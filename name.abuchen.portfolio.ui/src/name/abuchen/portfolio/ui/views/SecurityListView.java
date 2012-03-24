@@ -1,0 +1,894 @@
+package name.abuchen.portfolio.ui.views;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
+import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.wizards.AddSecurityWizard;
+import name.abuchen.portfolio.util.Dates;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.layout.RowLayoutFactory;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.PlatformUI;
+import org.swtchart.ILineSeries;
+import org.swtchart.ILineSeries.PlotSymbolType;
+import org.swtchart.ISeries;
+import org.swtchart.ISeries.SeriesType;
+
+public class SecurityListView extends AbstractListView
+{
+    private TableViewer securities;
+    private TableViewer prices;
+    private TableViewer transactions;
+    private TimelineChart chart;
+    private LatestQuoteTable latest;
+
+    private Date chartPeriod;
+
+    @Override
+    protected String getTitle()
+    {
+        return Messages.LabelSecurities;
+    }
+
+    protected void setWeights(SashForm sash)
+    {
+        sash.setWeights(new int[] { 50, 50 });
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        if (securities != null)
+            securities.refresh();
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // top table: securities
+    // //////////////////////////////////////////////////////////////
+
+    protected void createTopTable(Composite parent)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -2);
+        chartPeriod = cal.getTime();
+
+        securities = new TableViewer(parent, SWT.FULL_SELECTION);
+
+        TableViewerColumn column = new TableViewerColumn(securities, SWT.None);
+        column.getColumn().setText(Messages.ColumnName);
+        column.getColumn().setWidth(400);
+        ColumnViewerSorter.create(Security.class, "name").attachTo(securities, column, true); //$NON-NLS-1$
+
+        column = new TableViewerColumn(securities, SWT.None);
+        column.getColumn().setText(Messages.ColumnISIN);
+        column.getColumn().setWidth(100);
+        ColumnViewerSorter.create(Security.class, "isin").attachTo(securities, column); //$NON-NLS-1$
+
+        column = new TableViewerColumn(securities, SWT.None);
+        column.getColumn().setText(Messages.ColumnTicker);
+        column.getColumn().setWidth(100);
+        ColumnViewerSorter.create(Security.class, "tickerSymbol").attachTo(securities, column); //$NON-NLS-1$
+
+        column = new TableViewerColumn(securities, SWT.None);
+        column.getColumn().setText(Messages.ColumnSecurityType);
+        column.getColumn().setWidth(80);
+        ColumnViewerSorter.create(Security.class, "type").attachTo(securities, column); //$NON-NLS-1$
+
+        column = new TableViewerColumn(securities, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnLatest);
+        column.getColumn().setWidth(60);
+        ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                LatestSecurityPrice p1 = ((Security) o1).getLatest();
+                LatestSecurityPrice p2 = ((Security) o2).getLatest();
+
+                if (p1 == null)
+                    return p2 == null ? 0 : -1;
+                if (p2 == null)
+                    return 1;
+
+                int v1 = p1.getValue();
+                int v2 = p2.getValue();
+                return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
+            }
+        }).attachTo(securities, column);
+
+        column = new TableViewerColumn(securities, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnDelta);
+        column.getColumn().setWidth(60);
+        ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                LatestSecurityPrice p1 = ((Security) o1).getLatest();
+                LatestSecurityPrice p2 = ((Security) o2).getLatest();
+
+                if (p1 == null)
+                    return p2 == null ? 0 : -1;
+                if (p2 == null)
+                    return 1;
+
+                double v1 = (((double) (p1.getValue() - p1.getPreviousClose())) / p1.getPreviousClose() * 100);
+                double v2 = (((double) (p2.getValue() - p2.getPreviousClose())) / p2.getPreviousClose() * 100);
+                return Double.compare(v1, v2);
+            }
+        }).attachTo(securities, column);
+
+        securities.getTable().setHeaderVisible(true);
+        securities.getTable().setLinesVisible(true);
+
+        securities.setLabelProvider(new SecurityLabelProvider());
+        securities.setContentProvider(new SimpleListContentProvider());
+        securities.setInput(getClient().getSecurities());
+        securities.refresh();
+
+        securities.addSelectionChangedListener(new ISelectionChangedListener()
+        {
+            public void selectionChanged(SelectionChangedEvent event)
+            {
+                final Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
+                prices.setData(Security.class.toString(), security);
+                prices.setInput(security != null ? security.getPrices() : new ArrayList<SecurityPrice>(0));
+                prices.refresh();
+
+                latest.setInput(security);
+
+                transactions.setInput(security != null ? Transaction.sortByDate(security.getTransactions(getClient()))
+                                : new ArrayList<Transaction>(0));
+
+                updateChart(security);
+            }
+        });
+
+        new CellEditorFactory(securities, Security.class) //
+                        .notify(new CellEditorFactory.ModificationListener()
+                        {
+                            public void onModified(Object element, String property)
+                            {
+                                markDirty();
+                                securities.refresh(prices.getData(Security.class.toString()));
+                            }
+                        }) //
+                        .editable("name") // //$NON-NLS-1$
+                        .editable("isin") // //$NON-NLS-1$
+                        .editable("tickerSymbol") // //$NON-NLS-1$
+                        .editable("type") // //$NON-NLS-1$
+                        .readonly("latest") // //$NON-NLS-1$
+                        .readonly("delta") // //$NON-NLS-1$
+                        .apply();
+
+        hookContextMenu(securities.getTable(), new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillSecurityContextMenu(manager);
+            }
+        });
+    }
+
+    private abstract class AbstractDialogAction extends Action
+    {
+
+        public AbstractDialogAction(String text)
+        {
+            super(text);
+        }
+
+        @Override
+        public final void run()
+        {
+            Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
+
+            if (security == null)
+                return;
+
+            Dialog dialog = createDialog(security);
+            if (dialog.open() == Dialog.OK)
+            {
+                markDirty();
+                securities.setSelection(securities.getSelection());
+            }
+        }
+
+        abstract Dialog createDialog(Security security);
+    }
+
+    private void fillSecurityContextMenu(IMenuManager manager)
+    {
+        boolean isSecuritySelected = ((IStructuredSelection) securities.getSelection()).getFirstElement() != null;
+
+        if (isSecuritySelected)
+        {
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
+            {
+                @Override
+                Dialog createDialog(Security security)
+                {
+                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), security,
+                                    PortfolioTransaction.Type.BUY);
+                }
+            });
+
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
+            {
+                @Override
+                Dialog createDialog(Security security)
+                {
+                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), security,
+                                    PortfolioTransaction.Type.SELL);
+                }
+            });
+
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
+            {
+                @Override
+                Dialog createDialog(Security security)
+                {
+                    return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), security);
+                }
+            });
+            manager.add(new Separator());
+        }
+
+        manager.add(new Action(Messages.SecurityMenuAddNewSecurity)
+        {
+            @Override
+            public void run()
+            {
+                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new AddSecurityWizard(
+                                getClient()));
+                if (dialog.open() == Dialog.OK)
+                {
+                    markDirty();
+                    securities.setInput(getClient().getSecurities());
+                }
+            }
+        });
+
+        if (isSecuritySelected)
+        {
+            manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
+            {
+                @Override
+                public void run()
+                {
+                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
+
+                    if (security == null)
+                        return;
+
+                    if (!security.getTransactions(getClient()).isEmpty())
+                    {
+                        MessageDialog.openError(getClientEditor().getSite().getShell(),
+                                        Messages.MsgDeletionNotPossible,
+                                        MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
+                    }
+                    else
+                    {
+
+                        getClient().getSecurities().remove(security);
+                        markDirty();
+
+                        securities.setInput(getClient().getSecurities());
+                    }
+                }
+            });
+        }
+
+        manager.add(new Separator());
+        manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
+        {
+            @Override
+            public void run()
+            {
+                new UpdateQuotesJob(getClient())
+                {
+
+                    @Override
+                    protected void notifyFinished()
+                    {
+                        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
+                        {
+                            public void run()
+                            {
+                                markDirty();
+                                securities.refresh();
+                                securities.setSelection(securities.getSelection());
+                            }
+                        });
+                    }
+
+                }.schedule();
+            }
+        });
+    }
+
+    static class SecurityLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider
+    {
+
+        public Image getColumnImage(Object element, int columnIndex)
+        {
+            return null;
+        }
+
+        public String getColumnText(Object element, int columnIndex)
+        {
+            Security p = (Security) element;
+            switch (columnIndex)
+            {
+                case 0:
+                    return p.getName();
+                case 1:
+                    return p.getIsin();
+                case 2:
+                    return p.getTickerSymbol();
+                case 3:
+                    return p.getType().toString();
+                case 4:
+                    LatestSecurityPrice l1 = p.getLatest();
+                    return l1 != null ? String.format("%,.2f", l1.getValue() / 100d) : null; //$NON-NLS-1$
+                case 5:
+                    LatestSecurityPrice l2 = p.getLatest();
+                    return l2 != null ? String.format(
+                                    "%,.2f %%", ((double) (l2.getValue() - l2.getPreviousClose()) / (double) l2 //$NON-NLS-1$
+                                                    .getPreviousClose()) * 100) : null;
+            }
+            return null;
+        }
+
+        public Color getBackground(Object element, int columnIndex)
+        {
+            return null;
+        }
+
+        public Color getForeground(Object element, int columnIndex)
+        {
+            if (columnIndex != 5)
+                return null;
+
+            Security p = (Security) element;
+            LatestSecurityPrice latest = p.getLatest();
+            if (latest == null)
+                return null;
+
+            return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
+                            SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+        }
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // bottom table: folder
+    // //////////////////////////////////////////////////////////////
+
+    protected void createBottomTable(Composite parent)
+    {
+        Composite top = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(top);
+
+        // folder
+        CTabFolder folder = new CTabFolder(top, SWT.BORDER);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(folder);
+
+        // latest
+        latest = new LatestQuoteTable(top);
+        GridDataFactory.fillDefaults().grab(false, true).applyTo(latest.getControl());
+
+        // tab 1: chart
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabChart);
+
+        Composite chartComposite = new Composite(folder, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
+        item.setControl(chartComposite);
+
+        chart = new TimelineChart(chartComposite);
+        chart.getTitle().setText("..."); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
+
+        Composite buttons = new Composite(chartComposite, SWT.NONE);
+        buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
+        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
+
+        addButton(buttons, Messages.SecurityTabChart1M, Calendar.MONTH, -1);
+        addButton(buttons, Messages.SecurityTabChart2M, Calendar.MONTH, -2);
+        addButton(buttons, Messages.SecurityTabChart6M, Calendar.MONTH, -6);
+        addButton(buttons, Messages.SecurityTabChart1Y, Calendar.YEAR, -1);
+        addButton(buttons, Messages.SecurityTabChart2Y, Calendar.YEAR, -2);
+        addButton(buttons, Messages.SecurityTabChart3Y, Calendar.YEAR, -3);
+        addButton(buttons, Messages.SecurityTabChart5Y, Calendar.YEAR, -5);
+        addButton(buttons, Messages.SecurityTabChart10Y, Calendar.YEAR, -10);
+
+        Button button = new Button(buttons, SWT.FLAT);
+        button.setText(Messages.SecurityTabChartAll);
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                chartPeriod = null;
+
+                Security security = (Security) prices.getData(Security.class.toString());
+                updateChart(security);
+            }
+        });
+
+        // tab 2: historical quotes
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabHistoricalQuotes);
+        prices = createPricesTable(folder);
+        item.setControl(prices.getTable());
+
+        // tab 3: transactions
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabTransactions);
+        transactions = createTransactionTable(folder);
+        item.setControl(transactions.getTable());
+
+        folder.setSelection(0);
+    }
+
+    private void addButton(Composite buttons, String label, final int field, final int amount)
+    {
+        Button b = new Button(buttons, SWT.FLAT);
+        b.setText(label);
+        b.addSelectionListener(new ChartPeriodSelectionListener()
+        {
+            @Override
+            protected void roll(Calendar cal)
+            {
+                cal.add(field, amount);
+            }
+        });
+    }
+
+    private abstract class ChartPeriodSelectionListener implements SelectionListener
+    {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+            Calendar cal = Calendar.getInstance();
+            roll(cal);
+            chartPeriod = cal.getTime();
+
+            Security security = (Security) prices.getData(Security.class.toString());
+            updateChart(security);
+        }
+
+        protected abstract void roll(Calendar cal);
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e)
+        {}
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // tab item: prices
+    // //////////////////////////////////////////////////////////////
+
+    protected TableViewer createPricesTable(Composite parent)
+    {
+        final TableViewer prices = new TableViewer(parent, SWT.FULL_SELECTION);
+
+        TableColumn column = new TableColumn(prices.getTable(), SWT.None);
+        column.setText(Messages.ColumnDate);
+        column.setWidth(80);
+
+        column = new TableColumn(prices.getTable(), SWT.None);
+        column.setText(Messages.ColumnAmount);
+        column.setAlignment(SWT.RIGHT);
+        column.setWidth(80);
+
+        prices.getTable().setHeaderVisible(true);
+        prices.getTable().setLinesVisible(true);
+
+        prices.setLabelProvider(new PriceLabelProvider());
+        prices.setContentProvider(new SimpleListContentProvider(true));
+
+        new CellEditorFactory(prices, SecurityPrice.class) //
+                        .notify(new CellEditorFactory.ModificationListener()
+                        {
+                            public void onModified(Object element, String property)
+                            {
+                                markDirty();
+                                securities.refresh(prices.getData(Security.class.toString()));
+                                prices.refresh(element);
+
+                                Security security = (Security) prices.getData(Security.class.toString());
+
+                                latest.setInput(security);
+
+                                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+
+                                updateChart(security);
+                            }
+                        }) //
+                        .editable("time") // //$NON-NLS-1$
+                        .amount("value") // //$NON-NLS-1$
+                        .apply();
+
+        hookContextMenu(prices.getTable(), new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillPricesContextMenu(manager);
+            }
+        });
+
+        return prices;
+    }
+
+    private void fillPricesContextMenu(IMenuManager manager)
+    {
+        manager.add(new Action(Messages.SecurityMenuDeletePrice)
+        {
+            @Override
+            public void run()
+            {
+                SecurityPrice price = (SecurityPrice) ((IStructuredSelection) prices.getSelection()).getFirstElement();
+                Security security = (Security) prices.getData(Security.class.toString());
+
+                if (price == null || security == null)
+                    return;
+
+                security.removePrice(price);
+                markDirty();
+
+                prices.setInput(security.getPrices());
+
+                latest.setInput(security);
+
+                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+
+                updateChart(security);
+            }
+        });
+
+        manager.add(new Action(Messages.SecurityMenuAddPrice)
+        {
+            @Override
+            public void run()
+            {
+                Security security = (Security) prices.getData(Security.class.toString());
+                if (security == null)
+                    return;
+
+                SecurityPrice price = new SecurityPrice();
+                price.setTime(Dates.today());
+
+                security.addPrice(price);
+
+                markDirty();
+
+                prices.setInput(security.getPrices());
+                prices.setSelection(new StructuredSelection(price), true);
+
+                latest.setInput(security);
+
+                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+
+                updateChart(security);
+            }
+        });
+    }
+
+    static class PriceLabelProvider extends LabelProvider implements ITableLabelProvider
+    {
+
+        public Image getColumnImage(Object element, int columnIndex)
+        {
+            return null;
+        }
+
+        public String getColumnText(Object element, int columnIndex)
+        {
+            SecurityPrice p = (SecurityPrice) element;
+            switch (columnIndex)
+            {
+                case 0:
+                    return String.format("%tF", p.getTime()); //$NON-NLS-1$
+                case 1:
+                    return String.format("%,10.2f", p.getValue() / 100d); //$NON-NLS-1$
+            }
+            return null;
+        }
+
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // tab item: chart
+    // //////////////////////////////////////////////////////////////
+
+    private void updateChart(Security security)
+    {
+        ISeries series = chart.getSeriesSet().getSeries("prices"); //$NON-NLS-1$
+        if (series != null)
+            chart.getSeriesSet().deleteSeries("prices"); //$NON-NLS-1$
+        chart.clearMarkerLines();
+
+        if (security == null || security.getPrices().isEmpty())
+        {
+            chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
+            chart.redraw();
+            return;
+        }
+
+        chart.getTitle().setText(security.getName());
+
+        List<SecurityPrice> prices = security.getPrices();
+
+        int index;
+        Date[] dates;
+        double[] values;
+
+        if (chartPeriod == null)
+        {
+            index = 0;
+            dates = new Date[prices.size()];
+            values = new double[prices.size()];
+        }
+        else
+        {
+            index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0),
+                            new SecurityPrice.ByDate()));
+
+            if (index >= prices.size())
+            {
+                // no data available
+                chart.redraw();
+                return;
+            }
+
+            dates = new Date[prices.size() - index];
+            values = new double[prices.size() - index];
+        }
+
+        for (int ii = 0; index < prices.size(); index++, ii++)
+        {
+            SecurityPrice p = prices.get(index);
+            dates[ii] = p.getTime();
+            values[ii] = p.getValue() / 100d;
+        }
+
+        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "prices"); //$NON-NLS-1$
+        lineSeries.setXDateSeries(dates);
+        lineSeries.setLineWidth(2);
+        lineSeries.enableArea(true);
+        lineSeries.setSymbolType(PlotSymbolType.NONE);
+        lineSeries.setYSeries(values);
+
+        chart.getAxisSet().adjustRange();
+
+        for (Portfolio portfolio : getClient().getPortfolios())
+        {
+            for (PortfolioTransaction t : portfolio.getTransactions())
+            {
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.before(t.getDate())))
+                {
+                    switch (t.getType())
+                    {
+                        case BUY:
+                        case TRANSFER_IN:
+                            chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), String.valueOf(t.getShares()));
+                            break;
+                        case SELL:
+                        case TRANSFER_OUT:
+                            chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + String.valueOf(t.getShares())); //$NON-NLS-1$
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+                }
+            }
+
+        }
+
+        chart.redraw();
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // tab item: transactions
+    // //////////////////////////////////////////////////////////////
+
+    protected TableViewer createTransactionTable(Composite parent)
+    {
+        final TableViewer table = new TableViewer(parent, SWT.FULL_SELECTION);
+
+        TableColumn column = new TableColumn(table.getTable(), SWT.NONE);
+        column.setText(Messages.ColumnDate);
+        column.setWidth(80);
+
+        column = new TableColumn(table.getTable(), SWT.NONE);
+        column.setText(Messages.ColumnTransactionType);
+        column.setWidth(80);
+
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
+        column.setText(Messages.ColumnShares);
+        column.setWidth(80);
+
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
+        column.setText(Messages.ColumnAmount);
+        column.setWidth(80);
+
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
+        column.setText(Messages.ColumnQuote);
+        column.setWidth(80);
+
+        table.getTable().setHeaderVisible(true);
+        table.getTable().setLinesVisible(true);
+
+        table.setLabelProvider(new TransactionLabelProvider());
+        table.setContentProvider(new SimpleListContentProvider(true));
+
+        return table;
+    }
+
+    static class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
+    {
+
+        public Image getColumnImage(Object element, int columnIndex)
+        {
+            return null;
+        }
+
+        public String getColumnText(Object element, int columnIndex)
+        {
+            Transaction t = (Transaction) element;
+            switch (columnIndex)
+            {
+                case 0:
+                    return String.format("%tF", t.getDate()); //$NON-NLS-1$
+                case 1:
+                    if (t instanceof PortfolioTransaction)
+                        return ((PortfolioTransaction) t).getType().toString();
+                    else if (t instanceof AccountTransaction)
+                        return ((AccountTransaction) t).getType().toString();
+                    else
+                        return null;
+                case 2:
+                    if (t instanceof PortfolioTransaction)
+                        return String.format("%,d", ((PortfolioTransaction) t).getShares()); //$NON-NLS-1$
+                    else
+                        return null;
+                case 3:
+                    return String.format("%,10.2f", t.getAmount() / 100d); //$NON-NLS-1$
+                case 4:
+                    if (t instanceof PortfolioTransaction)
+                        return String.format("%,10.2f", ((PortfolioTransaction) t).getActualPurchasePrice() / 100d); //$NON-NLS-1$
+                    else
+                        return null;
+            }
+            return null;
+        }
+
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // tab item: latest quote
+    // //////////////////////////////////////////////////////////////
+
+    static class LatestQuoteTable
+    {
+        private Table table;
+
+        public LatestQuoteTable(Composite parent)
+        {
+            table = new Table(parent, SWT.BORDER);
+
+            TableColumn column = new TableColumn(table, SWT.NO_SCROLL | SWT.NO_FOCUS);
+            column.setWidth(80);
+
+            column = new TableColumn(table, SWT.NONE);
+            column.setWidth(80);
+            column.setAlignment(SWT.RIGHT);
+
+            TableItem item = new TableItem(table, SWT.NONE);
+            item.setText(0, Messages.ColumnLatestPrice);
+
+            item = new TableItem(table, SWT.NONE);
+            item.setText(0, Messages.ColumnLatestTrade);
+
+            item = new TableItem(table, SWT.NONE);
+            item.setText(0, Messages.ColumnDaysHigh);
+
+            item = new TableItem(table, SWT.NONE);
+            item.setText(0, Messages.ColumnDaysLow);
+
+            item = new TableItem(table, SWT.NONE);
+            item.setText(0, Messages.ColumnVolume);
+
+            item = new TableItem(table, SWT.NONE);
+            item.setText(0, Messages.ColumnPreviousClose);
+        }
+
+        public Control getControl()
+        {
+            return table;
+        }
+
+        public void setInput(Security security)
+        {
+            if (security == null || security.getLatest() == null)
+            {
+                for (int ii = 0; ii < 6; ii++)
+                    table.getItem(ii).setText(1, ""); //$NON-NLS-1$
+            }
+            else
+            {
+                LatestSecurityPrice p = security.getLatest();
+                table.getItem(0).setText(1, String.format("%,.2f", p.getValue() / 100d)); //$NON-NLS-1$
+
+                table.getItem(1).setText(1, String.format("%tF", p.getTime())); //$NON-NLS-1$
+
+                int daysHigh = p.getHigh();
+                table.getItem(2).setText(1, daysHigh == -1 ? "n/a" : String.format("%,.2f", daysHigh / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
+
+                int daysLow = p.getLow();
+                table.getItem(3).setText(1, daysLow == -1 ? "n/a" : String.format("%,.2f", daysLow / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
+
+                int volume = p.getVolume();
+                table.getItem(4).setText(1, volume == -1 ? "n/a" : String.format("%,d", volume)); //$NON-NLS-1$ //$NON-NLS-2$
+
+                int prevClose = p.getPreviousClose();
+                table.getItem(5).setText(1, prevClose == -1 ? "n/a" : String.format("%,.2f", prevClose / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        }
+    }
+
+}

@@ -1,0 +1,103 @@
+package name.abuchen.portfolio.ui.dialogs;
+
+import java.util.Date;
+import java.util.EnumSet;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.Dates;
+
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+
+public class OtherAccountTransactionsDialog extends AbstractDialog
+{
+    static class Model extends AbstractDialog.Model
+    {
+        private Account account;
+        private AccountTransaction.Type type;
+        private int amount;
+        private Date date = Dates.today();
+
+        public Model(Client client, Account account)
+        {
+            super(client);
+
+            this.account = account;
+            this.type = AccountTransaction.Type.INTEREST;
+        }
+
+        public AccountTransaction.Type getType()
+        {
+            return type;
+        }
+
+        public void setType(AccountTransaction.Type type)
+        {
+            firePropertyChange("type", this.type, this.type = type); //$NON-NLS-1$
+        }
+
+        public int getAmount()
+        {
+            return amount;
+        }
+
+        public void setAmount(int amount)
+        {
+            firePropertyChange("amount", this.amount, this.amount = amount); //$NON-NLS-1$
+        }
+
+        public Date getDate()
+        {
+            return date;
+        }
+
+        public void setDate(Date date)
+        {
+            firePropertyChange("date", this.date, this.date = date); //$NON-NLS-1$
+        }
+
+        public void createChanges()
+        {
+            if (account == null)
+                throw new UnsupportedOperationException(Messages.MsgMissingAccount);
+
+            AccountTransaction t = new AccountTransaction();
+            t.setAmount(amount);
+            t.setDate(date);
+            t.setType(type);
+            account.addTransaction(t);
+        }
+    }
+
+    public OtherAccountTransactionsDialog(Shell parentShell, Client client, Account account)
+    {
+        super(parentShell, Messages.LabelOther, client, new Model(client, account));
+    }
+
+    @Override
+    protected void createFormElements(Composite editArea)
+    {
+        // type
+        bindComboViewer(editArea, Messages.ColumnTransactionType, "type", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                return ((AccountTransaction.Type) element).name();
+                            }
+                        }, EnumSet.of(AccountTransaction.Type.INTEREST, //
+                                        AccountTransaction.Type.DEPOSIT, //
+                                        AccountTransaction.Type.REMOVAL, //
+                                        AccountTransaction.Type.TAXES, //
+                                        AccountTransaction.Type.FEES).toArray());
+
+        bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+
+        bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+
+    }
+}

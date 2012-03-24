@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+	<extension point="org.eclipse.core.contenttype.contentTypes">
+	    <content-type
+           base-type="org.eclipse.core.runtime.xml"
+           file-extensions="xml"
+           id="name.abuchen.portfolio.client"
+           name="%content-type.name"
+           priority="high">
+               <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber2">
+                   <parameter name="element" value="client"/>
+               </describer>
+		</content-type>
+	</extension>
+
+	<extension point="org.eclipse.ui.editors">
+		<editor
+		      class="name.abuchen.portfolio.ui.ClientEditor"
+		      default="false"
+		      id="name.abuchen.portfolio.ui.editor"
+		      name="%editor.name">
+			<contentTypeBinding contentTypeId="name.abuchen.portfolio.client"/>
+		</editor>
+	</extension>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="name.abuchen.portfolio.ui.app.Application">
+         </run>
+      </application>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="%perspective.name"
+            class="name.abuchen.portfolio.ui.app.Perspective"
+            id="name.abuchen.portfolio.perspective">
+      </perspective>
+   </extension>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="name.abuchen.portfolio.ui.application"
+            name="%product.name">
+         <property
+               name="appName"
+               value="Portfolio Performance">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/about.gif">
+         </property>
+         <property
+               name="aboutText"
+               value="Portfolio Performance&#x0A;&#x0A;(c) Copyright Andreas Buchen 2012.  All rights reserved.&#x0A;&#x0A;This product includes software developed by the&#x0A;Eclipse Foundation http://eclipse.org/&#x0A;Apache Software Foundation http://apache.org/">
+         </property>
+      </product>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="file"
+               label="%menu.file.label">
+            <command
+                  id="name.abuchen.portfolio.ui.menus.openFileCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.openFileCommand"
+                  mnemonic="%command.openFile.mnemonic">
+            </command>
+            <command
+                  id="name.abuchen.portfolio.ui.menus.newFileCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.newFileCommand"
+                  mnemonic="%command.newFile.mnemonic">
+            </command>
+            <command
+                  commandId="org.eclipse.ui.views.showView"
+                  label="%command.showErrorView.label"
+                  style="push">
+               <parameter
+                     name="org.eclipse.ui.views.showView.viewId"
+                     value="org.eclipse.pde.runtime.LogView">
+               </parameter>
+            </command>
+         </menu>
+         <menu
+               id="online"
+               label="%menu.online.label">
+            <command
+                  id="name.abuchen.portfolio.ui.menus.updateQuotesCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.updateQuotesCommand">
+            </command>
+            <command
+                  id="name.abuchen.portfolio.ui.menus.updateQuotesCommand2"
+                  commandId="name.abuchen.portfolio.ui.commands.updateQuotesCommand"
+                  label="%command.updateHistoricQuotes.label">
+               <parameter name="name.abuchen.portfolio.ui.param.target" value="historic"/>
+            </command>
+            <command
+                  commandId="name.abuchen.portfolio.ui.commands.updateCPICommand"
+                  id="name.abuchen.portfolio.ui.menus.updateCPICommand">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="name.abuchen.portfolio.ui.commands.category"
+            name="%category.name">
+      </category>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.openFileCommand"
+            name="%command.openFile.name">
+      </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.newFileCommand"
+            name="%command.newFile.name">
+      </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.updateQuotesCommand"
+            name="%command.updateQuotes.name">
+         <commandParameter
+               id="name.abuchen.portfolio.ui.param.target"
+               name="target"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.updateCPICommand"
+            name="%command.updateCPI.name">
+      </command>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.OpenFileHandler"
+            commandId="name.abuchen.portfolio.ui.commands.openFileCommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.NewFileHandler"
+            commandId="name.abuchen.portfolio.ui.commands.newFileCommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler"
+            commandId="name.abuchen.portfolio.ui.commands.updateQuotesCommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.UpdateCPIHandler"
+            commandId="name.abuchen.portfolio.ui.commands.updateCPICommand">
+      </handler>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="name.abuchen.portfolio.ui.commands.openFileCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="name.abuchen.portfolio.ui.scheme"
+            sequence="M1+O">
+      </key>
+      <key
+            commandId="name.abuchen.portfolio.ui.commands.newFileCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="name.abuchen.portfolio.ui.scheme"
+            sequence="M1+N">
+      </key>
+      <scheme
+            id="name.abuchen.portfolio.ui.scheme"
+            name="%scheme.name">
+      </scheme>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.elementFactories">
+      <factory
+            class="name.abuchen.portfolio.ui.ElementFactory"
+            id="name.abuchen.portfolio.ui.factory">
+      </factory>
+   </extension>
+</plugin>
