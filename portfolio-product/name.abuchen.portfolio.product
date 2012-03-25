@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.5.0.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="%product.name" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.5.0.qualifier" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icons/about.gif"/>
@@ -19,17 +19,19 @@ Apache Software Foundation http://apache.org/
    </configIni>
 
    <launcherArgs>
-      <programArgs>-nl de_DE -consoleLog</programArgs>
+      <programArgs>-nl de_DE</programArgs>
       <programArgsMac>-os macosx -ws cocoa -arch x86_64</programArgsMac>
       <vmArgs>-Xms40m -Xmx512m</vmArgs>
       <vmArgsMac>-Xdock:icon=../Resources/pp.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages/>
+   <windowImages i16="icons/pp_16.gif" i32="icons/pp_32.gif" i48="icons/pp_48.gif" i128="icons/pp_128.gif"/>
 
    <splash
       location="name.abuchen.portfolio.ui"
-      startupProgressRect="5,194,445,10" />
+      startupProgressRect="5,194,445,10"
+      startupMessageRect="193,100,257,20"
+      startupForegroundColor="FFFFFF" />
 
    <launcher name="PortfolioPerformance">
       <linux icon="icons/pp.xpm"/>
