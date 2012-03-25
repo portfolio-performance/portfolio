@@ -160,7 +160,7 @@ public class ClientEditor extends EditorPart
         }
         catch (IOException e)
         {
-            throw new PartInitException(new Status(IStatus.ERROR, FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+            throw new PartInitException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
         }
 
         if (clientFile != null)
@@ -424,7 +424,7 @@ public class ClientEditor extends EditorPart
         catch (IOException e)
         {
             ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+                            PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
         }
     }
 
@@ -465,7 +465,7 @@ public class ClientEditor extends EditorPart
         catch (IOException e)
         {
             ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+                            PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
         }
     }
 }

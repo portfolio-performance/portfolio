@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.ui.FinancePlugin;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.core.runtime.Status;
@@ -309,7 +309,7 @@ public class CellEditorFactory
             {
                 ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
                                 Messages.CellEditor_Error, e.getMessage(), new Status(Status.ERROR,
-                                                FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+                                                PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
                 return null;
             }
         }
@@ -326,7 +326,7 @@ public class CellEditorFactory
             {
                 ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
                                 Messages.CellEditor_Error, e.getMessage(), new Status(Status.ERROR,
-                                                FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+                                                PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
             }
         }
 

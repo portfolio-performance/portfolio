@@ -8,7 +8,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.ui.FinancePlugin;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.core.runtime.Status;
@@ -128,7 +128,7 @@ public class SearchSecurityWizardPage extends WizardPage
                         catch (IOException e)
                         {
                             setErrorMessage(e.getMessage());
-                            FinancePlugin.log(new Status(Status.ERROR, FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
                         }
                     }
                 });

@@ -5,13 +5,13 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.FrameworkUtil;
 
-public class FinancePlugin extends AbstractUIPlugin
+public class PortfolioPlugin extends AbstractUIPlugin
 {
     public static final String PLUGIN_IN = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
     public static final void log(IStatus status)
     {
-        Platform.getLog(FrameworkUtil.getBundle(FinancePlugin.class)).log(status);
+        Platform.getLog(FrameworkUtil.getBundle(PortfolioPlugin.class)).log(status);
     }
 
 }

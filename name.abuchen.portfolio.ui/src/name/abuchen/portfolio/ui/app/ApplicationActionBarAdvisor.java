@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.app;
 
-import name.abuchen.portfolio.ui.FinancePlugin;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.core.runtime.Status;
@@ -49,7 +49,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
                         }
                         catch (PartInitException e)
                         {
-                            FinancePlugin.log(new Status(Status.ERROR, FinancePlugin.PLUGIN_IN, e.getMessage(), e));
+                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
                         }
                     };
                 });

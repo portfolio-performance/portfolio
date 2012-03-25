@@ -18,5 +18,5 @@ Require-Bundle: name.abuchen.portfolio;bundle-version="0.5.0",
  org.eclipse.core.databinding.beans;bundle-version="1.2.100",
  org.swtchart;bundle-version="0.8.0"
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: name.abuchen.portfolio.ui.FinancePlugin
+Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
 Bundle-Vendor: %Bundle-Vendor
