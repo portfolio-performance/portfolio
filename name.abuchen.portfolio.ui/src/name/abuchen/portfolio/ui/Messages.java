@@ -138,6 +138,7 @@ public class Messages extends NLS
     public static String SecurityTabChartAll;
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTransactions;
+    public static String SystemMenuShowErrorLog;
     public static String TabTransactions;
     static
     {

@@ -81,15 +81,6 @@
                   commandId="name.abuchen.portfolio.ui.commands.newFileCommand"
                   mnemonic="%command.newFile.mnemonic">
             </command>
-            <command
-                  commandId="org.eclipse.ui.views.showView"
-                  label="%command.showErrorView.label"
-                  style="push">
-               <parameter
-                     name="org.eclipse.ui.views.showView.viewId"
-                     value="org.eclipse.pde.runtime.LogView">
-               </parameter>
-            </command>
          </menu>
          <menu
                id="online"
@@ -107,6 +98,39 @@
             <command
                   commandId="name.abuchen.portfolio.ui.commands.updateCPICommand"
                   id="name.abuchen.portfolio.ui.menus.updateCPICommand">
+            </command>
+         </menu>
+         <menu id="help"
+               label="%menu.help.label">
+            <visibleWhen
+                  checkEnabled="true">
+               <not>
+                  <systemTest
+                        property="os.name"
+                        value="Mac OS X">
+                  </systemTest>
+               </not>
+            </visibleWhen>
+            <command
+                  id="org.eclipse.ui.window.preferences"
+                  commandId="org.eclipse.ui.window.preferences">
+            </command>
+            <command
+                  commandId="org.eclipse.ui.views.showView"
+                  label="%command.showErrorView.label"
+                  style="push">
+               <parameter
+                     name="org.eclipse.ui.views.showView.viewId"
+                     value="org.eclipse.pde.runtime.LogView">
+               </parameter>
+            </command>
+            <separator
+                  name="name.abuchen.portfolio.ui.menus.helpSeparator"
+                  visible="true">
+            </separator>
+            <command
+                  id="org.eclipse.ui.help.aboutAction"
+                  commandId="org.eclipse.ui.help.aboutAction">
             </command>
          </menu>
       </menuContribution>
