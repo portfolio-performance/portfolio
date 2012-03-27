@@ -22,7 +22,7 @@ import org.htmlparser.util.ParserException;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
-    private static final String SEARCH_URL = "http://uk.finance.yahoo.com/lookup/all?s=%s&t=S&b=0&m=ALL"; //$NON-NLS-1$
+    private static final String SEARCH_URL = "http://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
 
     @Override
     public String getName()
@@ -184,7 +184,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
         {
             try
             {
-                DecimalFormat fmt = new DecimalFormat("#,##0.##", new DecimalFormatSymbols(Locale.UK)); //$NON-NLS-1$
+                DecimalFormat fmt = new DecimalFormat("#,##0.##", new DecimalFormatSymbols(Locale.GERMANY)); //$NON-NLS-1$
                 Number q = fmt.parse(text);
                 return (int) (q.doubleValue() * 100);
             }

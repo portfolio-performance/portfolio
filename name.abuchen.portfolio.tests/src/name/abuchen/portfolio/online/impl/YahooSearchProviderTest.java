@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,10 +31,10 @@ public class YahooSearchProviderTest
 
         ResultItem p = items.get(0);
         assertThat(p.getSymbol(), equalTo("SAP.DE"));
-        assertThat(p.getName(), equalTo("SAP AG"));
+        assertThat(p.getName(), equalTo("Sap AG"));
         assertThat(p.getIsin(), equalTo("DE0007164600"));
-        assertThat(p.getLastTrade(), equalTo(5081));
-        assertThat(p.getType(), equalTo("Stock"));
+        assertThat(p.getLastTrade(), equalTo(5309));
+        assertThat(p.getType(), equalTo("Aktien"));
         assertThat(p.getExchange(), equalTo("GER"));
     }
 
@@ -48,10 +48,10 @@ public class YahooSearchProviderTest
         List<ResultItem> items = new YahooSearchProvider.Visitor().visit(lexer);
 
         assertThat(items.size(), equalTo(20));
-        ResultItem p = items.get(5);
-        assertThat(p.getSymbol(), equalTo("2815.HK"));
+        ResultItem p = items.get(6);
+        assertThat(p.getSymbol(), equalTo("CEU-OTC.MI"));
         assertNull(p.getName());
-        assertThat(p.getIsin(), equalTo("FR0010372185"));
+        assertThat(p.getIsin(), equalTo("FR0010655696"));
         assertThat(p.getLastTrade(), equalTo(0));
         assertNull(p.getType());
         assertNull(p.getExchange());
