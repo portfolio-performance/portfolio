@@ -1,7 +1,13 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Category;
@@ -73,17 +79,16 @@ public class CategoryView extends AbstractFinanceView
         model = CategoryModel.create(snapshot);
 
         security2position = new HashMap<Security, SecurityPosition>();
-        if (snapshot.getJointPortfolio() != null)
-            for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
-                security2position.put(position.getSecurity(), position);
+        for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
+            security2position.put(position.getSecurity(), position);
 
         account2position = new HashMap<Account, AccountSnapshot>();
         for (AccountSnapshot accountSnapshot : snapshot.getAccounts())
             account2position.put(accountSnapshot.getAccount(), accountSnapshot);
 
         assets.setInput(this);
+        expandCategories();
         assets.refresh();
-        assets.expandToLevel(3);
     }
 
     private void notifyHasChanged()
@@ -180,6 +185,7 @@ public class CategoryView extends AbstractFinanceView
                     {
                         category.addCategory(new Category(Messages.LabelNewCategory, 100 - category.getSubject()
                                         .getChildrenPercentage()));
+                        assets.setExpandedState(category, true);
                         notifyHasChanged();
                     }
                 });
@@ -187,15 +193,23 @@ public class CategoryView extends AbstractFinanceView
 
             if (category.getChildren().isEmpty())
             {
+                Set<Object> assigned = new HashSet<Object>(model.getSubject().getTreeElements());
+
                 MenuManager securities = new MenuManager(Messages.AssetAllocationMenuAssignSecurity);
-                for (final Security s : getClient().getSecurities())
+                List<Security> list = getClient().getSecurities();
+                Collections.sort(list, new Security.ByName());
+                for (final Security s : list)
                 {
+                    if (assigned.contains(s))
+                        continue;
+
                     securities.add(new Action(s.getName())
                     {
                         @Override
                         public void run()
                         {
                             category.getSubject().addSecurity(s);
+                            assets.setExpandedState(category, true);
                             notifyHasChanged();
                         }
                     });
@@ -205,12 +219,16 @@ public class CategoryView extends AbstractFinanceView
                 MenuManager cash = new MenuManager(Messages.AssetAllocationMenuAssignAccount);
                 for (final Account a : getClient().getAccounts())
                 {
+                    if (assigned.contains(a))
+                        continue;
+
                     cash.add(new Action(a.getName())
                     {
                         @Override
                         public void run()
                         {
                             category.getSubject().addAccount(a);
+                            assets.setExpandedState(category, true);
                             notifyHasChanged();
                         }
                     });
@@ -296,6 +314,23 @@ public class CategoryView extends AbstractFinanceView
                 }
             });
         }
+    }
+
+    private void expandCategories()
+    {
+        List<CategoryModel> expanded = new ArrayList<CategoryModel>();
+        Stack<CategoryModel> stack = new Stack<CategoryModel>();
+        stack.push(model);
+        while (!stack.isEmpty())
+        {
+            CategoryModel c = stack.pop();
+            if (!c.getChildren().isEmpty())
+            {
+                expanded.add(c);
+                stack.addAll(c.getChildren());
+            }
+        }
+        assets.setExpandedElements(expanded.toArray(new CategoryModel[0]));
     }
 
     private class CategoryContentProvider implements ITreeContentProvider
@@ -410,7 +445,7 @@ public class CategoryView extends AbstractFinanceView
 
                         int gap = cat.getTarget() - cat.getActual();
 
-                        int count = gap / price.getValue();
+                        int count = price.getValue() != 0 ? gap / price.getValue() : 0;
 
                         if (columnIndex == 5)
                             return String.format("%,10d", count); //$NON-NLS-1$

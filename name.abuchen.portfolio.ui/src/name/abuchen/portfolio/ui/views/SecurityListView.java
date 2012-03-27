@@ -319,6 +319,13 @@ public class SecurityListView extends AbstractListView
                                         Messages.MsgDeletionNotPossible,
                                         MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
                     }
+                    else if (getClient().getRootCategory().getTreeElements().contains(security))
+                    {
+                        MessageDialog.openError(getClientEditor().getSite().getShell(),
+                                        Messages.MsgDeletionNotPossible, MessageFormat.format(
+                                                        Messages.MsgDeletionNotPossibleAssignedInAllocation,
+                                                        security.getName()));
+                    }
                     else
                     {
 

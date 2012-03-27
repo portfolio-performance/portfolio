@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 public class Category
 {
@@ -74,6 +75,23 @@ public class Category
     public List<Object> getElements()
     {
         return elements;
+    }
+
+    public List<Object> getTreeElements()
+    {
+        List<Object> answer = new ArrayList<Object>();
+
+        Stack<Category> stack = new Stack<Category>();
+        stack.push(this);
+
+        while (!stack.isEmpty())
+        {
+            Category c = stack.pop();
+            answer.addAll(c.elements);
+            stack.addAll(c.children);
+        }
+
+        return answer;
     }
 
     public void addSecurity(Security security)

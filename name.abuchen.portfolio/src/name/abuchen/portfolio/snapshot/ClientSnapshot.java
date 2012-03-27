@@ -33,7 +33,7 @@ public class ClientSnapshot
             snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, time));
 
         if (snapshot.portfolios.isEmpty())
-            snapshot.jointPortfolio = null;
+            snapshot.jointPortfolio = PortfolioSnapshot.create(new Portfolio(), time);
         else if (snapshot.portfolios.size() == 1)
             snapshot.jointPortfolio = snapshot.portfolios.get(0);
         else

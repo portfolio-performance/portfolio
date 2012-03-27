@@ -1,12 +1,27 @@
 package name.abuchen.portfolio.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class Security
 {
+    public static final class ByName implements Comparator<Security>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(Security s1, Security s2)
+        {
+            if (s1 == null)
+                return s2 == null ? 0 : -1;
+            return s1.name.compareTo(s2.name);
+        }
+    }
+
     public enum AssetClass
     {
         CASH, BOND, STOCK, REAL_ESTATE, COMMODITY;
