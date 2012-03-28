@@ -326,32 +326,14 @@ public class ClientEditor extends EditorPart
         }
         catch (ClassNotFoundException e)
         {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
         catch (InstantiationException e)
         {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
         catch (IllegalAccessException e)
         {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-        catch (UnsupportedOperationException e)
-        {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-        catch (Error e)
-        {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-        catch (Throwable e)
-        {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

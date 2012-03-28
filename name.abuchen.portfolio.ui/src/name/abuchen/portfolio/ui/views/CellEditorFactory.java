@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -259,12 +259,9 @@ public class CellEditorFactory
 
     public void apply()
     {
-
-        String[] props = properties.toArray(new String[0]);
-
-        viewer.setColumnProperties(props);
+        viewer.setColumnProperties(properties.toArray(new String[0]));
         viewer.setCellEditors(cellEditors.toArray(new CellEditor[0]));
-        viewer.setCellModifier(new CellModifiersImpl(subjectType, props, modifiers.toArray(new Modifier[0]), listener));
+        viewer.setCellModifier(new CellModifiersImpl(subjectType, properties, modifiers, listener));
     }
 
     // //////////////////////////////////////////////////////////////
@@ -285,12 +282,12 @@ public class CellEditorFactory
         private Modifier[] modifier;
         private ModificationListener listener;
 
-        public CellModifiersImpl(Class<?> subjectType, String[] names, Modifier[] modifier,
+        private CellModifiersImpl(Class<?> subjectType, List<String> names, List<Modifier> modifier,
                         ModificationListener listener)
         {
             this.subjectType = subjectType;
-            this.names = names;
-            this.modifier = modifier;
+            this.names = names.toArray(new String[0]);
+            this.modifier = modifier.toArray(new Modifier[0]);
             this.listener = listener;
         }
 
