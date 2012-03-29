@@ -28,9 +28,105 @@
 					</execution>
 					<execution>
 						<id>archive-products</id>
+						<phase>integration-test</phase>
 						<goals>
 							<goal>archive-products</goal>
 						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<products>
+						<product>
+							<id>name.abuchen.portfolio.product</id>
+							<rootFolder>portfolio</rootFolder>
+						</product>
+					</products>
+				</configuration>
+			</plugin>
+			<!-- poor man's root files (root files require features) -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>copy-linux-x86</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/products/name.abuchen.portfolio.product/linux/gtk/x86/portfolio</outputDirectory>
+							<resources>
+								<resource>
+									<directory>.</directory>
+									<include>kommer.xml</include>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-linux-x86_64</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio</outputDirectory>
+							<resources>
+								<resource>
+									<directory>.</directory>
+									<include>kommer.xml</include>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-macosx</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/products/name.abuchen.portfolio.product/macosx/cocoa/x86_64/portfolio</outputDirectory>
+							<resources>
+								<resource>
+									<directory>.</directory>
+									<include>kommer.xml</include>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-win32-x86</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/products/name.abuchen.portfolio.product/win32/win32/x86/portfolio</outputDirectory>
+							<resources>
+								<resource>
+									<directory>.</directory>
+									<include>kommer.xml</include>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-win32-x86_64</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/products/name.abuchen.portfolio.product/win32/win32/x86_64/portfolio</outputDirectory>
+							<resources>
+								<resource>
+									<directory>.</directory>
+									<include>kommer.xml</include>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
