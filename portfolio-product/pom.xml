@@ -35,10 +35,15 @@
 					</execution>
 				</executions>
 				<configuration>
+					<formats>
+						<macosx>tar.gz</macosx>
+						<linux>tar.gz</linux>
+					</formats>
 					<products>
 						<product>
 							<id>name.abuchen.portfolio.product</id>
 							<rootFolder>portfolio</rootFolder>
+							<archiveFileName>PortfolioPerformance-${project.version}</archiveFileName>
 						</product>
 					</products>
 				</configuration>
