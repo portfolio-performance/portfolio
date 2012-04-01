@@ -10,6 +10,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.util.Dates;
 
@@ -70,6 +71,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
         Collections.sort(getClient().getConsumerPriceIndeces());
         indeces.setInput(getClient().getConsumerPriceIndeces());
         indeces.refresh();
+        ViewerHelper.pack(indeces);
 
         new CellEditorFactory(indeces, ConsumerPriceIndex.class) //
                         .notify(new CellEditorFactory.ModificationListener()

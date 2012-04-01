@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -77,6 +78,7 @@ public class PortfolioListView extends AbstractListView
         portfolios.setContentProvider(new SimpleListContentProvider());
         portfolios.setInput(getClient().getPortfolios());
         portfolios.refresh();
+        ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -200,6 +202,12 @@ public class PortfolioListView extends AbstractListView
         item.setControl(transactions.getControl());
 
         folder.setSelection(0);
+
+        if (!getClient().getPortfolios().isEmpty())
+            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
+
+        ViewerHelper.pack(statementOfAssets);
+        ViewerHelper.pack(transactions);
     }
 
     private void createTransactionsTable(CTabFolder folder)
@@ -276,9 +284,6 @@ public class PortfolioListView extends AbstractListView
                 fillTransactionsContextMenu(manager);
             }
         });
-
-        if (!getClient().getPortfolios().isEmpty())
-            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
     }
 
     private void fillTransactionsContextMenu(IMenuManager manager)

@@ -11,6 +11,7 @@ import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -49,6 +50,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
         tree = createTreeViewer(parent);
 
         reportingPeriodUpdated();
+        ViewerHelper.pack(tree);
 
         return tree.getControl();
     }

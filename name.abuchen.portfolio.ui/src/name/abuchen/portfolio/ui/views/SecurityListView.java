@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.wizards.AddSecurityWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -55,7 +56,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -176,6 +176,7 @@ public class SecurityListView extends AbstractListView
         securities.setLabelProvider(new SecurityLabelProvider());
         securities.setContentProvider(new SimpleListContentProvider());
         securities.setInput(getClient().getSecurities());
+        ViewerHelper.pack(securities);
         securities.refresh();
 
         securities.addSelectionChangedListener(new ISelectionChangedListener()
@@ -425,16 +426,17 @@ public class SecurityListView extends AbstractListView
 
     protected void createBottomTable(Composite parent)
     {
-        Composite top = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(top);
+        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
 
         // folder
-        CTabFolder folder = new CTabFolder(top, SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(folder);
+        CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
-        latest = new LatestQuoteTable(top);
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(latest.getControl());
+        latest = new LatestQuoteTable(sash);
+
+        ViewerHelper.pack(latest.getTable());
+        int width = latest.getTable().getBounds().width;
+        sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -837,12 +839,15 @@ public class SecurityListView extends AbstractListView
         public LatestQuoteTable(Composite parent)
         {
             table = new Table(parent, SWT.BORDER);
+            table.setHeaderVisible(true);
 
             TableColumn column = new TableColumn(table, SWT.NO_SCROLL | SWT.NO_FOCUS);
             column.setWidth(80);
+            column.setResizable(true);
 
             column = new TableColumn(table, SWT.NONE);
             column.setWidth(80);
+            column.setResizable(true);
             column.setAlignment(SWT.RIGHT);
 
             TableItem item = new TableItem(table, SWT.NONE);
@@ -864,7 +869,7 @@ public class SecurityListView extends AbstractListView
             item.setText(0, Messages.ColumnPreviousClose);
         }
 
-        public Control getControl()
+        public Table getTable()
         {
             return table;
         }

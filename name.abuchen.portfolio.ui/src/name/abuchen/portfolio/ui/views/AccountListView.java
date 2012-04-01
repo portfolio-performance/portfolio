@@ -14,6 +14,7 @@ import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
 import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -77,6 +78,7 @@ public class AccountListView extends AbstractListView
         accounts.setContentProvider(new SimpleListContentProvider());
         accounts.setInput(getClient().getAccounts());
         accounts.refresh();
+        ViewerHelper.pack(accounts);
 
         accounts.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -230,6 +232,7 @@ public class AccountListView extends AbstractListView
 
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+        ViewerHelper.pack(transactions);
     }
 
     private abstract class AbstractDialogAction extends Action

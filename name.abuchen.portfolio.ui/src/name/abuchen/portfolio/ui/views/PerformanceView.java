@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -56,14 +57,17 @@ public class PerformanceView extends AbstractHistoricView
         calculation.setInput(snapshot);
         calculation.refresh();
         calculation.expandAll();
+        ViewerHelper.pack(calculation);
 
         snapshotStart.setInput(snapshot.getStartClientSnapshot());
         snapshotStart.refresh();
         snapshotStart.expandAll();
+        ViewerHelper.pack(snapshotStart);
 
         snapshotEnd.setInput(snapshot.getEndClientSnapshot());
         snapshotEnd.refresh();
         snapshotEnd.expandAll();
+        ViewerHelper.pack(snapshotEnd);
     }
 
     @Override

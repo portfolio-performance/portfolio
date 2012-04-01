@@ -15,6 +15,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -68,6 +69,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
             }
         });
         notifyModelUpdated();
+        ViewerHelper.pack(assets);
 
         return assets.getTree();
     }
