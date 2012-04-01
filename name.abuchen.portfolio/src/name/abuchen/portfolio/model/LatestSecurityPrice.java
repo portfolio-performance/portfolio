@@ -11,9 +11,7 @@ public class LatestSecurityPrice extends SecurityPrice
     private int previousClose;
 
     public LatestSecurityPrice()
-    {
-        super();
-    }
+    {}
 
     public LatestSecurityPrice(Date time, int price)
     {

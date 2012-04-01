@@ -16,9 +16,11 @@ public class Category
 
     private List<Object> elements = new ArrayList<Object>();
 
+    public Category()
+    {}
+
     public Category(String name, int percentage)
     {
-        super();
         this.name = name;
         this.percentage = percentage;
     }
