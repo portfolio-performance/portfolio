@@ -91,14 +91,26 @@
                id="file"
                label="%menu.file.label">
             <command
+                  id="name.abuchen.portfolio.ui.menus.newFileCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.newFileCommand"
+                  mnemonic="%command.newFile.mnemonic">
+            </command>
+            <command
                   id="name.abuchen.portfolio.ui.menus.openFileCommand"
                   commandId="name.abuchen.portfolio.ui.commands.openFileCommand"
                   mnemonic="%command.openFile.mnemonic">
             </command>
+            <separator
+                  name="name.abuchen.portfolio.ui.menus.fileSeparator"
+                  visible="true">
+            </separator>
             <command
-                  id="name.abuchen.portfolio.ui.menus.newFileCommand"
-                  commandId="name.abuchen.portfolio.ui.commands.newFileCommand"
-                  mnemonic="%command.newFile.mnemonic">
+                  id="org.eclipse.ui.file.save"
+                  commandId="org.eclipse.ui.file.save">
+            </command>
+            <command
+                  id="org.eclipse.ui.file.save"
+                  commandId="org.eclipse.ui.file.saveAs">
             </command>
          </menu>
          <menu

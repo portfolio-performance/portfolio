@@ -385,7 +385,7 @@ public class ClientEditor extends EditorPart
     @Override
     public boolean isSaveAsAllowed()
     {
-        return isDirty();
+        return true;
     }
 
     @Override
