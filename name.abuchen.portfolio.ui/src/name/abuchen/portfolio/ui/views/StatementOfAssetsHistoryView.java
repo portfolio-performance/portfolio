@@ -17,6 +17,7 @@ import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.swtchart.IAxis;
 import org.swtchart.Range;
@@ -99,6 +100,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         TimelineChart chart = new TimelineChart(parent);
         chart.getTitle().setVisible(false);
+        chart.getLegend().setVisible(true);
+        chart.getLegend().setPosition(SWT.BOTTOM);
 
         chart.addDateSeries(dates, totals, Colors.TOTALS);
         chart.addDateSeries(dates, cash, Colors.CASH);
@@ -158,7 +161,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         double[] d_transferals = new double[transferals.size()];
         for (int ii = 0; ii < d_transferals.length; ii++)
             d_transferals[ii] = transferals.get(ii) / 100d;
-        chart.addDateBarSeries(transferals_dates.toArray(new Date[0]), d_transferals);
+        chart.addDateBarSeries(transferals_dates.toArray(new Date[0]), d_transferals, Messages.LabelTransferals);
 
         // for one reason or another, the ranges are not calculated properly if
         // done automatically

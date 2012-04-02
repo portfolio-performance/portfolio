@@ -99,6 +99,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
     public static String LabelTotalSum;
+    public static String LabelTransferals;
     public static String LabelUnnamedXml;
     public static String LabelUnsavedFile;
     public static String MenuTransactionAdd;
@@ -113,6 +114,9 @@ public class Messages extends NLS
     public static String MsgErrorOpeningEditor;
     public static String MsgMissingAccount;
     public static String MsgMissingSecurity;
+    public static String PerformanceChartLabelAccumulatedIRR;
+    public static String PerformanceChartLabelCPI;
+    public static String PerformanceChartLabelMonthly;
     public static String PerformanceTabAssetsAtEnd;
     public static String PerformanceTabAssetsAtStart;
     public static String PerformanceTabCalculation;

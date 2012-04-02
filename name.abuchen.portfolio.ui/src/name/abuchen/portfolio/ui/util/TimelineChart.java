@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -17,12 +16,12 @@ import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries.SeriesType;
 import org.swtchart.IBarSeries;
 import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
+import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.IPlotArea;
+import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
@@ -134,13 +133,22 @@ public class TimelineChart extends Chart
 
     public void addDateSeries(Date[] dates, double[] values, Colors color)
     {
-        addDateSeries(dates, values, color, false);
+        addDateSeries(dates, values, color, false, color.name());
+    }
+
+    public void addDateSeries(Date[] dates, double[] values, Colors color, String label)
+    {
+        addDateSeries(dates, values, color, false, label);
     }
 
     public void addDateSeries(Date[] dates, double[] values, Colors color, boolean showArea)
     {
-        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE,
-                        UUID.randomUUID().toString());
+        addDateSeries(dates, values, color, showArea, color.name());
+    }
+
+    public void addDateSeries(Date[] dates, double[] values, Colors color, boolean showArea, String label)
+    {
+        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
         lineSeries.setXDateSeries(dates);
         lineSeries.enableArea(showArea);
         lineSeries.setLineWidth(2);
@@ -149,9 +157,9 @@ public class TimelineChart extends Chart
         lineSeries.setLineColor(resources.createColor(color.swt()));
     }
 
-    public IBarSeries addDateBarSeries(Date[] dates, double[] values)
+    public IBarSeries addDateBarSeries(Date[] dates, double[] values, String label)
     {
-        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, UUID.randomUUID().toString());
+        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, label);
         barSeries.setXDateSeries(dates);
         barSeries.setYSeries(values);
         barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));

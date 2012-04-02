@@ -38,6 +38,8 @@ public class PerformanceChartView extends AbstractHistoricView
     {
         chart = new TimelineChart(parent);
         chart.getTitle().setText(Messages.LabelInternalRateOfReturn);
+        chart.getLegend().setVisible(true);
+        chart.getLegend().setPosition(SWT.BOTTOM);
 
         // force layout, otherwise range calculation of chart does not work
         parent.layout();
@@ -139,11 +141,11 @@ public class PerformanceChartView extends AbstractHistoricView
             index++;
         }
 
-        IBarSeries barSeries = chart.addDateBarSeries(dates, irr);
+        IBarSeries barSeries = chart.addDateBarSeries(dates, irr, Messages.PerformanceChartLabelMonthly);
         barSeries.setBarPadding(50);
         barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 
-        chart.addDateSeries(dates, irrAccumulated, Colors.IRR);
+        chart.addDateSeries(dates, irrAccumulated, Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
         return firstDataPoint;
     }
 
@@ -210,7 +212,7 @@ public class PerformanceChartView extends AbstractHistoricView
         for (int ii = 0; ii < values.length; ii++)
             values[ii] = cpiSeries.get(ii);
 
-        chart.addDateSeries(cpiDates.toArray(new Date[0]), values, Colors.CPI);
+        chart.addDateSeries(cpiDates.toArray(new Date[0]), values, Colors.CPI, Messages.PerformanceChartLabelCPI);
     }
 
     private ConsumerPriceIndex lookup(Calendar cal, List<ConsumerPriceIndex> rates)
