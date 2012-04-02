@@ -7,8 +7,8 @@ public enum Colors
     TOTALS(0, 0, 0), //
 
     CASH(196, 55, 194), //
-    BOND(220, 161, 34), //
-    STOCK(87, 87, 255), //
+    DEBT(220, 161, 34), //
+    EQUITY(87, 87, 255), //
     REAL_ESTATE(253, 106, 14), //
     COMMODITY(87, 159, 87), //
 

@@ -24,7 +24,7 @@ public class Security
 
     public enum AssetClass
     {
-        CASH, BOND, STOCK, REAL_ESTATE, COMMODITY;
+        CASH, DEBT, EQUITY, REAL_ESTATE, COMMODITY;
     }
 
     private String name;

@@ -11,9 +11,15 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Security.AssetClass;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class ClientFactory
 {
@@ -77,10 +83,40 @@ public class ClientFactory
                     xstream.aliasField("i", ConsumerPriceIndex.class, "index");
 
                     xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }));
+                    xstream.registerConverter(new AssetClassConverter());
                 }
             }
         }
         return xstream;
     }
 
+    private static class AssetClassConverter implements Converter
+    {
+
+        @SuppressWarnings("rawtypes")
+        @Override
+        public boolean canConvert(Class type)
+        {
+            return Security.AssetClass.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
+        {
+            writer.setValue(((AssetClass) source).name());
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
+        {
+            // see #5 - renamed STOCK->EQUITY and BOND->DEBT
+            String value = reader.getValue();
+            if ("STOCK".equals(value)) //$NON-NLS-1$
+                value = "EQUITY"; //$NON-NLS-1$
+            else if ("BOND".equals(value)) //$NON-NLS-1$
+                value = "DEBT"; //$NON-NLS-1$
+            return AssetClass.valueOf(value);
+        }
+
+    }
 }

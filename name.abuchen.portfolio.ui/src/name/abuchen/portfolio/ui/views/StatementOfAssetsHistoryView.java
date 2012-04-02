@@ -72,8 +72,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         Date[] dates = new Date[noOfDays];
         double[] totals = new double[noOfDays];
         double[] cash = new double[noOfDays];
-        double[] stocks = new double[noOfDays];
-        double[] bonds = new double[noOfDays];
+        double[] equity = new double[noOfDays];
+        double[] debt = new double[noOfDays];
         double[] realEstate = new double[noOfDays];
         double[] commodity = new double[noOfDays];
 
@@ -88,8 +88,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
             List<AssetCategory> categories = snapshot.groupByCategory();
             cash[index] = categories.get(0).getValuation() / 100d;
-            bonds[index] = categories.get(1).getValuation() / 100d;
-            stocks[index] = categories.get(2).getValuation() / 100d;
+            debt[index] = categories.get(1).getValuation() / 100d;
+            equity[index] = categories.get(2).getValuation() / 100d;
             realEstate[index] = categories.get(3).getValuation() / 100d;
             commodity[index] = categories.get(4).getValuation() / 100d;
 
@@ -102,8 +102,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         chart.addDateSeries(dates, totals, Colors.TOTALS);
         chart.addDateSeries(dates, cash, Colors.CASH);
-        chart.addDateSeries(dates, bonds, Colors.BOND);
-        chart.addDateSeries(dates, stocks, Colors.STOCK);
+        chart.addDateSeries(dates, debt, Colors.DEBT);
+        chart.addDateSeries(dates, equity, Colors.EQUITY);
         chart.addDateSeries(dates, realEstate, Colors.REAL_ESTATE);
         chart.addDateSeries(dates, commodity, Colors.COMMODITY);
 

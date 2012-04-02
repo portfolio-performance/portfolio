@@ -84,7 +84,7 @@ public class PortfolioSnapshotTest
         Client client = new Client();
 
         Security securityA = new Security();
-        securityA.setType(AssetClass.BOND);
+        securityA.setType(AssetClass.DEBT);
         securityA.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1000));
         client.addSecurity(securityA);
 
@@ -95,13 +95,13 @@ public class PortfolioSnapshotTest
 
         Security securityC = new Security();
         securityC.setName("Security C");
-        securityC.setType(AssetClass.STOCK);
+        securityC.setType(AssetClass.EQUITY);
         securityC.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1200));
         client.addSecurity(securityC);
 
         Security securityD = new Security();
         securityD.setName("Security D");
-        securityD.setType(AssetClass.STOCK);
+        securityD.setType(AssetClass.EQUITY);
         securityD.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1200));
         client.addSecurity(securityD);
 
@@ -123,17 +123,17 @@ public class PortfolioSnapshotTest
         for (AssetCategory category : snapshot.groupByCategory())
             mapped.put(category.getAssetClass(), category);
 
-        AssetCategory bonds = mapped.get(AssetClass.BOND);
-        assertNotNull(bonds);
-        assertEquals(10000, bonds.getValuation());
-        assertEquals(1, bonds.getPositions().size());
+        AssetCategory debt = mapped.get(AssetClass.DEBT);
+        assertNotNull(debt);
+        assertEquals(10000, debt.getValuation());
+        assertEquals(1, debt.getPositions().size());
 
         AssetCategory commodities = mapped.get(AssetClass.COMMODITY);
         assertNotNull(commodities);
         assertEquals(11000, commodities.getValuation());
         assertEquals(1, commodities.getPositions().size());
 
-        AssetCategory stocks = mapped.get(AssetClass.STOCK);
+        AssetCategory stocks = mapped.get(AssetClass.EQUITY);
         assertNotNull(stocks);
         assertEquals(24000, stocks.getValuation());
         assertEquals(2, stocks.getPositions().size());

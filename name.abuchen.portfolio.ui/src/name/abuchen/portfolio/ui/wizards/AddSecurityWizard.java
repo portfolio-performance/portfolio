@@ -33,7 +33,7 @@ public class AddSecurityWizard extends Wizard
         security.setTickerSymbol(item.getSymbol());
         security.setName(item.getName());
         security.setIsin(item.getIsin());
-        security.setType(AssetClass.STOCK);
+        security.setType(AssetClass.EQUITY);
 
         client.addSecurity(security);
 
