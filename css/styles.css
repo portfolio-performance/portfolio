@@ -40,3 +40,7 @@ width: 340px;
 float: left;
 margin-bottom: 10px;
 }
+
+#versions {
+font-size: 0.7em;
+}
