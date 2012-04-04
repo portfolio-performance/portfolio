@@ -67,19 +67,26 @@ public class CategoryView extends AbstractFinanceView
     {
         assets = createAssetsViewer(parent);
 
-        notifyModelUpdated();
-        ViewerHelper.pack(assets);
+        updateSnapshot();
+        model = CategoryModel.create(snapshot);
 
+        assets.setInput(this);
+        expandCategories();
+        ViewerHelper.pack(assets);
         return assets.getControl();
     }
 
     @Override
     public void notifyModelUpdated()
     {
+        updateSnapshot();
+        model.recalculate(snapshot);
+        assets.refresh(true);
+    }
+
+    private void updateSnapshot()
+    {
         snapshot = ClientSnapshot.create(getClient(), Dates.today());
-
-        model = CategoryModel.create(snapshot);
-
         security2position = new HashMap<Security, SecurityPosition>();
         for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
             security2position.put(position.getSecurity(), position);
@@ -87,16 +94,11 @@ public class CategoryView extends AbstractFinanceView
         account2position = new HashMap<Account, AccountSnapshot>();
         for (AccountSnapshot accountSnapshot : snapshot.getAccounts())
             account2position.put(accountSnapshot.getAccount(), accountSnapshot);
-
-        assets.setInput(this);
-        expandCategories();
-        assets.refresh();
     }
 
-    private void notifyHasChanged()
+    private void onCategoryModelEdited()
     {
-        model.recalculateActuals(snapshot);
-        model.recalculateTargets();
+        model.recalculate(snapshot);
         markDirty();
         assets.refresh(true);
     }
@@ -152,7 +154,7 @@ public class CategoryView extends AbstractFinanceView
                         {
                             public void onModified(Object element, String property)
                             {
-                                notifyHasChanged();
+                                onCategoryModelEdited();
                             }
                         }) //
                         .editable("name") // //$NON-NLS-1$
@@ -188,7 +190,7 @@ public class CategoryView extends AbstractFinanceView
                         category.addCategory(new Category(Messages.LabelNewCategory, 100 - category.getSubject()
                                         .getChildrenPercentage()));
                         assets.setExpandedState(category, true);
-                        notifyHasChanged();
+                        onCategoryModelEdited();
                     }
                 });
             }
@@ -212,7 +214,7 @@ public class CategoryView extends AbstractFinanceView
                         {
                             category.getSubject().addSecurity(s);
                             assets.setExpandedState(category, true);
-                            notifyHasChanged();
+                            onCategoryModelEdited();
                         }
                     });
                 }
@@ -231,7 +233,7 @@ public class CategoryView extends AbstractFinanceView
                         {
                             category.getSubject().addAccount(a);
                             assets.setExpandedState(category, true);
-                            notifyHasChanged();
+                            onCategoryModelEdited();
                         }
                     });
                 }
@@ -246,7 +248,7 @@ public class CategoryView extends AbstractFinanceView
                     public void run()
                     {
                         category.getParent().removeCategory(category);
-                        notifyHasChanged();
+                        onCategoryModelEdited();
                     }
                 });
             }
@@ -298,7 +300,7 @@ public class CategoryView extends AbstractFinanceView
                 public void run()
                 {
                     model.findFor(security).getSubject().removeSecurity(security);
-                    notifyHasChanged();
+                    onCategoryModelEdited();
                 }
             });
         }
@@ -312,7 +314,7 @@ public class CategoryView extends AbstractFinanceView
                 public void run()
                 {
                     model.findFor(account).getSubject().removeAccount(account);
-                    notifyHasChanged();
+                    onCategoryModelEdited();
                 }
             });
         }

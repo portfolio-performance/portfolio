@@ -90,18 +90,20 @@ public class CategoryModel
         children.remove(category);
     }
 
-    public void recalculateTargets()
+    public void recalculate(ClientSnapshot snapshot)
+    {
+        this.target = snapshot.getAssets();
+        visitActuals(snapshot, this);
+        recalculateTargets();
+    }
+
+    private void recalculateTargets()
     {
         for (CategoryModel child : children)
         {
             child.target = target * child.subject.getPercentage() / 100;
             child.recalculateTargets();
         }
-    }
-
-    public void recalculateActuals(ClientSnapshot snapshot)
-    {
-        visitActuals(snapshot, this);
     }
 
     public CategoryModel findFor(Object element)
