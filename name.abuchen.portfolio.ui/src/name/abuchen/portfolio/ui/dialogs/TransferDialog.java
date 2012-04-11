@@ -6,6 +6,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -26,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class TransferDialog extends AbstractDialog
 {
-    static class Model extends AbstractDialog.Model
+    static class Model extends BindingHelper.Model
     {
         private Account accountFrom;
         private Account accountTo;
@@ -88,7 +89,7 @@ public class TransferDialog extends AbstractDialog
             firePropertyChange("date", this.date, this.date = date); //$NON-NLS-1$
         }
 
-        public void createChanges()
+        public void applyChanges()
         {
             if (accountFrom == null)
                 throw new UnsupportedOperationException(Messages.MsgAccountFromMissing);
@@ -111,7 +112,7 @@ public class TransferDialog extends AbstractDialog
 
     public TransferDialog(Shell parentShell, Client client, Account from)
     {
-        super(parentShell, Messages.AccountMenuTransfer, client, new Model(client, from));
+        super(parentShell, Messages.AccountMenuTransfer, new Model(client, from));
     }
 
     @Override
@@ -154,10 +155,10 @@ public class TransferDialog extends AbstractDialog
         final IViewerObservableValue observableTo = ViewersObservables.observeSingleSelection(comboTo);
 
         // amount
-        bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
         // date
-        bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
 
         //
         // Bind UI

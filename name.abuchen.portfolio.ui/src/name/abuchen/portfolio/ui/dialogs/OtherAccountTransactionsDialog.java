@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -15,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class OtherAccountTransactionsDialog extends AbstractDialog
 {
-    static class Model extends AbstractDialog.Model
+    static class Model extends BindingHelper.Model
     {
         private Account account;
         private AccountTransaction.Type type;
@@ -60,7 +61,7 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
             firePropertyChange("date", this.date, this.date = date); //$NON-NLS-1$
         }
 
-        public void createChanges()
+        public void applyChanges()
         {
             if (account == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingAccount);
@@ -75,14 +76,14 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
 
     public OtherAccountTransactionsDialog(Shell parentShell, Client client, Account account)
     {
-        super(parentShell, Messages.LabelOther, client, new Model(client, account));
+        super(parentShell, Messages.LabelOther, new Model(client, account));
     }
 
     @Override
     protected void createFormElements(Composite editArea)
     {
         // type
-        bindComboViewer(editArea, Messages.ColumnTransactionType, "type", new LabelProvider() //$NON-NLS-1$
+        bindings.bindComboViewer(editArea, Messages.ColumnTransactionType, "type", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
                             public String getText(Object element)
@@ -95,9 +96,9 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
                                         AccountTransaction.Type.TAXES, //
                                         AccountTransaction.Type.FEES).toArray());
 
-        bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
-        bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
 
     }
 }

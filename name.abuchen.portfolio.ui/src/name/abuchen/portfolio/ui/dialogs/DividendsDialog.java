@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -15,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class DividendsDialog extends AbstractDialog
 {
-    static class Model extends AbstractDialog.Model
+    static class Model extends BindingHelper.Model
     {
         private Security security;
         private Account account;
@@ -75,7 +76,7 @@ public class DividendsDialog extends AbstractDialog
             firePropertyChange("date", this.date, this.date = date); //$NON-NLS-1$
         }
 
-        public void createChanges()
+        public void applyChanges()
         {
             if (security == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
@@ -93,7 +94,7 @@ public class DividendsDialog extends AbstractDialog
 
     public DividendsDialog(Shell parentShell, Client client, Security security)
     {
-        super(parentShell, Messages.SecurityMenuDividends, client, new Model(client, security));
+        super(parentShell, Messages.SecurityMenuDividends, new Model(client, security));
         this.allowSelectionOfSecurity = security == null;
     }
 
@@ -103,11 +104,11 @@ public class DividendsDialog extends AbstractDialog
         // security selection
         if (!allowSelectionOfSecurity)
         {
-            createLabel(editArea, ((Model) getModel()).getSecurity().getName());
+            bindings.createLabel(editArea, ((Model) getModel()).getSecurity().getName());
         }
         else
         {
-            bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
+            bindings.bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                             {
                                 @Override
                                 public String getText(Object element)
@@ -118,7 +119,7 @@ public class DividendsDialog extends AbstractDialog
         }
 
         // account
-        bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
+        bindings.bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
                             public String getText(Object element)
@@ -128,9 +129,9 @@ public class DividendsDialog extends AbstractDialog
                         }, getModel().getClient().getAccounts().toArray());
 
         // amount
-        bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
         // date
-        bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
     }
 }

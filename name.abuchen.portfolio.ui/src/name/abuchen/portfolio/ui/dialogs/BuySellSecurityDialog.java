@@ -12,6 +12,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -26,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class BuySellSecurityDialog extends AbstractDialog
 {
-    static class Model extends AbstractDialog.Model
+    static class Model extends BindingHelper.Model
     {
         private final PortfolioTransaction.Type type;
 
@@ -159,7 +160,7 @@ public class BuySellSecurityDialog extends AbstractDialog
         }
 
         @Override
-        public void createChanges()
+        public void applyChanges()
         {
             if (security == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
@@ -198,7 +199,7 @@ public class BuySellSecurityDialog extends AbstractDialog
 
     public BuySellSecurityDialog(Shell parentShell, Client client, Security security, PortfolioTransaction.Type type)
     {
-        super(parentShell, security != null ? type.name() + " " + security.getName() : type.name(), client, new Model( //$NON-NLS-1$
+        super(parentShell, security != null ? type.name() + " " + security.getName() : type.name(), new Model( //$NON-NLS-1$
                         client, security, type));
 
         this.type = type;
@@ -208,16 +209,16 @@ public class BuySellSecurityDialog extends AbstractDialog
     @Override
     protected void createFormElements(Composite editArea)
     {
-        createLabel(editArea, type.name());
+        bindings.createLabel(editArea, type.name());
 
         // security selection
         if (!allowSelectionOfSecurity)
         {
-            createLabel(editArea, ((Model) getModel()).getSecurity().getName());
+            bindings.createLabel(editArea, ((Model) getModel()).getSecurity().getName());
         }
         else
         {
-            bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
+            bindings.bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                             {
                                 @Override
                                 public String getText(Object element)
@@ -228,7 +229,7 @@ public class BuySellSecurityDialog extends AbstractDialog
         }
 
         // portfolio selection
-        bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
+        bindings.bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
                             public String getText(Object element)
@@ -238,7 +239,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                         }, getModel().getClient().getPortfolios().toArray());
 
         // shares
-        bindMandatoryIntegerInput(editArea, Messages.ColumnShares, "shares"); //$NON-NLS-1$
+        bindings.bindMandatoryIntegerInput(editArea, Messages.ColumnShares, "shares"); //$NON-NLS-1$
 
         // price
         Label label = new Label(editArea, SWT.NONE);
@@ -255,12 +256,12 @@ public class BuySellSecurityDialog extends AbstractDialog
                                         .setConverter(new CurrencyToStringConverter()));
 
         // fee
-        bindPriceInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+        bindings.bindPriceInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
-        bindMandatoryPriceInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
+        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
 
         // date
-        bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
     }
 }
