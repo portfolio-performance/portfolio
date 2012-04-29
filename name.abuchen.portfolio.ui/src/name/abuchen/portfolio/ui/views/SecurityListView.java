@@ -20,9 +20,10 @@ import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.wizards.AddSecurityWizard;
+import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -197,22 +198,31 @@ public class SecurityListView extends AbstractListView
             }
         });
 
-        new CellEditorFactory(securities, Security.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                markDirty();
-                                securities.refresh(prices.getData(Security.class.toString()));
-                            }
-                        }) //
-                        .editable("name") // //$NON-NLS-1$
-                        .editable("isin") // //$NON-NLS-1$
-                        .editable("tickerSymbol") // //$NON-NLS-1$
-                        .editable("type") // //$NON-NLS-1$
-                        .readonly("latest") // //$NON-NLS-1$
-                        .readonly("delta") // //$NON-NLS-1$
-                        .apply();
+        securities.getTable().addSelectionListener(new SelectionListener()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent event)
+            {}
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event)
+            {
+                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
+                if (security == null)
+                    return;
+
+                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
+                                getClient(), security));
+                if (dialog.open() == Dialog.OK)
+                {
+                    markDirty();
+                    if (!securities.getControl().isDisposed()) {
+                        securities.refresh(true);
+                        runUpdateQuotesJob(security);
+                    }
+                }
+            }
+        });
 
         hookContextMenu(securities.getTable(), new IMenuListener()
         {
@@ -243,6 +253,7 @@ public class SecurityListView extends AbstractListView
             if (dialog.open() == Dialog.OK)
             {
                 markDirty();
+                securities.refresh(security, true);
                 securities.setSelection(securities.getSelection());
             }
         }
@@ -282,6 +293,17 @@ public class SecurityListView extends AbstractListView
                 Dialog createDialog(Security security)
                 {
                     return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), security);
+                }
+            });
+            manager.add(new Separator());
+
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)
+            {
+                @Override
+                Dialog createDialog(Security security)
+                {
+                    return new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(getClient(),
+                                    security));
                 }
             });
             manager.add(new Separator());
@@ -345,28 +367,32 @@ public class SecurityListView extends AbstractListView
                 public void run()
                 {
                     Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                    new UpdateQuotesJob(security)
-                    {
-
-                        @Override
-                        protected void notifyFinished()
-                        {
-                            PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
-                            {
-                                public void run()
-                                {
-                                    markDirty();
-                                    securities.refresh();
-                                    securities.setSelection(securities.getSelection());
-                                }
-                            });
-                        }
-
-                    }.schedule();
+                    runUpdateQuotesJob(security);
                 }
             });
         }
 
+    }
+
+    private void runUpdateQuotesJob(Security security)
+    {
+        new UpdateQuotesJob(security)
+        {
+            @Override
+            protected void notifyFinished()
+            {
+                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                        markDirty();
+                        securities.refresh();
+                        securities.setSelection(securities.getSelection());
+                    }
+                });
+            }
+
+        }.schedule();
     }
 
     static class SecurityLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider

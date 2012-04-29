@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-class SimpleListContentProvider implements IStructuredContentProvider
+public class SimpleListContentProvider implements IStructuredContentProvider
 {
     private boolean reverse = false;
     private Object[] elements;
@@ -30,7 +30,11 @@ class SimpleListContentProvider implements IStructuredContentProvider
     {
         if (newInput != null)
         {
-            elements = ((List<?>) newInput).toArray();
+            if (newInput instanceof Object[])
+                elements = (Object[]) newInput;
+            else
+                elements = ((List<?>) newInput).toArray();
+
             if (reverse)
             {
                 for (int left = 0, right = elements.length - 1; left < right; left++, right--)
