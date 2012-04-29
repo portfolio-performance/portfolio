@@ -2,11 +2,15 @@ package name.abuchen.portfolio.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -16,7 +20,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public class UpdateQuotesJob extends Job
 {
-    private final Client client;
+    private final List<Security> securities;
     private final boolean includeHistoricQuotes;
     private final long repeatPeriod;
 
@@ -25,48 +29,35 @@ public class UpdateQuotesJob extends Job
         this(client, true, -1);
     }
 
-    public UpdateQuotesJob(Client client, boolean includeHistoricQuotes, long repeatPeriod)
+    public UpdateQuotesJob(List<Security> securities, boolean includeHistoricQuotes, long repeatPeriod)
     {
         super(Messages.JobLabelUpdateQuotes);
-        this.client = client;
+        this.securities = new ArrayList<Security>(securities);
         this.includeHistoricQuotes = includeHistoricQuotes;
         this.repeatPeriod = repeatPeriod;
+    }
+
+    public UpdateQuotesJob(Client client, boolean includeHistoricQuotes, long repeatPeriod)
+    {
+        this(client.getSecurities(), includeHistoricQuotes, repeatPeriod);
+    }
+
+    public UpdateQuotesJob(Security security, boolean includeHistoricQuotes, long repeatPeriod)
+    {
+        this(Arrays.asList(new Security[] { security }), includeHistoricQuotes, repeatPeriod);
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        monitor.beginTask(Messages.JobLabelUpdating, client.getSecurities().size());
-        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
+        monitor.beginTask(Messages.JobLabelUpdating, securities.size());
 
         List<IStatus> errors = new ArrayList<IStatus>();
 
-        try
-        {
-            feed.updateLatestQuote(client.getSecurities());
-        }
-        catch (IOException e)
-        {
-            errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
-        }
+        doUpdateLatestQuotes(monitor, errors);
 
         if (includeHistoricQuotes)
-        {
-            for (Security security : client.getSecurities())
-            {
-                try
-                {
-                    feed.updateHistoricalQuotes(security);
-                }
-                catch (IOException e)
-                {
-                    errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_IN, security.getName() + ": " //$NON-NLS-1$
-                                    + e.getMessage(), e));
-                }
-
-                monitor.worked(1);
-            }
-        }
+            doUpdateHistoricalQuotes(monitor, errors);
 
         notifyFinished();
 
@@ -80,6 +71,52 @@ public class UpdateQuotesJob extends Job
             schedule(repeatPeriod);
 
         return Status.OK_STATUS;
+    }
+
+    private void doUpdateLatestQuotes(IProgressMonitor monitor, List<IStatus> errors)
+    {
+        Map<String, List<Security>> byFeeds = new HashMap<String, List<Security>>();
+        for (Security s : securities)
+        {
+            List<Security> l = byFeeds.get(s.getFeed());
+            if (l == null)
+                byFeeds.put(s.getFeed(), l = new ArrayList<Security>());
+            l.add(s);
+        }
+
+        for (Map.Entry<String, List<Security>> entry : byFeeds.entrySet())
+        {
+            try
+            {
+                QuoteFeed feed = Factory.getQuoteFeedProvider(entry.getKey());
+                if (feed != null)
+                    feed.updateLatestQuotes(entry.getValue());
+            }
+            catch (IOException e)
+            {
+                errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
+            }
+        }
+    }
+
+    private void doUpdateHistoricalQuotes(IProgressMonitor monitor, List<IStatus> errors)
+    {
+        for (Security security : securities)
+        {
+            try
+            {
+                QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+                if (feed != null)
+                    feed.updateHistoricalQuotes(security);
+            }
+            catch (IOException e)
+            {
+                errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_IN, security.getName() + ": " //$NON-NLS-1$
+                                + e.getMessage(), e));
+            }
+
+            monitor.worked(1);
+        }
     }
 
     protected void notifyFinished()

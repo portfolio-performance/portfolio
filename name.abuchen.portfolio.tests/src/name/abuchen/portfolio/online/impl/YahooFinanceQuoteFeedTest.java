@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online;
+package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -67,7 +67,7 @@ public class YahooFinanceQuoteFeedTest
         securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
                         YahooFinanceQuoteFeed.ID));
 
-        feed.updateLatestQuote(securities);
+        feed.updateLatestQuotes(securities);
 
         LatestSecurityPrice latest = securities.get(0).getLatest();
         assertThat(latest.getValue(), is(1371));

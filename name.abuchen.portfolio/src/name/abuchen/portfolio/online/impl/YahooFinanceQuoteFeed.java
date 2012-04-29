@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online;
+package name.abuchen.portfolio.online.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,9 +18,13 @@ import java.util.List;
 import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.Dates;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
@@ -36,7 +40,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // v = volume
     // Source = http://cliffngan.net/a/13
 
-    private static final DecimalFormat FMT_PRICE = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+    private final DecimalFormat FMT_PRICE = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
 
     private final SimpleDateFormat fmtTradeDate = new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
 
@@ -46,6 +50,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     + "&a={1}&b={2}&c={3}" // begin
                     + "&d={4}&e={5}&f={6}" // end
                     + "&g=d"; // daily
+
+    private SecuritySearchProvider searchProvider = new YahooSearchProvider();
 
     @Override
     public String getId()
@@ -60,7 +66,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateLatestQuote(List<Security> securities) throws IOException
+    public void updateLatestQuotes(List<Security> securities) throws IOException
     {
         List<Security> requested = new ArrayList<Security>();
 
@@ -79,6 +85,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
 
         InputStream is = null;
+        String line = null;
 
         try
         {
@@ -87,7 +94,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             for (Security security : requested)
             {
-                String line = dis.readLine();
+                line = dis.readLine();
                 if (line == null)
                     throw new IOException(MessageFormat.format(Messages.MsgMissingResponse, security));
 
@@ -118,9 +125,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 security.setLatest(price);
             }
         }
+        catch (NumberFormatException e)
+        {
+            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+        }
         catch (ParseException e)
         {
-            throw new IOException(Messages.MsgErrorsConvertingValue, e);
+            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
         }
         finally
         {
@@ -154,64 +165,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public void updateHistoricalQuotes(Security security) throws IOException
     {
-        // http://ichart.finance.yahoo.com/table.csv?s=DAI.DE&d=8&e=26&f=2011&g=d&a=0&b=1&c=2003&ignore=.csv
-
-        // Date,Open,High,Low,Close,Volume,Adj Close
-        // 2011-09-22,34.10,34.16,32.35,32.74,10825200,32.74
-
-        if (security.getTickerSymbol() == null)
-            throw new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
-
         Calendar start = caculateStart(security);
-        Calendar stop = Calendar.getInstance();
 
-        String wknUrl = MessageFormat.format(HISTORICAL_URL, //
-                        security.getTickerSymbol(), //
-                        start.get(Calendar.MONTH), //
-                        start.get(Calendar.DATE), //
-                        Integer.toString(start.get(Calendar.YEAR)), //
-                        stop.get(Calendar.MONTH), //
-                        stop.get(Calendar.DATE), //
-                        Integer.toString(stop.get(Calendar.YEAR)));
-
-        InputStream is = null;
-
-        try
-        {
-            is = openStream(wknUrl);
-            BufferedReader dis = new BufferedReader(new InputStreamReader(is));
-
-            String line = dis.readLine();
-
-            // poor man's check
-            if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
-                throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
-
-            while ((line = dis.readLine()) != null)
-            {
-                String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
-
-                SimpleDateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-                Date date = dfmt.parse(values[0]);
-
-                Number q = FMT_PRICE.parse(values[6]);
-                int v = (int) (q.doubleValue() * 100);
-
-                SecurityPrice price = new SecurityPrice(date, v);
-                security.addPrice(price);
-            }
-        }
-        catch (ParseException e)
-        {
-            throw new IOException(Messages.MsgErrorsConvertingValue, e);
-        }
-        finally
-        {
-            if (is != null)
-                is.close();
-        }
+        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime());
+        for (SecurityPrice p : quotes)
+            security.addPrice(p);
     }
 
     /* package */Calendar caculateStart(Security security)
@@ -231,10 +189,137 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return start;
     }
 
+    @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
+    {
+        return internalGetQuotes(LatestSecurityPrice.class, security, start);
+    }
+
+    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate)
+                    throws IOException
+    {
+        if (security.getTickerSymbol() == null)
+            throw new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
+
+        Calendar start = Calendar.getInstance();
+        start.setTime(startDate);
+        Calendar stop = Calendar.getInstance();
+
+        String wknUrl = MessageFormat.format(HISTORICAL_URL, //
+                        security.getTickerSymbol(), //
+                        start.get(Calendar.MONTH), //
+                        start.get(Calendar.DATE), //
+                        Integer.toString(start.get(Calendar.YEAR)), //
+                        stop.get(Calendar.MONTH), //
+                        stop.get(Calendar.DATE), //
+                        Integer.toString(stop.get(Calendar.YEAR)));
+
+        List<T> answer = new ArrayList<T>();
+
+        InputStream is = null;
+        String line = null;
+
+        try
+        {
+            is = openStream(wknUrl);
+            BufferedReader dis = new BufferedReader(new InputStreamReader(is));
+
+            line = dis.readLine();
+
+            // poor man's check
+            if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
+                throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
+
+            while ((line = dis.readLine()) != null)
+            {
+                String[] values = line.split(","); //$NON-NLS-1$
+                if (values.length != 7)
+                    throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
+
+                T price = klass.newInstance();
+
+                SimpleDateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
+                Date date = dfmt.parse(values[0]);
+
+                Number q = FMT_PRICE.parse(values[6]);
+                int v = (int) (q.doubleValue() * 100);
+
+                price.setTime(date);
+                price.setValue(v);
+
+                if (price instanceof LatestSecurityPrice)
+                {
+                    LatestSecurityPrice latest = (LatestSecurityPrice) price;
+
+                    q = FMT_PRICE.parse(values[5]);
+                    latest.setVolume(q.intValue());
+
+                    q = FMT_PRICE.parse(values[2]);
+                    latest.setHigh((int) (q.doubleValue() * 100));
+
+                    q = FMT_PRICE.parse(values[3]);
+                    latest.setLow((int) (q.doubleValue() * 100));
+                }
+
+                answer.add(price);
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+        }
+        catch (ParseException e)
+        {
+            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+        }
+        catch (InstantiationException e)
+        {
+            throw new IOException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IOException(e);
+        }
+        finally
+        {
+            if (is != null)
+                is.close();
+        }
+
+        return answer;
+    }
+
+    @Override
+    public List<Exchange> getExchanges(Security subject) throws IOException
+    {
+        String symbol = subject.getTickerSymbol();
+        int p = symbol.indexOf('.');
+        String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
+        if (p >= 0)
+            symbol = symbol.substring(0, p);
+
+        List<Exchange> answer = new ArrayList<Exchange>();
+
+        List<ResultItem> result = searchProvider.search(prefix);
+        for (ResultItem item : result)
+        {
+            if (item.getSymbol() != null && (symbol.equals(item.getSymbol()) || item.getSymbol().startsWith(prefix)))
+                answer.add(new Exchange(item.getSymbol(), item.getSymbol()));
+        }
+
+        return answer;
+    }
+
     /* enable testing */
     protected InputStream openStream(String wknUrl) throws MalformedURLException, IOException
     {
         return new URL(wknUrl).openStream();
+    }
+
+    /* enable testing */
+    /* package */void setSearchProvider(SecuritySearchProvider searchProvider)
+    {
+        this.searchProvider = searchProvider;
     }
 
 }

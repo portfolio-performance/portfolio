@@ -29,6 +29,7 @@ public class Messages extends NLS
     public static String MsgUnexpectedTag;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
+    public static String QuoteFeedManual;
     static
     {
         // initialize resource bundle

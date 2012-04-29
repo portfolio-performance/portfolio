@@ -12,7 +12,7 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Security.AssetClass;
-import name.abuchen.portfolio.online.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
