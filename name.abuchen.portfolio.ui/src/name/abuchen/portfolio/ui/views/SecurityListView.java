@@ -337,34 +337,36 @@ public class SecurityListView extends AbstractListView
                     }
                 }
             });
+
+            manager.add(new Separator());
+            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
+            {
+                @Override
+                public void run()
+                {
+                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
+                    new UpdateQuotesJob(security)
+                    {
+
+                        @Override
+                        protected void notifyFinished()
+                        {
+                            PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    markDirty();
+                                    securities.refresh();
+                                    securities.setSelection(securities.getSelection());
+                                }
+                            });
+                        }
+
+                    }.schedule();
+                }
+            });
         }
 
-        manager.add(new Separator());
-        manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-        {
-            @Override
-            public void run()
-            {
-                new UpdateQuotesJob(getClient())
-                {
-
-                    @Override
-                    protected void notifyFinished()
-                    {
-                        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
-                        {
-                            public void run()
-                            {
-                                markDirty();
-                                securities.refresh();
-                                securities.setSelection(securities.getSelection());
-                            }
-                        });
-                    }
-
-                }.schedule();
-            }
-        });
     }
 
     static class SecurityLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider

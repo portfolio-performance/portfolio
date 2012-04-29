@@ -42,9 +42,9 @@ public class UpdateQuotesJob extends Job
         this(client.getSecurities(), includeHistoricQuotes, repeatPeriod);
     }
 
-    public UpdateQuotesJob(Security security, boolean includeHistoricQuotes, long repeatPeriod)
+    public UpdateQuotesJob(Security security)
     {
-        this(Arrays.asList(new Security[] { security }), includeHistoricQuotes, repeatPeriod);
+        this(Arrays.asList(new Security[] { security }), true, -1);
     }
 
     @Override
