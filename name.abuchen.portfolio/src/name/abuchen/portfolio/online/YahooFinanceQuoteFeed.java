@@ -25,6 +25,8 @@ import name.abuchen.portfolio.util.Dates;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
+    public static final String ID = "YAHOO"; //$NON-NLS-1$
+
     private static final String LATEST_URL = "http://finance.yahoo.com/d/quotes.csv?s={0}&f=l1d1hgpv"; //$NON-NLS-1$
     // l1 = last trade (price only)
     // d1 = last trade date
@@ -48,7 +50,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public String getId()
     {
-        return "YAHOO"; //$NON-NLS-1$
+        return ID;
     }
 
     @Override

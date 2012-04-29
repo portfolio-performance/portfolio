@@ -34,18 +34,20 @@ public class Security
 
     private AssetClass type;
 
+    private String feed;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
 
     public Security()
     {}
 
-    public Security(String name, String isin, String tickerSymbol, AssetClass type)
+    public Security(String name, String isin, String tickerSymbol, AssetClass type, String feed)
     {
         this.name = name;
         this.isin = isin;
         this.tickerSymbol = tickerSymbol;
         this.type = type;
+        this.feed = feed;
     }
 
     public String getName()
@@ -86,6 +88,16 @@ public class Security
     public void setType(AssetClass type)
     {
         this.type = type;
+    }
+
+    public String getFeed()
+    {
+        return feed;
+    }
+
+    public void setFeed(String feed)
+    {
+        this.feed = feed;
     }
 
     public List<SecurityPrice> getPrices()

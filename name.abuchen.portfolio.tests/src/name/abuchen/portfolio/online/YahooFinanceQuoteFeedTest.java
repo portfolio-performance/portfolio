@@ -56,11 +56,16 @@ public class YahooFinanceQuoteFeedTest
         };
 
         ArrayList<Security> securities = new ArrayList<Security>();
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY));
+        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID));
 
         feed.updateLatestQuote(securities);
 

@@ -12,6 +12,7 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Security.AssetClass;
+import name.abuchen.portfolio.online.YahooFinanceQuoteFeed;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
@@ -30,7 +31,13 @@ public class ClientFactory
         Client client = (Client) xstream().fromXML(
                         new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))); //$NON-NLS-1$
 
-        if (client.getVersion() != 1)
+        if (client.getVersion() == 1)
+        {
+            addFeedAndExchange(client);
+            client.setVersion(2);
+        }
+
+        if (client.getVersion() != 2)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 
@@ -44,6 +51,12 @@ public class ClientFactory
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
         writer.write(xml);
         writer.close();
+    }
+
+    private static void addFeedAndExchange(Client client)
+    {
+        for (Security s : client.getSecurities())
+            s.setFeed(YahooFinanceQuoteFeed.ID);
     }
 
     @SuppressWarnings("nls")

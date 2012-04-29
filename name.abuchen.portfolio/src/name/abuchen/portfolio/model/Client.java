@@ -8,7 +8,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    private int version = 1;
+    private int version = 2;
 
     private List<Security> securities = new ArrayList<Security>();
     private List<ConsumerPriceIndex> consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
