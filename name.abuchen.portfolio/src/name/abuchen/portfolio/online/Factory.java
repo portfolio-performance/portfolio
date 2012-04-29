@@ -9,6 +9,7 @@ import javax.imageio.spi.ServiceRegistry;
 public class Factory
 {
     private static final List<QuoteFeed> FEEDS;
+    private static final List<SecuritySearchProvider> SEARCH;
 
     public static final List<QuoteFeed> getQuoteFeedProvider()
     {
@@ -25,12 +26,22 @@ public class Factory
         return null;
     }
 
+    public static final List<SecuritySearchProvider> getSearchProvider()
+    {
+        return SEARCH;
+    }
+
     static
     {
         FEEDS = new ArrayList<QuoteFeed>();
-
         Iterator<QuoteFeed> feeds = ServiceRegistry.lookupProviders(QuoteFeed.class);
         while (feeds.hasNext())
             FEEDS.add(feeds.next());
+
+        SEARCH = new ArrayList<SecuritySearchProvider>();
+        Iterator<SecuritySearchProvider> search = ServiceRegistry.lookupProviders(SecuritySearchProvider.class);
+        while (search.hasNext())
+            SEARCH.add(search.next());
+
     }
 }

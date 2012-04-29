@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 
 import org.htmlparser.Node;
@@ -23,6 +24,16 @@ import org.htmlparser.util.ParserException;
 public class YahooSearchProvider implements SecuritySearchProvider
 {
     private static final String SEARCH_URL = "http://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
+
+    public static class YahooResultItem extends ResultItem
+    {
+        @Override
+        public void applyTo(Security security)
+        {
+            super.applyTo(security);
+            security.setFeed(YahooFinanceQuoteFeed.ID);
+        }
+    }
 
     @Override
     public String getName()
@@ -42,13 +53,13 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
             if (answer.isEmpty())
             {
-                ResultItem item = new ResultItem();
+                ResultItem item = new YahooResultItem();
                 item.setName(String.format(Messages.MsgNoResults, query));
                 answer.add(item);
             }
             else if (answer.size() == 20)
             {
-                ResultItem item = new ResultItem();
+                ResultItem item = new YahooResultItem();
                 item.setName(Messages.MsgMoreResulstsAvailable);
                 answer.add(item);
             }
@@ -118,7 +129,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
             if (!tag.isEndTag())
             {
                 insideRow = true;
-                item = new ResultItem();
+                item = new YahooResultItem();
             }
             else
             {

@@ -6,10 +6,11 @@ import java.util.Set;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -123,7 +124,8 @@ public class SearchSecurityWizardPage extends WizardPage
                     {
                         try
                         {
-                            resultTable.setInput(SecuritySearchProvider.INSTANCE.search(searchBox.getText()));
+                            SecuritySearchProvider provider = Factory.getSearchProvider().get(0);
+                            resultTable.setInput(provider.search(searchBox.getText()));
                         }
                         catch (IOException e)
                         {

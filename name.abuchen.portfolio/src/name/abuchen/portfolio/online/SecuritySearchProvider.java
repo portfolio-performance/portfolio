@@ -3,7 +3,8 @@ package name.abuchen.portfolio.online;
 import java.io.IOException;
 import java.util.List;
 
-import name.abuchen.portfolio.online.impl.YahooSearchProvider;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Security.AssetClass;
 
 public interface SecuritySearchProvider
 {
@@ -76,11 +77,16 @@ public interface SecuritySearchProvider
             this.exchange = exchange;
         }
 
+        public void applyTo(Security security)
+        {
+            security.setTickerSymbol(getSymbol());
+            security.setName(getName());
+            security.setIsin(getIsin());
+            security.setType(AssetClass.EQUITY);
+        }
     }
 
     String getName();
 
     List<ResultItem> search(String query) throws IOException;
-
-    public static final SecuritySearchProvider INSTANCE = new YahooSearchProvider();
 }
