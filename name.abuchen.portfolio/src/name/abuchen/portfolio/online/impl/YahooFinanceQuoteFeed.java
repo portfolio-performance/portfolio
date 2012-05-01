@@ -304,7 +304,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         for (ResultItem item : result)
         {
             if (item.getSymbol() != null && (symbol.equals(item.getSymbol()) || item.getSymbol().startsWith(prefix)))
-                answer.add(new Exchange(item.getSymbol(), item.getSymbol()));
+            {
+                int e = item.getSymbol().indexOf('.');
+                String exchange = e >= 0 ? item.getSymbol().substring(e) : ".default"; //$NON-NLS-1$
+                String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
+                
+                answer.add(new Exchange(item.getSymbol(), String.format("%s (%s)", label, item.getSymbol()))); //$NON-NLS-1$
+            }
         }
 
         return answer;
