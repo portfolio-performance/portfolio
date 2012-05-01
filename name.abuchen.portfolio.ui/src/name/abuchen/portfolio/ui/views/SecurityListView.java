@@ -13,8 +13,10 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
@@ -22,7 +24,6 @@ import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.wizards.AddSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.util.Dates;
 
@@ -251,11 +252,14 @@ public class SecurityListView extends AbstractListView
 
             Dialog dialog = createDialog(security);
             if (dialog.open() == Dialog.OK)
-            {
-                markDirty();
-                securities.refresh(security, true);
-                securities.setSelection(securities.getSelection());
-            }
+                performFinish(security);
+        }
+
+        protected void performFinish(Security security)
+        {
+            markDirty();
+            securities.refresh(security, true);
+            securities.setSelection(securities.getSelection());
         }
 
         abstract Dialog createDialog(Security security);
@@ -305,6 +309,13 @@ public class SecurityListView extends AbstractListView
                     return new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(getClient(),
                                     security));
                 }
+
+                @Override
+                protected void performFinish(Security security)
+                {
+                    super.performFinish(security);
+                    runUpdateQuotesJob(security);
+                }
             });
             manager.add(new Separator());
         }
@@ -314,12 +325,17 @@ public class SecurityListView extends AbstractListView
             @Override
             public void run()
             {
-                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new AddSecurityWizard(
-                                getClient()));
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setType(AssetClass.EQUITY);
+                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
+                                getClient(), newSecurity));
                 if (dialog.open() == Dialog.OK)
                 {
                     markDirty();
+                    getClient().getSecurities().add(newSecurity);
                     securities.setInput(getClient().getSecurities());
+                    runUpdateQuotesJob(newSecurity);
                 }
             }
         });

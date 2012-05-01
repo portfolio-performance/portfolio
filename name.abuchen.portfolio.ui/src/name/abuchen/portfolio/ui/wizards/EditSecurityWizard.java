@@ -18,6 +18,7 @@ public class EditSecurityWizard extends Wizard
 
     private SecurityMasterDataPage dataPage;
     private QuoteProviderPage quotesPage;
+    private SearchSecurityWizardPage searchPage;
 
     private AbstractWizardPage currentPage;
 
@@ -41,6 +42,9 @@ public class EditSecurityWizard extends Wizard
 
         quotesPage = new QuoteProviderPage(client, editable);
         addPage(quotesPage);
+
+        searchPage = new SearchSecurityWizardPage(client, editable);
+        addPage(searchPage);
 
         final IWizardContainer c = this.getContainer();
         if (c instanceof IPageChangeProvider)

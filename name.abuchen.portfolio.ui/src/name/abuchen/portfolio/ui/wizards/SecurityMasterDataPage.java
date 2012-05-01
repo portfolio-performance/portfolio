@@ -7,14 +7,20 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Link;
 
 public class SecurityMasterDataPage extends AbstractWizardPage
 {
+    public static final String PAGE_NAME = "masterdata"; //$NON-NLS-1$
+
     static class Model extends BindingHelper.Model
     {
         private Security security;
@@ -95,11 +101,12 @@ public class SecurityMasterDataPage extends AbstractWizardPage
 
     }
 
+    private BindingHelper bindings;
     private Model model;
 
     protected SecurityMasterDataPage(Client client, Security security)
     {
-        super(Messages.EditWizardMasterData);
+        super(PAGE_NAME);
         setTitle(Messages.EditWizardMasterDataTitle);
         setDescription(Messages.EditWizardMasterDataDescription);
 
@@ -110,6 +117,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     public void beforePage()
     {
         model.readFromSecurity();
+        bindings.getBindingContext().updateModels();
     }
 
     @Override
@@ -126,7 +134,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         container.setLayout(new FormLayout());
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
-        final BindingHelper bindings = new BindingHelper(model)
+        bindings = new BindingHelper(model)
         {
             @Override
             public void onValidationStatusChanged(IStatus status)
@@ -141,13 +149,32 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindMandatoryStringInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
         bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                return ((AssetClass) element).name();
+                            }
+                        }, AssetClass.values());
+
+        Link link = new Link(container, SWT.UNDERLINE_LINK);
+        link.setText(Messages.EditWizardMasterDataLinkToSearch);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(link);
+
+        link.addSelectionListener(new SelectionListener()
         {
             @Override
-            public String getText(Object element)
+            public void widgetSelected(SelectionEvent arg0)
             {
-                return ((AssetClass) element).name();
+                setPageComplete(false);
+                getContainer().showPage(getWizard().getPage(SearchSecurityWizardPage.PAGE_NAME));
             }
-        }, AssetClass.values());
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent arg0)
+            {}
+        });
+
     }
 
 }

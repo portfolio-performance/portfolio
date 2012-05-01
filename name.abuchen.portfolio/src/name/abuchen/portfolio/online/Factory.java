@@ -20,7 +20,7 @@ public class Factory
     {
         for (QuoteFeed feed : FEEDS)
         {
-            if (feedId.equals(feed.getId()))
+            if (feed.getId().equals(feedId))
                 return feed;
         }
         return null;

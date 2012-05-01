@@ -72,10 +72,9 @@ public class Messages extends NLS
     public static String ConsumerPriceIndexMenuAdd;
     public static String ConsumerPriceIndexMenuDelete;
     public static String CurrencyConverter_MsgNotANumber;
-    public static String EditWizardMasterData;
     public static String EditWizardMasterDataDescription;
+    public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataTitle;
-    public static String EditWizardQuoteFeed;
     public static String EditWizardQuoteFeedDescription;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
@@ -105,7 +104,6 @@ public class Messages extends NLS
     public static String LabelQuoteFeedProvider;
     public static String LabelReportingYears;
     public static String LabelSampleData;
-    public static String LabelSearchDialog;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelStatementOfAssets;

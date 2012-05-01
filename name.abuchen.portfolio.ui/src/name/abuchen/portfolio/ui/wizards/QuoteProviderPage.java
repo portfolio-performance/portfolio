@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
@@ -75,7 +76,7 @@ public class QuoteProviderPage extends AbstractWizardPage
 
     protected QuoteProviderPage(Client client, Security security)
     {
-        super(Messages.EditWizardQuoteFeed);
+        super("feedprovider"); //$NON-NLS-1$
         setTitle(Messages.EditWizardQuoteFeedTitle);
         setDescription(Messages.EditWizardQuoteFeedDescription);
 
@@ -116,11 +117,17 @@ public class QuoteProviderPage extends AbstractWizardPage
         security.setFeed(feed.getId());
 
         Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
-        if (!feed.getId().equals(QuoteFeed.MANUAL))
+        if (exchange != null && !feed.getId().equals(QuoteFeed.MANUAL))
         {
             security.setTickerSymbol(exchange.getId());
             tickerSymbol = exchange.getId();
         }
+    }
+
+    @Override
+    public IWizardPage getNextPage()
+    {
+        return null;
     }
 
     @Override
@@ -141,16 +148,19 @@ public class QuoteProviderPage extends AbstractWizardPage
 
     private void setupInitialData()
     {
-        QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-        comboProvider.setSelection(new StructuredSelection(feed));
-
-        if (security.getTickerSymbol() != null && !feed.getId().equals(QuoteFeed.MANUAL))
+        if (security.getFeed() != null)
         {
-            Exchange exchange = new Exchange(security.getTickerSymbol(), security.getTickerSymbol());
-            ArrayList<Exchange> input = new ArrayList<Exchange>();
-            input.add(exchange);
-            comboExchange.setInput(input);
-            comboExchange.setSelection(new StructuredSelection(exchange));
+            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+            comboProvider.setSelection(new StructuredSelection(feed));
+
+            if (security.getTickerSymbol() != null && !QuoteFeed.MANUAL.equals(feed.getId()))
+            {
+                Exchange exchange = new Exchange(security.getTickerSymbol(), security.getTickerSymbol());
+                ArrayList<Exchange> input = new ArrayList<Exchange>();
+                input.add(exchange);
+                comboExchange.setInput(input);
+                comboExchange.setSelection(new StructuredSelection(exchange));
+            }
         }
     }
 
@@ -424,8 +434,11 @@ public class QuoteProviderPage extends AbstractWizardPage
                         {
                             currentJob = null;
                             cacheQuotes.put(exchange, quotes);
-                            tableSampleData.setInput(quotes);
-                            tableSampleData.refresh();
+                            if (!tableSampleData.getControl().isDisposed())
+                            {
+                                tableSampleData.setInput(quotes);
+                                tableSampleData.refresh();
+                            }
                         }
                     }
 
@@ -438,7 +451,7 @@ public class QuoteProviderPage extends AbstractWizardPage
                     @Override
                     public void run()
                     {
-                        if (currentJob == LoadHistoricalQuotes.this)
+                        if (currentJob == LoadHistoricalQuotes.this && !tableSampleData.getControl().isDisposed())
                         {
                             currentJob = null;
                             tableSampleData.setInput(new String[] { Messages.EditWizardQuoteFeedMsgErrorOrNoData });

@@ -23,7 +23,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -38,19 +38,48 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-public class SearchSecurityWizardPage extends WizardPage
+public class SearchSecurityWizardPage extends AbstractWizardPage
 {
+    public static final String PAGE_NAME = "searchpage"; //$NON-NLS-1$
+
     private Client client;
+    private Security security;
     private ResultItem item;
 
-    public SearchSecurityWizardPage(Client client)
+    public SearchSecurityWizardPage(Client client, Security security)
     {
-        super(Messages.LabelSearchDialog);
+        super(PAGE_NAME);
         setTitle(Messages.SecurityMenuAddNewSecurity);
         setDescription(Messages.SecurityMenuAddNewSecurityDescription);
 
         this.client = client;
+        this.security = security;
     }
+
+    @Override
+    public void beforePage()
+    {}
+
+    @Override
+    public void afterPage()
+    {
+        if (item != null)
+        {
+            String name = security.getName();
+            item.applyTo(security);
+
+            // keep name (overwriting is confusing to the user)
+            if (name != null && name.trim().length() > 0)
+                security.setName(name);
+        }
+    }
+
+    @Override
+    public IWizardPage getNextPage()
+    {
+        return getWizard().getPage(SecurityMasterDataPage.PAGE_NAME);
+    }
+
 
     @Override
     public void createControl(Composite parent)
@@ -148,12 +177,6 @@ public class SearchSecurityWizardPage extends WizardPage
         });
 
         setControl(container);
-        setPageComplete(false);
-    }
-
-    public ResultItem getItem()
-    {
-        return item;
     }
 
     private static class ResultItemLabelProvider extends LabelProvider implements ITableLabelProvider,
@@ -216,4 +239,5 @@ public class SearchSecurityWizardPage extends WizardPage
             return null;
         }
     }
+
 }
