@@ -125,6 +125,11 @@ public class Security
         prices.remove(price);
     }
 
+    public void removeAllPrices()
+    {
+        prices.clear();
+    }
+
     public SecurityPrice getSecurityPrice(Date time)
     {
         if (prices.isEmpty())

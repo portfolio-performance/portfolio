@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -217,7 +218,8 @@ public class SecurityListView extends AbstractListView
                 if (dialog.open() == Dialog.OK)
                 {
                     markDirty();
-                    if (!securities.getControl().isDisposed()) {
+                    if (!securities.getControl().isDisposed())
+                    {
                         securities.refresh(true);
                         runUpdateQuotesJob(security);
                     }
@@ -577,7 +579,7 @@ public class SecurityListView extends AbstractListView
 
     protected TableViewer createPricesTable(Composite parent)
     {
-        final TableViewer prices = new TableViewer(parent, SWT.FULL_SELECTION);
+        final TableViewer prices = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
 
         TableColumn column = new TableColumn(prices.getTable(), SWT.None);
         column.setText(Messages.ColumnDate);
@@ -600,15 +602,13 @@ public class SecurityListView extends AbstractListView
                             public void onModified(Object element, String property)
                             {
                                 markDirty();
-                                securities.refresh(prices.getData(Security.class.toString()));
-                                prices.refresh(element);
 
                                 Security security = (Security) prices.getData(Security.class.toString());
 
+                                securities.refresh(security);
+                                prices.refresh(element);
                                 latest.setInput(security);
-
                                 transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
-
                                 updateChart(security);
                             }
                         }) //
@@ -629,56 +629,104 @@ public class SecurityListView extends AbstractListView
 
     private void fillPricesContextMenu(IMenuManager manager)
     {
-        manager.add(new Action(Messages.SecurityMenuDeletePrice)
+        boolean isSecuritySelected = prices.getData(Security.class.toString()) != null;
+        if (isSecuritySelected)
         {
-            @Override
-            public void run()
+            manager.add(new Action(Messages.SecurityMenuAddPrice)
             {
-                SecurityPrice price = (SecurityPrice) ((IStructuredSelection) prices.getSelection()).getFirstElement();
-                Security security = (Security) prices.getData(Security.class.toString());
+                @Override
+                public void run()
+                {
+                    Security security = (Security) prices.getData(Security.class.toString());
+                    if (security == null)
+                        return;
 
-                if (price == null || security == null)
-                    return;
+                    SecurityPrice price = new SecurityPrice();
+                    price.setTime(Dates.today());
 
-                security.removePrice(price);
-                markDirty();
+                    security.addPrice(price);
 
-                prices.setInput(security.getPrices());
+                    markDirty();
 
-                latest.setInput(security);
+                    prices.setInput(security.getPrices());
+                    latest.setInput(security);
+                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    updateChart(security);
 
-                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    prices.setSelection(new StructuredSelection(price), true);
+                }
+            });
+            manager.add(new Separator());
+        }
 
-                updateChart(security);
-            }
-        });
-
-        manager.add(new Action(Messages.SecurityMenuAddPrice)
+        if (((IStructuredSelection) prices.getSelection()).getFirstElement() != null)
         {
-            @Override
-            public void run()
+            manager.add(new Action(Messages.SecurityMenuDeletePrice)
             {
-                Security security = (Security) prices.getData(Security.class.toString());
-                if (security == null)
-                    return;
+                @Override
+                public void run()
+                {
+                    Security security = (Security) prices.getData(Security.class.toString());
+                    if (security == null)
+                        return;
 
-                SecurityPrice price = new SecurityPrice();
-                price.setTime(Dates.today());
+                    Iterator<?> iter = ((IStructuredSelection) prices.getSelection()).iterator();
+                    while (iter.hasNext())
+                    {
+                        SecurityPrice price = (SecurityPrice) iter.next();
+                        if (price == null)
+                            continue;
 
-                security.addPrice(price);
+                        security.removePrice(price);
+                    }
 
-                markDirty();
+                    markDirty();
 
-                prices.setInput(security.getPrices());
-                prices.setSelection(new StructuredSelection(price), true);
+                    prices.setInput(security.getPrices());
+                    latest.setInput(security);
+                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    updateChart(security);
+                }
+            });
+        }
 
-                latest.setInput(security);
+        if (prices.getTable().getItemCount() > 0)
+        {
+            manager.add(new Action(Messages.SecurityMenuDeleteAllPrices)
+            {
+                @Override
+                public void run()
+                {
+                    Security security = (Security) prices.getData(Security.class.toString());
+                    if (security == null)
+                        return;
 
-                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    security.removeAllPrices();
 
-                updateChart(security);
-            }
-        });
+                    markDirty();
+
+                    prices.setInput(security.getPrices());
+                    latest.setInput(security);
+                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    updateChart(security);
+                }
+            });
+        }
+        
+        if (isSecuritySelected)
+        {
+            manager.add(new Separator());
+            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
+            {
+                @Override
+                public void run()
+                {
+                    Security security = (Security) prices.getData(Security.class.toString());
+                    if (security != null)
+                        runUpdateQuotesJob(security);
+                }
+            });
+        }
     }
 
     static class PriceLabelProvider extends LabelProvider implements ITableLabelProvider
