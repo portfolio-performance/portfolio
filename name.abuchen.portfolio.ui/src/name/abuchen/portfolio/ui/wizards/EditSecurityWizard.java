@@ -2,9 +2,11 @@ package name.abuchen.portfolio.ui.wizards;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.Wizard;
@@ -69,7 +71,25 @@ public class EditSecurityWizard extends Wizard
         if (currentPage != null)
             currentPage.afterPage();
 
+        boolean hasQuotes = !security.getPrices().isEmpty();
+        boolean providerChanged = (editable.getFeed() != null ? !editable.getFeed().equals(security.getFeed())
+                        : security.getFeed() != null)
+                        || (editable.getTickerSymbol() != null ? !editable.getTickerSymbol().equals(
+                                        security.getTickerSymbol()) : security.getTickerSymbol() != null);
+
         shallowCopy(editable, security);
+
+        if (hasQuotes && providerChanged)
+        {
+            MessageDialog dialog = new MessageDialog(getShell(), //
+                            Messages.MessageDialogProviderChanged, null, //
+                            Messages.MessageDialogProviderChangedText, //
+                            MessageDialog.QUESTION, //
+                            new String[] { Messages.MessageDialogProviderAnswerKeep,
+                                            Messages.MessageDialogProviderAnswerReplace }, 0);
+            if (dialog.open() == 1)
+                security.removeAllPrices();
+        }
 
         return true;
     }

@@ -116,6 +116,10 @@ public class Messages extends NLS
     public static String LabelUnsavedFile;
     public static String MenuTransactionAdd;
     public static String MenuTransactionDelete;
+    public static String MessageDialogProviderAnswerKeep;
+    public static String MessageDialogProviderAnswerReplace;
+    public static String MessageDialogProviderChanged;
+    public static String MessageDialogProviderChangedText;
     public static String MsgAccountFromMissing;
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
