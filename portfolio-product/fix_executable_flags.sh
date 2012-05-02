@@ -2,7 +2,7 @@
 
 # Tycho drops executable flag... fixing tar file after build
 
-version=0.5.2
+version=0.5.3-SNAPSHOT
 environments=( macosx.cocoa.x86_64 linux.gtk.x86_64 linux.gtk.x86 )
 
 cp *.mtree target/products
