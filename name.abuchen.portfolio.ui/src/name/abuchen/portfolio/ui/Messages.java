@@ -79,6 +79,13 @@ public class Messages extends NLS
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;
+    public static String ImportWizardPasteSourceDescription;
+    public static String ImportWizardPasteSourceExplanation;
+    public static String ImportWizardPasteSourcePasteHere;
+    public static String ImportWizardPasteSourceTitle;
+    public static String ImportWizardReviewDescription;
+    public static String ImportWizardReviewError;
+    public static String ImportWizardReviewTitle;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdating;
@@ -148,6 +155,7 @@ public class Messages extends NLS
     public static String SecurityMenuDeleteSecurity;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
+    public static String SecurityMenuImportQuotes;
     public static String SecurityMenuSell;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityTabChart;

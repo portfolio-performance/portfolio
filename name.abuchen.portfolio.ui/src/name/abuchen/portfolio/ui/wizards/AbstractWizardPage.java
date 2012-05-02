@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.ui.wizards;
 
+import org.eclipse.jface.dialogs.IPageChangeProvider;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.WizardPage;
 
 public abstract class AbstractWizardPage extends WizardPage
@@ -10,8 +14,30 @@ public abstract class AbstractWizardPage extends WizardPage
         super(pageName);
     }
 
-    public abstract void beforePage();
+    public void beforePage()
+    {}
 
-    public abstract void afterPage();
+    public void afterPage()
+    {}
 
+    public static final void attachPageListenerTo(final IWizardContainer c)
+    {
+        if (c instanceof IPageChangeProvider)
+        {
+            ((IPageChangeProvider) c).addPageChangedListener(new IPageChangedListener()
+            {
+                AbstractWizardPage currentPage;
+
+                @Override
+                public void pageChanged(PageChangedEvent event)
+                {
+                    if (currentPage != null)
+                        currentPage.afterPage();
+                    currentPage = (AbstractWizardPage) event.getSelectedPage();
+                    currentPage.beforePage();
+                }
+            });
+        }
+
+    }
 }

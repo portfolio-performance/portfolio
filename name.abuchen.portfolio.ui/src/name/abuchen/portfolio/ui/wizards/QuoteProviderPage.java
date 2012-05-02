@@ -17,7 +17,6 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.views.SimpleListContentProvider;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,18 +27,14 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -47,14 +42,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 
 public class QuoteProviderPage extends AbstractWizardPage
 {
     private ComboViewer comboProvider;
     private ComboViewer comboExchange;
-    private TableViewer tableSampleData;
+    private QuotesTableViewer tableSampleData;
 
     private Security security;
 
@@ -268,37 +261,7 @@ public class QuoteProviderPage extends AbstractWizardPage
         fd_composite.bottom = new FormAttachment(100, -10);
         composite.setLayoutData(fd_composite);
 
-        tableSampleData = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
-        Table table = tableSampleData.getTable();
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
-
-        TableColumn column = new TableColumn(tableSampleData.getTable(), SWT.None);
-        column.setText(Messages.ColumnDate);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        column = new TableColumn(tableSampleData.getTable(), SWT.None);
-        column.setText(Messages.ColumnDaysHigh);
-        column.setAlignment(SWT.RIGHT);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        column = new TableColumn(tableSampleData.getTable(), SWT.None);
-        column.setText(Messages.ColumnDaysLow);
-        column.setAlignment(SWT.RIGHT);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        column = new TableColumn(tableSampleData.getTable(), SWT.None);
-        column.setText(Messages.ColumnQuote);
-        column.setAlignment(SWT.RIGHT);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        column = new TableColumn(tableSampleData.getTable(), SWT.None);
-        column.setText(Messages.ColumnVolume);
-        column.setAlignment(SWT.RIGHT);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        tableSampleData.setLabelProvider(new PriceLabelProvider());
-        tableSampleData.setContentProvider(new SimpleListContentProvider());
+        tableSampleData = new QuotesTableViewer(composite);
     }
 
     private boolean areEqual(String s1, String s2)
@@ -319,7 +282,7 @@ public class QuoteProviderPage extends AbstractWizardPage
         }
         else
         {
-            tableSampleData.setInput(new String[] { Messages.EditWizardQuoteFeedMsgLoading });
+            tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgLoading);
             tableSampleData.refresh();
 
             Job job = new LoadHistoricalQuotes(feed, exchange);
@@ -454,7 +417,7 @@ public class QuoteProviderPage extends AbstractWizardPage
                         if (currentJob == LoadHistoricalQuotes.this && !tableSampleData.getControl().isDisposed())
                         {
                             currentJob = null;
-                            tableSampleData.setInput(new String[] { Messages.EditWizardQuoteFeedMsgErrorOrNoData });
+                            tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
                             tableSampleData.refresh();
                         }
                     }
@@ -468,41 +431,4 @@ public class QuoteProviderPage extends AbstractWizardPage
         }
 
     }
-
-    static class PriceLabelProvider extends LabelProvider implements ITableLabelProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            if (element instanceof String)
-            {
-                return columnIndex == 0 ? element.toString() : null;
-            }
-            else
-            {
-                LatestSecurityPrice p = (LatestSecurityPrice) element;
-                switch (columnIndex)
-                {
-                    case 0:
-                        return String.format("%tF", p.getTime()); //$NON-NLS-1$
-                    case 1:
-                        return String.format("%,10.2f", p.getHigh() / 100d); //$NON-NLS-1$
-                    case 2:
-                        return String.format("%,10.2f", p.getLow() / 100d); //$NON-NLS-1$
-                    case 3:
-                        return String.format("%,10.2f", p.getValue() / 100d); //$NON-NLS-1$
-                    case 4:
-                        return String.format("%,d", p.getVolume()); //$NON-NLS-1$
-                }
-            }
-            return null;
-        }
-
-    }
-
 }

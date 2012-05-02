@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
+import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -260,8 +261,11 @@ public class SecurityListView extends AbstractListView
         protected void performFinish(Security security)
         {
             markDirty();
-            securities.refresh(security, true);
-            securities.setSelection(securities.getSelection());
+            if (!securities.getControl().isDisposed())
+            {
+                securities.refresh(security, true);
+                securities.setSelection(securities.getSelection());
+            }
         }
 
         abstract Dialog createDialog(Security security);
@@ -320,30 +324,26 @@ public class SecurityListView extends AbstractListView
                 }
             });
             manager.add(new Separator());
-        }
 
-        manager.add(new Action(Messages.SecurityMenuAddNewSecurity)
-        {
-            @Override
-            public void run()
+            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
             {
-                Security newSecurity = new Security();
-                newSecurity.setFeed(QuoteFeed.MANUAL);
-                newSecurity.setType(AssetClass.EQUITY);
-                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
-                                getClient(), newSecurity));
-                if (dialog.open() == Dialog.OK)
+                @Override
+                public void run()
                 {
-                    markDirty();
-                    getClient().getSecurities().add(newSecurity);
-                    securities.setInput(getClient().getSecurities());
-                    runUpdateQuotesJob(newSecurity);
+                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
+                    runUpdateQuotesJob(security);
                 }
-            }
-        });
+            });
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuImportQuotes)
+            {
+                @Override
+                Dialog createDialog(Security security)
+                {
+                    return new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(security));
+                }
+            });
+            manager.add(new Separator());
 
-        if (isSecuritySelected)
-        {
             manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
             {
                 @Override
@@ -377,19 +377,28 @@ public class SecurityListView extends AbstractListView
                     }
                 }
             });
-
             manager.add(new Separator());
-            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                    runUpdateQuotesJob(security);
-                }
-            });
         }
 
+        manager.add(new Action(Messages.SecurityMenuAddNewSecurity)
+        {
+            @Override
+            public void run()
+            {
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setType(AssetClass.EQUITY);
+                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
+                                getClient(), newSecurity));
+                if (dialog.open() == Dialog.OK)
+                {
+                    markDirty();
+                    getClient().getSecurities().add(newSecurity);
+                    securities.setInput(getClient().getSecurities());
+                    runUpdateQuotesJob(newSecurity);
+                }
+            }
+        });
     }
 
     private void runUpdateQuotesJob(Security security)
@@ -712,7 +721,7 @@ public class SecurityListView extends AbstractListView
                 }
             });
         }
-        
+
         if (isSecuritySelected)
         {
             manager.add(new Separator());
@@ -724,6 +733,14 @@ public class SecurityListView extends AbstractListView
                     Security security = (Security) prices.getData(Security.class.toString());
                     if (security != null)
                         runUpdateQuotesJob(security);
+                }
+            });
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuImportQuotes)
+            {
+                @Override
+                Dialog createDialog(Security security)
+                {
+                    return new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(security));
                 }
             });
         }

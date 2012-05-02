@@ -4,11 +4,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 
-import org.eclipse.jface.dialogs.IPageChangeProvider;
-import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.PageChangedEvent;
-import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.Wizard;
 
 public class EditSecurityWizard extends Wizard
@@ -21,8 +17,6 @@ public class EditSecurityWizard extends Wizard
     private SecurityMasterDataPage dataPage;
     private QuoteProviderPage quotesPage;
     private SearchSecurityWizardPage searchPage;
-
-    private AbstractWizardPage currentPage;
 
     public EditSecurityWizard(Client client, Security security)
     {
@@ -48,28 +42,13 @@ public class EditSecurityWizard extends Wizard
         searchPage = new SearchSecurityWizardPage(client, editable);
         addPage(searchPage);
 
-        final IWizardContainer c = this.getContainer();
-        if (c instanceof IPageChangeProvider)
-        {
-            ((IPageChangeProvider) c).addPageChangedListener(new IPageChangedListener()
-            {
-                @Override
-                public void pageChanged(PageChangedEvent event)
-                {
-                    if (currentPage != null)
-                        currentPage.afterPage();
-                    currentPage = (AbstractWizardPage) event.getSelectedPage();
-                    currentPage.beforePage();
-                }
-            });
-        }
+        AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }
 
     @Override
     public boolean performFinish()
     {
-        if (currentPage != null)
-            currentPage.afterPage();
+        ((AbstractWizardPage) this.getContainer().getCurrentPage()).afterPage();
 
         boolean hasQuotes = !security.getPrices().isEmpty();
         boolean providerChanged = (editable.getFeed() != null ? !editable.getFeed().equals(security.getFeed())
