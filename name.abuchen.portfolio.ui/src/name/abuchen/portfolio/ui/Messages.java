@@ -134,6 +134,7 @@ public class Messages extends NLS
     public static String MsgDeletionNotPossibleAssignedInAllocation;
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
+    public static String MsgDialogNotAValidISIN;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningEditor;
     public static String MsgMissingAccount;

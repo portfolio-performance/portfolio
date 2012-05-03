@@ -9,6 +9,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.dialogs.SimpleDateTimeSelectionProperty;
 import name.abuchen.portfolio.ui.dialogs.StringToCurrencyConverter;
+import name.abuchen.portfolio.util.Isin;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -158,7 +159,7 @@ public class BindingHelper
 
     public final void bindPriceInput(Composite editArea, String label, String property)
     {
-        Text txtValue = createPriceInput(editArea, label);
+        Text txtValue = createTextInput(editArea, label);
 
         context.bindValue(
                         SWTObservables.observeText(txtValue, SWT.Modify), //
@@ -169,7 +170,7 @@ public class BindingHelper
 
     public final void bindMandatoryPriceInput(Composite editArea, final String label, String property)
     {
-        Text txtValue = createPriceInput(editArea, label);
+        Text txtValue = createTextInput(editArea, label);
 
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
@@ -189,7 +190,7 @@ public class BindingHelper
                         new UpdateValueStrategy().setConverter(new CurrencyToStringConverter()));
     }
 
-    private final Text createPriceInput(Composite editArea, final String label)
+    private final Text createTextInput(Composite editArea, final String label)
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
@@ -198,13 +199,9 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final void bindMandatoryIntegerInput(Composite editArea, final String label, String property)
+    public final Control bindMandatoryIntegerInput(Composite editArea, final String label, String property)
     {
-        Label l = new Label(editArea, SWT.NONE);
-        l.setText(label);
-        Text txtValue = new Text(editArea, SWT.BORDER);
-        txtValue.setFocus();
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+        Text txtValue = createTextInput(editArea, label);
 
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
@@ -219,14 +216,12 @@ public class BindingHelper
                             }
                         }), //
                         null);
+        return txtValue;
     }
 
     public final void bindStringInput(Composite editArea, final String label, String property)
     {
-        Label l = new Label(editArea, SWT.NONE);
-        l.setText(label);
-        Text txtValue = new Text(editArea, SWT.BORDER);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+        Text txtValue = createTextInput(editArea, label);
 
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property));
@@ -234,10 +229,7 @@ public class BindingHelper
 
     public final Control bindMandatoryStringInput(Composite editArea, final String label, String property)
     {
-        Label l = new Label(editArea, SWT.NONE);
-        l.setText(label);
-        Text txtValue = new Text(editArea, SWT.BORDER);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+        Text txtValue = createTextInput(editArea, label);
 
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
@@ -249,6 +241,27 @@ public class BindingHelper
                                 String v = (String) value;
                                 return v != null && v.trim().length() > 0 ? ValidationStatus.ok() : ValidationStatus
                                                 .error(MessageFormat.format(Messages.MsgDialogInputRequired, label));
+                            }
+                        }), //
+                        null);
+        return txtValue;
+    }
+
+    public final Control bindISINInput(Composite editArea, final String label, String property)
+    {
+        Text txtValue = createTextInput(editArea, label);
+
+        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
+                        BeansObservables.observeValue(model, property), //
+                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
+                        {
+                            @Override
+                            public IStatus validate(Object value)
+                            {
+                                String v = (String) value;
+                                return v == null || v.trim().length() == 0 || Isin.isValid(v) ? ValidationStatus.ok()
+                                                : ValidationStatus.error(MessageFormat.format(
+                                                                Messages.MsgDialogNotAValidISIN, label));
                             }
                         }), //
                         null);

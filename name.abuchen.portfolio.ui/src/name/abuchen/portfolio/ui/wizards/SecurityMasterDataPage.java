@@ -146,7 +146,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         };
 
         bindings.bindMandatoryStringInput(container, Messages.ColumnName, "name").setFocus(); //$NON-NLS-1$
-        bindings.bindMandatoryStringInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
+        bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
         bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
                         {

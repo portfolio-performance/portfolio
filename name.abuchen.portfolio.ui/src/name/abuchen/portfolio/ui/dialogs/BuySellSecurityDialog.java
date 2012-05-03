@@ -239,7 +239,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                         }, getModel().getClient().getPortfolios().toArray());
 
         // shares
-        bindings.bindMandatoryIntegerInput(editArea, Messages.ColumnShares, "shares"); //$NON-NLS-1$
+        bindings.bindMandatoryIntegerInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
 
         // price
         Label label = new Label(editArea, SWT.NONE);
