@@ -16,7 +16,9 @@ public class ExchangeLabels
         }
         catch (MissingResourceException e)
         {
-            return key;
+            // just return key w/o provider prefix
+            int p = key.indexOf('.');
+            return p >= 0 ? key.substring(p + 1) : key;
         }
     }
 }
