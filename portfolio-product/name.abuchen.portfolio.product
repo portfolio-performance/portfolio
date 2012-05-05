@@ -166,6 +166,7 @@ Apache Software Foundation http://apache.org/
       <plugin id="com.springsource.com.thoughtworks.xstream"/>
       <plugin id="com.springsource.javax.xml.stream"/>
       <plugin id="com.springsource.org.xmlpull"/>
+      <plugin id="com.springsource.org.apache.commons.csv"/>
       <plugin id="org.swtchart"/>
 
       <plugin id="com.bandlem.eclipse.fullscreen.ui" os="macosx" ws="cocoa" arch="x86_64"/>

@@ -75,6 +75,11 @@
 			<version>1.1.4.c</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.csv</artifactId>
+			<version>1.0.0.BUILD-20080106</version>
+		</dependency>
+		<dependency>
 			<groupId>org.swtchart</groupId>
 			<artifactId>org.swtchart</artifactId>
 			<version>0.8.0</version>

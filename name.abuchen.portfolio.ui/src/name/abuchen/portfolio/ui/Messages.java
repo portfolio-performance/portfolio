@@ -79,6 +79,14 @@ public class Messages extends NLS
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;
+    public static String ExportWizardAccountTransactions;
+    public static String ExportWizardDescription;
+    public static String ExportWizardErrorExporting;
+    public static String ExportWizardHistoricalQuotes;
+    public static String ExportWizardPortfolioTransactions;
+    public static String ExportWizardSelectDirectory;
+    public static String ExportWizardTitle;
+    public static String ExportWizardUnsupportedExport;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;

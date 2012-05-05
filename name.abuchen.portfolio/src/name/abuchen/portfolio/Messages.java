@@ -13,6 +13,14 @@ public class Messages extends NLS
     public static String ColumnPaidTaxes;
     public static String ColumnPerformance;
     public static String ColumnTransfers;
+    public static String CSVColumn_Date;
+    public static String CSVColumn_Description;
+    public static String CSVColumn_Fees;
+    public static String CSVColumn_ISIN;
+    public static String CSVColumn_Quote;
+    public static String CSVColumn_Shares;
+    public static String CSVColumn_Type;
+    public static String CSVColumn_Value;
     public static String LabelDeposits;
     public static String LabelInterest;
     public static String LabelJointPortfolio;

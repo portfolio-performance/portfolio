@@ -112,6 +112,14 @@
                   id="org.eclipse.ui.file.save"
                   commandId="org.eclipse.ui.file.saveAs">
             </command>
+            <separator
+                  name="name.abuchen.portfolio.ui.menus.exportSeparator"
+                  visible="true">
+            </separator>
+            <command
+                  id="name.abuchen.portfolio.ui.menus.exportCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.exportCommand">
+            </command>
          </menu>
          <menu
                id="online"
@@ -198,6 +206,11 @@
             id="name.abuchen.portfolio.ui.commands.updateCPICommand"
             name="%command.updateCPI.name">
       </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.exportCommand"
+            name="%command.export.name">
+      </command>
    </extension>
 
    <extension
@@ -217,6 +230,10 @@
       <handler
             class="name.abuchen.portfolio.ui.handlers.UpdateCPIHandler"
             commandId="name.abuchen.portfolio.ui.commands.updateCPICommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.ExportHandler"
+            commandId="name.abuchen.portfolio.ui.commands.exportCommand">
       </handler>
    </extension>
 

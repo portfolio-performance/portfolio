@@ -1,0 +1,112 @@
+package name.abuchen.portfolio.ui.wizards;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.CSVExporter;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
+
+public class ExportWizard extends Wizard
+{
+    private final Client client;
+
+    private ExportSelectionPage exportPage;
+
+    public ExportWizard(Client client)
+    {
+        this.client = client;
+    }
+
+    @Override
+    public void addPages()
+    {
+        addPage(exportPage = new ExportSelectionPage(client));
+        AbstractWizardPage.attachPageListenerTo(this.getContainer());
+    }
+
+    @Override
+    public boolean performFinish()
+    {
+        Object exportItem = exportPage.getExportItem();
+        Class<?> exportClass = exportPage.getExportClass();
+
+        File file = getFile(exportItem);
+
+        try
+        {
+            if (exportItem == AccountTransaction.class)
+                new CSVExporter().exportAccountTransactions(file, client.getAccounts());
+            else if (exportClass == AccountTransaction.class)
+                new CSVExporter().exportAccountTransactions(file, (Account) exportItem);
+            else if (exportItem == PortfolioTransaction.class)
+                new CSVExporter().exportPortfolioTransactions(file, client.getPortfolios());
+            else if (exportClass == PortfolioTransaction.class)
+                new CSVExporter().exportPortfolioTransactions(file, (Portfolio) exportItem);
+            else if (exportItem == SecurityPrice.class)
+                new CSVExporter().exportSecurityPrices(file, client.getSecurities());
+            else if (exportClass == SecurityPrice.class)
+                new CSVExporter().exportSecurityPrices(file, (Security) exportItem);
+            else
+                throw new UnsupportedOperationException(MessageFormat.format(Messages.ExportWizardUnsupportedExport,
+                                exportClass, exportItem));
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+            MessageDialog.openError(getShell(), Messages.ExportWizardErrorExporting, e.getMessage());
+        }
+
+        return true;
+    }
+
+    private File getFile(Object exportItem)
+    {
+        File file = null;
+        if (exportItem instanceof Class)
+        {
+            DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
+
+            directoryDialog.setMessage(Messages.ExportWizardSelectDirectory);
+
+            String dir = directoryDialog.open();
+            if (dir != null)
+                file = new File(dir);
+        }
+        else
+        {
+            String name = null;
+            if (exportItem instanceof Account)
+                name = ((Account) exportItem).getName();
+            else if (exportItem instanceof Portfolio)
+                name = ((Portfolio) exportItem).getName();
+            else if (exportItem instanceof Security)
+                name = ((Security) exportItem).getIsin();
+
+            FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+            if (name != null)
+                dialog.setFileName(name + ".csv"); //$NON-NLS-1$
+            dialog.setFilterNames(new String[] { "*.csv" }); //$NON-NLS-1$
+            String fileName = dialog.open();
+
+            if (fileName != null)
+                file = new File(fileName);
+        }
+        return file;
+    }
+
+}
