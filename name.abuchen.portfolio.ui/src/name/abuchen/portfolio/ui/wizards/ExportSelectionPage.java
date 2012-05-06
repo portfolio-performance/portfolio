@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -22,11 +23,14 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 public class ExportSelectionPage extends AbstractWizardPage
 {
@@ -112,7 +116,7 @@ public class ExportSelectionPage extends AbstractWizardPage
 
     }
 
-    static class ExportItemsContentProvider implements ITreeContentProvider
+    private static class ExportItemsContentProvider implements ITreeContentProvider
     {
         private Client client;
 
@@ -161,7 +165,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         {}
     }
 
-    static class ExportItemsLabelProvider extends LabelProvider
+    private static class ExportItemsLabelProvider extends LabelProvider
     {
         @Override
         public String getText(Object element)
@@ -182,5 +186,18 @@ public class ExportSelectionPage extends AbstractWizardPage
                 return null;
         }
 
+        @Override
+        public Image getImage(Object element)
+        {
+            if (element instanceof Class)
+                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+            else if (element instanceof Account)
+                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_ACCOUNT);
+            else if (element instanceof Portfolio)
+                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_PORTFOLIO);
+            else if (element instanceof Security)
+                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
+            return null;
+        }
     }
 }

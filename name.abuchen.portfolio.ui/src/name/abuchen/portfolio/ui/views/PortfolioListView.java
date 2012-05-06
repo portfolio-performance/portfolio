@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
@@ -157,7 +158,10 @@ public class PortfolioListView extends AbstractListView
 
         public Image getColumnImage(Object element, int columnIndex)
         {
-            return null;
+            if (columnIndex != 0)
+                return null;
+
+            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_PORTFOLIO);
         }
 
         public String getColumnText(Object element, int columnIndex)

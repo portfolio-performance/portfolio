@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
@@ -427,7 +428,10 @@ public class SecurityListView extends AbstractListView
 
         public Image getColumnImage(Object element, int columnIndex)
         {
-            return null;
+            if (columnIndex != 0)
+                return null;
+
+            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
         }
 
         public String getColumnText(Object element, int columnIndex)

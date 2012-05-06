@@ -19,6 +19,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
@@ -45,6 +46,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 public class CategoryView extends AbstractFinanceView
 {
@@ -399,7 +402,17 @@ public class CategoryView extends AbstractFinanceView
 
         public Image getColumnImage(Object element, int columnIndex)
         {
-            return null;
+            if (columnIndex != 0)
+                return null;
+
+            if (element instanceof CategoryModel)
+                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+            else if (element instanceof Account)
+                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_ACCOUNT);
+            else if (element instanceof Security)
+                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
+            else
+                return null;
         }
 
         public String getColumnText(Object element, int columnIndex)

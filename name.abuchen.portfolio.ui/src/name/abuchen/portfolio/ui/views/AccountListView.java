@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
@@ -154,7 +155,10 @@ public class AccountListView extends AbstractListView
 
         public Image getColumnImage(Object element, int columnIndex)
         {
-            return null;
+            if (columnIndex != 0)
+                return null;
+
+            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_ACCOUNT);
         }
 
         public String getColumnText(Object element, int columnIndex)

@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
@@ -165,7 +166,10 @@ public class SecurityPerformanceView extends AbstractHistoricView
 
         public Image getColumnImage(Object element, int columnIndex)
         {
-            return null;
+            if (columnIndex != 0 || !(element instanceof Record))
+                return null;
+
+            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
         }
 
         public String getColumnText(Object element, int columnIndex)
