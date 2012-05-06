@@ -29,11 +29,11 @@
 inklusive internen Zinsfuß.</p>
 
 <p><ul>
-<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.2-win32.win32.x86.zip">Windows 32bit</a> / 
-<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.2-win32.win32.x86_64.zip">64bit</a>
-<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.2-macosx.cocoa.x86_64.tar.gz">Mac OS X</a>
-<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.2-linux.gtk.x86.tar.gz">Linux 32bit </a> /
-<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.2-linux.gtk.x86_64.tar.gz">64bit</a>
+<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.3-win32.win32.x86.zip">Windows 32bit</a> / 
+<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.3-win32.win32.x86_64.zip">64bit</a>
+<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.3-macosx.cocoa.x86_64.tar.gz">Mac OS X</a>
+<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.3-linux.gtk.x86.tar.gz">Linux 32bit </a> /
+<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.5.3-linux.gtk.x86_64.tar.gz">64bit</a>
 </ul>
 </p>
 
@@ -42,9 +42,10 @@ inklusive internen Zinsfuß.</p>
 <ul>
     <li>Historische Performance auf Basis aller Transaktionen und Dividenden</li>
     <li>Berechnung des interner Zinsfuß (Internal Rate of Return)</li>
-    <li>Aggregation mehrerer Konten (z.B. Tagesgeldkonten) und mehrere Portfolios</li>
+    <li>Aggregation mehrerer Konten (z.B. Tagesgeldkonten) und mehrerer Portfolios</li>
     <li>Vergleich mit den deutschen Verbraucherpreisen (Inflationsrate)</li>
     <li>Aktualisierung der Kurse von <a href="http://de.finance.yahoo.com">Yahoo Finance</a></li>
+    <li>Offenes Dateiformat: alle Daten sind als XML gespeichert oder können als CSV exportiert werden</li>
 </ul>
 
 <p>Worum geht es <strong>nicht</strong>?</p>
@@ -122,15 +123,30 @@ inklusive internen Zinsfuß.</p>
 </a>
 </div>
 
+<div class="screenshot">
+<a title="Export Daten auch als CSV Datei (neben der XML Dateie des Programms)" href="images/shot_csv_export.png">
+    <img src="images/shot_csv_export_thumb.png" alt="" width="307" height="230"/>
+</a>
+</div>
+
 <h2>Links</h2>
 <ul>
-	<li><a href="https://github.com/buchen/portfolio/issues">Bug Tracker</a></li>
+	<li><a href="https://github.com/buchen/portfolio/issues">Bug Tracker / Features Requests</a></li>
 	<li><a href="https://github.com/buchen/portfolio">Source Code</a></li>
 </ul>
 
 <h2>Versionen</h2>
 
 <div id="versions">
+<h3>0.5.3 / 6. Mai 2012</h3>
+<ul>
+	<li>CSV Export von Umsätze und Kursen (Menü "File" -> "Exportieren...")</li>
+	<li>CSV Export auch per Kommandozeile (siehe <a href="https://github.com/buchen/portfolio/wiki">Wiki</a>)</li>
+	<li>Prüfung der ISIN bei Eingabe</li>
+	<li>Icons für Wertpapiere, Konten und Depots</li>
+	<li>Bug: Vermögensaufstellung flackert bei Kursaktualisierung</li>
+</ul>
+
 <h3>0.5.2 / 2. Mai 2012</h3>
 <ul>
 	<li>Verbesserter Dialog um Yahoo Kursinformationen zu konfigurieren (inklusive Auswahl der Börsenplätze)</li>
