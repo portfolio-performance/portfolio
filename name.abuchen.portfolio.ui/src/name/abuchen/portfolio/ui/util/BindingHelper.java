@@ -6,9 +6,6 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.CurrencyToStringConverter;
-import name.abuchen.portfolio.ui.dialogs.SimpleDateTimeSelectionProperty;
-import name.abuchen.portfolio.ui.dialogs.StringToCurrencyConverter;
 import name.abuchen.portfolio.util.Isin;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;

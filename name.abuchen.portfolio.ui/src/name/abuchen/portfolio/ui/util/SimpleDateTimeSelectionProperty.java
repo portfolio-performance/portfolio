@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.dialogs;
+package name.abuchen.portfolio.ui.util;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -7,7 +7,7 @@ import org.eclipse.jface.databinding.swt.WidgetValueProperty;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 
-public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
+/* package */class SimpleDateTimeSelectionProperty extends WidgetValueProperty
 {
     private static final ThreadLocal<Calendar> calendar = new ThreadLocal<Calendar>()
     {

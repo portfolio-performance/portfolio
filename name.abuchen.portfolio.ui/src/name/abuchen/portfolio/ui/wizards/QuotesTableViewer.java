@@ -4,7 +4,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.views.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnPixelData;

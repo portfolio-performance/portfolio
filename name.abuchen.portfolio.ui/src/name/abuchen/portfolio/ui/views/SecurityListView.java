@@ -24,6 +24,7 @@ import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;

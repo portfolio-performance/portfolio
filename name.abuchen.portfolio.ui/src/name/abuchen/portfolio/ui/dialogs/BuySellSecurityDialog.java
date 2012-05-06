@@ -13,6 +13,8 @@ import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;

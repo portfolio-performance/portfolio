@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.dialogs;
+package name.abuchen.portfolio.ui.util;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
