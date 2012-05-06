@@ -52,9 +52,18 @@ public class StatementOfAssetsView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
-        assets.setInput(snapshot);
-        assets.refresh();
-        assets.expandAll();
+
+        assets.getTree().setRedraw(false);
+        try
+        {
+            assets.setInput(snapshot);
+            assets.refresh();
+            assets.expandAll();
+        }
+        finally
+        {
+            assets.getTree().setRedraw(true);
+        }
     }
 
     @Override
