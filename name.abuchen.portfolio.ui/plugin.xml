@@ -35,6 +35,17 @@
    </extension>
 
    <extension
+         id="commandline"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            visible="true">
+         <run
+               class="name.abuchen.portfolio.ui.app.CommandLineApplication">
+         </run>
+      </application>
+   </extension>
+
+   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             name="%perspective.name"
