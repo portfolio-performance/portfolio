@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 
 import name.abuchen.portfolio.model.Account;
@@ -88,12 +87,21 @@ public class PortfolioListView extends AbstractListView
             {
                 Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
                 transactions.setData(Portfolio.class.toString(), portfolio);
-                transactions.setInput(portfolio != null ? portfolio.getTransactions()
-                                : new ArrayList<PortfolioTransaction>(0));
-                transactions.refresh();
 
-                statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                statementOfAssets.expandAll();
+                if (portfolio != null)
+                {
+                    transactions.setInput(portfolio.getTransactions());
+                    transactions.refresh();
+                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+                    statementOfAssets.expandAll();
+                }
+                else
+                {
+                    transactions.setInput(null);
+                    transactions.refresh();
+                    statementOfAssets.setInput(null);
+                    statementOfAssets.refresh();
+                }
             }
         });
 
