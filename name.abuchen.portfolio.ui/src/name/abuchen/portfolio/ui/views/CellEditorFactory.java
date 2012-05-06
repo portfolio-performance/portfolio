@@ -306,7 +306,7 @@ public class CellEditorFactory
             {
                 ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
                                 Messages.CellEditor_Error, e.getMessage(), new Status(Status.ERROR,
-                                                PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
+                                                PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
                 return null;
             }
         }
@@ -323,7 +323,7 @@ public class CellEditorFactory
             {
                 ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
                                 Messages.CellEditor_Error, e.getMessage(), new Status(Status.ERROR,
-                                                PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
+                                                PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         }
 

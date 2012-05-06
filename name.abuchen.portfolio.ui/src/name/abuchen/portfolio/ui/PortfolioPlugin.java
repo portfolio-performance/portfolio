@@ -16,7 +16,7 @@ import org.osgi.framework.FrameworkUtil;
 
 public class PortfolioPlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_IN = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
     public static final String IMG_SECURITY = "security"; //$NON-NLS-1$
     public static final String IMG_ACCOUNT = "account"; //$NON-NLS-1$
@@ -33,7 +33,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
     @Override
     protected void initializeImageRegistry(ImageRegistry registry)
     {
-        Bundle bundle = Platform.getBundle(PLUGIN_IN);
+        Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
         for (String key : new String[] { IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY })
         {
@@ -56,7 +56,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
 
     public static void log(Throwable t)
     {
-        log(new Status(Status.ERROR, PLUGIN_IN, t.getMessage(), t));
+        log(new Status(Status.ERROR, PLUGIN_ID, t.getMessage(), t));
     }
 
 }

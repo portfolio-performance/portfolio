@@ -49,7 +49,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
                         }
                         catch (PartInitException e)
                         {
-                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
+                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
                         }
                     };
                 });

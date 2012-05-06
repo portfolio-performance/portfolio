@@ -39,14 +39,14 @@ public class UpdateCPIJob extends Job
         }
         catch (IOException e)
         {
-            errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_IN, e.getMessage(), e));
+            errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
 
         notifyFinished();
 
         if (!errors.isEmpty())
         {
-            PortfolioPlugin.log(new MultiStatus(PortfolioPlugin.PLUGIN_IN, -1, errors.toArray(new IStatus[0]),
+            PortfolioPlugin.log(new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1, errors.toArray(new IStatus[0]),
                             Messages.JobMsgErrorUpdatingIndeces, null));
         }
 
