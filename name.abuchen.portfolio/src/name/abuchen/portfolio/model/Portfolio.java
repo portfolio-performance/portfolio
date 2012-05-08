@@ -46,4 +46,9 @@ public class Portfolio
         this.transactions.addAll(transactions);
     }
 
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }

@@ -165,7 +165,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         {}
     }
 
-    private static class ExportItemsLabelProvider extends LabelProvider
+    static class ExportItemsLabelProvider extends LabelProvider
     {
         @Override
         public String getText(Object element)
