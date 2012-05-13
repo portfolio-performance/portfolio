@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views;
+package name.abuchen.portfolio.ui.util;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;

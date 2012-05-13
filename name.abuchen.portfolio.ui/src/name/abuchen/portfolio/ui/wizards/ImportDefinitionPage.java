@@ -13,9 +13,9 @@ import java.util.Set;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.CellEditorFactory.ModificationListener;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.views.CellEditorFactory;
-import name.abuchen.portfolio.ui.views.CellEditorFactory.ModificationListener;
 import name.abuchen.portfolio.util.CSVImportDefinition;
 import name.abuchen.portfolio.util.CSVImporter;
 import name.abuchen.portfolio.util.CSVImporter.AmountField;
