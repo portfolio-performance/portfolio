@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.CSVImporter;
 
@@ -42,8 +43,9 @@ public class ImportWizard extends Wizard
             for (Exception e : errors)
                 status[ii++] = new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
 
-            ErrorDialog.openError(getShell(), "Error", "Errors during Import", new MultiStatus(
-                            PortfolioPlugin.PLUGIN_ID, -1, status, "Errors during Import", null));
+            ErrorDialog.openError(getShell(), Messages.LabelError, Messages.CSVImportErrorsDuringImport,
+                            new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1, status,
+                                            Messages.CSVImportErrorsDuringImport, null));
         }
 
         return true;

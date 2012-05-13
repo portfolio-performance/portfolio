@@ -4,6 +4,7 @@ import java.io.File;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ClientEditor;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.ImportWizard;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -33,7 +34,7 @@ public class ImportHandler extends AbstractHandler
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-        fileDialog.setFilterNames(new String[] { "Comma-separated Values (*.csv)", "All Files (*.*)" });
+        fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
         fileDialog.setFilterExtensions(new String[] { "csv", "*" }); //$NON-NLS-1$ //$NON-NLS-2$
         String fileName = fileDialog.open();
 

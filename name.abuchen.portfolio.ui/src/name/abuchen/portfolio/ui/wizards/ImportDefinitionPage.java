@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.views.CellEditorFactory;
@@ -108,6 +109,9 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     public ImportDefinitionPage(CSVImporter importer)
     {
         super("importdefinition"); //$NON-NLS-1$
+        setTitle(Messages.CSVImportWizardTitle);
+        setDescription(Messages.CSVImportWizardDescription);
+
         this.importer = importer;
     }
 
@@ -119,7 +123,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         container.setLayout(new FormLayout());
 
         Label lblTarget = new Label(container, SWT.NONE);
-        lblTarget.setText("Target:");
+        lblTarget.setText(Messages.CSVImportLabelTarget);
         Combo cmbTarget = new Combo(container, SWT.READ_ONLY);
         ComboViewer target = new ComboViewer(cmbTarget);
         target.setContentProvider(ArrayContentProvider.getInstance());
@@ -131,24 +135,24 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
                 if (element instanceof CSVImportDefinition)
                     return element.toString();
                 else
-                    return "     " + element.toString();
+                    return "     " + element.toString(); //$NON-NLS-1$
             }
         });
         target.addSelectionChangedListener(this);
 
         Label lblDelimiter = new Label(container, SWT.NONE);
-        lblDelimiter.setText("Delimiter:");
+        lblDelimiter.setText(Messages.CSVImportLabelDelimiter);
         Combo cmbDelimiter = new Combo(container, SWT.READ_ONLY);
         ComboViewer delimiter = new ComboViewer(cmbDelimiter);
         delimiter.setContentProvider(ArrayContentProvider.getInstance());
-        delimiter.setInput(new Delimiter[] { new Delimiter(',', "Comma (,)"), //
-                        new Delimiter(';', "Semicolon (;)"), //
-                        new Delimiter('\t', "Tab") });
+        delimiter.setInput(new Delimiter[] { new Delimiter(',', Messages.CSVImportSeparatorComma), //
+                        new Delimiter(';', Messages.CSVImportSeparatorSemicolon), //
+                        new Delimiter('\t', Messages.CSVImportSeparatorTab) });
         cmbDelimiter.select(1);
         delimiter.addSelectionChangedListener(this);
 
         Label lblSkipLines = new Label(container, SWT.NONE);
-        lblSkipLines.setText("Skip Lines:");
+        lblSkipLines.setText(Messages.CSVImportLabelSkipLines);
         final Spinner skipLines = new Spinner(container, SWT.BORDER);
         skipLines.setMinimum(0);
         skipLines.addModifyListener(new ModifyListener()
@@ -161,7 +165,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         });
 
         Label lblEncoding = new Label(container, SWT.NONE);
-        lblEncoding.setText("Encoding:");
+        lblEncoding.setText(Messages.CSVImportLabelEncoding);
         Combo cmbEncoding = new Combo(container, SWT.READ_ONLY);
         ComboViewer encoding = new ComboViewer(cmbEncoding);
         encoding.setContentProvider(ArrayContentProvider.getInstance());
@@ -170,7 +174,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         encoding.addSelectionChangedListener(this);
 
         final Button firstLineIsHeader = new Button(container, SWT.CHECK);
-        firstLineIsHeader.setText("First line contains header");
+        firstLineIsHeader.setText(Messages.CSVImportLabelFirstLineIsHeader);
         firstLineIsHeader.setSelection(true);
         firstLineIsHeader.addSelectionListener(new SelectionListener()
         {
@@ -235,7 +239,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
         data = new FormData();
         data.top = new FormAttachment(skipLines, 5);
-        data.left = new FormAttachment(skipLines, 0, SWT.LEFT);
+        data.left = new FormAttachment(lblSkipLines, 0, SWT.LEFT);
         data.right = new FormAttachment(100, 0);
         firstLineIsHeader.setLayoutData(data);
 
@@ -426,7 +430,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         catch (IOException e)
         {
             PortfolioPlugin.log(e);
-            ErrorDialog.openError(getShell(), "Error", e.getMessage(), new Status(Status.ERROR,
+            ErrorDialog.openError(getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
                             PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
 
         }
@@ -473,7 +477,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         }
         else
         {
-            setErrorMessage(MessageFormat.format("Missing field{1,choice,1#|1<s}: {0}",
+            setErrorMessage(MessageFormat.format(Messages.CSVImportErrorMissingFields,
                             Arrays.toString(fieldsToMap.toArray()), fieldsToMap.size()));
             setPageComplete(false);
         }
@@ -538,7 +542,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
     private static class ColumnConfigDialog extends Dialog implements ISelectionChangedListener
     {
-        private static final Field EMPTY = new Field("---");
+        private static final Field EMPTY = new Field("---"); //$NON-NLS-1$
 
         private CSVImportDefinition definition;
         private Column column;
@@ -558,7 +562,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             Composite composite = (Composite) super.createDialogArea(parent);
 
             Label label = new Label(composite, SWT.NONE);
-            label.setText("Mapped to Field");
+            label.setText(Messages.CSVImportLabelEditMapping);
 
             ComboViewer mappedTo = new ComboViewer(composite, SWT.READ_ONLY);
             mappedTo.setContentProvider(ArrayContentProvider.getInstance());
@@ -576,7 +580,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             final Composite dateArea = new Composite(details, SWT.NONE);
             GridLayoutFactory.fillDefaults().margins(0, 0).applyTo(dateArea);
             label = new Label(dateArea, SWT.NONE);
-            label.setText("Format");
+            label.setText(Messages.CSVImportLabelFormat);
             final ComboViewer dateFormats = new ComboViewer(dateArea, SWT.READ_ONLY);
             dateFormats.setContentProvider(ArrayContentProvider.getInstance());
             dateFormats.setInput(DateField.FORMATS);
@@ -609,16 +613,16 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
                                     tableViewer.refresh(element);
                                 }
                             }) //
-                            .readonly("key") //
-                            .editable("value") //
+                            .readonly("key") //$NON-NLS-1$
+                            .editable("value") //$NON-NLS-1$
                             .apply();
 
             TableColumn col = new TableColumn(tableViewer.getTable(), SWT.NONE);
-            col.setText("Value");
+            col.setText(Messages.CSVImportLabelExpectedValue);
             col.setWidth(100);
 
             col = new TableColumn(tableViewer.getTable(), SWT.NONE);
-            col.setText("Mapped");
+            col.setText(Messages.CSVImportLabelProvidedValue);
             col.setWidth(100);
 
             layout.topControl = emptyArea;
@@ -697,7 +701,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     private static class KeyMappingContentProvider implements IStructuredContentProvider
     {
         /* Map.Entry#setValue is not backed by EnumMap :-( */
-        private static class Entry<M extends Enum<M>> implements Comparable<Entry<M>>
+        public final static class Entry<M extends Enum<M>> implements Comparable<Entry<M>>
         {
             private EnumMap<M, String> map;
             private M key;

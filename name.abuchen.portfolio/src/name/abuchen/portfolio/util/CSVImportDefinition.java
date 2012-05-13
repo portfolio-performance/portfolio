@@ -121,7 +121,8 @@ public abstract class CSVImportDefinition
         }
         if (security == null)
         {
-            security = new Security("Imported: " + isin, isin, null, AssetClass.EQUITY, QuoteFeed.MANUAL);
+            security = new Security(MessageFormat.format(Messages.CSVImportedSecurityLabel, isin), isin, null,
+                            AssetClass.EQUITY, QuoteFeed.MANUAL);
             client.addSecurity(security);
         }
         return security;
@@ -135,7 +136,7 @@ public abstract class CSVImportDefinition
     {
         /* package */AccountTransactionDef()
         {
-            super("Account Transactions");
+            super(Messages.CSVDefAccountTransactions);
 
             List<Field> fields = getFields();
             fields.add(new DateField(Messages.CSVColumn_Date));
@@ -161,13 +162,13 @@ public abstract class CSVImportDefinition
 
             Date date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
             if (date == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Date),
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
 
             Integer amount = convertAmount(Messages.CSVColumn_Value, rawValues, field2column);
             if (amount == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Value),
-                                0);
+                throw new ParseException(
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Value), 0);
 
             AccountTransaction.Type type = convertEnum(Messages.CSVColumn_Type, AccountTransaction.Type.class,
                             rawValues, field2column);
@@ -198,7 +199,7 @@ public abstract class CSVImportDefinition
     {
         /* package */PortfolioTransactionDef()
         {
-            super("Portfolio Transactions");
+            super(Messages.CSVDefPortfolioTransactions);
 
             List<Field> fields = getFields();
             fields.add(new DateField(Messages.CSVColumn_Date));
@@ -227,13 +228,13 @@ public abstract class CSVImportDefinition
 
             Date date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
             if (date == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Date),
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
 
             Integer amount = convertAmount(Messages.CSVColumn_Value, rawValues, field2column);
             if (amount == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Value),
-                                0);
+                throw new ParseException(
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Value), 0);
 
             Integer fees = convertAmount(Messages.CSVColumn_Fees, rawValues, field2column);
             if (fees == null)
@@ -241,17 +242,16 @@ public abstract class CSVImportDefinition
 
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
             if (isin == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_ISIN),
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_ISIN),
                                 0);
 
             Integer shares = convertShares(Messages.CSVColumn_Shares, rawValues, field2column);
             if (shares == null)
                 throw new ParseException(
-                                MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Shares), 0);
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Shares), 0);
 
             PortfolioTransaction.Type type = convertEnum(Messages.CSVColumn_Type, PortfolioTransaction.Type.class,
-                            rawValues,
-                            field2column);
+                            rawValues, field2column);
 
             PortfolioTransaction transaction = new PortfolioTransaction();
             transaction.setDate(date);
@@ -273,7 +273,7 @@ public abstract class CSVImportDefinition
     {
         /* package */SecurityPriceDef()
         {
-            super("Historical Quotes");
+            super(Messages.CSVDefHistoricalQuotes);
 
             List<Field> fields = getFields();
             fields.add(new DateField(Messages.CSVColumn_Date));
@@ -297,13 +297,13 @@ public abstract class CSVImportDefinition
 
             Date date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
             if (date == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Date),
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
 
             Integer amount = convertAmount(Messages.CSVColumn_Quote, rawValues, field2column);
             if (amount == null)
-                throw new ParseException(MessageFormat.format("Missing required field: {0}", Messages.CSVColumn_Quote),
-                                0);
+                throw new ParseException(
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 
             security.addPrice(new SecurityPrice(date, Math.abs(amount)));
         }

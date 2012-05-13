@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.util.CSVImportDefinition.AccountTransactionDef;
 import name.abuchen.portfolio.util.CSVImportDefinition.PortfolioTransactionDef;
@@ -125,8 +126,8 @@ public class CSVImporter
     public static class DateField extends CSVImporter.Field
     {
         public static final FieldFormat[] FORMATS = new FieldFormat[] {
-                        new FieldFormat("JJJJ-MM-TT", new SimpleDateFormat("yyyy-MM-dd")),
-                        new FieldFormat("TT.MM.JJJJ", new SimpleDateFormat("dd.MM.yyyy")) };
+                        new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")) }; //$NON-NLS-1$
 
         /* package */DateField(String name)
         {
@@ -137,8 +138,8 @@ public class CSVImporter
     public static class AmountField extends CSVImporter.Field
     {
         public static final FieldFormat[] FORMATS = new FieldFormat[] {
-                        new FieldFormat("0.000,00", NumberFormat.getInstance(Locale.GERMANY)),
-                        new FieldFormat("0,000.00", NumberFormat.getInstance(Locale.US)) };
+                        new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
+                        new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)) };
 
         /* package */AmountField(String name)
         {
@@ -328,7 +329,7 @@ public class CSVImporter
             {
                 header = new String[line.length];
                 for (int ii = 0; ii < header.length; ii++)
-                    header[ii] = MessageFormat.format("Column {0}", ii + 1);
+                    header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
                 values.add(line);
             }
 
@@ -407,8 +408,8 @@ public class CSVImporter
             }
             catch (ParseException e)
             {
-                errors.add(new IOException(MessageFormat.format("Error importing record {0}: {1}",
-                                Arrays.toString(rawValues), e.getMessage()), e));
+                errors.add(new IOException(MessageFormat.format(Messages.CSVImportError, Arrays.toString(rawValues),
+                                e.getMessage()), e));
             }
         }
     }
