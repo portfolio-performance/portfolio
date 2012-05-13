@@ -32,6 +32,8 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -56,6 +58,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -64,7 +67,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
@@ -486,11 +488,24 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     private static final class ImportLabelProvider extends LabelProvider implements ITableLabelProvider,
                     ITableColorProvider
     {
+        private static final RGB GREEN = new RGB(152, 251, 152);
+        private static final RGB RED = new RGB(255, 127, 80);
+
         private CSVImporter importer;
+
+        private final LocalResourceManager resources;
 
         private ImportLabelProvider(CSVImporter importer)
         {
             this.importer = importer;
+            this.resources = new LocalResourceManager(JFaceResources.getResources());
+        }
+
+        @Override
+        public void dispose()
+        {
+            this.resources.dispose();
+            super.dispose();
         }
 
         @Override
@@ -531,11 +546,11 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
                     if (text != null)
                         column.getFormat().getFormat().parseObject(text);
                 }
-                return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+                return resources.createColor(GREEN);
             }
             catch (ParseException e)
             {
-                return Display.getDefault().getSystemColor(SWT.COLOR_RED);
+                return resources.createColor(RED);
             }
         }
     }
