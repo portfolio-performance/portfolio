@@ -565,10 +565,17 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         protected ColumnConfigDialog(Shell parentShell, CSVImportDefinition definition, Column column)
         {
             super(parentShell);
-            this.setShellStyle(getShellStyle() | SWT.SHEET);
+            setShellStyle(getShellStyle() | SWT.SHEET);
 
             this.definition = definition;
             this.column = column;
+        }
+
+        @Override
+        protected void configureShell(Shell shell)
+        {
+            super.configureShell(shell);
+            shell.setText(Messages.CSVImportLabelEditMapping);
         }
 
         @Override
@@ -592,8 +599,10 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
             final Composite emptyArea = new Composite(details, SWT.NONE);
 
+            GridLayoutFactory glf = GridLayoutFactory.fillDefaults().margins(0, 0);
+
             final Composite dateArea = new Composite(details, SWT.NONE);
-            GridLayoutFactory.fillDefaults().margins(0, 0).applyTo(dateArea);
+            glf.applyTo(dateArea);
             label = new Label(dateArea, SWT.NONE);
             label.setText(Messages.CSVImportLabelFormat);
             final ComboViewer dateFormats = new ComboViewer(dateArea, SWT.READ_ONLY);
@@ -603,7 +612,9 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             dateFormats.addSelectionChangedListener(this);
 
             final Composite valueArea = new Composite(details, SWT.NONE);
-            GridLayoutFactory.fillDefaults().margins(0, 0).applyTo(valueArea);
+            glf.applyTo(valueArea);
+            label = new Label(valueArea, SWT.NONE);
+            label.setText(Messages.CSVImportLabelFormat);
             final ComboViewer valueFormats = new ComboViewer(valueArea, SWT.READ_ONLY);
             valueFormats.setContentProvider(ArrayContentProvider.getInstance());
             valueFormats.setInput(AmountField.FORMATS);
@@ -611,8 +622,8 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             valueFormats.addSelectionChangedListener(this);
 
             final Composite keyArea = new Composite(details, SWT.NONE);
-            GridLayoutFactory.fillDefaults().margins(0, 0).applyTo(keyArea);
-            final TableViewer tableViewer = new TableViewer(keyArea);
+            glf.applyTo(keyArea);
+            final TableViewer tableViewer = new TableViewer(keyArea, SWT.FULL_SELECTION);
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.setLabelProvider(new KeyMappingLabelProvider());
             tableViewer.getTable().setLinesVisible(true);

@@ -35,7 +35,7 @@ public class ImportHandler extends AbstractHandler
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
         fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
-        fileDialog.setFilterExtensions(new String[] { "csv", "*" }); //$NON-NLS-1$ //$NON-NLS-2$
+        fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
         String fileName = fileDialog.open();
 
         if (fileName == null)

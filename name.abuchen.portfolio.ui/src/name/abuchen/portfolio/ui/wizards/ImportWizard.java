@@ -21,6 +21,7 @@ public class ImportWizard extends Wizard
 
     public ImportWizard(Client client, File inputFile)
     {
+        setWindowTitle(Messages.CSVImportWizardTitle);
         this.importer = new CSVImporter(client, inputFile);
     }
 
