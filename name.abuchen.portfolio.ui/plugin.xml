@@ -275,6 +275,18 @@
             schemeId="name.abuchen.portfolio.ui.scheme"
             sequence="M1+N">
       </key>
+      <key
+            commandId="org.eclipse.ui.file.save"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="name.abuchen.portfolio.ui.scheme"
+            sequence="M1+S">
+      </key>
+      <key
+            commandId="org.eclipse.ui.file.saveAs"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="name.abuchen.portfolio.ui.scheme"
+            sequence="M1+M2+S">
+      </key>
       <scheme
             id="name.abuchen.portfolio.ui.scheme"
             name="%scheme.name">
