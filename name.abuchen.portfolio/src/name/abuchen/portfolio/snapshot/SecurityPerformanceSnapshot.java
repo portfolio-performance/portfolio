@@ -167,7 +167,7 @@ public class SecurityPerformanceSnapshot
         }
 
         @Override
-        public int getAmount()
+        public long getAmount()
         {
             return position.calculateValue() * (isStart ? -1 : 1);
         }
@@ -186,7 +186,7 @@ public class SecurityPerformanceSnapshot
         private final Security security;
         private List<Transaction> transactions = new ArrayList<Transaction>();
 
-        private int delta;
+        private long delta;
         private double irr;
 
         /* package */Record(Security security)
@@ -204,7 +204,7 @@ public class SecurityPerformanceSnapshot
             return irr;
         }
 
-        public int getDelta()
+        public long getDelta()
         {
             return delta;
         }

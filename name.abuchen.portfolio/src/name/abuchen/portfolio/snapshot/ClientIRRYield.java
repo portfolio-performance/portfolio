@@ -9,11 +9,11 @@ import java.util.List;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.util.Dates;
 
 public class ClientIRRYield
@@ -171,7 +171,7 @@ public class ClientIRRYield
             if (t instanceof AccountTransaction)
             {
                 AccountTransaction at = (AccountTransaction) t;
-                int amount = at.getAmount();
+                long amount = at.getAmount();
                 if (at.getType() == Type.DEPOSIT || at.getType() == Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / 100d);
@@ -180,7 +180,7 @@ public class ClientIRRYield
             {
                 PortfolioTransaction pt = (PortfolioTransaction) t;
 
-                int amount = pt.getAmount();
+                long amount = pt.getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / 100d);

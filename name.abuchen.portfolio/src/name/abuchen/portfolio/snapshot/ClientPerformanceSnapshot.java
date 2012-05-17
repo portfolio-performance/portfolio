@@ -21,16 +21,16 @@ public class ClientPerformanceSnapshot
 {
     public static class Position
     {
-        int valuation;
+        long valuation;
         String label;
 
-        public Position(String label, int valuation)
+        public Position(String label, long valuation)
         {
             this.label = label;
             this.valuation = valuation;
         }
 
-        public int getValuation()
+        public long getValuation()
         {
             return valuation;
         }
@@ -46,15 +46,15 @@ public class ClientPerformanceSnapshot
         List<Position> positions = new ArrayList<Position>();
 
         String label;
-        int valuation;
+        long valuation;
 
-        public Category(String label, int valuation)
+        public Category(String label, long valuation)
         {
             this.label = label;
             this.valuation = valuation;
         }
 
-        public int getValuation()
+        public long getValuation()
         {
             return valuation;
         }
@@ -136,16 +136,16 @@ public class ClientPerformanceSnapshot
         long startDate = snapshotStart.getTime().getTime();
         long endDate = snapshotEnd.getTime().getTime();
 
-        Map<Security, Integer> valuation = new HashMap<Security, Integer>();
+        Map<Security, Long> valuation = new HashMap<Security, Long>();
         for (Security s : client.getSecurities())
-            valuation.put(s, Integer.valueOf(0));
+            valuation.put(s, Long.valueOf(0));
 
         for (PortfolioSnapshot portfolio : snapshotStart.getPortfolios())
         {
             for (Map.Entry<Security, SecurityPosition> entry : portfolio.getPositionsBySecurity().entrySet())
             {
-                Integer v = valuation.get(entry.getKey());
-                valuation.put(entry.getKey(), v.intValue() - entry.getValue().calculateValue());
+                Long v = valuation.get(entry.getKey());
+                valuation.put(entry.getKey(), v.longValue() - entry.getValue().calculateValue());
             }
 
             for (PortfolioTransaction t : portfolio.getSource().getTransactions())
@@ -157,15 +157,15 @@ public class ClientPerformanceSnapshot
                         case BUY:
                         case TRANSFER_IN:
                         {
-                            Integer v = valuation.get(t.getSecurity());
-                            valuation.put(t.getSecurity(), v.intValue() - t.getAmount());
+                            Long v = valuation.get(t.getSecurity());
+                            valuation.put(t.getSecurity(), v.longValue() - t.getAmount());
                             break;
                         }
                         case SELL:
                         case TRANSFER_OUT:
                         {
-                            Integer v = valuation.get(t.getSecurity());
-                            valuation.put(t.getSecurity(), v.intValue() + t.getAmount());
+                            Long v = valuation.get(t.getSecurity());
+                            valuation.put(t.getSecurity(), v.longValue() + t.getAmount());
                             break;
                         }
                         default:
@@ -180,20 +180,20 @@ public class ClientPerformanceSnapshot
         {
             for (Map.Entry<Security, SecurityPosition> entry : portfolio.getPositionsBySecurity().entrySet())
             {
-                Integer v = valuation.get(entry.getKey());
-                valuation.put(entry.getKey(), v.intValue() + entry.getValue().calculateValue());
+                Long v = valuation.get(entry.getKey());
+                valuation.put(entry.getKey(), v.longValue() + entry.getValue().calculateValue());
             }
         }
 
-        int valueGained = 0;
-        for (Integer v : valuation.values())
-            valueGained += v.intValue();
+        long valueGained = 0;
+        for (Long v : valuation.values())
+            valueGained += v.longValue();
 
         categories.get(CategoryType.CAPITAL_GAINS).valuation = valueGained;
 
         for (Security security : sortedSecurities())
         {
-            Integer value = valuation.get(security);
+            Long value = valuation.get(security);
             if (value == null || value == 0)
                 continue;
             categories.get(CategoryType.CAPITAL_GAINS).positions.add(new Position(security.getName(), value));
@@ -218,14 +218,14 @@ public class ClientPerformanceSnapshot
         long startDate = snapshotStart.getTime().getTime();
         long endDate = snapshotEnd.getTime().getTime();
 
-        int earnings = 0;
-        int otherEarnings = 0;
-        int fees = 0;
-        int taxes = 0;
-        int deposits = 0;
-        int removals = 0;
+        long earnings = 0;
+        long otherEarnings = 0;
+        long fees = 0;
+        long taxes = 0;
+        long deposits = 0;
+        long removals = 0;
 
-        Map<Security, Integer> earningsBySecurity = new HashMap<Security, Integer>();
+        Map<Security, Long> earningsBySecurity = new HashMap<Security, Long>();
 
         for (Account account : client.getAccounts())
         {
@@ -240,7 +240,7 @@ public class ClientPerformanceSnapshot
                             earnings += t.getAmount();
                             if (t.getSecurity() != null)
                             {
-                                Integer v = earningsBySecurity.get(t.getSecurity());
+                                Long v = earningsBySecurity.get(t.getSecurity());
                                 v = v == null ? t.getAmount() : v + t.getAmount();
                                 earningsBySecurity.put(t.getSecurity(), v);
                             }
@@ -303,7 +303,7 @@ public class ClientPerformanceSnapshot
         categories.get(CategoryType.EARNINGS).valuation = earnings;
         for (Security security : sortedSecurities())
         {
-            Integer value = earningsBySecurity.get(security);
+            Long value = earningsBySecurity.get(security);
             if (value == null || value == 0)
                 continue;
             categories.get(CategoryType.EARNINGS).positions.add(new Position(security.getName(), value));

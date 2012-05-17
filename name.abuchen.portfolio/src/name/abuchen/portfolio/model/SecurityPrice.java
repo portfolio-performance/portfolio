@@ -18,12 +18,12 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     }
 
     private Date time;
-    private int value;
+    private long value;
 
     public SecurityPrice()
     {}
 
-    public SecurityPrice(Date time, int price)
+    public SecurityPrice(Date time, long price)
     {
         this.value = price;
         this.time = time;
@@ -39,12 +39,12 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         this.time = time;
     }
 
-    public int getValue()
+    public long getValue()
     {
         return value;
     }
 
-    public void setValue(int value)
+    public void setValue(long value)
     {
         this.value = value;
     }
@@ -61,7 +61,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         final int prime = 31;
         int result = 1;
         result = prime * result + ((time == null) ? 0 : time.hashCode());
-        result = prime * result + value;
+        result = prime * result + (int) (value ^ (value >>> 32));
         return result;
     }
 

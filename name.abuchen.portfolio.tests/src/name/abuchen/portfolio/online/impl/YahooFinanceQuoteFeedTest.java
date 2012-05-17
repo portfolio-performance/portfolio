@@ -70,16 +70,16 @@ public class YahooFinanceQuoteFeedTest
         feed.updateLatestQuotes(securities);
 
         LatestSecurityPrice latest = securities.get(0).getLatest();
-        assertThat(latest.getValue(), is(1371));
+        assertThat(latest.getValue(), is(1371L));
         assertThat(latest.getTime(), equalTo(Dates.date(2011, Calendar.SEPTEMBER, 29)));
-        assertThat(latest.getHigh(), is(1375));
-        assertThat(latest.getLow(), is(1370));
+        assertThat(latest.getHigh(), is(1375L));
+        assertThat(latest.getLow(), is(1370L));
         assertThat(latest.getVolume(), is(10037));
-        assertThat(latest.getPreviousClose(), is(1271));
+        assertThat(latest.getPreviousClose(), is(1271L));
 
         latest = securities.get(1).getLatest();
-        assertThat(latest.getHigh(), is(-1));
-        assertThat(latest.getLow(), is(-1));
+        assertThat(latest.getHigh(), is(-1L));
+        assertThat(latest.getLow(), is(-1L));
         assertThat(latest.getVolume(), is(-1));
 
         latest = securities.get(3).getLatest();

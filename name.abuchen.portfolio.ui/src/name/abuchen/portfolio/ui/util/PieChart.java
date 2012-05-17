@@ -17,18 +17,18 @@ public class PieChart extends Composite implements Listener
 {
     public static class Slice
     {
-        private int value;
+        private long value;
         private String label;
         private Colors color;
 
-        public Slice(int value, String label, Colors color)
+        public Slice(long value, String label, Colors color)
         {
             this.value = value;
             this.label = label;
             this.color = color;
         }
 
-        public int getValue()
+        public long getValue()
         {
             return value;
         }

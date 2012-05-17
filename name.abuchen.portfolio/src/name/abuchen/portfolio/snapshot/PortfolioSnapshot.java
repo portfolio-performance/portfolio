@@ -140,9 +140,9 @@ public class PortfolioSnapshot
         return map;
     }
 
-    public int getValue()
+    public long getValue()
     {
-        int value = 0;
+        long value = 0;
         for (SecurityPosition p : positions)
             value += p.calculateValue();
 
@@ -151,7 +151,7 @@ public class PortfolioSnapshot
 
     private static class TotalsCategory extends AssetCategory
     {
-        public TotalsCategory(int valuation)
+        public TotalsCategory(long valuation)
         {
             super(null, valuation);
             this.valuation = valuation;
@@ -182,7 +182,7 @@ public class PortfolioSnapshot
         }
 
         for (AssetCategory cat : categories)
-            Collections.sort(cat.positions);
+            Collections.sort(cat.getPositions());
 
         return categories;
     }

@@ -31,7 +31,7 @@ public class TransferDialog extends AbstractDialog
     {
         private Account accountFrom;
         private Account accountTo;
-        private int amount;
+        private long amount;
         private Date date = Dates.today();
 
         public Model(Client client, Account accountFrom)
@@ -69,12 +69,12 @@ public class TransferDialog extends AbstractDialog
             firePropertyChange("accountTo", this.accountTo, this.accountTo = accountTo); //$NON-NLS-1$
         }
 
-        public int getAmount()
+        public long getAmount()
         {
             return amount;
         }
 
-        public void setAmount(int amount)
+        public void setAmount(long amount)
         {
             firePropertyChange("amount", this.amount, this.amount = amount); //$NON-NLS-1$
         }

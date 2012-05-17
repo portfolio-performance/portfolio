@@ -359,7 +359,7 @@ public class AccountListView extends AbstractListView
                 case 1:
                     return t.getType().toString();
                 case 2:
-                    int v = t.getAmount();
+                    long v = t.getAmount();
                     if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(
                                     t.getType()))
                         v = -v;

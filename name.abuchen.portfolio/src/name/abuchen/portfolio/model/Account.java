@@ -29,9 +29,9 @@ public class Account
         this.transactions.add(transaction);
     }
 
-    public int getCurrentAmount()
+    public long getCurrentAmount()
     {
-        int amount = 0;
+        long amount = 0;
 
         for (AccountTransaction t : transactions)
         {

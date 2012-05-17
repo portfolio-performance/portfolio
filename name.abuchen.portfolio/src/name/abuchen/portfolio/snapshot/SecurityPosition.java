@@ -7,18 +7,18 @@ public class SecurityPosition
 {
     private Security security;
     private SecurityPrice price;
-    private int shares;
+    private long shares;
 
     public SecurityPosition(Security security)
     {
         this.security = security;
     }
 
-    public SecurityPosition(Security security, SecurityPrice price, int count)
+    public SecurityPosition(Security security, SecurityPrice price, long shares)
     {
         this(security);
         this.price = price;
-        this.shares = count;
+        this.shares = shares;
     }
 
     public Security getSecurity()
@@ -36,19 +36,19 @@ public class SecurityPosition
         this.price = price;
     }
 
-    public int getShares()
+    public long getShares()
     {
         return shares;
     }
 
-    public void setShares(int shares)
+    public void setShares(long shares)
     {
         this.shares = shares;
     }
 
-    public int calculateValue()
+    public long calculateValue()
     {
-        int p = price != null ? price.getValue() : 0;
+        long p = price != null ? price.getValue() : 0;
         return shares * p;
     }
 

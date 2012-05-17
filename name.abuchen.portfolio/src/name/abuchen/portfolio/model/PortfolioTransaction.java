@@ -11,14 +11,14 @@ public class PortfolioTransaction extends Transaction
     }
 
     private Type type;
-    private int shares;
-    private int amount;
-    private int fees;
+    private long shares;
+    private long amount;
+    private long fees;
 
     public PortfolioTransaction()
     {}
 
-    public PortfolioTransaction(Date date, Security security, Type type, int shares, int amount, int fees)
+    public PortfolioTransaction(Date date, Security security, Type type, long shares, long amount, long fees)
     {
         super(date, security);
         this.type = type;
@@ -37,38 +37,38 @@ public class PortfolioTransaction extends Transaction
         this.type = type;
     }
 
-    public int getShares()
+    public long getShares()
     {
         return shares;
     }
 
-    public void setShares(int shares)
+    public void setShares(long shares)
     {
         this.shares = shares;
     }
 
     @Override
-    public int getAmount()
+    public long getAmount()
     {
         return amount;
     }
 
-    public void setAmount(int amount)
+    public void setAmount(long amount)
     {
         this.amount = amount;
     }
 
-    public int getFees()
+    public long getFees()
     {
         return fees;
     }
 
-    public void setFees(int fees)
+    public void setFees(long fees)
     {
         this.fees = fees;
     }
 
-    public int getActualPurchasePrice()
+    public long getActualPurchasePrice()
     {
         if (shares == 0)
             return 0;
@@ -90,7 +90,7 @@ public class PortfolioTransaction extends Transaction
     @SuppressWarnings("nls")
     public String toString()
     {
-        int v = getAmount();
+        long v = getAmount();
         if (EnumSet.of(Type.BUY, Type.TRANSFER_IN).contains(type))
             v = -v;
 

@@ -20,7 +20,7 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
     {
         private Account account;
         private AccountTransaction.Type type;
-        private int amount;
+        private long amount;
         private Date date = Dates.today();
 
         public Model(Client client, Account account)
@@ -41,12 +41,12 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
             firePropertyChange("type", this.type, this.type = type); //$NON-NLS-1$
         }
 
-        public int getAmount()
+        public long getAmount()
         {
             return amount;
         }
 
-        public void setAmount(int amount)
+        public void setAmount(long amount)
         {
             firePropertyChange("amount", this.amount, this.amount = amount); //$NON-NLS-1$
         }

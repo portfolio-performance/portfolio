@@ -7,7 +7,7 @@ public class CurrencyToStringConverter implements IConverter
     @Override
     public Object getFromType()
     {
-        return int.class;
+        return long.class;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class CurrencyToStringConverter implements IConverter
     @Override
     public Object convert(Object fromObject)
     {
-        return String.format("%,.2f", ((Integer) fromObject) / 100d); //$NON-NLS-1$
+        return String.format("%,.2f", ((Long) fromObject) / 100d); //$NON-NLS-1$
     }
 
 }

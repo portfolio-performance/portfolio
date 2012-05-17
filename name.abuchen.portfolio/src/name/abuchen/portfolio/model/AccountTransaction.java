@@ -12,12 +12,12 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
-    private int amount;
+    private long amount;
 
     public AccountTransaction()
     {}
 
-    public AccountTransaction(Date date, Security security, Type type, int amount)
+    public AccountTransaction(Date date, Security security, Type type, long amount)
     {
         super(date, security);
         this.type = type;
@@ -35,12 +35,12 @@ public class AccountTransaction extends Transaction
     }
 
     @Override
-    public int getAmount()
+    public long getAmount()
     {
         return amount;
     }
 
-    public void setAmount(int amount)
+    public void setAmount(long amount)
     {
         this.amount = amount;
     }
@@ -49,7 +49,7 @@ public class AccountTransaction extends Transaction
     @SuppressWarnings("nls")
     public String toString()
     {
-        int v = amount;
+        long v = amount;
         if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.TRANSFER_OUT, Type.BUY).contains(type))
             v = -v;
 

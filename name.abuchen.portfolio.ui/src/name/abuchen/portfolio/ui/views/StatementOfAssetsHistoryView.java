@@ -125,13 +125,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         Collections.sort(transactions);
 
         List<Date> transferals_dates = new ArrayList<Date>();
-        List<Integer> transferals = new ArrayList<Integer>();
+        List<Long> transferals = new ArrayList<Long>();
         int tIndex = 0;
 
         cal.setTime(startDate);
         while (cal.getTimeInMillis() <= endDate.getTime())
         {
-            int amount = 0;
+            long amount = 0;
             while (tIndex < transactions.size()
                             && transactions.get(tIndex).getDate().getTime() <= cal.getTimeInMillis())
             {

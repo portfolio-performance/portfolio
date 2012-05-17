@@ -12,8 +12,8 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -87,7 +87,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
                         }) //
                         .editable("year") // //$NON-NLS-1$
                         .month("month") // //$NON-NLS-1$
-                        .amount("index") // //$NON-NLS-1$
+                        .index("index") // //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(indeces.getTable(), new IMenuListener()

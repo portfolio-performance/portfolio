@@ -44,6 +44,8 @@ public final class ColumnViewerSorter extends ViewerComparator
                     type = 4;
                 else if (returnType.isAssignableFrom(Date.class))
                     type = 5;
+                else if (returnType.isAssignableFrom(Long.class) || returnType.isAssignableFrom(long.class))
+                    type = 6;
                 else
                     type = 0;
             }
@@ -81,6 +83,8 @@ public final class ColumnViewerSorter extends ViewerComparator
                         return ((Double) attribute1).compareTo((Double) attribute2);
                     case 5:
                         return ((Date) attribute1).compareTo((Date) attribute2);
+                    case 6:
+                        return ((Long) attribute1).compareTo((Long) attribute2);
                     default:
                         return String.valueOf(attribute1).compareTo(String.valueOf(attribute2));
                 }

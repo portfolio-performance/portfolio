@@ -20,7 +20,7 @@ public class DividendsDialog extends AbstractDialog
     {
         private Security security;
         private Account account;
-        private int amount;
+        private long amount;
         private Date date = Dates.today();
 
         public Model(Client client, Security security)
@@ -56,12 +56,12 @@ public class DividendsDialog extends AbstractDialog
             firePropertyChange("account", this.account, this.account = account); //$NON-NLS-1$
         }
 
-        public int getAmount()
+        public long getAmount()
         {
             return amount;
         }
 
-        public void setAmount(int amount)
+        public void setAmount(long amount)
         {
             firePropertyChange("amount", this.amount, this.amount = amount); //$NON-NLS-1$
         }

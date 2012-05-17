@@ -102,17 +102,17 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 if (values.length != 6)
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
-                int lastTrade = asPrice(values[0]);
+                long lastTrade = asPrice(values[0]);
 
                 Date lastTradeDate = asDate(values[1]);
                 if (lastTradeDate == null) // can't work w/o date
                     lastTradeDate = Dates.today();
 
-                int daysHigh = asPrice(values[2]);
+                long daysHigh = asPrice(values[2]);
 
-                int daysLow = asPrice(values[3]);
+                long daysLow = asPrice(values[3]);
 
-                int previousClose = asPrice(values[4]);
+                long previousClose = asPrice(values[4]);
 
                 int volume = asNumber(values[5]);
 
@@ -141,11 +141,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
     }
 
-    private int asPrice(String s) throws ParseException
+    private long asPrice(String s) throws ParseException
     {
         if ("N/A".equals(s)) //$NON-NLS-1$
             return -1;
-        return (int) (FMT_PRICE.parse(s).doubleValue() * 100);
+        return (long) (FMT_PRICE.parse(s).doubleValue() * 100);
     }
 
     private int asNumber(String s) throws ParseException
@@ -242,7 +242,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 Date date = dfmt.parse(values[0]);
 
                 Number q = FMT_PRICE.parse(values[6]);
-                int v = (int) (q.doubleValue() * 100);
+                long v = (long) (q.doubleValue() * 100);
 
                 price.setTime(date);
                 price.setValue(v);
@@ -255,10 +255,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     latest.setVolume(q.intValue());
 
                     q = FMT_PRICE.parse(values[2]);
-                    latest.setHigh((int) (q.doubleValue() * 100));
+                    latest.setHigh((long) (q.doubleValue() * 100));
 
                     q = FMT_PRICE.parse(values[3]);
-                    latest.setLow((int) (q.doubleValue() * 100));
+                    latest.setLow((long) (q.doubleValue() * 100));
                 }
 
                 answer.add(price);

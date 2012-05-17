@@ -51,7 +51,7 @@ public abstract class Transaction implements Comparable<Transaction>
         this.security = security;
     }
 
-    public abstract int getAmount();
+    public abstract long getAmount();
 
     @Override
     public int compareTo(Transaction o)

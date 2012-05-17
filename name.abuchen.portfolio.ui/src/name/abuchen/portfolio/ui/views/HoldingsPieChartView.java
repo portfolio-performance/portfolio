@@ -37,7 +37,7 @@ public class HoldingsPieChartView extends AbstractListView
 
         List<SecurityPosition> positions = new ArrayList<SecurityPosition>();
 
-        int cash = 0;
+        long cash = 0;
         for (AccountSnapshot a : snapshot.getAccounts())
             cash += a.getFunds();
         positions.add(new SecurityPosition(null, new SecurityPrice(snapshot.getTime(), cash), 1));
@@ -49,7 +49,7 @@ public class HoldingsPieChartView extends AbstractListView
             @Override
             public int compare(SecurityPosition pos1, SecurityPosition pos2)
             {
-                return -Integer.valueOf(pos1.calculateValue()).compareTo(pos2.calculateValue());
+                return -Long.valueOf(pos1.calculateValue()).compareTo(pos2.calculateValue());
             }
         });
 

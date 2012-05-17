@@ -191,13 +191,13 @@ public class YahooSearchProvider implements SecuritySearchProvider
             return true;
         }
 
-        private int parseIndex(String text) throws IOException
+        private long parseIndex(String text) throws IOException
         {
             try
             {
                 DecimalFormat fmt = new DecimalFormat("#,##0.##", new DecimalFormatSymbols(Locale.GERMANY)); //$NON-NLS-1$
                 Number q = fmt.parse(text);
-                return (int) (q.doubleValue() * 100);
+                return (long) (q.doubleValue() * 100);
             }
             catch (ParseException e)
             {

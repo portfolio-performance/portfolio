@@ -35,10 +35,10 @@ public class BuySellSecurityDialog extends AbstractDialog
 
         private Portfolio portfolio;
         private Security security;
-        private int shares;
-        private int price;
-        private int fees;
-        private int total;
+        private long shares;
+        private long price;
+        private long fees;
+        private long total;
         private Date date = Dates.today();
 
         public Model(Client client, Security security, Type type)
@@ -72,12 +72,12 @@ public class BuySellSecurityDialog extends AbstractDialog
             }
         }
 
-        public int getPrice()
+        public long getPrice()
         {
             return price;
         }
 
-        private int calculatePrice()
+        private long calculatePrice()
         {
             if (shares == 0)
             {
@@ -118,34 +118,34 @@ public class BuySellSecurityDialog extends AbstractDialog
             firePropertyChange("security", this.security, this.security = security); //$NON-NLS-1$
         }
 
-        public int getShares()
+        public long getShares()
         {
             return shares;
         }
 
-        public void setShares(int shares)
+        public void setShares(long shares)
         {
             firePropertyChange("shares", this.shares, this.shares = shares); //$NON-NLS-1$
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
         }
 
-        public int getFees()
+        public long getFees()
         {
             return fees;
         }
 
-        public void setFees(int fees)
+        public void setFees(long fees)
         {
             firePropertyChange("fees", this.fees, this.fees = fees); //$NON-NLS-1$
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
         }
 
-        public int getTotal()
+        public long getTotal()
         {
             return total;
         }
 
-        public void setTotal(int total)
+        public void setTotal(long total)
         {
             firePropertyChange("total", this.total, this.total = total); //$NON-NLS-1$
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
@@ -241,7 +241,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                         }, getModel().getClient().getPortfolios().toArray());
 
         // shares
-        bindings.bindMandatoryIntegerInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
+        bindings.bindMandatoryLongInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
 
         // price
         Label label = new Label(editArea, SWT.NONE);

@@ -19,8 +19,8 @@ public class CategoryModel
 
     private Category subject;
 
-    private int actual;
-    private int target;
+    private long actual;
+    private long target;
 
     private CategoryModel(CategoryModel parent, Category subject)
     {
@@ -33,12 +33,12 @@ public class CategoryModel
         return subject;
     }
 
-    public int getActual()
+    public long getActual()
     {
         return actual;
     }
 
-    public int getTarget()
+    public long getTarget()
     {
         return target;
     }
@@ -154,7 +154,7 @@ public class CategoryModel
 
     private static void visitActuals(ClientSnapshot snapshot, CategoryModel model)
     {
-        int actual = 0;
+        long actual = 0;
 
         for (CategoryModel child : model.children)
         {

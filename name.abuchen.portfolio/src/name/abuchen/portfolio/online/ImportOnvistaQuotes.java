@@ -113,13 +113,13 @@ public class ImportOnvistaQuotes
         return true;
     }
 
-    private int parsePrice(String text) throws IOException
+    private long parsePrice(String text) throws IOException
     {
         try
         {
             DecimalFormat fmt = new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMANY)); //$NON-NLS-1$
             Number q = fmt.parse(text);
-            return (int) (q.doubleValue() * 100);
+            return (long) (q.doubleValue() * 100);
         }
         catch (ParseException e)
         {

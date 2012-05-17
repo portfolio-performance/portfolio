@@ -9,17 +9,17 @@ import name.abuchen.portfolio.model.Security.AssetClass;
 public class AssetCategory
 {
     private final Security.AssetClass assetClass;
-    final List<AssetPosition> positions = new ArrayList<AssetPosition>();
-    private final int totalAssets;
-    protected int valuation = 0;
+    private final List<AssetPosition> positions = new ArrayList<AssetPosition>();
+    private final long totalAssets;
+    protected long valuation = 0;
 
-    /* package */AssetCategory(AssetClass assetClass, int totalAssets)
+    /* package */AssetCategory(AssetClass assetClass, long totalAssets)
     {
         this.assetClass = assetClass;
         this.totalAssets = totalAssets;
     }
 
-    public int getValuation()
+    public long getValuation()
     {
         return this.valuation;
     }

@@ -13,7 +13,7 @@ public interface SecuritySearchProvider
         private String symbol;
         private String name;
         private String isin;
-        private int lastTrade;
+        private long lastTrade;
         private String type;
         private String exchange;
 
@@ -47,12 +47,12 @@ public interface SecuritySearchProvider
             this.isin = isin;
         }
 
-        public int getLastTrade()
+        public long getLastTrade()
         {
             return lastTrade;
         }
 
-        public void setLastTrade(int lastTrade)
+        public void setLastTrade(long lastTrade)
         {
             this.lastTrade = lastTrade;
         }

@@ -45,7 +45,7 @@ public class ClientSnapshot
     private static class TotalsCategory extends AssetCategory
     {
 
-        public TotalsCategory(int valuation)
+        public TotalsCategory(long valuation)
         {
             super(null, valuation);
             this.valuation = valuation;
@@ -95,9 +95,9 @@ public class ClientSnapshot
         return jointPortfolio;
     }
 
-    public int getAssets()
+    public long getAssets()
     {
-        int assets = 0;
+        long assets = 0;
 
         for (AccountSnapshot account : accounts)
             assets += account.getFunds();
@@ -147,7 +147,7 @@ public class ClientSnapshot
         }
 
         for (AssetCategory cat : categories)
-            Collections.sort(cat.positions);
+            Collections.sort(cat.getPositions());
 
         return categories;
     }
@@ -161,11 +161,11 @@ public class ClientSnapshot
         buf.append(String.format("Date: %tF\n", time));
         buf.append(SEPERATOR);
 
-        int assets = 0;
+        long assets = 0;
 
         for (AccountSnapshot snapshot : accounts)
         {
-            int funds = snapshot.getFunds();
+            long funds = snapshot.getFunds();
             buf.append(String.format("%-66s %,10.2f\n", snapshot.getAccount().getName(), funds / 100d));
             assets += funds;
         }

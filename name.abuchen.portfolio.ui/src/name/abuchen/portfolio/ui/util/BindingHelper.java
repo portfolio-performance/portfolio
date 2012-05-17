@@ -67,7 +67,7 @@ public class BindingHelper
             propertyChangeSupport.firePropertyChange(attribute, oldValue, newValue);
         }
 
-        protected void firePropertyChange(String attribute, int oldValue, int newValue)
+        protected void firePropertyChange(String attribute, long oldValue, long newValue)
         {
             propertyChangeSupport.firePropertyChange(attribute, oldValue, newValue);
         }
@@ -178,8 +178,8 @@ public class BindingHelper
                                             @Override
                                             public IStatus validate(Object value)
                                             {
-                                                Integer v = (Integer) value;
-                                                return v != null && v.intValue() > 0 ? ValidationStatus.ok()
+                                                Long v = (Long) value;
+                                                return v != null && v.longValue() > 0 ? ValidationStatus.ok()
                                                                 : ValidationStatus.error(MessageFormat.format(
                                                                                 Messages.MsgDialogInputRequired, label));
                                             }
@@ -196,7 +196,7 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final Control bindMandatoryIntegerInput(Composite editArea, final String label, String property)
+    public final Control bindMandatoryLongInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
 
@@ -207,8 +207,8 @@ public class BindingHelper
                             @Override
                             public IStatus validate(Object value)
                             {
-                                Integer v = (Integer) value;
-                                return v != null && v.intValue() > 0 ? ValidationStatus.ok() : ValidationStatus
+                                Long v = (Long) value;
+                                return v != null && v.longValue() > 0 ? ValidationStatus.ok() : ValidationStatus
                                                 .error(MessageFormat.format(Messages.MsgDialogInputRequired, label));
                             }
                         }), //

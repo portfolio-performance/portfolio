@@ -119,29 +119,84 @@ public class CellEditorFactory
     public CellEditorFactory amount(String name)
     {
         final PropertyDescriptor descriptor = descriptorFor(name);
-        if (descriptor.getPropertyType() != int.class)
+        if (descriptor.getPropertyType() != long.class)
             throw new UnsupportedOperationException(String.format(
-                            "Property %s needs to be of type int to serve as an amount", name)); //$NON-NLS-1$
+                            "Property %s needs to be of type long to serve as an amount", name)); //$NON-NLS-1$
 
         final Pattern pattern = Pattern.compile("^([\\d.]*)(,(\\d\\d?))?$"); //$NON-NLS-1$
-        final String allowedChars = ",.0123456789"; //$NON-NLS-1$
 
         properties.add(name);
 
         TextCellEditor textEditor = new TextCellEditor((Composite) viewer.getControl());
         ((Text) textEditor.getControl()).setTextLimit(20);
-        ((Text) textEditor.getControl()).addVerifyListener(new VerifyListener()
-        {
-            public void verifyText(VerifyEvent e)
-            {
-                for (int ii = 0; e.doit && ii < e.text.length(); ii++)
-                    e.doit = allowedChars.indexOf(e.text.charAt(0)) >= 0;
-            }
-        });
+        ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
         cellEditors.add(textEditor);
 
         modifiers.add(new Modifier()
         {
+            public Object getValue(Object element) throws Exception
+            {
+                Long v = (Long) descriptor.getReadMethod().invoke(element);
+                return String.format("%,.2f", v.longValue() / 100d); //$NON-NLS-1$
+            }
+
+            public boolean modify(Object element, Object value) throws Exception
+            {
+                // double -> integer conversion is not precise enough
+
+                Matcher m = pattern.matcher(String.valueOf(value));
+                if (!m.matches())
+                    throw new IOException(String.format(Messages.CellEditor_NotANumber, value));
+
+                String strEuros = m.group(1);
+                Number euros = strEuros.trim().length() > 0 ? new DecimalFormat("#,###") //$NON-NLS-1$
+                                .parse(strEuros) : Long.valueOf(0);
+
+                String strCents = m.group(3);
+                int cents = 0;
+                if (strCents != null)
+                {
+                    cents = Integer.parseInt(strCents);
+                    if (strCents.length() == 1)
+                        cents *= 10;
+                }
+
+                Long newValue = Long.valueOf(euros.longValue() * 100 + cents);
+                Long oldValue = (Long) descriptor.getReadMethod().invoke(element);
+
+                if (!newValue.equals(oldValue))
+                {
+                    descriptor.getWriteMethod().invoke(element, newValue);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        });
+
+        return this;
+    }
+
+    public CellEditorFactory index(String name)
+    {
+        final PropertyDescriptor descriptor = descriptorFor(name);
+        if (descriptor.getPropertyType() != int.class)
+            throw new UnsupportedOperationException(String.format(
+                            "Property %s needs to be of type long to serve as an index", name)); //$NON-NLS-1$
+
+        properties.add(name);
+
+        TextCellEditor textEditor = new TextCellEditor((Composite) viewer.getControl());
+        ((Text) textEditor.getControl()).setTextLimit(20);
+        ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
+        cellEditors.add(textEditor);
+
+        modifiers.add(new Modifier()
+        {
+            private Pattern pattern = Pattern.compile("^([\\d.]*)(,(\\d\\d?))?$"); //$NON-NLS-1$
+
             public Object getValue(Object element) throws Exception
             {
                 Integer v = (Integer) descriptor.getReadMethod().invoke(element);
@@ -158,7 +213,7 @@ public class CellEditorFactory
 
                 String strEuros = m.group(1);
                 Number euros = strEuros.trim().length() > 0 ? new DecimalFormat("#,###") //$NON-NLS-1$
-                                .parse(strEuros) : Integer.valueOf(0);
+                                .parse(strEuros) : Long.valueOf(0);
 
                 String strCents = m.group(3);
                 int cents = 0;
@@ -185,6 +240,17 @@ public class CellEditorFactory
         });
 
         return this;
+    }
+
+    private final static class NumberVerifyListener implements VerifyListener
+    {
+        private String allowedChars = ",.0123456789"; //$NON-NLS-1$
+
+        public void verifyText(VerifyEvent e)
+        {
+            for (int ii = 0; e.doit && ii < e.text.length(); ii++)
+                e.doit = allowedChars.indexOf(e.text.charAt(0)) >= 0;
+        }
     }
 
     public CellEditorFactory combobox(String name, final List<?> items)
@@ -371,6 +437,34 @@ public class CellEditorFactory
                 }
             };
         }
+        else if (type == long.class)
+        {
+            return new Modifier()
+            {
+                public Object getValue(Object element) throws Exception
+                {
+                    Long v = (Long) descriptor.getReadMethod().invoke(element);
+                    return String.format("%d", v.longValue()); //$NON-NLS-1$
+                }
+
+                public boolean modify(Object element, Object value) throws Exception
+                {
+                    Number n = new DecimalFormat("#").parse(String.valueOf(value)); //$NON-NLS-1$
+                    Long newValue = n.longValue();
+                    Long oldValue = (Long) descriptor.getReadMethod().invoke(element);
+
+                    if (!newValue.equals(oldValue))
+                    {
+                        descriptor.getWriteMethod().invoke(element, newValue);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            };
+        }
         else if (type == Date.class)
         {
             return new Modifier()
@@ -466,7 +560,7 @@ public class CellEditorFactory
     {
         Class<?> type = descriptor.getPropertyType();
 
-        if (type == int.class)
+        if (type == int.class || type == long.class)
         {
             TextCellEditor textEditor = new TextCellEditor((Composite) viewer.getControl());
             ((Text) textEditor.getControl()).setTextLimit(20);

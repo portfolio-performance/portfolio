@@ -13,7 +13,7 @@ public class AccountSnapshot
 
     public static AccountSnapshot create(Account account, Date time)
     {
-        int funds = 0;
+        long funds = 0;
 
         for (AccountTransaction t : account.getTransactions())
         {
@@ -50,9 +50,9 @@ public class AccountSnapshot
 
     private Account account;
     private Date time;
-    private int funds;
+    private long funds;
 
-    private AccountSnapshot(Account account, Date time, int funds)
+    private AccountSnapshot(Account account, Date time, long funds)
     {
         this.account = account;
         this.time = time;
@@ -69,7 +69,7 @@ public class AccountSnapshot
         return time;
     }
 
-    public int getFunds()
+    public long getFunds()
     {
         return funds;
     }

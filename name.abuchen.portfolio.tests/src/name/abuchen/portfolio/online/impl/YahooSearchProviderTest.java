@@ -33,7 +33,7 @@ public class YahooSearchProviderTest
         assertThat(p.getSymbol(), equalTo("SAP.DE"));
         assertThat(p.getName(), equalTo("Sap AG"));
         assertThat(p.getIsin(), equalTo("DE0007164600"));
-        assertThat(p.getLastTrade(), equalTo(5309));
+        assertThat(p.getLastTrade(), equalTo(5309L));
         assertThat(p.getType(), equalTo("Aktien"));
         assertThat(p.getExchange(), equalTo("GER"));
     }
@@ -52,7 +52,7 @@ public class YahooSearchProviderTest
         assertThat(p.getSymbol(), equalTo("CEU-OTC.MI"));
         assertNull(p.getName());
         assertThat(p.getIsin(), equalTo("FR0010655696"));
-        assertThat(p.getLastTrade(), equalTo(0));
+        assertThat(p.getLastTrade(), equalTo(0L));
         assertNull(p.getType());
         assertNull(p.getExchange());
     }

@@ -149,8 +149,8 @@ public class SecurityListView extends AbstractListView
                 if (p2 == null)
                     return 1;
 
-                int v1 = p1.getValue();
-                int v2 = p2.getValue();
+                long v1 = p1.getValue();
+                long v2 = p2.getValue();
                 return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
             }
         }).attachTo(securities, column);
@@ -1003,16 +1003,16 @@ public class SecurityListView extends AbstractListView
 
                 table.getItem(1).setText(1, String.format("%tF", p.getTime())); //$NON-NLS-1$
 
-                int daysHigh = p.getHigh();
+                long daysHigh = p.getHigh();
                 table.getItem(2).setText(1, daysHigh == -1 ? "n/a" : String.format("%,.2f", daysHigh / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
 
-                int daysLow = p.getLow();
+                long daysLow = p.getLow();
                 table.getItem(3).setText(1, daysLow == -1 ? "n/a" : String.format("%,.2f", daysLow / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
 
-                int volume = p.getVolume();
+                long volume = p.getVolume();
                 table.getItem(4).setText(1, volume == -1 ? "n/a" : String.format("%,d", volume)); //$NON-NLS-1$ //$NON-NLS-2$
 
-                int prevClose = p.getPreviousClose();
+                long prevClose = p.getPreviousClose();
                 table.getItem(5).setText(1, prevClose == -1 ? "n/a" : String.format("%,.2f", prevClose / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }

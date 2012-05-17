@@ -4,36 +4,36 @@ import java.util.Date;
 
 public class LatestSecurityPrice extends SecurityPrice
 {
-    private int high;
-    private int low;
+    private long high;
+    private long low;
     private int volume;
 
-    private int previousClose;
+    private long previousClose;
 
     public LatestSecurityPrice()
     {}
 
-    public LatestSecurityPrice(Date time, int price)
+    public LatestSecurityPrice(Date time, long price)
     {
         super(time, price);
     }
 
-    public int getHigh()
+    public long getHigh()
     {
         return high;
     }
 
-    public void setHigh(int high)
+    public void setHigh(long high)
     {
         this.high = high;
     }
 
-    public int getLow()
+    public long getLow()
     {
         return low;
     }
 
-    public void setLow(int low)
+    public void setLow(long low)
     {
         this.low = low;
     }
@@ -48,12 +48,12 @@ public class LatestSecurityPrice extends SecurityPrice
         this.volume = volume;
     }
 
-    public int getPreviousClose()
+    public long getPreviousClose()
     {
         return previousClose;
     }
 
-    public void setPreviousClose(int previousClose)
+    public void setPreviousClose(long previousClose)
     {
         this.previousClose = previousClose;
     }
@@ -63,9 +63,9 @@ public class LatestSecurityPrice extends SecurityPrice
     {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + high;
-        result = prime * result + low;
-        result = prime * result + previousClose;
+        result = prime * result + (int) (high ^ (high >>> 32));
+        result = prime * result + (int) (low ^ (low >>> 32));
+        result = prime * result + (int) (previousClose ^ (previousClose >>> 32));
         result = prime * result + volume;
         return result;
     }

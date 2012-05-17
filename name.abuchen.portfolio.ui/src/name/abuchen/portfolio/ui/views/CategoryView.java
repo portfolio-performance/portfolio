@@ -433,8 +433,8 @@ public class CategoryView extends AbstractFinanceView
                     case 3:
                         // actual %
                         // --> root is compared to target = total assets
-                        int actual = cat.getActual();
-                        int base = cat.getParent() == null ? cat.getTarget() : cat.getParent().getActual();
+                        long actual = cat.getActual();
+                        long base = cat.getParent() == null ? cat.getTarget() : cat.getParent().getActual();
 
                         return String.format("%,10.1f", ((double) actual / (double) base) * 100d); //$NON-NLS-1$
                     case 4:
@@ -461,9 +461,9 @@ public class CategoryView extends AbstractFinanceView
                         CategoryModel cat = model.findFor(security);
                         SecurityPrice price = security.getSecurityPrice(Dates.today());
 
-                        int gap = cat.getTarget() - cat.getActual();
+                        long gap = cat.getTarget() - cat.getActual();
 
-                        int count = price.getValue() != 0 ? gap / price.getValue() : 0;
+                        long count = price.getValue() != 0 ? gap / price.getValue() : 0;
 
                         if (columnIndex == 5)
                             return String.format("%,10d", count); //$NON-NLS-1$

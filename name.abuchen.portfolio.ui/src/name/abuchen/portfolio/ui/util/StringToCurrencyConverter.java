@@ -22,7 +22,7 @@ public class StringToCurrencyConverter implements IConverter
     @Override
     public Object getToType()
     {
-        return int.class;
+        return long.class;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class StringToCurrencyConverter implements IConverter
         {
             String value = (String) fromObject;
 
-            Matcher m = pattern.matcher(String.valueOf(value));
+            Matcher m = pattern.matcher(value);
             if (!m.matches())
                 throw new IllegalArgumentException(String.format(Messages.CurrencyConverter_MsgNotANumber, value));
 
@@ -49,7 +49,7 @@ public class StringToCurrencyConverter implements IConverter
                     cents *= 10;
             }
 
-            return Integer.valueOf(euros.intValue() * 100 + cents);
+            return Long.valueOf(euros.longValue() * 100 + cents);
         }
         catch (ParseException e)
         {

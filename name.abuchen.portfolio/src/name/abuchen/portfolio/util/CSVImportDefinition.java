@@ -51,7 +51,7 @@ public abstract class CSVImportDefinition
     /* package */abstract void build(Client client, Object target, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException;
 
-    protected Integer convertAmount(String name, String[] rawValues, Map<String, Column> field2column)
+    protected Long convertAmount(String name, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException
     {
         String value = getTextValue(name, rawValues, field2column);
@@ -59,10 +59,10 @@ public abstract class CSVImportDefinition
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return Integer.valueOf((int) Math.round(num.doubleValue() * 100d));
+        return Long.valueOf((long) Math.round(num.doubleValue() * 100d));
     }
 
-    protected Integer convertShares(String name, String[] rawValues, Map<String, Column> field2column)
+    protected Long convertShares(String name, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException
     {
         String value = getTextValue(name, rawValues, field2column);
@@ -70,7 +70,7 @@ public abstract class CSVImportDefinition
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return (int) Math.round(num.doubleValue());
+        return (long) Math.round(num.doubleValue());
     }
 
     protected Date convertDate(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
@@ -165,7 +165,7 @@ public abstract class CSVImportDefinition
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
 
-            Integer amount = convertAmount(Messages.CSVColumn_Value, rawValues, field2column);
+            Long amount = convertAmount(Messages.CSVColumn_Value, rawValues, field2column);
             if (amount == null)
                 throw new ParseException(
                                 MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Value), 0);
@@ -231,21 +231,21 @@ public abstract class CSVImportDefinition
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
 
-            Integer amount = convertAmount(Messages.CSVColumn_Value, rawValues, field2column);
+            Long amount = convertAmount(Messages.CSVColumn_Value, rawValues, field2column);
             if (amount == null)
                 throw new ParseException(
                                 MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Value), 0);
 
-            Integer fees = convertAmount(Messages.CSVColumn_Fees, rawValues, field2column);
+            Long fees = convertAmount(Messages.CSVColumn_Fees, rawValues, field2column);
             if (fees == null)
-                fees = Integer.valueOf(0);
+                fees = Long.valueOf(0);
 
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
             if (isin == null)
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_ISIN),
                                 0);
 
-            Integer shares = convertShares(Messages.CSVColumn_Shares, rawValues, field2column);
+            Long shares = convertShares(Messages.CSVColumn_Shares, rawValues, field2column);
             if (shares == null)
                 throw new ParseException(
                                 MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Shares), 0);
@@ -300,7 +300,7 @@ public abstract class CSVImportDefinition
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
 
-            Integer amount = convertAmount(Messages.CSVColumn_Quote, rawValues, field2column);
+            Long amount = convertAmount(Messages.CSVColumn_Quote, rawValues, field2column);
             if (amount == null)
                 throw new ParseException(
                                 MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
