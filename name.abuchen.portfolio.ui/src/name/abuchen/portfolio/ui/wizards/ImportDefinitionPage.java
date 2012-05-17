@@ -261,7 +261,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         TableColumnLayout layout = new TableColumnLayout();
         compositeTable.setLayout(layout);
 
-        tableViewer = new TableViewer(compositeTable, SWT.BORDER);
+        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -414,11 +414,11 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
                 column.dispose();
 
             TableColumnLayout layout = (TableColumnLayout) tableViewer.getTable().getParent().getLayout();
-            for (final CSVImporter.Column header : importer.getColumns())
+            for (Column column : importer.getColumns())
             {
-                TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
-                column.setText(header.getLabel());
-                layout.setColumnData(column, new ColumnPixelData(80, true));
+                TableColumn tableColumn = new TableColumn(tableViewer.getTable(), SWT.None);
+                layout.setColumnData(tableColumn, new ColumnPixelData(80, true));
+                setColumnLabel(tableColumn, column);
             }
 
             tableViewer.setInput(importer.getRawValues());
@@ -427,7 +427,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             for (TableColumn column : tableViewer.getTable().getColumns())
                 column.pack();
 
-            doUpdateTable();
+            doUpdateErrorMessages();
         }
         catch (IOException e)
         {
@@ -442,6 +442,12 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         }
     }
 
+    private void setColumnLabel(TableColumn tableColumn, Column column)
+    {
+        tableColumn.setText(column.getField() != null ? column.getLabel() + " -> [" + column.getField().getName() + "]" : column.getLabel()); //$NON-NLS-1$ //$NON-NLS-2$
+        tableColumn.setAlignment(column.getField() instanceof AmountField ? SWT.RIGHT : SWT.LEFT);
+    }
+
     private void doUpdateTable()
     {
         Table table = tableViewer.getTable();
@@ -450,11 +456,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         try
         {
             for (int ii = 0; ii < table.getColumnCount(); ii++)
-            {
-                Column column = importer.getColumns()[ii];
-                boolean isNumber = column.getField() instanceof AmountField;
-                table.getColumn(ii).setAlignment(isNumber ? SWT.RIGHT : SWT.LEFT);
-            }
+                setColumnLabel(table.getColumn(ii), importer.getColumns()[ii]);
 
             tableViewer.refresh();
 
