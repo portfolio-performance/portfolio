@@ -28,10 +28,7 @@ Apache Software Foundation http://apache.org/
    <windowImages i16="icons/pp_16.gif" i32="icons/pp_32.gif" i48="icons/pp_48.gif" i128="icons/pp_128.gif"/>
 
    <splash
-      location="name.abuchen.portfolio.ui"
-      startupProgressRect="5,194,445,10"
-      startupMessageRect="193,100,257,20"
-      startupForegroundColor="FFFFFF" />
+      location="name.abuchen.portfolio.ui" />
 
    <launcher name="PortfolioPerformance">
       <linux icon="icons/pp.xpm"/>

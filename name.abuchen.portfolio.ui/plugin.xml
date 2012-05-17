@@ -76,20 +76,8 @@
                value="Portfolio Performance&#x0A;&#x0A;(c) Copyright Andreas Buchen 2012.  All rights reserved.&#x0A;&#x0A;This product includes software developed by the&#x0A;Eclipse Foundation http://eclipse.org/&#x0A;Apache Software Foundation http://apache.org/">
          </property>
          <property
-               name="startupProgressRect"
-               value="5,194,445,10">
-         </property>
-         <property
                name="preferenceCustomization"
                value="plugin_customization.ini">
-         </property>
-         <property
-               name="startupForegroundColor"
-               value="FFFFFF">
-         </property>
-         <property
-               name="startupMessageRect"
-               value="193,100,257,20">
          </property>
       </product>
    </extension>
@@ -299,5 +287,17 @@
             class="name.abuchen.portfolio.ui.ElementFactory"
             id="name.abuchen.portfolio.ui.factory">
       </factory>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.splashHandlers">
+      <splashHandler
+            class="name.abuchen.portfolio.ui.app.VersionNumberSplashHandler"
+            id="name.abuchen.portfolio.ui.splash">
+      </splashHandler>
+      <splashHandlerProductBinding
+            productId="name.abuchen.portfolio.ui.product"
+            splashId="name.abuchen.portfolio.ui.splash">
+      </splashHandlerProductBinding>         
    </extension>
 </plugin>
