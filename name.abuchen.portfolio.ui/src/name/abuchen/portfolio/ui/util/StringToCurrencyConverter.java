@@ -1,17 +1,27 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.core.databinding.conversion.IConverter;
 
 public class StringToCurrencyConverter implements IConverter
 {
-    private static final Pattern pattern = Pattern.compile("^([\\d.]*)(,(\\d\\d?))?$"); //$NON-NLS-1$
+    private static final Pattern PATTERN = Pattern.compile("^([\\d.]*)(,(\\d*))?$"); //$NON-NLS-1$
+    private final NumberFormat full = new DecimalFormat("#,###"); //$NON-NLS-1$
+
+    private final double factor;
+
+    public StringToCurrencyConverter(Values<?> type)
+    {
+        this.factor = type.divider();
+    }
 
     @Override
     public Object getFromType()
@@ -32,24 +42,28 @@ public class StringToCurrencyConverter implements IConverter
         {
             String value = (String) fromObject;
 
-            Matcher m = pattern.matcher(value);
+            Matcher m = PATTERN.matcher(String.valueOf(value));
             if (!m.matches())
-                throw new IllegalArgumentException(String.format(Messages.CurrencyConverter_MsgNotANumber, value));
+                throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, value));
 
-            String strEuros = m.group(1);
-            Number euros = strEuros.trim().length() > 0 ? new DecimalFormat("#,###").parse(strEuros) : Integer //$NON-NLS-1$
-                            .valueOf(0);
+            String strBefore = m.group(1);
+            Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
 
-            String strCents = m.group(3);
-            int cents = 0;
-            if (strCents != null)
+            String strAfter = m.group(3);
+            int after = 0;
+            if (strAfter != null && strAfter.length() > 0)
             {
-                cents = Integer.parseInt(strCents);
-                if (strCents.length() == 1)
-                    cents *= 10;
+                after = Integer.parseInt(strAfter);
+
+                int length = (int) Math.log10(factor);
+                for (int ii = strAfter.length(); ii > length; ii--)
+                    after /= 10;
+                for (int ii = strAfter.length(); ii < length; ii++)
+                    after *= 10;
             }
 
-            return Long.valueOf(euros.longValue() * 100 + cents);
+            long resultValue = before.longValue() * (int) factor + after;
+            return Long.valueOf(resultValue);
         }
         catch (ParseException e)
         {

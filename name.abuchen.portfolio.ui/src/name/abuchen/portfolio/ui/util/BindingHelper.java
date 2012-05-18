@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.Isin;
 
@@ -154,25 +155,37 @@ public class BindingHelper
                         BeansObservables.observeValue(model, property));
     }
 
-    public final void bindPriceInput(Composite editArea, String label, String property)
+    public final void bindAmountInput(Composite editArea, String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
 
         context.bindValue(
                         SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
-                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter()),
-                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter()));
+                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Amount)),
+                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Amount)));
     }
 
-    public final void bindMandatoryPriceInput(Composite editArea, final String label, String property)
+    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
+        bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
+        return txtValue;
+    }
 
+    public final Control bindMandatorySharesInput(Composite editArea, final String label, String property)
+    {
+        Text txtValue = createTextInput(editArea, label);
+        bindMandatoryDecimalInput(label, property, txtValue, Values.Share);
+        return txtValue;
+    }
+
+    private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
+    {
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
                         new UpdateValueStrategy() //
-                                        .setConverter(new StringToCurrencyConverter()) //
+                                        .setConverter(new StringToCurrencyConverter(type)) //
                                         .setAfterConvertValidator(new IValidator()
                                         {
                                             @Override
@@ -184,7 +197,7 @@ public class BindingHelper
                                                                                 Messages.MsgDialogInputRequired, label));
                                             }
                                         }), // ,
-                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter()));
+                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(type)));
     }
 
     private final Text createTextInput(Composite editArea, final String label)

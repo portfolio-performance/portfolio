@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -241,7 +242,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                         }, getModel().getClient().getPortfolios().toArray());
 
         // shares
-        bindings.bindMandatoryLongInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
+        bindings.bindMandatorySharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
 
         // price
         Label label = new Label(editArea, SWT.NONE);
@@ -253,15 +254,15 @@ public class BuySellSecurityDialog extends AbstractDialog
                         SWTObservables.observeText(lblPrice),
                         BeansObservables.observeValue(getModel(), "price"), //$NON-NLS-1$
                         new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_UPDATE)
-                                        .setConverter(new StringToCurrencyConverter()), //
+                                        .setConverter(new StringToCurrencyConverter(Values.Amount)), //
                         new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_UPDATE)
-                                        .setConverter(new CurrencyToStringConverter()));
+                                        .setConverter(new CurrencyToStringConverter(Values.Amount)));
 
         // fee
-        bindings.bindPriceInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+        bindings.bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
-        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
+        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
 
         // date
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$

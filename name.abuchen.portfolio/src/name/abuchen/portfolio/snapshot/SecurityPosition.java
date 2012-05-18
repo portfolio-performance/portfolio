@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Values;
 
 public class SecurityPosition
 {
@@ -49,7 +50,7 @@ public class SecurityPosition
     public long calculateValue()
     {
         long p = price != null ? price.getValue() : 0;
-        return shares * p;
+        return shares * p / Values.Share.factor();
     }
 
 }

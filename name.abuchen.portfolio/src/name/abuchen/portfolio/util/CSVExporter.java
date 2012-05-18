@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Values;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
@@ -101,7 +102,7 @@ public class CSVExporter
                 printer.print(t.getType().name());
                 printer.print(currencyFormat.format(t.getAmount() / 100d));
                 printer.print(currencyFormat.format(t.getFees() / 100d));
-                printer.print(String.valueOf(t.getShares()));
+                printer.print(Values.Share.format(t.getShares()));
 
                 if (t.getSecurity() != null)
                 {

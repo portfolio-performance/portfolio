@@ -1,12 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.EnumSet;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -19,29 +18,31 @@ import name.abuchen.portfolio.util.Dates;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 public class PortfolioListView extends AbstractListView
 {
     private TableViewer portfolios;
     private TableViewer transactions;
-    private TreeViewer statementOfAssets;
+    private StatementOfAssetsViewer statementOfAssets;
 
     @Override
     protected String getTitle()
@@ -94,14 +95,12 @@ public class PortfolioListView extends AbstractListView
                     transactions.setInput(portfolio.getTransactions());
                     transactions.refresh();
                     statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                    statementOfAssets.expandAll();
                 }
                 else
                 {
                     transactions.setInput(null);
                     transactions.refresh();
-                    statementOfAssets.setInput(null);
-                    statementOfAssets.refresh();
+                    statementOfAssets.setInput((PortfolioSnapshot)null);
                 }
             }
         });
@@ -199,74 +198,184 @@ public class PortfolioListView extends AbstractListView
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.LabelStatementOfAssets);
-        statementOfAssets = StatementOfAssetsView.createAssetsViewer(folder);
-        item.setControl(statementOfAssets.getTree());
+        statementOfAssets = new StatementOfAssetsViewer(folder);
+        item.setControl(statementOfAssets.getControl());
 
-        hookContextMenu(statementOfAssets.getControl(), new IMenuListener()
+        hookContextMenu(statementOfAssets.getTableViewer().getControl(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
             {
-                StatementOfAssetsView.createMenuListener(manager, statementOfAssets, PortfolioListView.this);
+                statementOfAssets.hookMenuListener(manager, PortfolioListView.this);
             }
         });
 
-        createTransactionsTable(folder);
+        Control control = createTransactionsTable(folder);
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.TabTransactions);
-        item.setControl(transactions.getControl());
+        item.setControl(control);
 
         folder.setSelection(0);
 
         if (!getClient().getPortfolios().isEmpty())
             portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
 
-        ViewerHelper.pack(statementOfAssets);
+        statementOfAssets.pack();
         ViewerHelper.pack(transactions);
     }
 
-    private void createTransactionsTable(CTabFolder folder)
+    private Control createTransactionsTable(CTabFolder folder)
     {
-        transactions = new TableViewer(folder, SWT.FULL_SELECTION);
+        Composite container = new Composite(folder, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
+
+        transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         TableViewerColumn column = new TableViewerColumn(transactions, SWT.NONE);
         column.getColumn().setText(Messages.ColumnDate);
-        column.getColumn().setWidth(80);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Date.format(((PortfolioTransaction) element).getDate());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "date").attachTo(transactions, column, true); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.NONE);
         column.getColumn().setText(Messages.ColumnTransactionType);
-        column.getColumn().setWidth(80);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((PortfolioTransaction) element).getType().toString();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "type").attachTo(transactions, column); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
-        column.getColumn().setWidth(250);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "security").attachTo(transactions, column); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnShares);
-        column.getColumn().setWidth(80);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object element)
+            {
+                return ((PortfolioTransaction) element).getShares();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "shares").attachTo(transactions, column); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnAmount);
-        column.getColumn().setWidth(80);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((PortfolioTransaction) element).getAmount());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(transactions, column); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnFees);
-        column.getColumn().setWidth(80);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((PortfolioTransaction) element).getFees());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(transactions, column); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnPurchaseRate);
-        column.getColumn().setWidth(80);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice").attachTo(transactions, column); //$NON-NLS-1$
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setLabelProvider(new TransactionLabelProvider());
         transactions.setContentProvider(new SimpleListContentProvider());
 
         new CellEditorFactory(transactions, PortfolioTransaction.class) //
@@ -280,13 +389,12 @@ public class PortfolioListView extends AbstractListView
                                 transactions.refresh(element);
 
                                 statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                                statementOfAssets.expandAll();
                             }
                         }) //
                         .editable("date") // //$NON-NLS-1$
                         .editable("type") // //$NON-NLS-1$
                         .combobox("security", getClient().getSecurities()) // //$NON-NLS-1$
-                        .editable("shares") // //$NON-NLS-1$
+                        .shares("shares") // //$NON-NLS-1$
                         .amount("amount") // //$NON-NLS-1$
                         .amount("fees") // //$NON-NLS-1$
                         .apply();
@@ -298,6 +406,8 @@ public class PortfolioListView extends AbstractListView
                 fillTransactionsContextMenu(manager);
             }
         });
+
+        return container;
     }
 
     private void fillTransactionsContextMenu(IMenuManager manager)
@@ -322,7 +432,6 @@ public class PortfolioListView extends AbstractListView
                 transactions.setSelection(new StructuredSelection(transaction), true);
 
                 statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                statementOfAssets.expandAll();
             }
         });
 
@@ -348,59 +457,15 @@ public class PortfolioListView extends AbstractListView
                 transactions.setInput(portfolio.getTransactions());
 
                 statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                statementOfAssets.expandAll();
             }
         });
     }
 
-    private static class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider,
-                    ITableColorProvider
+    private Color colorFor(PortfolioTransaction t)
     {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            PortfolioTransaction t = (PortfolioTransaction) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return String.format("%tF", t.getDate()); //$NON-NLS-1$
-                case 1:
-                    return t.getType().toString();
-                case 2:
-                    return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
-                case 3:
-                    return String.format("%,d", t.getShares()); //$NON-NLS-1$
-                case 4:
-                    return String.format("%,.2f", t.getAmount() / 100d); //$NON-NLS-1$
-                case 5:
-                    return String.format("%,.2f", t.getFees() / 100d); //$NON-NLS-1$
-                case 6:
-                    if (t.getShares() == 0)
-                        return ""; //$NON-NLS-1$
-                    return String.format("%,.2f", t.getActualPurchasePrice() / 100d); //$NON-NLS-1$
-            }
-            return null;
-        }
-
-        public Color getBackground(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public Color getForeground(Object element, int columnIndex)
-        {
-            PortfolioTransaction t = (PortfolioTransaction) element;
-
-            if (EnumSet.of(Type.SELL, Type.TRANSFER_OUT).contains(t.getType()))
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-            else
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-        }
+        if (t.getType() == Type.SELL || t.getType() == Type.TRANSFER_OUT)
+            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+        else
+            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
-
 }

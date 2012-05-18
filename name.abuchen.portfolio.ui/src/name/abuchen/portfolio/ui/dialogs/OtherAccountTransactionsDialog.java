@@ -96,7 +96,7 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
                                         AccountTransaction.Type.TAXES, //
                                         AccountTransaction.Type.FEES).toArray());
 
-        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
 

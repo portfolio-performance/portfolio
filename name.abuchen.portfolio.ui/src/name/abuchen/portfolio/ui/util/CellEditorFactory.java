@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.util;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -11,9 +10,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
@@ -116,75 +114,27 @@ public class CellEditorFactory
         return this;
     }
 
+    public CellEditorFactory shares(String name)
+    {
+        return decimal(name, Values.Share);
+    }
+
     public CellEditorFactory amount(String name)
     {
-        final PropertyDescriptor descriptor = descriptorFor(name);
-        if (descriptor.getPropertyType() != long.class)
-            throw new UnsupportedOperationException(String.format(
-                            "Property %s needs to be of type long to serve as an amount", name)); //$NON-NLS-1$
-
-        final Pattern pattern = Pattern.compile("^([\\d.]*)(,(\\d\\d?))?$"); //$NON-NLS-1$
-
-        properties.add(name);
-
-        TextCellEditor textEditor = new TextCellEditor((Composite) viewer.getControl());
-        ((Text) textEditor.getControl()).setTextLimit(20);
-        ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
-        cellEditors.add(textEditor);
-
-        modifiers.add(new Modifier()
-        {
-            public Object getValue(Object element) throws Exception
-            {
-                Long v = (Long) descriptor.getReadMethod().invoke(element);
-                return String.format("%,.2f", v.longValue() / 100d); //$NON-NLS-1$
-            }
-
-            public boolean modify(Object element, Object value) throws Exception
-            {
-                // double -> integer conversion is not precise enough
-
-                Matcher m = pattern.matcher(String.valueOf(value));
-                if (!m.matches())
-                    throw new IOException(String.format(Messages.CellEditor_NotANumber, value));
-
-                String strEuros = m.group(1);
-                Number euros = strEuros.trim().length() > 0 ? new DecimalFormat("#,###") //$NON-NLS-1$
-                                .parse(strEuros) : Long.valueOf(0);
-
-                String strCents = m.group(3);
-                int cents = 0;
-                if (strCents != null)
-                {
-                    cents = Integer.parseInt(strCents);
-                    if (strCents.length() == 1)
-                        cents *= 10;
-                }
-
-                Long newValue = Long.valueOf(euros.longValue() * 100 + cents);
-                Long oldValue = (Long) descriptor.getReadMethod().invoke(element);
-
-                if (!newValue.equals(oldValue))
-                {
-                    descriptor.getWriteMethod().invoke(element, newValue);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        });
-
-        return this;
+        return decimal(name, Values.Amount);
     }
 
     public CellEditorFactory index(String name)
     {
+        return decimal(name, Values.Index);
+    }
+
+    private CellEditorFactory decimal(String name, Values<?> type)
+    {
         final PropertyDescriptor descriptor = descriptorFor(name);
-        if (descriptor.getPropertyType() != int.class)
+        if (Long.class.isAssignableFrom(descriptor.getPropertyType()))
             throw new UnsupportedOperationException(String.format(
-                            "Property %s needs to be of type long to serve as an index", name)); //$NON-NLS-1$
+                            "Property %s needs to be of type long to serve as decimal", name)); //$NON-NLS-1$
 
         properties.add(name);
 
@@ -193,53 +143,50 @@ public class CellEditorFactory
         ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
         cellEditors.add(textEditor);
 
-        modifiers.add(new Modifier()
-        {
-            private Pattern pattern = Pattern.compile("^([\\d.]*)(,(\\d\\d?))?$"); //$NON-NLS-1$
-
-            public Object getValue(Object element) throws Exception
-            {
-                Integer v = (Integer) descriptor.getReadMethod().invoke(element);
-                return String.format("%,.2f", v.intValue() / 100d); //$NON-NLS-1$
-            }
-
-            public boolean modify(Object element, Object value) throws Exception
-            {
-                // double -> integer conversion is not precise enough
-
-                Matcher m = pattern.matcher(String.valueOf(value));
-                if (!m.matches())
-                    throw new IOException(String.format(Messages.CellEditor_NotANumber, value));
-
-                String strEuros = m.group(1);
-                Number euros = strEuros.trim().length() > 0 ? new DecimalFormat("#,###") //$NON-NLS-1$
-                                .parse(strEuros) : Long.valueOf(0);
-
-                String strCents = m.group(3);
-                int cents = 0;
-                if (strCents != null)
-                {
-                    cents = Integer.parseInt(strCents);
-                    if (strCents.length() == 1)
-                        cents *= 10;
-                }
-
-                Integer newValue = Integer.valueOf(euros.intValue() * 100 + cents);
-                Integer oldValue = (Integer) descriptor.getReadMethod().invoke(element);
-
-                if (!newValue.equals(oldValue))
-                {
-                    descriptor.getWriteMethod().invoke(element, newValue);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        });
+        modifiers.add(new LongValueModifier(descriptor, type));
 
         return this;
+    }
+
+    private static final class LongValueModifier implements Modifier
+    {
+        private final StringToCurrencyConverter toCurrency;
+        private final CurrencyToStringConverter fromCurrency;
+
+        private final PropertyDescriptor descriptor;
+
+        private LongValueModifier(PropertyDescriptor descriptor, Values<?> type)
+        {
+            this.descriptor = descriptor;
+            this.toCurrency = new StringToCurrencyConverter(type);
+            this.fromCurrency = new CurrencyToStringConverter(type);
+        }
+
+        public Object getValue(Object element) throws Exception
+        {
+            return fromCurrency.convert(descriptor.getReadMethod().invoke(element));
+        }
+
+        public boolean modify(Object element, Object value) throws Exception
+        {
+            Number newValue = (Number) toCurrency.convert(String.valueOf(value));
+
+            if (int.class.isAssignableFrom(descriptor.getPropertyType())
+                            || Integer.class.isAssignableFrom(descriptor.getPropertyType()))
+                newValue = Integer.valueOf(newValue.intValue());
+
+            Number oldValue = (Number) descriptor.getReadMethod().invoke(element);
+
+            if (!newValue.equals(oldValue))
+            {
+                descriptor.getWriteMethod().invoke(element, newValue);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     private final static class NumberVerifyListener implements VerifyListener

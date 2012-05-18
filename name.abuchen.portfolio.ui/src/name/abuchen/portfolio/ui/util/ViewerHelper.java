@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Table;
@@ -20,6 +21,14 @@ public class ViewerHelper
         {
             TableColumn column = table.getColumn(i);
             int originalWidth = column.getWidth();
+
+            if (originalWidth == 0)
+            {
+                Object layoutData = column.getData("org.eclipse.jface.LAYOUT_DATA"); //$NON-NLS-1$
+                if (layoutData instanceof ColumnPixelData)
+                    originalWidth = ((ColumnPixelData) layoutData).width;
+            }
+
             column.pack();
             int packedWidth = column.getWidth();
 

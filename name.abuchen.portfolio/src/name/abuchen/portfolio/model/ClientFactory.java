@@ -37,7 +37,13 @@ public class ClientFactory
             client.setVersion(2);
         }
 
-        if (client.getVersion() != 2)
+        if (client.getVersion() == 2)
+        {
+            addDecimalPlaces(client);
+            client.setVersion(3);
+        }
+
+        if (client.getVersion() != 3)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 
@@ -57,6 +63,13 @@ public class ClientFactory
     {
         for (Security s : client.getSecurities())
             s.setFeed(YahooFinanceQuoteFeed.ID);
+    }
+
+    private static void addDecimalPlaces(Client client)
+    {
+        for (Portfolio p : client.getPortfolios())
+            for (PortfolioTransaction t : p.getTransactions())
+                t.setShares(t.getShares() * Values.Share.factor());
     }
 
     @SuppressWarnings("nls")

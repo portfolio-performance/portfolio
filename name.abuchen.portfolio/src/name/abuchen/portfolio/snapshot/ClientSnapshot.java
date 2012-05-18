@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Values;
 
 public class ClientSnapshot
 {
@@ -130,7 +131,7 @@ public class ClientSnapshot
         for (AccountSnapshot a : this.getAccounts())
         {
             SecurityPosition sp = new SecurityPosition(null);
-            sp.setShares(1);
+            sp.setShares(Values.Share.factor());
             sp.setPrice(new SecurityPrice(this.getTime(), a.getFunds()));
             AssetPosition ap = new AssetPosition(sp, a.getAccount().getName(), totals.getValuation());
             cash.addPosition(ap);

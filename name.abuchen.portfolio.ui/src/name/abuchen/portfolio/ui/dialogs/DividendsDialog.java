@@ -129,7 +129,7 @@ public class DividendsDialog extends AbstractDialog
                         }, getModel().getClient().getAccounts().toArray());
 
         // amount
-        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
         // date
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$

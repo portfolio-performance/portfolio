@@ -155,7 +155,7 @@ public class TransferDialog extends AbstractDialog
         final IViewerObservableValue observableTo = ViewersObservables.observeSingleSelection(comboTo);
 
         // amount
-        bindings.bindMandatoryPriceInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
         // date
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$

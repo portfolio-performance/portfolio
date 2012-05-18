@@ -27,7 +27,7 @@ public class CurrentIRRYieldTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2009, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 10, 100, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 100, 0));
         client.addPortfolio(portfolio);
 
         return client;

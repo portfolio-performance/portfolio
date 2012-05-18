@@ -46,16 +46,16 @@ public class PortfolioSnapshotTest
 
         Portfolio portfolioA = new Portfolio();
         portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityA,
-                        PortfolioTransaction.Type.BUY, 10, 10000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0));
         portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 10, 12000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 12000, 0));
         client.addPortfolio(portfolioA);
 
         Portfolio portfolioB = new Portfolio();
         portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityB,
-                        PortfolioTransaction.Type.BUY, 10, 11000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 11000, 0));
         portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 10, 12000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 12000, 0));
         client.addPortfolio(portfolioB);
 
         ClientSnapshot snapshot = ClientSnapshot.create(client, referenceDate);
@@ -64,15 +64,15 @@ public class PortfolioSnapshotTest
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
 
         SecurityPosition positionA = jointPortfolio.getPositionsBySecurity().get(securityA);
-        assertEquals(10, positionA.getShares());
+        assertEquals(1000000, positionA.getShares());
         assertEquals(10000, positionA.calculateValue());
 
         SecurityPosition positionB = jointPortfolio.getPositionsBySecurity().get(securityB);
-        assertEquals(10, positionB.getShares());
+        assertEquals(1000000, positionB.getShares());
         assertEquals(11000, positionB.calculateValue());
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertEquals(20, positionX.getShares());
+        assertEquals(2000000, positionX.getShares());
         assertEquals(24000, positionX.calculateValue());
     }
 
@@ -107,13 +107,13 @@ public class PortfolioSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityA,
-                        PortfolioTransaction.Type.BUY, 10, 10000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityB,
-                        PortfolioTransaction.Type.BUY, 10, 11000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 11000, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityC,
-                        PortfolioTransaction.Type.BUY, 10, 12000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 12000, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityD,
-                        PortfolioTransaction.Type.BUY, 10, 12000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 12000, 0));
         client.addPortfolio(portfolio);
 
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, referenceDate);

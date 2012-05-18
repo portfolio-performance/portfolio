@@ -7,13 +7,15 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -23,13 +25,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TreeColumn;
 
 public class PerformanceView extends AbstractHistoricView
 {
     private TreeViewer calculation;
-    private TreeViewer snapshotStart;
-    private TreeViewer snapshotEnd;
+    private StatementOfAssetsViewer snapshotStart;
+    private StatementOfAssetsViewer snapshotEnd;
 
     public PerformanceView()
     {
@@ -60,14 +61,9 @@ public class PerformanceView extends AbstractHistoricView
         ViewerHelper.pack(calculation);
 
         snapshotStart.setInput(snapshot.getStartClientSnapshot());
-        snapshotStart.refresh();
-        snapshotStart.expandAll();
-        ViewerHelper.pack(snapshotStart);
-
+        snapshotStart.pack();
         snapshotEnd.setInput(snapshot.getEndClientSnapshot());
-        snapshotEnd.refresh();
-        snapshotEnd.expandAll();
-        ViewerHelper.pack(snapshotEnd);
+        snapshotEnd.pack();
     }
 
     @Override
@@ -75,9 +71,8 @@ public class PerformanceView extends AbstractHistoricView
     {
         // result tabs
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(folder);
 
-        calculation = createCalculationItem(folder, Messages.PerformanceTabCalculation);
+        createCalculationItem(folder, Messages.PerformanceTabCalculation);
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
         snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
 
@@ -88,41 +83,41 @@ public class PerformanceView extends AbstractHistoricView
         return folder;
     }
 
-    private TreeViewer createStatementOfAssetsItem(CTabFolder folder, String title)
+    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
     {
+        StatementOfAssetsViewer viewer = new StatementOfAssetsViewer(folder);
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
-        TreeViewer viewer = StatementOfAssetsView.createAssetsViewer(folder);
-        item.setControl(viewer.getTree());
+        item.setControl(viewer.getControl());
 
         return viewer;
     }
 
-    private TreeViewer createCalculationItem(CTabFolder folder, String title)
+    private void createCalculationItem(CTabFolder folder, String title)
     {
+        Composite container = new Composite(folder, SWT.NONE);
+        TreeColumnLayout layout = new TreeColumnLayout();
+        container.setLayout(layout);
+
+        calculation = new TreeViewer(container, SWT.FULL_SELECTION);
+
+        TreeViewerColumn column = new TreeViewerColumn(calculation, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnLable);
+        layout.setColumnData(column.getColumn(),  new ColumnPixelData(350));
+
+        column = new TreeViewerColumn(calculation, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnValue);
+        layout.setColumnData(column.getColumn(),  new ColumnPixelData(80));
+
+        calculation.getTree().setHeaderVisible(true);
+        calculation.getTree().setLinesVisible(true);
+
+        calculation.setLabelProvider(new PerformanceLabelProvider());
+        calculation.setContentProvider(new PerformanceContentProvider());
+
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
-
-        TreeViewer viewer = new TreeViewer(folder, SWT.FULL_SELECTION);
-
-        TreeColumn column = new TreeColumn(viewer.getTree(), SWT.None);
-        column.setText(Messages.ColumnLable);
-        column.setWidth(350);
-
-        column = new TreeColumn(viewer.getTree(), SWT.None);
-        column.setText(Messages.ColumnValue);
-        column.setAlignment(SWT.RIGHT);
-        column.setWidth(80);
-
-        viewer.getTree().setHeaderVisible(true);
-        viewer.getTree().setLinesVisible(true);
-
-        viewer.setLabelProvider(new PerformanceLabelProvider());
-        viewer.setContentProvider(new PerformanceContentProvider());
-
-        item.setControl(viewer.getTree());
-
-        return viewer;
+        item.setControl(container);
     }
 
     private static class PerformanceContentProvider implements ITreeContentProvider

@@ -77,10 +77,10 @@ public class PortfolioTransaction extends Transaction
         {
             case BUY:
             case TRANSFER_IN:
-                return (amount - fees) / shares;
+                return (amount - fees) * Values.Share.factor() / shares;
             case SELL:
             case TRANSFER_OUT:
-                return (amount + fees) / shares;
+                return (amount + fees) * Values.Share.factor() / shares;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }

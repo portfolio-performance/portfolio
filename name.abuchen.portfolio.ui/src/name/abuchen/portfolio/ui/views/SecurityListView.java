@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -41,6 +42,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -451,7 +453,7 @@ public class SecurityListView extends AbstractListView
                     return p.getType().toString();
                 case 4:
                     LatestSecurityPrice l1 = p.getLatest();
-                    return l1 != null ? String.format("%,.2f", l1.getValue() / 100d) : null; //$NON-NLS-1$
+                    return l1 != null ? Values.Quote.format(l1.getValue()) : null;
                 case 5:
                     LatestSecurityPrice l2 = p.getLatest();
                     return l2 != null ? String.format(
@@ -766,9 +768,9 @@ public class SecurityListView extends AbstractListView
             switch (columnIndex)
             {
                 case 0:
-                    return String.format("%tF", p.getTime()); //$NON-NLS-1$
+                    return Values.Date.format(p.getTime());
                 case 1:
-                    return String.format("%,10.2f", p.getValue() / 100d); //$NON-NLS-1$
+                    return Values.Quote.format(p.getValue());
             }
             return null;
         }
@@ -845,15 +847,16 @@ public class SecurityListView extends AbstractListView
             {
                 if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.before(t.getDate())))
                 {
+                    String label = Values.Share.format(t.getShares());
                     switch (t.getType())
                     {
                         case BUY:
                         case TRANSFER_IN:
-                            chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), String.valueOf(t.getShares()));
+                            chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), label);
                             break;
                         case SELL:
                         case TRANSFER_OUT:
-                            chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + String.valueOf(t.getShares())); //$NON-NLS-1$
+                            chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + label); //$NON-NLS-1$
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -874,73 +877,86 @@ public class SecurityListView extends AbstractListView
     {
         final TableViewer table = new TableViewer(parent, SWT.FULL_SELECTION);
 
-        TableColumn column = new TableColumn(table.getTable(), SWT.NONE);
-        column.setText(Messages.ColumnDate);
-        column.setWidth(80);
+        TableViewerColumn column = new TableViewerColumn(table, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnDate);
+        column.getColumn().setWidth(80);
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Date.format(((Transaction) element).getDate());
+            }
+        });
+        ColumnViewerSorter.create(Transaction.class, "date").attachTo(table, column, true); //$NON-NLS-1$
 
-        column = new TableColumn(table.getTable(), SWT.NONE);
-        column.setText(Messages.ColumnTransactionType);
-        column.setWidth(80);
+        column = new TableViewerColumn(table, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnTransactionType);
+        column.getColumn().setWidth(80);
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof PortfolioTransaction)
+                    return ((PortfolioTransaction) element).getType().toString();
+                else if (element instanceof AccountTransaction)
+                    return ((AccountTransaction) element).getType().toString();
+                else
+                    return null;
+            }
+        });
 
-        column = new TableColumn(table.getTable(), SWT.RIGHT);
-        column.setText(Messages.ColumnShares);
-        column.setWidth(80);
+        column = new TableViewerColumn(table, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnShares);
+        column.getColumn().setWidth(80);
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object element)
+            {
+                return (element instanceof PortfolioTransaction) ? ((PortfolioTransaction) element).getShares() : null;
+            }
+        });
 
-        column = new TableColumn(table.getTable(), SWT.RIGHT);
-        column.setText(Messages.ColumnAmount);
-        column.setWidth(80);
+        column = new TableViewerColumn(table, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnAmount);
+        column.getColumn().setWidth(80);
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((Transaction) element).getAmount());
+            }
+        });
+        ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(table, column); //$NON-NLS-1$
 
-        column = new TableColumn(table.getTable(), SWT.RIGHT);
-        column.setText(Messages.ColumnQuote);
-        column.setWidth(80);
+        column = new TableViewerColumn(table, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnQuote);
+        column.getColumn().setWidth(80);
+        column.getColumn().setMoveable(true);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return (element instanceof PortfolioTransaction) ? Values.Amount
+                                .format(((PortfolioTransaction) element)
+                                .getActualPurchasePrice()) : null;
+            }
+        });
 
         table.getTable().setHeaderVisible(true);
         table.getTable().setLinesVisible(true);
 
-        table.setLabelProvider(new TransactionLabelProvider());
         table.setContentProvider(new SimpleListContentProvider(true));
 
         return table;
-    }
-
-    static class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            Transaction t = (Transaction) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return String.format("%tF", t.getDate()); //$NON-NLS-1$
-                case 1:
-                    if (t instanceof PortfolioTransaction)
-                        return ((PortfolioTransaction) t).getType().toString();
-                    else if (t instanceof AccountTransaction)
-                        return ((AccountTransaction) t).getType().toString();
-                    else
-                        return null;
-                case 2:
-                    if (t instanceof PortfolioTransaction)
-                        return String.format("%,d", ((PortfolioTransaction) t).getShares()); //$NON-NLS-1$
-                    else
-                        return null;
-                case 3:
-                    return String.format("%,10.2f", t.getAmount() / 100d); //$NON-NLS-1$
-                case 4:
-                    if (t instanceof PortfolioTransaction)
-                        return String.format("%,10.2f", ((PortfolioTransaction) t).getActualPurchasePrice() / 100d); //$NON-NLS-1$
-                    else
-                        return null;
-            }
-            return null;
-        }
-
     }
 
     // //////////////////////////////////////////////////////////////
@@ -999,21 +1015,21 @@ public class SecurityListView extends AbstractListView
             else
             {
                 LatestSecurityPrice p = security.getLatest();
-                table.getItem(0).setText(1, String.format("%,.2f", p.getValue() / 100d)); //$NON-NLS-1$
+                table.getItem(0).setText(1, Values.Amount.format(p.getValue()));
 
-                table.getItem(1).setText(1, String.format("%tF", p.getTime())); //$NON-NLS-1$
+                table.getItem(1).setText(1, Values.Date.format(p.getTime()));
 
                 long daysHigh = p.getHigh();
-                table.getItem(2).setText(1, daysHigh == -1 ? "n/a" : String.format("%,.2f", daysHigh / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
+                table.getItem(2).setText(1, daysHigh == -1 ? "n/a" : Values.Amount.format(daysHigh)); //$NON-NLS-1$
 
                 long daysLow = p.getLow();
-                table.getItem(3).setText(1, daysLow == -1 ? "n/a" : String.format("%,.2f", daysLow / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
+                table.getItem(3).setText(1, daysLow == -1 ? "n/a" : Values.Amount.format(daysLow)); //$NON-NLS-1$
 
                 long volume = p.getVolume();
                 table.getItem(4).setText(1, volume == -1 ? "n/a" : String.format("%,d", volume)); //$NON-NLS-1$ //$NON-NLS-2$
 
                 long prevClose = p.getPreviousClose();
-                table.getItem(5).setText(1, prevClose == -1 ? "n/a" : String.format("%,.2f", prevClose / 100d)); //$NON-NLS-1$ //$NON-NLS-2$
+                table.getItem(5).setText(1, prevClose == -1 ? "n/a" : Values.Amount.format(prevClose)); //$NON-NLS-1$
             }
         }
     }
