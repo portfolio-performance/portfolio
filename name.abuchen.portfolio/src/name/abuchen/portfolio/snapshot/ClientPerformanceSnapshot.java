@@ -21,8 +21,8 @@ public class ClientPerformanceSnapshot
 {
     public static class Position
     {
-        long valuation;
-        String label;
+        private long valuation;
+        private String label;
 
         public Position(String label, long valuation)
         {
@@ -43,10 +43,10 @@ public class ClientPerformanceSnapshot
 
     public static class Category
     {
-        List<Position> positions = new ArrayList<Position>();
+        private List<Position> positions = new ArrayList<Position>();
 
-        String label;
-        long valuation;
+        private String label;
+        private long valuation;
 
         public Category(String label, long valuation)
         {

@@ -9,7 +9,7 @@ import org.eclipse.ui.PlatformUI;
 public class Application implements IApplication
 {
 
-    public Object start(IApplicationContext context) throws Exception
+    public Object start(IApplicationContext context)
     {
         Display display = PlatformUI.createDisplay();
         try

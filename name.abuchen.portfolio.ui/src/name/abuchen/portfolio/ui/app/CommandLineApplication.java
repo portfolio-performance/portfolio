@@ -15,7 +15,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 public class CommandLineApplication implements IApplication
 {
 
-    public Object start(IApplicationContext context) throws Exception
+    public Object start(IApplicationContext context)
     {
         String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 

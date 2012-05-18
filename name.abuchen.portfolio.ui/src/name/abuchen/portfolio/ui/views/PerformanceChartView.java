@@ -20,7 +20,7 @@ import org.swtchart.ISeries;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
-    TimelineChart chart;
+    private TimelineChart chart;
 
     public PerformanceChartView()
     {

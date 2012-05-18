@@ -26,7 +26,7 @@ public abstract class AbstractWizardPage extends WizardPage
         {
             ((IPageChangeProvider) c).addPageChangedListener(new IPageChangedListener()
             {
-                AbstractWizardPage currentPage;
+                private AbstractWizardPage currentPage;
 
                 @Override
                 public void pageChanged(PageChangedEvent event)

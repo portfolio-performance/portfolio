@@ -52,9 +52,9 @@ public class ClientPerformanceSnapshotTest
         assertEquals(8, categories.size());
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).valuation);
-        assertEquals(5000, result.get(CategoryType.EARNINGS).valuation);
-        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).valuation);
+        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
+        assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
+        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).getValuation());
     }
 
     @Test
@@ -72,9 +72,9 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(105000, result.get(CategoryType.INITIAL_VALUE).valuation);
-        assertEquals(0, result.get(CategoryType.EARNINGS).valuation);
-        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).valuation);
+        assertEquals(105000, result.get(CategoryType.INITIAL_VALUE).getValuation());
+        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
+        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).getValuation());
     }
 
     @Test
@@ -92,10 +92,10 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).valuation);
-        assertEquals(5000, result.get(CategoryType.EARNINGS).valuation);
-        assertEquals(0, result.get(CategoryType.CAPITAL_GAINS).valuation);
-        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).valuation);
+        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
+        assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
+        assertEquals(0, result.get(CategoryType.CAPITAL_GAINS).getValuation());
+        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).getValuation());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(5000, result.get(CategoryType.EARNINGS).valuation);
+        assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
     }
 
     @Test
@@ -140,10 +140,10 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).valuation);
-        assertEquals(0, result.get(CategoryType.EARNINGS).valuation);
-        assertEquals(10000, result.get(CategoryType.CAPITAL_GAINS).valuation);
-        assertEquals(110000, result.get(CategoryType.FINAL_VALUE).valuation);
+        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
+        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
+        assertEquals(10000, result.get(CategoryType.CAPITAL_GAINS).getValuation());
+        assertEquals(110000, result.get(CategoryType.FINAL_VALUE).getValuation());
     }
 
     @Test
@@ -166,10 +166,10 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).valuation);
-        assertEquals(0, result.get(CategoryType.EARNINGS).valuation);
-        assertEquals(10000 + (11000 - 9900), result.get(CategoryType.CAPITAL_GAINS).valuation);
-        assertEquals(121000, result.get(CategoryType.FINAL_VALUE).valuation);
+        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
+        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
+        assertEquals(10000 + (11000 - 9900), result.get(CategoryType.CAPITAL_GAINS).getValuation());
+        assertEquals(121000, result.get(CategoryType.FINAL_VALUE).getValuation());
     }
 
     @Test
@@ -192,10 +192,10 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).valuation);
-        assertEquals(0, result.get(CategoryType.EARNINGS).valuation);
-        assertEquals(1000 * 9 + (9900 - 10000), result.get(CategoryType.CAPITAL_GAINS).valuation);
-        assertEquals(11000 * 9, result.get(CategoryType.FINAL_VALUE).valuation);
+        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
+        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
+        assertEquals(1000 * 9 + (9900 - 10000), result.get(CategoryType.CAPITAL_GAINS).getValuation());
+        assertEquals(11000 * 9, result.get(CategoryType.FINAL_VALUE).getValuation());
     }
 
     @Test
@@ -218,7 +218,7 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(1000 * 9 + (9900 - 10000), result.get(CategoryType.CAPITAL_GAINS).valuation);
+        assertEquals(1000 * 9 + (9900 - 10000), result.get(CategoryType.CAPITAL_GAINS).getValuation());
     }
 
 }

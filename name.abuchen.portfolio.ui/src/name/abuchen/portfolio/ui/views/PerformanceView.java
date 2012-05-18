@@ -182,7 +182,7 @@ public class PerformanceView extends AbstractHistoricView
     private static class PerformanceLabelProvider extends LabelProvider implements ITableLabelProvider,
                     ITableFontProvider
     {
-        FontRegistry registry = new FontRegistry();
+        private FontRegistry registry = new FontRegistry();
 
         public Image getColumnImage(Object element, int columnIndex)
         {

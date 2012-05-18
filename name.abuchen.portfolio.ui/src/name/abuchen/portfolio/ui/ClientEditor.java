@@ -43,7 +43,7 @@ public class ClientEditor extends EditorPart
 {
     public static class ClientEditorInput extends PlatformObject implements IPathEditorInput, IPersistableElement
     {
-        IPath path;
+        private IPath path;
 
         public ClientEditorInput()
         {}

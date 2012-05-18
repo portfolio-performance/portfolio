@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {
-    private final char POINT = new DecimalFormatSymbols().getDecimalSeparator();
+    private final static char POINT = new DecimalFormatSymbols().getDecimalSeparator();
 
     private final NumberFormat format = new DecimalFormat("#,##0.###"); //$NON-NLS-1$
 
@@ -56,8 +56,9 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         super.initialize(viewer, column);
     }
 
-    private Rectangle getSize(Event event, String s)
+    private Rectangle getSize(Event event, String text)
     {
+        String s = text;
         int p = s.indexOf(POINT);
         if (p >= 0)
             s = s.substring(0, p);

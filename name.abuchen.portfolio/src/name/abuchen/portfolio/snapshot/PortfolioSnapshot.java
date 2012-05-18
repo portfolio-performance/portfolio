@@ -154,7 +154,7 @@ public class PortfolioSnapshot
         public TotalsCategory(long valuation)
         {
             super(null, valuation);
-            this.valuation = valuation;
+            this.setValuation(valuation);
         }
     }
 

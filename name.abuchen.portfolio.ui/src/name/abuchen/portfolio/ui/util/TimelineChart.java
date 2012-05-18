@@ -29,9 +29,9 @@ public class TimelineChart extends Chart
 {
     private static class MarkerLine
     {
-        Date date;
-        RGB color;
-        String label;
+        private Date date;
+        private RGB color;
+        private String label;
 
         private MarkerLine(Date date, RGB color, String label)
         {

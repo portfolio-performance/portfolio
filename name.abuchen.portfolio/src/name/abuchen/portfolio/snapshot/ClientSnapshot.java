@@ -49,7 +49,7 @@ public class ClientSnapshot
         public TotalsCategory(long valuation)
         {
             super(null, valuation);
-            this.valuation = valuation;
+            this.setValuation(valuation);
         }
 
     }

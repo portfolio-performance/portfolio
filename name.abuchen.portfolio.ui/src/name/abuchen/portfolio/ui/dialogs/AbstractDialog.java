@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Shell;
     private String title;
     private Model model;
 
-    protected BindingHelper bindings;
+    private BindingHelper bindings;
 
     public AbstractDialog(Shell parentShell, String title, Model model)
     {
@@ -53,6 +53,11 @@ import org.eclipse.swt.widgets.Shell;
     protected DataBindingContext getBindingContext()
     {
         return bindings.getBindingContext();
+    }
+
+    protected BindingHelper bindings()
+    {
+        return bindings;
     }
 
     @Override

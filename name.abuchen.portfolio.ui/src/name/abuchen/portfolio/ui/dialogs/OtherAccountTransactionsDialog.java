@@ -83,7 +83,7 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
     protected void createFormElements(Composite editArea)
     {
         // type
-        bindings.bindComboViewer(editArea, Messages.ColumnTransactionType, "type", new LabelProvider() //$NON-NLS-1$
+        bindings().bindComboViewer(editArea, Messages.ColumnTransactionType, "type", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
                             public String getText(Object element)
@@ -96,9 +96,9 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
                                         AccountTransaction.Type.TAXES, //
                                         AccountTransaction.Type.FEES).toArray());
 
-        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
-        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings().bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
 
     }
 }

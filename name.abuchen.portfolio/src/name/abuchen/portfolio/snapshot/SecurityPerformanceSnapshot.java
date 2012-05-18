@@ -155,8 +155,8 @@ public class SecurityPerformanceSnapshot
 
     private static class SecurityPositionTransaction extends Transaction
     {
-        boolean isStart;
-        SecurityPosition position;
+        private boolean isStart;
+        private SecurityPosition position;
 
         public SecurityPositionTransaction(boolean isStart, SecurityPosition position, Date time)
         {

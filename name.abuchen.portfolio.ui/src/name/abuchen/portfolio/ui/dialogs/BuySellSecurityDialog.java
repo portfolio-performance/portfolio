@@ -212,16 +212,16 @@ public class BuySellSecurityDialog extends AbstractDialog
     @Override
     protected void createFormElements(Composite editArea)
     {
-        bindings.createLabel(editArea, type.name());
+        bindings().createLabel(editArea, type.name());
 
         // security selection
         if (!allowSelectionOfSecurity)
         {
-            bindings.createLabel(editArea, ((Model) getModel()).getSecurity().getName());
+            bindings().createLabel(editArea, ((Model) getModel()).getSecurity().getName());
         }
         else
         {
-            bindings.bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
+            bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                             {
                                 @Override
                                 public String getText(Object element)
@@ -232,7 +232,7 @@ public class BuySellSecurityDialog extends AbstractDialog
         }
 
         // portfolio selection
-        bindings.bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
+        bindings().bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
                             public String getText(Object element)
@@ -242,7 +242,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                         }, getModel().getClient().getPortfolios().toArray());
 
         // shares
-        bindings.bindMandatorySharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
+        bindings().bindMandatorySharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
 
         // price
         Label label = new Label(editArea, SWT.NONE);
@@ -259,12 +259,12 @@ public class BuySellSecurityDialog extends AbstractDialog
                                         .setConverter(new CurrencyToStringConverter(Values.Amount)));
 
         // fee
-        bindings.bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+        bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
-        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
+        bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
 
         // date
-        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings().bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
     }
 }

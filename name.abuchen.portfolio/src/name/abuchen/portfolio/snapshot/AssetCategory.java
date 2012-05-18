@@ -11,7 +11,7 @@ public class AssetCategory
     private final Security.AssetClass assetClass;
     private final List<AssetPosition> positions = new ArrayList<AssetPosition>();
     private final long totalAssets;
-    protected long valuation = 0;
+    private long valuation = 0;
 
     /* package */AssetCategory(AssetClass assetClass, long totalAssets)
     {
@@ -22,6 +22,11 @@ public class AssetCategory
     public long getValuation()
     {
         return this.valuation;
+    }
+
+    protected void setValuation(long valuation)
+    {
+        this.valuation = valuation;
     }
 
     public double getShare()

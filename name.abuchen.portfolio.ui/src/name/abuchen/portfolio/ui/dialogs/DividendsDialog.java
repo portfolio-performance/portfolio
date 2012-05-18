@@ -104,11 +104,11 @@ public class DividendsDialog extends AbstractDialog
         // security selection
         if (!allowSelectionOfSecurity)
         {
-            bindings.createLabel(editArea, ((Model) getModel()).getSecurity().getName());
+            bindings().createLabel(editArea, ((Model) getModel()).getSecurity().getName());
         }
         else
         {
-            bindings.bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
+            bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                             {
                                 @Override
                                 public String getText(Object element)
@@ -119,7 +119,7 @@ public class DividendsDialog extends AbstractDialog
         }
 
         // account
-        bindings.bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
+        bindings().bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
                             public String getText(Object element)
@@ -129,9 +129,9 @@ public class DividendsDialog extends AbstractDialog
                         }, getModel().getClient().getAccounts().toArray());
 
         // amount
-        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
 
         // date
-        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
+        bindings().bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
     }
 }
