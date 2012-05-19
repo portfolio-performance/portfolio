@@ -19,9 +19,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -30,29 +37,49 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-public class CellEditorFactory
+public final class CellEditorFactory
 {
     public interface ModificationListener
     {
         void onModified(Object element, String property);
     }
 
-    private Class<?> subjectType;
-    private ColumnViewer viewer;
+    private final Class<?> subjectType;
+    private final ColumnViewer viewer;
+
     private ModificationListener listener = new ModificationListener()
     {
         public void onModified(Object element, String property)
         {}
     };
 
-    private List<String> properties = new ArrayList<String>();
-    private List<CellEditor> cellEditors = new ArrayList<CellEditor>();
-    private List<Modifier> modifiers = new ArrayList<Modifier>();
+    private final List<String> properties = new ArrayList<String>();
+    private final List<CellEditor> cellEditors = new ArrayList<CellEditor>();
+    private final List<Modifier> modifiers = new ArrayList<Modifier>();
 
     public CellEditorFactory(ColumnViewer viewer, Class<?> subject)
     {
         this.subjectType = subject;
         this.viewer = viewer;
+
+        ColumnViewerEditorActivationStrategy support = new ColumnViewerEditorActivationStrategy(viewer)
+        {
+            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
+            {
+                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+                                || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
+                                || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+            }
+        };
+
+        int feature = ColumnViewerEditor.TABBING_HORIZONTAL
+                    | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.TABBING_VERTICAL
+                    | ColumnViewerEditor.KEYBOARD_ACTIVATION;
+        if (viewer instanceof TableViewer)
+            TableViewerEditor.create((TableViewer) viewer, null, support, feature);
+        else if (viewer instanceof TreeViewer)
+            TreeViewerEditor.create((TreeViewer) viewer, support, feature);
     }
 
     public CellEditorFactory notify(ModificationListener listener)
