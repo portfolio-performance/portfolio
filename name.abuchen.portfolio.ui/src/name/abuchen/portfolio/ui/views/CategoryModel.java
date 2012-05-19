@@ -78,10 +78,12 @@ public class CategoryModel
         subject.setPercentage(percentage);
     }
 
-    public void addCategory(Category category)
+    public CategoryModel addCategory(Category category)
     {
         subject.addCategory(category);
-        children.add(new CategoryModel(this, category));
+        CategoryModel m = new CategoryModel(this, category);
+        children.add(m);
+        return m;
     }
 
     public void removeCategory(CategoryModel category)

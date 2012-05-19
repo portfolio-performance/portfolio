@@ -192,10 +192,11 @@ public class CategoryView extends AbstractFinanceView
                     @Override
                     public void run()
                     {
-                        category.addCategory(new Category(Messages.LabelNewCategory, 100 - category.getSubject()
-                                        .getChildrenPercentage()));
+                        CategoryModel element = category.addCategory(new Category(Messages.LabelNewCategory,
+                                        100 - category.getSubject().getChildrenPercentage()));
                         assets.setExpandedState(category, true);
                         onCategoryModelEdited();
+                        assets.editElement(element, 0);
                     }
                 });
             }

@@ -135,6 +135,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
                 markDirty();
 
                 indeces.setInput(getClient().getConsumerPriceIndeces());
+                indeces.editElement(index, 0);
                 refreshChart();
             }
         });

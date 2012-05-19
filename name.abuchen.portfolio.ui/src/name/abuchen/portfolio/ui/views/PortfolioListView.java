@@ -158,6 +158,7 @@ public class PortfolioListView extends AbstractListView
                 markDirty();
 
                 portfolios.setInput(getClient().getPortfolios());
+                portfolios.editElement(portfolio, 0);
             }
         });
     }
@@ -455,6 +456,7 @@ public class PortfolioListView extends AbstractListView
 
                 portfolios.refresh(transactions.getData(Account.class.toString()));
                 transactions.setInput(portfolio.getTransactions());
+                transactions.editElement(transaction, 0);
 
                 statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
             }

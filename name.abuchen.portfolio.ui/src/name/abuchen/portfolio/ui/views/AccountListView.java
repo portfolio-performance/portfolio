@@ -149,6 +149,7 @@ public class AccountListView extends AbstractListView
                 markDirty();
 
                 accounts.setInput(getClient().getAccounts());
+                accounts.editElement(account, 0);
             }
         });
     }

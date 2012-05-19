@@ -671,6 +671,7 @@ public class SecurityListView extends AbstractListView
                     updateChart(security);
 
                     prices.setSelection(new StructuredSelection(price), true);
+                    prices.editElement(price, 0);
                 }
             });
             manager.add(new Separator());
