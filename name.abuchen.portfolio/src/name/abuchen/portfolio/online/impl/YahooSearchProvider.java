@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 
 import org.htmlparser.Node;
@@ -24,6 +25,14 @@ import org.htmlparser.util.ParserException;
 public class YahooSearchProvider implements SecuritySearchProvider
 {
     private static final String SEARCH_URL = "http://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
+
+    private static final ThreadLocal<DecimalFormat> FMT_INDEX = new ThreadLocal<DecimalFormat>()
+    {
+        protected DecimalFormat initialValue()
+        {
+            return new DecimalFormat("#,##0.##", new DecimalFormatSymbols(Locale.GERMANY)); //$NON-NLS-1$
+        }
+    };
 
     public static class YahooResultItem extends ResultItem
     {
@@ -195,9 +204,8 @@ public class YahooSearchProvider implements SecuritySearchProvider
         {
             try
             {
-                DecimalFormat fmt = new DecimalFormat("#,##0.##", new DecimalFormatSymbols(Locale.GERMANY)); //$NON-NLS-1$
-                Number q = fmt.parse(text);
-                return (long) (q.doubleValue() * 100);
+                Number q = FMT_INDEX.get().parse(text);
+                return (long) (q.doubleValue() * Values.Quote.factor());
             }
             catch (ParseException e)
             {

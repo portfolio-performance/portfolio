@@ -40,9 +40,21 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // v = volume
     // Source = http://cliffngan.net/a/13
 
-    private final DecimalFormat FMT_PRICE = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+    private static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
+    {
+        protected DecimalFormat initialValue()
+        {
+            return new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+        }
+    };
 
-    private final SimpleDateFormat fmtTradeDate = new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
+    private static final ThreadLocal<SimpleDateFormat> FMT_TRADE_DATET = new ThreadLocal<SimpleDateFormat>()
+    {
+        protected SimpleDateFormat initialValue()
+        {
+            return new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
+        }
+    };
 
     @SuppressWarnings("nls")
     private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/table.csv?ignore=.csv" //
@@ -145,21 +157,21 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         if ("N/A".equals(s)) //$NON-NLS-1$
             return -1;
-        return (long) (FMT_PRICE.parse(s).doubleValue() * 100);
+        return (long) (FMT_PRICE.get().parse(s).doubleValue() * 100);
     }
 
     private int asNumber(String s) throws ParseException
     {
         if ("N/A".equals(s)) //$NON-NLS-1$
             return -1;
-        return FMT_PRICE.parse(s).intValue();
+        return FMT_PRICE.get().parse(s).intValue();
     }
 
     private Date asDate(String s) throws ParseException
     {
         if ("\"N/A\"".equals(s)) //$NON-NLS-1$
             return null;
-        return fmtTradeDate.parse(s);
+        return FMT_TRADE_DATET.get().parse(s);
     }
 
     @Override
@@ -230,6 +242,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
                 throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
 
+            DecimalFormat priceFormat = FMT_PRICE.get();
+
             while ((line = dis.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
@@ -241,7 +255,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 SimpleDateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
                 Date date = dfmt.parse(values[0]);
 
-                Number q = FMT_PRICE.parse(values[6]);
+                Number q = priceFormat.parse(values[6]);
                 long v = (long) (q.doubleValue() * 100);
 
                 price.setTime(date);
@@ -251,13 +265,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 {
                     LatestSecurityPrice latest = (LatestSecurityPrice) price;
 
-                    q = FMT_PRICE.parse(values[5]);
+                    q = priceFormat.parse(values[5]);
                     latest.setVolume(q.intValue());
 
-                    q = FMT_PRICE.parse(values[2]);
+                    q = priceFormat.parse(values[2]);
                     latest.setHigh((long) (q.doubleValue() * 100));
 
-                    q = FMT_PRICE.parse(values[3]);
+                    q = priceFormat.parse(values[3]);
                     latest.setLow((long) (q.doubleValue() * 100));
                 }
 
@@ -308,7 +322,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 int e = item.getSymbol().indexOf('.');
                 String exchange = e >= 0 ? item.getSymbol().substring(e) : ".default"; //$NON-NLS-1$
                 String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
-                
+
                 answer.add(new Exchange(item.getSymbol(), String.format("%s (%s)", label, item.getSymbol()))); //$NON-NLS-1$
             }
         }
