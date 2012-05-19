@@ -91,7 +91,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     @SuppressWarnings("nls")
     public String toString()
     {
-        return String.format("%tF: %,10.2f", time, value / 100d);
+        return String.format("%tF: %,10.2f", time, value / Values.Quote.divider());
     }
 
 }

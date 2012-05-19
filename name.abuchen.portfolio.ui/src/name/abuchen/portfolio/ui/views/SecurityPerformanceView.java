@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.ui.Messages;
@@ -185,7 +186,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
                     case 1:
                         return String.format("%,.2f %%", record.getIrr() * 100); //$NON-NLS-1$
                     case 2:
-                        return String.format("%,.2f", record.getDelta() / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(record.getDelta());
                 }
             }
             else if (element instanceof Transaction)
@@ -195,7 +196,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
                 switch (columnIndex)
                 {
                     case 3:
-                        return String.format("%tF", t.getDate()); //$NON-NLS-1$
+                        return Values.Date.format(t.getDate());
                     case 4:
                         if (t instanceof PortfolioTransaction)
                             return ((PortfolioTransaction) t).getType().name();
@@ -204,7 +205,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
                         else
                             return "QUOTE"; //$NON-NLS-1$
                     case 5:
-                        return String.format("%,.2f", Math.abs(t.getAmount()) / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(Math.abs(t.getAmount()));
                 }
 
             }

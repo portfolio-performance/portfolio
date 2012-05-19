@@ -6,6 +6,7 @@ import java.util.Set;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
@@ -209,7 +210,7 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
                     return item.getIsin();
                 case 3:
                     if (item.getLastTrade() != 0)
-                        return String.format("%,.2f", item.getLastTrade() / 100d); //$NON-NLS-1$
+                        return Values.Quote.format(item.getLastTrade());
                     else
                         return null;
                 case 4:

@@ -167,7 +167,8 @@ public class ClientSnapshot
         for (AccountSnapshot snapshot : accounts)
         {
             long funds = snapshot.getFunds();
-            buf.append(String.format("%-66s %,10.2f\n", snapshot.getAccount().getName(), funds / 100d));
+            buf.append(String.format("%-66s %,10.2f\n", snapshot.getAccount().getName(),
+                            funds / Values.Amount.divider()));
             assets += funds;
         }
 
@@ -175,7 +176,8 @@ public class ClientSnapshot
 
         for (PortfolioSnapshot snapshot : portfolios)
         {
-            buf.append(String.format("%-66s %,10.2f\n", snapshot.getSource().getName(), snapshot.getValue() / 100d));
+            buf.append(String.format("%-66s %,10.2f\n", snapshot.getSource().getName(), //
+                            snapshot.getValue() / Values.Amount.divider()));
 
             buf.append(SEPERATOR);
 
@@ -192,14 +194,14 @@ public class ClientSnapshot
                 buf.append(String.format("%5d %-50s %,10.2f %,10.2f\n", //
                                 p.getShares(), //
                                 p.getSecurity().getName(), //
-                                p.getPrice().getValue() / 100d, //
-                                p.calculateValue() / 100d));
+                                p.getPrice().getValue() / Values.Quote.divider(), //
+                                p.calculateValue() / Values.Amount.divider()));
 
             buf.append(SEPERATOR);
             assets += snapshot.getValue();
         }
 
-        buf.append(String.format("%-67s %,10.2f\n", "Total Assets", assets / 100d));
+        buf.append(String.format("%-67s %,10.2f\n", "Total Assets", assets / Values.Amount.divider()));
         buf.append(SEPERATOR);
 
         return buf.toString();

@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
 public class ClientIRRYield
@@ -161,7 +162,7 @@ public class ClientIRRYield
         Calendar cal = Calendar.getInstance();
         cal.setTime(start);
         dates.add(cal.getTime());
-        values.add(-(snapshotStart.getAssets()) / 100d);
+        values.add(-(snapshotStart.getAssets()) / Values.Amount.divider());
 
         for (Transaction t : transactions)
         {
@@ -174,7 +175,7 @@ public class ClientIRRYield
                 long amount = at.getAmount();
                 if (at.getType() == Type.DEPOSIT || at.getType() == Type.TRANSFER_IN)
                     amount = -amount;
-                values.add(amount / 100d);
+                values.add(amount / Values.Amount.divider());
             }
             else if (t instanceof PortfolioTransaction)
             {
@@ -183,7 +184,7 @@ public class ClientIRRYield
                 long amount = pt.getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     amount = -amount;
-                values.add(amount / 100d);
+                values.add(amount / Values.Amount.divider());
             }
             else
             {
@@ -193,6 +194,6 @@ public class ClientIRRYield
 
         cal.setTime(end);
         dates.add(cal.getTime());
-        values.add(snapshotEnd.getAssets() / 100d);
+        values.add(snapshotEnd.getAssets() / Values.Amount.divider());
     }
 }

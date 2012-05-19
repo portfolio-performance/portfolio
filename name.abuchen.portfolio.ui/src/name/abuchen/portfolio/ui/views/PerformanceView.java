@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.Calendar;
 
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
@@ -200,7 +201,7 @@ public class PerformanceView extends AbstractHistoricView
                     case 0:
                         return cat.getLabel();
                     case 1:
-                        return String.format("%,10.2f", cat.getValuation() / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(cat.getValuation());
                 }
             }
             else if (element instanceof ClientPerformanceSnapshot.Position)
@@ -212,7 +213,7 @@ public class PerformanceView extends AbstractHistoricView
                     case 0:
                         return pos.getLabel();
                     case 1:
-                        return String.format("%,10.2f", pos.getValuation() / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(pos.getValuation());
                 }
             }
             return null;

@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Values;
 
 public class SecurityPerformanceSnapshot
 {
@@ -176,7 +177,8 @@ public class SecurityPerformanceSnapshot
         @SuppressWarnings("nls")
         public String toString()
         {
-            return String.format("%tF                                 %,10.2f", getDate(), getAmount() / 100d);
+            return String.format("%tF                                 %,10.2f", getDate(),
+                            getAmount() / Values.Amount.divider());
         }
 
     }
@@ -243,11 +245,11 @@ public class SecurityPerformanceSnapshot
 
                 if (t instanceof SecurityPositionTransaction)
                 {
-                    values.add(((SecurityPositionTransaction) t).getAmount() / 100d);
+                    values.add(((SecurityPositionTransaction) t).getAmount() / Values.Amount.divider());
                 }
                 else if (t instanceof AccountTransaction)
                 {
-                    values.add(((AccountTransaction) t).getAmount() / 100d);
+                    values.add(((AccountTransaction) t).getAmount() / Values.Amount.divider());
                 }
                 else if (t instanceof PortfolioTransaction)
                 {
@@ -256,11 +258,11 @@ public class SecurityPerformanceSnapshot
                     {
                         case TRANSFER_IN:
                         case BUY:
-                            values.add(-pt.getAmount() / 100d);
+                            values.add(-pt.getAmount() / Values.Amount.divider());
                             break;
                         case TRANSFER_OUT:
                         case SELL:
-                            values.add(pt.getAmount() / 100d);
+                            values.add(pt.getAmount() / Values.Amount.divider());
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -321,7 +323,7 @@ public class SecurityPerformanceSnapshot
 
             if (!transactions.isEmpty())
             {
-                buf.append(String.format("%-46s %,10.2f\n", "Absolute", delta / 100d));
+                buf.append(String.format("%-46s %,10.2f\n", "Absolute", delta / Values.Amount.divider()));
                 buf.append(String.format("%-46s %,10.2f\n", "IRR", irr * 100));
 
                 for (Transaction t : transactions)

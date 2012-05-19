@@ -53,7 +53,7 @@ public class AccountTransaction extends Transaction
         if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.TRANSFER_OUT, Type.BUY).contains(type))
             v = -v;
 
-        return String.format("%tF                                 %,10.2f", getDate(), v / 100d);
+        return String.format("%tF                                 %,10.2f", getDate(), v / Values.Amount.divider());
     }
 
 }

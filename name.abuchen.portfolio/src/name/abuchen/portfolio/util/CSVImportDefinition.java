@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.CSVImporter.AmountField;
 import name.abuchen.portfolio.util.CSVImporter.Column;
@@ -59,7 +60,7 @@ public abstract class CSVImportDefinition
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return Long.valueOf((long) Math.round(num.doubleValue() * 100d));
+        return Long.valueOf((long) Math.round(num.doubleValue() * Values.Amount.factor()));
     }
 
     protected Long convertShares(String name, String[] rawValues, Map<String, Column> field2column)

@@ -52,7 +52,7 @@ public class ConsumerPriceIndex implements Comparable<ConsumerPriceIndex>
     @SuppressWarnings("nls")
     public String toString()
     {
-        return String.format("%d-%s %,.2f", getYear(), new DateFormatSymbols().getMonths()[getMonth()],
-                        getIndex() / 100d);
+        return String.format("%d-%s %,.2f", getYear(), new DateFormatSymbols().getMonths()[getMonth()], getIndex()
+                        / Values.Index.divider());
     }
 }

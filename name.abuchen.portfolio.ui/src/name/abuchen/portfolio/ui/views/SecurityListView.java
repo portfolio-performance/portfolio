@@ -829,7 +829,7 @@ public class SecurityListView extends AbstractListView
         {
             SecurityPrice p = prices.get(index);
             dates[ii] = p.getTime();
-            values[ii] = p.getValue() / 100d;
+            values[ii] = p.getValue() / Values.Quote.divider();
         }
 
         ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "prices"); //$NON-NLS-1$

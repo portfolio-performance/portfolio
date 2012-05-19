@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -158,7 +159,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
                 case 1:
                     return String.valueOf(MONTHS[p.getMonth()]);
                 case 2:
-                    return String.format("%,10.2f", p.getIndex() / 100d); //$NON-NLS-1$
+                    return Values.Index.format(p.getIndex());
             }
             return null;
         }
@@ -191,7 +192,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
         for (ConsumerPriceIndex index : indeces)
         {
             dates[ii] = Dates.date(index.getYear(), index.getMonth(), 1);
-            cpis[ii] = (double) index.getIndex() / 100d;
+            cpis[ii] = (double) index.getIndex() / Values.Index.divider();
             ii++;
         }
 

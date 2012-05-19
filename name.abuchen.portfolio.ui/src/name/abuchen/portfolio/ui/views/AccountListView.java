@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
@@ -171,7 +172,7 @@ public class AccountListView extends AbstractListView
                 case 0:
                     return p.getName();
                 case 1:
-                    return String.format("%,10.2f", p.getCurrentAmount() / 100d); //$NON-NLS-1$
+                    return Values.Amount.format(p.getCurrentAmount());
             }
             return null;
         }
@@ -355,7 +356,7 @@ public class AccountListView extends AbstractListView
             switch (columnIndex)
             {
                 case 0:
-                    return String.format("%tF", t.getDate()); //$NON-NLS-1$
+                    return Values.Date.format(t.getDate());
                 case 1:
                     return t.getType().toString();
                 case 2:
@@ -363,7 +364,7 @@ public class AccountListView extends AbstractListView
                     if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(
                                     t.getType()))
                         v = -v;
-                    return String.format("%,10.2f", v / 100d); //$NON-NLS-1$
+                    return Values.Amount.format(v);
                 case 3:
                     return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
             }

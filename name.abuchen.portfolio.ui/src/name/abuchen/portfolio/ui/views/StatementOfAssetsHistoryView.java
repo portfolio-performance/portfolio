@@ -9,6 +9,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
@@ -85,14 +86,14 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             ClientSnapshot snapshot = ClientSnapshot.create(getClient(), cal.getTime());
             dates[index] = cal.getTime();
 
-            totals[index] = snapshot.getAssets() / 100d;
+            totals[index] = snapshot.getAssets() / Values.Amount.divider();
 
             List<AssetCategory> categories = snapshot.groupByCategory();
-            cash[index] = categories.get(0).getValuation() / 100d;
-            debt[index] = categories.get(1).getValuation() / 100d;
-            equity[index] = categories.get(2).getValuation() / 100d;
-            realEstate[index] = categories.get(3).getValuation() / 100d;
-            commodity[index] = categories.get(4).getValuation() / 100d;
+            cash[index] = categories.get(0).getValuation() / Values.Amount.divider();
+            debt[index] = categories.get(1).getValuation() / Values.Amount.divider();
+            equity[index] = categories.get(2).getValuation() / Values.Amount.divider();
+            realEstate[index] = categories.get(3).getValuation() / Values.Amount.divider();
+            commodity[index] = categories.get(4).getValuation() / Values.Amount.divider();
 
             cal.add(Calendar.DATE, 1);
             index++;
@@ -160,7 +161,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         double[] d_transferals = new double[transferals.size()];
         for (int ii = 0; ii < d_transferals.length; ii++)
-            d_transferals[ii] = transferals.get(ii) / 100d;
+            d_transferals[ii] = transferals.get(ii) / Values.Amount.divider();
         chart.addDateBarSeries(transferals_dates.toArray(new Date[0]), d_transferals, Messages.LabelTransferals);
 
         // for one reason or another, the ranges are not calculated properly if

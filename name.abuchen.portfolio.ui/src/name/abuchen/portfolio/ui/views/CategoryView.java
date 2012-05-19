@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -429,7 +430,7 @@ public class CategoryView extends AbstractFinanceView
                     case 1:
                         return String.format("%,10.1f", (double) cat.getPercentage()); //$NON-NLS-1$
                     case 2:
-                        return String.format("%,10.2f", cat.getTarget() / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(cat.getTarget());
                     case 3:
                         // actual %
                         // --> root is compared to target = total assets
@@ -438,11 +439,11 @@ public class CategoryView extends AbstractFinanceView
 
                         return String.format("%,10.1f", ((double) actual / (double) base) * 100d); //$NON-NLS-1$
                     case 4:
-                        return String.format("%,10.2f", cat.getActual() / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(cat.getActual());
                     case 5:
                         return String.format("%,10.1f", ((double) cat.getActual() / cat.getTarget()) * 100d - 100); //$NON-NLS-1$
                     case 6:
-                        return String.format("%,10.2f", (cat.getActual() - cat.getTarget()) / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(cat.getActual() - cat.getTarget());
                 }
             }
             else if (element instanceof Security)
@@ -454,8 +455,7 @@ public class CategoryView extends AbstractFinanceView
                         return security.getName();
                     case 4:
                         SecurityPosition p = security2position.get(security);
-                        double v = p == null ? 0 : p.calculateValue() / 100d;
-                        return String.format("%,10.2f", v); //$NON-NLS-1$
+                        return Values.Amount.format(p == null ? 0 : p.calculateValue());
                     case 5:
                     case 6:
                         CategoryModel cat = model.findFor(security);
@@ -468,7 +468,7 @@ public class CategoryView extends AbstractFinanceView
                         if (columnIndex == 5)
                             return String.format("%,10d", count); //$NON-NLS-1$
                         else
-                            return String.format("%,10.2f", (count * price.getValue()) / 100d); //$NON-NLS-1$
+                            return Values.Quote.format(count * price.getValue());
                 }
             }
             else if (element instanceof Account)
@@ -480,7 +480,7 @@ public class CategoryView extends AbstractFinanceView
                         return account.getName();
                     case 4:
                         AccountSnapshot s = account2position.get(account);
-                        return String.format("%,10.2f", s.getFunds() / 100d); //$NON-NLS-1$
+                        return Values.Amount.format(s.getFunds());
                 }
             }
             return null;

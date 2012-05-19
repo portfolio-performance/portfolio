@@ -94,7 +94,8 @@ public class PortfolioTransaction extends Transaction
         if (EnumSet.of(Type.BUY, Type.TRANSFER_IN).contains(type))
             v = -v;
 
-        return String.format("%tF %-12s %-18s %,10.2f", getDate(), type, getSecurity().getTickerSymbol(), v / 100d);
+        return String.format("%tF %-12s %-18s %,10.2f", getDate(), type, getSecurity().getTickerSymbol(), //
+                        v / Values.Amount.divider());
     }
 
 }

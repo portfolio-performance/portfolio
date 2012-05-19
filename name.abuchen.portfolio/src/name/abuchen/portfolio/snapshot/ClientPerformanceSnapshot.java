@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 
 public class ClientPerformanceSnapshot
 {
@@ -326,7 +327,7 @@ public class ClientPerformanceSnapshot
     {
         StringBuilder buf = new StringBuilder();
         for (Category c : categories.values())
-            buf.append(String.format("%-53s %,10.2f\n", c.label, c.valuation / 100d));
+            buf.append(String.format("%-53s %,10.2f\n", c.label, c.valuation / Values.Amount.divider()));
         return buf.toString();
     }
 }

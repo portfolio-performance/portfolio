@@ -4,6 +4,7 @@ import java.util.Date;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Values;
 
 public class AccountSnapshot
 {
@@ -85,7 +86,7 @@ public class AccountSnapshot
         buf.append("-----------------------------------------------------\n");
 
         buf.append("                                           ");
-        buf.append(String.format("%,10.2f\n", funds / 100d));
+        buf.append(String.format("%,10.2f\n", funds / Values.Amount.divider()));
 
         buf.append("-----------------------------------------------------\n");
 

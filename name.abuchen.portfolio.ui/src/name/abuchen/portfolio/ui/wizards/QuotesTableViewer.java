@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.wizards;
 import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 
@@ -110,13 +111,13 @@ public class QuotesTableViewer
                 switch (columnIndex)
                 {
                     case 0:
-                        return String.format("%tF", p.getTime()); //$NON-NLS-1$
+                        return Values.Date.format(p.getTime());
                     case 1:
-                        return String.format("%,10.2f", p.getHigh() / 100d); //$NON-NLS-1$
+                        return Values.Quote.format(p.getHigh());
                     case 2:
-                        return String.format("%,10.2f", p.getLow() / 100d); //$NON-NLS-1$
+                        return Values.Quote.format(p.getLow());
                     case 3:
-                        return String.format("%,10.2f", p.getValue() / 100d); //$NON-NLS-1$
+                        return Values.Quote.format(p.getValue());
                     case 4:
                         return String.format("%,d", p.getVolume()); //$NON-NLS-1$
                 }

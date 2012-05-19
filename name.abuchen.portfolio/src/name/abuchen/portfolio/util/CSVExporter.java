@@ -52,7 +52,7 @@ public class CSVExporter
             {
                 printer.print(dateFormat.format(t.getDate()));
                 printer.print(t.getType().name());
-                printer.print(currencyFormat.format(t.getAmount() / 100d));
+                printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
                 if (t.getSecurity() != null)
                 {
                     printer.print(t.getSecurity().getIsin());
@@ -100,8 +100,8 @@ public class CSVExporter
             {
                 printer.print(dateFormat.format(t.getDate()));
                 printer.print(t.getType().name());
-                printer.print(currencyFormat.format(t.getAmount() / 100d));
-                printer.print(currencyFormat.format(t.getFees() / 100d));
+                printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
                 printer.print(Values.Share.format(t.getShares()));
 
                 if (t.getSecurity() != null)
@@ -144,7 +144,7 @@ public class CSVExporter
             for (SecurityPrice p : security.getPrices())
             {
                 printer.print(dateFormat.format(p.getTime()));
-                printer.print(currencyFormat.format(p.getValue() / 100d));
+                printer.print(currencyFormat.format(p.getValue() / Values.Quote.divider()));
                 printer.println();
             }
         }

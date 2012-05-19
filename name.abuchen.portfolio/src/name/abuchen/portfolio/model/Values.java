@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 public abstract class Values<E>
@@ -15,10 +16,12 @@ public abstract class Values<E>
 
     public static final Values<Long> Share = new Values<Long>("#,##0.#####", 100000D, 100000) //$NON-NLS-1$
     {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
         @Override
         public String format(Long share)
         {
-            return String.format("%,.2f", share / divider()); //$NON-NLS-1$
+            return format.format(share / divider());
         }
     };
 
@@ -54,7 +57,7 @@ public abstract class Values<E>
         @Override
         public String format(Double percent)
         {
-            return String.format("%,10.2f", percent * 100); //$NON-NLS-1$
+            return String.format("%,.2f", percent * 100); //$NON-NLS-1$
         }
     };
 
