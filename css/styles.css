@@ -44,3 +44,27 @@ margin-bottom: 10px;
 #versions {
 font-size: 0.7em;
 }
+
+.news {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0px;
+border-bottom: thin solid grey;
+}
+
+.news tr {
+}
+
+.news td {
+vertical-align: top;
+border-top: thin solid grey;
+}
+
+.title {
+width: 20%;
+font-weight: bold;
+}
+
+.content {
+width: 80%;
+}
