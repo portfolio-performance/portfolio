@@ -89,9 +89,9 @@ public class BuySellSecurityDialog extends AbstractDialog
                 switch (type)
                 {
                     case BUY:
-                        return Math.max(0, (total - fees) / shares);
+                        return Math.max(0, (total - fees) * Values.Share.factor() / shares);
                     case SELL:
-                        return Math.max(0, (total + fees) / shares);
+                        return Math.max(0, (total + fees) * Values.Share.factor() / shares);
                     default:
                         throw new RuntimeException("Unsupported transaction type for dialog " + type); //$NON-NLS-1$
                 }
