@@ -18,6 +18,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
 {
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
+    public static final String IMG_LOGO = "pp_128"; //$NON-NLS-1$
+
     public static final String IMG_SECURITY = "security"; //$NON-NLS-1$
     public static final String IMG_ACCOUNT = "account"; //$NON-NLS-1$
     public static final String IMG_PORTFOLIO = "portfolio"; //$NON-NLS-1$
@@ -35,7 +37,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
     {
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
-        for (String key : new String[] { IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY })
+        for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);

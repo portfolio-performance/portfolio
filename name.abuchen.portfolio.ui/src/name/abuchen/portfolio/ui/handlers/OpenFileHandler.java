@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.ClientEditor.ClientEditorInput;
+import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -37,7 +37,7 @@ public class OpenFileHandler extends AbstractHandler
                 page.openEditor(new ClientEditorInput(new Path(fileSelected)), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
             }
 
-            return null;
+            return fileSelected;
         }
         catch (PartInitException e)
         {

@@ -154,6 +154,18 @@
                </not>
             </visibleWhen>
             <command
+                  id="org.eclipse.ui.help.aboutAction"
+                  commandId="org.eclipse.ui.help.aboutAction">
+            </command>
+            <command
+                  id="org.eclipse.ui.help.quickStartAction"
+                  commandId="org.eclipse.ui.help.quickStartAction">
+            </command>
+            <separator
+                  name="name.abuchen.portfolio.ui.menus.helpSeparator"
+                  visible="true">
+            </separator>
+            <command
                   id="org.eclipse.ui.window.preferences"
                   commandId="org.eclipse.ui.window.preferences">
             </command>
@@ -165,14 +177,6 @@
                      name="org.eclipse.ui.views.showView.viewId"
                      value="org.eclipse.pde.runtime.LogView">
                </parameter>
-            </command>
-            <separator
-                  name="name.abuchen.portfolio.ui.menus.helpSeparator"
-                  visible="true">
-            </separator>
-            <command
-                  id="org.eclipse.ui.help.aboutAction"
-                  commandId="org.eclipse.ui.help.aboutAction">
             </command>
          </menu>
       </menuContribution>
@@ -188,6 +192,11 @@
             categoryId="name.abuchen.portfolio.ui.commands.category"
             id="name.abuchen.portfolio.ui.commands.openFileCommand"
             name="%command.openFile.name">
+      </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.openSampleCommand"
+            name="%command.openSample.name">
       </command>
       <command
             categoryId="name.abuchen.portfolio.ui.commands.category"
@@ -226,6 +235,10 @@
       <handler
             class="name.abuchen.portfolio.ui.handlers.OpenFileHandler"
             commandId="name.abuchen.portfolio.ui.commands.openFileCommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.OpenSampleFileHandler"
+            commandId="name.abuchen.portfolio.ui.commands.openSampleCommand">
       </handler>
       <handler
             class="name.abuchen.portfolio.ui.handlers.NewFileHandler"
@@ -299,5 +312,17 @@
             productId="name.abuchen.portfolio.ui.product"
             splashId="name.abuchen.portfolio.ui.splash">
       </splashHandlerProductBinding>         
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.intro">
+      <introProductBinding
+            introId="name.abuchen.portfolio.ui.intro"
+            productId="name.abuchen.portfolio.ui.product">
+      </introProductBinding>
+      <intro
+            class="name.abuchen.portfolio.ui.app.IntroPart"
+            id="name.abuchen.portfolio.ui.intro">
+      </intro>
    </extension>
 </plugin>

@@ -1,9 +1,10 @@
 package name.abuchen.portfolio.ui.app;
 
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,6 +15,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
@@ -35,8 +37,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
             if (systemMenu != null)
             {
                 int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
-                MenuItem newAppMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
 
+                MenuItem newAppMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
                 newAppMenuItem.setText(Messages.SystemMenuShowErrorLog);
                 newAppMenuItem.addSelectionListener(new SelectionAdapter()
                 {
@@ -53,6 +55,19 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
                         }
                     };
                 });
+
+                MenuItem newWelcomeMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
+                newWelcomeMenuItem.setText(Messages.SystemMenuWelcome);
+                newWelcomeMenuItem.addSelectionListener(new SelectionAdapter()
+                {
+                    public void widgetSelected(SelectionEvent event)
+                    {
+                        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                        IAction introAction = ActionFactory.INTRO.create(window);
+                        introAction.run();
+                    };
+                });
+
             }
         }
     }
