@@ -112,6 +112,8 @@ public class Messages extends NLS
     public static String ImportWizardReviewDescription;
     public static String ImportWizardReviewError;
     public static String ImportWizardReviewTitle;
+    public static String IntroNewFile;
+    public static String IntroNewFileText;
     public static String IntroOpenFile;
     public static String IntroOpenFileText;
     public static String IntroOpenSample;

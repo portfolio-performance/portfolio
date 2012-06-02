@@ -64,6 +64,7 @@ public class IntroPart extends org.eclipse.ui.part.IntroPart implements IHyperli
                         .append(Messages.IntroTitle) //
                         .append("</span></p>"); //$NON-NLS-1$
         addLink(buf, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
+        addLink(buf, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
         addLink(buf, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
         addLink(buf, "http://buchen.github.com/portfolio/new_and_noteworthy.html", //$NON-NLS-1$
                         Messages.IntroReadNews, Messages.IntroReadNewsText);
@@ -97,6 +98,12 @@ public class IntroPart extends org.eclipse.ui.part.IntroPart implements IHyperli
                                 "name.abuchen.portfolio.ui.commands.openFileCommand", null); //$NON-NLS-1$
                 if (result != null)
                     PlatformUI.getWorkbench().getIntroManager().closeIntro(this);
+            }
+            else if ("action:new".equals(target)) //$NON-NLS-1$
+            {
+                IHandlerService handlerService = (IHandlerService) getIntroSite().getService(IHandlerService.class);
+                handlerService.executeCommand("name.abuchen.portfolio.ui.commands.newFileCommand", null); //$NON-NLS-1$
+                PlatformUI.getWorkbench().getIntroManager().closeIntro(this);
             }
             else if ("action:sample".equals(target)) //$NON-NLS-1$
             {
