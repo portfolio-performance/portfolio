@@ -18,6 +18,15 @@ mvn install:install-file
     -DgeneratePom=true
 ```
 
+
+Give Maven some memory (and, as Maven has troubles with German locale on Mac, switch to English):
+
+```
+export MAVEN_OPTS="-Xmx1g -XX:MaxPermSize=500m"
+export LANG=en_US.UTF-8
+```
+
+
 Run Maven 3.0.x in the 'portfolio-app' directory:
 
 ```
