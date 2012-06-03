@@ -13,12 +13,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
@@ -28,14 +28,6 @@ import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.events.IHyperlinkListener;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormText;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.forms.widgets.TableWrapData;
-import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.PageBook;
 
@@ -103,28 +95,35 @@ public class ClientEditor extends EditorPart
         }
     }
 
+    private final class ActivateViewAction extends Action
+    {
+        private String view;
+
+        private ActivateViewAction(String label, String view)
+        {
+            super(label);
+            this.view = view;
+        }
+
+        private ActivateViewAction(String text, String view, ImageDescriptor image)
+        {
+            super(text, image);
+            this.view = view;
+        }
+
+        @Override
+        public void run()
+        {
+            ClientEditor.this.activateView(view);
+        }
+    }
+
     private boolean isDirty = false;
     private IPath clientFile;
     private Client client;
 
-    private SashForm sash;
     private PageBook book;
     private AbstractFinanceView view;
-
-    private IHyperlinkListener listener = new IHyperlinkListener()
-    {
-        public void linkActivated(HyperlinkEvent e)
-        {
-            String target = (String) e.getHref();
-            activateView(target);
-        }
-
-        public void linkEntered(HyperlinkEvent e)
-        {}
-
-        public void linkExited(HyperlinkEvent e)
-        {}
-    };
 
     // //////////////////////////////////////////////////////////////
     // init
@@ -202,104 +201,51 @@ public class ClientEditor extends EditorPart
     @Override
     public void createPartControl(Composite parent)
     {
-        sash = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH);
+        Composite container = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(container);
 
-        FormToolkit toolkit = new FormToolkit(parent.getDisplay());
-        Form form = toolkit.createForm(sash);
+        Sidebar sidebar = new Sidebar(container, SWT.BORDER);
+        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(sidebar);
 
-        GridLayout layout = new GridLayout();
-        layout.verticalSpacing = 20;
-        form.getBody().setLayout(layout);
+        createGeneralDataSection(sidebar);
+        createMasterDataSection(sidebar);
+        createPerformanceSection(sidebar);
 
-        Section section = createGeneralDataSection(toolkit, form);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(section);
+        book = new PageBook(container, SWT.NONE);
 
-        section = createMasterDataSection(toolkit, form);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(section);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
 
-        section = createPerformanceSection(toolkit, form);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(section);
-
-        form.getBody().layout();
-
-        book = new PageBook(sash, SWT.NONE);
-
-        sash.setWeights(new int[] { 1, 4 });
-
-        activateView("StatementOfAssets"); //$NON-NLS-1$
+        sidebar.select(7);
     }
 
-    private Section createGeneralDataSection(FormToolkit toolkit, Form form)
+    private void createGeneralDataSection(Sidebar sidebar)
     {
-        Section section = toolkit.createSection(form.getBody(), Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE);
-        section.setText(Messages.ClientEditorLabelGeneralData);
-        Composite sectionClient = toolkit.createComposite(section);
-        sectionClient.setLayout(new TableWrapLayout());
-        FormText text = toolkit.createFormText(sectionClient, true);
-        text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
-
-        StringBuilder buf = new StringBuilder();
-        buf.append("<form>"); //$NON-NLS-1$
-        buf.append("<li><a href=\"SecurityList\">").append(Messages.LabelSecurities).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li><a href=\"ConsumerPriceIndexList\">").append(Messages.LabelConsumerPriceIndex).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("</form>"); //$NON-NLS-1$
-        text.setText(buf.toString(), true, false);
-
-        text.addHyperlinkListener(listener);
-
-        section.setClient(sectionClient);
-        return section;
+        sidebar.addSection(Messages.ClientEditorLabelGeneralData);
+        sidebar.addItem(new ActivateViewAction(Messages.LabelSecurities, "SecurityList", //$NON-NLS-1$
+                        PortfolioPlugin.getDefault().getImageRegistry().getDescriptor(PortfolioPlugin.IMG_SECURITY)));
+        sidebar.addItem(new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
     }
 
-    private Section createMasterDataSection(FormToolkit toolkit, Form form)
+    private void createMasterDataSection(Sidebar sidebar)
     {
-        Section section = toolkit.createSection(form.getBody(), Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE);
-        section.setText(Messages.ClientEditorLabelClientMasterData);
-        Composite sectionClient = toolkit.createComposite(section);
-        sectionClient.setLayout(new TableWrapLayout());
-        FormText text = toolkit.createFormText(sectionClient, true);
-        text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
-
-        StringBuilder buf = new StringBuilder();
-        buf.append("<form>"); //$NON-NLS-1$
-        buf.append("<li><a href=\"AccountList\">").append(Messages.LabelAccounts).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li><a href=\"PortfolioList\">").append(Messages.LabelPortfolios).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("</form>"); //$NON-NLS-1$
-        text.setText(buf.toString(), true, false);
-
-        text.addHyperlinkListener(listener);
-
-        section.setClient(sectionClient);
-        return section;
+        sidebar.addSection(Messages.ClientEditorLabelClientMasterData);
+        sidebar.addItem(new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
+                        PortfolioPlugin.getDefault().getImageRegistry().getDescriptor(PortfolioPlugin.IMG_ACCOUNT)));
+        sidebar.addItem(new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
+                        PortfolioPlugin.getDefault().getImageRegistry().getDescriptor(PortfolioPlugin.IMG_PORTFOLIO)));
     }
 
-    private Section createPerformanceSection(FormToolkit toolkit, Form form)
+    private void createPerformanceSection(Sidebar sidebar)
     {
-        Section section = toolkit.createSection(form.getBody(), Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE);
-        section.setText(Messages.ClientEditorLabelReports);
-        Composite sectionClient = toolkit.createComposite(section);
-        sectionClient.setLayout(new TableWrapLayout());
-        FormText text = toolkit.createFormText(sectionClient, true);
-        text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
-
-        StringBuilder buf = new StringBuilder();
-        buf.append("<form>"); //$NON-NLS-1$
-        buf.append("<li><a href=\"StatementOfAssets\">").append(Messages.LabelStatementOfAssets).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li bindent=\"20\"><a href=\"StatementOfAssetsHistory\">").append(Messages.ClientEditorLabelChart).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li bindent=\"20\"><a href=\"HoldingsPieChart\">").append(Messages.ClientEditorLabelHoldings).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li bindent=\"20\"><a href=\"StatementOfAssetsPieChart\">").append(Messages.LabelAssetClasses).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li bindent=\"20\"><a href=\"Category\">").append(Messages.LabelAssetAllocation).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        buf.append("<li><a href=\"Performance\">").append(Messages.ClientEditorLabelPerformance).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li bindent=\"20\"><a href=\"PerformanceChart\">").append(Messages.ClientEditorLabelChart).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("<li bindent=\"20\"><a href=\"SecurityPerformance\">").append(Messages.LabelSecurities).append("</a></li>"); //$NON-NLS-1$ //$NON-NLS-2$
-        buf.append("</form>"); //$NON-NLS-1$
-        text.setText(buf.toString(), true, false);
-
-        text.addHyperlinkListener(listener);
-
-        section.setClient(sectionClient);
-        return section;
+        sidebar.addSection(Messages.ClientEditorLabelReports);
+        sidebar.addItem(new ActivateViewAction(Messages.LabelStatementOfAssets, "StatementOfAssets")); //$NON-NLS-1$
+        sidebar.addSubItem(new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
+        sidebar.addSubItem(new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
+        sidebar.addSubItem(new ActivateViewAction(Messages.LabelAssetClasses, "StatementOfAssetsPieChart")); //$NON-NLS-1$
+        sidebar.addSubItem(new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
+        sidebar.addItem(new ActivateViewAction(Messages.ClientEditorLabelPerformance, "Performance")); //$NON-NLS-1$
+        sidebar.addSubItem(new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
+        sidebar.addSubItem(new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
     }
 
     protected void activateView(String target)
