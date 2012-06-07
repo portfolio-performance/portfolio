@@ -24,6 +24,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static final String IMG_ACCOUNT = "account"; //$NON-NLS-1$
     public static final String IMG_PORTFOLIO = "portfolio"; //$NON-NLS-1$
 
+    public static final String IMG_PLUS = "plus"; //$NON-NLS-1$
+
     private static PortfolioPlugin instance;
 
     public PortfolioPlugin()
@@ -37,7 +39,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
     {
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
-        for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY })
+        for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_PLUS })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);
@@ -59,6 +61,11 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static void log(Throwable t)
     {
         log(new Status(Status.ERROR, PLUGIN_ID, t.getMessage(), t));
+    }
+
+    public static ImageDescriptor descriptor(String key)
+    {
+        return getDefault().getImageRegistry().getDescriptor(key);
     }
 
 }

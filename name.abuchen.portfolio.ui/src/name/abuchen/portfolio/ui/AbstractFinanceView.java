@@ -34,7 +34,7 @@ public abstract class AbstractFinanceView
     public void notifyModelUpdated()
     {}
 
-    public void init(ClientEditor clientEditor)
+    public void init(ClientEditor clientEditor, Object parameter)
     {
         this.clientEditor = clientEditor;
     }

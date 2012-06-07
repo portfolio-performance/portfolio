@@ -6,6 +6,8 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.ui.Sidebar.Entry;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,7 +16,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -98,29 +103,38 @@ public class ClientEditor extends EditorPart
     private final class ActivateViewAction extends Action
     {
         private String view;
+        private Object parameter;
 
         private ActivateViewAction(String label, String view)
         {
-            super(label);
-            this.view = view;
+            this(label, view, null, null);
         }
 
         private ActivateViewAction(String text, String view, ImageDescriptor image)
         {
+            this(text, view, null, image);
+        }
+
+        public ActivateViewAction(String text, String view, Object parameter, ImageDescriptor image)
+        {
             super(text, image);
             this.view = view;
+            this.parameter = parameter;
         }
 
         @Override
         public void run()
         {
-            ClientEditor.this.activateView(view);
+            ClientEditor.this.activateView(view, parameter);
         }
     }
 
     private boolean isDirty = false;
     private IPath clientFile;
     private Client client;
+
+    private Entry allSecurities;
+    private Entry statementOfAssets;
 
     private PageBook book;
     private AbstractFinanceView view;
@@ -210,45 +224,128 @@ public class ClientEditor extends EditorPart
         createGeneralDataSection(sidebar);
         createMasterDataSection(sidebar);
         createPerformanceSection(sidebar);
+        createMiscSection(sidebar);
 
         book = new PageBook(container, SWT.NONE);
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
 
-        sidebar.select(7);
+        sidebar.select(statementOfAssets);
     }
 
-    private void createGeneralDataSection(Sidebar sidebar)
+    private void createGeneralDataSection(final Sidebar sidebar)
     {
-        sidebar.addSection(Messages.ClientEditorLabelGeneralData);
-        sidebar.addItem(new ActivateViewAction(Messages.LabelSecurities, "SecurityList", //$NON-NLS-1$
-                        PortfolioPlugin.getDefault().getImageRegistry().getDescriptor(PortfolioPlugin.IMG_SECURITY)));
-        sidebar.addItem(new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
+        final Entry section = new Entry(sidebar, Messages.LabelSecurities);
+        section.setAction(new Action(Messages.LabelSecurities, PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        {
+            @Override
+            public void run()
+            {
+                String name = askWatchlistName("New Watchlist");
+                if (name == null)
+                    return;
+
+                Watchlist watchlist = new Watchlist();
+                watchlist.setName(name);
+                client.getWatchlists().add(watchlist);
+                markDirty();
+
+                createWathlistEntry(section, watchlist);
+                sidebar.layout();
+            }
+        });
+
+        allSecurities = new Entry(section, new ActivateViewAction("All Securities", "SecurityList", //$NON-NLS-2$
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
+
+        for (Watchlist watchlist : client.getWatchlists())
+            createWathlistEntry(section, watchlist);
+    }
+
+    private void createWathlistEntry(Entry section, final Watchlist watchlist)
+    {
+        final Entry entry = new Entry(section, watchlist.getName());
+        entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
+        entry.setContextMenu(new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                manager.add(new Action("Rename Watchlist")
+                {
+                    @Override
+                    public void run()
+                    {
+                        String newName = askWatchlistName(watchlist.getName());
+                        if (newName != null)
+                        {
+                            watchlist.setName(newName);
+                            markDirty();
+                            entry.setLabel(newName);
+                        }
+                    }
+                });
+
+                manager.add(new Action("Delete Watchlist")
+                {
+                    @Override
+                    public void run()
+                    {
+                        client.getWatchlists().remove(watchlist);
+                        markDirty();
+                        entry.dispose();
+                        allSecurities.select();
+                    }
+                });
+            }
+        });
+    }
+
+    private String askWatchlistName(String initialValue)
+    {
+        InputDialog dlg = new InputDialog(getSite().getShell(), "Edit Watchlist Name", "Give the watchlist a name",
+                        initialValue, null);
+        if (dlg.open() != InputDialog.OK)
+            return null;
+
+        return dlg.getValue();
     }
 
     private void createMasterDataSection(Sidebar sidebar)
     {
-        sidebar.addSection(Messages.ClientEditorLabelClientMasterData);
-        sidebar.addItem(new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
-                        PortfolioPlugin.getDefault().getImageRegistry().getDescriptor(PortfolioPlugin.IMG_ACCOUNT)));
-        sidebar.addItem(new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
-                        PortfolioPlugin.getDefault().getImageRegistry().getDescriptor(PortfolioPlugin.IMG_PORTFOLIO)));
+        Entry section = new Entry(sidebar, Messages.ClientEditorLabelClientMasterData);
+        new Entry(section, new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
+        new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
     }
 
     private void createPerformanceSection(Sidebar sidebar)
     {
-        sidebar.addSection(Messages.ClientEditorLabelReports);
-        sidebar.addItem(new ActivateViewAction(Messages.LabelStatementOfAssets, "StatementOfAssets")); //$NON-NLS-1$
-        sidebar.addSubItem(new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
-        sidebar.addSubItem(new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
-        sidebar.addSubItem(new ActivateViewAction(Messages.LabelAssetClasses, "StatementOfAssetsPieChart")); //$NON-NLS-1$
-        sidebar.addSubItem(new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
-        sidebar.addItem(new ActivateViewAction(Messages.ClientEditorLabelPerformance, "Performance")); //$NON-NLS-1$
-        sidebar.addSubItem(new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
-        sidebar.addSubItem(new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
+        Entry section = new Entry(sidebar, Messages.ClientEditorLabelReports);
+
+        statementOfAssets = new Entry(section, new ActivateViewAction(Messages.LabelStatementOfAssets,
+                        "StatementOfAssets")); //$NON-NLS-1$
+        new Entry(statementOfAssets,
+                        new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
+        new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
+        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetClasses, "StatementOfAssetsPieChart")); //$NON-NLS-1$
+        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
+
+        Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
+                        "Performance")); //$NON-NLS-1$
+        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
+        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
     }
 
-    protected void activateView(String target)
+    private void createMiscSection(Sidebar sidebar)
+    {
+        Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
+        new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
+    }
+
+    protected void activateView(String target, Object parameter)
     {
         if (view != null && !view.getControl().isDisposed())
         {
@@ -265,7 +362,7 @@ public class ClientEditor extends EditorPart
                 return;
 
             view = (AbstractFinanceView) clazz.newInstance();
-            view.init(this);
+            view.init(this, parameter);
             view.createViewControl(book);
 
             book.showPage(view.getControl());
