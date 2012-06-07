@@ -38,6 +38,14 @@ public class Client
         securities.add(security);
     }
 
+    public void removeSecurity(Security security)
+    {
+        securities.remove(security);
+        for (Watchlist w : watchlists)
+            w.getSecurities().remove(security);
+        // FIXME possibly remove transactions and category assignments as well
+    }
+
     public List<Watchlist> getWatchlists()
     {
         if (watchlists == null)

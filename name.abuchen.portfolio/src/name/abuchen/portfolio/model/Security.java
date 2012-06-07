@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class Security
+public final class Security
 {
     public static final class ByName implements Comparator<Security>, Serializable
     {
@@ -230,6 +230,22 @@ public class Security
                 }
             }
         }
+
+        return answer;
+    }
+
+    public Security deepCopy()
+    {
+        Security answer = new Security();
+
+        answer.name = name;
+        answer.isin = isin;
+        answer.tickerSymbol = tickerSymbol;
+        answer.type = type;
+
+        answer.feed = feed;
+        answer.prices = new ArrayList<SecurityPrice>(prices);
+        answer.latest = latest;
 
         return answer;
     }

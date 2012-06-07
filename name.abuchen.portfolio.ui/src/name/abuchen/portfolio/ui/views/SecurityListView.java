@@ -18,12 +18,16 @@ import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -57,6 +61,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -85,10 +91,12 @@ public class SecurityListView extends AbstractListView
 
     private Date chartPeriod;
 
+    private Watchlist watchlist;
+
     @Override
     protected String getTitle()
     {
-        return Messages.LabelSecurities;
+        return watchlist == null ? Messages.LabelSecurities : Messages.LabelSecurities + " " + watchlist.getName(); //$NON-NLS-1$
     }
 
     protected void setWeights(SashForm sash)
@@ -100,7 +108,16 @@ public class SecurityListView extends AbstractListView
     public void notifyModelUpdated()
     {
         if (securities != null)
-            securities.refresh();
+            securities.setInput(watchlist != null ? watchlist.getSecurities() : getClient().getSecurities());
+    }
+
+    @Override
+    public void init(ClientEditor clientEditor, Object parameter)
+    {
+        super.init(clientEditor, parameter);
+
+        if (parameter instanceof Watchlist)
+            this.watchlist = (Watchlist) parameter;
     }
 
     // //////////////////////////////////////////////////////////////
@@ -184,7 +201,12 @@ public class SecurityListView extends AbstractListView
 
         securities.setLabelProvider(new SecurityLabelProvider());
         securities.setContentProvider(new SimpleListContentProvider());
-        securities.setInput(getClient().getSecurities());
+
+        securities.addDragSupport(DND.DROP_MOVE, //
+                        new Transfer[] { SecurityTransfer.getTransfer() }, //
+                        new SecurityDragListener(securities));
+
+        securities.setInput(watchlist != null ? watchlist.getSecurities() : getClient().getSecurities());
         ViewerHelper.pack(securities);
         securities.refresh();
 
@@ -349,39 +371,65 @@ public class SecurityListView extends AbstractListView
             });
             manager.add(new Separator());
 
-            manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
+            if (watchlist == null)
             {
-                @Override
-                public void run()
+                manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
                 {
-                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-
-                    if (security == null)
-                        return;
-
-                    if (!security.getTransactions(getClient()).isEmpty())
+                    @Override
+                    public void run()
                     {
-                        MessageDialog.openError(getClientEditor().getSite().getShell(),
-                                        Messages.MsgDeletionNotPossible,
-                                        MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
+                        Security security = (Security) ((IStructuredSelection) securities.getSelection())
+                                        .getFirstElement();
+
+                        if (security == null)
+                            return;
+
+                        if (!security.getTransactions(getClient()).isEmpty())
+                        {
+                            MessageDialog.openError(
+                                            getClientEditor().getSite().getShell(),
+                                            Messages.MsgDeletionNotPossible,
+                                            MessageFormat.format(Messages.MsgDeletionNotPossibleDetail,
+                                                            security.getName()));
+                        }
+                        else if (getClient().getRootCategory().getTreeElements().contains(security))
+                        {
+                            MessageDialog.openError(getClientEditor().getSite().getShell(),
+                                            Messages.MsgDeletionNotPossible, MessageFormat.format(
+                                                            Messages.MsgDeletionNotPossibleAssignedInAllocation,
+                                                            security.getName()));
+                        }
+                        else
+                        {
+
+                            getClient().removeSecurity(security);
+                            markDirty();
+
+                            securities.setInput(getClient().getSecurities());
+                        }
                     }
-                    else if (getClient().getRootCategory().getTreeElements().contains(security))
+                });
+            }
+            else
+            {
+                manager.add(new Action(MessageFormat.format("Remove from ''{0}''", watchlist.getName()))
+                {
+                    @Override
+                    public void run()
                     {
-                        MessageDialog.openError(getClientEditor().getSite().getShell(),
-                                        Messages.MsgDeletionNotPossible, MessageFormat.format(
-                                                        Messages.MsgDeletionNotPossibleAssignedInAllocation,
-                                                        security.getName()));
-                    }
-                    else
-                    {
+                        Security security = (Security) ((IStructuredSelection) securities.getSelection())
+                                        .getFirstElement();
 
-                        getClient().getSecurities().remove(security);
+                        if (security == null)
+                            return;
+
+                        watchlist.getSecurities().remove(security);
                         markDirty();
 
-                        securities.setInput(getClient().getSecurities());
+                        securities.setInput(watchlist.getSecurities());
                     }
-                }
-            });
+                });
+            }
             manager.add(new Separator());
         }
 
@@ -399,7 +447,11 @@ public class SecurityListView extends AbstractListView
                 {
                     markDirty();
                     getClient().getSecurities().add(newSecurity);
-                    securities.setInput(getClient().getSecurities());
+
+                    if (watchlist != null)
+                        watchlist.getSecurities().add(newSecurity);
+
+                    securities.setInput(watchlist != null ? watchlist.getSecurities() : getClient().getSecurities());
                     runUpdateQuotesJob(newSecurity);
                 }
             }
@@ -947,8 +999,7 @@ public class SecurityListView extends AbstractListView
             public String getText(Object element)
             {
                 return (element instanceof PortfolioTransaction) ? Values.Amount
-                                .format(((PortfolioTransaction) element)
-                                .getActualPurchasePrice()) : null;
+                                .format(((PortfolioTransaction) element).getActualPurchasePrice()) : null;
             }
         });
 

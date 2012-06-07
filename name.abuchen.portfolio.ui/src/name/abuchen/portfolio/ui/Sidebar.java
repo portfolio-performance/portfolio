@@ -8,6 +8,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyEvent;
@@ -83,6 +87,54 @@ public final class Sidebar extends Composite
         public void setContextMenu(IMenuListener listener)
         {
             item.addContextMenu(listener);
+        }
+
+        public void addDropSupport(int operations, Transfer[] transferTypes, final DropTargetListener listener)
+        {
+            DropTarget dropTarget = new DropTarget(item, operations);
+            dropTarget.setTransfer(transferTypes);
+            dropTarget.addDropListener(new DropTargetListener()
+            {
+                @Override
+                public void dropAccept(DropTargetEvent event)
+                {
+                    listener.dropAccept(event);
+                }
+
+                @Override
+                public void drop(DropTargetEvent event)
+                {
+                    listener.drop(event);
+                }
+
+                @Override
+                public void dragOver(DropTargetEvent event)
+                {
+                    listener.dragOver(event);
+                }
+
+                @Override
+                public void dragOperationChanged(DropTargetEvent event)
+                {
+                    listener.dragOperationChanged(event);
+                }
+
+                @Override
+                public void dragLeave(DropTargetEvent event)
+                {
+                    listener.dragLeave(event);
+                    item.setIsDragTarget(false);
+                    item.redraw();
+                }
+
+                @Override
+                public void dragEnter(DropTargetEvent event)
+                {
+                    listener.dragEnter(event);
+                    item.setIsDragTarget(true);
+                    item.redraw();
+                }
+            });
         }
 
         private Entry findPeer(int direction)
@@ -378,6 +430,8 @@ public final class Sidebar extends Composite
 
         private Menu contextMenu;
 
+        private boolean isDragTarget;
+
         public Item(Composite parent, Entry entry)
         {
             super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
@@ -475,6 +529,11 @@ public final class Sidebar extends Composite
                 contextMenu.dispose();
         }
 
+        public void setIsDragTarget(boolean isDragTarget)
+        {
+            this.isDragTarget = isDragTarget;
+        }
+
         public void setIndent(int indent)
         {
             this.indent = indent;
@@ -519,7 +578,7 @@ public final class Sidebar extends Composite
 
             if (this == Sidebar.this.selection.item)
             {
-                gc.setForeground(lighterSelectedColor);
+                gc.setForeground(isDragTarget ? selectedColor : lighterSelectedColor);
                 gc.setBackground(selectedColor);
                 gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, true);
 
@@ -535,11 +594,11 @@ public final class Sidebar extends Composite
                 if (indent > 0)
                 {
                     gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-                    gc.setFont(regularFont);
+                    gc.setFont(isDragTarget ? boldFont : regularFont);
                 }
                 else
                 {
-                    gc.setForeground(sectionColor);
+                    gc.setForeground(isDragTarget ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : sectionColor);
                     gc.setFont(sectionFont);
                 }
             }

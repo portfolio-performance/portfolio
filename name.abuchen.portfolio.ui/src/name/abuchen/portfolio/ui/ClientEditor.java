@@ -6,8 +6,10 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,6 +26,10 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
@@ -267,6 +273,7 @@ public class ClientEditor extends EditorPart
         final Entry entry = new Entry(section, watchlist.getName());
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
+
         entry.setContextMenu(new IMenuListener()
         {
             @Override
@@ -298,6 +305,35 @@ public class ClientEditor extends EditorPart
                         allSecurities.select();
                     }
                 });
+            }
+        });
+
+        entry.addDropSupport(DND.DROP_MOVE, new Transfer[] { SecurityTransfer.getTransfer() }, new DropTargetAdapter()
+        {
+            @Override
+            public void drop(DropTargetEvent event)
+            {
+                if (SecurityTransfer.getTransfer().isSupportedType(event.currentDataType))
+                {
+                    Security security = SecurityTransfer.getTransfer().getSecurity();
+                    if (security != null)
+                    {
+                        // if the security is dragged from another file, add to
+                        // a deep copy to the client's securities list
+                        if (!client.getSecurities().contains(security))
+                        {
+                            security = security.deepCopy();
+                            client.getSecurities().add(security);
+                        }
+
+                        if (!watchlist.getSecurities().contains(security))
+                            watchlist.addSecurity(security);
+
+                        markDirty();
+
+                        notifyModelUpdated();
+                    }
+                }
             }
         });
     }
