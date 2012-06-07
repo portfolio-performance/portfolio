@@ -272,7 +272,7 @@ public class ClientEditor extends EditorPart
     {
         final Entry entry = new Entry(section, watchlist.getName());
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_WATCHLIST)));
 
         entry.setContextMenu(new IMenuListener()
         {
