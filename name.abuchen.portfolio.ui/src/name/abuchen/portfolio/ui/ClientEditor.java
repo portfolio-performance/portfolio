@@ -247,7 +247,7 @@ public class ClientEditor extends EditorPart
             @Override
             public void run()
             {
-                String name = askWatchlistName("New Watchlist");
+                String name = askWatchlistName(Messages.WatchlistNewLabel);
                 if (name == null)
                     return;
 
@@ -261,7 +261,7 @@ public class ClientEditor extends EditorPart
             }
         });
 
-        allSecurities = new Entry(section, new ActivateViewAction("All Securities", "SecurityList", //$NON-NLS-2$
+        allSecurities = new Entry(section, new ActivateViewAction(Messages.LabelAllSecurities, "SecurityList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
 
         for (Watchlist watchlist : client.getWatchlists())
@@ -279,7 +279,7 @@ public class ClientEditor extends EditorPart
             @Override
             public void menuAboutToShow(IMenuManager manager)
             {
-                manager.add(new Action("Rename Watchlist")
+                manager.add(new Action(Messages.WatchlistRename)
                 {
                     @Override
                     public void run()
@@ -294,7 +294,7 @@ public class ClientEditor extends EditorPart
                     }
                 });
 
-                manager.add(new Action("Delete Watchlist")
+                manager.add(new Action(Messages.WatchlistDelete)
                 {
                     @Override
                     public void run()
@@ -340,8 +340,8 @@ public class ClientEditor extends EditorPart
 
     private String askWatchlistName(String initialValue)
     {
-        InputDialog dlg = new InputDialog(getSite().getShell(), "Edit Watchlist Name", "Give the watchlist a name",
-                        initialValue, null);
+        InputDialog dlg = new InputDialog(getSite().getShell(), Messages.WatchlistEditDialog,
+                        Messages.WatchlistEditDialogMsg, initialValue, null);
         if (dlg.open() != InputDialog.OK)
             return null;
 

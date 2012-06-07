@@ -412,7 +412,7 @@ public class SecurityListView extends AbstractListView
             }
             else
             {
-                manager.add(new Action(MessageFormat.format("Remove from ''{0}''", watchlist.getName()))
+                manager.add(new Action(MessageFormat.format(Messages.SecurityMenuRemoveFromWatchlist, watchlist.getName()))
                 {
                     @Override
                     public void run()

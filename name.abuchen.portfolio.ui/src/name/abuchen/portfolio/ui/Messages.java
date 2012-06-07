@@ -129,6 +129,7 @@ public class Messages extends NLS
     public static String JobMsgLoadingExchanges;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String LabelAccounts;
+    public static String LabelAllSecurities;
     public static String LabelAssetAllocation;
     public static String LabelAssetClasses;
     public static String LabelConsumerPriceIndex;
@@ -192,6 +193,7 @@ public class Messages extends NLS
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuImportQuotes;
+    public static String SecurityMenuRemoveFromWatchlist;
     public static String SecurityMenuSell;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityTabChart;
@@ -209,6 +211,11 @@ public class Messages extends NLS
     public static String SystemMenuShowErrorLog;
     public static String SystemMenuWelcome;
     public static String TabTransactions;
+    public static String WatchlistDelete;
+    public static String WatchlistEditDialog;
+    public static String WatchlistEditDialogMsg;
+    public static String WatchlistNewLabel;
+    public static String WatchlistRename;
     static
     {
         // initialize resource bundle
