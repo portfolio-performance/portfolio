@@ -11,6 +11,7 @@ public class Client
     private int version = 3;
 
     private List<Security> securities = new ArrayList<Security>();
+    private List<Watchlist> watchlists = new ArrayList<Watchlist>();
     private List<ConsumerPriceIndex> consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
 
     private List<Account> accounts = new ArrayList<Account>();
@@ -35,6 +36,13 @@ public class Client
     public void addSecurity(Security security)
     {
         securities.add(security);
+    }
+
+    public List<Watchlist> getWatchlists()
+    {
+        if (watchlists == null)
+            watchlists = new ArrayList<Watchlist>();
+        return watchlists;
     }
 
     public List<ConsumerPriceIndex> getConsumerPriceIndeces()

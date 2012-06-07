@@ -93,6 +93,7 @@ public class ClientFactory
                     xstream.alias("security", Security.class);
                     xstream.alias("latest", LatestSecurityPrice.class);
                     xstream.alias("category", Category.class);
+                    xstream.alias("watchlist", Watchlist.class);
 
                     xstream.alias("price", SecurityPrice.class);
                     xstream.useAttributeFor(SecurityPrice.class, "time");
