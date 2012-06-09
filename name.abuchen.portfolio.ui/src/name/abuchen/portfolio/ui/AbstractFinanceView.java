@@ -49,7 +49,7 @@ public abstract class AbstractFinanceView
         return clientEditor.getClient();
     }
 
-    protected void markDirty()
+    public void markDirty()
     {
         clientEditor.markDirty();
     }

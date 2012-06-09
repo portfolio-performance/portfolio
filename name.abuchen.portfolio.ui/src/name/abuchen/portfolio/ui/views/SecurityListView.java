@@ -1,10 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -14,26 +12,17 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
-import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
 import name.abuchen.portfolio.util.Dates;
 
@@ -42,14 +31,12 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -61,12 +48,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
@@ -75,7 +59,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.PlatformUI;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
@@ -83,7 +66,7 @@ import org.swtchart.ISeries.SeriesType;
 
 public class SecurityListView extends AbstractListView
 {
-    private TableViewer securities;
+    private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
     private TimelineChart chart;
@@ -92,6 +75,13 @@ public class SecurityListView extends AbstractListView
     private Date chartPeriod;
 
     private Watchlist watchlist;
+
+    public SecurityListView()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -2);
+        chartPeriod = cal.getTime();
+    }
 
     @Override
     protected String getTitle()
@@ -108,7 +98,7 @@ public class SecurityListView extends AbstractListView
     public void notifyModelUpdated()
     {
         if (securities != null)
-            securities.setInput(watchlist != null ? watchlist.getSecurities() : getClient().getSecurities());
+            setSecurityTableInput();
     }
 
     @Override
@@ -126,413 +116,38 @@ public class SecurityListView extends AbstractListView
 
     protected void createTopTable(Composite parent)
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -2);
-        chartPeriod = cal.getTime();
-
-        securities = new TableViewer(parent, SWT.FULL_SELECTION);
-
-        TableViewerColumn column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnName);
-        column.getColumn().setWidth(400);
-        ColumnViewerSorter.create(Security.class, "name").attachTo(securities, column, true); //$NON-NLS-1$
-
-        column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnISIN);
-        column.getColumn().setWidth(100);
-        ColumnViewerSorter.create(Security.class, "isin").attachTo(securities, column); //$NON-NLS-1$
-
-        column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnTicker);
-        column.getColumn().setWidth(100);
-        ColumnViewerSorter.create(Security.class, "tickerSymbol").attachTo(securities, column); //$NON-NLS-1$
-
-        column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnSecurityType);
-        column.getColumn().setWidth(80);
-        ColumnViewerSorter.create(Security.class, "type").attachTo(securities, column); //$NON-NLS-1$
-
-        column = new TableViewerColumn(securities, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnLatest);
-        column.getColumn().setWidth(60);
-        ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                LatestSecurityPrice p1 = ((Security) o1).getLatest();
-                LatestSecurityPrice p2 = ((Security) o2).getLatest();
-
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
-
-                long v1 = p1.getValue();
-                long v2 = p2.getValue();
-                return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
-            }
-        }).attachTo(securities, column);
-
-        column = new TableViewerColumn(securities, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnDelta);
-        column.getColumn().setWidth(60);
-        ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                LatestSecurityPrice p1 = ((Security) o1).getLatest();
-                LatestSecurityPrice p2 = ((Security) o2).getLatest();
-
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
-
-                double v1 = (((double) (p1.getValue() - p1.getPreviousClose())) / p1.getPreviousClose() * 100);
-                double v2 = (((double) (p2.getValue() - p2.getPreviousClose())) / p2.getPreviousClose() * 100);
-                return Double.compare(v1, v2);
-            }
-        }).attachTo(securities, column);
-
-        securities.getTable().setHeaderVisible(true);
-        securities.getTable().setLinesVisible(true);
-
-        securities.setLabelProvider(new SecurityLabelProvider());
-        securities.setContentProvider(new SimpleListContentProvider());
-
-        securities.addDragSupport(DND.DROP_MOVE, //
-                        new Transfer[] { SecurityTransfer.getTransfer() }, //
-                        new SecurityDragListener(securities));
-
-        securities.setInput(watchlist != null ? watchlist.getSecurities() : getClient().getSecurities());
-        ViewerHelper.pack(securities);
-        securities.refresh();
-
+        securities = new SecuritiesTable(parent, this);
         securities.addSelectionChangedListener(new ISelectionChangedListener()
         {
             public void selectionChanged(SelectionChangedEvent event)
             {
-                final Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                prices.setData(Security.class.toString(), security);
-                prices.setInput(security != null ? security.getPrices() : new ArrayList<SecurityPrice>(0));
-                prices.refresh();
-
-                latest.setInput(security);
-
-                transactions.setInput(security != null ? Transaction.sortByDate(security.getTransactions(getClient()))
-                                : new ArrayList<Transaction>(0));
-
-                updateChart(security);
+                onSecurityChanged((Security) ((IStructuredSelection) event.getSelection()).getFirstElement());
             }
         });
 
-        securities.getTable().addSelectionListener(new SelectionListener()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent event)
-            {}
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                if (security == null)
-                    return;
-
-                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
-                                getClient(), security));
-                if (dialog.open() == Dialog.OK)
-                {
-                    markDirty();
-                    if (!securities.getControl().isDisposed())
-                    {
-                        securities.refresh(true);
-                        runUpdateQuotesJob(security);
-                    }
-                }
-            }
-        });
-
-        hookContextMenu(securities.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillSecurityContextMenu(manager);
-            }
-        });
+        setSecurityTableInput();
     }
 
-    private abstract class AbstractDialogAction extends Action
+    private void setSecurityTableInput()
     {
-
-        public AbstractDialogAction(String text)
-        {
-            super(text);
-        }
-
-        @Override
-        public final void run()
-        {
-            Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-
-            if (security == null)
-                return;
-
-            Dialog dialog = createDialog(security);
-            if (dialog.open() == Dialog.OK)
-                performFinish(security);
-        }
-
-        protected void performFinish(Security security)
-        {
-            markDirty();
-            if (!securities.getControl().isDisposed())
-            {
-                securities.refresh(security, true);
-                securities.setSelection(securities.getSelection());
-            }
-        }
-
-        abstract Dialog createDialog(Security security);
+        if (watchlist != null)
+            securities.setInput(watchlist);
+        else
+            securities.setInput(getClient().getSecurities());
     }
 
-    private void fillSecurityContextMenu(IMenuManager manager)
+    private void onSecurityChanged(Security security)
     {
-        boolean isSecuritySelected = ((IStructuredSelection) securities.getSelection()).getFirstElement() != null;
+        prices.setData(Security.class.toString(), security);
+        prices.setInput(security != null ? security.getPrices() : new ArrayList<SecurityPrice>(0));
+        prices.refresh();
 
-        if (isSecuritySelected)
-        {
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
-            {
-                @Override
-                Dialog createDialog(Security security)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), security,
-                                    PortfolioTransaction.Type.BUY);
-                }
-            });
+        latest.setInput(security);
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-            {
-                @Override
-                Dialog createDialog(Security security)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), security,
-                                    PortfolioTransaction.Type.SELL);
-                }
-            });
+        transactions.setInput(security != null ? Transaction.sortByDate(security.getTransactions(getClient()))
+                        : new ArrayList<Transaction>(0));
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-            {
-                @Override
-                Dialog createDialog(Security security)
-                {
-                    return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), security);
-                }
-            });
-            manager.add(new Separator());
-
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)
-            {
-                @Override
-                Dialog createDialog(Security security)
-                {
-                    return new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(getClient(),
-                                    security));
-                }
-
-                @Override
-                protected void performFinish(Security security)
-                {
-                    super.performFinish(security);
-                    runUpdateQuotesJob(security);
-                }
-            });
-            manager.add(new Separator());
-
-            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                    runUpdateQuotesJob(security);
-                }
-            });
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuImportQuotes)
-            {
-                @Override
-                Dialog createDialog(Security security)
-                {
-                    return new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(security));
-                }
-            });
-            manager.add(new Separator());
-
-            if (watchlist == null)
-            {
-                manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
-                {
-                    @Override
-                    public void run()
-                    {
-                        Security security = (Security) ((IStructuredSelection) securities.getSelection())
-                                        .getFirstElement();
-
-                        if (security == null)
-                            return;
-
-                        if (!security.getTransactions(getClient()).isEmpty())
-                        {
-                            MessageDialog.openError(
-                                            getClientEditor().getSite().getShell(),
-                                            Messages.MsgDeletionNotPossible,
-                                            MessageFormat.format(Messages.MsgDeletionNotPossibleDetail,
-                                                            security.getName()));
-                        }
-                        else if (getClient().getRootCategory().getTreeElements().contains(security))
-                        {
-                            MessageDialog.openError(getClientEditor().getSite().getShell(),
-                                            Messages.MsgDeletionNotPossible, MessageFormat.format(
-                                                            Messages.MsgDeletionNotPossibleAssignedInAllocation,
-                                                            security.getName()));
-                        }
-                        else
-                        {
-
-                            getClient().removeSecurity(security);
-                            markDirty();
-
-                            securities.setInput(getClient().getSecurities());
-                        }
-                    }
-                });
-            }
-            else
-            {
-                manager.add(new Action(MessageFormat.format(Messages.SecurityMenuRemoveFromWatchlist, watchlist.getName()))
-                {
-                    @Override
-                    public void run()
-                    {
-                        Security security = (Security) ((IStructuredSelection) securities.getSelection())
-                                        .getFirstElement();
-
-                        if (security == null)
-                            return;
-
-                        watchlist.getSecurities().remove(security);
-                        markDirty();
-
-                        securities.setInput(watchlist.getSecurities());
-                    }
-                });
-            }
-            manager.add(new Separator());
-        }
-
-        manager.add(new Action(Messages.SecurityMenuAddNewSecurity)
-        {
-            @Override
-            public void run()
-            {
-                Security newSecurity = new Security();
-                newSecurity.setFeed(QuoteFeed.MANUAL);
-                newSecurity.setType(AssetClass.EQUITY);
-                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
-                                getClient(), newSecurity));
-                if (dialog.open() == Dialog.OK)
-                {
-                    markDirty();
-                    getClient().getSecurities().add(newSecurity);
-
-                    if (watchlist != null)
-                        watchlist.getSecurities().add(newSecurity);
-
-                    securities.setInput(watchlist != null ? watchlist.getSecurities() : getClient().getSecurities());
-                    runUpdateQuotesJob(newSecurity);
-                }
-            }
-        });
-    }
-
-    private void runUpdateQuotesJob(Security security)
-    {
-        new UpdateQuotesJob(security)
-        {
-            @Override
-            protected void notifyFinished()
-            {
-                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        markDirty();
-                        securities.refresh();
-                        securities.setSelection(securities.getSelection());
-                    }
-                });
-            }
-
-        }.schedule();
-    }
-
-    static class SecurityLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            if (columnIndex != 0)
-                return null;
-
-            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            Security p = (Security) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return p.getName();
-                case 1:
-                    return p.getIsin();
-                case 2:
-                    return p.getTickerSymbol();
-                case 3:
-                    return p.getType().toString();
-                case 4:
-                    LatestSecurityPrice l1 = p.getLatest();
-                    return l1 != null ? Values.Quote.format(l1.getValue()) : null;
-                case 5:
-                    LatestSecurityPrice l2 = p.getLatest();
-                    return l2 != null ? String.format(
-                                    "%,.2f %%", ((double) (l2.getValue() - l2.getPreviousClose()) / (double) l2 //$NON-NLS-1$
-                                                    .getPreviousClose()) * 100) : null;
-            }
-            return null;
-        }
-
-        public Color getBackground(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public Color getForeground(Object element, int columnIndex)
-        {
-            if (columnIndex != 5)
-                return null;
-
-            Security p = (Security) element;
-            LatestSecurityPrice latest = p.getLatest();
-            if (latest == null)
-                return null;
-
-            return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
-                            SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-        }
+        updateChart(security);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -793,15 +408,26 @@ public class SecurityListView extends AbstractListView
                 {
                     Security security = (Security) prices.getData(Security.class.toString());
                     if (security != null)
-                        runUpdateQuotesJob(security);
+                        securities.updateQuotes(security);
                 }
             });
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuImportQuotes)
+            manager.add(new Action(Messages.SecurityMenuImportQuotes)
             {
                 @Override
-                Dialog createDialog(Security security)
+                public void run()
                 {
-                    return new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(security));
+                    Security security = (Security) prices.getData(Security.class.toString());
+                    if (security == null)
+                        return;
+
+                    Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(
+                                    security));
+                    if (dialog.open() != Dialog.OK)
+                        return;
+
+                    markDirty();
+                    securities.refresh(security);
+                    onSecurityChanged(security);
                 }
             });
         }
