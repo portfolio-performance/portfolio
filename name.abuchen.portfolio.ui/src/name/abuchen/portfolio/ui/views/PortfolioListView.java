@@ -171,7 +171,7 @@ public class PortfolioListView extends AbstractListView
             if (columnIndex != 0)
                 return null;
 
-            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_PORTFOLIO);
+            return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
         }
 
         public String getColumnText(Object element, int columnIndex)

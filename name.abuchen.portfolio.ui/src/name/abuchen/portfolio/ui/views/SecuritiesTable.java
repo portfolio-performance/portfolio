@@ -390,7 +390,7 @@ public class SecuritiesTable
             if (columnIndex != 0)
                 return null;
 
-            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
+            return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
         }
 
         public String getColumnText(Object element, int columnIndex)

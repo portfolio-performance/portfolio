@@ -411,9 +411,9 @@ public class CategoryView extends AbstractFinanceView
             if (element instanceof CategoryModel)
                 return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             else if (element instanceof Account)
-                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_ACCOUNT);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             else if (element instanceof Security)
-                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             else
                 return null;
         }

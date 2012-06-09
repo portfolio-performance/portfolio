@@ -162,7 +162,7 @@ public class AccountListView extends AbstractListView
             if (columnIndex != 0)
                 return null;
 
-            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_ACCOUNT);
+            return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
         }
 
         public String getColumnText(Object element, int columnIndex)

@@ -170,7 +170,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
             if (columnIndex != 0 || !(element instanceof Record))
                 return null;
 
-            return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
+            return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
         }
 
         public String getColumnText(Object element, int columnIndex)

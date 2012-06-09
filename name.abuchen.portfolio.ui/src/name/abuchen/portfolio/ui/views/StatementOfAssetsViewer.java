@@ -94,11 +94,8 @@ public class StatementOfAssetsViewer
                 if (e instanceof AssetCategory)
                     return null;
                 else
-                    return PortfolioPlugin
-                                    .getDefault()
-                                    .getImageRegistry()
-                                    .get(((AssetPosition) e).getSecurity() != null ? PortfolioPlugin.IMG_SECURITY
-                                                    : PortfolioPlugin.IMG_ACCOUNT);
+                    return PortfolioPlugin.image(((AssetPosition) e).getSecurity() != null ? PortfolioPlugin.IMG_SECURITY
+                                    : PortfolioPlugin.IMG_ACCOUNT);
             }
 
             @Override

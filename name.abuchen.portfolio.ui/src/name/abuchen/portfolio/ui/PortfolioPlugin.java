@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -67,6 +68,11 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static ImageDescriptor descriptor(String key)
     {
         return getDefault().getImageRegistry().getDescriptor(key);
+    }
+
+    public static Image image(String key)
+    {
+        return getDefault().getImageRegistry().get(key);
     }
 
 }

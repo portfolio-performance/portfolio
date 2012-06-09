@@ -70,7 +70,7 @@ public class IntroPart extends org.eclipse.ui.part.IntroPart implements IHyperli
                         Messages.IntroReadNews, Messages.IntroReadNewsText);
         buf.append("</form>"); //$NON-NLS-1$
         text.setText(buf.toString(), true, false);
-        text.setImage("logo", PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_LOGO)); //$NON-NLS-1$
+        text.setImage("logo", PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO)); //$NON-NLS-1$
         text.setColor("header", toolkit.getColors().getColor(IFormColors.TITLE)); //$NON-NLS-1$
         text.setFont("header", JFaceResources.getHeaderFont()); //$NON-NLS-1$
         text.addHyperlinkListener(this);

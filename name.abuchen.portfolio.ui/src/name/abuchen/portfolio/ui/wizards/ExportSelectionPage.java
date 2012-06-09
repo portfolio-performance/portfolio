@@ -192,11 +192,11 @@ public class ExportSelectionPage extends AbstractWizardPage
             if (element instanceof Class)
                 return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             else if (element instanceof Account)
-                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_ACCOUNT);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             else if (element instanceof Portfolio)
-                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_PORTFOLIO);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
             else if (element instanceof Security)
-                return PortfolioPlugin.getDefault().getImageRegistry().get(PortfolioPlugin.IMG_SECURITY);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             return null;
         }
     }
