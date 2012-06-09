@@ -12,17 +12,21 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
 import name.abuchen.portfolio.util.Dates;
 
@@ -59,6 +63,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
@@ -108,6 +114,36 @@ public class SecurityListView extends AbstractListView
 
         if (parameter instanceof Watchlist)
             this.watchlist = (Watchlist) parameter;
+    }
+
+    @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        ToolItem button = new ToolItem(toolBar, SWT.PUSH);
+        button.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_PLUS));
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setType(AssetClass.EQUITY);
+                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
+                                getClient(), newSecurity));
+                if (dialog.open() == Dialog.OK)
+                {
+                    markDirty();
+                    getClient().getSecurities().add(newSecurity);
+
+                    if (watchlist != null)
+                        watchlist.getSecurities().add(newSecurity);
+
+                    setSecurityTableInput();
+                    securities.updateQuotes(newSecurity);
+                }
+            }
+        });
     }
 
     // //////////////////////////////////////////////////////////////
