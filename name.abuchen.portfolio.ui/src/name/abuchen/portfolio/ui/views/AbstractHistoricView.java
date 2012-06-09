@@ -5,15 +5,14 @@ import java.text.MessageFormat;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 /* package */abstract class AbstractHistoricView extends AbstractFinanceView
 {
@@ -40,22 +39,13 @@ import org.eclipse.swt.widgets.Control;
     @Override
     protected final Control createBody(Composite parent)
     {
-        Composite top = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().spacing(1, 1).applyTo(top);
-
-        Composite buttonBar = new Composite(top, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonBar);
-        buttonBar.setLayout(new RowLayout());
-        addButtons(buttonBar);
-
-        Control body = buildBody(top);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(body);
-        return top;
+        return buildBody(parent);
     }
 
-    protected void addButtons(Composite buttonBar)
+    @Override
+    protected void addButtons(ToolBar toolBar)
     {
-        reportingPeriod = new Combo(buttonBar, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
+        reportingPeriod = new Combo(toolBar, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
 
         for (int ii = 0; ii < numberOfYears; ii++)
             reportingPeriod.add(MessageFormat.format(Messages.LabelReportingYears, ii + 1));
@@ -73,6 +63,11 @@ import org.eclipse.swt.widgets.Control;
             public void widgetDefaultSelected(SelectionEvent e)
             {}
         });
+        reportingPeriod.pack();
+
+        ToolItem toolItem = new ToolItem(toolBar, SWT.SEPARATOR);
+        toolItem.setWidth(reportingPeriod.getSize().x);
+        toolItem.setControl(reportingPeriod);
     }
 
     protected final int getReportingYears()

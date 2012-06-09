@@ -14,11 +14,15 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ToolBar;
 
 public abstract class AbstractFinanceView
 {
@@ -57,7 +61,7 @@ public abstract class AbstractFinanceView
     public final void createViewControl(Composite parent)
     {
         top = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().spacing(1, 1).applyTo(top);
+        GridLayoutFactory.fillDefaults().spacing(0, 0).applyTo(top);
 
         Control header = createHeader(top);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(header);
@@ -71,18 +75,41 @@ public abstract class AbstractFinanceView
     private Control createHeader(Composite parent)
     {
         Composite header = new Composite(parent, SWT.NONE);
-
-        header.setLayout(new RowLayout(SWT.VERTICAL));
+        header.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
         Font boldFont = resourceManager.createFont(FontDescriptor.createFrom(
-                        JFaceResources.getFont(JFaceResources.DIALOG_FONT)).setStyle(SWT.BOLD));
+                        JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
         Label title = new Label(header, SWT.NONE);
         title.setText(getTitle());
         title.setFont(boldFont);
+        title.setForeground(resourceManager.createColor(new RGB(149, 165, 180)));
+
+        ToolBar toolBar = new ToolBar(header, SWT.FLAT);
+        toolBar.setBackground(header.getBackground());
+        addButtons(toolBar);
+
+        // layout
+        FormLayout layout = new FormLayout();
+        layout.marginWidth = 5;
+        layout.marginHeight = 5;
+        header.setLayout(layout);
+
+        FormData data = new FormData();
+        data.top = new FormAttachment(0);
+        data.left = new FormAttachment(0);
+        title.setLayoutData(data);
+
+        data = new FormData();
+        data.top = new FormAttachment(title, 0, SWT.CENTER);
+        data.right = new FormAttachment(100);
+        toolBar.setLayoutData(data);
 
         return header;
     }
+
+    protected void addButtons(ToolBar toolBar)
+    {}
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
     {

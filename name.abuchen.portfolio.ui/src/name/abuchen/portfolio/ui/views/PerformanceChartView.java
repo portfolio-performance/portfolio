@@ -37,7 +37,7 @@ public class PerformanceChartView extends AbstractHistoricView
     protected Composite buildBody(Composite parent)
     {
         chart = new TimelineChart(parent);
-        chart.getTitle().setText(Messages.LabelInternalRateOfReturn);
+        chart.getTitle().setVisible(false);
         chart.getLegend().setVisible(true);
         chart.getLegend().setPosition(SWT.BOTTOM);
 
