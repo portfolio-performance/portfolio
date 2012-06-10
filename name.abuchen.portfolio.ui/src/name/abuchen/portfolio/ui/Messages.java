@@ -147,6 +147,7 @@ public class Messages extends NLS
     public static String LabelQuoteFeedProvider;
     public static String LabelReportingYears;
     public static String LabelSampleData;
+    public static String LabelSearch;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelStatementOfAssets;

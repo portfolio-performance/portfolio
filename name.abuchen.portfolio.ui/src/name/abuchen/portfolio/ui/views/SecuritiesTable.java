@@ -38,6 +38,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -175,6 +176,11 @@ public class SecuritiesTable
         this.securities.addSelectionChangedListener(listener);
     }
 
+    public void addFilter(ViewerFilter filter)
+    {
+        this.securities.addFilter(filter);
+    }
+
     public void setInput(List<Security> securities)
     {
         this.securities.setInput(securities);
@@ -190,6 +196,19 @@ public class SecuritiesTable
     public void refresh(Security security)
     {
         this.securities.refresh(security, true);
+    }
+
+    public void refresh()
+    {
+        try
+        {
+            securities.getControl().setRedraw(false);
+            securities.refresh();
+        }
+        finally
+        {
+            securities.getControl().setRedraw(true);
+        }
     }
 
     public void updateQuotes(Security security)

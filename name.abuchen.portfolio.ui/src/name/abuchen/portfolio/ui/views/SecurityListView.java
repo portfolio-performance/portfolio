@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -47,11 +48,15 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -63,6 +68,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.swtchart.ILineSeries;
@@ -81,6 +87,8 @@ public class SecurityListView extends AbstractListView
     private Date chartPeriod;
 
     private Watchlist watchlist;
+
+    private Pattern filterPattern;
 
     public SecurityListView()
     {
@@ -119,6 +127,45 @@ public class SecurityListView extends AbstractListView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
+        addSearchButton(toolBar);
+
+        new ToolItem(toolBar, SWT.SEPARATOR | SWT.VERTICAL).setWidth(20);
+
+        addCreateSecurityButton(toolBar);
+    }
+
+    private void addSearchButton(ToolBar toolBar)
+    {
+        final Text search = new Text(toolBar, SWT.SEARCH | SWT.ICON_CANCEL);
+        search.setSize(100, SWT.DEFAULT);
+        search.setMessage(Messages.LabelSearch);
+
+        ToolItem toolItem = new ToolItem(toolBar, SWT.SEPARATOR);
+        toolItem.setWidth(search.getSize().x);
+        toolItem.setControl(search);
+
+        search.addModifyListener(new ModifyListener()
+        {
+            @Override
+            public void modifyText(ModifyEvent e)
+            {
+                String filter = search.getText().trim();
+                if (filter.length() == 0)
+                {
+                    filterPattern = null;
+                    securities.refresh();
+                }
+                else
+                {
+                    filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                    securities.refresh();
+                }
+            }
+        });
+    }
+
+    private void addCreateSecurityButton(ToolBar toolBar)
+    {
         ToolItem button = new ToolItem(toolBar, SWT.PUSH);
         button.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_PLUS));
         button.addSelectionListener(new SelectionAdapter()
@@ -153,11 +200,38 @@ public class SecurityListView extends AbstractListView
     protected void createTopTable(Composite parent)
     {
         securities = new SecuritiesTable(parent, this);
+
         securities.addSelectionChangedListener(new ISelectionChangedListener()
         {
             public void selectionChanged(SelectionChangedEvent event)
             {
                 onSecurityChanged((Security) ((IStructuredSelection) event.getSelection()).getFirstElement());
+            }
+        });
+
+        securities.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                if (filterPattern == null)
+                    return true;
+
+                Security security = (Security) element;
+
+                if (security.getName() != null && filterPattern.matcher(security.getName()).matches())
+                    return true;
+
+                if (security.getIsin() != null && filterPattern.matcher(security.getIsin()).matches())
+                    return true;
+
+                if (security.getTickerSymbol() != null && filterPattern.matcher(security.getTickerSymbol()).matches())
+                    return true;
+
+                if (security.getType() != null && filterPattern.matcher(security.getType().name()).matches())
+                    return true;
+
+                return false;
             }
         });
 
