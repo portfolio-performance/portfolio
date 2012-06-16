@@ -16,6 +16,7 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -37,6 +38,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
 
 public class PortfolioListView extends AbstractListView
 {
@@ -54,6 +56,30 @@ public class PortfolioListView extends AbstractListView
     public void notifyModelUpdated()
     {
         portfolios.setSelection(portfolios.getSelection());
+    }
+
+    @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        Action createPortfolio = new Action()
+        {
+            @Override
+            public void run()
+            {
+                Portfolio portfolio = new Portfolio();
+                portfolio.setName(Messages.LabelNoName);
+
+                getClient().addPortfolio(portfolio);
+                markDirty();
+
+                portfolios.setInput(getClient().getPortfolios());
+                portfolios.editElement(portfolio, 0);
+            }
+        };
+        createPortfolio.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        createPortfolio.setToolTipText(Messages.PortfolioMenuAdd);
+
+        new ActionContributionItem(createPortfolio).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -129,36 +155,19 @@ public class PortfolioListView extends AbstractListView
 
     private void fillPortfolioContextMenu(IMenuManager manager)
     {
+        final Portfolio portfolio = (Portfolio) ((IStructuredSelection) portfolios.getSelection()).getFirstElement();
+        if (portfolio == null)
+            return;
+
         manager.add(new Action(Messages.PortfolioMenuDelete)
         {
             @Override
             public void run()
             {
-                Portfolio portfolio = (Portfolio) ((IStructuredSelection) portfolios.getSelection()).getFirstElement();
-
-                if (portfolio == null)
-                    return;
-
                 getClient().getPortfolios().remove(portfolio);
                 markDirty();
 
                 portfolios.setInput(getClient().getPortfolios());
-            }
-        });
-
-        manager.add(new Action(Messages.PortfolioMenuAdd)
-        {
-            @Override
-            public void run()
-            {
-                Portfolio portfolio = new Portfolio();
-                portfolio.setName(Messages.LabelNoName);
-
-                getClient().addPortfolio(portfolio);
-                markDirty();
-
-                portfolios.setInput(getClient().getPortfolios());
-                portfolios.editElement(portfolio, 0);
             }
         });
     }
