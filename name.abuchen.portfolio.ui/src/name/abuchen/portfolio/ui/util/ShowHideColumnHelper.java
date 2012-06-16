@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
+
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -120,14 +124,18 @@ public class ShowHideColumnHelper implements IMenuListener
         }
     }
 
+    private String identifier;
+    private boolean isUserConfigured = false;
+
     private List<Column> columns = new ArrayList<Column>();
 
     private TableViewer viewer;
     private TableColumnLayout layout;
     private Menu contextMenu;
 
-    public ShowHideColumnHelper(TableViewer viewer, TableColumnLayout layout)
+    public ShowHideColumnHelper(String identifier, TableViewer viewer, TableColumnLayout layout)
     {
+        this.identifier = identifier;
         this.viewer = viewer;
         this.layout = layout;
 
@@ -143,6 +151,8 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private void widgetDisposed()
     {
+        persistColumnConfig();
+
         if (contextMenu != null)
             contextMenu.dispose();
     }
@@ -189,6 +199,11 @@ public class ShowHideColumnHelper implements IMenuListener
         }
     }
 
+    public boolean isUserConfigured()
+    {
+        return isUserConfigured;
+    }
+
     public void addColumn(Column column)
     {
         columns.add(column);
@@ -196,11 +211,63 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public void createColumns()
     {
-        for (Column column : columns)
+        List<Column> configured = readColumnConfig();
+        if (!configured.isEmpty())
         {
-            if (column.isVisible())
+            isUserConfigured = true;
+            for (Column column : configured)
                 column.create(viewer, layout);
         }
+        else
+        {
+            for (Column column : columns)
+            {
+                if (column.isVisible())
+                    column.create(viewer, layout);
+            }
+        }
+    }
+
+    private List<Column> readColumnConfig()
+    {
+        String config = PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier);
+        if (config == null || config.trim().length() == 0)
+            return Collections.emptyList();
+
+        try
+        {
+            List<Column> answer = new ArrayList<Column>();
+            StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
+            while (tokens.hasMoreTokens())
+            {
+                String def = tokens.nextToken();
+                int p = def.indexOf('=');
+
+                Column col = columns.get(Integer.parseInt(def.substring(0, p)));
+                col.defaultWidth = Integer.parseInt(def.substring(p + 1));
+                answer.add(col);
+            }
+
+            return answer;
+        }
+        catch (NumberFormatException e)
+        {
+            PortfolioPlugin.log(e);
+            return Collections.emptyList();
+        }
+    }
+
+    private void persistColumnConfig()
+    {
+        StringBuilder buf = new StringBuilder();
+
+        for (int index : viewer.getTable().getColumnOrder())
+        {
+            TableColumn col = viewer.getTable().getColumn(index);
+            Column column = (Column) col.getData(Column.class.getName());
+            buf.append(columns.indexOf(column)).append('=').append(col.getWidth()).append(';');
+        }
+        PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, buf.toString());
     }
 
 }

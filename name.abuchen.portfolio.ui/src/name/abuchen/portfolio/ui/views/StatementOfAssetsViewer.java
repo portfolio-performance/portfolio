@@ -58,7 +58,7 @@ public class StatementOfAssetsViewer
 
         assets = new TableViewer(container, SWT.FULL_SELECTION);
 
-        support = new ShowHideColumnHelper(assets, layout);
+        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), assets, layout);
 
         Column column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
@@ -194,7 +194,7 @@ public class StatementOfAssetsViewer
         assets.getTable().setLinesVisible(true);
 
         assets.setContentProvider(new StatementOfAssetsContentProvider());
-        
+
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
     }
@@ -248,7 +248,8 @@ public class StatementOfAssetsViewer
 
     public void pack()
     {
-        ViewerHelper.pack(assets);
+        if (!support.isUserConfigured())
+            ViewerHelper.pack(assets);
     }
 
     public ShowHideColumnHelper getColumnHelper()
