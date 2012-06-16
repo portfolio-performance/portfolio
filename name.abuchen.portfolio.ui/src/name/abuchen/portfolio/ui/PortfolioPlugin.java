@@ -27,6 +27,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static final String IMG_WATCHLIST = "watchlist"; //$NON-NLS-1$
 
     public static final String IMG_PLUS = "plus"; //$NON-NLS-1$
+    public static final String IMG_CONFIG = "config"; //$NON-NLS-1$
 
     private static PortfolioPlugin instance;
 
@@ -41,7 +42,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
     {
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
-        for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST, IMG_PLUS })
+        for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST, IMG_PLUS,
+                        IMG_CONFIG })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);
