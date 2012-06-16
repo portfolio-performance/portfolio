@@ -32,6 +32,7 @@ import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -166,12 +167,10 @@ public class SecurityListView extends AbstractListView
 
     private void addCreateSecurityButton(ToolBar toolBar)
     {
-        ToolItem button = new ToolItem(toolBar, SWT.PUSH);
-        button.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_PLUS));
-        button.addSelectionListener(new SelectionAdapter()
+        Action createSecurity = new Action()
         {
             @Override
-            public void widgetSelected(SelectionEvent e)
+            public void run()
             {
                 Security newSecurity = new Security();
                 newSecurity.setFeed(QuoteFeed.MANUAL);
@@ -190,7 +189,11 @@ public class SecurityListView extends AbstractListView
                     securities.updateQuotes(newSecurity);
                 }
             }
-        });
+        };
+        createSecurity.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        createSecurity.setToolTipText(Messages.SecurityMenuAddNewSecurity);
+
+        new ActionContributionItem(createSecurity).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////
