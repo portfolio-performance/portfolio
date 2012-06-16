@@ -42,31 +42,28 @@ public final class Sidebar extends Composite
     public static final class Entry
     {
         private Sidebar bar;
-        private Entry parent;
-        private List<Entry> children = new ArrayList<Entry>();
 
         private Item item;
 
         private Action action;
 
-        private Entry(Sidebar sidebar)
-        {
-            bar = sidebar;
-        }
-
         public Entry(Sidebar sidebar, String label)
         {
             bar = sidebar;
-            bar.root.children.add(this);
-            parent = bar.root;
+            bar.entries.add(this);
             item = bar.createItem(this, label, 0);
         }
 
         public Entry(Entry parent, String label)
         {
             this.bar = parent.bar;
-            parent.children.add(this);
-            this.parent = parent;
+
+            int index = this.bar.entries.indexOf(parent) + 1;
+            for (; index < this.bar.entries.size(); index++)
+                if (bar.entries.get(index).item.indent == parent.item.indent)
+                    break;
+            bar.entries.add(index, this);
+
             item = bar.createItem(this, label, parent.item.indent + STEP);
         }
 
@@ -137,54 +134,14 @@ public final class Sidebar extends Composite
             });
         }
 
-        private Entry findPeer(int direction)
-        {
-            if (parent == null)
-                return null;
-
-            int index = parent.children.indexOf(this);
-
-            if (direction == SWT.ARROW_DOWN && parent.children.size() > index + 1)
-                return parent.children.get(index + 1);
-            else if (direction == SWT.ARROW_UP && index > 0)
-                return parent.children.get(index - 1);
-            else
-                return null;
-        }
-
         private Entry findNeighbor(int direction)
         {
+            int index = bar.entries.indexOf(this);
             if (direction == SWT.ARROW_DOWN)
             {
-                if (!children.isEmpty())
-                    return children.get(0);
-
-                Entry e = this;
-                while (e != null)
-                {
-                    Entry peer = e.findPeer(SWT.ARROW_DOWN);
-                    if (peer != null)
-                        return peer;
-                    else
-                        e = e.parent;
-                }
+                return index + 1 < bar.entries.size() ? bar.entries.get(index + 1) : null;
             }
-            else if (direction == SWT.ARROW_UP)
-            {
-                if (parent == null)
-                    return null;
-
-                Entry peer = findPeer(SWT.ARROW_UP);
-                if (peer == null)
-                    return parent;
-
-                while (true)
-                {
-                    if (peer.children.isEmpty())
-                        return peer;
-                    peer = peer.children.get(peer.children.size() - 1);
-                }
-            }
+            else if (direction == SWT.ARROW_UP) { return index > 0 ? bar.entries.get(index - 1) : null; }
 
             return null;
         }
@@ -207,17 +164,17 @@ public final class Sidebar extends Composite
             if (down != null)
             {
                 Entry up = findNeighbor(SWT.ARROW_UP);
-                if (up != bar.root)
+                if (up != null)
                 {
                     FormData data = (FormData) down.item.getLayoutData();
                     data.top = new FormAttachment(up.item, down.item.indent == 0 ? 20 : 0);
                 }
             }
 
-            parent.children.remove(this);
+            bar.entries.remove(this);
 
             if (bar.selection == this)
-                bar.selection = bar.root;
+                bar.selection = null;
 
             item.dispose();
             bar.layout();
@@ -240,14 +197,13 @@ public final class Sidebar extends Composite
     private Font boldFont;
     private Font sectionFont;
 
-    private Entry root = null;
+    private List<Entry> entries = new ArrayList<Entry>();
+
     private Entry selection = null;
 
     public Sidebar(Composite parent, int style)
     {
         super(parent, style);
-
-        root = selection = new Entry(this);
 
         setLayout(new FormLayout());
 
@@ -339,7 +295,7 @@ public final class Sidebar extends Composite
 
     private void keyPressed(KeyEvent e)
     {
-        if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN)
+        if (selection != null && (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN))
         {
             Entry entry = selection.findNeighbor(e.keyCode);
             while (entry != null && !entry.isSelectable())
@@ -390,18 +346,19 @@ public final class Sidebar extends Composite
         data.left = new FormAttachment(0);
         data.right = new FormAttachment(100);
 
-        Entry up = entry.findNeighbor(SWT.ARROW_UP);
-        if (up == root)
+        int index = entries.indexOf(entry);
+
+        if (index == 0)
             data.top = new FormAttachment(0, 5);
         else
-            data.top = new FormAttachment(up.item, indent == 0 ? 20 : 0);
+            data.top = new FormAttachment(entries.get(index - 1).item, indent == 0 ? 20 : 0);
         l.setLayoutData(data);
 
-        Entry down = entry.findNeighbor(SWT.ARROW_DOWN);
-        if (down != null)
+        if (index + 1 < entries.size())
         {
-            data = (FormData) down.item.getLayoutData();
-            data.top = new FormAttachment(l, down.item.indent == 0 ? 20 : 0);
+            Item item = entries.get(index + 1).item;
+            data = (FormData) item.getLayoutData();
+            data.top = new FormAttachment(l, item.indent == 0 ? 20 : 0);
         }
 
         return l;
@@ -576,7 +533,7 @@ public final class Sidebar extends Composite
 
             Rectangle bounds = getClientArea();
 
-            if (this == Sidebar.this.selection.item)
+            if (Sidebar.this.selection != null && this == Sidebar.this.selection.item)
             {
                 gc.setForeground(isDragTarget ? selectedColor : lighterSelectedColor);
                 gc.setBackground(selectedColor);
