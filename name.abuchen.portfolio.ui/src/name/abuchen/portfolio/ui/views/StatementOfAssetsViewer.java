@@ -188,6 +188,32 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 60);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                if (e instanceof AssetPosition && ((AssetPosition) e).getPosition() != null)
+                {
+                    long purchasePrice = ((AssetPosition) e).getPosition().calculateFIFOPurchasePrice();
+                    return purchasePrice == 0 ? null : Values.Amount.format(purchasePrice);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            @Override
+            public Font getFont(Object e)
+            {
+                return (e instanceof AssetCategory) ? boldFont : null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         assets.getTable().setHeaderVisible(true);

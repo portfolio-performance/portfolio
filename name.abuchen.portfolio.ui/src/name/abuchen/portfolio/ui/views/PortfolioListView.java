@@ -354,7 +354,7 @@ public class PortfolioListView extends AbstractListView
         ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(transactions, column); //$NON-NLS-1$
 
         column = new TableViewerColumn(transactions, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnPurchaseRate);
+        column.getColumn().setText(Messages.ColumnPurchasePrice);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
         column.getColumn().setMoveable(true);
         column.setLabelProvider(new ColumnLabelProvider()

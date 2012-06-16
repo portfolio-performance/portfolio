@@ -52,7 +52,7 @@ public class Messages extends NLS
     public static String ColumnPortfolio;
     public static String ColumnPreviousClose;
     public static String ColumnPrice;
-    public static String ColumnPurchaseRate;
+    public static String ColumnPurchasePrice;
     public static String ColumnQuote;
     public static String ColumnReferenceAccount;
     public static String ColumnSecurity;
