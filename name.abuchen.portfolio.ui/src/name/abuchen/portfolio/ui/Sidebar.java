@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
@@ -50,8 +51,7 @@ public final class Sidebar extends Composite
         public Entry(Sidebar sidebar, String label)
         {
             bar = sidebar;
-            bar.entries.add(this);
-            item = bar.createItem(this, label, 0);
+            item = bar.createItem(bar.entries.size(), this, label, 0);
         }
 
         public Entry(Entry parent, String label)
@@ -62,9 +62,8 @@ public final class Sidebar extends Composite
             for (; index < this.bar.entries.size(); index++)
                 if (bar.entries.get(index).item.indent == parent.item.indent)
                     break;
-            bar.entries.add(index, this);
 
-            item = bar.createItem(this, label, parent.item.indent + STEP);
+            item = bar.createItem(index, this, label, parent.item.indent + STEP);
         }
 
         public Entry(Entry parent, Action action)
@@ -137,11 +136,11 @@ public final class Sidebar extends Composite
         private Entry findNeighbor(int direction)
         {
             int index = bar.entries.indexOf(this);
+
             if (direction == SWT.ARROW_DOWN)
-            {
                 return index + 1 < bar.entries.size() ? bar.entries.get(index + 1) : null;
-            }
-            else if (direction == SWT.ARROW_UP) { return index > 0 ? bar.entries.get(index - 1) : null; }
+            else if (direction == SWT.ARROW_UP)
+                return index > 0 ? bar.entries.get(index - 1) : null;
 
             return null;
         }
@@ -163,12 +162,13 @@ public final class Sidebar extends Composite
 
             if (down != null)
             {
+                FormData data = (FormData) down.item.getLayoutData();
+
                 Entry up = findNeighbor(SWT.ARROW_UP);
                 if (up != null)
-                {
-                    FormData data = (FormData) down.item.getLayoutData();
                     data.top = new FormAttachment(up.item, down.item.indent == 0 ? 20 : 0);
-                }
+                else
+                    data.top = new FormAttachment(0, 5);
             }
 
             bar.entries.remove(this);
@@ -221,8 +221,6 @@ public final class Sidebar extends Composite
 
         if (selection.item != null)
             selection.item.redraw();
-
-        this.setFocus();
 
         entry.action.run();
     }
@@ -336,17 +334,18 @@ public final class Sidebar extends Composite
         sectionFont = new Font(Display.getDefault(), fontData);
     }
 
-    private Item createItem(Entry entry, String label, int indent)
+    private Item createItem(int index, Entry entry, String label, int indent)
     {
+        entries.add(index, entry);
+
         Item l = new Item(this, entry);
         l.setText(label);
         l.setIndent(indent);
 
+        // fix layout data
         FormData data = new FormData();
         data.left = new FormAttachment(0);
         data.right = new FormAttachment(100);
-
-        int index = entries.indexOf(entry);
 
         if (index == 0)
             data.top = new FormAttachment(0, 5);
@@ -360,6 +359,8 @@ public final class Sidebar extends Composite
             data = (FormData) item.getLayoutData();
             data.top = new FormAttachment(l, item.indent == 0 ? 20 : 0);
         }
+
+        this.setTabList(new Control[0]);
 
         return l;
     }
@@ -421,15 +422,6 @@ public final class Sidebar extends Composite
                 {
                     if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN)
                         Sidebar.this.keyPressed(e);
-                }
-            });
-
-            addTraverseListener(new TraverseListener()
-            {
-                @Override
-                public void keyTraversed(TraverseEvent e)
-                {
-                    Sidebar.this.keyTraversed(e);
                 }
             });
 
