@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.Widget;
 
 public class ViewerHelper
 {
@@ -20,14 +21,7 @@ public class ViewerHelper
         for (int i = 0, n = table.getColumnCount(); i < n; i++)
         {
             TableColumn column = table.getColumn(i);
-            int originalWidth = column.getWidth();
-
-            if (originalWidth == 0)
-            {
-                Object layoutData = column.getData("org.eclipse.jface.LAYOUT_DATA"); //$NON-NLS-1$
-                if (layoutData instanceof ColumnPixelData)
-                    originalWidth = ((ColumnPixelData) layoutData).width;
-            }
+            int originalWidth = getOriginalWidth(column, column.getWidth());
 
             column.pack();
             int packedWidth = column.getWidth();
@@ -48,7 +42,8 @@ public class ViewerHelper
         for (int i = 0, n = tree.getColumnCount(); i < n; i++)
         {
             TreeColumn column = tree.getColumn(i);
-            int originalWidth = column.getWidth();
+            int originalWidth = getOriginalWidth(column, column.getWidth());
+
             column.pack();
             int packedWidth = column.getWidth();
 
@@ -56,6 +51,18 @@ public class ViewerHelper
                 column.setWidth(originalWidth);
         }
         tree.pack();
+    }
+
+    private static int getOriginalWidth(Widget column, int width)
+    {
+        if (width == 0)
+        {
+            Object layoutData = column.getData("org.eclipse.jface.LAYOUT_DATA"); //$NON-NLS-1$
+            if (layoutData instanceof ColumnPixelData)
+                return ((ColumnPixelData) layoutData).width;
+        }
+        
+        return width;
     }
 
 }

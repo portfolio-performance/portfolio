@@ -56,10 +56,18 @@ public class PerformanceView extends AbstractHistoricView
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), startDate.getTime(),
                         Dates.today());
 
-        calculation.setInput(snapshot);
-        calculation.refresh();
-        calculation.expandAll();
-        ViewerHelper.pack(calculation);
+        try
+        {
+            calculation.getTree().setRedraw(false);
+            calculation.setInput(snapshot);
+            calculation.expandAll();
+            ViewerHelper.pack(calculation);
+            calculation.getTree().getParent().layout();
+        }
+        finally
+        {
+            calculation.getTree().setRedraw(true);
+        }
 
         snapshotStart.setInput(snapshot.getStartClientSnapshot());
         snapshotStart.pack();
