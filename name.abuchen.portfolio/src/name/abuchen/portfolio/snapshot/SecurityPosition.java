@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
@@ -9,6 +13,8 @@ public class SecurityPosition
     private Security security;
     private SecurityPrice price;
     private long shares;
+
+    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
 
     public SecurityPosition(Security security)
     {
@@ -53,4 +59,22 @@ public class SecurityPosition
         return shares * p / Values.Share.factor();
     }
 
+    public void addTransaction(PortfolioTransaction t)
+    {
+        transactions.add(t);
+
+        switch (t.getType())
+        {
+            case BUY:
+            case TRANSFER_IN:
+                shares += t.getShares();
+                break;
+            case SELL:
+            case TRANSFER_OUT:
+                shares -= t.getShares();
+                break;
+            default:
+                throw new RuntimeException();
+        }
+    }
 }

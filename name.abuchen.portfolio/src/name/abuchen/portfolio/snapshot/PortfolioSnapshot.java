@@ -37,7 +37,7 @@ public class PortfolioSnapshot
                         SecurityPosition p = positions.get(t.getSecurity());
                         if (p == null)
                             positions.put(t.getSecurity(), p = new SecurityPosition(t.getSecurity()));
-                        p.setShares(p.getShares() + t.getShares());
+                        p.addTransaction(t);
                         break;
                     }
                     case TRANSFER_OUT:
@@ -46,7 +46,7 @@ public class PortfolioSnapshot
                         SecurityPosition p = positions.get(t.getSecurity());
                         if (p == null)
                             positions.put(t.getSecurity(), p = new SecurityPosition(t.getSecurity()));
-                        p.setShares(p.getShares() - t.getShares());
+                        p.addTransaction(t);
                         break;
                     }
                     default:
