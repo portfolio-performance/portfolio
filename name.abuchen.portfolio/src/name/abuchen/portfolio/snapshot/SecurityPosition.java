@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
@@ -57,6 +58,48 @@ public class SecurityPosition
     {
         long p = price != null ? price.getValue() : 0;
         return shares * p / Values.Share.factor();
+    }
+
+    public long calculateFIFOPurchasePrice()
+    {
+        if (transactions.isEmpty())
+            return 0;
+
+        // assume: list is sorted, to FIFO
+        long sharesSold = 0;
+        for (PortfolioTransaction t : transactions)
+        {
+            if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL)
+                sharesSold += t.getShares();
+        }
+
+        long sharesBought = 0;
+        long purchasePrice = 0;
+        for (PortfolioTransaction t : transactions)
+        {
+            if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY)
+            {
+                long bought = t.getShares();
+
+                if (sharesSold > 0)
+                {
+                    sharesSold -= bought;
+
+                    if (sharesSold < 0)
+                        bought = -sharesSold;
+                    else
+                        bought = 0;
+                }
+
+                if (bought > 0)
+                {
+                    sharesBought += bought;
+                    purchasePrice += (bought * t.getActualPurchasePrice()) / Values.Share.factor();
+                }
+            }
+        }
+
+        return sharesBought > 0 ? (purchasePrice * Values.Share.factor()) / sharesBought : 0;
     }
 
     public void addTransaction(PortfolioTransaction t)
