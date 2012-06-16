@@ -158,6 +158,7 @@ public class Messages extends NLS
     public static String LabelTransferals;
     public static String LabelUnnamedXml;
     public static String LabelUnsavedFile;
+    public static String MenuShowHideColumns;
     public static String MenuTransactionAdd;
     public static String MenuTransactionDelete;
     public static String MessageDialogProviderAnswerKeep;

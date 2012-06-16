@@ -15,6 +15,8 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -24,11 +26,9 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -43,6 +43,8 @@ public class StatementOfAssetsViewer
 
     private Font boldFont;
 
+    private ShowHideColumnHelper support;
+
     public StatementOfAssetsViewer(Composite parent)
     {
         createColumns(parent);
@@ -56,10 +58,9 @@ public class StatementOfAssetsViewer
 
         assets = new TableViewer(container, SWT.FULL_SELECTION);
 
-        TableViewerColumn column = new TableViewerColumn(assets, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnShares);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80));
-        column.getColumn().setMoveable(true);
+        support = new ShowHideColumnHelper(assets, layout);
+
+        Column column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
         {
             @Override
@@ -71,11 +72,9 @@ public class StatementOfAssetsViewer
                     return null;
             }
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(assets, SWT.LEFT);
-        column.getColumn().setText(Messages.ColumnName);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(300));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnName, SWT.LEFT, 300);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -104,11 +103,9 @@ public class StatementOfAssetsViewer
                 return (e instanceof AssetCategory) ? boldFont : null;
             }
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(assets, SWT.None);
-        column.getColumn().setText(Messages.ColumnTicker);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnTicker, SWT.None, 60);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -120,11 +117,24 @@ public class StatementOfAssetsViewer
                     return null;
             }
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(assets, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnQuote);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnISIN, SWT.None, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
+                    return ((AssetPosition) e).getSecurity().getIsin();
+                else
+                    return null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 60);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -136,11 +146,9 @@ public class StatementOfAssetsViewer
                     return null;
             }
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(assets, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnMarketValue);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnMarketValue, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -157,13 +165,10 @@ public class StatementOfAssetsViewer
             {
                 return (e instanceof AssetCategory) ? boldFont : null;
             }
-
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(assets, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnShareInPercent);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnShareInPercent, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -181,6 +186,9 @@ public class StatementOfAssetsViewer
                 return (e instanceof AssetCategory) ? boldFont : null;
             }
         });
+        support.addColumn(column);
+
+        support.createColumns();
 
         assets.getTable().setHeaderVisible(true);
         assets.getTable().setLinesVisible(true);
@@ -241,6 +249,11 @@ public class StatementOfAssetsViewer
     public void pack()
     {
         ViewerHelper.pack(assets);
+    }
+
+    public ShowHideColumnHelper getColumnHelper()
+    {
+        return support;
     }
 
     public TableViewer getTableViewer()
