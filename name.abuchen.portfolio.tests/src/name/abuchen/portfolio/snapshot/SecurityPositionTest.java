@@ -22,7 +22,7 @@ public class SecurityPositionTest
                         50000, 0));
 
         assertEquals(50 * Values.Share.factor(), position.getShares());
-        assertEquals(1000L, position.calculateFIFOPurchasePrice());
+        assertEquals(1000L, position.getFIFOPurchasePrice());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class SecurityPositionTest
                         100000, 0));
 
         assertEquals(50 * Values.Share.factor(), position.getShares());
-        assertEquals(2000L, position.calculateFIFOPurchasePrice());
+        assertEquals(2000L, position.getFIFOPurchasePrice());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class SecurityPositionTest
                         100000, 0));
 
         assertEquals(50 * Values.Share.factor(), position.getShares());
-        assertEquals(1500L, position.calculateFIFOPurchasePrice());
+        assertEquals(1500L, position.getFIFOPurchasePrice());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class SecurityPositionTest
                         50000, 0));
 
         assertEquals(-50 * Values.Share.factor(), position.getShares());
-        assertEquals(0L, position.calculateFIFOPurchasePrice());
+        assertEquals(0L, position.getFIFOPurchasePrice());
     }
 
 }

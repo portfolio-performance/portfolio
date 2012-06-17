@@ -31,10 +31,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 public class StatementOfAssetsViewer
 {
@@ -196,8 +198,48 @@ public class StatementOfAssetsViewer
             {
                 if (e instanceof AssetPosition && ((AssetPosition) e).getPosition() != null)
                 {
-                    long purchasePrice = ((AssetPosition) e).getPosition().calculateFIFOPurchasePrice();
+                    long purchasePrice = ((AssetPosition) e).getPosition().getFIFOPurchasePrice();
                     return purchasePrice == 0 ? null : Values.Amount.format(purchasePrice);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnPurchaseValue, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                if (e instanceof AssetPosition && ((AssetPosition) e).getPosition() != null)
+                {
+                    long purchaseValue = ((AssetPosition) e).getPosition().getFIFOPurchaseValue();
+                    return purchaseValue == 0 ? null : Values.Amount.format(purchaseValue);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnProfitLoss, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
+                {
+                    long delta = ((AssetPosition) e).getPosition().getDelta();
+                    return delta == 0 ? null : Values.Amount.format(delta);
                 }
                 else
                 {
@@ -206,9 +248,23 @@ public class StatementOfAssetsViewer
             }
 
             @Override
-            public Font getFont(Object e)
+            public Color getForeground(Object e)
             {
-                return (e instanceof AssetCategory) ? boldFont : null;
+                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
+                {
+                    long delta = ((AssetPosition) e).getPosition().getDelta();
+
+                    if (delta < 0)
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                    else if (delta > 0)
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                    else
+                        return null;
+                }
+                else
+                {
+                    return null;
+                }
             }
         });
         column.setVisible(false);
