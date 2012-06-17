@@ -21,6 +21,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -39,6 +40,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
 
 public class AccountListView extends AbstractListView
 {
@@ -49,6 +51,30 @@ public class AccountListView extends AbstractListView
     protected String getTitle()
     {
         return Messages.LabelAccounts;
+    }
+
+    @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        Action createPortfolio = new Action()
+        {
+            @Override
+            public void run()
+            {
+                Account account = new Account();
+                account.setName(Messages.LabelNoName);
+
+                getClient().addAccount(account);
+                markDirty();
+
+                accounts.setInput(getClient().getAccounts());
+                accounts.editElement(account, 0);
+            }
+        };
+        createPortfolio.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        createPortfolio.setToolTipText(Messages.AccountMenuAdd);
+
+        new ActionContributionItem(createPortfolio).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -120,36 +146,19 @@ public class AccountListView extends AbstractListView
 
     private void fillAccountsContextMenu(IMenuManager manager)
     {
+        final Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
+        if (account == null)
+            return;
+
         manager.add(new Action(Messages.AccountMenuDelete)
         {
             @Override
             public void run()
             {
-                Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
-
-                if (account == null)
-                    return;
-
                 getClient().getAccounts().remove(account);
                 markDirty();
 
                 accounts.setInput(getClient().getAccounts());
-            }
-        });
-
-        manager.add(new Action(Messages.AccountMenuAdd)
-        {
-            @Override
-            public void run()
-            {
-                Account account = new Account();
-                account.setName(Messages.LabelNoName);
-
-                getClient().addAccount(account);
-                markDirty();
-
-                accounts.setInput(getClient().getAccounts());
-                accounts.editElement(account, 0);
             }
         });
     }
