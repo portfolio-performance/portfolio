@@ -1,6 +1,7 @@
 body {
 font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
 background: #E5E5E5;
+font-size: small;
 }
 
 #content {
@@ -39,10 +40,6 @@ margin-bottom: 10px;
 width: 340px;
 float: left;
 margin-bottom: 10px;
-}
-
-#versions {
-font-size: 0.7em;
 }
 
 .news {
