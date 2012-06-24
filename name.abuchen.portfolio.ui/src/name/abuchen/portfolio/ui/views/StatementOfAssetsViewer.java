@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
@@ -10,6 +13,8 @@ import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
@@ -48,9 +53,14 @@ public class StatementOfAssetsViewer
 
     private ShowHideColumnHelper support;
 
-    public StatementOfAssetsViewer(Composite parent)
+    private final Client client;
+    private ClientSnapshot clientSnapshot;
+    private PortfolioSnapshot portfolioSnapshot;
+
+    public StatementOfAssetsViewer(Composite parent, Client client)
     {
         createColumns(parent);
+        this.client = client;
     }
 
     private void createColumns(Composite parent)
@@ -257,6 +267,80 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("1YR Performance", SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (element.isSecurity())
+                {
+                    calculate1YrPerformance(element);
+                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    return Values.Percent.format(record.getIrr());
+                }
+                return null;
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                Element element = (Element) e;
+                if (element.isSecurity())
+                {
+                    calculate1YrPerformance(element);
+                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    double irr = record.getIrr();
+
+                    if (irr < 0)
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                    else if (irr > 0)
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                }
+                return null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("1YR Performance Delta", SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (element.isSecurity())
+                {
+                    calculate1YrPerformance(element);
+                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    return Values.Amount.format(record.getDelta());
+                }
+                return null;
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                Element element = (Element) e;
+                if (element.isSecurity())
+                {
+                    calculate1YrPerformance(element);
+                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    long delta = record.getDelta();
+
+                    if (delta < 0)
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                    else if (delta > 0)
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                }
+                return null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         assets.getTable().setHeaderVisible(true);
@@ -336,11 +420,15 @@ public class StatementOfAssetsViewer
 
     public void setInput(ClientSnapshot snapshot)
     {
+        this.clientSnapshot = snapshot;
+        this.portfolioSnapshot = null;
         internalSetInput(snapshot);
     }
 
     public void setInput(PortfolioSnapshot snapshot)
     {
+        this.clientSnapshot = null;
+        this.portfolioSnapshot = snapshot;
         internalSetInput(snapshot);
     }
 
@@ -358,14 +446,64 @@ public class StatementOfAssetsViewer
         }
     }
 
+    private void calculate1YrPerformance(Element element)
+    {
+        // already calculated?
+        if (element.get1YrPerformance() != null)
+            return;
+
+        if (clientSnapshot == null && portfolioSnapshot == null)
+            return;
+
+        // start date
+        Date endDate = clientSnapshot != null ? clientSnapshot.getTime() : portfolioSnapshot.getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endDate);
+        cal.add(Calendar.YEAR, -1);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.DATE, -1);
+
+        SecurityPerformanceSnapshot sps = null;
+
+        if (clientSnapshot != null)
+            sps = SecurityPerformanceSnapshot.create(client, cal.getTime(), endDate);
+        else
+            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getSource(), cal.getTime(), endDate);
+
+        StatementOfAssetsContentProvider contentProvider = (StatementOfAssetsContentProvider) assets
+                        .getContentProvider();
+
+        for (Element e : contentProvider.elements)
+        {
+            if (e.isSecurity())
+            {
+                for (Record r : sps.getRecords())
+                {
+                    if (r.getSecurity().equals(e.getSecurity()))
+                    {
+                        e.oneYear = r;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     private static class Element
     {
         private AssetCategory category;
         private AssetPosition position;
 
+        private transient SecurityPerformanceSnapshot.Record oneYear;
+
         private Element(AssetCategory category)
         {
             this.category = category;
+        }
+
+        public Record get1YrPerformance()
+        {
+            return oneYear;
         }
 
         private Element(AssetPosition position)

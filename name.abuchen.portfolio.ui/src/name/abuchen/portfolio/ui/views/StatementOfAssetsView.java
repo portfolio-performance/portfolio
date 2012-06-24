@@ -52,7 +52,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        assetViewer = new StatementOfAssetsViewer(parent);
+        assetViewer = new StatementOfAssetsViewer(parent, getClient());
         hookContextMenu(assetViewer.getTableViewer().getControl(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)

@@ -24,17 +24,42 @@ public class SecurityPerformanceSnapshot
 {
     public static SecurityPerformanceSnapshot create(Client client, Date startDate, Date endDate)
     {
+        Map<Security, Record> transactions = initRecords(client);
+
+        for (Account account : client.getAccounts())
+            extractSecurityRelatedAccountTransactions(account, startDate, endDate, transactions);
+        for (Portfolio portfolio : client.getPortfolios())
+        {
+            extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
+            addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
+        }
+
+        return doCreateSnapshot(transactions);
+    }
+
+    public static SecurityPerformanceSnapshot create(Client client, Portfolio portfolio, Date startDate, Date endDate)
+    {
+        Map<Security, Record> transactions = initRecords(client);
+
+        if (portfolio.getReferenceAccount() != null)
+            extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), startDate, endDate, transactions);
+        extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
+        addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
+
+        return doCreateSnapshot(transactions);
+    }
+
+    private static Map<Security, Record> initRecords(Client client)
+    {
         Map<Security, Record> transactions = new HashMap<Security, Record>();
 
-        // null -> cash
-        // transactions.put(null, new ArrayList<Transaction>());
         for (Security s : client.getSecurities())
             transactions.put(s, new Record(s));
+        return transactions;
+    }
 
-        extractSecurityRelatedAccountTransactions(client, startDate, endDate, transactions);
-        extractSecurityRelatedPortfolioTransactions(client, startDate, endDate, transactions);
-        addPseudoValudationTansactions(client, startDate, endDate, transactions);
-
+    private static SecurityPerformanceSnapshot doCreateSnapshot(Map<Security, Record> transactions)
+    {
         for (Record c : transactions.values())
             c.prepare();
 
@@ -48,83 +73,73 @@ public class SecurityPerformanceSnapshot
         return new SecurityPerformanceSnapshot(transactions.values());
     }
 
-    private static void extractSecurityRelatedAccountTransactions(Client client, Date startDate, Date endDate,
+    private static void extractSecurityRelatedAccountTransactions(Account account, Date startDate, Date endDate,
                     Map<Security, Record> transactions)
     {
-        for (Account account : client.getAccounts())
+        for (AccountTransaction t : account.getTransactions())
         {
-            for (AccountTransaction t : account.getTransactions())
+            if (t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime())
             {
-                if (t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime())
+                switch (t.getType())
                 {
-                    switch (t.getType())
-                    {
-                        case INTEREST:
-                        case DIVIDENDS:
-                            if (t.getSecurity() != null)
-                                transactions.get(t.getSecurity()).add(t);
-                            break;
-                        case FEES:
-                        case TAXES:
-                        case DEPOSIT:
-                        case REMOVAL:
-                        case BUY:
-                        case SELL:
-                        case TRANSFER_IN:
-                        case TRANSFER_OUT:
-                            // transactions.get(null).add(t);
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
-            }
-        }
-    }
-
-    private static void extractSecurityRelatedPortfolioTransactions(Client client, Date startDate, Date endDate,
-                    Map<Security, Record> transactions)
-    {
-        for (Portfolio portfolio : client.getPortfolios())
-        {
-            for (PortfolioTransaction t : portfolio.getTransactions())
-            {
-                if (t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime())
-                {
-                    switch (t.getType())
-                    {
-                        case TRANSFER_IN:
-                        case TRANSFER_OUT:
-                        case BUY:
-                        case SELL:
+                    case INTEREST:
+                    case DIVIDENDS:
+                        if (t.getSecurity() != null)
                             transactions.get(t.getSecurity()).add(t);
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
+                        break;
+                    case FEES:
+                    case TAXES:
+                    case DEPOSIT:
+                    case REMOVAL:
+                    case BUY:
+                    case SELL:
+                    case TRANSFER_IN:
+                    case TRANSFER_OUT:
+                        // transactions.get(null).add(t);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
                 }
-
             }
         }
     }
 
-    private static void addPseudoValudationTansactions(Client client, Date startDate, Date endDate,
+    private static void extractSecurityRelatedPortfolioTransactions(Portfolio portfolio, Date startDate, Date endDate,
                     Map<Security, Record> transactions)
     {
-        for (Portfolio portfolio : client.getPortfolios())
+        for (PortfolioTransaction t : portfolio.getTransactions())
         {
-            PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, startDate);
-            for (SecurityPosition position : snapshot.getPositions())
+            if (t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime())
             {
-                transactions.get(position.getSecurity())
-                                .add(new SecurityPositionTransaction(true, position, startDate));
+                switch (t.getType())
+                {
+                    case TRANSFER_IN:
+                    case TRANSFER_OUT:
+                    case BUY:
+                    case SELL:
+                        transactions.get(t.getSecurity()).add(t);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
             }
 
-            snapshot = PortfolioSnapshot.create(portfolio, endDate);
-            for (SecurityPosition position : snapshot.getPositions())
-            {
-                transactions.get(position.getSecurity()).add(new SecurityPositionTransaction(false, position, endDate));
-            }
+        }
+    }
+
+    private static void addPseudoValuationTansactions(Portfolio portfolio, Date startDate, Date endDate,
+                    Map<Security, Record> transactions)
+    {
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, startDate);
+        for (SecurityPosition position : snapshot.getPositions())
+        {
+            transactions.get(position.getSecurity()).add(new SecurityPositionTransaction(true, position, startDate));
+        }
+
+        snapshot = PortfolioSnapshot.create(portfolio, endDate);
+        for (SecurityPosition position : snapshot.getPositions())
+        {
+            transactions.get(position.getSecurity()).add(new SecurityPositionTransaction(false, position, endDate));
         }
     }
 
