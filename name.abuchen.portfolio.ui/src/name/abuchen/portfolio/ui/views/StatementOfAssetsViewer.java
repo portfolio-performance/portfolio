@@ -10,6 +10,7 @@ import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -68,10 +69,8 @@ public class StatementOfAssetsViewer
             @Override
             public Long getValue(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
-                    return ((AssetPosition) e).getPosition().getShares();
-                else
-                    return null;
+                Element element = (Element) e;
+                return element.isSecurity() ? element.getSecurityPosition().getShares() : null;
             }
         });
         support.addColumn(column);
@@ -82,27 +81,28 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetCategory)
-                    return ((AssetCategory) e).getAssetClass() != null ? ((AssetCategory) e).getAssetClass().name()
+                Element element = (Element) e;
+                if (element.isCategory())
+                    return element.getCategory().getAssetClass() != null ? element.getCategory().getAssetClass().name()
                                     : Messages.LabelTotalSum;
                 else
-                    return ((AssetPosition) e).getDescription();
+                    return element.getPosition().getDescription();
             }
 
             @Override
             public Image getImage(Object e)
             {
-                if (e instanceof AssetCategory)
-                    return null;
-                else
-                    return PortfolioPlugin.image(((AssetPosition) e).getSecurity() != null ? PortfolioPlugin.IMG_SECURITY
+                Element element = (Element) e;
+                if (element.isPosition())
+                    return PortfolioPlugin.image(element.isSecurity() ? PortfolioPlugin.IMG_SECURITY
                                     : PortfolioPlugin.IMG_ACCOUNT);
+                return null;
             }
 
             @Override
             public Font getFont(Object e)
             {
-                return (e instanceof AssetCategory) ? boldFont : null;
+                return ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -113,10 +113,8 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
-                    return ((AssetPosition) e).getSecurity().getTickerSymbol();
-                else
-                    return null;
+                Element element = (Element) e;
+                return element.isSecurity() ? element.getSecurity().getTickerSymbol() : null;
             }
         });
         support.addColumn(column);
@@ -127,10 +125,8 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
-                    return ((AssetPosition) e).getSecurity().getIsin();
-                else
-                    return null;
+                Element element = (Element) e;
+                return element.isSecurity() ? element.getSecurity().getIsin() : null;
             }
         });
         column.setVisible(false);
@@ -142,10 +138,9 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
-                    return Values.Quote.format(((AssetPosition) e).getPosition().getPrice().getValue());
-                else
-                    return null;
+                Element element = (Element) e;
+                return element.isSecurity() ? Values.Quote.format(element.getSecurityPosition().getPrice().getValue())
+                                : null;
             }
         });
         support.addColumn(column);
@@ -156,16 +151,17 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetCategory)
-                    return Values.Amount.format(((AssetCategory) e).getValuation());
+                Element element = (Element) e;
+                if (element.isCategory())
+                    return Values.Amount.format(element.getCategory().getValuation());
                 else
-                    return Values.Amount.format(((AssetPosition) e).getValuation());
+                    return Values.Amount.format(element.getPosition().getValuation());
             }
 
             @Override
             public Font getFont(Object e)
             {
-                return (e instanceof AssetCategory) ? boldFont : null;
+                return ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -176,16 +172,17 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetCategory)
-                    return Values.Percent.format(((AssetCategory) e).getShare());
+                Element element = (Element) e;
+                if (element.isCategory())
+                    return Values.Percent.format(element.getCategory().getShare());
                 else
-                    return Values.Percent.format(((AssetPosition) e).getShare());
+                    return Values.Percent.format(element.getPosition().getShare());
             }
 
             @Override
             public Font getFont(Object e)
             {
-                return (e instanceof AssetCategory) ? boldFont : null;
+                return ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -196,15 +193,13 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getPosition() != null)
+                Element element = (Element) e;
+                if (element.isSecurity())
                 {
-                    long purchasePrice = ((AssetPosition) e).getPosition().getFIFOPurchasePrice();
+                    long purchasePrice = element.getSecurityPosition().getFIFOPurchasePrice();
                     return purchasePrice == 0 ? null : Values.Amount.format(purchasePrice);
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         });
         column.setVisible(false);
@@ -216,15 +211,13 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getPosition() != null)
+                Element element = (Element) e;
+                if (element.isSecurity())
                 {
-                    long purchaseValue = ((AssetPosition) e).getPosition().getFIFOPurchaseValue();
+                    long purchaseValue = element.getSecurityPosition().getFIFOPurchaseValue();
                     return purchaseValue == 0 ? null : Values.Amount.format(purchaseValue);
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         });
         column.setVisible(false);
@@ -236,35 +229,29 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
+                Element element = (Element) e;
+                if (element.isSecurity())
                 {
-                    long delta = ((AssetPosition) e).getPosition().getDelta();
+                    long delta = element.getSecurityPosition().getDelta();
                     return delta == 0 ? null : Values.Amount.format(delta);
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
 
             @Override
             public Color getForeground(Object e)
             {
-                if (e instanceof AssetPosition && ((AssetPosition) e).getSecurity() != null)
+                Element element = (Element) e;
+                if (element.isSecurity())
                 {
-                    long delta = ((AssetPosition) e).getPosition().getDelta();
+                    long delta = element.getSecurityPosition().getDelta();
 
                     if (delta < 0)
                         return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
                     else if (delta > 0)
                         return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                    else
-                        return null;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         });
         column.setVisible(false);
@@ -283,13 +270,11 @@ public class StatementOfAssetsViewer
 
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
     {
-        Object element = ((IStructuredSelection) assets.getSelection()).getFirstElement();
-        if (element == null || !(element instanceof AssetPosition))
+        Element element = (Element) ((IStructuredSelection) assets.getSelection()).getFirstElement();
+        if (element == null || !element.isSecurity())
             return;
 
-        final Security security = ((AssetPosition) element).getSecurity();
-        if (security == null)
-            return;
+        final Security security = element.getSecurity();
 
         manager.add(new Action(Messages.SecurityMenuBuy)
         {
@@ -373,16 +358,67 @@ public class StatementOfAssetsViewer
         }
     }
 
+    private static class Element
+    {
+        private AssetCategory category;
+        private AssetPosition position;
+
+        private Element(AssetCategory category)
+        {
+            this.category = category;
+        }
+
+        private Element(AssetPosition position)
+        {
+            this.position = position;
+        }
+
+        public boolean isCategory()
+        {
+            return category != null;
+        }
+
+        public boolean isPosition()
+        {
+            return position != null;
+        }
+
+        public boolean isSecurity()
+        {
+            return position != null && position.getSecurity() != null;
+        }
+
+        public AssetCategory getCategory()
+        {
+            return category;
+        }
+
+        public AssetPosition getPosition()
+        {
+            return position;
+        }
+
+        public SecurityPosition getSecurityPosition()
+        {
+            return position != null ? position.getPosition() : null;
+        }
+
+        public Security getSecurity()
+        {
+            return position != null ? position.getSecurity() : null;
+        }
+    }
+
     private static class StatementOfAssetsContentProvider implements IStructuredContentProvider
     {
-        private Object[] elements;
+        private Element[] elements;
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
         {
             if (newInput == null)
             {
-                this.elements = new Object[0];
+                this.elements = new Element[0];
             }
             else if (newInput instanceof ClientSnapshot)
             {
@@ -398,15 +434,16 @@ public class StatementOfAssetsViewer
             }
         }
 
-        private Object[] asList(List<AssetCategory> categories)
+        private Element[] asList(List<AssetCategory> categories)
         {
-            List<Object> answer = new ArrayList<Object>();
+            List<Element> answer = new ArrayList<Element>();
             for (AssetCategory cat : categories)
             {
-                answer.add(cat);
-                answer.addAll(cat.getPositions());
+                answer.add(new Element(cat));
+                for (AssetPosition p : cat.getPositions())
+                    answer.add(new Element(p));
             }
-            return answer.toArray();
+            return answer.toArray(new Element[0]);
         }
 
         @Override
