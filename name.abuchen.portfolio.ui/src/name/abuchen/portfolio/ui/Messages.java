@@ -40,6 +40,8 @@ public class Messages extends NLS
     public static String ColumnFees;
     public static String ColumnIndex;
     public static String ColumnIRR;
+    public static String ColumnIRRPerformance;
+    public static String ColumnIRRPerformanceOption;
     public static String ColumnISIN;
     public static String ColumnLable;
     public static String ColumnLastTrade;
@@ -67,6 +69,8 @@ public class Messages extends NLS
     public static String ColumnTargetValue;
     public static String ColumnTicker;
     public static String ColumnTotal;
+    public static String ColumnTotalProfitLoss;
+    public static String ColumnTotalProfitLossOption;
     public static String ColumnTransactionType;
     public static String ColumnValue;
     public static String ColumnVolume;

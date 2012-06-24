@@ -3,7 +3,9 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -23,6 +25,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -267,30 +270,31 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("1YR Performance", SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column = new Column(Messages.ColumnIRRPerformance, SWT.RIGHT, 80);
+        column.setOptions(Messages.LabelReportingYears, Messages.ColumnIRRPerformanceOption, 1, 2, 3, 4, 5, 10);
+        column.setLabelProvider(new OptionLabelProvider()
         {
             @Override
-            public String getText(Object e)
+            public String getText(Object e, Integer option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
                 {
-                    calculate1YrPerformance(element);
-                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    calculatePerformance(element, option);
+                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
                     return Values.Percent.format(record.getIrr());
                 }
                 return null;
             }
 
             @Override
-            public Color getForeground(Object e)
+            public Color getForeground(Object e, Integer option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
                 {
-                    calculate1YrPerformance(element);
-                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    calculatePerformance(element, option);
+                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
                     double irr = record.getIrr();
 
                     if (irr < 0)
@@ -304,30 +308,31 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("1YR Performance Delta", SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column = new Column(Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80);
+        column.setOptions(Messages.LabelReportingYears, Messages.ColumnTotalProfitLossOption, 1, 2, 3, 4, 5, 10);
+        column.setLabelProvider(new OptionLabelProvider()
         {
             @Override
-            public String getText(Object e)
+            public String getText(Object e, Integer option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
                 {
-                    calculate1YrPerformance(element);
-                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    calculatePerformance(element, option);
+                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
                     return Values.Amount.format(record.getDelta());
                 }
                 return null;
             }
 
             @Override
-            public Color getForeground(Object e)
+            public Color getForeground(Object e, Integer option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
                 {
-                    calculate1YrPerformance(element);
-                    SecurityPerformanceSnapshot.Record record = element.get1YrPerformance();
+                    calculatePerformance(element, option);
+                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
                     long delta = record.getDelta();
 
                     if (delta < 0)
@@ -446,10 +451,10 @@ public class StatementOfAssetsViewer
         }
     }
 
-    private void calculate1YrPerformance(Element element)
+    private void calculatePerformance(Element element, Integer option)
     {
         // already calculated?
-        if (element.get1YrPerformance() != null)
+        if (element.getPerformance(option) != null)
             return;
 
         if (clientSnapshot == null && portfolioSnapshot == null)
@@ -459,7 +464,7 @@ public class StatementOfAssetsViewer
         Date endDate = clientSnapshot != null ? clientSnapshot.getTime() : portfolioSnapshot.getTime();
         Calendar cal = Calendar.getInstance();
         cal.setTime(endDate);
-        cal.add(Calendar.YEAR, -1);
+        cal.add(Calendar.YEAR, -option.intValue());
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.add(Calendar.DATE, -1);
 
@@ -481,7 +486,7 @@ public class StatementOfAssetsViewer
                 {
                     if (r.getSecurity().equals(e.getSecurity()))
                     {
-                        e.oneYear = r;
+                        e.setPerformance(option, r);
                         break;
                     }
                 }
@@ -494,16 +499,21 @@ public class StatementOfAssetsViewer
         private AssetCategory category;
         private AssetPosition position;
 
-        private transient SecurityPerformanceSnapshot.Record oneYear;
+        private transient Map<Integer, SecurityPerformanceSnapshot.Record> performance = new HashMap<Integer, SecurityPerformanceSnapshot.Record>();
 
         private Element(AssetCategory category)
         {
             this.category = category;
         }
 
-        public Record get1YrPerformance()
+        public void setPerformance(Integer year, Record record)
         {
-            return oneYear;
+            performance.put(year, record);
+        }
+
+        public Record getPerformance(Integer year)
+        {
+            return performance.get(year);
         }
 
         private Element(AssetPosition position)

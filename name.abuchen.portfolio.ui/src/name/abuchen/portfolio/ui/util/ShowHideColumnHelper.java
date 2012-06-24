@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -18,14 +18,42 @@ import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class ShowHideColumnHelper implements IMenuListener
 {
+    public static class OptionLabelProvider extends CellLabelProvider
+    {
+        public String getText(Object element, Integer option)
+        {
+            return null;
+        }
+
+        public Color getForeground(Object element, Integer option)
+        {
+            return null;
+        }
+
+        @Override
+        public void update(ViewerCell cell)
+        {
+            Table table = (Table) cell.getControl();
+            int columnIndex = cell.getColumnIndex();
+            Integer option = (Integer) table.getColumn(columnIndex).getData(OPTIONS_KEY);
+
+            Object element = cell.getElement();
+            cell.setText(getText(element, option));
+            cell.setForeground(getForeground(element, option));
+        }
+    }
+
     public static class Column
     {
         private String label;
@@ -34,6 +62,10 @@ public class ShowHideColumnHelper implements IMenuListener
         private boolean isVisible = true;
         private ColumnViewerSorter sorter;
         private CellLabelProvider labelProvider;
+
+        private String optionsMenuLabel;
+        private String optionsColumnLabel;
+        private Integer[] options;
 
         public Column(String label, int style, int defaultWidth)
         {
@@ -55,6 +87,13 @@ public class ShowHideColumnHelper implements IMenuListener
         public void setLabelProvider(CellLabelProvider labelProvider)
         {
             this.labelProvider = labelProvider;
+        }
+
+        public void setOptions(String menuPattern, String columnPattern, Integer... options)
+        {
+            this.optionsMenuLabel = menuPattern;
+            this.optionsColumnLabel = columnPattern;
+            this.options = options;
         }
 
         String getLabel()
@@ -87,27 +126,54 @@ public class ShowHideColumnHelper implements IMenuListener
             return labelProvider;
         }
 
-        public void create(TableViewer viewer, TableColumnLayout layout)
+        boolean hasOptions()
+        {
+            return options != null;
+        }
+
+        Integer[] getOptions()
+        {
+            return options;
+        }
+
+        String getOptionsColumnLabel()
+        {
+            return optionsColumnLabel;
+        }
+
+        String getOptionsMenuLabel()
+        {
+            return optionsMenuLabel;
+        }
+
+        private void create(TableViewer viewer, TableColumnLayout layout, Object option)
+        {
+            create(viewer, layout, option, getDefaultWidth());
+        }
+
+        private void create(TableViewer viewer, TableColumnLayout layout, Object option, int width)
         {
             TableViewerColumn col = new TableViewerColumn(viewer, getStyle());
-            col.getColumn().setText(getLabel());
+            col.getColumn().setText(option == null ? getLabel() : MessageFormat.format(optionsColumnLabel, option));
             col.getColumn().setMoveable(true);
             col.setLabelProvider(getLabelProvider());
 
-            layout.setColumnData(col.getColumn(), new ColumnPixelData(getDefaultWidth()));
-            col.getColumn().setWidth(getDefaultWidth());
+            layout.setColumnData(col.getColumn(), new ColumnPixelData(width));
+            col.getColumn().setWidth(width);
 
             if (sorter != null)
                 sorter.attachTo(viewer, col);
 
             col.getColumn().setData(Column.class.getName(), this);
+            col.getColumn().setData(OPTIONS_KEY, option);
         }
 
-        public void destroy(TableViewer viewer)
+        public void destroy(TableViewer viewer, Object option)
         {
             for (TableColumn column : viewer.getTable().getColumns())
             {
-                if (column.getData(Column.class.getName()) == this)
+                if (column.getData(Column.class.getName()) == this //
+                                && (option == null || option.equals(column.getData(OPTIONS_KEY))))
                 {
                     try
                     {
@@ -123,6 +189,8 @@ public class ShowHideColumnHelper implements IMenuListener
             }
         }
     }
+
+    private static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
 
     private String identifier;
     private boolean isUserConfigured = false;
@@ -174,29 +242,68 @@ public class ShowHideColumnHelper implements IMenuListener
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        final Set<Column> visible = new HashSet<Column>();
+        final Map<Column, List<Object>> visible = new HashMap<Column, List<Object>>();
         for (TableColumn col : viewer.getTable().getColumns())
-            visible.add((Column) col.getData(Column.class.getName()));
-
-        for (final Column col : columns)
         {
-            Action action = new Action(col.getLabel())
+            Column column = (Column) col.getData(Column.class.getName());
+            if (column.hasOptions())
             {
-                @Override
-                public void run()
-                {
-                    if (visible.contains(col))
-                        col.destroy(viewer);
-                    else
-                    {
-                        col.create(viewer, layout);
-                        viewer.refresh(true);
-                    }
-                }
-            };
-            action.setChecked(visible.contains(col));
-            manager.add(action);
+                List<Object> options = visible.get(column);
+                if (options == null)
+                    visible.put(column, options = new ArrayList<Object>());
+                options.add(col.getData(OPTIONS_KEY));
+            }
+            else
+            {
+                visible.put(column, null);
+            }
         }
+
+        for (final Column column : columns)
+        {
+            if (column.hasOptions())
+            {
+                List<Object> options = visible.get(column);
+
+                MenuManager subMenu = new MenuManager(column.getLabel());
+
+                for (final Object option : column.getOptions())
+                {
+                    boolean isVisible = options != null && options.contains(option);
+                    String label = MessageFormat.format(column.getOptionsMenuLabel(), option);
+                    addShowHideAction(subMenu, column, label, isVisible, option);
+                }
+
+                manager.add(subMenu);
+            }
+            else
+            {
+                addShowHideAction(manager, column, column.getLabel(), visible.containsKey(column), null);
+            }
+        }
+    }
+
+    private void addShowHideAction(IMenuManager manager, final Column column, String label, final boolean isChecked,
+                    final Object option)
+    {
+        Action action = new Action(label)
+        {
+            @Override
+            public void run()
+            {
+                if (isChecked)
+                {
+                    column.destroy(viewer, option);
+                }
+                else
+                {
+                    column.create(viewer, layout, option);
+                    viewer.refresh(true);
+                }
+            }
+        };
+        action.setChecked(isChecked);
+        manager.add(action);
     }
 
     public boolean isUserConfigured()
@@ -211,49 +318,57 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public void createColumns()
     {
-        List<Column> configured = readColumnConfig();
-        if (!configured.isEmpty())
+        createFromColumnConfig();
+
+        if (viewer.getTable().getColumnCount() > 0)
         {
             isUserConfigured = true;
-            for (Column column : configured)
-                column.create(viewer, layout);
         }
         else
         {
             for (Column column : columns)
             {
                 if (column.isVisible())
-                    column.create(viewer, layout);
+                    column.create(viewer, layout, null);
             }
         }
     }
 
-    private List<Column> readColumnConfig()
+    private void createFromColumnConfig()
     {
         String config = PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier);
         if (config == null || config.trim().length() == 0)
-            return Collections.emptyList();
+            return;
 
         try
         {
-            List<Column> answer = new ArrayList<Column>();
             StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
             while (tokens.hasMoreTokens())
             {
                 String def = tokens.nextToken();
                 int p = def.indexOf('=');
+                int o = def.indexOf('|', p);
 
                 Column col = columns.get(Integer.parseInt(def.substring(0, p)));
-                col.defaultWidth = Integer.parseInt(def.substring(p + 1));
-                answer.add(col);
-            }
 
-            return answer;
+                int width = 0;
+                Integer option = null;
+
+                if (o < 0)
+                {
+                    width = Integer.parseInt(def.substring(p + 1));
+                }
+                else
+                {
+                    option = Integer.parseInt(def.substring(p + 1, o));
+                    width = Integer.parseInt(def.substring(o + 1));
+                }
+                col.create(viewer, layout, option, width);
+            }
         }
         catch (NumberFormatException e)
         {
             PortfolioPlugin.log(e);
-            return Collections.emptyList();
         }
     }
 
@@ -265,7 +380,13 @@ public class ShowHideColumnHelper implements IMenuListener
         {
             TableColumn col = viewer.getTable().getColumn(index);
             Column column = (Column) col.getData(Column.class.getName());
-            buf.append(columns.indexOf(column)).append('=').append(col.getWidth()).append(';');
+            buf.append(columns.indexOf(column)).append('=');
+
+            Object option = col.getData(OPTIONS_KEY);
+            if (option != null)
+                buf.append(option).append('|');
+
+            buf.append(col.getWidth()).append(';');
         }
         PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, buf.toString());
     }
