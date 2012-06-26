@@ -15,9 +15,6 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -91,20 +88,9 @@ public abstract class AbstractFinanceView
         addButtons(toolBar);
 
         // layout
-        FormLayout layout = new FormLayout();
-        layout.marginWidth = 5;
-        layout.marginHeight = 5;
-        header.setLayout(layout);
-
-        FormData data = new FormData();
-        data.top = new FormAttachment(0);
-        data.left = new FormAttachment(0);
-        title.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(title, 0, SWT.CENTER);
-        data.right = new FormAttachment(100);
-        toolBar.setLayoutData(data);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(header);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
+        GridDataFactory.fillDefaults().applyTo(toolBar);
 
         return header;
     }
