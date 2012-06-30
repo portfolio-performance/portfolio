@@ -17,7 +17,6 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.swtchart.IAxis;
@@ -175,7 +174,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.setRange(new Range(range[0] - 3000, range[1] + 3000));
 
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
         return chart;
     }
 
