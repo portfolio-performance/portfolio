@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -281,6 +283,38 @@ public class ShowHideColumnHelper implements IMenuListener
                 addShowHideAction(manager, column, column.getLabel(), visible.containsKey(column), null);
             }
         }
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.MenuResetColumns)
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    // first add, then remove columns
+                    // (otherwise rendering of first column is broken)
+                    viewer.getTable().setRedraw(false);
+
+                    int count = viewer.getTable().getColumnCount();
+
+                    for (Column column : columns)
+                    {
+                        if (column.isVisible())
+                            column.create(viewer, layout, null);
+                    }
+
+                    for (int ii = 0; ii < count; ii++)
+                        viewer.getTable().getColumn(0).dispose();
+                }
+                finally
+                {
+                    viewer.refresh();
+                    viewer.getTable().setRedraw(true);
+                }
+            }
+        });
     }
 
     private void addShowHideAction(IMenuManager manager, final Column column, String label, final boolean isChecked,
