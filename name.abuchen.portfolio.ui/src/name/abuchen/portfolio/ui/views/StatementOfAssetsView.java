@@ -4,6 +4,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -35,6 +36,19 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                new TableViewerCSVExporter(assetViewer.getTableViewer()) //
+                                .export(Messages.LabelStatementOfAssets + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+        new ActionContributionItem(export).fill(toolBar, -1);
+
         Action config = new Action()
         {
             @Override
@@ -45,7 +59,6 @@ public class StatementOfAssetsView extends AbstractFinanceView
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
         config.setToolTipText(Messages.MenuShowHideColumns);
-        
         new ActionContributionItem(config).fill(toolBar, -1);
     }
 
