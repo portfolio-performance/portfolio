@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
@@ -133,6 +134,7 @@ public class SecurityListView extends AbstractListView
         new ToolItem(toolBar, SWT.SEPARATOR | SWT.VERTICAL).setWidth(20);
 
         addCreateSecurityButton(toolBar);
+        addExportButton(toolBar);
     }
 
     private void addSearchButton(ToolBar toolBar)
@@ -194,6 +196,23 @@ public class SecurityListView extends AbstractListView
         createSecurity.setToolTipText(Messages.SecurityMenuAddNewSecurity);
 
         new ActionContributionItem(createSecurity).fill(toolBar, -1);
+    }
+
+    private void addExportButton(ToolBar toolBar)
+    {
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                new TableViewerCSVExporter(securities.getTableViewer()) //
+                                .export(getTitle() + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+
+        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////

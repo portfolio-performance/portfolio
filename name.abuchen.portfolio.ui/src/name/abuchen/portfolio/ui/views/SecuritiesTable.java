@@ -232,6 +232,11 @@ public class SecuritiesTable
         }.schedule();
     }
 
+    public TableViewer getTableViewer()
+    {
+        return securities;
+    }
+
     //
     // private
     //
