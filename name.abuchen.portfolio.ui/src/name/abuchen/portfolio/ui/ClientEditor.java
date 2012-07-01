@@ -157,9 +157,9 @@ public class ClientEditor extends EditorPart
     public void createPartControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 1).applyTo(container);
 
-        Sidebar sidebar = new Sidebar(container, SWT.BORDER);
+        Sidebar sidebar = new Sidebar(container, SWT.NONE);
         GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(sidebar);
 
         createGeneralDataSection(sidebar);
