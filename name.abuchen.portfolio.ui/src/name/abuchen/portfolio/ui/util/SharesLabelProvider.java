@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views;
+package name.abuchen.portfolio.ui.util;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {
-    private final static char POINT = new DecimalFormatSymbols().getDecimalSeparator();
+    private static final char POINT = new DecimalFormatSymbols().getDecimalSeparator();
 
     private final NumberFormat format = new DecimalFormat("#,##0.###"); //$NON-NLS-1$
 

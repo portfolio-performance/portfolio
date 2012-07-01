@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.views.SharesLabelProvider;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;

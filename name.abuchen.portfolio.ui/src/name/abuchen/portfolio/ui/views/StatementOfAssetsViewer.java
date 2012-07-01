@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
