@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dnd;
 
+import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Security;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -26,13 +27,33 @@ public class SecurityDragListener extends DragSourceAdapter
 
     public void dragSetData(DragSourceEvent event)
     {
-        IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-        Security security = (Security) selection.getFirstElement();
-        SecurityTransfer.getTransfer().setSecurity(security);
+        SecurityTransfer.getTransfer().setSecurity(getSecurity());
     }
 
     public void dragStart(DragSourceEvent event)
     {
-        event.doit = !viewer.getSelection().isEmpty();
+        event.doit = getSecurity() != null;
+    }
+
+    private Security getSecurity()
+    {
+        IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+        if (selection.isEmpty())
+            return null;
+
+        Object element = selection.getFirstElement();
+
+        if (element instanceof Security)
+        {
+            return (Security) element;
+        }
+        else if (element instanceof Adaptable)
+        {
+            return ((Adaptable) element).adapt(Security.class);
+        }
+        else
+        {
+            return null;
+        }
     }
 }

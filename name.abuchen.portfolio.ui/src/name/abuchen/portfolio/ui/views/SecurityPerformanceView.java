@@ -12,6 +12,8 @@ import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
@@ -24,6 +26,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -109,6 +113,10 @@ public class SecurityPerformanceView extends AbstractHistoricView
 
         tree.setLabelProvider(new SecurityPerformanceLabelProvider());
         tree.setContentProvider(new SecurityPerformanceContentProvider());
+
+        tree.addDragSupport(DND.DROP_MOVE, //
+                        new Transfer[] { SecurityTransfer.getTransfer() }, //
+                        new SecurityDragListener(tree));
 
         return tree;
     }

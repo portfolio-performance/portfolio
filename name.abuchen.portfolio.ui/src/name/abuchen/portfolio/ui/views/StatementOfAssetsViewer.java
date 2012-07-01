@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -23,6 +24,8 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
@@ -40,6 +43,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -353,6 +358,10 @@ public class StatementOfAssetsViewer
 
         assets.setContentProvider(new StatementOfAssetsContentProvider());
 
+        assets.addDragSupport(DND.DROP_MOVE, //
+                        new Transfer[] { SecurityTransfer.getTransfer() }, //
+                        new SecurityDragListener(assets));
+
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
     }
@@ -494,7 +503,7 @@ public class StatementOfAssetsViewer
         }
     }
 
-    private static class Element
+    private static class Element implements Adaptable
     {
         private AssetCategory category;
         private AssetPosition position;
@@ -554,6 +563,12 @@ public class StatementOfAssetsViewer
         public Security getSecurity()
         {
             return position != null ? position.getSecurity() : null;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return type == Security.class ? type.cast(getSecurity()) : null;
         }
     }
 

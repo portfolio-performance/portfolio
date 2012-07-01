@@ -13,6 +13,7 @@ import java.util.Map;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -198,7 +199,7 @@ public class SecurityPerformanceSnapshot
 
     }
 
-    public static class Record
+    public static class Record implements Adaptable
     {
         private final Security security;
         private List<Transaction> transactions = new ArrayList<Transaction>();
@@ -229,6 +230,12 @@ public class SecurityPerformanceSnapshot
         public List<Transaction> getTransactions()
         {
             return transactions;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return type == Security.class ? type.cast(security) : null;
         }
 
         void add(Transaction t)
