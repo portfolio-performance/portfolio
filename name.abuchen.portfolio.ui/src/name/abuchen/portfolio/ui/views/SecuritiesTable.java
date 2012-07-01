@@ -19,6 +19,8 @@ import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
@@ -31,13 +33,11 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -64,35 +64,85 @@ public class SecuritiesTable
     private Menu contextMenu;
     private TableViewer securities;
 
+    private ShowHideColumnHelper support;
+
     public SecuritiesTable(Composite parent, AbstractFinanceView view)
     {
         this.view = view;
-        this.securities = new TableViewer(parent, SWT.FULL_SELECTION);
 
-        TableViewerColumn column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnName);
-        column.getColumn().setWidth(400);
-        ColumnViewerSorter.create(Security.class, "name").attachTo(securities, column, true); //$NON-NLS-1$
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnISIN);
-        column.getColumn().setWidth(100);
-        ColumnViewerSorter.create(Security.class, "isin").attachTo(securities, column); //$NON-NLS-1$
+        this.securities = new TableViewer(container, SWT.FULL_SELECTION);
 
-        column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnTicker);
-        column.getColumn().setWidth(100);
-        ColumnViewerSorter.create(Security.class, "tickerSymbol").attachTo(securities, column); //$NON-NLS-1$
+        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), securities, layout);
 
-        column = new TableViewerColumn(securities, SWT.None);
-        column.getColumn().setText(Messages.ColumnSecurityType);
-        column.getColumn().setWidth(80);
-        ColumnViewerSorter.create(Security.class, "type").attachTo(securities, column); //$NON-NLS-1$
+        Column column = new Column(Messages.ColumnName, SWT.LEFT, 400);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getName();
+            }
 
-        column = new TableViewerColumn(securities, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnLatest);
-        column.getColumn().setWidth(60);
-        ColumnViewerSorter.create(new Comparator<Object>()
+            @Override
+            public Image getImage(Object e)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "name")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnISIN, SWT.LEFT, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getIsin();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "isin")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTicker, SWT.LEFT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getTickerSymbol();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnSecurityType, SWT.LEFT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getType().toString();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "type")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnLatest, SWT.RIGHT, 60);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                LatestSecurityPrice latest = ((Security) e).getLatest();
+                return latest != null ? Values.Quote.format(latest.getValue()) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
         {
             @Override
             public int compare(Object o1, Object o2)
@@ -109,12 +159,34 @@ public class SecuritiesTable
                 long v2 = p2.getValue();
                 return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
             }
-        }).attachTo(securities, column);
+        }));
+        support.addColumn(column);
 
-        column = new TableViewerColumn(securities, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnDelta);
-        column.getColumn().setWidth(60);
-        ColumnViewerSorter.create(new Comparator<Object>()
+        column = new Column(Messages.ColumnDelta, SWT.RIGHT, 60);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                LatestSecurityPrice latest = ((Security) e).getLatest();
+                return latest != null ? String.format("%,.2f %%", //$NON-NLS-1$
+                                ((double) (latest.getValue() - latest.getPreviousClose()) //
+                                / (double) latest.getPreviousClose()) * 100) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                Security p = (Security) element;
+                LatestSecurityPrice latest = p.getLatest();
+                if (latest == null)
+                    return null;
+
+                return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
+                                SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
         {
             @Override
             public int compare(Object o1, Object o2)
@@ -131,12 +203,14 @@ public class SecuritiesTable
                 double v2 = (((double) (p2.getValue() - p2.getPreviousClose())) / p2.getPreviousClose() * 100);
                 return Double.compare(v1, v2);
             }
-        }).attachTo(securities, column);
+        }));
+        support.addColumn(column);
+
+        support.createColumns();
 
         securities.getTable().setHeaderVisible(true);
         securities.getTable().setLinesVisible(true);
 
-        securities.setLabelProvider(new SecurityLabelProvider());
         securities.setContentProvider(new SimpleListContentProvider());
 
         securities.addDragSupport(DND.DROP_MOVE, //
@@ -235,6 +309,11 @@ public class SecuritiesTable
     public TableViewer getTableViewer()
     {
         return securities;
+    }
+
+    public ShowHideColumnHelper getColumnHelper()
+    {
+        return support;
     }
 
     //
@@ -402,63 +481,6 @@ public class SecuritiesTable
                     securities.setInput(watchlist.getSecurities());
                 }
             });
-        }
-    }
-
-    private static class SecurityLabelProvider extends LabelProvider implements ITableLabelProvider,
-                    ITableColorProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            if (columnIndex != 0)
-                return null;
-
-            return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            Security p = (Security) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return p.getName();
-                case 1:
-                    return p.getIsin();
-                case 2:
-                    return p.getTickerSymbol();
-                case 3:
-                    return p.getType().toString();
-                case 4:
-                    LatestSecurityPrice l1 = p.getLatest();
-                    return l1 != null ? Values.Quote.format(l1.getValue()) : null;
-                case 5:
-                    LatestSecurityPrice l2 = p.getLatest();
-                    return l2 != null ? String.format(
-                                    "%,.2f %%", ((double) (l2.getValue() - l2.getPreviousClose()) / (double) l2 //$NON-NLS-1$
-                                                    .getPreviousClose()) * 100) : null;
-            }
-            return null;
-        }
-
-        public Color getBackground(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public Color getForeground(Object element, int columnIndex)
-        {
-            if (columnIndex != 5)
-                return null;
-
-            Security p = (Security) element;
-            LatestSecurityPrice latest = p.getLatest();
-            if (latest == null)
-                return null;
-
-            return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
-                            SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
         }
     }
 
