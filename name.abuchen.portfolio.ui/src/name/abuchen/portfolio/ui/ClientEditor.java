@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -34,9 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPathEditorInput;
-import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
@@ -44,68 +41,6 @@ import org.eclipse.ui.part.PageBook;
 
 public class ClientEditor extends EditorPart
 {
-    public static class ClientEditorInput extends PlatformObject implements IPathEditorInput, IPersistableElement
-    {
-        private IPath path;
-
-        public ClientEditorInput()
-        {}
-
-        public ClientEditorInput(IPath path)
-        {
-            this.path = path;
-        }
-
-        @Override
-        public boolean exists()
-        {
-            return path != null && path.toFile().exists();
-        }
-
-        @Override
-        public ImageDescriptor getImageDescriptor()
-        {
-            return null;
-        }
-
-        @Override
-        public String getName()
-        {
-            return Messages.LabelPortfolioPerformanceFile;
-        }
-
-        @Override
-        public IPersistableElement getPersistable()
-        {
-            return path != null ? this : null;
-        }
-
-        @Override
-        public String getToolTipText()
-        {
-            return getName();
-        }
-
-        @Override
-        public IPath getPath()
-        {
-            return path;
-        }
-
-        @Override
-        public void saveState(IMemento memento)
-        {
-            if (path != null)
-                memento.putString("file", path.toOSString()); //$NON-NLS-1$
-        }
-
-        @Override
-        public String getFactoryId()
-        {
-            return "name.abuchen.portfolio.ui.factory"; //$NON-NLS-1$
-        }
-    }
-
     private final class ActivateViewAction extends Action
     {
         private String view;

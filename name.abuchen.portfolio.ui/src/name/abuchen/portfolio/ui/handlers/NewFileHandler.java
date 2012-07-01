@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import name.abuchen.portfolio.ui.ClientEditorInput;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.ClientEditor.ClientEditorInput;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

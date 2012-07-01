@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui;
 
-import name.abuchen.portfolio.ui.ClientEditor.ClientEditorInput;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
