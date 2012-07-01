@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -63,6 +65,7 @@ public class ShowHideColumnHelper implements IMenuListener
         private int defaultWidth;
         private boolean isVisible = true;
         private ColumnViewerSorter sorter;
+        private Integer defaultSortDirection;
         private CellLabelProvider labelProvider;
 
         private String optionsMenuLabel;
@@ -84,6 +87,12 @@ public class ShowHideColumnHelper implements IMenuListener
         public void setSorter(ColumnViewerSorter sorter)
         {
             this.sorter = sorter;
+        }
+
+        public void setSorter(ColumnViewerSorter sorter, int direction)
+        {
+            setSorter(sorter);
+            this.defaultSortDirection = direction;
         }
 
         public void setLabelProvider(CellLabelProvider labelProvider)
@@ -147,13 +156,13 @@ public class ShowHideColumnHelper implements IMenuListener
         {
             return optionsMenuLabel;
         }
-
+        
         private void create(TableViewer viewer, TableColumnLayout layout, Object option)
         {
-            create(viewer, layout, option, getDefaultWidth());
+            create(viewer, layout, option, defaultSortDirection, getDefaultWidth());
         }
 
-        private void create(TableViewer viewer, TableColumnLayout layout, Object option, int width)
+        private void create(TableViewer viewer, TableColumnLayout layout, Object option, Integer direction, int width)
         {
             TableViewerColumn col = new TableViewerColumn(viewer, getStyle());
             col.getColumn().setText(option == null ? getLabel() : MessageFormat.format(optionsColumnLabel, option));
@@ -164,7 +173,11 @@ public class ShowHideColumnHelper implements IMenuListener
             col.getColumn().setWidth(width);
 
             if (sorter != null)
+            {
                 sorter.attachTo(viewer, col);
+                if (direction != null)
+                    sorter.setSorter(direction);
+            }
 
             col.getColumn().setData(Column.class.getName(), this);
             col.getColumn().setData(OPTIONS_KEY, option);
@@ -193,6 +206,7 @@ public class ShowHideColumnHelper implements IMenuListener
     }
 
     private static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
+    private static final Pattern CONFIG_PATTERN = Pattern.compile("^(\\d*)=(?:(\\d*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
     private String identifier;
     private boolean isUserConfigured = false;
@@ -379,25 +393,25 @@ public class ShowHideColumnHelper implements IMenuListener
             StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
             while (tokens.hasMoreTokens())
             {
-                String def = tokens.nextToken();
-                int p = def.indexOf('=');
-                int o = def.indexOf('|', p);
+                Matcher matcher = CONFIG_PATTERN.matcher(tokens.nextToken());
+                if (!matcher.matches())
+                    continue;
+                
+                // index
+                Column col = columns.get(Integer.parseInt(matcher.group(1)));
 
-                Column col = columns.get(Integer.parseInt(def.substring(0, p)));
-
-                int width = 0;
-                Integer option = null;
-
-                if (o < 0)
-                {
-                    width = Integer.parseInt(def.substring(p + 1));
-                }
-                else
-                {
-                    option = Integer.parseInt(def.substring(p + 1, o));
-                    width = Integer.parseInt(def.substring(o + 1));
-                }
-                col.create(viewer, layout, option, width);
+                // option
+                String o = matcher.group(2);
+                Integer option = o != null ? Integer.parseInt(o) : null;
+                
+                // direction
+                String d = matcher.group(3);
+                Integer direction = d != null ? Integer.parseInt(d) : null;
+                
+                // width
+                int width = Integer.parseInt(matcher.group(4));
+                
+                col.create(viewer, layout, option, direction, width);
             }
         }
         catch (NumberFormatException e)
@@ -410,6 +424,8 @@ public class ShowHideColumnHelper implements IMenuListener
     {
         StringBuilder buf = new StringBuilder();
 
+        TableColumn sortedColumn = viewer.getTable().getSortColumn();
+
         for (int index : viewer.getTable().getColumnOrder())
         {
             TableColumn col = viewer.getTable().getColumn(index);
@@ -419,10 +435,11 @@ public class ShowHideColumnHelper implements IMenuListener
             Object option = col.getData(OPTIONS_KEY);
             if (option != null)
                 buf.append(option).append('|');
+            if (col == sortedColumn)
+                buf.append(viewer.getTable().getSortDirection()).append('$');
 
             buf.append(col.getWidth()).append(';');
         }
         PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, buf.toString());
     }
-
 }

@@ -93,7 +93,7 @@ public class SecuritiesTable
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "name")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnISIN, SWT.LEFT, 100);

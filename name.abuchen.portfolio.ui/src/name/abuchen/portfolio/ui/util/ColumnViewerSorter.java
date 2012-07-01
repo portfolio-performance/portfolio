@@ -180,7 +180,7 @@ public final class ColumnViewerSorter extends ViewerComparator
             setSorter(direction);
     }
 
-    private void setSorter(int direction)
+    /* package */ void setSorter(int direction)
     {
         this.direction = direction;
 
