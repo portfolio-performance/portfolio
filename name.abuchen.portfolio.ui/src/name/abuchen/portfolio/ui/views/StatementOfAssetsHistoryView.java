@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.swtchart.IAxis;
 import org.swtchart.Range;
@@ -43,7 +44,12 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Override
     protected Composite buildBody(Composite parent)
     {
-        return chart = buildChart(parent);
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new FillLayout());
+        
+        chart = buildChart(container);
+        
+        return container;
     }
 
     @Override
