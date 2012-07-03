@@ -42,7 +42,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     }
 
     @Override
-    protected Composite buildBody(Composite parent)
+    protected Composite createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());

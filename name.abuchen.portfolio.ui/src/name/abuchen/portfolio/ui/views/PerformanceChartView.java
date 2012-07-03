@@ -34,7 +34,7 @@ public class PerformanceChartView extends AbstractHistoricView
     }
 
     @Override
-    protected Composite buildBody(Composite parent)
+    protected Composite createBody(Composite parent)
     {
         chart = new TimelineChart(parent);
         chart.getTitle().setVisible(false);

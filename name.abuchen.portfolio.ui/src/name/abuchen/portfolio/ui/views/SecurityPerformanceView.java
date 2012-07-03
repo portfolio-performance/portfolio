@@ -51,7 +51,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected Control buildBody(Composite parent)
+    protected Control createBody(Composite parent)
     {
         tree = createTreeViewer(parent);
 

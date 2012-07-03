@@ -76,7 +76,7 @@ public class PerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected Control buildBody(Composite parent)
+    protected Control createBody(Composite parent)
     {
         // result tabs
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
