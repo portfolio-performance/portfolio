@@ -155,6 +155,7 @@ public class TimelineChart extends Chart
         lineSeries.setSymbolType(PlotSymbolType.NONE);
         lineSeries.setYSeries(values);
         lineSeries.setLineColor(resources.createColor(color.swt()));
+        lineSeries.setAntialias(SWT.ON);
     }
 
     public IBarSeries addDateBarSeries(Date[] dates, double[] values, String label)

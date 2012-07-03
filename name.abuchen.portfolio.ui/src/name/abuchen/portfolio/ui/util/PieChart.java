@@ -55,6 +55,8 @@ public class PieChart extends Composite implements Listener
     public PieChart(Composite parent, int style)
     {
         super(parent, style);
+        setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        
         resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
         addListener(SWT.Paint, this);
@@ -113,7 +115,8 @@ public class PieChart extends Composite implements Listener
                 image.dispose();
             image = new Image(Display.getCurrent(), size.x, size.y);
             GC gc = new GC(image);
-
+            gc.setAntialias(SWT.ON);
+            
             int total = 0;
             for (Slice slice : slices)
                 total += slice.getValue();

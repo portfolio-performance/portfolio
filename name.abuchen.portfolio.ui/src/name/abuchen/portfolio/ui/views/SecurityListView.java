@@ -667,6 +667,7 @@ public class SecurityListView extends AbstractListView
         lineSeries.enableArea(true);
         lineSeries.setSymbolType(PlotSymbolType.NONE);
         lineSeries.setYSeries(values);
+        lineSeries.setAntialias(SWT.ON);
 
         chart.getAxisSet().adjustRange();
 
