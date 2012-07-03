@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.PieChart;
@@ -17,8 +18,9 @@ import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-public class HoldingsPieChartView extends AbstractListView
+public class HoldingsPieChartView extends AbstractFinanceView
 {
 
     private PieChart canvas;
@@ -29,7 +31,8 @@ public class HoldingsPieChartView extends AbstractListView
         return Messages.LabelStatementOfAssetsHoldings;
     }
 
-    protected void createTopTable(Composite parent)
+    @Override
+    protected Control createBody(Composite parent)
     {
         canvas = new PieChart(parent, SWT.NONE);
 
@@ -65,10 +68,7 @@ public class HoldingsPieChartView extends AbstractListView
         canvas.setSlices(slices);
 
         canvas.redraw();
+        
+        return canvas;
     }
-
-    @Override
-    protected void createBottomTable(Composite parent)
-    {}
-
 }
