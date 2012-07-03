@@ -5,6 +5,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -58,7 +59,10 @@ public abstract class AbstractFinanceView
     public final void createViewControl(Composite parent)
     {
         top = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().spacing(0, 0).applyTo(top);
+        // on windows, add a spacing line as tables
+        // have white top and need a border
+        int spacing = Platform.OS_WIN32.equals(Platform.getOS()) ? 1 : 0;
+        GridLayoutFactory.fillDefaults().spacing(spacing, spacing).applyTo(top);
 
         Control header = createHeader(top);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(header);
