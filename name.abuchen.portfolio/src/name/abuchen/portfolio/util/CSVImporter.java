@@ -27,6 +27,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.util.CSVImportDefinition.AccountTransactionDef;
 import name.abuchen.portfolio.util.CSVImportDefinition.PortfolioTransactionDef;
+import name.abuchen.portfolio.util.CSVImportDefinition.SecurityDef;
 import name.abuchen.portfolio.util.CSVImportDefinition.SecurityPriceDef;
 
 import org.apache.commons.csv.CSVParser;
@@ -219,7 +220,7 @@ public class CSVImporter
     private final Client client;
     private final File inputFile;
     private final CSVImportDefinition[] definitions = new CSVImportDefinition[] { new AccountTransactionDef(),
-                    new PortfolioTransactionDef(), new SecurityPriceDef() };
+                    new PortfolioTransactionDef(), new SecurityPriceDef(), new SecurityDef() };
 
     private CSVImportDefinition importDefinition;
     private Object importTarget;

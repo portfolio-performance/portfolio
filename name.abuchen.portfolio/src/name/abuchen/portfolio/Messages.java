@@ -19,11 +19,14 @@ public class Messages extends NLS
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
     public static String CSVColumn_Shares;
+    public static String CSVColumn_TickerSymbol;
     public static String CSVColumn_Type;
     public static String CSVColumn_Value;
     public static String CSVDefAccountTransactions;
     public static String CSVDefHistoricalQuotes;
     public static String CSVDefPortfolioTransactions;
+    public static String CSVDefSecurities;
+    public static String CSVDefSecurityMasterData;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
@@ -31,6 +34,7 @@ public class Messages extends NLS
     public static String CSVImportedSecurityLabel;
     public static String CSVImportError;
     public static String CSVImportGenericColumnLabel;
+    public static String CSVImportISINExists;
     public static String CSVImportMissingField;
     public static String LabelDeposits;
     public static String LabelInterest;

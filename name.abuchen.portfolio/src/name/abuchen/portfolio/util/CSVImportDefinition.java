@@ -3,6 +3,7 @@ package name.abuchen.portfolio.util;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.CSVImporter.AmountField;
 import name.abuchen.portfolio.util.CSVImporter.Column;
 import name.abuchen.portfolio.util.CSVImporter.DateField;
@@ -109,7 +111,7 @@ public abstract class CSVImportDefinition
         return value != null && value.trim().length() == 0 ? null : value;
     }
 
-    protected Security lookupOrCreateSecurity(Client client, String isin)
+    protected Security lookupSecurity(Client client, String isin, boolean doCreate)
     {
         Security security = null;
         for (Security s : client.getSecurities())
@@ -120,7 +122,7 @@ public abstract class CSVImportDefinition
                 break;
             }
         }
-        if (security == null)
+        if (security == null && doCreate)
         {
             security = new Security(MessageFormat.format(Messages.CSVImportedSecurityLabel, isin), isin, null,
                             AssetClass.EQUITY, QuoteFeed.MANUAL);
@@ -180,7 +182,7 @@ public abstract class CSVImportDefinition
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
             if (isin != null)
             {
-                Security security = lookupOrCreateSecurity(client, isin);
+                Security security = lookupSecurity(client, isin, true);
                 transaction.setSecurity(security);
             }
 
@@ -257,7 +259,7 @@ public abstract class CSVImportDefinition
             PortfolioTransaction transaction = new PortfolioTransaction();
             transaction.setDate(date);
             transaction.setAmount(Math.abs(amount));
-            transaction.setSecurity(lookupOrCreateSecurity(client, isin));
+            transaction.setSecurity(lookupSecurity(client, isin, true));
             transaction.setShares(Math.abs(shares));
             transaction.setFees(Math.abs(fees));
 
@@ -307,6 +309,60 @@ public abstract class CSVImportDefinition
                                 MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 
             security.addPrice(new SecurityPrice(date, Math.abs(amount)));
+        }
+    }
+
+    /* package */static class SecurityDef extends CSVImportDefinition
+    {
+        /* package */SecurityDef()
+        {
+            super(Messages.CSVDefSecurities);
+
+            List<Field> fields = getFields();
+            fields.add(new Field(Messages.CSVColumn_ISIN));
+            fields.add(new Field(Messages.CSVColumn_Description));
+            fields.add(new Field(Messages.CSVColumn_TickerSymbol));
+            fields.add(new EnumField<AssetClass>(Messages.CSVColumn_Type, AssetClass.class));
+        }
+
+        @Override
+        public List<?> getTargets(Client client)
+        {
+            return Arrays.asList(new String[] { Messages.CSVDefSecurityMasterData });
+        }
+
+        @Override
+        void build(Client client, Object target, String[] rawValues, Map<String, Column> field2column)
+                        throws ParseException
+        {
+            if (!(target instanceof String))
+                throw new IllegalArgumentException();
+
+            String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
+            if (isin == null)
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_ISIN),
+                                0);
+
+            Security security = lookupSecurity(client, isin, false);
+            if (security != null)
+                throw new ParseException(MessageFormat.format(Messages.CSVImportISINExists, isin), 0);
+
+            String description = getTextValue(Messages.CSVColumn_Description, rawValues, field2column);
+            if (description == null)
+                description = MessageFormat.format(Messages.CSVImportedSecurityLabel, isin);
+
+            String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+
+            AssetClass assetClass = convertEnum(Messages.CSVColumn_Type, AssetClass.class, rawValues, field2column);
+            if (assetClass == null)
+                assetClass = AssetClass.EQUITY;
+
+            String feed = QuoteFeed.MANUAL;
+            if (tickerSymbol != null)
+                feed = YahooFinanceQuoteFeed.ID;
+
+            security = new Security(description, isin, tickerSymbol, assetClass, feed);
+            client.addSecurity(security);
         }
     }
 
