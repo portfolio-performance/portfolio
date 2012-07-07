@@ -29,6 +29,7 @@ import name.abuchen.portfolio.util.CSVImporter.FieldFormat;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -476,14 +477,25 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
         if (fieldsToMap.isEmpty())
         {
-            setErrorMessage(null);
+            setMessage(null);
             setPageComplete(importer.getImportTarget() != null);
         }
         else
         {
-            setErrorMessage(MessageFormat.format(Messages.CSVImportErrorMissingFields,
-                            Arrays.toString(fieldsToMap.toArray()), fieldsToMap.size()));
-            setPageComplete(false);
+            boolean onlyOptional = true;
+            StringBuilder message = new StringBuilder();
+            for (Field f : fieldsToMap)
+            {
+                onlyOptional = f.isOptional() && onlyOptional;
+
+                if (message.length() > 0)
+                    message.append(", "); //$NON-NLS-1$
+                message.append(f.getName());
+            }
+
+            setMessage(MessageFormat.format(Messages.CSVImportErrorMissingFields, message, fieldsToMap.size()),
+                            onlyOptional ? IMessageProvider.WARNING : IMessageProvider.ERROR);
+            setPageComplete(onlyOptional);
         }
     }
 

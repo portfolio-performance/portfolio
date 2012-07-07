@@ -102,6 +102,9 @@ public abstract class CSVImportDefinition
     protected String getTextValue(String name, String[] rawValues, Map<String, Column> field2column)
     {
         Column column = field2column.get(name);
+        if (column == null)
+            return null;
+
         int columnIndex = column.getColumnIndex();
 
         if (columnIndex < 0 || columnIndex >= rawValues.length)
@@ -143,9 +146,10 @@ public abstract class CSVImportDefinition
 
             List<Field> fields = getFields();
             fields.add(new DateField(Messages.CSVColumn_Date));
-            fields.add(new Field(Messages.CSVColumn_ISIN));
+            fields.add(new Field(Messages.CSVColumn_ISIN).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Value));
-            fields.add(new EnumField<AccountTransaction.Type>(Messages.CSVColumn_Type, AccountTransaction.Type.class));
+            fields.add(new EnumField<AccountTransaction.Type>(Messages.CSVColumn_Type, AccountTransaction.Type.class)
+                            .setOptional(true));
         }
 
         @Override
@@ -208,10 +212,10 @@ public abstract class CSVImportDefinition
             fields.add(new DateField(Messages.CSVColumn_Date));
             fields.add(new Field(Messages.CSVColumn_ISIN));
             fields.add(new AmountField(Messages.CSVColumn_Value));
-            fields.add(new AmountField(Messages.CSVColumn_Fees));
+            fields.add(new AmountField(Messages.CSVColumn_Fees).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Shares));
             fields.add(new EnumField<PortfolioTransaction.Type>(Messages.CSVColumn_Type,
-                            PortfolioTransaction.Type.class));
+                            PortfolioTransaction.Type.class).setOptional(true));
         }
 
         @Override
@@ -320,9 +324,9 @@ public abstract class CSVImportDefinition
 
             List<Field> fields = getFields();
             fields.add(new Field(Messages.CSVColumn_ISIN));
-            fields.add(new Field(Messages.CSVColumn_Description));
-            fields.add(new Field(Messages.CSVColumn_TickerSymbol));
-            fields.add(new EnumField<AssetClass>(Messages.CSVColumn_Type, AssetClass.class));
+            fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
+            fields.add(new EnumField<AssetClass>(Messages.CSVColumn_Type, AssetClass.class).setOptional(true));
         }
 
         @Override

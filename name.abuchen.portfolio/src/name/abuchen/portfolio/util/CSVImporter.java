@@ -106,6 +106,7 @@ public class CSVImporter
     public static class Field
     {
         private final String name;
+        private boolean isOptional = false; 
 
         public Field(String name)
         {
@@ -115,6 +116,17 @@ public class CSVImporter
         public String getName()
         {
             return name;
+        }
+        
+        public Field setOptional(boolean isOptional)
+        {
+            this.isOptional = isOptional;
+            return this;
+        }
+        
+        public boolean isOptional()
+        {
+            return isOptional;
         }
 
         @Override
