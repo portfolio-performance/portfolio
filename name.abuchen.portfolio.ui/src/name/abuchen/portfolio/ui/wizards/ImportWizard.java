@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.wizards;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +43,12 @@ public class ImportWizard extends Wizard
             IStatus[] status = new IStatus[errors.size()];
             int ii = 0;
             for (Exception e : errors)
-                status[ii++] = new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
+                status[ii++] = new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
 
-            ErrorDialog.openError(getShell(), Messages.LabelError, Messages.CSVImportErrorsDuringImport,
-                            new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1, status,
-                                            Messages.CSVImportErrorsDuringImport, null));
+            String message = MessageFormat.format(Messages.CSVImportErrorsDuringImport, errors.size(), importer
+                            .getRawValues().size());
+            ErrorDialog.openError(getShell(), Messages.LabelError, null, new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1,
+                            status, message, null));
         }
 
         return true;
