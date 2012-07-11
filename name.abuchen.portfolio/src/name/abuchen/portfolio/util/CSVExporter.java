@@ -69,7 +69,6 @@ public class CSVExporter
         finally
         {
             writer.close();
-
         }
     }
 
@@ -120,7 +119,6 @@ public class CSVExporter
         finally
         {
             writer.close();
-
         }
     }
 
@@ -128,6 +126,35 @@ public class CSVExporter
     {
         for (Portfolio portfolio : portfolios)
             exportPortfolioTransactions(new File(directory, portfolio.getName() + ".csv"), portfolio); //$NON-NLS-1$
+    }
+
+    public void exportSecurityMasterData(File file, List<Security> securities) throws IOException
+    {
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
+
+        try
+        {
+            CSVPrinter printer = new CSVPrinter(writer);
+            printer.setStrategy(strategy);
+
+            printer.println(new String[] { Messages.CSVColumn_ISIN, //
+                            Messages.CSVColumn_Description, //
+                            Messages.CSVColumn_TickerSymbol, //
+                            Messages.CSVColumn_Type });
+
+            for (Security s : securities)
+            {
+                printer.print(s.getIsin());
+                printer.print(s.getName());
+                printer.print(s.getTickerSymbol());
+                printer.print(s.getType().toString());
+                printer.println();
+            }
+        }
+        finally
+        {
+            writer.close();
+        }
     }
 
     public void exportSecurityPrices(File file, Security security) throws IOException
@@ -151,7 +178,6 @@ public class CSVExporter
         finally
         {
             writer.close();
-
         }
     }
 

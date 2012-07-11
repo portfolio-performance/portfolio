@@ -81,7 +81,8 @@ public class ExportSelectionPage extends AbstractWizardPage
         treeViewer.setContentProvider(new ExportItemsContentProvider());
         treeViewer.setLabelProvider(new ExportItemsLabelProvider());
         treeViewer.setInput(client);
-        treeViewer.setExpandedElements(new Object[] { AccountTransaction.class, PortfolioTransaction.class });
+        treeViewer.setExpandedElements(new Object[] { AccountTransaction.class, PortfolioTransaction.class,
+                        Security.class });
 
         // wiring
         setPageComplete(false);
@@ -129,7 +130,8 @@ public class ExportSelectionPage extends AbstractWizardPage
         @Override
         public Object[] getElements(Object inputElement)
         {
-            return new Class[] { AccountTransaction.class, PortfolioTransaction.class, SecurityPrice.class };
+            return new Class[] { AccountTransaction.class, PortfolioTransaction.class, Security.class,
+                            SecurityPrice.class };
         }
 
         @Override
@@ -141,6 +143,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                     return client.getAccounts().toArray();
                 else if (parentElement == PortfolioTransaction.class)
                     return client.getPortfolios().toArray();
+                else if (parentElement == Security.class)
+                    return new String[] { Messages.ExportWizardSecurityMasterData };
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().toArray();
             }
@@ -180,8 +184,12 @@ public class ExportSelectionPage extends AbstractWizardPage
                 return Messages.ExportWizardAccountTransactions;
             else if (element == PortfolioTransaction.class)
                 return Messages.ExportWizardPortfolioTransactions;
+            else if (element == Security.class)
+                return Messages.ExportWizardSecurities;
             else if (element == SecurityPrice.class)
                 return Messages.ExportWizardHistoricalQuotes;
+            else if (element instanceof String)
+                return (String) element;
             else
                 return null;
         }

@@ -232,7 +232,7 @@ public class CSVImporter
     private final Client client;
     private final File inputFile;
     private final CSVImportDefinition[] definitions = new CSVImportDefinition[] { new AccountTransactionDef(),
-                    new PortfolioTransactionDef(), new SecurityPriceDef(), new SecurityDef() };
+                    new PortfolioTransactionDef(), new SecurityDef(), new SecurityPriceDef() };
 
     private CSVImportDefinition importDefinition;
     private Object importTarget;

@@ -57,6 +57,11 @@ public class ExportWizard extends Wizard
                 new CSVExporter().exportPortfolioTransactions(file, client.getPortfolios());
             else if (exportClass == PortfolioTransaction.class)
                 new CSVExporter().exportPortfolioTransactions(file, (Portfolio) exportItem);
+            else if (exportItem == Security.class)
+                new CSVExporter().exportSecurityMasterData(new File(file, Messages.ExportWizardSecurityMasterData
+                                + ".csv"), client.getSecurities()); //$NON-NLS-1$
+            else if (exportClass == Security.class)
+                new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
             else if (exportItem == SecurityPrice.class)
                 new CSVExporter().exportSecurityPrices(file, client.getSecurities());
             else if (exportClass == SecurityPrice.class)
@@ -96,6 +101,8 @@ public class ExportWizard extends Wizard
                 name = ((Portfolio) exportItem).getName();
             else if (exportItem instanceof Security)
                 name = ((Security) exportItem).getIsin();
+            else if (exportItem instanceof String)
+                name = (String) exportItem;
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
             if (name != null)
