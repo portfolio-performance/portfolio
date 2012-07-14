@@ -3,7 +3,9 @@ package name.abuchen.portfolio.ui.update;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,12 +40,12 @@ public class UpdateHelper
 
         IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
         if (profile == null)
-            throw new IOException("No profile found. Running from IDE?");
+            throw new IOException(Messages.MsgNoProfileFound);
     }
 
     public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, IOException
     {
-        SubMonitor sub = SubMonitor.convert(monitor, "Checking for application updates...", 200);
+        SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
         final String newVersion = checkForUpdates(sub.newChild(100));
         if (newVersion != null)
@@ -54,8 +56,8 @@ public class UpdateHelper
                 public void run()
                 {
                     doUpdate[0] = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
-                                    "Updates Available.", "A new version is available. Do you want to update?\n"
-                                                    + newVersion);
+                                    Messages.LabelUpdatesAvailable,
+                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion));
                 }
             });
 
@@ -70,8 +72,8 @@ public class UpdateHelper
                 {
                     public void run()
                     {
-                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Info",
-                                        "No updates available.");
+                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                        Messages.MsgNoUpdatesAvailable);
                     }
                 });
             }
@@ -97,7 +99,8 @@ public class UpdateHelper
             throw new IOException(status.getException());
 
         Update[] possibleUpdates = operation.getPossibleUpdates();
-        return possibleUpdates.length > 0 ? possibleUpdates[0].replacement.getVersion().toString() : "Unknown";
+        return possibleUpdates.length > 0 ? possibleUpdates[0].replacement.getVersion().toString()
+                        : Messages.LabelUnknownVersion;
     }
 
     private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, IOException

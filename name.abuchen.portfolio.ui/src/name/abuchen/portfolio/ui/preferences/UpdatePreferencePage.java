@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -19,15 +20,15 @@ public class UpdatePreferencePage extends FieldEditorPreferencePage implements I
     public void createFieldEditors()
     {
         addField(new StringFieldEditor(PortfolioPlugin.Preferences.UPDATE_SITE, //
-                        "&Update Site:", getFieldEditorParent()));
+                        Messages.PrefUpdateSite, getFieldEditorParent()));
         addField(new BooleanFieldEditor(PortfolioPlugin.Preferences.AUTO_UPDATE, //
-                        "&Check for updates on start", getFieldEditorParent()));
+                        Messages.PrefCheckOnStartup, getFieldEditorParent()));
     }
 
     @Override
     public void init(IWorkbench workbench)
     {
         setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
-        setDescription("Configures where to check for updates for the application.");
+        setDescription(Messages.PrefMsgConfigureUpdates);
     }
 }

@@ -132,6 +132,7 @@ public class Messages extends NLS
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdating;
+    public static String JobMsgCheckingForUpdates;
     public static String JobMsgErrorUpdatingIndeces;
     public static String JobMsgErrorUpdatingQuotes;
     public static String JobMsgLoadingExchanges;
@@ -143,6 +144,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelError;
     public static String LabelExchange;
+    public static String LabelInfo;
     public static String LabelInternalRateOfReturn;
     public static String LabelNewCategory;
     public static String LabelNoName;
@@ -164,8 +166,10 @@ public class Messages extends NLS
     public static String LabelStatementOfAssetsHoldings;
     public static String LabelTotalSum;
     public static String LabelTransferals;
+    public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
     public static String LabelUnsavedFile;
+    public static String LabelUpdatesAvailable;
     public static String MenuExportData;
     public static String MenuResetColumns;
     public static String MenuShowHideColumns;
@@ -178,6 +182,7 @@ public class Messages extends NLS
     public static String MsgAccountFromMissing;
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
+    public static String MsgConfirmInstall;
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleAssignedInAllocation;
     public static String MsgDeletionNotPossibleDetail;
@@ -187,6 +192,8 @@ public class Messages extends NLS
     public static String MsgErrorOpeningEditor;
     public static String MsgMissingAccount;
     public static String MsgMissingSecurity;
+    public static String MsgNoProfileFound;
+    public static String MsgNoUpdatesAvailable;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceChartLabelMonthly;
@@ -195,6 +202,9 @@ public class Messages extends NLS
     public static String PerformanceTabCalculation;
     public static String PortfolioMenuAdd;
     public static String PortfolioMenuDelete;
+    public static String PrefCheckOnStartup;
+    public static String PrefMsgConfigureUpdates;
+    public static String PrefUpdateSite;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;

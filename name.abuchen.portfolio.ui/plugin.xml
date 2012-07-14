@@ -338,14 +338,16 @@
             id="name.abuchen.portfolio.ui.intro">
       </intro>
    </extension>
+
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="name.abuchen.portfolio.ui.preferences.UpdatePreferencePage"
             id="name.abuchen.portfolio.ui.updatePreferencePage"
-            name="Update Policy">
+            name="%pref.updates.name">
       </page>
    </extension>
+
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer

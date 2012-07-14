@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.app;
 
 import java.io.IOException;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
@@ -43,7 +44,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor
                         .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);
         if (autoUpdate)
         {
-            Job job = new Job("Check for Updates")
+            Job job = new Job(Messages.JobMsgCheckingForUpdates)
             {
 
                 @Override
