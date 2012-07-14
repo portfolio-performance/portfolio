@@ -194,6 +194,7 @@ public class Messages extends NLS
     public static String MsgMissingSecurity;
     public static String MsgNoProfileFound;
     public static String MsgNoUpdatesAvailable;
+    public static String MsgRestartRequired;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceChartLabelMonthly;

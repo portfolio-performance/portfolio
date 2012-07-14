@@ -62,7 +62,17 @@ public class UpdateHelper
             });
 
             if (doUpdate[0])
+            {
                 runUpdateOperation(sub.newChild(100));
+                Display.getDefault().asyncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                        Messages.MsgRestartRequired);
+                    }
+                });
+            }
         }
         else
         {
