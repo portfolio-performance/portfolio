@@ -48,6 +48,9 @@ Apache Software Foundation http://apache.org/
       <plugin id="name.abuchen.portfolio"/>
       <plugin id="name.abuchen.portfolio.ui"/>
 
+      <plugin id="org.apache.commons.codec"/>
+      <plugin id="org.apache.commons.logging"/>
+      <plugin id="org.apache.commons.httpclient"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.commands.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -87,6 +90,16 @@ Apache Software Foundation http://apache.org/
       <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf.filetransfer"/>
+      <plugin id="org.eclipse.ecf.filetransfer.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf.identity"/>
+      <plugin id="org.eclipse.ecf.identity.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.app.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.common"/>
@@ -123,6 +136,8 @@ Apache Software Foundation http://apache.org/
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.natives"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.natives.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.transport.ecf"/>
+      <plugin id="org.eclipse.equinox.p2.transport.ecf.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.ds"/>
       <plugin id="org.eclipse.equinox.ds.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator"/>
