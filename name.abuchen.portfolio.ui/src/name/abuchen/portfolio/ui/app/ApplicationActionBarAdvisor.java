@@ -3,9 +3,11 @@ package name.abuchen.portfolio.ui.app;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
+import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,6 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.eclipse.ui.handlers.IHandlerService;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor
 {
@@ -38,7 +41,28 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
             {
                 int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
 
-                MenuItem newAppMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
+                MenuItem updatesMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
+                updatesMenuItem.setText(Messages.SystemMenuCheckForUpdates);
+                updatesMenuItem.addSelectionListener(new SelectionAdapter()
+                {
+                    public void widgetSelected(SelectionEvent event)
+                    {
+                        try
+                        {
+                            IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(
+                                            IHandlerService.class);
+                            handlerService.executeCommand("name.abuchen.portfolio.ui.commands.updateCommand", null); //$NON-NLS-1$
+                        }
+                        catch (CommandException e)
+                        {
+                            PortfolioPlugin.log(e);
+                            ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, null,
+                                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage()));
+                        }
+                    };
+                });
+
+                MenuItem newAppMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
                 newAppMenuItem.setText(Messages.SystemMenuShowErrorLog);
                 newAppMenuItem.addSelectionListener(new SelectionAdapter()
                 {
@@ -51,12 +75,12 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
                         }
                         catch (PartInitException e)
                         {
-                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                            PortfolioPlugin.log(e);
                         }
                     };
                 });
 
-                MenuItem newWelcomeMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
+                MenuItem newWelcomeMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 3);
                 newWelcomeMenuItem.setText(Messages.SystemMenuWelcome);
                 newWelcomeMenuItem.addSelectionListener(new SelectionAdapter()
                 {

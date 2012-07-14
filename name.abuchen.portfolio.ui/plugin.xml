@@ -123,10 +123,6 @@
                   id="name.abuchen.portfolio.ui.menus.exportCommand"
                   commandId="name.abuchen.portfolio.ui.commands.exportCommand">
             </command>
-            <command
-                  id="name.abuchen.portfolio.ui.menus.updateCommand"
-                  commandId="name.abuchen.portfolio.ui.commands.updateCommand">
-            </command>
          </menu>
          <menu
                id="online"
@@ -172,6 +168,10 @@
             <command
                   id="org.eclipse.ui.window.preferences"
                   commandId="org.eclipse.ui.window.preferences">
+            </command>
+            <command
+                  id="name.abuchen.portfolio.ui.menus.updateCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.updateCommand">
             </command>
             <command
                   commandId="org.eclipse.ui.views.showView"
