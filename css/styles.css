@@ -47,6 +47,7 @@ width: 100%;
 border-collapse: separate;
 border-spacing: 0px;
 border-bottom: thin solid grey;
+margin-bottom: 100px;
 }
 
 .news tr {
