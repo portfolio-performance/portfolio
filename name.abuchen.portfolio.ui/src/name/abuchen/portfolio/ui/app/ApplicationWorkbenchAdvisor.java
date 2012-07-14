@@ -1,5 +1,14 @@
 package name.abuchen.portfolio.ui.app;
 
+import java.io.IOException;
+
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.update.UpdateHelper;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -25,6 +34,37 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor
     {
         super.initialize(configurer);
         configurer.setSaveAndRestore(true);
+    }
+
+    @Override
+    public void postStartup()
+    {
+        boolean autoUpdate = PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);
+        if (autoUpdate)
+        {
+            Job job = new Job("Check for Updates")
+            {
+
+                @Override
+                protected IStatus run(IProgressMonitor monitor)
+                {
+                    try
+                    {
+                        UpdateHelper updateHelper = new UpdateHelper();
+                        updateHelper.runUpdate(monitor, true);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+                    }
+                    return Status.OK_STATUS;
+                }
+
+            };
+            job.setSystem(true);
+            job.schedule(500);
+        }
     }
 
 }

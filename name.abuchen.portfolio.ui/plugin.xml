@@ -123,6 +123,10 @@
                   id="name.abuchen.portfolio.ui.menus.exportCommand"
                   commandId="name.abuchen.portfolio.ui.commands.exportCommand">
             </command>
+            <command
+                  id="name.abuchen.portfolio.ui.menus.updateCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.updateCommand">
+            </command>
          </menu>
          <menu
                id="online"
@@ -228,6 +232,11 @@
             id="name.abuchen.portfolio.ui.commands.exportCommand"
             name="%command.export.name">
       </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.updateCommand"
+            name="%command.update.name">
+      </command>
    </extension>
 
    <extension
@@ -259,6 +268,10 @@
       <handler
             class="name.abuchen.portfolio.ui.handlers.ExportHandler"
             commandId="name.abuchen.portfolio.ui.commands.exportCommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.UpdateHandler"
+            commandId="name.abuchen.portfolio.ui.commands.updateCommand">
       </handler>
    </extension>
 
@@ -324,5 +337,19 @@
             class="name.abuchen.portfolio.ui.app.IntroPart"
             id="name.abuchen.portfolio.ui.intro">
       </intro>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="name.abuchen.portfolio.ui.preferences.UpdatePreferencePage"
+            id="name.abuchen.portfolio.ui.updatePreferencePage"
+            name="Update Policy">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="name.abuchen.portfolio.ui.preferences.UpdateInitializer">
+      </initializer>
    </extension>
 </plugin>

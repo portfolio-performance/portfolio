@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="%product.name" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.6.1.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.6.1.qualifier" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icons/about.gif"/>
@@ -104,10 +104,29 @@ Apache Software Foundation http://apache.org/
       <plugin id="org.eclipse.equinox.launcher.win32.win32.x86_64" fragment="true" os="win32" ws="win32" arch="x86_64"/>
       <plugin id="org.eclipse.equinox.launcher.win32.win32.x86_64.nl_de" fragment="true" os="win32" ws="win32" arch="x86_64"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
+      <plugin id="org.eclipse.equinox.p2.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine"/>
+      <plugin id="org.eclipse.equinox.p2.engine.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository"/>
+      <plugin id="org.eclipse.equinox.p2.repository.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.director"/>
+      <plugin id="org.eclipse.equinox.p2.director.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.operations"/>
+      <plugin id="org.eclipse.equinox.p2.operations.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.natives"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.natives.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.ds"/>
+      <plugin id="org.eclipse.equinox.ds.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.preferences.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.registry"/>
@@ -170,9 +189,13 @@ Apache Software Foundation http://apache.org/
    </plugins>
 
    <configurations>
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="name.abuchen.portfolio.ui" autoStart="false" startLevel="5" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
    </configurations>
+
 
 </product>

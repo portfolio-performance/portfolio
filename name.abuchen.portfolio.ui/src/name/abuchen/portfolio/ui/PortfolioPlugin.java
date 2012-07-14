@@ -17,6 +17,12 @@ import org.osgi.framework.FrameworkUtil;
 
 public class PortfolioPlugin extends AbstractUIPlugin
 {
+    public interface Preferences
+    {
+        String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
+        String AUTO_UPDATE = "AUTO_UPDATE"; //$NON-NLS-1$
+    }
+
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
     public static final String IMG_LOGO = "pp_128"; //$NON-NLS-1$
