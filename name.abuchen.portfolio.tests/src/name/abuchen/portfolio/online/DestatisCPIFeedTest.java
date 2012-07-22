@@ -27,9 +27,9 @@ public class DestatisCPIFeedTest
         Lexer lexer = new Lexer(html);
         List<ConsumerPriceIndex> prices = new DestatisCPIFeed.Visitor().visit(lexer);
 
-        assertThat(prices.size(), equalTo(19 /* years in file */* 12 + 2));
+        assertThat(prices.size(), equalTo(19 /* years in file */* 12 + 6));
 
-        ConsumerPriceIndex p = prices.get(1);
+        ConsumerPriceIndex p = prices.get(5);
         assertThat(p.getYear(), equalTo(2012));
         assertThat(p.getMonth(), equalTo(Calendar.JANUARY));
         assertThat(p.getIndex(), equalTo(11150));

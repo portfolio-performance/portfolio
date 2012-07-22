@@ -4,12 +4,12 @@
   <head><!-- PrintShortcut -->
     <base href="https://www.destatis.de/"></base>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Gesamtwirtschaft &amp; Umwelt - Verbraucherpreisindizes - Statistisches Bundesamt (Destatis) - Verbraucherpreise - Destatis</title>
+    <title>Gesamtwirtschaft &amp; Umwelt - Verbraucherpreisindizes - Statistisches Bundesamt (Destatis) - Verbraucherpreise- Statistisches Bundesamt (Destatis)</title>
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
     <meta http-equiv="imagetoolbar" content="false" />
     <meta name="MSSmartTagsPreventParsing" content="true" />
-    <meta name="genTime" content="Fri Mar 16 20:46:00 CET 2012"/>
+    <meta name="genTime" content="Sun Jul 22 20:09:54 CEST 2012"/>
     <meta name="generator" content="Government Site Builder"/>
 
     <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=1.0, user-scalable=yes" />
@@ -19,13 +19,13 @@
 
     <meta name="description" content="Tabellen zum Verbraucherpreisindex: Gesamtindex und 12 Abteilungen. Jahresdurchschnitte und Monatswerte, Indizes und Veränderungsraten."/>
     <meta name="keywords" content="Dienstleistung, Erzeugerpreisindex"/>
-    <meta name="date" content="13.03.2012"/>
+    <meta name="date" content="02.07.2012"/>
     <meta http-equiv="content-language" content="DE"/>
     <meta name="language" content="DE"/>
     <meta name="publisher" content="Internet"/>
     <meta name="DC.Publisher" content="Internet"/>
-    <link rel="canonical" href="https://www.destatis.de/DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html"/>
-    <link rel="bookmark" href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652#Start" type="text/html" title="Zum Inhalt" /><!-- NOTE: points to the beginning of the document -->
+    <link rel="canonical" href="https://www.destatis.de/DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html"/>
+    <link rel="bookmark" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?nn=50652#Start" type="text/html" title="Zum Inhalt" /><!-- NOTE: points to the beginning of the document -->
     <link rel="copyright" href="DE/Meta/Impressum/Impressum.html" type="text/html" title="Impressum" />
     <link rel="glossary" href="" type="text/html" title="Glossar" />
     <link rel="help" href="DE/PresseService/ErsterBesuch/ErsterBesuch.html" type="text/html" title="Hilfe" />
@@ -36,19 +36,19 @@
   <link rel="up" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Preise.html" type="text/html" title="Preise" />
   <link rel="chapter" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Wertsicherungsklauseln/Wertsicherungsklauseln.html" type="text/html" title="Wertsicherungsklauseln" />
   <link rel="chapter" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/WarenkorbWaegungsschema/WarenkorbWaegungsschema.html" type="text/html" title="Warenkorb und Wägungsschema" />
-    <link rel="shortcut icon" href="/SiteGlobals/StyleBundlesComposing/Bilder/favicon.ico?__blob=normal&amp;v=7" type="image/ico" />
+    <link rel="shortcut icon" href="/SiteGlobals/StyleBundles/Bilder/favicon.ico?__blob=normal&amp;v=7" type="image/ico" />
 
 <link rel="alternate" type="application/rss+xml" title="Statistisches Bundesamt" href="SiteGlobals/Functions/RSSFeed/DE/RSSNewsfeed/Aktuell.xml"/>
 
-<link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/destatis.css" type="text/css" media="screen,projection, print" />
-<link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/destatis-bg-images.css" type="text/css" media="screen,handheld,projection, print" />
-<!--[if IE 7]><link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/ie7.css" type="text/css" media="screen,handheld,projection,print" /><![endif]-->
-<!--[if gte IE 8]><link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/gte-ie8.css" type="text/css" media="screen,handheld,projection, print" /><![endif]-->
-<link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/handheld.css" type="text/css" media="only screen and (max-device-width: 640px)" />
-<link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/printpreview.css" type="text/css" media="screen" />
-<link id="printcss" rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/print.css" type="text/css" media="print" />
-<link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/destatis_ao.css" type="text/css" media="screen,projection" />
-<link rel="stylesheet" href="SiteGlobals/StyleBundlesComposing/CSS/destatis_ao_PM.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/destatis.css" type="text/css" media="screen,projection, print" />
+<link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/destatis-bg-images.css" type="text/css" media="screen,handheld,projection, print" />
+<!--[if IE 7]><link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/ie7.css" type="text/css" media="screen,handheld,projection,print" /><![endif]-->
+<!--[if gte IE 8]><link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/gte-ie8.css" type="text/css" media="screen,handheld,projection, print" /><![endif]-->
+<link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/handheld.css" type="text/css" media="only screen and (max-device-width: 640px)" />
+<link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/printmedia.css" type="text/css" media="print" />
+<link id="printcss" rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/print.css" type="text/css" media="print" />
+<link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/destatis_ao.css" type="text/css" media="screen,projection, print" />
+<link rel="stylesheet" href="SiteGlobals/StyleBundles/CSS/destatis_ao_PM.css" type="text/css" media="screen" />
 
 
 <!--<script type="text/javascript"src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" ></script>-->
@@ -57,7 +57,7 @@
 <div id="printPreview" class="printpreview">
  <span class="formHandle">
   <span>
-   <a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652" onclick="ppToggle(); return false;">Normalansicht</a>
+   <a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?nn=50652" onclick="ppToggle(); return false;">Normalansicht</a>
   </span>
  </span>
  <script type="text/javascript">
@@ -71,19 +71,17 @@
   <div id="wrapperInner">
     <a id="Start" name="Start"></a>
     <h1 class="navSkip">Navigation und Service</h1>
-    <p class="navSkip"><em>Springe direkt zu:</em></p>
     <ul class="navSkip">
-      <li><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652#Inhalt">Inhalt</a></li>
-      <li><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652#Hauptmenu">Hauptmenu</a></li>
-      <li><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652#Suche">Suche</a></li>
+      <li><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?nn=50652#Inhalt">Springe direkt zu: Inhalt</a></li>
+      <li><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?nn=50652#Hauptmenu">Springe direkt zu: Hauptmenu</a></li>
     </ul><!-- .navSkip -->
     <div id="wrapperHeader" class="clearfix">
       <div id="fade2BG"></div>
-      <div id="logoDestatis"><a href="DE/Startseite.html" id="anfang" title="Zur Startseite"><img src="/SiteGlobals/StyleBundlesComposing/Bilder/logoDestatis.png?__blob=normal&amp;v=15" alt="Government Site Builder Standardl&ouml;sung (Link zur Startseite)" /></a></div>
+      <div id="logoDestatis"><a href="DE/Startseite.html" id="anfang" title="Zur Startseite"><img src="/SiteGlobals/StyleBundles/Bilder/logoDestatis.png?__blob=normal&amp;v=19" alt="Logo Destatis - Statistisches Bundesamt, Link zur Startseite" /></a></div>
       <div id="navServiceMeta" class="clearfix">
         <h2 class="aural">Servicemenü</h2>
         
-<ul><li ><a href="DE/Service/Glossar/Glossar.html">Glossar</a></li><li ><a href="DE/Meta/Sitemap/Sitemap.html">Si­te­map</a></li><li ><a href="DE/PresseService/ErsterBesuch/ErsterBesuch.html">Ers­ter Be­such</a></li><li ><a href="DE/Service/Kontakt/Kontakt.html">Kon­takt</a></li><li ><a href="DE/Meta/Impressum/Impressum.html">Im­pres­s­um</a></li><li ><a href="DE/Meta/RSS/RSS_News.html">R­SS/News</a></li></ul>
+<ul><li ><a href="DE/Service/Glossar/Glossar.html">Glossar</a></li><li ><a href="DE/Meta/Sitemap/Sitemap.html">Si­te­map</a></li><li ><a href="DE/PresseService/ErsterBesuch/ErsterBesuch.html">Ers­ter Be­such</a></li><li ><a href="DE/Service/Barrierefrei/Barrierefrei.html">Bar­rie­re­frei?</a></li><li ><a href="DE/Service/Kontakt/Kontakt.html">Kon­takt</a></li><li ><a href="DE/Meta/Impressum/Impressum.html">Im­pres­s­um</a></li><li ><a href="DE/Meta/RSS/RSS_News.html">R­SS/News</a></li></ul>
       </div>
       <div id="langSwitch">
         <ul class="clearfix">
@@ -95,7 +93,7 @@
         </ul>
       </div>
       <div id="search">
-        <h2 class="aural"><a id="Suche" name="Suche">Suche</a></h2>
+        <h2 class="aural"><a id="Suche" name="Suche">Suche: Bitte Tab-Taste nutzen, um ins Suchfeld zu springen.</a></h2>
         
 
 <form name="ServicebereichSuche" action="SiteGlobals/Forms/Suche/Servicesuche_Formular.html"
@@ -105,7 +103,7 @@
   <input type="hidden" name="resourceId" value="47156" />
   <input type="hidden" name="input_" value="145110" />
   <input type="hidden" name="pageLocale" value="DE" />
-	<input type="hidden" name="searchUrl" value="http://www.destatis.de/DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652"/>
+	<input type="hidden" name="searchUrl" value="http://www.destatis.de/DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?nn=50652"/>
 	<fieldset>
     <p>
       <label for="topSearchField " class="aural">Suchbegriff</label>
@@ -116,37 +114,11 @@
       <input name="documentType" type="hidden" value="ALL" />
       <input name="dateOfIssue" type="hidden" value="ALL" />
       <input name="switchsource" type="hidden" value="solr Internet" />
-      <input type="image" src="/SiteGlobals/StyleBundlesComposing/Bilder/btnHeaderSucheLupe.png?__blob=normal&amp;v=8" id="btnSucheAbsenden" title="Suche starten" class="submit" alt="Suche starten" />
+      <input type="image" src="/SiteGlobals/StyleBundles/Bilder/btnHeaderSucheLupe.png?__blob=normal&amp;v=8" id="btnSucheAbsenden" title="Suche starten" class="submit" alt="Suche starten" />
     </p>
 </fieldset>
 </form>
 
-<!--<form enctype="application/x-www-form-urlencoded" method="get" action="SiteGlobals/Forms/Suche/Servicesuche_Formular.html" name="ServicebereichSuche">
-  <fieldset>
-    <p>
-      <label for="f1140d724 " class="aural">Suchbegriff</label>
-      <input type="text" maxlength="100" size="26" alt="Suchtext" value="Suchbegriff" name="templateQueryString" id="f1140d724" class="suchtext" />
-      <label for="btnSucheAbsenden" class="aural">Suchen</label>
-      <input type="submit" class="submit" value=" " name="submit" id="btnSucheAbsenden" />
-    </p>
-  </fieldset>
-</form>-->
-<script type="text/javascript">
-/*
- document.getElementById("f1140d724").onkeyup=function(){
-  var url="/solr/suggest?q="+document.getElementById("f1140d724").value;
-  new Ajax.Request(url,
-   {
-    method:'get',
-    onSuccess: function(transport){
-          var response = transport.responseText || "no response text";
-          alert("Success! \n\n" + response);
-    }
-   }
-  );
- }
-*/
-</script>
       </div><!-- #search -->
     <div id="navPrimary" class="clearfix">
       <h2 class="aural"><a id="Hauptmenu" name="Hauptmenu">Hauptmenu</a></h2>
@@ -161,8 +133,7 @@
       <div class="menu-box">
         <div class="wrapperFlyout clearfix">
     <div class="col">
-        <h5><a href="DE/ZahlenFakten/Indikatoren/Indikatoren.html">In­di­ka­to­ren</a>
-        </h5>
+        <div class="flyoutHeader"><a href="DE/ZahlenFakten/Indikatoren/Indikatoren.html">In­di­ka­to­ren</a></div>
         <ul>
             
 <li class="virgin"><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Konjunkturindikatoren.html">Kon­junk­tu­rin­di­ka­to­ren</a></li>
@@ -173,7 +144,7 @@
                   
         </ul>
         <br/>
-        <h5><a href="DE/ZahlenFakten/LaenderRegionen/LaenderRegionen.html">Län­der &amp; Re­gio­nen</a></h5>
+        <div class="flyoutHeader"><a href="DE/ZahlenFakten/LaenderRegionen/LaenderRegionen.html">Län­der &amp; Re­gio­nen</a></div>
         <ul>
             
 <li class="virgin"><a href="DE/ZahlenFakten/LaenderRegionen/Regionales/Regionaldaten.html">Re­gio­na­les</a></li>
@@ -184,13 +155,13 @@
                   
         </ul>
         <br/>
-        <h5><a href="DE/ZahlenFakten/Datenbanken/Datenbanken.html">Da­ten­ban­ken</a></h5>
+        <div class="flyoutHeader"><a href="DE/ZahlenFakten/Datenbanken/Datenbanken.html">Da­ten­ban­ken</a></div>
     </div>
     <div class="col">
-        <h5><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/GesamtwirtschaftUmwelt.html">Ge­samt­wirt­schaft &amp; Um­welt</a></h5>
+        <div class="flyoutHeader"><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/GesamtwirtschaftUmwelt.html">Ge­samt­wirt­schaft &amp; Um­welt</a></div>
         <ul>
             
-<li class="virgin"><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/VGR/VolkswirtschaftlicheGesamtrechnungen.html">Volks­wirt­schaft­li­che Gesamt­rechnungen</a></li>
+<li class="virgin"><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/VGR/VolkswirtschaftlicheGesamtrechnungen.html">Volks­wirt­schaft­li­che Ge­samt­rech­nun­gen</a></li>
                   
 <li class="virgin"><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/UnternehmenHandwerk/UnternehmenHandwerk.html">Un­ter­neh­men, Hand­werk</a></li>
                   
@@ -207,12 +178,12 @@
         </ul>
     </div>
     <div class="col">
-        <h5><a href="DE/ZahlenFakten/Wirtschaftsbereiche/Wirtschaftsbereiche.html">Wirt­schafts­be­rei­che</a></h5>
+        <div class="flyoutHeader"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/Wirtschaftsbereiche.html">Wirt­schafts­be­rei­che</a></div>
         <ul>
             
 <li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/LandForstwirtschaft/LandForstwirtschaft.html">Land- &amp; Forst­wirt­schaft</a></li>
                   
-<li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/IndustrieVerarbeitendesGewerbe/IndustrieVerarbeitendesGewerbe.html">In­dus­trie, Ver­ar­bei­ten­des Gewerbe</a></li>
+<li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/IndustrieVerarbeitendesGewerbe/IndustrieVerarbeitendesGewerbe.html">In­dus­trie, Ver­ar­bei­ten­des Ge­wer­be</a></li>
                   
 <li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/Energie/Energie.html">Ener­gie</a></li>
                   
@@ -220,19 +191,19 @@
                   
 <li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/Dienstleistungen/DienstleistungenFinanzdienstleistungen.html">Dienst­leis­tun­gen</a></li>
                   
-<li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/BinnenhandelGastgewerbeTourismus/BinnenhandelGastgewerbeTourismus.html">Bin­nen­han­del, Gast­ge­wer­be, Tourismus</a></li>
+<li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/BinnenhandelGastgewerbeTourismus/BinnenhandelGastgewerbeTourismus.html">Bin­nen­han­del, Gast­ge­wer­be, Tou­ris­mus</a></li>
                   
 <li class="virgin"><a href="DE/ZahlenFakten/Wirtschaftsbereiche/TransportVerkehr/TransportVerkehr.html">Trans­port &amp; Ver­kehr</a></li>
                   
         </ul>
     </div>
     <div class="col last">
-        <h5><a href="DE/ZahlenFakten/GesellschaftStaat/StaatGesellschaft.html">Ge­sell­schaft &amp; Staat</a></h5>
+        <div class="flyoutHeader"><a href="DE/ZahlenFakten/GesellschaftStaat/StaatGesellschaft.html">Ge­sell­schaft &amp; Staat</a></div>
         <ul>
             
 <li class="virgin"><a href="DE/ZahlenFakten/GesellschaftStaat/Bevoelkerung/Bevoelkerung.html">Be­völ­ke­rung</a></li>
                   
-<li class="virgin"><a href="DE/ZahlenFakten/GesellschaftStaat/EinkommenKonsumLebensbedingungen/EinkommenKonsumLebensbedingungen.html">Ein­kom­men, Kon­sum, Lebens­bedingungen</a></li>
+<li class="virgin"><a href="DE/ZahlenFakten/GesellschaftStaat/EinkommenKonsumLebensbedingungen/EinkommenKonsumLebensbedingungen.html">Ein­kom­men, Kon­sum, Le­bens­be­din­gun­gen</a></li>
                   
 <li class="virgin"><a href="DE/ZahlenFakten/GesellschaftStaat/BildungForschungKultur/BildungForschungKultur.html">Bil­dung, For­schung, Kul­tur</a></li>
                   
@@ -290,7 +261,7 @@
 </li>
   <li>
     <div class="box" id="n-3">
-      <h3><a href="DE/PresseService/PresseService.html"><span><span class="rounded"></span><span class="roundedr"></span>Pres­se &amp; Service</span></a></h3>
+      <h3><a href="DE/PresseService/PresseService.html"><span><span class="rounded"></span><span class="roundedr"></span>Pres­se &amp; Ser­vice</span></a></h3>
     <h4 class="aural">Unternavigationspunkte</h4>
     <div class="menu">
       <div class="menu-box">
@@ -393,7 +364,7 @@
 </li>
       <li class=""><em><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/GesamtwirtschaftUmwelt.html">Ge­samt­wirt­schaft &amp; Um­welt</a></em><span class="aural">:</span>
         <ul>
-          <li class=""><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/VGR/VolkswirtschaftlicheGesamtrechnungen.html">Volks­wirt­schaft­li­che Gesamt­rechnungen</a>
+          <li class=""><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/VGR/VolkswirtschaftlicheGesamtrechnungen.html">Volks­wirt­schaft­li­che Ge­samt­rech­nun­gen</a>
 
 </li>
           <li class=""><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/UnternehmenHandwerk/UnternehmenHandwerk.html">Un­ter­neh­men, Hand­werk</a>
@@ -481,21 +452,21 @@
       <ul class="menu">
            
                   <li class="level1 current"><div title="Sie sind hier: Seite 1"><span>Monatswerte</span></div></li>
-                  <li class="level1"><div><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?cms_gtp=145110_slot%253D2&amp;https=1" title=""> Jahresdurchschnitte</a></div></li>
+                  <li class="level1"><div><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?cms_gtp=145110_slot%253D2&amp;https=1" title=""> Jahresdurchschnitte</a></div></li>
            
         </ul><!-- scroller -->
   <div class="tabContent level1 indicators">
                <ul class="navIndex navIndexLevel2">
            
                   <li class="level2 first  active"><strong title="Sie sind hier: Seite 1">Indizes</strong></li>
-                  <li class="level2 last "><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?cms_gtp=145112_list%253D2&amp;https=1" title=""> Veränderung zum Vorjahr</a></li>
+                  <li class="level2 last "><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?cms_gtp=145112_list%253D2&amp;https=1" title=""> Veränderung zum Vorjahr</a></li>
            
         </ul>
                  <ul class="navIndex navIndexLevel3">
 
                   <li class="level3 first  active"><strong title="Sie sind hier: Seite 1">Abteilungen 01 bis 04</strong></li>
-                  <li class="level3  "><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?cms_gtp=145116_list%253D2&amp;https=1" title=""> Abteilungen 05 bis 08</a></li>
-                  <li class="level3  last"><a href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?cms_gtp=145116_list%253D3&amp;https=1" title=""> Abteilungen 09 bis 12</a></li>
+                  <li class="level3  "><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?cms_gtp=145116_list%253D2&amp;https=1" title=""> Abteilungen 05 bis 08</a></li>
+                  <li class="level3  last"><a href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html?cms_gtp=145116_list%253D3&amp;https=1" title=""> Abteilungen 09 bis 12</a></li>
         </ul>
         <div class="clear"></div> 
 <div class="tabContent level3">
@@ -548,7 +519,43 @@ Brennstoffe
 04
               </th> 
             </tr></thead><tbody><tr> 
-              <th rowspan="2" scope="row">2012</th>  
+              <th rowspan="6" scope="row">2012</th>  
+              <th scope="row">
+                <abbr title="Juni">Jun</abbr>
+              </th>  
+              <td>112,5</td>  
+              <td>120,3</td>  
+              <td>117,9</td>  
+              <td>107,4</td>  
+              <td>115,6</td> 
+            </tr><tr> 
+              <th scope="row">
+                <abbr title="Mai">Mai</abbr>
+              </th>  
+              <td>112,6</td>  
+              <td>119,1</td>  
+              <td>118,1</td>  
+              <td>109,0</td>  
+              <td>115,8</td> 
+            </tr><tr> 
+              <th scope="row">
+                <abbr title="April">Apr</abbr>
+              </th>  
+              <td>112,8</td>  
+              <td>119,1</td>  
+              <td>117,9</td>  
+              <td>109,7</td>  
+              <td>115,8</td> 
+            </tr><tr> 
+              <th scope="row">
+                <abbr title="März">Mär</abbr>
+              </th>  
+              <td>112,6</td>  
+              <td>119,1</td>  
+              <td>117,7</td>  
+              <td>109,5</td>  
+              <td>115,7</td> 
+            </tr><tr> 
               <th scope="row">
                 <abbr title="Februar">Feb</abbr>
               </th>  
@@ -644,7 +651,7 @@ Brennstoffe
                 <abbr title="April">Apr</abbr>
               </th>  
               <td>110,5</td>  
-              td>115,5</td>  
+              <td>115,5</td>  
               <td>113,2</td>  
               <td>106,1</td>  
               <td>113,3</td> 
@@ -2870,6 +2877,10 @@ Brennstoffe
               
               
               
+              
+              
+              
+              
              
           </table>  
             
@@ -2894,25 +2905,28 @@ Brennstoffe
   
   <div id="wrapperFooter">
     <div id="footerLinks">
-      <ul><li><p>Datenbanken<br/>
+      
+<h1></h1>
+<hr/>
+<ul><li><p>Daten­banken<br/>
 </p>
 
-<ul><li><a class="RichTextExtLink ExternalLink" href="https://www-genesis.destatis.de/genesis/online" target="_blank" title="Externer Link GENESIS-Online - Das statistische Informationssystem (Öffnet neues Fenster)">GENESIS Online</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.regionalstatistik.de/genesis/online/logon" target="_blank" title="Externer Link Regionaldatenbank Deutschland - Das statistische Informationssystem des Bundes und der Länder (Öffnet neues Fenster)">Regional­datenbank</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.gbe-bund.de/gbe10/abrechnung.prc_abr_test_logon?p_uid=gastg&amp;p_aid=&amp;p_knoten=FID&amp;p_sprache=D&amp;p_suchstring=256" target="_blank" title="Externer Link GBE: Krankheitskosten in Mio. € für Deutschland (Öffnet neues Fenster)">Gesundheits­bericht­erstattung des Bundes</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www-skm.destatis.de/webskm/online" target="_blank" title="Externer Link Link zur Webdatenbank aller Informationspflichten (Öffnet neues Fenster)">Bürokratiekosten</a></li><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/VerdiensteArbeitskosten/Tarifvererdienste/TDB/Tarifdatenbank.html" title="Tarifdatenbank">Tarifdatenbank</a></li></ul>
-</li><li><p>Statistik anschaulich</p>
+<ul><li><a class="RichTextExtLink ExternalLink" href="https://www-genesis.destatis.de/genesis/online" target="_blank" title="Externer Link: GENESIS-Online - Das statistische Informationssystem (öffnet neues Fenster)">GENESIS-Online</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.regionalstatistik.de/genesis/online/logon" target="_blank" title="Externer Link: Regionaldatenbank Deutschland - Das statistische Informationssystem des Bundes und der Länder (öffnet neues Fenster)">Regional­datenbank</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.gbe-bund.de/gbe10/abrechnung.prc_abr_test_logon?p_uid=gastg&amp;p_aid=&amp;p_knoten=FID&amp;p_sprache=D&amp;p_suchstring=256" target="_blank" title="Externer Link: GBE: Krankheitskosten in Mio. € für Deutschland (öffnet neues Fenster)">Gesund­heits­bericht­erstattung des Bundes</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www-skm.destatis.de/webskm/online" target="_blank" title="Externer Link: Link zur Webdatenbank aller Informationspflichten (öffnet neues Fenster)">Bürokratie­kosten</a></li><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/VerdiensteArbeitskosten/Tarifverdienste/TDB/Tarifdatenbank.html" title="Tarifdatenbank">Tarif­datenbank</a></li></ul>
+</li><li><p>Statistik an­schau­lich</p>
 
-<ul><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/WarenkorbWaegungsschema/Content75/PreisKaleidoskopUebersicht.html" title="Preis-Kaleidoskop">Preis-Kaleidoskop</a></li><li><a class="RichTextIntLink NavNode" href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Preismonitor/Preismonitor.html" title="Preismonitor">Preismonitor</a></li><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/WarenkorbWaegungsschema/Content75/PersoenlicherInflationsrechnerUebersicht.html" title="Persönlichen Inflationsrechner ausprobieren und Preisstatistik verstehen">Persönlicher Inflations­rechner</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.destatis.de/bevoelkerungspyramide/" target="_blank" title="Externer Link Interaktive Darstellung der 12. koordinierten Bevölkerungsvorausberechnung (Öffnet neues Fenster)">Bevölkerungs­pyramide</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.destatis.de/laenderpyramiden/" target="_blank" title="Externer Link Interaktive Darstellung der 12. koordinierten Bevölkerungsvorausberechnung nach Ländern (Öffnet neues Fenster)">Länder­pyramiden</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.destatis.de/KoMo/Konjunkturmonitor.svg" target="_blank" title="Externer Link Konjunkturmonitor (Öffnet neues Fenster)">Konjunktur­monitor</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.destatis.de/onlineatlas/" target="_blank" title="Externer Link Online-Atlas zur Regionalstatistik (Öffnet neues Fenster)">Regionalatlas</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.destatis.de/aussenhandelsatlas" target="_blank" title="Im neuen Fenster: Link zum Aussenhandelsatlas (Öffnet neues Fenster)">Atlas des Außen­handels</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.destatis.de/luftverkehrsatlas" target="_blank" title="Im neuen Fenster: Link zum Atlas der Luftverkehrsstatistik (Öffnet neues Fenster)">Atlas der Luft­verkehrs­statistik</a></li></ul>
-</li><li><p>Stark nachgefragt</p>
+<ul><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/WarenkorbWaegungsschema/Content75/PreisKaleidoskopUebersicht.html" title="Preis-Kaleidoskop">Preis-Kaleidoskop</a></li><li><a class="RichTextIntLink NavNode" href="DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Preismonitor/Preismonitor.html" title="Preismonitor">Preismonitor</a></li><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/WarenkorbWaegungsschema/Content75/PersoenlicherInflationsrechnerUebersicht.html" title="Persönlichen Inflationsrechner ausprobieren und Preisstatistik verstehen">Persönlicher Inflations­rechner</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.destatis.de/bevoelkerungspyramide/" target="_blank" title="Externer Link: Interaktive Darstellung der 12. koordinierten Bevölkerungsvorausberechnung (öffnet neues Fenster)">Bevölkerungs­pyramide</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.destatis.de/laenderpyramiden/" target="_blank" title="Externer Link: Interaktive Darstellung der 12. koordinierten Bevölkerungsvorausberechnung nach Ländern (öffnet neues Fenster)">Länder­pyramiden</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.destatis.de/KoMo/Konjunkturmonitor.svg" target="_blank" title="Externer Link: Konjunkturmonitor (öffnet neues Fenster)">Konjunktur­monitor</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.destatis.de/onlineatlas/" target="_blank" title="Externer Link: Online-Atlas zur Regionalstatistik (öffnet neues Fenster)">Regional­atlas</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.destatis.de/aussenhandelsatlas" target="_blank" title="Im neuen Fenster: Link zum Aussenhandelsatlas (öffnet neues Fenster)">Atlas des Außen­handels</a></li><li><a class="RichTextExtLink ExternalLink" href="https://www.destatis.de/luftverkehrsatlas" target="_blank" title="Im neuen Fenster: Link zum Atlas der Luftverkehrsstatistik (öffnet neues Fenster)">Atlas der Luft­verkehrs­statistik</a></li></ul>
+</li><li><p>Stark nach­gefragt</p>
 
-<ul><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/PreisindizesVertraege.html" title="Preisindizes in Verträgen">Wertsicherungs­klauseln/Preis­indizes in Verträgen</a></li><li><a class="RichTextIntLink NavNode" href="DE/Quiz/Quiz.html" title="Quiz - Statistisches Bundesamt (Destatis)">Quiz</a></li></ul>
-</li><li><p>Grundlagen</p>
+<ul><li><a class="RichTextIntLink Basepage" href="DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/PreisindizesVertraege.html" title="Preisindizes in Verträgen">Wert­sicherungs­klauseln/Preis­indizes in Verträgen</a></li><li><a class="RichTextIntLink NavNode" href="DE/Publikationen/STATmagazin/STATmagazin.html" title="Publikation - STATmagazin">STATmagazin</a></li><li><a class="RichTextIntLink NavNode" href="DE/Quiz/Quiz.html" title="Quiz">Quiz</a></li></ul>
+</li><li><p>Grund­lagen</p>
 
-<ul><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Methoden.html" title="Methoden - Statistisches Bundesamt (Destatis)">Methoden &amp; Verfahren</a></li><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Rechtsgrundlagen/Rechtsgrundlagen.html" title="Rechtsgrundlagen - Statistisches Bundesamt (Destatis)">Rechts­grundlagen</a></li><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Klassifikationen/Klassifikationen.html" title="Klassifikationen - Statistisches Bundesamt (Destatis)">Klassifikationen</a></li><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Qualitaet/Qualitaet.html" title="Qualität - Statistisches Bundesamt (Destatis)">Qualität</a></li></ul>
-</li><li><p>Auskunftgebende</p>
+<ul><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Methoden.html" title="Methoden">Methoden &amp; Verfahren</a></li><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Rechtsgrundlagen/Rechtsgrundlagen.html" title="Rechtsgrundlagen">Rechts­grundlagen</a></li><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Klassifikationen/Klassifikationen.html" title="Klassifikationen - Statistisches Bundesamt (Destatis)">Klassifi­kationen</a></li><li><a class="RichTextIntLink NavNode" href="DE/Methoden/Qualitaet/Qualitaet.html" title="Qualität - Statistisches Bundesamt (Destatis)">Qualität</a></li></ul>
+</li><li><p>Auskunft­gebende</p>
 
-<ul><li><a class="RichTextIntLink NavNode" href="DE/IDEVeCore/IDEVeCore.html" title="Online Meldungen - Statistisches Bundesamt (Destatis)">Online melden</a></li><li><a class="RichTextIntLink NavNode" href="DE/IDEVeCore/IDEVeCore.html" title="Online Meldungen - Statistisches Bundesamt (Destatis)">IDEV</a></li><li><a class="RichTextIntLink NavNode" href="DE/IDEVeCore/IDEVeCore.html" title="Online Meldungen - Statistisches Bundesamt (Destatis)">.CORE</a></li><li><a class="RichTextIntLink NavNode" href="DE/IntraExtrahandel/IntraExtrahandel.html" title="Intra-/Extrahandel - Statististisches Bundesamt (Destatis)">Intra-/Extrahandel</a></li></ul>
-</li><li><p>Institutionen</p>
+<ul><li><a class="RichTextIntLink NavNode" href="DE/OnlineMelden/OnlineMelden.html" title="Online melden">Online melden</a></li><li><a class="RichTextIntLink NavNode" href="DE/OnlineMelden/OnlineMelden.html" title="Online melden">IDEV</a></li><li><a class="RichTextIntLink NavNode" href="DE/OnlineMelden/OnlineMelden.html" title="Online melden">.CORE</a></li><li><a class="RichTextIntLink NavNode" href="DE/IntraExtrahandel/IntraExtrahandel.html" title="Intra-/Extrahandel">Intra-/Extra­handel</a></li></ul>
+</li><li><p>Institu­tionen</p>
 
-<ul><li><a class="RichTextIntLink NavNode" href="DE/UeberUns/LeitungOrganisation/StatistischerBeirat/StatistischerBeirat.html" title="Statisitscher Beirat - Statistisches Bundesamt (Destatis)">Statistischer Beirat</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.bib-demographie.de/index2.html" target="_blank" title="Externer Link Bundesinstitut für Bevölkerungsforschung (Öffnet neues Fenster)">Bundes­institut für Bevölkerungs­forschung</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.sachverstaendigenrat-wirtschaft.de/" target="_blank" title="Externer Link Sachverständigenrat zur Begutachtung der gesamtwirtschaftlichen Entwicklung (Öffnet neues Fenster)">Sachverständigenrat</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.bundeswahlleiter.de/" target="_blank" title="Externer Link Bundeswahlleiter (Öffnet neues Fenster)">Bundeswahlleiter</a></li><li><a class="RichTextIntLink NavNode" href="DE/PresseService/Adressbuch/StatistischesAdressbuch.html" title="Statistisches Adressbuch - Statistisches Bundesamt (Destatis)">Statistik-Adressbuch</a></li></ul>
+<ul><li><a class="RichTextIntLink NavNode" href="DE/UeberUns/LeitungOrganisation/StatistischerBeirat/StatistischerBeirat.html" title="Statistscher Beirat">Statistischer Beirat</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.bib-demographie.de/index2.html" target="_blank" title="Externer Link: Bundesinstitut für Bevölkerungsforschung (öffnet neues Fenster)">Bundes­institut für Bevölkerungs­forschung</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.sachverstaendigenrat-wirtschaft.de/" target="_blank" title="Externer Link: Sachverständigenrat zur Begutachtung der gesamtwirtschaftlichen Entwicklung (öffnet neues Fenster)">Sach­verständigen­rat</a></li><li><a class="RichTextExtLink ExternalLink" href="http://www.bundeswahlleiter.de/" target="_blank" title="Externer Link: Bundeswahlleiter (öffnet neues Fenster)">Bundes­wahl­leiter</a></li><li><a class="RichTextIntLink NavNode" href="DE/PresseService/Adressbuch/StatistischesAdressbuch.html" title="Statistisches Adressbuch - Statistisches Bundesamt (Destatis)">Statistik-Adressbuch</a></li></ul>
 </li></ul>
 
     </div>
@@ -2925,8 +2939,8 @@ Brennstoffe
           <script type="text/javascript">
           /* <![CDATA[ */
             var printLinkText='Drucken';
-            document.write('<a href="#" onclick="window.print();return false;">'+printLinkText+'<\/a>');
-            document.write('<a class="noprint" href="#" onclick="ppToggle(); return false;">Druckvorschau</a>');
+            document.write('<a href="javascript:void(0);" onclick="window.print();return false;">'+printLinkText+'<\/a>');
+            document.write('<a class="noprint" href="javascript:void(0);" onclick="ppToggle(); return false;">Druckvorschau</a>');
           /* ]]> */
           </script>
         </div>
@@ -2936,7 +2950,7 @@ Brennstoffe
   </div><!-- #wrapperInner -->
 </div> <!-- #wapperOuter -->
 <script src="SiteGlobals/Functions/JavaScript/Init.js?v=7" type="text/javascript" ></script>
-<script src="SiteGlobals/Functions/JavaScript/usage.js?v=6" type="text/javascript" ></script>
+<script src="SiteGlobals/Functions/JavaScript/usage.js?v=12" type="text/javascript" ></script>
 <!--Realisiert mit dem Government Site Builder, der Content Management Lösung der Bundesverwaltung, www.government-site-builder.de -->
   </body>
 </html>

@@ -28,7 +28,7 @@ public class DestatisCPIFeed implements CPIFeed
         try
         {
             URL url = new URL(
-                            "https://www.destatis.de/DE/ZahlenFakten/Indikatoren/Konjunkturindikatoren/Basisdaten/VerbraucherpreiseKategorien.html?nn=50652"); //$NON-NLS-1$
+                            "https://www.destatis.de/DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html"); //$NON-NLS-1$
             Lexer lexer = new Lexer(url.openConnection());
 
             List<ConsumerPriceIndex> prices = new Visitor().visit(lexer);
