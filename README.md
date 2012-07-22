@@ -33,6 +33,15 @@ Run Maven 3.0.x in the 'portfolio-app' directory:
 mvn clean verify
 ```
 
+
+Create a new version with Tycho's version command:
+
+```
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z-SNAPSHOT
+```
+(and, as Tycho skips it, remember to edit the name.abuchen.portfolio.product file manually)
+
+
 ## Developing with Eclipse
 
 Download [Eclipse 3.7.2](http://eclipse.org/downloads/) including the RCP Tools.
