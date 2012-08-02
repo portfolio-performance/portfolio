@@ -14,6 +14,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -76,6 +77,28 @@ public class BindingHelper
         public abstract void applyChanges();
     }
 
+    private final static class StatusTextConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return IStatus.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            IStatus status = (IStatus) fromObject;
+            return status.isOK() ? "" : status.getMessage(); //$NON-NLS-1$
+        }
+    }
+
     class ModelStatusListener
     {
         public void setStatus(IStatus status)
@@ -99,8 +122,8 @@ public class BindingHelper
         this.model = model;
         this.context = new DataBindingContext();
 
-        context.bindValue(PojoObservables.observeValue(listener, "status"), new AggregateValidationStatus(context, //$NON-NLS-1$
-                        AggregateValidationStatus.MAX_SEVERITY));
+        context.bindValue(PojoObservables.observeValue(listener, "status"), //$NON-NLS-1$
+                        new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
     }
 
     public void onValidationStatusChanged(IStatus status)
@@ -118,8 +141,10 @@ public class BindingHelper
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(errorLabel);
 
         // error label
-        context.bindValue(SWTObservables.observeText(errorLabel), new AggregateValidationStatus(context,
-                        AggregateValidationStatus.MAX_SEVERITY));
+        context.bindValue(SWTObservables.observeText(errorLabel), //
+                        new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY), //
+                        null, //
+                        new UpdateValueStrategy().setConverter(new StatusTextConverter()));
     }
 
     public final void createLabel(Composite editArea, String text)
