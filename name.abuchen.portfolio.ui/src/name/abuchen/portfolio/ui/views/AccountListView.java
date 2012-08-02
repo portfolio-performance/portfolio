@@ -3,11 +3,13 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -223,6 +225,9 @@ public class AccountListView extends AbstractListView
         transactions.setLabelProvider(new TransactionLabelProvider());
         transactions.setContentProvider(new SimpleListContentProvider());
 
+        List<Security> securities = getClient().getSecurities();
+        Collections.sort(securities, new Security.ByName());
+
         new CellEditorFactory(transactions, AccountTransaction.class) //
                         .notify(new CellEditorFactory.ModificationListener()
                         {
@@ -236,7 +241,7 @@ public class AccountListView extends AbstractListView
                         .editable("date") // //$NON-NLS-1$
                         .editable("type") // //$NON-NLS-1$
                         .amount("amount") // //$NON-NLS-1$
-                        .combobox("security", getClient().getSecurities(), true) // //$NON-NLS-1$
+                        .combobox("security", securities, true) // //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()

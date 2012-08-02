@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.Collections;
+import java.util.List;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
@@ -127,7 +131,7 @@ public class PortfolioListView extends AbstractListView
                 {
                     transactions.setInput(null);
                     transactions.refresh();
-                    statementOfAssets.setInput((PortfolioSnapshot)null);
+                    statementOfAssets.setInput((PortfolioSnapshot) null);
                 }
             }
         });
@@ -389,6 +393,9 @@ public class PortfolioListView extends AbstractListView
 
         transactions.setContentProvider(new SimpleListContentProvider());
 
+        List<Security> securities = getClient().getSecurities();
+        Collections.sort(securities, new Security.ByName());
+
         new CellEditorFactory(transactions, PortfolioTransaction.class) //
                         .notify(new CellEditorFactory.ModificationListener()
                         {
@@ -404,7 +411,7 @@ public class PortfolioListView extends AbstractListView
                         }) //
                         .editable("date") // //$NON-NLS-1$
                         .editable("type") // //$NON-NLS-1$
-                        .combobox("security", getClient().getSecurities()) // //$NON-NLS-1$
+                        .combobox("security", securities) // //$NON-NLS-1$
                         .shares("shares") // //$NON-NLS-1$
                         .amount("amount") // //$NON-NLS-1$
                         .amount("fees") // //$NON-NLS-1$

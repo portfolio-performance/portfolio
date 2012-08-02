@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -221,6 +223,9 @@ public class BuySellSecurityDialog extends AbstractDialog
         }
         else
         {
+            List<Security> securities = getModel().getClient().getSecurities();
+            Collections.sort(securities, new Security.ByName());
+
             bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                             {
                                 @Override
@@ -228,7 +233,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                                 {
                                     return ((Security) element).getName();
                                 }
-                            }, getModel().getClient().getSecurities().toArray());
+                            }, securities.toArray());
         }
 
         // portfolio selection
