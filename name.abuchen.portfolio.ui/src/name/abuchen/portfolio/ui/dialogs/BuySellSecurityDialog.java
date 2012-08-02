@@ -199,23 +199,22 @@ public class BuySellSecurityDialog extends AbstractDialog
         }
     }
 
-    private PortfolioTransaction.Type type;
     private boolean allowSelectionOfSecurity = false;
 
     public BuySellSecurityDialog(Shell parentShell, Client client, Security security, PortfolioTransaction.Type type)
     {
-        super(parentShell, security != null ? type.name() + " " + security.getName() : type.name(), new Model( //$NON-NLS-1$
-                        client, security, type));
+        super(parentShell, security != null ? type.name() + " " + security.getName() : type.name(), //$NON-NLS-1$
+                        new Model(client, security, type));
 
-        this.type = type;
+        if (!(type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL))
+            throw new UnsupportedOperationException("dialog supports only BUY or SELL operation"); //$NON-NLS-1$
+
         this.allowSelectionOfSecurity = security == null;
     }
 
     @Override
     protected void createFormElements(Composite editArea)
     {
-        bindings().createLabel(editArea, type.name());
-
         // security selection
         if (!allowSelectionOfSecurity)
         {
