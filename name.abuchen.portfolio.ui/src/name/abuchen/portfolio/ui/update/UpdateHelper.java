@@ -47,7 +47,7 @@ public class UpdateHelper
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
-        final String newVersion = checkForUpdates(sub.newChild(100));
+        final String[] newVersion = checkForUpdates(sub.newChild(100));
         if (newVersion != null)
         {
             final boolean[] doUpdate = new boolean[1];
@@ -57,7 +57,7 @@ public class UpdateHelper
                 {
                     doUpdate[0] = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
                                     Messages.LabelUpdatesAvailable,
-                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion));
+                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion[0], newVersion[1]));
                 }
             });
 
@@ -90,7 +90,7 @@ public class UpdateHelper
         }
     }
 
-    private String checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, IOException
+    private String[] checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, IOException
     {
         loadRepository(agent);
 
@@ -109,8 +109,17 @@ public class UpdateHelper
             throw new IOException(status.getException());
 
         Update[] possibleUpdates = operation.getPossibleUpdates();
-        return possibleUpdates.length > 0 ? possibleUpdates[0].replacement.getVersion().toString()
-                        : Messages.LabelUnknownVersion;
+        Update update = possibleUpdates.length > 0 ? possibleUpdates[0] : null;
+
+        if (update == null)
+        {
+            return new String[] { Messages.LabelUnknownVersion, null };
+        }
+        else
+        {
+            return new String[] { update.replacement.getVersion().toString(),
+                            update.replacement.getProperty("latest.changes.description", null) }; //$NON-NLS-1$
+        }
     }
 
     private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, IOException
