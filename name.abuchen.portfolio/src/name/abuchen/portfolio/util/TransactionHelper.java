@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -18,6 +21,11 @@ public class TransactionHelper
         {
             this.owner = owner;
             this.transaction = transaction;
+        }
+
+        public Object getOwner()
+        {
+            return owner;
         }
 
         public Transaction getTransaction()
@@ -73,7 +81,7 @@ public class TransactionHelper
         }
     }
 
-    public static CounterTransaction findCounterTransaction(Client client, Transaction t)
+    public static List<CounterTransaction> findCounterTransaction(Client client, Transaction t)
     {
         if (t instanceof AccountTransaction)
             return findCounterTransaction(client, (AccountTransaction) t);
@@ -83,7 +91,7 @@ public class TransactionHelper
             throw new UnsupportedOperationException("Unsupport transaction " + t.getClass().getName()); //$NON-NLS-1$
     }
 
-    private static CounterTransaction findCounterTransaction(Client client, AccountTransaction t)
+    private static List<CounterTransaction> findCounterTransaction(Client client, AccountTransaction t)
     {
         switch (t.getType())
         {
@@ -96,11 +104,11 @@ public class TransactionHelper
             case TRANSFER_OUT:
                 return findCounterTransactionInAccounts(client, t, AccountTransaction.Type.TRANSFER_IN);
             default:
-                return null;
+                throw new UnsupportedOperationException("Unsupport transaction type " + t.getType()); //$NON-NLS-1$
         }
     }
 
-    private static CounterTransaction findCounterTransaction(Client client, PortfolioTransaction t)
+    private static List<CounterTransaction> findCounterTransaction(Client client, PortfolioTransaction t)
     {
         switch (t.getType())
         {
@@ -109,13 +117,14 @@ public class TransactionHelper
             case SELL:
                 return findCounterTransactionInAccounts(client, t, AccountTransaction.Type.SELL);
             default:
-                return null;
+                throw new UnsupportedOperationException("Unsupport transaction type " + t.getType()); //$NON-NLS-1$
         }
     }
 
-    private static CounterTransaction findCounterTransactionInPortfolio(Client client, AccountTransaction t,
+    private static List<CounterTransaction> findCounterTransactionInPortfolio(Client client, AccountTransaction t,
                     PortfolioTransaction.Type type)
     {
+        List<CounterTransaction> answer = new ArrayList<CounterTransaction>();
         for (Portfolio p : client.getPortfolios())
         {
             for (PortfolioTransaction tp : p.getTransactions())
@@ -132,15 +141,16 @@ public class TransactionHelper
                 if (tp.getAmount() != t.getAmount())
                     continue;
 
-                return new CounterTransaction(p, tp);
+                answer.add(new CounterTransaction(p, tp));
             }
         }
-        return null;
+        return answer;
     }
 
-    private static CounterTransaction findCounterTransactionInAccounts(Client client, Transaction t,
+    private static List<CounterTransaction> findCounterTransactionInAccounts(Client client, Transaction t,
                     AccountTransaction.Type type)
     {
+        List<CounterTransaction> answer = new ArrayList<CounterTransaction>();
         for (Account a : client.getAccounts())
         {
             if (a.getTransactions().contains(t))
@@ -160,10 +170,10 @@ public class TransactionHelper
                 if (ta.getAmount() != t.getAmount())
                     continue;
 
-                return new CounterTransaction(a, ta);
+                answer.add(new CounterTransaction(a, ta));
             }
         }
-        return null;
+        return answer;
     }
 
 }

@@ -97,6 +97,7 @@ public class Messages extends NLS
     public static String CSVImportWizardTitle;
     public static String CurrencyConverter_MsgNotANumber;
     public static String DialogTitleCounterTransactionNotFound;
+    public static String DialogTitleMultipleCounterTransactions;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataTitle;
@@ -196,6 +197,7 @@ public class Messages extends NLS
     public static String MsgMissingSecurity;
     public static String MsgNoProfileFound;
     public static String MsgNoUpdatesAvailable;
+    public static String MsgPickOneOfMultipleCounterTransactions;
     public static String MsgRestartRequired;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
