@@ -8,7 +8,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
@@ -17,6 +16,7 @@ import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
@@ -435,11 +435,15 @@ public class PortfolioListView extends AbstractListView
             @Override
             public void run()
             {
-                Transaction transaction = (Transaction) ((IStructuredSelection) transactions.getSelection())
-                                .getFirstElement();
+                PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
+                                .getSelection()).getFirstElement();
                 Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
 
                 if (transaction == null || portfolio == null)
+                    return;
+
+                if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(), getClient(),
+                                transaction))
                     return;
 
                 portfolio.getTransactions().remove(transaction);

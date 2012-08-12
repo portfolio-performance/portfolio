@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -348,10 +349,14 @@ public class AccountListView extends AbstractListView
                 if (transaction == null || account == null)
                     return;
 
+                if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(), getClient(),
+                                transaction))
+                    return;
+
                 account.getTransactions().remove(transaction);
                 markDirty();
 
-                accounts.refresh(transactions.getData(Account.class.toString()));
+                accounts.refresh();
                 transactions.setInput(account.getTransactions());
             }
         });

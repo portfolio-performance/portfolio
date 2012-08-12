@@ -96,6 +96,7 @@ public class Messages extends NLS
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
     public static String CurrencyConverter_MsgNotANumber;
+    public static String DialogTitleCounterTransactionNotFound;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataTitle;
@@ -182,6 +183,7 @@ public class Messages extends NLS
     public static String MsgAccountFromMissing;
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
+    public static String MsgCounterTransactionNotFoundDeleteAnyway;
     public static String MsgConfirmInstall;
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleAssignedInAllocation;
