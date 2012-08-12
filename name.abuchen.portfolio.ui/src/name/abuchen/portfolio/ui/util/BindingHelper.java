@@ -25,6 +25,8 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -229,7 +231,16 @@ public class BindingHelper
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
-        Text txtValue = new Text(editArea, SWT.BORDER);
+
+        final Text txtValue = new Text(editArea, SWT.BORDER);
+        txtValue.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                txtValue.selectAll();
+            }
+        });
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
         return txtValue;
     }
