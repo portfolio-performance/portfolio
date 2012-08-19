@@ -173,6 +173,7 @@ public class Messages extends NLS
     public static String LabelUnsavedFile;
     public static String LabelUpdatesAvailable;
     public static String MenuExportData;
+    public static String MenuOpenSecurityOnSite;
     public static String MenuResetColumns;
     public static String MenuShowHideColumns;
     public static String MenuTransactionAdd;

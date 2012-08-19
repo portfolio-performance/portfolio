@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -363,7 +364,8 @@ public class SecuritiesTable
 
     private void fillContextMenu(IMenuManager manager)
     {
-        if (!(((IStructuredSelection) securities.getSelection()).getFirstElement() != null))
+        final Security security = (Security)((IStructuredSelection) securities.getSelection()).getFirstElement();
+        if (security == null)
             return;
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
@@ -416,7 +418,6 @@ public class SecuritiesTable
             @Override
             public void run()
             {
-                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
                 updateQuotes(security);
             }
         });
@@ -430,6 +431,9 @@ public class SecuritiesTable
         });
 
         manager.add(new Separator());
+        manager.add(new WebLocationMenu(security));
+
+        manager.add(new Separator());
         if (watchlist == null)
         {
             manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
@@ -437,11 +441,6 @@ public class SecuritiesTable
                 @Override
                 public void run()
                 {
-                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-
-                    if (security == null)
-                        return;
-
                     if (!security.getTransactions(getClient()).isEmpty())
                     {
                         MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
@@ -470,11 +469,6 @@ public class SecuritiesTable
                 @Override
                 public void run()
                 {
-                    Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-
-                    if (security == null)
-                        return;
-
                     watchlist.getSecurities().remove(security);
                     markDirty();
 
