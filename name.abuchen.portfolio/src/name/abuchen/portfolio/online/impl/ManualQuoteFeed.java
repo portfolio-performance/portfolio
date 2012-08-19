@@ -25,7 +25,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateLatestQuotes(List<Security> securities)
+    public void updateLatestQuotes(List<Security> securities, List<Exception> errors)
     {
         for (Security security : securities)
             security.setLatest(null);

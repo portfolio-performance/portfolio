@@ -3,12 +3,16 @@ package name.abuchen.portfolio.online.impl;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
@@ -58,16 +62,18 @@ public class YahooFinanceQuoteFeedTest
         ArrayList<Security> securities = new ArrayList<Security>();
         securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
                         YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+        securities.add(new Security("Adidas", "DE000A1EWWW0", "ADS.DE", Security.AssetClass.EQUITY,
                         YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+        securities.add(new Security("Daimler AG", "DE0007100000", "BAYN.DE", Security.AssetClass.EQUITY,
                         YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+        securities.add(new Security("Daimler AG", "DE0007100000", "BMW.DE", Security.AssetClass.EQUITY,
                         YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+        securities.add(new Security("Daimler AG", "DE0007100000", "CBK.DE", Security.AssetClass.EQUITY,
                         YahooFinanceQuoteFeed.ID));
 
-        feed.updateLatestQuotes(securities);
+        List<Exception> errors = new ArrayList<Exception>();
+        feed.updateLatestQuotes(securities, errors);
+        assertThat(errors.size(), is(0));
 
         LatestSecurityPrice latest = securities.get(0).getLatest();
         assertThat(latest.getValue(), is(1371L));
@@ -84,6 +90,40 @@ public class YahooFinanceQuoteFeedTest
 
         latest = securities.get(3).getLatest();
         assertThat(latest.getTime(), equalTo(Dates.today()));
+    }
+
+    @Test
+    public void testForMissingQuotesFromYahoo() throws IOException
+    {
+        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
+        {
+            @Override
+            protected InputStream openStream(String url) throws MalformedURLException, IOException
+            {
+                return new ByteArrayInputStream("\"ADS.DE\",49.20,\"9/1/2011\",N/A,N/A,48.66,N/A" //
+                                .getBytes(Charset.forName("UTF-8")));
+            }
+        };
+
+        Security daimler = new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID);
+        Security adidas = new Security("Adidas", "DE000A1EWWW0", "ADS.DE", Security.AssetClass.EQUITY,
+                        YahooFinanceQuoteFeed.ID);
+
+        ArrayList<Security> securities = new ArrayList<Security>();
+        securities.add(daimler);
+        securities.add(adidas);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        feed.updateLatestQuotes(securities, errors);
+
+        // not first, but second security must have value
+        LatestSecurityPrice latest = adidas.getLatest();
+        assertThat(latest.getValue(), is(4920L));
+
+        assertThat(errors.size(), is(1));
+
+        assertThat(errors.get(0).getMessage(), containsString(daimler.getTickerSymbol()));
     }
 
     @Test

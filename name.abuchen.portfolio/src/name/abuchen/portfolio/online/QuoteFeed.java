@@ -16,7 +16,7 @@ public interface QuoteFeed
 
     String getName();
 
-    void updateLatestQuotes(List<Security> securities) throws IOException;
+    void updateLatestQuotes(List<Security> securities, List<Exception> errors) throws IOException;
 
     void updateHistoricalQuotes(Security security) throws IOException;
 

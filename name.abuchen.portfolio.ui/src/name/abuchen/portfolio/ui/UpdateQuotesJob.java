@@ -90,7 +90,13 @@ public class UpdateQuotesJob extends Job
             {
                 QuoteFeed feed = Factory.getQuoteFeedProvider(entry.getKey());
                 if (feed != null)
-                    feed.updateLatestQuotes(entry.getValue());
+                {
+                    ArrayList<Exception> exceptions = new ArrayList<Exception>();
+                    feed.updateLatestQuotes(entry.getValue(), exceptions);
+                    
+                    for (Exception e : exceptions)
+                        errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                }
             }
             catch (IOException e)
             {

@@ -49,6 +49,7 @@ public class Messages extends NLS
     public static String MsgNoResults;
     public static String MsgResponseContainsNoIndices;
     public static String MsgUnexpectedHeader;
+    public static String MsgUnexpectedSymbol;
     public static String MsgUnexpectedTag;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
