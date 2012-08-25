@@ -34,7 +34,7 @@
 		<repository>
 			<id>p2-babel</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.9.1/indigo</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.10.0/indigo</url>
 		</repository>
 		<repository>
 			<id>p2-bandlem</id>
