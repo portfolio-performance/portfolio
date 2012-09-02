@@ -146,6 +146,8 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelError;
     public static String LabelExchange;
+    public static String LabelIndustry;
+    public static String LabelIndustryGroup;
     public static String LabelInfo;
     public static String LabelInternalRateOfReturn;
     public static String LabelNewCategory;
@@ -160,12 +162,14 @@ public class Messages extends NLS
     public static String LabelReportingYears;
     public static String LabelSampleData;
     public static String LabelSearch;
+    public static String LabelSector;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsClasses;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
+    public static String LabelSubIndustry;
     public static String LabelTotalSum;
     public static String LabelTransferals;
     public static String LabelUnknownVersion;

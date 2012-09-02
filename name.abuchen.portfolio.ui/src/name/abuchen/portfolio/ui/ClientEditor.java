@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
@@ -314,6 +315,8 @@ public class ClientEditor extends EditorPart
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(new IndustryClassification().getRootCategory().getLabel(),
+                        "IndustryClassificationDefinition")); //$NON-NLS-1$
     }
 
     protected void activateView(String target, Object parameter)

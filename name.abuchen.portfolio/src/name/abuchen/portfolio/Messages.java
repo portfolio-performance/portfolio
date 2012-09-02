@@ -37,6 +37,7 @@ public class Messages extends NLS
     public static String CSVImportISINExists;
     public static String CSVImportMissingField;
     public static String LabelDeposits;
+    public static String LabelIndustryClassification;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
     public static String LabelPortfolio;
