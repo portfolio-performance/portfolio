@@ -98,6 +98,7 @@ public class Messages extends NLS
     public static String CurrencyConverter_MsgNotANumber;
     public static String DialogTitleCounterTransactionNotFound;
     public static String DialogTitleMultipleCounterTransactions;
+    public static String EditWizardIndustryClassificationDescription;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataTitle;
@@ -143,6 +144,7 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetAllocation;
     public static String LabelAssetClasses;
+    public static String LabelChoose;
     public static String LabelConsumerPriceIndex;
     public static String LabelError;
     public static String LabelExchange;
@@ -240,6 +242,7 @@ public class Messages extends NLS
     public static String SecurityTabChartAll;
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTransactions;
+    public static String ShortLabelIndustry;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuShowErrorLog;
     public static String SystemMenuWelcome;

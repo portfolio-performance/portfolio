@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -47,6 +48,12 @@ public class IndustryClassification
         public List<Category> getChildren()
         {
             return children;
+        }
+
+        @Override
+        public String toString()
+        {
+            return getLabel();
         }
     }
 
@@ -99,6 +106,25 @@ public class IndustryClassification
     public Category getRootCategory()
     {
         return ROOT_CATEGORY;
+    }
+
+    public Category getCategoryById(String id)
+    {
+        if (id == null)
+            return null;
+
+        LinkedList<Category> stack = new LinkedList<Category>();
+        stack.addAll(getRootCategory().getChildren());
+
+        while (!stack.isEmpty())
+        {
+            Category c = stack.removeFirst();
+            if (id.equals(c.getId()))
+                return c;
+            stack.addAll(c.getChildren());
+        }
+
+        return null;
     }
 
 }

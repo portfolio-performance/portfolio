@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.wizards;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.ui.Messages;
@@ -11,10 +12,13 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
 public class SecurityMasterDataPage extends AbstractWizardPage
@@ -104,6 +108,9 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     private BindingHelper bindings;
     private Model model;
 
+    private final IndustryClassification taxonomy = new IndustryClassification();
+    private Label classication;
+
     protected SecurityMasterDataPage(Client client, Security security)
     {
         super(PAGE_NAME);
@@ -118,6 +125,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     {
         model.readFromSecurity();
         bindings.getBindingContext().updateModels();
+        updateIndustryClassification();
     }
 
     @Override
@@ -157,6 +165,8 @@ public class SecurityMasterDataPage extends AbstractWizardPage
                             }
                         }, AssetClass.values());
 
+        addIndustryPicker(container);
+
         Link link = new Link(container, SWT.UNDERLINE_LINK);
         link.setText(Messages.EditWizardMasterDataLinkToSearch);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(link);
@@ -164,17 +174,76 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         link.addSelectionListener(new SelectionListener()
         {
             @Override
-            public void widgetSelected(SelectionEvent arg0)
+            public void widgetSelected(SelectionEvent e)
             {
                 setPageComplete(false);
                 getContainer().showPage(getWizard().getPage(SearchSecurityWizardPage.PAGE_NAME));
             }
 
             @Override
-            public void widgetDefaultSelected(SelectionEvent arg0)
+            public void widgetDefaultSelected(SelectionEvent e)
             {}
         });
 
     }
 
+    private void addIndustryPicker(Composite container)
+    {
+        Label label = new Label(container, SWT.NONE);
+        label.setText(Messages.ShortLabelIndustry);
+
+        Composite industryPicker = new Composite(container, SWT.NONE);
+
+        classication = new Label(industryPicker, SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+
+        Button button = new Button(industryPicker, SWT.PUSH);
+        button.setText(Messages.LabelChoose);
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                setPageComplete(false);
+                getContainer().showPage(getWizard().getPage(IndustryClassificationPage.PAGE_NAME));
+            }
+        });
+
+        // layout: composite
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(label);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(industryPicker);
+
+        // layout: label + button
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(industryPicker);
+        int height = classication.getFont().getFontData()[0].getHeight();
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).hint(SWT.DEFAULT, height * 4)
+                        .applyTo(classication);
+        GridDataFactory.fillDefaults().grab(false, false).align(SWT.FILL, SWT.BEGINNING).applyTo(button);
+    }
+
+    private void updateIndustryClassification()
+    {
+        IndustryClassification.Category category = taxonomy.getCategoryById(model.security.getIndustryClassification());
+        if (category != null)
+        {
+            StringBuilder buf = new StringBuilder();
+
+            while (category != null)
+            {
+                if (buf.length() > 0)
+                    buf.insert(0, " » "); //$NON-NLS-1$
+
+                buf.insert(0, category.getLabel());
+                category = category.getParent();
+
+                if (category.getParent() == null)
+                    break;
+            }
+
+            classication.setText(buf.toString());
+        }
+        else
+        {
+            classication.setText("---"); //$NON-NLS-1$
+        }
+    }
 }

@@ -41,6 +41,8 @@ public class EditSecurityWizard extends Wizard
 
         searchPage = new SearchSecurityWizardPage(client, editable);
         addPage(searchPage);
+        
+        addPage(new IndustryClassificationPage(editable));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }
@@ -80,6 +82,7 @@ public class EditSecurityWizard extends Wizard
         target.setTickerSymbol(source.getTickerSymbol());
         target.setType(source.getType());
         target.setFeed(source.getFeed());
+        target.setIndustryClassification(source.getIndustryClassification());
     }
 
 }
