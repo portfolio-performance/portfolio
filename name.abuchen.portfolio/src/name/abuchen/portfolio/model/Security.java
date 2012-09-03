@@ -33,6 +33,7 @@ public final class Security
     private String tickerSymbol;
 
     private AssetClass type;
+    private String industryClassification;
 
     private String feed;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
@@ -78,6 +79,16 @@ public final class Security
     public void setTickerSymbol(String tickerSymbol)
     {
         this.tickerSymbol = tickerSymbol;
+    }
+
+    public String getIndustryClassification()
+    {
+        return industryClassification;
+    }
+
+    public void setIndustryClassification(String industryClassification)
+    {
+        this.industryClassification = industryClassification;
     }
 
     public AssetClass getType()

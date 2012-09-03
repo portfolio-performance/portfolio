@@ -8,7 +8,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    private int version = 3;
+    private int version = 4;
 
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists = new ArrayList<Watchlist>();

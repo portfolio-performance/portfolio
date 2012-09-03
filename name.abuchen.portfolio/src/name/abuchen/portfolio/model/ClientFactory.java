@@ -42,8 +42,14 @@ public class ClientFactory
             addDecimalPlaces(client);
             client.setVersion(3);
         }
+        
+        if (client.getVersion() == 3)
+        {
+            // do nothing --> added industry classification
+            client.setVersion(4);
+        }
 
-        if (client.getVersion() != 3)
+        if (client.getVersion() != 4)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 
