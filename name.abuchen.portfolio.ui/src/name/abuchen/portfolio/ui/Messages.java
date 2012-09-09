@@ -172,6 +172,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssetsClasses;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
+    public static String LabelStatementOfAssetsIndustries;
     public static String LabelSubIndustry;
     public static String LabelTotalSum;
     public static String LabelTransferals;
@@ -243,6 +244,7 @@ public class Messages extends NLS
     public static String SecurityTabChartAll;
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTransactions;
+    public static String ShortLabelIndustries;
     public static String ShortLabelIndustry;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuShowErrorLog;
