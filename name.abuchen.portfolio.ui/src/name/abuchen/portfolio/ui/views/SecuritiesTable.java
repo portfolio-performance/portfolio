@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.IndustryClassification;
+import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -19,11 +21,12 @@ import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
 
@@ -207,6 +210,8 @@ public class SecuritiesTable
         }));
         support.addColumn(column);
 
+        addIndustryClassificationColumns(support);
+
         support.createColumns();
 
         securities.getTable().setHeaderVisible(true);
@@ -244,6 +249,53 @@ public class SecuritiesTable
         });
 
         hookContextMenu();
+    }
+
+    private void addIndustryClassificationColumns(ShowHideColumnHelper support)
+    {
+        String commonLabels = "{0,choice,1#" + Messages.LabelSector + //$NON-NLS-1$
+                        "|2#" + Messages.LabelIndustryGroup + //$NON-NLS-1$
+                        "|3#" + Messages.LabelIndustry + //$NON-NLS-1$
+                        "|4#" + Messages.LabelSubIndustry; //$NON-NLS-1$
+
+        String menuLabels = commonLabels + //
+                        "|100#" + Messages.LabelFullClassification + //$NON-NLS-1$
+                        "}"; //$NON-NLS-1$
+
+        String columnLabels = commonLabels + //
+                        "|100#" + Messages.ShortLabelIndustry + //$NON-NLS-1$
+                        "}"; //$NON-NLS-1$
+
+        Column column = new Column(Messages.ShortLabelIndustry, SWT.LEFT, 120);
+        column.setOptions(menuLabels, columnLabels, 1, 2, 3, 4, 100);
+        column.setLabelProvider(new OptionLabelProvider()
+        {
+            private IndustryClassification taxonomy = new IndustryClassification();
+
+            @Override
+            public String getText(Object e, Integer option)
+            {
+                Security security = (Security) e;
+                IndustryClassification.Category category = taxonomy.getCategoryById(security
+                                .getIndustryClassification());
+                if (category == null)
+                    return null;
+
+                switch (option)
+                {
+                    case 100:
+                        return category.getPathLabel();
+                    default:
+                        List<Category> path = category.getPath();
+                        if (option < path.size())
+                            return path.get(option).getLabel();
+                }
+
+                return null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     public void addSelectionChangedListener(ISelectionChangedListener listener)
@@ -364,7 +416,7 @@ public class SecuritiesTable
 
     private void fillContextMenu(IMenuManager manager)
     {
-        final Security security = (Security)((IStructuredSelection) securities.getSelection()).getFirstElement();
+        final Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
         if (security == null)
             return;
 

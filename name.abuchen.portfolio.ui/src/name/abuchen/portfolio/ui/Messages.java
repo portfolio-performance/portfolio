@@ -148,6 +148,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelError;
     public static String LabelExchange;
+    public static String LabelFullClassification;
     public static String LabelIndustry;
     public static String LabelIndustryGroup;
     public static String LabelInfo;

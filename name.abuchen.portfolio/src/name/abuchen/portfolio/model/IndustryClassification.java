@@ -34,6 +34,23 @@ public class IndustryClassification
         {
             return label;
         }
+        
+        public String getPathLabel()
+        {
+            List<Category> path = getPath();
+            StringBuilder buf = new StringBuilder();
+            for (Category c : path)
+            {
+                if (c.isRoot())
+                    continue;
+                
+                if (buf.length() > 0)
+                    buf.append(" » "); //$NON-NLS-1$
+                
+                buf.append(c.getLabel());
+            }
+            return buf.toString();
+        }
 
         public String getDescription()
         {
@@ -48,6 +65,25 @@ public class IndustryClassification
         public List<Category> getChildren()
         {
             return children;
+        }
+        
+        public boolean isRoot()
+        {
+            return getParent() == null;
+        }
+        
+        public List<Category> getPath()
+        {
+            LinkedList<Category> path = new LinkedList<Category>();
+            
+            Category c = this;
+            while (c != null)
+            {
+                path.addFirst(c);
+                c = c.getParent();
+            }
+
+            return path;
         }
 
         @Override
