@@ -23,8 +23,12 @@ public class OpenSampleFileHandler extends AbstractHandler
     {
         try
         {
+            String file = event.getParameter("name.abuchen.portfolio.ui.param.sample"); //$NON-NLS-1$
+            if (file == null)
+                file = "kommer.xml"; //$NON-NLS-1$
+
             URL installURL = Platform.getInstallLocation().getURL();
-            IPath p = new Path(installURL.getFile()).append("kommer.xml"); //$NON-NLS-1$
+            IPath p = new Path(installURL.getFile()).append(file);
 
             IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
             IWorkbenchPage page = window.getActivePage();

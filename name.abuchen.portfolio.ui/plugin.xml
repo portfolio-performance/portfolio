@@ -201,6 +201,11 @@
             categoryId="name.abuchen.portfolio.ui.commands.category"
             id="name.abuchen.portfolio.ui.commands.openSampleCommand"
             name="%command.openSample.name">
+         <commandParameter
+               id="name.abuchen.portfolio.ui.param.sample"
+               name="sample"
+               optional="true">
+         </commandParameter>
       </command>
       <command
             categoryId="name.abuchen.portfolio.ui.commands.category"

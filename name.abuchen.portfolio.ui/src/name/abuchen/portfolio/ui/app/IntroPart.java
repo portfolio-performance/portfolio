@@ -2,10 +2,14 @@ package name.abuchen.portfolio.ui.app;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -19,6 +23,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
@@ -66,6 +71,7 @@ public class IntroPart extends org.eclipse.ui.part.IntroPart implements IHyperli
         addLink(buf, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
         addLink(buf, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
         addLink(buf, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
+        addLink(buf, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
         addLink(buf, "http://buchen.github.com/portfolio/new_and_noteworthy.html", //$NON-NLS-1$
                         Messages.IntroReadNews, Messages.IntroReadNewsText);
         buf.append("</form>"); //$NON-NLS-1$
@@ -107,9 +113,11 @@ public class IntroPart extends org.eclipse.ui.part.IntroPart implements IHyperli
             }
             else if ("action:sample".equals(target)) //$NON-NLS-1$
             {
-                IHandlerService handlerService = (IHandlerService) getIntroSite().getService(IHandlerService.class);
-                handlerService.executeCommand("name.abuchen.portfolio.ui.commands.openSampleCommand", null); //$NON-NLS-1$
-                PlatformUI.getWorkbench().getIntroManager().closeIntro(this);
+                openSample("kommer.xml"); //$NON-NLS-1$
+            }
+            else if ("action:daxsample".equals(target)) //$NON-NLS-1$
+            {
+                openSample("dax.xml"); //$NON-NLS-1$
             }
             else if (target.startsWith("http://")) //$NON-NLS-1$
             {
@@ -134,6 +142,20 @@ public class IntroPart extends org.eclipse.ui.part.IntroPart implements IHyperli
             PortfolioPlugin.log(e);
             MessageDialog.openError(getIntroSite().getShell(), Messages.LabelError, e.getMessage());
         }
+    }
+
+    private void openSample(String file) throws CommandException
+    {
+        IHandlerService handlerService = (IHandlerService) getIntroSite().getService(IHandlerService.class);
+        ICommandService commandService = (ICommandService) getIntroSite().getService(ICommandService.class);
+
+        Command command = commandService.getCommand("name.abuchen.portfolio.ui.commands.openSampleCommand"); //$NON-NLS-1$
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("name.abuchen.portfolio.ui.param.sample", file); //$NON-NLS-1$
+        ParameterizedCommand parameterized = ParameterizedCommand.generateCommand(command, parameters);
+        handlerService.executeCommand(parameterized, null);
+        PlatformUI.getWorkbench().getIntroManager().closeIntro(this);
     }
 
     @Override
