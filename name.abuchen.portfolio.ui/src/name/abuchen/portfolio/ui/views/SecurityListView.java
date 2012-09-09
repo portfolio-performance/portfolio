@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -28,7 +27,6 @@ import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -68,9 +66,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -313,9 +309,8 @@ public class SecurityListView extends AbstractListView
 
         // latest
         latest = new LatestQuoteTable(sash);
-
-        ViewerHelper.pack(latest.getTable());
-        int width = latest.getTable().getBounds().width;
+        latest.getControl().pack();
+        int width = latest.getControl().getBounds().width + 30;
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
 
         // tab 1: chart
@@ -787,80 +782,4 @@ public class SecurityListView extends AbstractListView
 
         return table;
     }
-
-    // //////////////////////////////////////////////////////////////
-    // tab item: latest quote
-    // //////////////////////////////////////////////////////////////
-
-    static class LatestQuoteTable
-    {
-        private Table table;
-
-        public LatestQuoteTable(Composite parent)
-        {
-            table = new Table(parent, SWT.BORDER);
-            table.setHeaderVisible(true);
-
-            TableColumn column = new TableColumn(table, SWT.NO_SCROLL | SWT.NO_FOCUS);
-            column.setWidth(80);
-            column.setResizable(true);
-
-            column = new TableColumn(table, SWT.NONE);
-            column.setWidth(80);
-            column.setResizable(true);
-            column.setAlignment(SWT.RIGHT);
-
-            TableItem item = new TableItem(table, SWT.NONE);
-            item.setText(0, Messages.ColumnLatestPrice);
-
-            item = new TableItem(table, SWT.NONE);
-            item.setText(0, Messages.ColumnLatestTrade);
-
-            item = new TableItem(table, SWT.NONE);
-            item.setText(0, Messages.ColumnDaysHigh);
-
-            item = new TableItem(table, SWT.NONE);
-            item.setText(0, Messages.ColumnDaysLow);
-
-            item = new TableItem(table, SWT.NONE);
-            item.setText(0, Messages.ColumnVolume);
-
-            item = new TableItem(table, SWT.NONE);
-            item.setText(0, Messages.ColumnPreviousClose);
-        }
-
-        public Table getTable()
-        {
-            return table;
-        }
-
-        public void setInput(Security security)
-        {
-            if (security == null || security.getLatest() == null)
-            {
-                for (int ii = 0; ii < 6; ii++)
-                    table.getItem(ii).setText(1, ""); //$NON-NLS-1$
-            }
-            else
-            {
-                LatestSecurityPrice p = security.getLatest();
-                table.getItem(0).setText(1, Values.Amount.format(p.getValue()));
-
-                table.getItem(1).setText(1, Values.Date.format(p.getTime()));
-
-                long daysHigh = p.getHigh();
-                table.getItem(2).setText(1, daysHigh == -1 ? "n/a" : Values.Amount.format(daysHigh)); //$NON-NLS-1$
-
-                long daysLow = p.getLow();
-                table.getItem(3).setText(1, daysLow == -1 ? "n/a" : Values.Amount.format(daysLow)); //$NON-NLS-1$
-
-                long volume = p.getVolume();
-                table.getItem(4).setText(1, volume == -1 ? "n/a" : String.format("%,d", volume)); //$NON-NLS-1$ //$NON-NLS-2$
-
-                long prevClose = p.getPreviousClose();
-                table.getItem(5).setText(1, prevClose == -1 ? "n/a" : Values.Amount.format(prevClose)); //$NON-NLS-1$
-            }
-        }
-    }
-
 }

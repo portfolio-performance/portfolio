@@ -13,7 +13,9 @@ public enum Colors
     COMMODITY(87, 159, 87), //
 
     CPI(39, 196, 39), //
-    IRR(0, 0, 0);
+    IRR(0, 0, 0), //
+    
+    HEADINGS(149, 165, 180);
 
     private final int red;
     private final int green;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuListener;
@@ -15,7 +16,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -84,7 +84,7 @@ public abstract class AbstractFinanceView
         Label title = new Label(header, SWT.NONE);
         title.setText(getTitle());
         title.setFont(boldFont);
-        title.setForeground(resourceManager.createColor(new RGB(149, 165, 180)));
+        title.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
         title.setBackground(header.getBackground());
 
         ToolBar toolBar = new ToolBar(header, SWT.FLAT);
