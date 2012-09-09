@@ -65,6 +65,7 @@
 								<resource>
 									<directory>.</directory>
 									<include>kommer.xml</include>
+									<include>dax.xml</include>
 								</resource>
 							</resources>
 						</configuration>
@@ -81,6 +82,7 @@
 								<resource>
 									<directory>.</directory>
 									<include>kommer.xml</include>
+									<include>dax.xml</include>
 								</resource>
 							</resources>
 						</configuration>
@@ -97,6 +99,7 @@
 								<resource>
 									<directory>.</directory>
 									<include>kommer.xml</include>
+									<include>dax.xml</include>
 								</resource>
 							</resources>
 						</configuration>
@@ -113,6 +116,7 @@
 								<resource>
 									<directory>.</directory>
 									<include>kommer.xml</include>
+									<include>dax.xml</include>
 								</resource>
 							</resources>
 						</configuration>
@@ -129,6 +133,7 @@
 								<resource>
 									<directory>.</directory>
 									<include>kommer.xml</include>
+									<include>dax.xml</include>
 								</resource>
 							</resources>
 						</configuration>
