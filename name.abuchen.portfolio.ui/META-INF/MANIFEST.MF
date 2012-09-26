@@ -24,7 +24,9 @@ Require-Bundle: name.abuchen.portfolio,
  org.eclipse.equinox.p2.repository;bundle-version="2.1.1",
  org.eclipse.equinox.p2.engine;bundle-version="2.1.1",
  org.eclipse.equinox.p2.metadata.repository;bundle-version="1.2.0",
- org.eclipse.equinox.p2.director;bundle-version="2.1.1"
+ org.eclipse.equinox.p2.director;bundle-version="2.1.1",
+ de.engehausen.treemap,
+ de.engehausen.treemap.swt
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
 Bundle-Vendor: %Bundle-Vendor
