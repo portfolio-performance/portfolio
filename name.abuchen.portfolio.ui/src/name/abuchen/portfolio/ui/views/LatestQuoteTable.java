@@ -201,10 +201,19 @@ class LatestQuoteTable
             List<IndustryClassification.Category> path = category != null ? category.getPath()
                             : new ArrayList<IndustryClassification.Category>();
 
-            valueSector.setText(path.size() >= 2 ? path.get(1).getLabel() : EMPTY_LABEL);
-            valueIndustryGroup.setText(path.size() >= 3 ? path.get(2).getLabel() : EMPTY_LABEL);
-            valueIndustry.setText(path.size() >= 4 ? path.get(3).getLabel() : EMPTY_LABEL);
-            valueSubIndustry.setText(path.size() >= 5 ? path.get(4).getLabel() : EMPTY_LABEL);
+            valueSector.setText(path.size() >= 2 ? escape(path.get(1).getLabel()) : EMPTY_LABEL);
+            valueIndustryGroup.setText(path.size() >= 3 ? escape(path.get(2).getLabel()) : EMPTY_LABEL);
+            valueIndustry.setText(path.size() >= 4 ? escape(path.get(3).getLabel()) : EMPTY_LABEL);
+            valueSubIndustry.setText(path.size() >= 5 ? escape(path.get(4).getLabel()) : EMPTY_LABEL);
         }
+    }
+
+    private String escape(String label)
+    {
+        int p = label.indexOf('&');
+        if (p < 0)
+            return label;
+
+        return label.substring(0, p) + "&&" + escape(label.substring(p + 1)); //$NON-NLS-1$
     }
 }
