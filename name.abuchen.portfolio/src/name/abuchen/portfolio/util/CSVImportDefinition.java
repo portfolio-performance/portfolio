@@ -73,7 +73,7 @@ public abstract class CSVImportDefinition
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return (long) Math.round(num.doubleValue());
+        return (long) Math.round(num.doubleValue() * Values.Share.factor());
     }
 
     protected Date convertDate(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
