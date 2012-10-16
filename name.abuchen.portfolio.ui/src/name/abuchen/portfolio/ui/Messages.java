@@ -182,6 +182,7 @@ public class Messages extends NLS
     public static String LabelUnnamedXml;
     public static String LabelUnsavedFile;
     public static String LabelUpdatesAvailable;
+    public static String MenuConfigureChart;
     public static String MenuExportData;
     public static String MenuOpenSecurityOnSite;
     public static String MenuResetColumns;
@@ -234,6 +235,8 @@ public class Messages extends NLS
     public static String SecurityMenuRemoveFromWatchlist;
     public static String SecurityMenuSell;
     public static String SecurityMenuUpdateQuotes;
+    public static String SecurityPickerMenuAddSecurity;
+    public static String SecurityPickerTitle;
     public static String SecurityTabChart;
     public static String SecurityTabChart10Y;
     public static String SecurityTabChart1M;

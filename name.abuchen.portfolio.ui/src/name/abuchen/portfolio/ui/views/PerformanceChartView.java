@@ -6,20 +6,30 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.snapshot.ClientIRRYield;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.IBarSeries;
 import org.swtchart.ISeries;
+import org.swtchart.LineStyle;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
+    private SecurityPicker picker;
+
+    private ColorWheel colorWheel;
     private TimelineChart chart;
 
     public PerformanceChartView()
@@ -34,8 +44,49 @@ public class PerformanceChartView extends AbstractHistoricView
     }
 
     @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        super.addButtons(toolBar);
+        addConfigButton(toolBar);
+    }
+
+    private void addConfigButton(ToolBar toolBar)
+    {
+        Action config = new Action()
+        {
+            @Override
+            public void run()
+            {
+                picker.showMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setToolTipText(Messages.MenuConfigureChart);
+
+        new ActionContributionItem(config).fill(toolBar, -1);
+    }
+
+    @Override
     protected Composite createBody(Composite parent)
     {
+        picker = new SecurityPicker(PerformanceChartView.class.getName(), parent, getClient());
+        picker.setListener(new SecurityPicker.SecurityListener()
+        {
+            @Override
+            public void onAddition(Security[] securities)
+            {
+                refreshChart();
+            }
+
+            @Override
+            public void onRemoval(Security[] securities)
+            {
+                refreshChart();
+            }
+        });
+
+        colorWheel = new ColorWheel(parent);
+
         chart = new TimelineChart(parent);
         chart.getTitle().setVisible(false);
         chart.getLegend().setVisible(true);
@@ -81,6 +132,12 @@ public class PerformanceChartView extends AbstractHistoricView
 
             addCPISeries(startDate, endDate, firstDataPoint);
 
+            for (Security security : picker.getSelectedSecurities())
+                addSecuritySeries(startDate, endDate, firstDataPoint, security);
+
+            chart.getSeriesSet().bringToFront(Messages.PerformanceChartLabelCPI);
+            chart.getSeriesSet().bringToFront(Messages.PerformanceChartLabelAccumulatedIRR);
+
             chart.getAxisSet().adjustRange();
         }
         finally
@@ -90,7 +147,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.redraw();
     }
 
-    private Date addYieldSeries(Date startDate, Date endDate)
+    private Date addYieldSeries(final Date startDate, final Date endDate)
     {
         List<ClientIRRYield> yields = new ArrayList<ClientIRRYield>();
         Date firstDataPoint = null;
@@ -149,7 +206,7 @@ public class PerformanceChartView extends AbstractHistoricView
         return firstDataPoint;
     }
 
-    private void addCPISeries(Date startDate, Date endDate, Date firstDataPoint)
+    private void addCPISeries(final Date startDate, final Date endDate, Date firstDataPoint)
     {
         List<ConsumerPriceIndex> rawData = getClient().getConsumerPriceIndeces();
 
@@ -212,7 +269,8 @@ public class PerformanceChartView extends AbstractHistoricView
         for (int ii = 0; ii < values.length; ii++)
             values[ii] = cpiSeries.get(ii);
 
-        chart.addDateSeries(cpiDates.toArray(new Date[0]), values, Colors.CPI, Messages.PerformanceChartLabelCPI);
+        chart.addDateSeries(cpiDates.toArray(new Date[0]), values, Colors.CPI, Messages.PerformanceChartLabelCPI) //
+                        .setLineStyle(LineStyle.DASHDOTDOT);
     }
 
     private ConsumerPriceIndex lookup(Calendar cal, List<ConsumerPriceIndex> rates)
@@ -221,6 +279,72 @@ public class PerformanceChartView extends AbstractHistoricView
             if (r.getYear() == cal.get(Calendar.YEAR) && r.getMonth() == cal.get(Calendar.MONTH))
                 return r;
         return null;
+    }
+
+    private void addSecuritySeries(Date startDate, Date endDate, Date firstDataPoint, Security security)
+    {
+        Calendar cal = Calendar.getInstance();
+
+        SecurityPrice baseline = null;
+        if (startDate.getTime() == firstDataPoint.getTime())
+        {
+            cal.setTime(startDate);
+            cal.add(Calendar.MONTH, -1);
+            baseline = security.getSecurityPrice(cal.getTime());
+        }
+        else
+        {
+            cal.setTime(firstDataPoint);
+            cal.add(Calendar.MONTH, -1);
+            firstDataPoint = cal.getTime();
+        }
+
+        List<Date> dates = new ArrayList<Date>();
+        List<Double> series = new ArrayList<Double>();
+
+        cal.setTime(startDate);
+        while (cal.getTimeInMillis() < endDate.getTime())
+        {
+            // get last day of month
+            cal.add(Calendar.MONTH, 1);
+            cal.add(Calendar.DATE, -1);
+            SecurityPrice price = security.getSecurityPrice(cal.getTime());
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+
+            if (cal.getTimeInMillis() < firstDataPoint.getTime())
+            {
+                series.add(0d);
+            }
+            else if (price != null)
+            {
+                if (baseline == null)
+                    baseline = price;
+                series.add((((double) price.getValue() / (double) baseline.getValue()) - 1) * 100);
+            }
+            else if (!series.isEmpty())
+            {
+                series.add(series.get(series.size() - 1));
+            }
+            else
+            {
+                series.add(0d);
+            }
+
+            cal.set(Calendar.DAY_OF_MONTH, 15);
+            dates.add(cal.getTime());
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            cal.add(Calendar.MONTH, 1);
+        }
+
+        double[] values = new double[series.size()];
+        for (int ii = 0; ii < values.length; ii++)
+            values[ii] = series.get(ii);
+
+        chart.addDateSeries(
+                        dates.toArray(new Date[0]), //
+                        values, //
+                        colorWheel.getSegment(picker.getSelectedSecurities().indexOf(security)).getColor(),
+                        security.getName());
     }
 
 }

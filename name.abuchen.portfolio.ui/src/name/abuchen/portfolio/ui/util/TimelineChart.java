@@ -10,6 +10,7 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -133,20 +134,25 @@ public class TimelineChart extends Chart
 
     public void addDateSeries(Date[] dates, double[] values, Colors color)
     {
-        addDateSeries(dates, values, color, false, color.name());
+        addDateSeries(dates, values, resources.createColor(color.swt()), false, color.name());
     }
 
-    public void addDateSeries(Date[] dates, double[] values, Colors color, String label)
+    public ILineSeries addDateSeries(Date[] dates, double[] values, Colors color, String label)
     {
-        addDateSeries(dates, values, color, false, label);
+        return addDateSeries(dates, values, resources.createColor(color.swt()), false, label);
+    }
+
+    public ILineSeries addDateSeries(Date[] dates, double[] values, Color color, String label)
+    {
+        return addDateSeries(dates, values, color, false, label);
     }
 
     public void addDateSeries(Date[] dates, double[] values, Colors color, boolean showArea)
     {
-        addDateSeries(dates, values, color, showArea, color.name());
+        addDateSeries(dates, values, resources.createColor(color.swt()), showArea, color.name());
     }
 
-    public void addDateSeries(Date[] dates, double[] values, Colors color, boolean showArea, String label)
+    private ILineSeries addDateSeries(Date[] dates, double[] values, Color color, boolean showArea, String label)
     {
         ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
         lineSeries.setXDateSeries(dates);
@@ -154,8 +160,9 @@ public class TimelineChart extends Chart
         lineSeries.setLineWidth(2);
         lineSeries.setSymbolType(PlotSymbolType.NONE);
         lineSeries.setYSeries(values);
-        lineSeries.setLineColor(resources.createColor(color.swt()));
+        lineSeries.setLineColor(color);
         lineSeries.setAntialias(SWT.ON);
+        return lineSeries;
     }
 
     public IBarSeries addDateBarSeries(Date[] dates, double[] values, String label)

@@ -6,13 +6,9 @@ import java.util.List;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
-import org.eclipse.jface.resource.ColorDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -113,60 +109,6 @@ class IndustryClassificationTreeMapViewer
         }
     }
 
-    private static class ColorWheel
-    {
-        public class Segment
-        {
-            private float[] hsb;
-
-            private Segment(float[] hsb)
-            {
-                this.hsb = hsb;
-            }
-
-            private Segment(RGB rgb)
-            {
-                this.hsb = rgb.getHSB();
-            }
-
-            public Color getColor()
-            {
-                RGB rgb = new RGB(hsb[0], hsb[1], hsb[2]);
-                return (Color) resources.createColor(ColorDescriptor.createFrom(rgb));
-            }
-
-            public Color getBrigherColor()
-            {
-                RGB rgb = new RGB(hsb[0], hsb[1], Math.min(1.0f, hsb[2] + 0.05f));
-                return (Color) resources.createColor(ColorDescriptor.createFrom(rgb));
-            }
-
-            public Color getDarkerColor()
-            {
-                RGB rgb = new RGB(hsb[0], hsb[1], Math.max(0f, hsb[2] - 0.05f));
-                return (Color) resources.createColor(ColorDescriptor.createFrom(rgb));
-            }
-        }
-
-        final static float hue = 262.3f;
-        final static float saturation = 0.464f;
-        final static float brightness = 0.886f;
-        float step;
-
-        private LocalResourceManager resources;
-
-        public ColorWheel(Control owner, int size)
-        {
-            resources = new LocalResourceManager(JFaceResources.getResources(), owner);
-            step = (360.0f / (float) size);
-        }
-
-        public Segment getSpoke(int spoke)
-        {
-            return new Segment(new float[] { (hue + (step * spoke)) % 360f, saturation, brightness });
-        }
-    }
-
     private class ClassificationRectangleRenderer implements IRectangleRenderer<Item, PaintEvent, Color>
     {
         private ColorWheel colorWheel;
@@ -189,7 +131,7 @@ class IndustryClassificationTreeMapViewer
 
             List<Item> path = item.getPath();
             int index = path.get(0).getChildren().indexOf(path.get(1));
-            return colorWheel.getSpoke(index);
+            return colorWheel.getSegment(index);
         }
 
         @Override

@@ -12,7 +12,7 @@ public enum Colors
     REAL_ESTATE(253, 106, 14), //
     COMMODITY(87, 159, 87), //
 
-    CPI(39, 196, 39), //
+    CPI(120, 120, 120), //
     IRR(0, 0, 0), //
     
     HEADINGS(149, 165, 180);
