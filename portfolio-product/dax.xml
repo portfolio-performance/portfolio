@@ -1,7 +1,8 @@
 <client>
-  <version>4</version>
+  <version>5</version>
   <securities>
     <security>
+      <uuid>b23ec5dd-c899-4f45-90f9-bfd83ed971ad</uuid>
       <name>Adidas AG</name>
       <isin>DE000A1EWWW0</isin>
       <tickerSymbol>ADS.DE</tickerSymbol>
@@ -199,6 +200,7 @@
       </latest>
     </security>
     <security>
+      <uuid>07c00f1e-101b-46b2-8587-93b137a4119b</uuid>
       <name>Allianz SE</name>
       <isin>DE0008404005</isin>
       <tickerSymbol>ALV.DE</tickerSymbol>
@@ -396,6 +398,7 @@
       </latest>
     </security>
     <security>
+      <uuid>dc22bc1a-0cdb-4ee9-aeda-e3509d21bea5</uuid>
       <name>BASF SE</name>
       <isin>DE000BASF111</isin>
       <tickerSymbol>BAS.DE</tickerSymbol>
@@ -593,6 +596,7 @@
       </latest>
     </security>
     <security>
+      <uuid>9f4a72e8-9cbf-427b-b565-64fba96505ee</uuid>
       <name>BMW AG</name>
       <isin>DE0005190003</isin>
       <tickerSymbol>BMW.DE</tickerSymbol>
@@ -790,6 +794,7 @@
       </latest>
     </security>
     <security>
+      <uuid>ad5b8fed-9d3b-487a-8efd-1bfb90bcb004</uuid>
       <name>Bayer AG</name>
       <isin>DE000BAY0017</isin>
       <tickerSymbol>BAYN.DE</tickerSymbol>
@@ -987,6 +992,7 @@
       </latest>
     </security>
     <security>
+      <uuid>3bca179f-644d-4d11-917b-577b9b0caad3</uuid>
       <name>Beiersdorf AG</name>
       <isin>DE0005200000</isin>
       <tickerSymbol>BEI.DE</tickerSymbol>
@@ -1184,6 +1190,7 @@
       </latest>
     </security>
     <security>
+      <uuid>6d90d476-112b-4bec-b345-53db714d7c4b</uuid>
       <name>Commerzbank AG</name>
       <isin>DE0008032004</isin>
       <tickerSymbol>CBK.DE</tickerSymbol>
@@ -1381,6 +1388,7 @@
       </latest>
     </security>
     <security>
+      <uuid>704f5f3e-dd03-4a56-9fdf-84626c4503ca</uuid>
       <name>DAX</name>
       <isin></isin>
       <tickerSymbol>^GDAXI</tickerSymbol>
@@ -1573,6 +1581,7 @@
       </latest>
     </security>
     <security>
+      <uuid>3893de65-e448-4087-a022-8f0f9c1f8549</uuid>
       <name>Daimler AG</name>
       <isin>DE0007100000</isin>
       <tickerSymbol>DAI.DE</tickerSymbol>
@@ -1770,6 +1779,7 @@
       </latest>
     </security>
     <security>
+      <uuid>f6f86199-ac70-4018-b2b0-b4d568303f54</uuid>
       <name>Deutsche Bank AG</name>
       <isin>DE0005140008</isin>
       <tickerSymbol>DBK.DE</tickerSymbol>
@@ -1967,6 +1977,7 @@
       </latest>
     </security>
     <security>
+      <uuid>42de5c0e-0996-46f9-b62b-246afc65b865</uuid>
       <name>Deutsche Börse AG</name>
       <isin>DE0005810055</isin>
       <tickerSymbol>DB1.DE</tickerSymbol>
@@ -2164,6 +2175,7 @@
       </latest>
     </security>
     <security>
+      <uuid>2a24cdf6-61fa-4d2d-9814-1c7cfdad14c2</uuid>
       <name>Deutsche Lufthansa AG</name>
       <isin>DE0008232125</isin>
       <tickerSymbol>LHA.DE</tickerSymbol>
@@ -2361,6 +2373,7 @@
       </latest>
     </security>
     <security>
+      <uuid>47d4a5c8-088e-4daa-805c-7bfdbd9d3e5e</uuid>
       <name>Deutsche Post AG</name>
       <isin>DE0005552004</isin>
       <tickerSymbol>DPW.DE</tickerSymbol>
@@ -2558,6 +2571,7 @@
       </latest>
     </security>
     <security>
+      <uuid>8438a76f-9ace-4789-917f-b3c773bac904</uuid>
       <name>Deutsche Telekom AG</name>
       <isin>DE0005557508</isin>
       <tickerSymbol>DTE.DE</tickerSymbol>
@@ -2755,6 +2769,7 @@
       </latest>
     </security>
     <security>
+      <uuid>985b7e89-ec86-495a-b3c3-bf3423d1d7d3</uuid>
       <name>E.ON Aktiengesellschaft AG</name>
       <isin>DE000ENAG999</isin>
       <tickerSymbol>EOAN.DE</tickerSymbol>
@@ -2952,6 +2967,7 @@
       </latest>
     </security>
     <security>
+      <uuid>6860c250-c203-4e12-83d5-704a6608a8c7</uuid>
       <name>Fresenius Medical Care Corporation</name>
       <isin>DE0005785802</isin>
       <tickerSymbol>FME.DE</tickerSymbol>
@@ -3149,6 +3165,7 @@
       </latest>
     </security>
     <security>
+      <uuid>2c29fcdb-1a3a-47b8-8253-6904878071da</uuid>
       <name>Fresenius SE &amp; Co KGaA</name>
       <isin>DE0005785604</isin>
       <tickerSymbol>FRE.DE</tickerSymbol>
@@ -3346,6 +3363,7 @@
       </latest>
     </security>
     <security>
+      <uuid>91b58bdb-b499-4897-a277-04a2a0b23532</uuid>
       <name>HeidelbergCement AG</name>
       <isin>DE0006047004</isin>
       <tickerSymbol>HEI.DE</tickerSymbol>
@@ -3542,6 +3560,7 @@
       </latest>
     </security>
     <security>
+      <uuid>4cef8789-576a-44b5-817e-43eb8753601e</uuid>
       <name>Henkel AG &amp; Co KGaA</name>
       <isin>DE0006048432</isin>
       <tickerSymbol>HEN3.DE</tickerSymbol>
@@ -3739,6 +3758,7 @@
       </latest>
     </security>
     <security>
+      <uuid>03b02642-b6fc-4043-90e0-0d8befbe4b1a</uuid>
       <name>Infineon Technologies AG</name>
       <isin>DE0006231004</isin>
       <tickerSymbol>IFX.DE</tickerSymbol>
@@ -3936,6 +3956,7 @@
       </latest>
     </security>
     <security>
+      <uuid>5fbdb59c-11a0-4830-876d-42d0dbed96b4</uuid>
       <name>K+S Aktiengesellschaft</name>
       <isin>DE000KSAG888</isin>
       <tickerSymbol>SDF.DE</tickerSymbol>
@@ -4133,6 +4154,7 @@
       </latest>
     </security>
     <security>
+      <uuid>3765c42a-e243-4444-a113-f4fba5b79e21</uuid>
       <name>Linde AG</name>
       <isin>DE0006483001</isin>
       <tickerSymbol>LIN.DE</tickerSymbol>
@@ -4330,6 +4352,7 @@
       </latest>
     </security>
     <security>
+      <uuid>fdec0fea-ebf5-40b5-88e9-783005c8e85c</uuid>
       <name>MAN SE</name>
       <isin>DE0005937007</isin>
       <tickerSymbol>MAN.DE</tickerSymbol>
@@ -4527,6 +4550,7 @@
       </latest>
     </security>
     <security>
+      <uuid>9027ff27-ec3d-43b4-9618-f6277abb5986</uuid>
       <name>Merck KGaA</name>
       <isin>DE0006599905</isin>
       <tickerSymbol>MRK.DE</tickerSymbol>
@@ -4724,6 +4748,7 @@
       </latest>
     </security>
     <security>
+      <uuid>ccb97ac8-0714-4d6d-9c86-24021b01cfc3</uuid>
       <name>Metro AG</name>
       <isin>DE0007257503</isin>
       <tickerSymbol>MEO.DE</tickerSymbol>
@@ -4921,6 +4946,7 @@
       </latest>
     </security>
     <security>
+      <uuid>77635222-5697-4fd4-907f-6b26967ae8f7</uuid>
       <name>Muenchener Rueckversicherungs AG</name>
       <isin>DE0008430026</isin>
       <tickerSymbol>MUV2.DE</tickerSymbol>
@@ -5118,6 +5144,7 @@
       </latest>
     </security>
     <security>
+      <uuid>123fd2bc-0263-420b-a573-60cc1f5777ee</uuid>
       <name>RWE AG</name>
       <isin>DE0007037129</isin>
       <tickerSymbol>RWE.DE</tickerSymbol>
@@ -5315,6 +5342,7 @@
       </latest>
     </security>
     <security>
+      <uuid>039e04a5-8ce9-4fae-a453-a9be3033e487</uuid>
       <name>SAP AG</name>
       <isin>DE0007164600</isin>
       <tickerSymbol>SAP.DE</tickerSymbol>
@@ -5534,6 +5562,7 @@
       </latest>
     </security>
     <security>
+      <uuid>df9f58ee-1241-43a3-8a1d-5cf302e04229</uuid>
       <name>Siemens AG</name>
       <isin>DE0007236101</isin>
       <tickerSymbol>SIE.DE</tickerSymbol>
@@ -5731,6 +5760,7 @@
       </latest>
     </security>
     <security>
+      <uuid>c0474da7-0619-4414-b815-19636e27d0e3</uuid>
       <name>ThyssenKrupp AG</name>
       <isin>DE0007500001</isin>
       <tickerSymbol>TKA.DE</tickerSymbol>
@@ -5928,6 +5958,7 @@
       </latest>
     </security>
     <security>
+      <uuid>ca6cb047-48c6-43b5-9a2a-ae5d857e977b</uuid>
       <name>Volkswagen AG</name>
       <isin>DE0007664039</isin>
       <tickerSymbol>VOW3.DE</tickerSymbol>

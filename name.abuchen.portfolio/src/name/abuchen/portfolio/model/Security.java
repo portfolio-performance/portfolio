@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public final class Security
 {
@@ -27,6 +28,8 @@ public final class Security
         CASH, DEBT, EQUITY, REAL_ESTATE, COMMODITY;
     }
 
+    private String uuid;
+
     private String name;
 
     private String isin;
@@ -40,7 +43,9 @@ public final class Security
     private LatestSecurityPrice latest;
 
     public Security()
-    {}
+    {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
     public Security(String name, String isin, String tickerSymbol, AssetClass type, String feed)
     {
@@ -49,6 +54,17 @@ public final class Security
         this.tickerSymbol = tickerSymbol;
         this.type = type;
         this.feed = feed;
+    }
+
+    public String getUUID()
+    {
+        return uuid;
+    }
+
+    /* package */void generateUUID()
+    {
+        // needed to assign UUIDs when loading older versions from XML
+        uuid = UUID.randomUUID().toString();
     }
 
     public String getName()

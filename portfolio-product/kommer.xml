@@ -1,7 +1,8 @@
 <client>
-  <version>3</version>
+  <version>5</version>
   <securities>
     <security>
+      <uuid>4ff3673d-4a19-4b01-a53e-07dbf0929a8e</uuid>
       <name>ComStage ETF MSCI Europe Small Cap</name>
       <isin>LU0392496344</isin>
       <tickerSymbol>X026.DE</tickerSymbol>
@@ -893,6 +894,7 @@
       </latest>
     </security>
     <security>
+      <uuid>60a33206-38fb-4db8-b621-417117ebc720</uuid>
       <name>ComStage ETF MSCI USA Small Cap</name>
       <isin>LU0392496005</isin>
       <tickerSymbol>X023.DE</tickerSymbol>
@@ -1784,6 +1786,7 @@
       </latest>
     </security>
     <security>
+      <uuid>b31c5890-69b2-4820-9ff3-cb492f6b8e8c</uuid>
       <name>ETFlab DJ STOXX Strong Value 20</name>
       <isin>DE000ETFL045</isin>
       <tickerSymbol>EL4D.DE</tickerSymbol>
@@ -2643,6 +2646,7 @@
       </latest>
     </security>
     <security>
+      <uuid>5d22a93e-9ae5-4f25-9da8-d8eb98ac05fa</uuid>
       <name>Lyxor ETF EuroMTS 1-3Y</name>
       <isin>FR0010222224</isin>
       <tickerSymbol>LYQ2.MU</tickerSymbol>
@@ -3708,6 +3712,7 @@
       </latest>
     </security>
     <security>
+      <uuid>9cb735fa-342a-4efb-a7be-0b2fd5427410</uuid>
       <name>db x-trackers DBLCI-OY - balanced</name>
       <isin>LU0292106167</isin>
       <tickerSymbol>DXSM.DE</tickerSymbol>
@@ -4952,6 +4957,7 @@
       </latest>
     </security>
     <security>
+      <uuid>c72b20c5-89f6-4036-a57c-3126bb5d5631</uuid>
       <name>db x-trackers MSCI Emerging Markets</name>
       <isin>LU0292107645</isin>
       <tickerSymbol>DBX1.DE</tickerSymbol>
@@ -6200,6 +6206,7 @@
       </latest>
     </security>
     <security>
+      <uuid>6a9e132f-96e0-4b3b-b8ca-17f9489e6a34</uuid>
       <name>db x-trackers MSCI European Small Cap TRN</name>
       <isin>LU0322253906</isin>
       <tickerSymbol>DX2J.DE</tickerSymbol>
@@ -7305,6 +7312,7 @@
       </latest>
     </security>
     <security>
+      <uuid>4db1b9a8-da26-42c8-ad1f-c3a2f0e6c1ea</uuid>
       <name>iShares Barclays Capital Euro Inflation Linked Bonds</name>
       <isin>DE000A0HG2S8</isin>
       <tickerSymbol>IBCI.F</tickerSymbol>
@@ -8656,6 +8664,7 @@
       </latest>
     </security>
     <security>
+      <uuid>2cd0faab-66f2-4e18-bc01-033c90d84552</uuid>
       <name>iShares DJ Asia Pacific Select Divident 30 (DE)</name>
       <isin>DE000A0H0744</isin>
       <tickerSymbol>EXXW.DE</tickerSymbol>
@@ -9515,6 +9524,7 @@
       </latest>
     </security>
     <security>
+      <uuid>f8b90064-6788-48de-9fe3-9117b01a6224</uuid>
       <name>iShares DJ STOXX Select Dividend 30</name>
       <isin>DE0002635299</isin>
       <tickerSymbol>EXSH.DE</tickerSymbol>
@@ -10374,6 +10384,7 @@
       </latest>
     </security>
     <security>
+      <uuid>c16dddba-205b-4674-b431-65ae78afcdba</uuid>
       <name>iShares DJ US Select Divident (DE)</name>
       <isin>DE000A0D8Q49</isin>
       <tickerSymbol>EXX5.DE</tickerSymbol>
@@ -11233,6 +11244,7 @@
       </latest>
     </security>
     <security>
+      <uuid>a3aa026c-a70d-4865-bee1-41f67eeb472d</uuid>
       <name>iShares FTSE EPRA/NAREIT Global Property</name>
       <isin>DE000A0LGQL5</isin>
       <tickerSymbol>IQQ6.DE</tickerSymbol>
@@ -12254,6 +12266,7 @@
       </latest>
     </security>
     <security>
+      <uuid>83de6d7d-3edd-4c14-947f-73e8a6a65223</uuid>
       <name>iShares MSCI AC Far East ex-Japan SmallCap</name>
       <isin>DE000A0RFEF2</isin>
       <tickerSymbol>IUS9.DE</tickerSymbol>
@@ -13087,6 +13100,7 @@
       </latest>
     </security>
     <security>
+      <uuid>24154331-8966-4f7a-b149-07f21474ff05</uuid>
       <name>iShares MSCI Emerging Markets</name>
       <isin>DE000A0HGZT7</isin>
       <tickerSymbol>IQQE.DE</tickerSymbol>
@@ -14387,6 +14401,7 @@
       </latest>
     </security>
     <security>
+      <uuid>292abb87-1e1a-4ce3-991c-c77d4914befe</uuid>
       <name>iShares MSCI Japan SmallCap</name>
       <isin>DE000A0RFEC9</isin>
       <tickerSymbol>IUS4.DE</tickerSymbol>
@@ -15218,6 +15233,7 @@
       </latest>
     </security>
     <security>
+      <uuid>eb44234d-bc85-4617-a56e-55bd6f0bbf59</uuid>
       <name>iShares STOXX Europe Small 200</name>
       <isin>DE000A0D8QZ7</isin>
       <tickerSymbol>EXSE.DE</tickerSymbol>
@@ -15535,6 +15551,7 @@
       </latest>
     </security>
     <security>
+      <uuid>2f95f3b0-05eb-40c0-a123-be6d53dba95d</uuid>
       <name>iShares eb.rexx Government Germany 1,5-2,5</name>
       <isin>DE0006289473</isin>
       <tickerSymbol>EXHB.DE</tickerSymbol>
@@ -16396,6 +16413,7 @@
       </latest>
     </security>
     <security>
+      <uuid>f52d3250-9a9f-4fd5-b4e4-5bcf705e0a15</uuid>
       <name>Dax</name>
       <isin></isin>
       <tickerSymbol>^GDAXI</tickerSymbol>
@@ -17690,6 +17708,7 @@
       </latest>
     </security>
     <security>
+      <uuid>381e03f2-f019-4686-bac5-2444576e2df2</uuid>
       <name>Dow Jones</name>
       <isin></isin>
       <tickerSymbol>^DJI</tickerSymbol>
@@ -18966,6 +18985,7 @@
       </latest>
     </security>
     <security>
+      <uuid>79ea3186-48d7-4be2-9ccc-494af9c7eca7</uuid>
       <name>NASDAQ Composite</name>
       <isin></isin>
       <tickerSymbol>^IXIC</tickerSymbol>
@@ -20496,6 +20516,10 @@
     <cpi y="2012" m="2" i="11260"/>
     <cpi y="2012" m="3" i="11280"/>
     <cpi y="2012" m="4" i="11260"/>
+    <cpi y="2012" m="5" i="11250"/>
+    <cpi y="2012" m="6" i="11290"/>
+    <cpi y="2012" m="7" i="11330"/>
+    <cpi y="2012" m="8" i="11330"/>
   </consumerPriceIndeces>
   <accounts>
     <account>

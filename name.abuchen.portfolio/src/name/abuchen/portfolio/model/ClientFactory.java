@@ -49,7 +49,14 @@ public class ClientFactory
             client.setVersion(4);
         }
 
-        if (client.getVersion() != 4)
+        if (client.getVersion() == 4)
+        {
+            for (Security s : client.getSecurities())
+                s.generateUUID();
+            client.setVersion(5);
+        }
+
+        if (client.getVersion() != 5)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 
