@@ -6,11 +6,13 @@ See http://buchen.github.com/portfolio/ for more details.
 
 ## Building with Maven
 
-Install [SWTChart](http://www.swtchart.org/) into your local Maven repository:
+### Install 3rd party libraries into your local Maven repository:
+
+[SWTChart](http://www.swtchart.org/)
 
 ```
 mvn install:install-file
-    -Dfile=path/to/org.swtchart_0.8.0.v20120301.jar
+    -Dfile=org.swtchart_0.8.0.v20120301.jar
     -DgroupId=org.swtchart
     -DartifactId=org.swtchart
     -Dversion=0.8.0
@@ -18,6 +20,29 @@ mvn install:install-file
     -DgeneratePom=true
 ```
 
+[TreeMapLib](http://code.google.com/p/treemaplib/)
+
+```
+mvn install:install-file
+    -Dfile=tm_core_0.0.4.jar
+    -DgroupId=de.engehausen
+    -DartifactId=de.engehausen.treemap
+    -Dversion=0.0.4
+    -Dpackaging=jar
+    -DgeneratePom=true
+```
+
+```
+mvn install:install-file
+    -Dfile=tm_swt_0.0.4.jar
+    -DgroupId=de.engehausen
+    -DartifactId=de.engehausen.treemap.swt
+    -Dversion=0.0.4
+    -Dpackaging=jar
+    -DgeneratePom=true
+```
+
+### Configure Maven
 
 Give Maven some memory (and, as Maven has troubles with German locale on Mac, switch to English):
 
@@ -26,6 +51,7 @@ export MAVEN_OPTS="-Xmx1g -XX:MaxPermSize=500m"
 export LANG=en_US.UTF-8
 ```
 
+### Build
 
 Run Maven 3.0.x in the 'portfolio-app' directory:
 
