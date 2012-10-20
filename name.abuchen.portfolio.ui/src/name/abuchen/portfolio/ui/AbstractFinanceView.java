@@ -15,6 +15,8 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -69,6 +71,15 @@ public abstract class AbstractFinanceView
 
         Control body = createBody(top);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(body);
+        
+        top.addDisposeListener(new DisposeListener()
+        {
+            @Override
+            public void widgetDisposed(DisposeEvent e)
+            {
+                dispose();
+            }
+        });
     }
 
     protected abstract Control createBody(Composite parent);

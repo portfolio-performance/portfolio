@@ -322,12 +322,7 @@ public class ClientEditor extends EditorPart
 
     protected void activateView(String target, Object parameter)
     {
-        if (view != null && !view.getControl().isDisposed())
-        {
-            view.getControl().dispose();
-            view.dispose();
-            view = null;
-        }
+        disposeView();
 
         try
         {
@@ -353,6 +348,15 @@ public class ClientEditor extends EditorPart
         catch (IllegalAccessException e)
         {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void disposeView()
+    {
+        if (view != null && !view.getControl().isDisposed())
+        {
+            view.getControl().dispose();
+            view = null;
         }
     }
 
