@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.swt.SWT;
@@ -21,6 +22,8 @@ import org.eclipse.swt.widgets.ToolItem;
 
 /* package */abstract class AbstractHistoricView extends AbstractFinanceView
 {
+    private String identifier;
+
     private final int numberOfYears;
 
     private int reportingPeriod;
@@ -34,6 +37,31 @@ import org.eclipse.swt.widgets.ToolItem;
     {
         this.numberOfYears = numberOfYears;
         this.reportingPeriod = defaultSelection + 1;
+
+        identifier = this.getClass().getSimpleName() + "-REPORTING"; //$NON-NLS-1$
+    }
+
+    @Override
+    public void init(ClientEditor clientEditor, Object parameter)
+    {
+        super.init(clientEditor, parameter);
+        load();
+    }
+
+    @Override
+    public void dispose()
+    {
+        getClientEditor().getPreferenceStore().setValue(identifier, String.valueOf(reportingPeriod) + 'Y');
+        super.dispose();
+    }
+
+    private void load()
+    {
+        String config = getClientEditor().getPreferenceStore().getString(identifier);
+        if (config == null || config.trim().length() == 0)
+            return;
+
+        this.reportingPeriod = Integer.parseInt(config.substring(0, config.length() - 1));
     }
 
     protected abstract void reportingPeriodUpdated();
