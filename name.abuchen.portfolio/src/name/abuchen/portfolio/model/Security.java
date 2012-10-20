@@ -253,6 +253,7 @@ public final class Security
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.type = type;
+        answer.industryClassification = industryClassification;
 
         answer.feed = feed;
         answer.prices = new ArrayList<SecurityPrice>(prices);
