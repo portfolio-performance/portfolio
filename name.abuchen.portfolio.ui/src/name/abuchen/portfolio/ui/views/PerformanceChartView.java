@@ -27,6 +27,10 @@ import org.swtchart.LineStyle;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
+    private static final int NUM_OF_COLORS = 10;
+    private static final LineStyle[] LINE_STYLES = new LineStyle[] { LineStyle.SOLID, LineStyle.DOT, LineStyle.DASH,
+                    LineStyle.DASHDOT, LineStyle.DASHDOTDOT };
+
     private SecurityPicker picker;
 
     private ColorWheel colorWheel;
@@ -85,7 +89,7 @@ public class PerformanceChartView extends AbstractHistoricView
             }
         });
 
-        colorWheel = new ColorWheel(parent);
+        colorWheel = new ColorWheel(parent, NUM_OF_COLORS);
 
         chart = new TimelineChart(parent);
         chart.getTitle().setVisible(false);
@@ -340,11 +344,12 @@ public class PerformanceChartView extends AbstractHistoricView
         for (int ii = 0; ii < values.length; ii++)
             values[ii] = series.get(ii);
 
-        chart.addDateSeries(
-                        dates.toArray(new Date[0]), //
+        int index = getClient().getSecurities().indexOf(security);
+
+        chart.addDateSeries(dates.toArray(new Date[0]), //
                         values, //
-                        colorWheel.getSegment(picker.getSelectedSecurities().indexOf(security)).getColor(),
-                        security.getName());
+                        colorWheel.getSegment(index).getColor(), security.getName()) //
+                        .setLineStyle(LINE_STYLES[(index / NUM_OF_COLORS) % LINE_STYLES.length]);
     }
 
 }
