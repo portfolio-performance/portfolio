@@ -69,7 +69,7 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     protected Composite createBody(Composite parent)
     {
-        picker = new SecurityPicker(PerformanceChartView.class.getName(), parent, getClient());
+        picker = new SecurityPicker(PerformanceChartView.class.getSimpleName(), parent, getClientEditor());
         picker.setListener(new SecurityPicker.SecurityListener()
         {
             @Override

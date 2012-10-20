@@ -7,6 +7,7 @@ import java.util.Map;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
@@ -35,6 +36,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
     }
 
     private final String identifier;
+    private final ClientEditor clientEditor;
     private final Client client;
 
     private SecurityPicker.SecurityListener listener;
@@ -43,10 +45,11 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
     private Menu contextMenu;
 
-    public SecurityPicker(String identifier, Control owner, Client client)
+    public SecurityPicker(String identifier, Control owner, ClientEditor clientEditor)
     {
         this.identifier = identifier + "-SECURITIES"; //$NON-NLS-1$
-        this.client = client;
+        this.clientEditor = clientEditor;
+        this.client = clientEditor.getClient();
 
         owner.addDisposeListener(new DisposeListener()
         {
@@ -101,12 +104,12 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                 buf.append(',');
             buf.append(s.getUUID());
         }
-        PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, buf.toString());
+        clientEditor.getPreferenceStore().setValue(identifier, buf.toString());
     }
 
     private void load()
     {
-        String config = PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier);
+        String config = clientEditor.getPreferenceStore().getString(identifier);
         if (config == null || config.trim().length() == 0)
             return;
 
