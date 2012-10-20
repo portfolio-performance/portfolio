@@ -8,24 +8,16 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVStrategy;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
-public class TableViewerCSVExporter
+public class TableViewerCSVExporter extends AbstractCSVExporter
 {
-    private static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
-                    CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
-
     private final TableViewer viewer;
 
     public TableViewerCSVExporter(TableViewer viewer)
@@ -33,7 +25,14 @@ public class TableViewerCSVExporter
         this.viewer = viewer;
     }
 
-    public void writeToFile(File file) throws IOException
+    @Override
+    protected Control getControl()
+    {
+        return viewer.getTable();
+    }
+
+    @Override
+    protected void writeToFile(File file) throws IOException
     {
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
 
@@ -77,29 +76,6 @@ public class TableViewerCSVExporter
         finally
         {
             writer.close();
-
         }
     }
-
-    public void export(String fileName)
-    {
-        FileDialog dialog = new FileDialog(viewer.getTable().getShell(), SWT.SAVE);
-        dialog.setFileName(fileName);
-        String name = dialog.open();
-        if (name == null)
-            return;
-
-        File file = new File(name);
-
-        try
-        {
-            writeToFile(file);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            MessageDialog.openError(viewer.getTable().getShell(), Messages.ExportWizardErrorExporting, e.getMessage());
-        }
-    }
-
 }
