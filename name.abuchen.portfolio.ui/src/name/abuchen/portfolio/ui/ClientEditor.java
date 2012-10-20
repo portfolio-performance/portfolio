@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
@@ -24,6 +26,8 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -75,6 +79,8 @@ public class ClientEditor extends EditorPart
     private IPath clientFile;
     private Client client;
 
+    private PreferenceStore preferences = new PreferenceStore();
+
     private Entry allSecurities;
     private Entry statementOfAssets;
 
@@ -117,6 +123,8 @@ public class ClientEditor extends EditorPart
         {
             throw new PartInitException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
+
+        loadPreferences();
 
         if (clientFile != null)
             setPartName(clientFile.lastSegment());
@@ -371,6 +379,11 @@ public class ClientEditor extends EditorPart
         return client;
     }
 
+    public IPreferenceStore getPreferenceStore()
+    {
+        return preferences;
+    }
+
     /* package */void markDirty()
     {
         boolean oldIsDirty = isDirty;
@@ -399,6 +412,13 @@ public class ClientEditor extends EditorPart
     // //////////////////////////////////////////////////////////////
 
     @Override
+    public void dispose()
+    {
+        storePreferences();
+        super.dispose();
+    }
+
+    @Override
     public boolean isDirty()
     {
         return isDirty;
@@ -424,6 +444,8 @@ public class ClientEditor extends EditorPart
             ClientFactory.save(client, clientFile.toFile());
             isDirty = false;
             firePropertyChange(PROP_DIRTY);
+
+            storePreferences();
         }
         catch (IOException e)
         {
@@ -465,11 +487,73 @@ public class ClientEditor extends EditorPart
 
             isDirty = false;
             firePropertyChange(PROP_DIRTY);
+
+            storePreferences();
         }
         catch (IOException e)
         {
             ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
                             PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+        }
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // preference store functions
+    // //////////////////////////////////////////////////////////////
+
+    private void storePreferences()
+    {
+        if (clientFile != null && preferences.needsSaving())
+        {
+            try
+            {
+                preferences.setFilename(getPreferenceStoreFile(clientFile).getAbsolutePath());
+                preferences.save();
+            }
+            catch (IOException ignore)
+            {
+                PortfolioPlugin.log(ignore);
+            }
+        }
+    }
+
+    private void loadPreferences()
+    {
+        if (clientFile != null)
+        {
+            try
+            {
+                File preferenceFile = getPreferenceStoreFile(clientFile);
+                preferences.setFilename(preferenceFile.getAbsolutePath());
+                if (preferenceFile.exists())
+                {
+                    preferences.load();
+                }
+            }
+            catch (IOException ignore)
+            {
+                PortfolioPlugin.log(ignore);
+            }
+        }
+    }
+
+    private File getPreferenceStoreFile(IPath file) throws IOException
+    {
+        try
+        {
+            byte[] digest = MessageDigest.getInstance("MD5").digest(file.toOSString().getBytes()); //$NON-NLS-1$
+
+            StringBuilder filename = new StringBuilder();
+            filename.append("prf_"); //$NON-NLS-1$
+            for (int i = 0; i < digest.length; i++)
+                filename.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
+            filename.append(".txt"); //$NON-NLS-1$
+
+            return new File(PortfolioPlugin.getDefault().getStateLocation().toFile(), filename.toString());
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IOException(e);
         }
     }
 }
