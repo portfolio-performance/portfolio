@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +15,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -51,7 +54,27 @@ public class PerformanceChartView extends AbstractHistoricView
     protected void addButtons(ToolBar toolBar)
     {
         super.addButtons(toolBar);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
+    }
+
+    private void addExportButton(ToolBar toolBar)
+    {
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
+                exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-01")); //$NON-NLS-1$
+                exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
+                exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+
+        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     private void addConfigButton(ToolBar toolBar)
