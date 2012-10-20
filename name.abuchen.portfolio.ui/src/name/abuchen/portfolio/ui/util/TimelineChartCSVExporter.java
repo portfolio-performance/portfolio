@@ -11,6 +11,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import name.abuchen.portfolio.ui.Messages;
 
@@ -21,6 +23,8 @@ import org.swtchart.ISeries;
 public class TimelineChartCSVExporter extends AbstractCSVExporter
 {
     private final TimelineChart chart;
+
+    private Set<String> discontinousSeries = new HashSet<String>();
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
     private NumberFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
@@ -38,6 +42,11 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
     public void setValueFormat(NumberFormat valueFormat)
     {
         this.valueFormat = valueFormat;
+    }
+
+    public void addDiscontinousSeries(String seriesId)
+    {
+        discontinousSeries.add(seriesId);
     }
 
     @Override
@@ -67,16 +76,21 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
             // write body
             Date[] dateSeries = series[0].getXDateSeries();
 
-            double[][] valueSeries = new double[series.length][];
+            SeriesAdapter[] adapters = new SeriesAdapter[series.length];
             for (int ii = 0; ii < series.length; ii++)
-                valueSeries[ii] = series[ii].getYSeries();
+            {
+                if (discontinousSeries.contains(series[ii].getId()))
+                    adapters[ii] = new DiscontinousAdapter(series[ii]);
+                else
+                    adapters[ii] = new DefaultAdapter(series[ii]);
+            }
 
             for (int line = 0; line < dateSeries.length; line++)
             {
                 printer.print(dateFormat.format(dateSeries[line]));
 
-                for (int col = 0; col < valueSeries.length; col++)
-                    printer.print(valueFormat.format(valueSeries[col][line]));
+                for (int col = 0; col < adapters.length; col++)
+                    printer.print(adapters[col].format(dateSeries[line], line));
 
                 printer.println();
             }
@@ -84,6 +98,53 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
         finally
         {
             writer.close();
+        }
+    }
+
+    private interface SeriesAdapter
+    {
+        public String format(Date date, int line);
+    }
+
+    private class DefaultAdapter implements SeriesAdapter
+    {
+        private double[] values;
+
+        public DefaultAdapter(ISeries series)
+        {
+            this.values = series.getYSeries();
+        }
+
+        @Override
+        public String format(Date date, int line)
+        {
+            return valueFormat.format(values[line]);
+        }
+    }
+
+    private class DiscontinousAdapter implements SeriesAdapter
+    {
+        private Date[] dates;
+        private double[] values;
+
+        private int next = 0;
+
+        public DiscontinousAdapter(ISeries series)
+        {
+            this.dates = series.getXDateSeries();
+            this.values = series.getYSeries();
+        }
+
+        @Override
+        public String format(Date date, int line)
+        {
+            if (next >= dates.length)
+                return ""; //$NON-NLS-1$
+
+            if (date.getTime() != dates[next].getTime())
+                return ""; //$NON-NLS-1$
+
+            return valueFormat.format(values[next++]);
         }
     }
 }

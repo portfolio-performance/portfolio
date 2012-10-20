@@ -13,13 +13,18 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.IAxis;
 import org.swtchart.Range;
 
@@ -41,14 +46,38 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         return Messages.LabelStatementOfAssetsHistory;
     }
 
+    protected void addButtons(ToolBar toolBar)
+    {
+        super.addButtons(toolBar);
+        addExportButton(toolBar);
+    }
+
+    private void addExportButton(ToolBar toolBar)
+    {
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
+                exporter.addDiscontinousSeries(Messages.LabelTransferals);
+                exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+
+        new ActionContributionItem(export).fill(toolBar, -1);
+    }
+
     @Override
     protected Composite createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
-        
+
         chart = buildChart(container);
-        
+
         return container;
     }
 
