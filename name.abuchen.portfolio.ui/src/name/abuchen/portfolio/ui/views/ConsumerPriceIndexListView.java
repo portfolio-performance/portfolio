@@ -10,14 +10,17 @@ import java.util.List;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -28,6 +31,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
 public class ConsumerPriceIndexListView extends AbstractListView
@@ -39,6 +43,28 @@ public class ConsumerPriceIndexListView extends AbstractListView
     protected String getTitle()
     {
         return Messages.LabelConsumerPriceIndex;
+    }
+
+    protected void addButtons(ToolBar toolBar)
+    {
+        super.addButtons(toolBar);
+        addExportButton(toolBar);
+    }
+
+    private void addExportButton(ToolBar toolBar)
+    {
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                new TimelineChartCSVExporter(chart).export(getTitle() + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+
+        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     @Override
