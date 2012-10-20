@@ -28,7 +28,22 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 /* package */class SecurityPicker implements IMenuListener
 {
-    public static interface SecurityListener
+    private final class SecurityLabelProvider extends LabelProvider
+    {
+        @Override
+        public Image getImage(Object element)
+        {
+            return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            return ((Security) element).getName();
+        }
+    }
+
+    public interface SecurityListener
     {
         void onAddition(Security[] securities);
 
@@ -153,24 +168,13 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
             @Override
             public void run()
             {
+                List<Security> list = new ArrayList<Security>(client.getSecurities());
+                for (Security s : securities)
+                    list.remove(s);
+
                 ElementListSelectionDialog dialog = new ElementListSelectionDialog(contextMenu.getShell(),
-                                new LabelProvider()
-                                {
-
-                                    @Override
-                                    public Image getImage(Object element)
-                                    {
-                                        return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
-                                    }
-
-                                    @Override
-                                    public String getText(Object element)
-                                    {
-                                        return ((Security) element).getName();
-                                    }
-
-                                });
-                dialog.setElements(client.getSecurities().toArray());
+                                new SecurityLabelProvider());
+                dialog.setElements(list.toArray());
                 dialog.setTitle(Messages.SecurityPickerTitle);
                 dialog.setMessage(Messages.SecurityPickerTitle);
                 dialog.setMultipleSelection(true);
