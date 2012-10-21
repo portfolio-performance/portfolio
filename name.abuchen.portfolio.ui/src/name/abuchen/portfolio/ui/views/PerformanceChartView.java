@@ -202,7 +202,15 @@ public class PerformanceChartView extends AbstractHistoricView
 
         // if file has no data points at all
         if (firstDataPoint == null)
+        {
             firstDataPoint = startDate;
+        }
+        else
+        {
+            cal.setTime(firstDataPoint);
+            cal.add(Calendar.DATE, 1);
+            firstDataPoint = cal.getTime();
+        }
 
         // dates
         Date[] dates = new Date[yields.size()];
