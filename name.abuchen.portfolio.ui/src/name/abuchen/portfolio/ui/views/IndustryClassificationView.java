@@ -308,7 +308,7 @@ public class IndustryClassificationView extends AbstractFinanceView
                 @Override
                 public int compare(Item o1, Item o2)
                 {
-                    return Long.valueOf(o1.getValuation()).compareTo(Long.valueOf(o2.getValuation()));
+                    return Long.valueOf(o2.getValuation()).compareTo(Long.valueOf(o1.getValuation()));
                 }
             });
 
@@ -346,7 +346,7 @@ public class IndustryClassificationView extends AbstractFinanceView
 
         public void selectFirst()
         {
-            menu.getItem(0).notifyListeners(SWT.Selection, new Event());
+            menu.getItem(1).notifyListeners(SWT.Selection, new Event());
         }
 
         public void add(String item, final Control viewer)

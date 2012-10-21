@@ -1,15 +1,18 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.util.Iterator;
-import java.util.List;
 
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -26,16 +29,14 @@ import de.engehausen.treemap.swt.TreeMap;
 class IndustryClassificationTreeMapViewer
 {
     private Composite container;
+
+    private TreeMapLegend legend;
     private TreeMap<Item> treeMap;
 
     public IndustryClassificationTreeMapViewer(Composite parent, int style)
     {
         container = new Composite(parent, style);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        FillLayout layout = new FillLayout();
-        layout.marginHeight = 10;
-        layout.marginWidth = 10;
-        container.setLayout(layout);
 
         treeMap = new TreeMap<Item>(container);
         treeMap.setTreeMapLayout(new SquarifiedLayout<Item>(10));
@@ -56,12 +57,22 @@ class IndustryClassificationTreeMapViewer
                     return ""; //$NON-NLS-1$
             }
         });
+
+        legend = new TreeMapLegend(container, treeMap);
+
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(10, 10).applyTo(container);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(treeMap);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(legend);
     }
 
     public void setInput(Item rootItem)
     {
-        treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(rootItem));
+        TreeMapColorProvider colorProvider = new TreeMapColorProvider(treeMap, Math.max(10, rootItem.getChildren()
+                        .size()));
+        treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(colorProvider));
         treeMap.setTreeModel(new Model(rootItem));
+        legend.setColorProvider(colorProvider);
+        legend.setRootItem(rootItem);
     }
 
     public Control getControl()
@@ -111,27 +122,11 @@ class IndustryClassificationTreeMapViewer
 
     private class ClassificationRectangleRenderer implements IRectangleRenderer<Item, PaintEvent, Color>
     {
-        private ColorWheel colorWheel;
+        private TreeMapColorProvider colorProvider;
 
-        public ClassificationRectangleRenderer(Item rootItem)
+        public ClassificationRectangleRenderer(TreeMapColorProvider colorProvider)
         {
-            colorWheel = new ColorWheel(container, Math.max(10, rootItem.getChildren().size()));
-        }
-
-        private ColorWheel.Segment getSegment(ITreeModel<IRectangle<Item>> model, IRectangle<Item> rectangle)
-        {
-            Item item = rectangle.getNode();
-
-            if (item.isCategory())
-                return colorWheel.new Segment(Colors.HEADINGS.swt());
-            else if (item.isAccount())
-                return colorWheel.new Segment(Colors.CASH.swt());
-            else if (model.getParent(rectangle) == null)
-                return colorWheel.new Segment(Colors.valueOf(item.getSecurity().getType().name()).swt());
-
-            List<Item> path = item.getPath();
-            int index = path.get(0).getChildren().indexOf(path.get(1));
-            return colorWheel.getSegment(index);
+            this.colorProvider = colorProvider;
         }
 
         @Override
@@ -139,31 +134,47 @@ class IndustryClassificationTreeMapViewer
                         final IRectangle<Item> rectangle, final IColorProvider<Item, Color> colorProvider,
                         final ILabelProvider<Item> labelProvider)
         {
-            ColorWheel.Segment segment = getSegment(model, rectangle);
+            Item item = rectangle.getNode();
+
+            if (item.isCategory())
+                return;
 
             Color oldForeground = event.gc.getForeground();
             Color oldBackground = event.gc.getBackground();
 
-            event.gc.setBackground(segment.getColor());
-            event.gc.fillRectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+            Rectangle r = new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+            this.colorProvider.drawRectangle(item, event.gc, r);
 
-            event.gc.setForeground(segment.getDarkerColor());
-            event.gc.drawLine(rectangle.getX(), rectangle.getY() + rectangle.getHeight() - 1, rectangle.getX()
-                            + rectangle.getWidth() - 1, rectangle.getY() + rectangle.getHeight() - 1);
-            event.gc.drawLine(rectangle.getX() + rectangle.getWidth() - 1, rectangle.getY(), rectangle.getX()
-                            + rectangle.getWidth() - 1, rectangle.getY() + rectangle.getHeight() - 1);
+            String label = item.toString();
+            String info = String.format("%s (%s%%)", Values.Amount.format(item.getValuation()), //$NON-NLS-1$
+                            Values.Percent.format(item.getPercentage()));
 
-            event.gc.setForeground(segment.getBrigherColor());
-            event.gc.drawLine(rectangle.getX(), rectangle.getY(), rectangle.getX() + rectangle.getWidth(),
-                            rectangle.getY());
-            event.gc.drawLine(rectangle.getX(), rectangle.getY(), rectangle.getX(),
-                            rectangle.getY() + rectangle.getHeight());
+            event.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
-            String label = labelProvider.getLabel(model, rectangle);
-            if (label != null)
+            Point labelExtend = event.gc.textExtent(label);
+            Point infoExtend = event.gc.textExtent(info);
+
+            int width = Math.max(labelExtend.x, infoExtend.x);
+            if (width <= rectangle.getWidth() || rectangle.getWidth() > rectangle.getHeight())
             {
-                event.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-                event.gc.drawText(label, rectangle.getX() + 1, rectangle.getY() + 1);
+                event.gc.drawText(label, r.x + 2, r.y + 2, true);
+                event.gc.drawText(info, r.x + 2, r.y + 2 + labelExtend.y, true);
+            }
+            else
+            {
+                final Transform transform = new Transform(event.display);
+                try
+                {
+                    transform.translate(r.x, r.y);
+                    transform.rotate(-90);
+                    event.gc.setTransform(transform);
+                    event.gc.drawString(label, -labelExtend.x - 2, 2, true);
+                    event.gc.drawString(info, -infoExtend.x - 2, 2 + labelExtend.y, true);
+                }
+                finally
+                {
+                    transform.dispose();
+                }
             }
 
             event.gc.setForeground(oldForeground);

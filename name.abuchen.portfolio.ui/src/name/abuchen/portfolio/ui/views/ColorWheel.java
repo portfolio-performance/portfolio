@@ -13,13 +13,13 @@ import org.eclipse.swt.widgets.Control;
     {
         private float[] hsb;
 
-        private Segment(float[] hsb)
+        /* package */Segment(float[] hsb)
         {
             this.hsb = new float[hsb.length];
             System.arraycopy(hsb, 0, this.hsb, 0, hsb.length);
         }
 
-        Segment(RGB rgb)
+        /* package */Segment(RGB rgb)
         {
             this.hsb = rgb.getHSB();
         }
@@ -40,6 +40,11 @@ import org.eclipse.swt.widgets.Control;
         {
             RGB rgb = new RGB(hsb[0], hsb[1], Math.max(0f, hsb[2] - 0.05f));
             return (Color) resources.createColor(ColorDescriptor.createFrom(rgb));
+        }
+
+        public Segment getShade(int segment)
+        {
+            return new Segment(new float[] { hsb[0], hsb[1], Math.min(1.0f, hsb[2] + (0.05f * segment)) });
         }
     }
 
