@@ -195,14 +195,17 @@ public class IndustryClassificationView extends AbstractFinanceView
 
         Category rootCategory = taxonomy.getRootCategory();
         Item rootItem = new Item(null, rootCategory);
+        Category otherCategory = new Category(Category.OTHER_ID, rootCategory, Messages.LabelWithoutClassification);
+        Item otherItem = new Item(rootItem, otherCategory);
+        rootItem.getChildren().add(otherItem);
 
         Map<Category, Item> items = new HashMap<Category, Item>();
 
         buildTree(rootCategory, rootItem, items);
 
-        assignSecurities(taxonomy, items, portfolio.getPositionsBySecurity());
+        assignSecurities(taxonomy, items, portfolio.getPositionsBySecurity(), otherItem);
 
-        assignNonSecurities(rootItem, snapshot);
+        assignNonSecurities(otherItem, snapshot);
 
         pruneEmpty(rootItem);
 
@@ -227,7 +230,7 @@ public class IndustryClassificationView extends AbstractFinanceView
     }
 
     private void assignSecurities(IndustryClassification taxonomy, Map<Category, Item> items,
-                    Map<Security, SecurityPosition> positions)
+                    Map<Security, SecurityPosition> positions, Item otherItem)
     {
         for (Map.Entry<Security, SecurityPosition> position : positions.entrySet())
         {
@@ -238,9 +241,8 @@ public class IndustryClassificationView extends AbstractFinanceView
 
             if (category == null)
             {
-                Item item = items.get(taxonomy.getRootCategory());
-                item.getChildren().add(new Item(item, security, valuation));
-                item.valuation += valuation;
+                otherItem.getChildren().add(new Item(otherItem, security, valuation));
+                otherItem.valuation += valuation;
             }
             else
             {
@@ -261,6 +263,7 @@ public class IndustryClassificationView extends AbstractFinanceView
                 continue;
             Item child = new Item(item, account.getAccount(), account.getFunds());
             item.getChildren().add(child);
+            item.valuation += account.getFunds();
         }
     }
 

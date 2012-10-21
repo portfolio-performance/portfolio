@@ -15,7 +15,8 @@ public enum Colors
     CPI(120, 120, 120), //
     IRR(0, 0, 0), //
     
-    HEADINGS(149, 165, 180);
+    HEADINGS(149, 165, 180), //
+    OTHER_CATEGORY(180, 180, 180);
 
     private final int red;
     private final int green;

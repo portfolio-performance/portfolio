@@ -182,6 +182,7 @@ public class Messages extends NLS
     public static String LabelUnnamedXml;
     public static String LabelUnsavedFile;
     public static String LabelUpdatesAvailable;
+    public static String LabelWithoutClassification;
     public static String MenuConfigureChart;
     public static String MenuExportData;
     public static String MenuOpenSecurityOnSite;

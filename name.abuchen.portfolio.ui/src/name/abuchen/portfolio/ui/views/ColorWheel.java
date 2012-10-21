@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Control;
 
         public Segment getShade(int segment)
         {
-            return new Segment(new float[] { hsb[0], hsb[1], Math.min(1.0f, hsb[2] + (0.05f * segment)) });
+            return new Segment(new float[] { hsb[0], hsb[1], Math.max(0f, hsb[2] - (0.07f * (segment % 4))) });
         }
     }
 

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.List;
 
+import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
@@ -25,7 +26,14 @@ import org.eclipse.swt.widgets.Control;
         if (path.size() == 1)
             return colorWheel.new Segment(Colors.HEADINGS.swt());
 
-        ColorWheel.Segment segment = colorWheel.getSegment(path.get(0).getChildren().indexOf(path.get(1)));
+        ColorWheel.Segment segment = null;
+        Item rootLevel = path.get(0);
+        Item firstLevel = path.get(1);
+
+        if (firstLevel.isCategory() && Category.OTHER_ID.equals(firstLevel.getCategory().getId()))
+            segment = colorWheel.new Segment(Colors.OTHER_CATEGORY.swt());
+        else
+            segment = colorWheel.getSegment(rootLevel.getChildren().indexOf(firstLevel));
 
         if (path.size() == 2)
             return segment;

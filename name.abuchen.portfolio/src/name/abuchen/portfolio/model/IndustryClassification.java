@@ -12,12 +12,21 @@ public class IndustryClassification
 {
     public static class Category
     {
+        public static final String OTHER_ID = "-1"; //$NON-NLS-1$
+        
         private String id;
         private String label;
         private String description;
 
         private Category parent;
         private List<Category> children = new ArrayList<Category>();
+
+        public Category(String id, Category parent, String label)
+        {
+            this.id = id;
+            this.parent = parent;
+            this.label = label;
+        }
 
         private Category(String id, Category parent)
         {
