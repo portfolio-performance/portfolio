@@ -41,15 +41,15 @@ public class IndustryClassificationView extends AbstractFinanceView
 {
     /* package */static class Item
     {
-        Item parent;
-        List<Item> children = new ArrayList<Item>();
+        private Item parent;
+        private List<Item> children = new ArrayList<Item>();
 
-        long valuation;
-        double percentage;
+        private long valuation;
+        private double percentage;
 
-        IndustryClassification.Category category;
-        Security security;
-        Account account;
+        private IndustryClassification.Category category;
+        private Security security;
+        private Account account;
 
         public Item(Item parent, Category category)
         {

@@ -34,7 +34,7 @@ public class IndustryClassification
         {
             return label;
         }
-        
+
         public String getPathLabel()
         {
             List<Category> path = getPath();
@@ -43,10 +43,10 @@ public class IndustryClassification
             {
                 if (c.isRoot())
                     continue;
-                
+
                 if (buf.length() > 0)
                     buf.append(" » "); //$NON-NLS-1$
-                
+
                 buf.append(c.getLabel());
             }
             return buf.toString();
@@ -66,16 +66,16 @@ public class IndustryClassification
         {
             return children;
         }
-        
+
         public boolean isRoot()
         {
             return getParent() == null;
         }
-        
+
         public List<Category> getPath()
         {
             LinkedList<Category> path = new LinkedList<Category>();
-            
+
             Category c = this;
             while (c != null)
             {
@@ -93,7 +93,7 @@ public class IndustryClassification
         }
     }
 
-    private static Category ROOT_CATEGORY;
+    private static final Category ROOT_CATEGORY;
 
     static
     {
