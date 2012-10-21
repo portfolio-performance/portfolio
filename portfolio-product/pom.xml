@@ -140,6 +140,28 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<file>target/products/name.abuchen.portfolio.product/macosx/cocoa/x86_64/portfolio/PortfolioPerformance.app/Contents/Info.plist</file>
+					<replacements>
+						<replacement>
+							<token>&lt;/dict&gt;</token>
+							<value>&lt;key&gt;NSHighResolutionCapable&lt;/key&gt;&lt;true/&gt;&lt;/dict&gt;</value>
+						</replacement>
+					</replacements>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
