@@ -8,33 +8,20 @@ import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.model.IndustryClassification;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.ui.Sidebar.Entry;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -46,43 +33,11 @@ import org.eclipse.ui.part.PageBook;
 
 public class ClientEditor extends EditorPart
 {
-    private final class ActivateViewAction extends Action
-    {
-        private String view;
-        private Object parameter;
-
-        private ActivateViewAction(String label, String view)
-        {
-            this(label, view, null, null);
-        }
-
-        private ActivateViewAction(String text, String view, ImageDescriptor image)
-        {
-            this(text, view, null, image);
-        }
-
-        public ActivateViewAction(String text, String view, Object parameter, ImageDescriptor image)
-        {
-            super(text, image);
-            this.view = view;
-            this.parameter = parameter;
-        }
-
-        @Override
-        public void run()
-        {
-            ClientEditor.this.activateView(view, parameter);
-        }
-    }
-
     private boolean isDirty = false;
     private IPath clientFile;
     private Client client;
 
     private PreferenceStore preferences = new PreferenceStore();
-
-    private Entry allSecurities;
-    private Entry statementOfAssets;
 
     private PageBook book;
     private AbstractFinanceView view;
@@ -131,6 +86,11 @@ public class ClientEditor extends EditorPart
         else
             setPartName(Messages.LabelUnsavedFile);
 
+        scheduleOnlineUpdateJobs();
+    }
+
+    private void scheduleOnlineUpdateJobs()
+    {
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
             new UpdateQuotesJob(client, false, 1000 * 60 * 10)
@@ -168,164 +128,14 @@ public class ClientEditor extends EditorPart
         Composite container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 1).applyTo(container);
 
-        Sidebar sidebar = new Sidebar(container, SWT.NONE);
-        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(sidebar);
-
-        createGeneralDataSection(sidebar);
-        createMasterDataSection(sidebar);
-        createPerformanceSection(sidebar);
-        createMiscSection(sidebar);
+        ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
+        Control control = sidebar.createSidebarControl(container);
+        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(control);
 
         book = new PageBook(container, SWT.NONE);
-
         GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
 
-        sidebar.select(statementOfAssets);
-    }
-
-    private void createGeneralDataSection(final Sidebar sidebar)
-    {
-        final Entry section = new Entry(sidebar, Messages.LabelSecurities);
-        section.setAction(new Action(Messages.LabelSecurities, PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
-        {
-            @Override
-            public void run()
-            {
-                String name = askWatchlistName(Messages.WatchlistNewLabel);
-                if (name == null)
-                    return;
-
-                Watchlist watchlist = new Watchlist();
-                watchlist.setName(name);
-                client.getWatchlists().add(watchlist);
-                markDirty();
-
-                createWathlistEntry(section, watchlist);
-                sidebar.layout();
-            }
-        });
-
-        allSecurities = new Entry(section, new ActivateViewAction(Messages.LabelAllSecurities, "SecurityList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
-
-        for (Watchlist watchlist : client.getWatchlists())
-            createWathlistEntry(section, watchlist);
-    }
-
-    private void createWathlistEntry(Entry section, final Watchlist watchlist)
-    {
-        final Entry entry = new Entry(section, watchlist.getName());
-        entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_WATCHLIST)));
-
-        entry.setContextMenu(new IMenuListener()
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                manager.add(new Action(Messages.WatchlistRename)
-                {
-                    @Override
-                    public void run()
-                    {
-                        String newName = askWatchlistName(watchlist.getName());
-                        if (newName != null)
-                        {
-                            watchlist.setName(newName);
-                            markDirty();
-                            entry.setLabel(newName);
-                        }
-                    }
-                });
-
-                manager.add(new Action(Messages.WatchlistDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        client.getWatchlists().remove(watchlist);
-                        markDirty();
-                        entry.dispose();
-                        allSecurities.select();
-                    }
-                });
-            }
-        });
-
-        entry.addDropSupport(DND.DROP_MOVE, new Transfer[] { SecurityTransfer.getTransfer() }, new DropTargetAdapter()
-        {
-            @Override
-            public void drop(DropTargetEvent event)
-            {
-                if (SecurityTransfer.getTransfer().isSupportedType(event.currentDataType))
-                {
-                    Security security = SecurityTransfer.getTransfer().getSecurity();
-                    if (security != null)
-                    {
-                        // if the security is dragged from another file, add to
-                        // a deep copy to the client's securities list
-                        if (!client.getSecurities().contains(security))
-                        {
-                            security = security.deepCopy();
-                            client.getSecurities().add(security);
-                        }
-
-                        if (!watchlist.getSecurities().contains(security))
-                            watchlist.addSecurity(security);
-
-                        markDirty();
-
-                        notifyModelUpdated();
-                    }
-                }
-            }
-        });
-    }
-
-    private String askWatchlistName(String initialValue)
-    {
-        InputDialog dlg = new InputDialog(getSite().getShell(), Messages.WatchlistEditDialog,
-                        Messages.WatchlistEditDialogMsg, initialValue, null);
-        if (dlg.open() != InputDialog.OK)
-            return null;
-
-        return dlg.getValue();
-    }
-
-    private void createMasterDataSection(Sidebar sidebar)
-    {
-        Entry section = new Entry(sidebar, Messages.ClientEditorLabelClientMasterData);
-        new Entry(section, new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
-        new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
-    }
-
-    private void createPerformanceSection(Sidebar sidebar)
-    {
-        Entry section = new Entry(sidebar, Messages.ClientEditorLabelReports);
-
-        statementOfAssets = new Entry(section, new ActivateViewAction(Messages.LabelStatementOfAssets,
-                        "StatementOfAssets")); //$NON-NLS-1$
-        new Entry(statementOfAssets,
-                        new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetClasses, "StatementOfAssetsPieChart")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.ShortLabelIndustries, "IndustryClassification")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
-
-        Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
-                        "Performance")); //$NON-NLS-1$
-        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
-        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
-    }
-
-    private void createMiscSection(Sidebar sidebar)
-    {
-        Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
-        new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
-        new Entry(section, new ActivateViewAction(new IndustryClassification().getRootCategory().getLabel(),
-                        "IndustryClassificationDefinition")); //$NON-NLS-1$
+        sidebar.selectDefaultView();
     }
 
     protected void activateView(String target, Object parameter)
