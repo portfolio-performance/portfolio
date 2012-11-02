@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views;
 import java.util.Iterator;
 
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -28,14 +27,14 @@ import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
 
-class IndustryClassificationTreeMapViewer
+class TreeMapViewer
 {
     private SashForm sash;
 
     private TreeMapLegend legend;
-    private TreeMap<Item> treeMap;
+    private TreeMap<TreeMapItem> treeMap;
 
-    public IndustryClassificationTreeMapViewer(Composite parent, int style)
+    public TreeMapViewer(Composite parent, int style)
     {
         sash = new SashForm(parent, SWT.HORIZONTAL);
         sash.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -43,23 +42,14 @@ class IndustryClassificationTreeMapViewer
         Composite container = new Composite(sash, style);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
-        treeMap = new TreeMap<Item>(container);
-        treeMap.setTreeMapLayout(new SquarifiedLayout<Item>(10));
-        treeMap.setLabelProvider(new ILabelProvider<Item>()
+        treeMap = new TreeMap<TreeMapItem>(container);
+        treeMap.setTreeMapLayout(new SquarifiedLayout<TreeMapItem>(10));
+        treeMap.setLabelProvider(new ILabelProvider<TreeMapItem>()
         {
             @Override
-            public String getLabel(ITreeModel<IRectangle<Item>> model, IRectangle<Item> rectangle)
+            public String getLabel(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle)
             {
-                Item node = rectangle.getNode();
-
-                if (node.isCategory())
-                    return node.getCategory().getPathLabel();
-                else if (node.isSecurity())
-                    return node.getSecurity().getName();
-                else if (node.isAccount())
-                    return node.getAccount().getName();
-                else
-                    return ""; //$NON-NLS-1$
+                return rectangle.getNode().getLabel();
             }
         });
 
@@ -67,12 +57,13 @@ class IndustryClassificationTreeMapViewer
 
         final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE,
                         SecurityDetailsViewer.Facet.values());
-        treeMap.addSelectionChangeListener(new ISelectionChangeListener<Item>()
+        treeMap.addSelectionChangeListener(new ISelectionChangeListener<TreeMapItem>()
         {
             @Override
-            public void selectionChanged(ITreeModel<IRectangle<Item>> model, IRectangle<Item> rectangle, String label)
+            public void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle,
+                            String label)
             {
-                Item node = rectangle.getNode();
+                TreeMapItem node = rectangle.getNode();
                 details.setInput(node.isSecurity() ? node.getSecurity() : null);
             }
         });
@@ -88,7 +79,7 @@ class IndustryClassificationTreeMapViewer
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
     }
 
-    public void setInput(Item rootItem)
+    public void setInput(TreeMapItem rootItem)
     {
         TreeMapColorProvider colorProvider = new TreeMapColorProvider(treeMap, Math.max(10, rootItem.getChildren()
                         .size()));
@@ -103,47 +94,47 @@ class IndustryClassificationTreeMapViewer
         return sash;
     }
 
-    private static class Model implements IWeightedTreeModel<Item>
+    private static class Model implements IWeightedTreeModel<TreeMapItem>
     {
-        private Item root;
+        private TreeMapItem root;
 
-        public Model(Item root)
+        public Model(TreeMapItem root)
         {
             this.root = root;
         }
 
         @Override
-        public Iterator<Item> getChildren(Item item)
+        public Iterator<TreeMapItem> getChildren(TreeMapItem item)
         {
             return item.getChildren().iterator();
         }
 
         @Override
-        public Item getParent(Item item)
+        public TreeMapItem getParent(TreeMapItem item)
         {
             return item.getParent();
         }
 
         @Override
-        public Item getRoot()
+        public TreeMapItem getRoot()
         {
             return root;
         }
 
         @Override
-        public boolean hasChildren(Item item)
+        public boolean hasChildren(TreeMapItem item)
         {
             return !item.getChildren().isEmpty();
         }
 
         @Override
-        public long getWeight(Item item)
+        public long getWeight(TreeMapItem item)
         {
             return item.getValuation();
         }
     }
 
-    private class ClassificationRectangleRenderer implements IRectangleRenderer<Item, PaintEvent, Color>
+    private class ClassificationRectangleRenderer implements IRectangleRenderer<TreeMapItem, PaintEvent, Color>
     {
         private TreeMapColorProvider colorProvider;
 
@@ -153,11 +144,12 @@ class IndustryClassificationTreeMapViewer
         }
 
         @Override
-        public void render(final PaintEvent event, final ITreeModel<IRectangle<Item>> model,
-                        final IRectangle<Item> rectangle, final IColorProvider<Item, Color> colorProvider,
-                        final ILabelProvider<Item> labelProvider)
+        public void render(final PaintEvent event, final ITreeModel<IRectangle<TreeMapItem>> model,
+                        final IRectangle<TreeMapItem> rectangle,
+                        final IColorProvider<TreeMapItem, Color> colorProvider,
+                        final ILabelProvider<TreeMapItem> labelProvider)
         {
-            Item item = rectangle.getNode();
+            TreeMapItem item = rectangle.getNode();
 
             if (item.isCategory())
                 return;
@@ -205,9 +197,10 @@ class IndustryClassificationTreeMapViewer
         }
 
         @Override
-        public void highlight(final PaintEvent event, final ITreeModel<IRectangle<Item>> model,
-                        final IRectangle<Item> rectangle, final IColorProvider<Item, Color> colorProvider,
-                        final ILabelProvider<Item> labelProvider)
+        public void highlight(final PaintEvent event, final ITreeModel<IRectangle<TreeMapItem>> model,
+                        final IRectangle<TreeMapItem> rectangle,
+                        final IColorProvider<TreeMapItem, Color> colorProvider,
+                        final ILabelProvider<TreeMapItem> labelProvider)
         {
             event.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
             event.gc.drawRectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());

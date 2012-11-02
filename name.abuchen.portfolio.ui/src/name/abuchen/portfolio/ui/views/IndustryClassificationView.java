@@ -1,15 +1,9 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.model.Security;
@@ -31,124 +25,9 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class IndustryClassificationView extends AbstractFinanceView
 {
-    public static class Item
-    {
-        private Item parent;
-        private List<Item> children = new ArrayList<Item>();
-
-        private long valuation;
-        private double percentage;
-
-        private IndustryClassification.Category category;
-        private Security security;
-        private Account account;
-
-        public Item(Item parent, Category category)
-        {
-            this.parent = parent;
-            this.category = category;
-        }
-
-        public Item(Item parent, Security security, long valuation)
-        {
-            this.parent = parent;
-            this.security = security;
-            this.valuation = valuation;
-        }
-
-        public Item(Item parent, Account account, long valuation)
-        {
-            this.parent = parent;
-            this.account = account;
-            this.valuation = valuation;
-        }
-
-        public Item getParent()
-        {
-            return parent;
-        }
-
-        public boolean isCategory()
-        {
-            return category != null;
-        }
-
-        public IndustryClassification.Category getCategory()
-        {
-            return category;
-        }
-
-        public boolean isSecurity()
-        {
-            return security != null;
-        }
-
-        public Security getSecurity()
-        {
-            return security;
-        }
-
-        public boolean isAccount()
-        {
-            return account != null;
-        }
-
-        public Account getAccount()
-        {
-            return account;
-        }
-
-        public long getValuation()
-        {
-            return valuation;
-        }
-
-        public double getPercentage()
-        {
-            return percentage;
-        }
-
-        public List<Item> getChildren()
-        {
-            return children;
-        }
-
-        public List<Item> getPath()
-        {
-            LinkedList<Item> path = new LinkedList<Item>();
-
-            Item item = this;
-            while (item != null)
-            {
-                path.addFirst(item);
-                item = item.getParent();
-            }
-
-            return path;
-        }
-
-        public String getLabel()
-        {
-            if (isCategory())
-                return category.getLabel();
-            else if (isSecurity())
-                return security.getName();
-            else if (isAccount())
-                return account.getName();
-            else
-                return super.toString();
-        }
-
-        @Override
-        public String toString()
-        {
-            return getLabel();
-        }
-    }
-
     private static final String IDENTIFIER = IndustryClassificationView.class.getName() + "-VIEW"; //$NON-NLS-1$
 
-    private Item rootItem;
+    private TreeMapItem rootItem;
 
     private ViewDropdownMenu dropdown;
 
@@ -173,7 +52,7 @@ public class IndustryClassificationView extends AbstractFinanceView
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new StackLayout());
 
-        IndustryClassificationTreeMapViewer mapViewer = new IndustryClassificationTreeMapViewer(container, SWT.NONE);
+        TreeMapViewer mapViewer = new TreeMapViewer(container, SWT.NONE);
         mapViewer.setInput(rootItem);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, mapViewer.getControl());
 
@@ -193,19 +72,19 @@ public class IndustryClassificationView extends AbstractFinanceView
         super.dispose();
     }
 
-    private Item calculateRootItem()
+    private TreeMapItem calculateRootItem()
     {
         IndustryClassification taxonomy = new IndustryClassification();
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
         PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
 
         Category rootCategory = taxonomy.getRootCategory();
-        Item rootItem = new Item(null, rootCategory);
+        TreeMapItem rootItem = new TreeMapItem(null, rootCategory);
         Category otherCategory = new Category(Category.OTHER_ID, rootCategory, Messages.LabelWithoutClassification);
-        Item otherItem = new Item(rootItem, otherCategory);
+        TreeMapItem otherItem = new TreeMapItem(rootItem, otherCategory);
         rootItem.getChildren().add(otherItem);
 
-        Map<Category, Item> items = new HashMap<Category, Item>();
+        Map<Category, TreeMapItem> items = new HashMap<Category, TreeMapItem>();
 
         buildTree(rootCategory, rootItem, items);
 
@@ -213,30 +92,28 @@ public class IndustryClassificationView extends AbstractFinanceView
 
         assignNonSecurities(otherItem, snapshot);
 
-        pruneEmpty(rootItem);
-
-        calculatePercentages(snapshot.getAssets(), rootItem);
-
-        sortBySize(rootItem);
+        rootItem.pruneEmpty();
+        rootItem.calculatePercentages(snapshot.getAssets());
+        rootItem.sortBySize();
 
         return rootItem;
     }
 
-    private void buildTree(Category category, Item item, Map<Category, Item> items)
+    private void buildTree(Category category, TreeMapItem item, Map<Category, TreeMapItem> items)
     {
         items.put(category, item);
 
         for (Category childCategory : category.getChildren())
         {
-            Item childItem = new Item(item, childCategory);
+            TreeMapItem childItem = new TreeMapItem(item, childCategory);
             item.getChildren().add(childItem);
 
             buildTree(childCategory, childItem, items);
         }
     }
 
-    private void assignSecurities(IndustryClassification taxonomy, Map<Category, Item> items,
-                    Map<Security, SecurityPosition> positions, Item otherItem)
+    private void assignSecurities(IndustryClassification taxonomy, Map<Category, TreeMapItem> items,
+                    Map<Security, SecurityPosition> positions, TreeMapItem otherItem)
     {
         for (Map.Entry<Security, SecurityPosition> position : positions.entrySet())
         {
@@ -247,84 +124,32 @@ public class IndustryClassificationView extends AbstractFinanceView
 
             if (category == null)
             {
-                otherItem.getChildren().add(new Item(otherItem, security, valuation));
-                otherItem.valuation += valuation;
+                otherItem.getChildren().add(new TreeMapItem(otherItem, security, valuation));
+                otherItem.setValuation(otherItem.getValuation() + valuation);
             }
             else
             {
-                Item item = items.get(category);
-                item.getChildren().add(new Item(item, security, valuation));
+                TreeMapItem item = items.get(category);
+                item.getChildren().add(new TreeMapItem(item, security, valuation));
                 List<Category> path = category.getPath();
                 for (int ii = 0; ii < path.size(); ii++)
-                    items.get(path.get(ii)).valuation += valuation;
+                {
+                    TreeMapItem child = items.get(path.get(ii));
+                    child.setValuation(child.getValuation() + valuation);
+                }
             }
         }
     }
 
-    private void assignNonSecurities(Item item, ClientSnapshot snapshot)
+    private void assignNonSecurities(TreeMapItem item, ClientSnapshot snapshot)
     {
         for (AccountSnapshot account : snapshot.getAccounts())
         {
             if (account.getFunds() == 0)
                 continue;
-            Item child = new Item(item, account.getAccount(), account.getFunds());
+            TreeMapItem child = new TreeMapItem(item, account.getAccount(), account.getFunds());
             item.getChildren().add(child);
-            item.valuation += account.getFunds();
+            item.setValuation(item.getValuation() + account.getFunds());
         }
     }
-
-    private void pruneEmpty(Item root)
-    {
-        LinkedList<Item> stack = new LinkedList<Item>();
-        stack.add(root);
-
-        while (!stack.isEmpty())
-        {
-            Item item = stack.remove();
-            Iterator<Item> iterator = item.getChildren().iterator();
-            while (iterator.hasNext())
-            {
-                Item child = iterator.next();
-                if (child.getValuation() == 0)
-                    iterator.remove();
-            }
-
-            stack.addAll(item.getChildren());
-        }
-    }
-
-    private void calculatePercentages(long assets, Item root)
-    {
-        LinkedList<Item> stack = new LinkedList<Item>();
-        stack.add(root);
-
-        while (!stack.isEmpty())
-        {
-            Item item = stack.remove();
-            item.percentage = (double) item.valuation / (double) assets;
-
-            stack.addAll(item.getChildren());
-        }
-    }
-
-    private void sortBySize(Item item)
-    {
-        if (!item.getChildren().isEmpty())
-        {
-
-            Collections.sort(item.getChildren(), new Comparator<Item>()
-            {
-                @Override
-                public int compare(Item o1, Item o2)
-                {
-                    return Long.valueOf(o2.getValuation()).compareTo(Long.valueOf(o1.getValuation()));
-                }
-            });
-
-            for (Item child : item.getChildren())
-                sortBySize(child);
-
-        }
-    }
-
 }

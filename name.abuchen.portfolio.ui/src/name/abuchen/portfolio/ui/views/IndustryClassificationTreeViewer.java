@@ -4,7 +4,6 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -42,22 +41,13 @@ class IndustryClassificationTreeViewer
             @Override
             public String getText(Object element)
             {
-                Item node = (Item) element;
-
-                if (node.isCategory())
-                    return node.getCategory().getLabel();
-                else if (node.isSecurity())
-                    return node.getSecurity().getName();
-                else if (node.isAccount())
-                    return node.getAccount().getName();
-                else
-                    return null;
+                return ((TreeMapItem) element).getLabel();
             }
 
             @Override
             public Image getImage(Object element)
             {
-                Item node = (Item) element;
+                TreeMapItem node = (TreeMapItem) element;
 
                 if (node.isCategory())
                     return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
@@ -69,7 +59,7 @@ class IndustryClassificationTreeViewer
                     return null;
             }
         });
-        ColumnViewerSorter.create(Item.class, "label").attachTo(viewer, column); //$NON-NLS-1$
+        ColumnViewerSorter.create(TreeMapItem.class, "label").attachTo(viewer, column); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnActualPercent);
@@ -80,11 +70,11 @@ class IndustryClassificationTreeViewer
             @Override
             public String getText(Object element)
             {
-                double percentage = ((Item) element).getPercentage();
+                double percentage = ((TreeMapItem) element).getPercentage();
                 return String.format("%,10.1f", percentage * 100d); //$NON-NLS-1$
             }
         });
-        ColumnViewerSorter.create(Item.class, "percentage").attachTo(viewer, column, true); //$NON-NLS-1$
+        ColumnViewerSorter.create(TreeMapItem.class, "percentage").attachTo(viewer, column, true); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnActualValue);
@@ -95,18 +85,18 @@ class IndustryClassificationTreeViewer
             @Override
             public String getText(Object element)
             {
-                long valuation = ((Item) element).getValuation();
+                long valuation = ((TreeMapItem) element).getValuation();
                 return Values.Amount.format(valuation);
             }
         });
-        ColumnViewerSorter.create(Item.class, "valuation").attachTo(viewer, column); //$NON-NLS-1$
+        ColumnViewerSorter.create(TreeMapItem.class, "valuation").attachTo(viewer, column); //$NON-NLS-1$
 
         viewer.getTree().setHeaderVisible(true);
         viewer.getTree().setLinesVisible(true);
         viewer.setContentProvider(new ItemContentProvider());
     }
 
-    public void setInput(Item rootItem)
+    public void setInput(TreeMapItem rootItem)
     {
         viewer.setInput(rootItem);
     }
@@ -118,12 +108,12 @@ class IndustryClassificationTreeViewer
 
     private static class ItemContentProvider implements ITreeContentProvider
     {
-        private Item root;
+        private TreeMapItem root;
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
         {
-            root = (Item) newInput;
+            root = (TreeMapItem) newInput;
         }
 
         @Override
@@ -135,13 +125,13 @@ class IndustryClassificationTreeViewer
         @Override
         public boolean hasChildren(Object element)
         {
-            return !((Item) element).getChildren().isEmpty();
+            return !((TreeMapItem) element).getChildren().isEmpty();
         }
 
         @Override
         public Object[] getChildren(Object parentElement)
         {
-            return ((Item) parentElement).getChildren().toArray();
+            return ((TreeMapItem) parentElement).getChildren().toArray();
         }
 
         @Override

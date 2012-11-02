@@ -4,7 +4,6 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -19,16 +18,16 @@ import org.eclipse.swt.widgets.Control;
         colorWheel = new ColorWheel(owner, size);
     }
 
-    public ColorWheel.Segment getSegment(Item item)
+    public ColorWheel.Segment getSegment(TreeMapItem item)
     {
-        List<Item> path = item.getPath();
+        List<TreeMapItem> path = item.getPath();
 
         if (path.size() == 1)
             return colorWheel.new Segment(Colors.HEADINGS.swt());
 
         ColorWheel.Segment segment = null;
-        Item rootLevel = path.get(0);
-        Item firstLevel = path.get(1);
+        TreeMapItem rootLevel = path.get(0);
+        TreeMapItem firstLevel = path.get(1);
 
         if (firstLevel.isCategory() && Category.OTHER_ID.equals(firstLevel.getCategory().getId()))
             segment = colorWheel.new Segment(Colors.OTHER_CATEGORY.swt());
@@ -41,7 +40,7 @@ import org.eclipse.swt.widgets.Control;
             return segment.getShade(path.get(1).getChildren().indexOf(path.get(2)));
     }
 
-    public void drawRectangle(Item item, GC gc, Rectangle r)
+    public void drawRectangle(TreeMapItem item, GC gc, Rectangle r)
     {
         ColorWheel.Segment segment = getSegment(item);
 

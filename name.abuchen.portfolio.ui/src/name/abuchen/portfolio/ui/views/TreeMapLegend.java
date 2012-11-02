@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -28,9 +27,9 @@ import de.engehausen.treemap.swt.TreeMap;
 {
     private TreeMapColorProvider colorProvider;
 
-    private Item rootItem;
+    private TreeMapItem rootItem;
 
-    public TreeMapLegend(Composite parent, TreeMap<Item> treeMap)
+    public TreeMapLegend(Composite parent, TreeMap<TreeMapItem> treeMap)
     {
         super(parent, SWT.NONE);
 
@@ -42,10 +41,10 @@ import de.engehausen.treemap.swt.TreeMap;
         layout.justify = false;
         setLayout(layout);
 
-        treeMap.addSelectionChangeListener(new ISelectionChangeListener<Item>()
+        treeMap.addSelectionChangeListener(new ISelectionChangeListener<TreeMapItem>()
         {
             @Override
-            public void selectionChanged(ITreeModel<IRectangle<Item>> model, IRectangle<Item> rectangle, String label)
+            public void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle, String label)
             {
                 TreeMapLegend.this.selectionChanged(model, rectangle, label);
             }
@@ -57,7 +56,7 @@ import de.engehausen.treemap.swt.TreeMap;
         this.colorProvider = colorProvider;
     }
 
-    public void setRootItem(Item rootItem)
+    public void setRootItem(TreeMapItem rootItem)
     {
         this.rootItem = rootItem;
 
@@ -66,11 +65,11 @@ import de.engehausen.treemap.swt.TreeMap;
 
         boolean hasParent = false;
 
-        List<Item> path = rootItem.getPath();
+        List<TreeMapItem> path = rootItem.getPath();
         for (int ii = 1; ii < path.size(); ii++)
         {
             hasParent = true;
-            Item item = path.get(ii);
+            TreeMapItem item = path.get(ii);
             new LegendItem(this, item);
         }
 
@@ -80,26 +79,26 @@ import de.engehausen.treemap.swt.TreeMap;
             l.setText(">>"); //$NON-NLS-1$
         }
 
-        for (Item child : rootItem.getChildren())
+        for (TreeMapItem child : rootItem.getChildren())
             new LegendItem(this, child);
 
         pack();
         getParent().layout();
     }
 
-    private void selectionChanged(ITreeModel<IRectangle<Item>> model, IRectangle<Item> rectangle, String label)
+    private void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle, String label)
     {
         // find out if root changed (drill-down)
-        Item newRoot = model.getRoot().getNode();
+        TreeMapItem newRoot = model.getRoot().getNode();
         if (newRoot != rootItem)
             setRootItem(newRoot);
     }
 
     public class LegendItem extends Canvas implements Listener
     {
-        private final Item item;
+        private final TreeMapItem item;
 
-        public LegendItem(Composite parent, Item item)
+        public LegendItem(Composite parent, TreeMapItem item)
         {
             super(parent, SWT.NO_BACKGROUND);
 
