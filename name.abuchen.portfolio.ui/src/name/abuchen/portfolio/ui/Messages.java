@@ -183,6 +183,7 @@ public class Messages extends NLS
     public static String LabelUnnamedXml;
     public static String LabelUnsavedFile;
     public static String LabelUpdatesAvailable;
+    public static String LabelViewPieChart;
     public static String LabelViewTable;
     public static String LabelViewTreeMap;
     public static String LabelWithoutClassification;
