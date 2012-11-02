@@ -81,7 +81,7 @@ public class SecurityListView extends AbstractListView
     private TableViewer prices;
     private TableViewer transactions;
     private TimelineChart chart;
-    private LatestQuoteTable latest;
+    private SecurityDetailsViewer latest;
 
     private Date chartPeriod;
 
@@ -308,9 +308,9 @@ public class SecurityListView extends AbstractListView
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
-        latest = new LatestQuoteTable(sash);
+        latest = new SecurityDetailsViewer(sash, SWT.BORDER);
         latest.getControl().pack();
-        int width = latest.getControl().getBounds().width + 30;
+        int width = latest.getControl().getBounds().width;
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
 
         // tab 1: chart
