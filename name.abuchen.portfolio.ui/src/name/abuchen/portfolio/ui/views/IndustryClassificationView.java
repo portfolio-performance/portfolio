@@ -150,6 +150,8 @@ public class IndustryClassificationView extends AbstractFinanceView
         }
     }
 
+    private static final String IDENTIFIER = IndustryClassificationView.class.getName() + "-VIEW"; //$NON-NLS-1$
+
     private Item rootItem;
 
     private DropdownMenu dropdown;
@@ -175,17 +177,24 @@ public class IndustryClassificationView extends AbstractFinanceView
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new StackLayout());
 
-        IndustryClassificationTreeViewer treeViewer = new IndustryClassificationTreeViewer(container, SWT.NONE);
-        treeViewer.setInput(rootItem);
-        dropdown.add(Messages.LabelViewTable, PortfolioPlugin.IMG_VIEW_TABLE, treeViewer.getControl());
-
         IndustryClassificationTreeMapViewer mapViewer = new IndustryClassificationTreeMapViewer(container, SWT.NONE);
         mapViewer.setInput(rootItem);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, mapViewer.getControl());
 
-        dropdown.selectFirst();
+        IndustryClassificationTreeViewer treeViewer = new IndustryClassificationTreeViewer(container, SWT.NONE);
+        treeViewer.setInput(rootItem);
+        dropdown.add(Messages.LabelViewTable, PortfolioPlugin.IMG_VIEW_TABLE, treeViewer.getControl());
+
+        dropdown.select(getClientEditor().getPreferenceStore().getInt(IDENTIFIER));
 
         return container;
+    }
+
+    @Override
+    public void dispose()
+    {
+        getClientEditor().getPreferenceStore().setValue(IDENTIFIER, dropdown.getSelectedIndex());
+        super.dispose();
     }
 
     private Item calculateRootItem()
@@ -348,9 +357,15 @@ public class IndustryClassificationView extends AbstractFinanceView
             });
         }
 
-        public void selectFirst()
+        public int getSelectedIndex()
         {
-            menu.getItem(1).notifyListeners(SWT.Selection, new Event());
+            return (Integer) dropdown.getData();
+        }
+
+        public void select(int index)
+        {
+            int selected = index >= 0 && index < menu.getItemCount() ? index : 0;
+            menu.getItem(selected).notifyListeners(SWT.Selection, new Event());
         }
 
         public void add(String item, String imageKey, final Control viewer)
@@ -358,6 +373,7 @@ public class IndustryClassificationView extends AbstractFinanceView
             MenuItem menuItem = new MenuItem(menu, SWT.NONE);
             menuItem.setText(item);
             menuItem.setImage(PortfolioPlugin.image(imageKey));
+            menuItem.setData(Integer.valueOf(menu.getItemCount() - 1));
             menuItem.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent event)
@@ -365,6 +381,7 @@ public class IndustryClassificationView extends AbstractFinanceView
                     MenuItem selected = (MenuItem) event.widget;
                     dropdown.setImage(selected.getImage());
                     dropdown.setToolTipText(selected.getText());
+                    dropdown.setData(selected.getData());
 
                     toolBar.getParent().layout();
 
