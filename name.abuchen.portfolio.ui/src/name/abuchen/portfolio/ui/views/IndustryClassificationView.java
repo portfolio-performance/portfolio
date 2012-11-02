@@ -19,6 +19,7 @@ import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.swt.SWT;
@@ -176,11 +177,11 @@ public class IndustryClassificationView extends AbstractFinanceView
 
         IndustryClassificationTreeViewer treeViewer = new IndustryClassificationTreeViewer(container, SWT.NONE);
         treeViewer.setInput(rootItem);
-        dropdown.add("Tree", treeViewer.getControl());
+        dropdown.add(Messages.LabelViewTable, PortfolioPlugin.IMG_VIEW_TABLE, treeViewer.getControl());
 
         IndustryClassificationTreeMapViewer mapViewer = new IndustryClassificationTreeMapViewer(container, SWT.NONE);
         mapViewer.setInput(rootItem);
-        dropdown.add("Tree Map", mapViewer.getControl());
+        dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, mapViewer.getControl());
 
         dropdown.selectFirst();
 
@@ -352,16 +353,18 @@ public class IndustryClassificationView extends AbstractFinanceView
             menu.getItem(1).notifyListeners(SWT.Selection, new Event());
         }
 
-        public void add(String item, final Control viewer)
+        public void add(String item, String imageKey, final Control viewer)
         {
             MenuItem menuItem = new MenuItem(menu, SWT.NONE);
             menuItem.setText(item);
+            menuItem.setImage(PortfolioPlugin.image(imageKey));
             menuItem.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent event)
                 {
                     MenuItem selected = (MenuItem) event.widget;
-                    dropdown.setText(selected.getText());
+                    dropdown.setImage(selected.getImage());
+                    dropdown.setToolTipText(selected.getText());
 
                     toolBar.getParent().layout();
 
