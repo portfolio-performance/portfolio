@@ -8,6 +8,7 @@ import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
@@ -21,6 +22,7 @@ import de.engehausen.treemap.IColorProvider;
 import de.engehausen.treemap.ILabelProvider;
 import de.engehausen.treemap.IRectangle;
 import de.engehausen.treemap.IRectangleRenderer;
+import de.engehausen.treemap.ISelectionChangeListener;
 import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
@@ -28,14 +30,17 @@ import de.engehausen.treemap.swt.TreeMap;
 
 class IndustryClassificationTreeMapViewer
 {
-    private Composite container;
+    private SashForm sash;
 
     private TreeMapLegend legend;
     private TreeMap<Item> treeMap;
 
     public IndustryClassificationTreeMapViewer(Composite parent, int style)
     {
-        container = new Composite(parent, style);
+        sash = new SashForm(parent, SWT.HORIZONTAL);
+        sash.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+        Composite container = new Composite(sash, style);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
         treeMap = new TreeMap<Item>(container);
@@ -60,9 +65,27 @@ class IndustryClassificationTreeMapViewer
 
         legend = new TreeMapLegend(container, treeMap);
 
+        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE,
+                        SecurityDetailsViewer.Facet.values());
+        treeMap.addSelectionChangeListener(new ISelectionChangeListener<Item>()
+        {
+            @Override
+            public void selectionChanged(ITreeModel<IRectangle<Item>> model, IRectangle<Item> rectangle, String label)
+            {
+                Item node = rectangle.getNode();
+                details.setInput(node.isSecurity() ? node.getSecurity() : null);
+            }
+        });
+
+        // layout tree map + legend
         GridLayoutFactory.fillDefaults().numColumns(1).margins(10, 10).applyTo(container);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(treeMap);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(legend);
+
+        // layout sash
+        details.getControl().pack();
+        int width = details.getControl().getBounds().width;
+        sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
     }
 
     public void setInput(Item rootItem)
@@ -77,7 +100,7 @@ class IndustryClassificationTreeMapViewer
 
     public Control getControl()
     {
-        return container;
+        return sash;
     }
 
     private static class Model implements IWeightedTreeModel<Item>

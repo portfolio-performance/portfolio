@@ -36,6 +36,7 @@ class SecurityDetailsViewer
 
     public enum Facet
     {
+        MASTER_DATA(MasterDataFacet.class), //
         LATEST_QUOTE(LatestQuoteFacet.class), //
         INDUSTRY_CLASSIFICATION(IndustryClassificationFacet.class);
 
@@ -87,6 +88,70 @@ class SecurityDetailsViewer
             value.setLayoutData(data);
         }
 
+    }
+
+    private static class MasterDataFacet extends SecurityFacet
+    {
+        private Label valueName;
+        private Label valueISIN;
+        private Label valueTickerSymbol;
+
+        public MasterDataFacet(Font boldFont, Color color)
+        {
+            super(boldFont, color);
+        }
+
+        @Override
+        Control createViewControl(Composite parent)
+        {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setBackground(parent.getBackground());
+
+            Label heading = createHeading(composite, Messages.ClientEditorLabelClientMasterData);
+
+            valueName = new Label(composite, SWT.NONE);
+            valueISIN = new Label(composite, SWT.NONE);
+            valueTickerSymbol = new Label(composite, SWT.NONE);
+
+            // layout
+
+            FormLayout layout = new FormLayout();
+            layout.marginLeft = 5;
+            layout.marginRight = 5;
+            composite.setLayout(layout);
+
+            FormData data = new FormData();
+            data.top = new FormAttachment(0, 5);
+            heading.setLayoutData(data);
+
+            data = new FormData();
+            data.top = new FormAttachment(heading, 5);
+            data.left = new FormAttachment(0);
+            data.right = new FormAttachment(100);
+            valueName.setLayoutData(data);
+
+            below(valueName, valueISIN);
+            below(valueISIN, valueTickerSymbol);
+
+            return composite;
+        }
+
+        @Override
+        void setInput(Security security)
+        {
+            if (security == null || security.getLatest() == null)
+            {
+                valueName.setText(EMPTY_LABEL);
+                valueISIN.setText(EMPTY_LABEL);
+                valueTickerSymbol.setText(EMPTY_LABEL);
+            }
+            else
+            {
+                valueName.setText(security.getName());
+                valueISIN.setText(security.getIsin());
+                valueTickerSymbol.setText(security.getTickerSymbol());
+            }
+        }
     }
 
     private static class LatestQuoteFacet extends SecurityFacet
