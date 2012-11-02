@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.views.IndustryClassificationView.Item;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -68,6 +69,7 @@ class IndustryClassificationTreeViewer
                     return null;
             }
         });
+        ColumnViewerSorter.create(Item.class, "label").attachTo(viewer, column); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnActualPercent);
@@ -82,6 +84,7 @@ class IndustryClassificationTreeViewer
                 return String.format("%,10.1f", percentage * 100d); //$NON-NLS-1$
             }
         });
+        ColumnViewerSorter.create(Item.class, "percentage").attachTo(viewer, column, true); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnActualValue);
@@ -96,6 +99,7 @@ class IndustryClassificationTreeViewer
                 return Values.Amount.format(valuation);
             }
         });
+        ColumnViewerSorter.create(Item.class, "valuation").attachTo(viewer, column); //$NON-NLS-1$
 
         viewer.getTree().setHeaderVisible(true);
         viewer.getTree().setLinesVisible(true);

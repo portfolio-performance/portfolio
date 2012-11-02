@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 public class IndustryClassificationView extends AbstractFinanceView
 {
-    /* package */static class Item
+    public static class Item
     {
         private Item parent;
         private List<Item> children = new ArrayList<Item>();
@@ -136,8 +136,7 @@ public class IndustryClassificationView extends AbstractFinanceView
             return path;
         }
 
-        @Override
-        public String toString()
+        public String getLabel()
         {
             if (isCategory())
                 return category.getLabel();
@@ -147,6 +146,12 @@ public class IndustryClassificationView extends AbstractFinanceView
                 return account.getName();
             else
                 return super.toString();
+        }
+
+        @Override
+        public String toString()
+        {
+            return getLabel();
         }
     }
 
