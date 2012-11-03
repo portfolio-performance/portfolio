@@ -12,9 +12,12 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.PieChart;
+import name.abuchen.portfolio.ui.util.TreeMapItemCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewDropdownMenu;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -27,6 +30,8 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
 
     private ViewDropdownMenu dropdown;
 
+    private TreeMapItem root;
+
     @Override
     protected String getTitle()
     {
@@ -36,8 +41,20 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        super.addButtons(toolBar);
         dropdown = new ViewDropdownMenu(toolBar);
+
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                new TreeMapItemCSVExporter(toolBar, Messages.LabelAssetClasses, root) //
+                                .export(Messages.LabelStatementOfAssetsClasses + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     @Override
@@ -75,14 +92,14 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
 
     private void createTreeMap(Composite parent, ClientSnapshot snapshot, List<AssetCategory> categories)
     {
-        TreeMapItem rootItem = new TreeMapItem();
+        root = new TreeMapItem();
         for (AssetCategory category : categories)
         {
             if (category.getAssetClass() == null)
                 continue;
 
-            TreeMapItem categoryItem = new TreeMapItem(rootItem, category);
-            rootItem.getChildren().add(categoryItem);
+            TreeMapItem categoryItem = new TreeMapItem(root, category);
+            root.getChildren().add(categoryItem);
 
             for (AssetPosition position : category.getPositions())
             {
@@ -91,18 +108,18 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
             }
         }
 
-        rootItem.pruneEmpty();
-        rootItem.calculatePercentages(snapshot.getAssets());
-        rootItem.sortBySize();
+        root.pruneEmpty();
+        root.calculatePercentages(snapshot.getAssets());
+        root.sortBySize();
 
         List<Colors> colors = new ArrayList<Colors>();
-        for (TreeMapItem child : rootItem.getChildren())
+        for (TreeMapItem child : root.getChildren())
             colors.add(Colors.valueOf(child.getAssetCategory().getAssetClass().name()));
 
         ColorWheel colorWheel = new ColorWheel(parent, colors);
 
         TreeMapViewer viewer = new TreeMapViewer(parent, SWT.NONE);
-        viewer.setInput(rootItem, colorWheel);
+        viewer.setInput(root, colorWheel);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, viewer.getControl());
     }
 
