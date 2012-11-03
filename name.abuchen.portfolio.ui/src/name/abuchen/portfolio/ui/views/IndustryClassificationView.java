@@ -14,9 +14,12 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewDropdownMenu;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -27,9 +30,8 @@ public class IndustryClassificationView extends AbstractFinanceView
 {
     private static final String IDENTIFIER = IndustryClassificationView.class.getName() + "-VIEW"; //$NON-NLS-1$
 
-    private TreeMapItem rootItem;
-
     private ViewDropdownMenu dropdown;
+    private IndustryClassificationTreeViewer treeViewer;
 
     @Override
     protected String getTitle()
@@ -40,24 +42,36 @@ public class IndustryClassificationView extends AbstractFinanceView
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        super.addButtons(toolBar);
         dropdown = new ViewDropdownMenu(toolBar);
+
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                new TreeViewerCSVExporter(treeViewer.getTreeViewer()) //
+                                .export(Messages.ShortLabelIndustries + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     @Override
     protected Control createBody(Composite parent)
     {
-        rootItem = calculateRootItem();
+        TreeMapItem root = calculateRootItem();
 
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new StackLayout());
 
         TreeMapViewer mapViewer = new TreeMapViewer(container, SWT.NONE);
-        mapViewer.setInput(rootItem);
+        mapViewer.setInput(root);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, mapViewer.getControl());
 
-        IndustryClassificationTreeViewer treeViewer = new IndustryClassificationTreeViewer(container, SWT.NONE);
-        treeViewer.setInput(rootItem);
+        treeViewer = new IndustryClassificationTreeViewer(container, SWT.NONE);
+        treeViewer.setInput(root);
         dropdown.add(Messages.LabelViewTable, PortfolioPlugin.IMG_VIEW_TABLE, treeViewer.getControl());
 
         dropdown.select(getClientEditor().getPreferenceStore().getInt(IDENTIFIER));

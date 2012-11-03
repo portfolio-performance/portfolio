@@ -105,6 +105,11 @@ class IndustryClassificationTreeViewer
     {
         return container;
     }
+    
+    public TreeViewer getTreeViewer()
+    {
+        return viewer;
+    }
 
     private static class ItemContentProvider implements ITreeContentProvider
     {
