@@ -7,15 +7,14 @@ import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Control;
 
 /* package */class TreeMapColorProvider
 {
     private ColorWheel colorWheel;
 
-    public TreeMapColorProvider(Control owner, int size)
+    public TreeMapColorProvider(ColorWheel colorWheel)
     {
-        colorWheel = new ColorWheel(owner, size);
+        this.colorWheel = colorWheel;
     }
 
     public ColorWheel.Segment getSegment(TreeMapItem item)

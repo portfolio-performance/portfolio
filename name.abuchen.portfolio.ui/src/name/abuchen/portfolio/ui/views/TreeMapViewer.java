@@ -81,8 +81,13 @@ class TreeMapViewer
 
     public void setInput(TreeMapItem rootItem)
     {
-        TreeMapColorProvider colorProvider = new TreeMapColorProvider(treeMap, Math.max(10, rootItem.getChildren()
-                        .size()));
+        ColorWheel colorWheel = new ColorWheel(treeMap, Math.max(10, rootItem.getChildren().size()));
+        setInput(rootItem, colorWheel);
+    }
+
+    public void setInput(TreeMapItem rootItem, ColorWheel colorWheel)
+    {
+        TreeMapColorProvider colorProvider = new TreeMapColorProvider(colorWheel);
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(colorProvider));
         treeMap.setTreeModel(new Model(rootItem));
         legend.setColorProvider(colorProvider);

@@ -95,8 +95,14 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         rootItem.calculatePercentages(snapshot.getAssets());
         rootItem.sortBySize();
 
+        List<Colors> colors = new ArrayList<Colors>();
+        for (TreeMapItem child : rootItem.getChildren())
+            colors.add(Colors.valueOf(child.getAssetCategory().getAssetClass().name()));
+
+        ColorWheel colorWheel = new ColorWheel(parent, colors);
+
         TreeMapViewer viewer = new TreeMapViewer(parent, SWT.NONE);
-        viewer.setInput(rootItem);
+        viewer.setInput(rootItem, colorWheel);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, viewer.getControl());
     }
 

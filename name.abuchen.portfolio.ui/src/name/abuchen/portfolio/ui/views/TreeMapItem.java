@@ -100,6 +100,16 @@ public class TreeMapItem
     {
         return account;
     }
+    
+    public boolean isAssetCategory()
+    {
+        return assetCategory != null;
+    }
+
+    public AssetCategory getAssetCategory()
+    {
+        return assetCategory;
+    }
 
     public void setValuation(long valuation)
     {
@@ -202,7 +212,7 @@ public class TreeMapItem
             return security.getName();
         else if (isAccount())
             return account.getName();
-        else if (assetCategory != null)
+        else if (isAssetCategory())
             return assetCategory.getAssetClass().name();
         else if (assetPosition != null)
             return assetPosition.getDescription();
