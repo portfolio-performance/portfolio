@@ -119,7 +119,14 @@ public class IndustryClassificationPage extends AbstractWizardPage
         @Override
         public Object[] getElements(Object inputElement)
         {
-            return root.getChildren().toArray();
+            Object[] elements = new Object[root.getChildren().size() + 1];
+            elements[0] = new IndustryClassification.Category(null, root, Messages.LabelNoClassification);
+
+            int index = 1;
+            for (Object object : root.getChildren())
+                elements[index++] = object;
+
+            return elements;
         }
 
         @Override

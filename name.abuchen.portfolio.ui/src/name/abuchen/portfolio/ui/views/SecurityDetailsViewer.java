@@ -359,11 +359,7 @@ class SecurityDetailsViewer
 
         private String escape(String label)
         {
-            int p = label.indexOf('&');
-            if (p < 0)
-                return label;
-
-            return label.substring(0, p) + "&&" + escape(label.substring(p + 1)); //$NON-NLS-1$
+            return label.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 

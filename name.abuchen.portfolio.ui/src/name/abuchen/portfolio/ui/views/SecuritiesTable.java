@@ -350,8 +350,11 @@ public class SecuritiesTable
                     public void run()
                     {
                         markDirty();
-                        securities.refresh();
-                        securities.setSelection(securities.getSelection());
+                        if (!securities.getTable().isDisposed())
+                        {
+                            securities.refresh();
+                            securities.setSelection(securities.getSelection());
+                        }
                     }
                 });
             }

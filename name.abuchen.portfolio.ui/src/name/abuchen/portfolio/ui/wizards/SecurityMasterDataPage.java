@@ -215,7 +215,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         // layout: label + button
         GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(industryPicker);
         int height = classication.getFont().getFontData()[0].getHeight();
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).hint(SWT.DEFAULT, height * 4)
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).hint(100, height * 4)
                         .applyTo(classication);
         GridDataFactory.fillDefaults().grab(false, false).align(SWT.FILL, SWT.BEGINNING).applyTo(button);
     }
@@ -239,7 +239,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
                     break;
             }
 
-            classication.setText(buf.toString());
+            classication.setText(buf.toString().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
         }
         else
         {
