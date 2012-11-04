@@ -77,6 +77,7 @@ import de.engehausen.treemap.swt.TreeMap;
         {
             Label l = new Label(this, SWT.NONE);
             l.setText(">>"); //$NON-NLS-1$
+            l.setBackground(this.getBackground());
         }
 
         for (TreeMapItem child : rootItem.getChildren())

@@ -105,7 +105,6 @@ class SecurityDetailsViewer
         Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
-            composite.setBackground(parent.getBackground());
 
             Label heading = createHeading(composite, Messages.ClientEditorLabelClientMasterData);
 
@@ -172,7 +171,6 @@ class SecurityDetailsViewer
         public Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
-            composite.setBackground(parent.getBackground());
 
             Label headingQuotes = createHeading(composite, Messages.ColumnLatestPrice);
 
@@ -299,7 +297,6 @@ class SecurityDetailsViewer
         Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
-            composite.setBackground(parent.getBackground());
 
             Label headingClassification = createHeading(composite, taxonomy.getRootCategory().getLabel());
 
@@ -376,6 +373,7 @@ class SecurityDetailsViewer
     {
         container = new Composite(parent, style);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // fonts
 

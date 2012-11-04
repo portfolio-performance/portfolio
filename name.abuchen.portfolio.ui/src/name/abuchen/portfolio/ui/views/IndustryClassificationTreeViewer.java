@@ -30,7 +30,7 @@ class IndustryClassificationTreeViewer
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
 
-        viewer = new TreeViewer(container);
+        viewer = new TreeViewer(container, SWT.FULL_SELECTION);
 
         TreeViewerColumn column = new TreeViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ShortLabelIndustry);
