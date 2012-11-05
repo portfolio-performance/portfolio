@@ -8,7 +8,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    private int version = 5;
+    private int version = 6;
 
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists = new ArrayList<Watchlist>();
@@ -17,6 +17,8 @@ public class Client
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
     private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
+
+    private String industryTaxonomyId;
 
     public int getVersion()
     {
@@ -101,5 +103,15 @@ public class Client
     public Category getRootCategory()
     {
         return this.rootCategory;
+    }
+
+    public void setIndustryTaxonomy(IndustryClassification taxonomy)
+    {
+        this.industryTaxonomyId = taxonomy != null ? taxonomy.getIdentifier() : null;
+    }
+
+    public IndustryClassification getIndustryTaxonomy()
+    {
+        return IndustryClassification.lookup(industryTaxonomyId);
     }
 }

@@ -108,16 +108,19 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     private BindingHelper bindings;
     private Model model;
 
-    private final IndustryClassification taxonomy = new IndustryClassification();
+    private IndustryClassification taxonomy;
     private Label classication;
 
     protected SecurityMasterDataPage(Client client, Security security)
     {
         super(PAGE_NAME);
+        
+        this.taxonomy = client.getIndustryTaxonomy();
+        this.model = new Model(client, security);
+        
         setTitle(Messages.EditWizardMasterDataTitle);
         setDescription(Messages.EditWizardMasterDataDescription);
 
-        this.model = new Model(client, security);
     }
 
     @Override

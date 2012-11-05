@@ -42,7 +42,7 @@ public class EditSecurityWizard extends Wizard
         searchPage = new SearchSecurityWizardPage(client, editable);
         addPage(searchPage);
         
-        addPage(new IndustryClassificationPage(editable));
+        addPage(new IndustryClassificationPage(client, editable));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }

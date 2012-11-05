@@ -66,7 +66,7 @@ public class IndustryClassificationView extends AbstractFinanceView
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new StackLayout());
 
-        TreeMapViewer mapViewer = new TreeMapViewer(container, SWT.NONE);
+        TreeMapViewer mapViewer = new TreeMapViewer(container, SWT.NONE, getClient());
         mapViewer.setInput(root);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, mapViewer.getControl());
 
@@ -88,7 +88,7 @@ public class IndustryClassificationView extends AbstractFinanceView
 
     private TreeMapItem calculateRootItem()
     {
-        IndustryClassification taxonomy = new IndustryClassification();
+        IndustryClassification taxonomy = getClient().getIndustryTaxonomy();
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
         PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
 

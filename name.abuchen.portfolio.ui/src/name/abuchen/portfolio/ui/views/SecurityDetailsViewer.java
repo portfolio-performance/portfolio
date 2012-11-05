@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
@@ -65,7 +66,7 @@ class SecurityDetailsViewer
             this.color = color;
         }
 
-        abstract Control createViewControl(Composite parent);
+        abstract Control createViewControl(Composite parent, Client client);
 
         abstract void setInput(Security security);
 
@@ -102,7 +103,7 @@ class SecurityDetailsViewer
         }
 
         @Override
-        Control createViewControl(Composite parent)
+        Control createViewControl(Composite parent, Client client)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -168,7 +169,7 @@ class SecurityDetailsViewer
         }
 
         @Override
-        public Control createViewControl(Composite parent)
+        public Control createViewControl(Composite parent, Client client)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -281,7 +282,7 @@ class SecurityDetailsViewer
 
     private static class IndustryClassificationFacet extends SecurityFacet
     {
-        private IndustryClassification taxonomy = new IndustryClassification();
+        private IndustryClassification taxonomy;
 
         private Label valueSector;
         private Label valueIndustryGroup;
@@ -294,8 +295,10 @@ class SecurityDetailsViewer
         }
 
         @Override
-        Control createViewControl(Composite parent)
+        Control createViewControl(Composite parent, Client client)
         {
+            taxonomy = client.getIndustryTaxonomy();
+
             Composite composite = new Composite(parent, SWT.NONE);
 
             Label headingClassification = createHeading(composite, taxonomy.getRootCategory().getLabel());
@@ -364,12 +367,12 @@ class SecurityDetailsViewer
 
     private List<SecurityFacet> children = new ArrayList<SecurityFacet>();
 
-    public SecurityDetailsViewer(Composite parent, int style)
+    public SecurityDetailsViewer(Composite parent, int style, Client client)
     {
-        this(parent, style, Facet.LATEST_QUOTE, Facet.INDUSTRY_CLASSIFICATION);
+        this(parent, style, client, Facet.LATEST_QUOTE, Facet.INDUSTRY_CLASSIFICATION);
     }
 
-    public SecurityDetailsViewer(Composite parent, int style, Facet... facets)
+    public SecurityDetailsViewer(Composite parent, int style, Client client, Facet... facets)
     {
         container = new Composite(parent, style);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -390,7 +393,7 @@ class SecurityDetailsViewer
             try
             {
                 SecurityFacet child = facet.create(boldFont, color);
-                Control control = child.createViewControl(container);
+                Control control = child.createViewControl(container, client);
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(control);
                 children.add(child);
             }

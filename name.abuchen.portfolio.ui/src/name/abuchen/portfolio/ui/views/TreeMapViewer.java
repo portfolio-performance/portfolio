@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.Iterator;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Values;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -34,7 +35,7 @@ class TreeMapViewer
     private TreeMapLegend legend;
     private TreeMap<TreeMapItem> treeMap;
 
-    public TreeMapViewer(Composite parent, int style)
+    public TreeMapViewer(Composite parent, int style, Client client)
     {
         sash = new SashForm(parent, SWT.HORIZONTAL);
         sash.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -55,7 +56,7 @@ class TreeMapViewer
 
         legend = new TreeMapLegend(container, treeMap);
 
-        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE,
+        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, client,
                         SecurityDetailsViewer.Facet.values());
         treeMap.addSelectionChangeListener(new ISelectionChangeListener<TreeMapItem>()
         {

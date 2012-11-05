@@ -270,7 +270,7 @@ public class SecuritiesTable
         column.setOptions(menuLabels, columnLabels, 1, 2, 3, 4, 100);
         column.setLabelProvider(new OptionLabelProvider()
         {
-            private IndustryClassification taxonomy = new IndustryClassification();
+            private IndustryClassification taxonomy = getClient().getIndustryTaxonomy();
 
             @Override
             public String getText(Object e, Integer option)

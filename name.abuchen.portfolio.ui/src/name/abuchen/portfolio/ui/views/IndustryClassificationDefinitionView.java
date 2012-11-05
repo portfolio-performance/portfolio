@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -29,7 +30,15 @@ import org.eclipse.ui.PlatformUI;
 
 public class IndustryClassificationDefinitionView extends AbstractFinanceView
 {
-    private IndustryClassification industryClassification = new IndustryClassification();
+    private IndustryClassification industryClassification;
+
+    @Override
+    public void init(ClientEditor clientEditor, Object parameter)
+    {
+        super.init(clientEditor, parameter);
+
+        industryClassification = clientEditor.getClient().getIndustryTaxonomy();
+    }
 
     @Override
     protected String getTitle()

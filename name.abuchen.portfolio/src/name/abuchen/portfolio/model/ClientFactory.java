@@ -56,7 +56,13 @@ public class ClientFactory
             client.setVersion(5);
         }
 
-        if (client.getVersion() != 5)
+        if (client.getVersion() == 5)
+        {
+            // do nothing --> save industry taxonomy in client
+            client.setVersion(6);
+        }
+
+        if (client.getVersion() != 6)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 

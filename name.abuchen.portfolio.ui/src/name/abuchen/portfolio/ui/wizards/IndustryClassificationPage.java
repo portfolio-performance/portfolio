@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.model.Security;
@@ -27,7 +28,7 @@ public class IndustryClassificationPage extends AbstractWizardPage
 {
     public static final String PAGE_NAME = "industryClassification"; //$NON-NLS-1$
 
-    private final IndustryClassification taxonomy = new IndustryClassification();
+    private IndustryClassification taxonomy;
     private Security security;
     private Category classification;
 
@@ -35,13 +36,15 @@ public class IndustryClassificationPage extends AbstractWizardPage
 
     private PatternFilter filterPattern;
 
-    protected IndustryClassificationPage(Security security)
+    protected IndustryClassificationPage(Client client, Security security)
     {
         super(PAGE_NAME);
-        setTitle(taxonomy.getRootCategory().getLabel());
-        setDescription(Messages.EditWizardIndustryClassificationDescription);
 
         this.security = security;
+        this.taxonomy = client.getIndustryTaxonomy();
+        
+        setTitle(taxonomy.getRootCategory().getLabel());
+        setDescription(Messages.EditWizardIndustryClassificationDescription);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class IndustryClassificationPage extends AbstractWizardPage
         tree = t.getViewer();
         tree.setContentProvider(new ClassificationContentProvider());
         tree.setLabelProvider(new ClassificationLabelProvider());
-        tree.setInput(new IndustryClassification().getRootCategory());
+        tree.setInput(taxonomy.getRootCategory());
 
         tree.addSelectionChangedListener(new ISelectionChangedListener()
         {

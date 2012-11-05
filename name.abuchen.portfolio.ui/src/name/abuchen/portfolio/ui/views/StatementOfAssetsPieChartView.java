@@ -118,7 +118,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
 
         ColorWheel colorWheel = new ColorWheel(parent, colors);
 
-        TreeMapViewer viewer = new TreeMapViewer(parent, SWT.NONE);
+        TreeMapViewer viewer = new TreeMapViewer(parent, SWT.NONE, getClient());
         viewer.setInput(root, colorWheel);
         dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, viewer.getControl());
     }

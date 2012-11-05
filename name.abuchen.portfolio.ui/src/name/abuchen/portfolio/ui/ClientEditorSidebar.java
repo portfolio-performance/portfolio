@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui;
 
-import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
@@ -219,8 +218,8 @@ import org.eclipse.swt.widgets.Control;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
-        new Entry(section, new ActivateViewAction(new IndustryClassification().getRootCategory().getLabel(),
-                        "IndustryClassificationDefinition")); //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(editor.getClient().getIndustryTaxonomy().getRootCategory()
+                        .getLabel(), "IndustryClassificationDefinition")); //$NON-NLS-1$
     }
 
 }

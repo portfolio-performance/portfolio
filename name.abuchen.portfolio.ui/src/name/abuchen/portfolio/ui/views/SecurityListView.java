@@ -308,7 +308,7 @@ public class SecurityListView extends AbstractListView
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
-        latest = new SecurityDetailsViewer(sash, SWT.BORDER);
+        latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
         latest.getControl().pack();
         int width = latest.getControl().getBounds().width;
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
