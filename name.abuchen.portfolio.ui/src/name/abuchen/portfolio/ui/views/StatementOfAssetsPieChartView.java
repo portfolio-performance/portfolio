@@ -87,7 +87,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         pieChart.setSlices(slices);
         pieChart.redraw();
 
-        dropdown.add(Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART, pieChart);
+        dropdown.add(pieChart, Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART);
     }
 
     private void createTreeMap(Composite parent, ClientSnapshot snapshot, List<AssetCategory> categories)
@@ -120,7 +120,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
 
         TreeMapViewer viewer = new TreeMapViewer(parent, SWT.NONE, getClient());
         viewer.setInput(root, colorWheel);
-        dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, viewer.getControl());
+        dropdown.add(viewer.getControl(), Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP);
     }
 
     @Override

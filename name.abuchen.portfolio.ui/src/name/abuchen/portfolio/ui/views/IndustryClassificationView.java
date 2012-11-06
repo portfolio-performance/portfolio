@@ -68,11 +68,11 @@ public class IndustryClassificationView extends AbstractFinanceView
 
         TreeMapViewer mapViewer = new TreeMapViewer(container, SWT.NONE, getClient());
         mapViewer.setInput(root);
-        dropdown.add(Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, mapViewer.getControl());
+        dropdown.add(mapViewer.getControl(), Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP);
 
         treeViewer = new IndustryClassificationTreeViewer(container, SWT.NONE);
         treeViewer.setInput(root);
-        dropdown.add(Messages.LabelViewTable, PortfolioPlugin.IMG_VIEW_TABLE, treeViewer.getControl());
+        dropdown.add(treeViewer.getControl(), Messages.LabelViewTable, PortfolioPlugin.IMG_VIEW_TABLE);
 
         dropdown.select(getClientEditor().getPreferenceStore().getInt(IDENTIFIER));
 
