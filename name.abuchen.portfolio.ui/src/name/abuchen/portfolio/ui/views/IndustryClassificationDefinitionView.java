@@ -8,7 +8,7 @@ import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
-import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ToolBarDropdownMenu;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -25,25 +25,55 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 public class IndustryClassificationDefinitionView extends AbstractFinanceView
 {
-    private IndustryClassification industryClassification;
+    private TableViewer viewer;
+    private ToolBarDropdownMenu<IndustryClassification> menu;
+
+    private IndustryClassification taxonomy;
 
     @Override
     public void init(ClientEditor clientEditor, Object parameter)
     {
         super.init(clientEditor, parameter);
 
-        industryClassification = clientEditor.getClient().getIndustryTaxonomy();
+        taxonomy = clientEditor.getClient().getIndustryTaxonomy();
     }
 
     @Override
     protected String getTitle()
     {
-        return industryClassification.getRootCategory().getLabel();
+        return taxonomy.getRootCategory().getLabel();
+    }
+
+    @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        menu = new ToolBarDropdownMenu<IndustryClassification>(toolBar)
+        {
+            @Override
+            protected void itemSelected(IndustryClassification selection)
+            {
+                viewer.getTable().setRedraw(false);
+
+                try
+                {
+                    taxonomy = selection;
+                    for (TableColumn column : viewer.getTable().getColumns())
+                        column.dispose();
+                    createColumns(viewer, taxonomy);
+                    viewer.setInput(getLeafs(taxonomy.getRootCategory()));
+                }
+                finally
+                {
+                    viewer.getTable().setRedraw(true);
+                }
+            }
+        };
     }
 
     @Override
@@ -51,52 +81,55 @@ public class IndustryClassificationDefinitionView extends AbstractFinanceView
     {
         Composite composite = new Composite(parent, SWT.NONE);
 
-        TableViewer classification = new TableViewer(composite, SWT.FULL_SELECTION);
+        viewer = new TableViewer(composite, SWT.FULL_SELECTION);
 
-        TableColumn column = new TableColumn(classification.getTable(), SWT.None);
-        column.setText(Messages.LabelSector);
-        column.setWidth(220);
+        createColumns(viewer, taxonomy);
 
-        column = new TableColumn(classification.getTable(), SWT.None);
-        column.setText(Messages.LabelIndustryGroup);
-        column.setWidth(220);
+        viewer.getTable().setHeaderVisible(true);
+        viewer.getTable().setLinesVisible(true);
 
-        column = new TableColumn(classification.getTable(), SWT.None);
-        column.setText(Messages.LabelIndustry);
-        column.setWidth(220);
+        viewer.setLabelProvider(new IndustryLabelProvider());
+        viewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        column = new TableColumn(classification.getTable(), SWT.None);
-        column.setText(Messages.LabelSubIndustry);
-        column.setWidth(220);
-
-        classification.getTable().setHeaderVisible(true);
-        classification.getTable().setLinesVisible(true);
-
-        classification.setLabelProvider(new IndustryLabelProvider());
-        classification.setContentProvider(ArrayContentProvider.getInstance());
-
-        classification.setInput(getLeafs(industryClassification.getRootCategory()));
+        viewer.setInput(getLeafs(taxonomy.getRootCategory()));
 
         final Text description = new Text(composite, SWT.WRAP);
 
         // layout
         GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 1).margins(0, 0).applyTo(composite);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(classification.getControl());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(viewer.getControl());
         int height = description.getFont().getFontData()[0].getHeight() * 3 + 5;
         GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, height).applyTo(description);
 
         // selection event
-        classification.addSelectionChangedListener(new ISelectionChangedListener()
+        viewer.addSelectionChangedListener(new ISelectionChangedListener()
         {
             @Override
             public void selectionChanged(SelectionChangedEvent event)
             {
                 Category category = (Category) ((StructuredSelection) event.getSelection()).getFirstElement();
-                description.setText(category != null ? category.getDescription() : null);
+                description.setText(category != null && category.getDescription() != null ? category.getDescription()
+                                : ""); //$NON-NLS-1$
             }
         });
 
+        // add menu items
+        for (IndustryClassification t : IndustryClassification.list())
+            menu.add(t, t.getName(), null);
+
+        menu.select(taxonomy);
+
         return composite;
+    }
+
+    private void createColumns(TableViewer viewer, IndustryClassification taxonomy)
+    {
+        for (String label : taxonomy.getLabels())
+        {
+            TableColumn column = new TableColumn(viewer.getTable(), SWT.None);
+            column.setText(label);
+            column.setWidth(220);
+        }
     }
 
     private List<Category> getLeafs(Category root)
@@ -119,56 +152,36 @@ public class IndustryClassificationDefinitionView extends AbstractFinanceView
         return items;
     }
 
-    private static class IndustryLabelProvider extends LabelProvider implements ITableLabelProvider
+    private class IndustryLabelProvider extends LabelProvider implements ITableLabelProvider
     {
         @Override
         public String getColumnText(Object element, int columnIndex)
         {
-            Category subIndustry = (Category) element;
-            Category industry = getParent(subIndustry);
-            Category industryGroup = getParent(industry);
-            Category sector = getParent(industryGroup);
+            Category item = getCategory(element, columnIndex);
 
-            switch (columnIndex)
-            {
-                case 0:
-                    return sector != null ? sector.getLabel() : null;
-                case 1:
-                    return industryGroup != null ? industryGroup.getLabel() : null;
-                case 2:
-                    return industry != null ? industry.getLabel() : null;
-                case 3:
-                    return subIndustry.getLabel();
-            }
-            return null;
+            return item != null ? item.getLabel() : null;
         }
 
         @Override
         public Image getColumnImage(Object element, int columnIndex)
         {
-            Category subIndustry = (Category) element;
-            Category industry = getParent(subIndustry);
-            Category industryGroup = getParent(industry);
-            Category sector = getParent(industryGroup);
+            Category item = getCategory(element, columnIndex);
 
-            if (columnIndex == 0 && sector == null)
-                return null;
-
-            if (columnIndex == 1 && industryGroup == null)
-                return null;
-
-            if (columnIndex == 2 && industry == null)
-                return null;
-
-            return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+            return item != null ? PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER)
+                            : null;
         }
 
-        private Category getParent(Category category)
+        private Category getCategory(Object element, int columnIndex)
         {
-            if (category == null)
-                return null;
-            Category parent = category.getParent();
-            return parent.getChildren().indexOf(category) == 0 ? parent : null;
+            int size = taxonomy.getLabels().size();
+
+            Category item = (Category) element;
+            for (int ii = 0; ii < size - columnIndex - 1 && item != null; ii++)
+            {
+                Category parent = item.getParent();
+                item = parent.getChildren().indexOf(item) == 0 ? parent : null;
+            }
+            return item;
         }
     }
 }
