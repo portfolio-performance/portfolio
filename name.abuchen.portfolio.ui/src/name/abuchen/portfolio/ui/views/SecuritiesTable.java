@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -253,10 +254,22 @@ public class SecuritiesTable
 
     private void addIndustryClassificationColumns(ShowHideColumnHelper support)
     {
-        String commonLabels = "{0,choice,1#" + Messages.LabelSector + //$NON-NLS-1$
-                        "|2#" + Messages.LabelIndustryGroup + //$NON-NLS-1$
-                        "|3#" + Messages.LabelIndustry + //$NON-NLS-1$
-                        "|4#" + Messages.LabelSubIndustry; //$NON-NLS-1$
+        List<Integer> options = new ArrayList<Integer>();
+
+        StringBuilder commonLabels = new StringBuilder();
+        commonLabels.append("{0,choice,"); //$NON-NLS-1$
+
+        int index = 1;
+        for (String label : getClient().getIndustryTaxonomy().getLabels())
+        {
+            options.add(index);
+            if (index > 1)
+                commonLabels.append('|');
+            commonLabels.append(index).append('#').append(label);
+
+            index++;
+        }
+        options.add(100);
 
         String menuLabels = commonLabels + //
                         "|100#" + Messages.LabelFullClassification + //$NON-NLS-1$
@@ -267,7 +280,7 @@ public class SecuritiesTable
                         "}"; //$NON-NLS-1$
 
         Column column = new Column(Messages.ShortLabelIndustry, SWT.LEFT, 120);
-        column.setOptions(menuLabels, columnLabels, 1, 2, 3, 4, 100);
+        column.setOptions(menuLabels, columnLabels, options.toArray(new Integer[0]));
         column.setLabelProvider(new OptionLabelProvider()
         {
             private IndustryClassification taxonomy = getClient().getIndustryTaxonomy();

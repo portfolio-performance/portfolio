@@ -284,10 +284,7 @@ class SecurityDetailsViewer
     {
         private IndustryClassification taxonomy;
 
-        private Label valueSector;
-        private Label valueIndustryGroup;
-        private Label valueIndustry;
-        private Label valueSubIndustry;
+        private List<Label> labels = new ArrayList<Label>();
 
         public IndustryClassificationFacet(Font boldFont, Color color)
         {
@@ -300,34 +297,34 @@ class SecurityDetailsViewer
             taxonomy = client.getIndustryTaxonomy();
 
             Composite composite = new Composite(parent, SWT.NONE);
-
-            Label headingClassification = createHeading(composite, taxonomy.getRootCategory().getLabel());
-
-            valueSector = new Label(composite, SWT.NONE);
-            valueIndustryGroup = new Label(composite, SWT.NONE);
-            valueIndustry = new Label(composite, SWT.NONE);
-            valueSubIndustry = new Label(composite, SWT.NONE);
-
-            // layout
-
             FormLayout layout = new FormLayout();
             layout.marginLeft = 5;
             layout.marginRight = 5;
             composite.setLayout(layout);
 
+            Label heading = createHeading(composite, taxonomy.getRootCategory().getLabel());
             FormData data = new FormData();
             data.top = new FormAttachment(0, 5);
-            headingClassification.setLayoutData(data);
+            heading.setLayoutData(data);
 
-            data = new FormData();
-            data.top = new FormAttachment(headingClassification, 5);
-            data.left = new FormAttachment(0);
-            data.right = new FormAttachment(100);
-            valueSector.setLayoutData(data);
+            for (int ii = 0; ii < taxonomy.getLabels().size(); ii++)
+            {
+                Label label = new Label(composite, SWT.NONE);
+                labels.add(label);
 
-            below(valueSector, valueIndustryGroup);
-            below(valueIndustryGroup, valueIndustry);
-            below(valueIndustry, valueSubIndustry);
+                if (ii == 0)
+                {
+                    data = new FormData();
+                    data.top = new FormAttachment(heading, 5);
+                    data.left = new FormAttachment(0);
+                    data.right = new FormAttachment(100);
+                    label.setLayoutData(data);
+                }
+                else
+                {
+                    below(labels.get(ii - 1), label);
+                }
+            }
 
             return composite;
         }
@@ -337,10 +334,8 @@ class SecurityDetailsViewer
         {
             if (security == null || security.getLatest() == null)
             {
-                valueSector.setText(EMPTY_LABEL);
-                valueIndustryGroup.setText(EMPTY_LABEL);
-                valueIndustry.setText(EMPTY_LABEL);
-                valueSubIndustry.setText(EMPTY_LABEL);
+                for (Label l : labels)
+                    l.setText(EMPTY_LABEL);
             }
             else
             {
@@ -350,10 +345,8 @@ class SecurityDetailsViewer
                 List<IndustryClassification.Category> path = category != null ? category.getPath()
                                 : new ArrayList<IndustryClassification.Category>();
 
-                valueSector.setText(path.size() >= 2 ? escape(path.get(1).getLabel()) : EMPTY_LABEL);
-                valueIndustryGroup.setText(path.size() >= 3 ? escape(path.get(2).getLabel()) : EMPTY_LABEL);
-                valueIndustry.setText(path.size() >= 4 ? escape(path.get(3).getLabel()) : EMPTY_LABEL);
-                valueSubIndustry.setText(path.size() >= 5 ? escape(path.get(4).getLabel()) : EMPTY_LABEL);
+                for (int ii = 0; ii < labels.size(); ii++)
+                    labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getLabel()) : EMPTY_LABEL);
             }
         }
 
