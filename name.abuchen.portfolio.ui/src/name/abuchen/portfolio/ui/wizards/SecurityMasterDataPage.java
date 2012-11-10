@@ -206,7 +206,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                setPageComplete(false);
                 getContainer().showPage(getWizard().getPage(IndustryClassificationPage.PAGE_NAME));
             }
         });
