@@ -6,10 +6,15 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.IndustryClassification.Category;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ToolBarDropdownMenu;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -23,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -33,6 +39,7 @@ public class IndustryClassificationDefinitionView extends AbstractFinanceView
 {
     private TableViewer viewer;
     private ToolBarDropdownMenu<IndustryClassification> menu;
+    private Action actionUseTaxonomy;
 
     private IndustryClassification taxonomy;
 
@@ -67,6 +74,7 @@ public class IndustryClassificationDefinitionView extends AbstractFinanceView
                         column.dispose();
                     createColumns(viewer, taxonomy);
                     viewer.setInput(getLeafs(taxonomy.getRootCategory()));
+                    actionUseTaxonomy.setEnabled(taxonomy != getClient().getIndustryTaxonomy());
                 }
                 finally
                 {
@@ -74,6 +82,38 @@ public class IndustryClassificationDefinitionView extends AbstractFinanceView
                 }
             }
         };
+
+        actionUseTaxonomy = new Action(Messages.ChangeTaxonomyAction)
+        {
+            @Override
+            public void run()
+            {
+                // confirm change if securities are classified
+                boolean hasClassification = false;
+                for (Security s : getClient().getSecurities())
+                {
+                    hasClassification = s.getIndustryClassification() != null;
+                    if (hasClassification)
+                        break;
+                }
+
+                if (hasClassification)
+                {
+                    boolean confirmed = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
+                                    Messages.ChangeTaxonomyTitle, Messages.ChangeTaxonomyRequestConfirmation);
+
+                    if (!confirmed)
+                        return;
+
+                }
+
+                getClient().setIndustryTaxonomy(taxonomy);
+                actionUseTaxonomy.setEnabled(taxonomy != getClient().getIndustryTaxonomy());
+            }
+        };
+        actionUseTaxonomy.setEnabled(taxonomy != getClient().getIndustryTaxonomy());
+
+        new ActionContributionItem(actionUseTaxonomy).fill(toolBar, -1);
     }
 
     @Override

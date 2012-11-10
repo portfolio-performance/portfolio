@@ -17,6 +17,9 @@ public class Messages extends NLS
     public static String AssetAllocationMenuRemove;
     public static String CellEditor_Error;
     public static String CellEditor_NotANumber;
+    public static String ChangeTaxonomyAction;
+    public static String ChangeTaxonomyRequestConfirmation;
+    public static String ChangeTaxonomyTitle;
     public static String ClientEditorLabelChart;
     public static String ClientEditorLabelClientMasterData;
     public static String ClientEditorLabelGeneralData;
