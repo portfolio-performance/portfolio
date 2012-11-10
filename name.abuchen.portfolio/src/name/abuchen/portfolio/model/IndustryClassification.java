@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,13 +105,16 @@ public class IndustryClassification
         }
     }
 
+    private static final String GICS = "gics"; //$NON-NLS-1$
+    private static final String SIMPLE2LEVEL = "simple2level"; //$NON-NLS-1$
+
     private static final Map<String, IndustryClassification> CLASSIFICATIONS;
 
     static
     {
         CLASSIFICATIONS = new HashMap<String, IndustryClassification>();
 
-        for (String id : new String[] { "industry-classification" })
+        for (String id : new String[] { GICS, SIMPLE2LEVEL })
         {
             IndustryClassification c = new IndustryClassification(id);
             c.load();
@@ -121,12 +125,20 @@ public class IndustryClassification
     public static IndustryClassification lookup(String identifier)
     {
         if (identifier == null)
-            return CLASSIFICATIONS.get("industry-classification");
+            return CLASSIFICATIONS.get(GICS);
 
         return CLASSIFICATIONS.get(identifier);
     }
 
+    public static List<IndustryClassification> list()
+    {
+        return new ArrayList<IndustryClassification>(CLASSIFICATIONS.values());
+    }
+
     private final String identifier;
+
+    private String name;
+    private List<String> labels;
     private Category root;
 
     private IndustryClassification(String identifier)
@@ -137,6 +149,16 @@ public class IndustryClassification
     public String getIdentifier()
     {
         return identifier;
+    }
+
+    public List<String> getLabels()
+    {
+        return labels;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 
     public Category getRootCategory()
@@ -165,10 +187,15 @@ public class IndustryClassification
 
     private void load()
     {
-        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.model." + identifier); //$NON-NLS-1$
+        ResourceBundle bundle = ResourceBundle
+                        .getBundle("name.abuchen.portfolio.model." + identifier + "-classification"); //$NON-NLS-1$ //$NON-NLS-2$
 
         root = new Category("0", null); //$NON-NLS-1$
         root.label = Messages.LabelIndustryClassification;
+
+        this.name = getString(bundle, "name"); //$NON-NLS-1$
+        this.labels = Arrays.asList(getString(bundle, "labels").split(",")); //$NON-NLS-1$ //$NON-NLS-2$
+
         readCategory(bundle, root);
     }
 
