@@ -12,4 +12,32 @@
 
 	<artifactId>name.abuchen.portfolio.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<plugins>
+			<!-- replace once root files are used -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>package-dax-file</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/../portfolio-product</directory>
+									<include>dax.xml</include>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

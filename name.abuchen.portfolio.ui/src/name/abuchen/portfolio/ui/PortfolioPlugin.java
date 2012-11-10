@@ -1,22 +1,69 @@
 package name.abuchen.portfolio.ui;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 public class PortfolioPlugin extends AbstractUIPlugin
 {
+    @SuppressWarnings("nls")
+    private final class ManuallyUpdateDaxSampleBecauseOfMissingRootFilesJob extends Job
+    {
+        private ManuallyUpdateDaxSampleBecauseOfMissingRootFilesJob()
+        {
+            super("Update dax.xml sample");
+        }
+
+        @Override
+        protected IStatus run(IProgressMonitor monitor)
+        {
+            URL installURL = Platform.getInstallLocation().getURL();
+            File f = new File(installURL.getFile(), "dax.xml");
+            if (f.exists())
+                return Status.OK_STATUS;
+
+            InputStream in = getClass().getResourceAsStream("/dax.xml");
+            if (in == null)
+                return Status.OK_STATUS;
+
+            try
+            {
+                FileOutputStream out = new FileOutputStream(f);
+
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = in.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
+
+                out.close();
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+            }
+
+            return Status.OK_STATUS;
+        }
+    }
+
     public interface Preferences
     {
         String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
@@ -46,6 +93,20 @@ public class PortfolioPlugin extends AbstractUIPlugin
     {
         super();
         instance = this;
+    }
+
+    @Override
+    public void start(BundleContext context) throws Exception
+    {
+        super.start(context);
+
+        if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
+        {
+            Job job = new ManuallyUpdateDaxSampleBecauseOfMissingRootFilesJob();
+            job.setSystem(true);
+            job.schedule(2000);
+        }
+
     }
 
     @Override
