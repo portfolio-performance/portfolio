@@ -25,6 +25,7 @@
 		<module>../name.abuchen.portfolio</module>
 		<module>../name.abuchen.portfolio.tests</module>
 		<module>../name.abuchen.portfolio.ui</module>
+		<module>../name.abuchen.portfolio.feature</module>
 		<module>../portfolio-product</module>
 	</modules>
 
