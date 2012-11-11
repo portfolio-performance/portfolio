@@ -2,7 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
     <title>Portfolio Performance</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="Portfolio Performance ist ein Open Source Programm mit dem man die historische Performance und den internen Zinsfuß über mehrere Portfolio hinweg berechnen kann.">
+
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.lightbox-0.5.pack.js"></script>
 
@@ -15,19 +17,18 @@
         $('#content .screenshot a').lightBox();
     });
     </script>
-<script type="text/javascript">
+    <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-34744550-1']);
-  _gaq.push(['_trackPageview']);
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-34744550-1']);
+      _gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
 </head>
 
 <body>
@@ -42,15 +43,17 @@
 inklusive internen Zinsfuß.</p>
 
 <p><ul>
-<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.6.4-win32.win32.x86.zip">Windows 32bit</a> / 
-<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.6.4-win32.win32.x86_64.zip">64bit</a>
-<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.6.4-macosx.cocoa.x86_64.tar.gz">Mac OS X</a>
-<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.6.4-linux.gtk.x86.tar.gz">Linux 32bit</a> /
-<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.6.4-linux.gtk.x86_64.tar.gz">64bit</a>
+<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.7.0-win32.win32.x86.zip">Windows 32bit</a> / 
+<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.7.0-win32.win32.x86_64.zip">64bit</a>
+<a id="popup">[?]<span>Portfolio Performance ist in Java programmiert. Darum kommt es darauf an, ob die Java Virtual Machine (JVM) in der 32bit oder 64bit Version installiert ist. Das kann man mit dem Befehl <code>java -version</code> auf der Kommandozeile feststellen.</span></a>
+</li>
+<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.7.0-macosx.cocoa.x86_64.tar.gz">Mac OS X</a></li>
+<li><a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.7.0-linux.gtk.x86.tar.gz">Linux 32bit</a> /
+<a href="https://github.com/downloads/buchen/portfolio/PortfolioPerformance-0.7.0-linux.gtk.x86_64.tar.gz">64bit</a></li>
 </ul>
 </p>
 
-Aktuelle Version 0.6.4 - <a href="new_and_noteworthy.html">was ist neu?</a>
+Aktuelle Version 0.7.0 - <a href="new_and_noteworthy.html">was ist neu?</a>
 
 <h2>Features</h2>
 
@@ -144,6 +147,12 @@ Aktuelle Version 0.6.4 - <a href="new_and_noteworthy.html">was ist neu?</a>
 </a>
 </div>
 
+<div class="screenshot">
+<a title="Branchenklassifizierung und Auswertung" href="images/shot_industry_classification.png">
+    <img src="images/shot_industry_classification_thumb.png" alt="" width="307" height="230"/>
+</a>
+</div>
+
 <h2>Links</h2>
 <ul>
 	<li><a href="https://github.com/buchen/portfolio/issues">Bug Tracker / Features Requests</a></li>
@@ -154,6 +163,15 @@ Aktuelle Version 0.6.4 - <a href="new_and_noteworthy.html">was ist neu?</a>
 
 <div id="versions">
 <a href="new_and_noteworthy.html">Was ist neu?</a>
+
+<h3>0.7.0 / 11. November 2012</h3>
+<ul>
+    <li>Branchenklassifizierung</li>
+    <li>Performance Chart: Vergleich mit einem anderen Papier (oder Index)</li>
+    <li>Neue Beispieldatei mit einem DAX Investment und Branchen</li>
+    <li>Mehr Exportmöglichkeiten, z.B. Export der Datenbasis von den Diagrammen</li>
+    <li>Unterstützung des MacBook Retina</li>
+</ul>
 
 <h3>0.6.5 / 26. September 2012 (via Online Aktualisierung)</h3>
 <ul>

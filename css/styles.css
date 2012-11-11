@@ -66,3 +66,38 @@ font-weight: bold;
 .content {
 width: 80%;
 }
+
+/* hoverpopup */
+
+#popup {
+position: static;
+}
+
+#popup a, #popup a:visited {
+}
+
+#popup span {
+	display: none;
+}
+
+#popup:hover { 
+	background-color: #fdf6e4; 
+}
+
+#popup:hover	{
+	background-color: #fdf6e4;
+	text-indent: 0; /* added the default value */
+}
+
+#popup:hover span {
+	display: block;
+	position: absolute;
+	width: 320px;
+	margin: 5px;
+	padding: 10px;
+	color: #000;
+	font-weight: normal;
+	background: #fdf6e4;
+	text-align: left;
+	border: 1px solid #666;
+}

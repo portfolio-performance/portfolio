@@ -2,22 +2,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
     <title>Portfolio Performance - New &amp; Noteworthy</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="Übersicht über die neuesten Funktionen im Open Source Programm Portfolio Performance.">
+
     <link rel="icon" type="image/gif" href="images/pp_16.gif" />
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
-<script type="text/javascript">
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-34744550-1']);
+      _gaq.push(['_trackPageview']);
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-34744550-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
 </head>
 
 <body>
@@ -29,6 +29,59 @@
 <h1><img src="images/pp_48.gif" width="48" height="48" alt="logo" valign="bottom"/> New & Noteworthy</h1>
 
 <p>Hier eine Liste mit den grösseren und interessanteren Änderungen in <a href="index.html">Portfolio Performance</a>.</p>
+
+<h2>Version 0.7.0 (11. November 2012)</h2>
+
+
+<table class="news">
+<tbody>
+<tr>
+<td class="title">Neue Bespieldatei: dax.xml</td>
+<td class="content">Im Installationsverzeichnis gibt es eine neue Datei <strong>dax.xml</strong>, die ein prototypisches DAX Investment trackt.
+</td>
+</tr>
+
+<tr>
+<td class="title">Klassifizierung der Branchen</td>
+<td class="content">Zur besseren Auswertung kann jetzt jedes Wertpapier einer Branche zugeordnet werden:
+<p>
+  <ul>
+    <li>Wählen Sie zunächst ein System zur Klassifzierung: Zur Verfügung steht der <a href="http://en.wikipedia.org/wiki/Global_Industry_Classification_Standard">Global Industry Classifcation Standard (GICS)</a> oder ein einfacheres zweistufiges System</li>
+    <li>Ordnen Sie dann die Wertpapiere im 'Bearbeiten' Dialog einer Branche zu</li>
+    <li>In der Ansicht 'Vermögensaufstellung - Branchen' stehen anschließend Auswertungen und Export zur Verfügung</li>
+  </ul>
+</p>
+<p>Zur Auswertung kann man eine wunderschöne <a href="http://de.wikipedia.org/wiki/Tree_Map">TreeMap</a> verwenden. Mit einem Rechtsklick taucht man in eine Branche ab, mit einem Linksklick gelangt man wieder zurück.</p>
+<p><img src="images/nn_industry_treemap.png" alt="Verteilung der Branchen im Portfolio" width="542" height="375"/></p>
+<p>Im Bereich 'Stammdaten' gibt es ein Überblick über die Branchen:</p>
+<p><img src="images/nn_industry_classification.png" alt="Klassifizierung der Branchen" width="542" height="284"/></p>
+<p>Dort kann man auch das Klassifizierungssystem auswählen (Mit der Schaltfläche 'Anwenden' wird die Klassifizierung für die aktuelle Datei aktiviert):</p>
+<p><img src="images/nn_industry_classification_choose.png" alt="Auswahl der Klassifizierung" width="542" height="127"/></p>
+<p>Im Dialog 'Wertpapier bearbeiten' wird eine Branche einem Wertpapier zugeordnet:</p>
+<p><img src="images/nn_industry_edit_security.png" alt="Wertpapier editieren" width="542" height="350"/></p>
+</td>
+</tr>
+
+<tr>
+<td class="title">Performance Chart: Vergleich mit einem anderen Papier</td>
+<td class="content">Dem Performance Chart können nun beliebige andere Papiere zugeordnet werden.  Damit lässt sich die Performance des Portfolio einfach vergleichen. Das funktioniert auch mit einem Index. Der DAX ist zum Beispiel auf Yahoo unter dem Symbol <a href="http://de.finance.yahoo.com/q?s=%5EGDAXI">^GDAXI</a> verfügbar.
+<p><img src="images/nn_irr_chart.png" alt="Interner Zinsfuß mit einem anderen Papier vergleichen" width="542" height="321"/></p>
+</td>
+</tr>
+
+<tr>
+<td class="title">Mehr Exportmöglichkeiten</td>
+<td class="content">Alle Daten aus dem Programm holen! Mit der neuen Version können jetzt auch die Basisdaten der Diagramme als CSV exportiert werden. So lassen sich zum Beispiel sehr einfach Diagramme in Excel erstellen.
+<p>Die Exportfunktion befindet <strong>oben rechts</strong>.</p>
+<p><img src="images/nn_export_asset_diagram.png" alt="Basisdaten der Diagramme exportieren" width="542" height="425"/></p>
+<p>Auch die Asset Klassen lassen sich exportieren:</p>
+<p><img src="images/nn_export_asset_classes.png" alt="Export der Asset Klassen" width="542" height="188"/></p>
+</td>
+</tr>
+</tbody>
+</table>
+
+
 
 <h2>Version 0.6.4 (19. August 2012)</h2>
 
@@ -55,7 +108,7 @@ Seiten von Yahoo, OnVista und Finanzen.net dieses Wertpapiers springen.
 <tr>
 <td class="title">Automatische Aktualisierung</td>
 <td class="content">Mit dem Menü "Nach Aktualisierungen suchen..." werden neue Programmversionen
-installiert. Dabei werden nur die geänderten Komponenten geladen wodurch das Update deutlich schneller wird.
+installiert. Dabei werden nur die geänderten Komponenten geladen, wodurch das Update deutlich schneller wird.
 <p><img src="images/nn_checkforupdates.png" alt="Nach Aktualsierungen suchen" width="542" height="174"/></p>
 <p>Optional kann man in den Einstellung (oder auch 'Benutzervorgaben') festlegen, dass bei jedem Start
 auf vorhanden Updates geprüft wird.</p>
