@@ -77,6 +77,7 @@ public class Messages extends NLS
     public static String ColumnTransactionType;
     public static String ColumnValue;
     public static String ColumnVolume;
+    public static String ColumnWKN;
     public static String ColumnYear;
     public static String ConsumerPriceIndexMenuAdd;
     public static String ConsumerPriceIndexMenuDelete;

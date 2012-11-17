@@ -213,6 +213,19 @@ public class SecuritiesTable
 
         addIndustryClassificationColumns(support);
 
+        column = new Column(Messages.ColumnWKN, SWT.LEFT, 60);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getWkn();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         securities.getTable().setHeaderVisible(true);

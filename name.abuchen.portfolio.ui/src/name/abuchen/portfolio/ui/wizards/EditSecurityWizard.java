@@ -80,6 +80,7 @@ public class EditSecurityWizard extends Wizard
         target.setName(source.getName());
         target.setIsin(source.getIsin());
         target.setTickerSymbol(source.getTickerSymbol());
+        target.setWkn(source.getWkn());
         target.setType(source.getType());
         target.setFeed(source.getFeed());
         target.setIndustryClassification(source.getIndustryClassification());

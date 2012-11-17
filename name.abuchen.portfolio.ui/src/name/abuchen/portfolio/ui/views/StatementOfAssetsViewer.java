@@ -354,6 +354,19 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnWKN, SWT.None, 60);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                return element.isSecurity() ? element.getSecurity().getWkn() : null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         assets.getTable().setHeaderVisible(true);

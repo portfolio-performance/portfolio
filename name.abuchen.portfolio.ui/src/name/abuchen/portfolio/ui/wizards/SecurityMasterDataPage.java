@@ -32,6 +32,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         private String name;
         private String isin;
         private String tickerSymbol;
+        private String wkn;
         private AssetClass type;
 
         public Model(Client client, Security security)
@@ -43,6 +44,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             name = security.getName();
             isin = security.getIsin();
             tickerSymbol = security.getTickerSymbol();
+            wkn = security.getWkn();
             type = security.getType();
         }
 
@@ -76,6 +78,16 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             firePropertyChange("tickerSymbol", this.tickerSymbol, this.tickerSymbol = tickerSymbol); //$NON-NLS-1$
         }
 
+        public String getWkn()
+        {
+            return wkn;
+        }
+
+        public void setWkn(String wkn)
+        {
+            firePropertyChange("wkn", this.tickerSymbol, this.wkn = wkn); //$NON-NLS-1$
+        }
+
         public AssetClass getType()
         {
             return type;
@@ -92,6 +104,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             security.setName(name);
             security.setIsin(isin);
             security.setTickerSymbol(tickerSymbol);
+            security.setWkn(wkn);
             security.setType(type);
         }
 
@@ -100,6 +113,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             setName(security.getName());
             setIsin(security.getIsin());
             setTickerSymbol(security.getTickerSymbol());
+            setWkn(security.getWkn());
             setType(security.getType());
         }
 
@@ -159,6 +173,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindMandatoryStringInput(container, Messages.ColumnName, "name").setFocus(); //$NON-NLS-1$
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
+        bindings.bindStringInput(container, Messages.ColumnWKN, "wkn"); //$NON-NLS-1$
         bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override

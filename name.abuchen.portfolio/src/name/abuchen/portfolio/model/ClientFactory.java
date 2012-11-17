@@ -61,8 +61,14 @@ public class ClientFactory
             // do nothing --> save industry taxonomy in client
             client.setVersion(6);
         }
+        
+        if (client.getVersion() == 6)
+        {
+            // do nothing --> added WKN attribute to security
+            client.setVersion(7);
+        }
 
-        if (client.getVersion() != 6)
+        if (client.getVersion() != 7)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 

@@ -326,6 +326,7 @@ public abstract class CSVImportDefinition
             fields.add(new Field(Messages.CSVColumn_ISIN));
             fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
             fields.add(new EnumField<AssetClass>(Messages.CSVColumn_Type, AssetClass.class).setOptional(true));
         }
 
@@ -356,6 +357,7 @@ public abstract class CSVImportDefinition
                 description = MessageFormat.format(Messages.CSVImportedSecurityLabel, isin);
 
             String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+            String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
 
             AssetClass assetClass = convertEnum(Messages.CSVColumn_Type, AssetClass.class, rawValues, field2column);
             if (assetClass == null)
@@ -366,6 +368,7 @@ public abstract class CSVImportDefinition
                 feed = YahooFinanceQuoteFeed.ID;
 
             security = new Security(description, isin, tickerSymbol, assetClass, feed);
+            security.setWkn(wkn);
             client.addSecurity(security);
         }
     }

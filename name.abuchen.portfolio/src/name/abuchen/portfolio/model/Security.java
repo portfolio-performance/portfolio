@@ -34,6 +34,7 @@ public final class Security
 
     private String isin;
     private String tickerSymbol;
+    private String wkn;
 
     private AssetClass type;
     private String industryClassification;
@@ -95,6 +96,16 @@ public final class Security
     public void setTickerSymbol(String tickerSymbol)
     {
         this.tickerSymbol = tickerSymbol;
+    }
+
+    public String getWkn()
+    {
+        return wkn;
+    }
+
+    public void setWkn(String wkn)
+    {
+        this.wkn = wkn;
     }
 
     public String getIndustryClassification()
@@ -268,6 +279,7 @@ public final class Security
         answer.name = name;
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
+        answer.wkn = wkn;
         answer.type = type;
         answer.industryClassification = industryClassification;
 

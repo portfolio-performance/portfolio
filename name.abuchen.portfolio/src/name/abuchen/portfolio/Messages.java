@@ -22,6 +22,7 @@ public class Messages extends NLS
     public static String CSVColumn_TickerSymbol;
     public static String CSVColumn_Type;
     public static String CSVColumn_Value;
+    public static String CSVColumn_WKN;
     public static String CSVDefAccountTransactions;
     public static String CSVDefHistoricalQuotes;
     public static String CSVDefPortfolioTransactions;
