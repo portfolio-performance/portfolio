@@ -16,6 +16,9 @@
 
 	<properties>
 		<tycho-version>0.16.0</tycho-version>
+		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
 	</properties>
 
 	<modules>
@@ -142,10 +145,25 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.ui.ide</id>
-							<removeAll/>
+							<removeAll />
 						</filter>
 					</filters>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.6.0.201210061924</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -168,7 +186,7 @@
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
+					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
 				<plugin>
