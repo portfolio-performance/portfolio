@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.update;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -8,12 +7,13 @@ import java.text.MessageFormat;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
-import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
@@ -32,7 +32,7 @@ public class UpdateHelper
     private final IProvisioningAgent agent;
     private UpdateOperation operation;
 
-    public UpdateHelper() throws IOException
+    public UpdateHelper() throws CoreException
     {
         agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
 
@@ -40,10 +40,13 @@ public class UpdateHelper
 
         IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
         if (profile == null)
-            throw new IOException(Messages.MsgNoProfileFound);
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
     }
 
-    public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, IOException
+    public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, CoreException
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
@@ -90,7 +93,7 @@ public class UpdateHelper
         }
     }
 
-    private String[] checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, IOException
+    private String[] checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
     {
         loadRepository(agent);
 
@@ -106,7 +109,7 @@ public class UpdateHelper
             throw new OperationCanceledException();
 
         if (status.getSeverity() == IStatus.ERROR)
-            throw new IOException(status.getException());
+            throw new CoreException(status);
 
         Update[] possibleUpdates = operation.getPossibleUpdates();
         Update update = possibleUpdates.length > 0 ? possibleUpdates[0] : null;
@@ -122,7 +125,7 @@ public class UpdateHelper
         }
     }
 
-    private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, IOException
+    private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, CoreException
     {
         if (operation == null)
             checkForUpdates(monitor);
@@ -144,7 +147,7 @@ public class UpdateHelper
         return type.cast(result);
     }
 
-    private void loadRepository(IProvisioningAgent agent) throws IOException
+    private void loadRepository(IProvisioningAgent agent) throws CoreException
     {
         IMetadataRepositoryManager repositoryManager = (IMetadataRepositoryManager) agent
                         .getService(IMetadataRepositoryManager.SERVICE_NAME);
@@ -160,13 +163,10 @@ public class UpdateHelper
             repositoryManager.loadRepository(repoLocation, null);
             artifactManager.loadRepository(repoLocation, null);
         }
-        catch (ProvisionException e)
-        {
-            throw new IOException(e);
-        }
         catch (URISyntaxException e)
         {
-            throw new IOException(e);
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
+            throw new CoreException(status);
         }
     }
 }

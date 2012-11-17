@@ -1,11 +1,10 @@
 package name.abuchen.portfolio.ui.app;
 
-import java.io.IOException;
-
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -55,9 +54,9 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor
                         UpdateHelper updateHelper = new UpdateHelper();
                         updateHelper.runUpdate(monitor, true);
                     }
-                    catch (IOException e)
+                    catch (CoreException e)
                     {
-                        PortfolioPlugin.log(e);
+                        PortfolioPlugin.log(e.getStatus());
                     }
                     return Status.OK_STATUS;
                 }
