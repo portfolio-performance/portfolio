@@ -34,10 +34,10 @@ mvn install:install-file
 
 ```
 mvn install:install-file
-    -Dfile=tm_swt_0.0.4.jar
+    -Dfile=tm_swt_0.0.5.jar
     -DgroupId=de.engehausen
     -DartifactId=de.engehausen.treemap.swt
-    -Dversion=0.0.4
+    -Dversion=0.0.5
     -Dpackaging=jar
     -DgeneratePom=true
 ```
