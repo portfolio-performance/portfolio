@@ -30,6 +30,11 @@
 
 	<repositories>
 		<repository>
+			<id>p2-orbit</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository</url>
+		</repository>
+		<repository>
 			<id>p2-indigo</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/indigo</url>
