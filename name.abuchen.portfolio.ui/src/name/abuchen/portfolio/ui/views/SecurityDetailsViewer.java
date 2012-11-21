@@ -139,7 +139,7 @@ class SecurityDetailsViewer
         @Override
         void setInput(Security security)
         {
-            if (security == null || security.getLatest() == null)
+            if (security == null)
             {
                 valueName.setText(EMPTY_LABEL);
                 valueISIN.setText(EMPTY_LABEL);
@@ -332,7 +332,7 @@ class SecurityDetailsViewer
         @Override
         void setInput(Security security)
         {
-            if (security == null || security.getLatest() == null)
+            if (security == null)
             {
                 for (Label l : labels)
                     l.setText(EMPTY_LABEL);
