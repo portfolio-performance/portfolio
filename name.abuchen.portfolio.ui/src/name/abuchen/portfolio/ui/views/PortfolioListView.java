@@ -26,6 +26,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -431,56 +432,69 @@ public class PortfolioListView extends AbstractListView
 
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
-        manager.add(new Action(Messages.MenuTransactionDelete)
+        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
+        if (hasTransactionSelected)
         {
-            @Override
-            public void run()
+            manager.add(new Action(Messages.MenuTransactionDelete)
             {
-                PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
-                                .getSelection()).getFirstElement();
-                Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
+                @Override
+                public void run()
+                {
+                    PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+                    Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
 
-                if (transaction == null || portfolio == null)
-                    return;
+                    if (transaction == null || portfolio == null)
+                        return;
 
-                if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(), getClient(),
-                                transaction))
-                    return;
+                    if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(),
+                                    getClient(), transaction))
+                        return;
 
-                portfolio.getTransactions().remove(transaction);
-                markDirty();
+                    portfolio.getTransactions().remove(transaction);
+                    markDirty();
 
-                portfolios.refresh(transactions.getData(Portfolio.class.toString()));
-                transactions.setInput(portfolio.getTransactions());
-                transactions.setSelection(new StructuredSelection(transaction), true);
+                    portfolios.refresh(transactions.getData(Portfolio.class.toString()));
+                    transactions.setInput(portfolio.getTransactions());
+                    transactions.setSelection(new StructuredSelection(transaction), true);
 
-                statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-            }
-        });
+                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+                }
+            });
+        }
 
         manager.add(new Action(Messages.MenuTransactionAdd)
         {
             @Override
             public void run()
             {
-                Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-                if (portfolio == null)
-                    return;
+                // if no securities exist yet, inform user
+                if (getClient().getSecurities().isEmpty())
+                {
+                    MessageDialog.openError(getClientEditor().getSite().getShell(), Messages.LabelError,
+                                    Messages.MsgNoSecuritiesMaintained);
+                }
+                else
+                {
+                    Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
+                    if (portfolio == null)
+                        return;
 
-                PortfolioTransaction transaction = new PortfolioTransaction();
-                transaction.setDate(Dates.today());
-                transaction.setType(PortfolioTransaction.Type.BUY);
-                transaction.setSecurity(getClient().getSecurities().get(0));
+                    PortfolioTransaction transaction = new PortfolioTransaction();
+                    transaction.setDate(Dates.today());
+                    transaction.setType(PortfolioTransaction.Type.BUY);
+                    transaction.setSecurity(getClient().getSecurities().get(0));
 
-                portfolio.addTransaction(transaction);
+                    portfolio.addTransaction(transaction);
 
-                markDirty();
+                    markDirty();
 
-                portfolios.refresh(transactions.getData(Account.class.toString()));
-                transactions.setInput(portfolio.getTransactions());
-                transactions.editElement(transaction, 0);
+                    portfolios.refresh(transactions.getData(Account.class.toString()));
+                    transactions.setInput(portfolio.getTransactions());
+                    transactions.editElement(transaction, 0);
 
-                statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+                }
             }
         });
     }

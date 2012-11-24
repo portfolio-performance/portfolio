@@ -214,6 +214,7 @@ public class Messages extends NLS
     public static String MsgMissingAccount;
     public static String MsgMissingSecurity;
     public static String MsgNoProfileFound;
+    public static String MsgNoSecuritiesMaintained;
     public static String MsgNoUpdatesAvailable;
     public static String MsgPickOneOfMultipleCounterTransactions;
     public static String MsgRestartRequired;
