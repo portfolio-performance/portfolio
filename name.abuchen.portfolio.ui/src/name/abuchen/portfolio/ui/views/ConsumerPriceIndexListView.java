@@ -13,6 +13,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
@@ -23,14 +26,12 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
@@ -77,27 +78,63 @@ public class ConsumerPriceIndexListView extends AbstractListView
     @Override
     protected void createTopTable(Composite parent)
     {
-        indeces = new TableViewer(parent, SWT.FULL_SELECTION);
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        TableColumn column = new TableColumn(indeces.getTable(), SWT.None);
-        column.setText(Messages.ColumnYear);
-        column.setWidth(80);
+        indeces = new TableViewer(container, SWT.FULL_SELECTION);
 
-        column = new TableColumn(indeces.getTable(), SWT.None);
-        column.setText(Messages.ColumnMonth);
-        column.setWidth(80);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(ConsumerPriceIndexListView.class.getSimpleName()
+                        + "@bottom", indeces, layout); //$NON-NLS-1$
 
-        column = new TableColumn(indeces.getTable(), SWT.RIGHT);
-        column.setText(Messages.ColumnIndex);
-        column.setWidth(80);
+        Column column = new Column(Messages.ColumnYear, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return String.valueOf(((ConsumerPriceIndex) element).getYear());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(ConsumerPriceIndex.class, "year", "month"), SWT.DOWN); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnMonth, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            private final String[] MONTHS = new DateFormatSymbols().getMonths();
+
+            @Override
+            public String getText(Object element)
+            {
+                return String.valueOf(MONTHS[((ConsumerPriceIndex) element).getMonth()]);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(ConsumerPriceIndex.class, "month", "year")); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnIndex, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Index.format(((ConsumerPriceIndex) element).getIndex());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(ConsumerPriceIndex.class, "index")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        support.createColumns();
 
         indeces.getTable().setHeaderVisible(true);
         indeces.getTable().setLinesVisible(true);
 
-        indeces.setLabelProvider(new CPILabelProvider());
         indeces.setContentProvider(new SimpleListContentProvider());
 
-        Collections.sort(getClient().getConsumerPriceIndeces());
         indeces.setInput(getClient().getConsumerPriceIndeces());
         indeces.refresh();
         ViewerHelper.pack(indeces);
@@ -165,32 +202,6 @@ public class ConsumerPriceIndexListView extends AbstractListView
                 refreshChart();
             }
         });
-    }
-
-    static class CPILabelProvider extends LabelProvider implements ITableLabelProvider
-    {
-        private static final String[] MONTHS = new DateFormatSymbols().getMonths();
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            ConsumerPriceIndex p = (ConsumerPriceIndex) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return String.valueOf(p.getYear());
-                case 1:
-                    return String.valueOf(MONTHS[p.getMonth()]);
-                case 2:
-                    return Values.Index.format(p.getIndex());
-            }
-            return null;
-        }
-
     }
 
     @Override

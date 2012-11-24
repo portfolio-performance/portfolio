@@ -2,8 +2,10 @@ package name.abuchen.portfolio.ui.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -20,13 +22,36 @@ import org.eclipse.swt.widgets.Widget;
 
 public final class ColumnViewerSorter extends ViewerComparator
 {
+    private static class ChainedComparator implements Comparator<Object>
+    {
+        private final List<Comparator<Object>> comparators;
+
+        private ChainedComparator(List<Comparator<Object>> comparators)
+        {
+            this.comparators = comparators;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            for (Comparator<Object> c : comparators)
+            {
+                int result = c.compare(o1, o2);
+                if (result != 0)
+                    return result;
+            }
+
+            return 0;
+        }
+    }
+
     private static class BeanComparator implements Comparator<Object>
     {
         private final Class<?> clazz;
         private final Method method;
         private final int type;
 
-        public BeanComparator(Class<?> clazz, String attribute)
+        private BeanComparator(Class<?> clazz, String attribute)
         {
             try
             {
@@ -100,9 +125,15 @@ public final class ColumnViewerSorter extends ViewerComparator
         }
     }
 
-    public static ColumnViewerSorter create(Class<?> clazz, String attribute)
+    public static ColumnViewerSorter create(Class<?> clazz, String... attributes)
     {
-        return new ColumnViewerSorter(new BeanComparator(clazz, attribute));
+        List<Comparator<Object>> comparators = new ArrayList<Comparator<Object>>();
+
+        for (String attribute : attributes)
+            comparators.add(new BeanComparator(clazz, attribute));
+
+        return new ColumnViewerSorter(comparators.size() == 1 ? comparators.get(0) : new ChainedComparator(
+                        comparators));
     }
 
     public static ColumnViewerSorter create(Comparator<Object> comparator)
@@ -180,7 +211,7 @@ public final class ColumnViewerSorter extends ViewerComparator
             setSorter(direction);
     }
 
-    /* package */ void setSorter(int direction)
+    /* package */void setSorter(int direction)
     {
         this.direction = direction;
 
