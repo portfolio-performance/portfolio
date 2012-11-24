@@ -63,6 +63,7 @@ public class ShowHideColumnHelper implements IMenuListener
         private String label;
         private int style;
         private int defaultWidth;
+        private boolean isMoveable = true;
         private boolean isVisible = true;
         private ColumnViewerSorter sorter;
         private Integer defaultSortDirection;
@@ -82,6 +83,11 @@ public class ShowHideColumnHelper implements IMenuListener
         public void setVisible(boolean isVisible)
         {
             this.isVisible = isVisible;
+        }
+        
+        public void setMoveable(boolean isMoveable)
+        {
+            this.isMoveable = isMoveable;
         }
 
         public void setSorter(ColumnViewerSorter sorter)
@@ -166,7 +172,7 @@ public class ShowHideColumnHelper implements IMenuListener
         {
             TableViewerColumn col = new TableViewerColumn(viewer, getStyle());
             col.getColumn().setText(option == null ? getLabel() : MessageFormat.format(optionsColumnLabel, option));
-            col.getColumn().setMoveable(true);
+            col.getColumn().setMoveable(isMoveable);
             col.setLabelProvider(getLabelProvider());
 
             layout.setColumnData(col.getColumn(), new ColumnPixelData(width));

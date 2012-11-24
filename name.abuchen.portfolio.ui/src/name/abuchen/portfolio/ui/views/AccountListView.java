@@ -19,6 +19,8 @@ import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
 import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
@@ -29,15 +31,13 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -87,17 +87,48 @@ public class AccountListView extends AbstractListView
     @Override
     protected void createTopTable(Composite parent)
     {
-        accounts = new TableViewer(parent, SWT.FULL_SELECTION);
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        TableViewerColumn column = new TableViewerColumn(accounts, SWT.None);
-        column.getColumn().setText(Messages.ColumnAccount);
-        column.getColumn().setWidth(150);
-        ColumnViewerSorter.create(Account.class, "name").attachTo(accounts, column, true); //$NON-NLS-1$
+        accounts = new TableViewer(container, SWT.FULL_SELECTION);
 
-        column = new TableViewerColumn(accounts, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnBalance);
-        column.getColumn().setWidth(80);
-        ColumnViewerSorter.create(Account.class, "currentAmount").attachTo(accounts, column); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+                        accounts, layout);
+
+        Column column = new Column(Messages.ColumnAccount, SWT.None, 150);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Account) e).getName();
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Account.class, "name"), SWT.DOWN); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnBalance, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Amount.format(((Account) e).getCurrentAmount());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Account.class, "currentAmount")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        support.createColumns();
 
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);
@@ -107,7 +138,6 @@ public class AccountListView extends AbstractListView
             Collections.sort(account.getTransactions());
         }
 
-        accounts.setLabelProvider(new AccountLabelProvider());
         accounts.setContentProvider(new SimpleListContentProvider());
         accounts.setInput(getClient().getAccounts());
         accounts.refresh();
@@ -166,64 +196,109 @@ public class AccountListView extends AbstractListView
         });
     }
 
-    static class AccountLabelProvider extends LabelProvider implements ITableLabelProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            if (columnIndex != 0)
-                return null;
-
-            return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            Account p = (Account) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return p.getName();
-                case 1:
-                    return Values.Amount.format(p.getCurrentAmount());
-            }
-            return null;
-        }
-
-    }
-
     // //////////////////////////////////////////////////////////////
     // bottom table: transactions
     // //////////////////////////////////////////////////////////////
 
     protected void createBottomTable(Composite parent)
     {
-        transactions = new TableViewer(parent, SWT.FULL_SELECTION);
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        TableViewerColumn column = new TableViewerColumn(transactions, SWT.None);
-        column.getColumn().setText(Messages.ColumnDate);
-        column.getColumn().setWidth(80);
-        ColumnViewerSorter.create(AccountTransaction.class, "date").attachTo(transactions, column, true); //$NON-NLS-1$
+        transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        column = new TableViewerColumn(transactions, SWT.None);
-        column.getColumn().setText(Messages.ColumnTransactionType);
-        column.getColumn().setWidth(100);
-        ColumnViewerSorter.create(AccountTransaction.class, "type").attachTo(transactions, column); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+                        transactions, layout);
 
-        column = new TableViewerColumn(transactions, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnAmount);
-        column.getColumn().setWidth(80);
-        ColumnViewerSorter.create(AccountTransaction.class, "amount").attachTo(transactions, column); //$NON-NLS-1$
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return Values.Date.format(t.getDate());
+            }
 
-        column = new TableViewerColumn(transactions, SWT.None);
-        column.getColumn().setText(Messages.ColumnSecurity);
-        column.getColumn().setWidth(250);
-        ColumnViewerSorter.create(AccountTransaction.class, "security").attachTo(transactions, column); //$NON-NLS-1$
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return t.getType().toString();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "type")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnAmount, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                long v = t.getAmount();
+                if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+                    v = -v;
+                return Values.Amount.format(v);
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "amount")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnSecurity, SWT.None, 250);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setLabelProvider(new TransactionLabelProvider());
         transactions.setContentProvider(new SimpleListContentProvider());
 
         List<Security> securities = getClient().getSecurities();
@@ -256,6 +331,14 @@ public class AccountListView extends AbstractListView
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
         ViewerHelper.pack(transactions);
+    }
+
+    private Color colorFor(AccountTransaction t)
+    {
+        if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+        else
+            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
     private abstract class AbstractDialogAction extends Action
@@ -361,51 +444,4 @@ public class AccountListView extends AbstractListView
             }
         });
     }
-
-    static class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            AccountTransaction t = (AccountTransaction) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return Values.Date.format(t.getDate());
-                case 1:
-                    return t.getType().toString();
-                case 2:
-                    long v = t.getAmount();
-                    if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(
-                                    t.getType()))
-                        v = -v;
-                    return Values.Amount.format(v);
-                case 3:
-                    return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
-            }
-            return null;
-        }
-
-        public Color getBackground(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public Color getForeground(Object element, int columnIndex)
-        {
-            AccountTransaction t = (AccountTransaction) element;
-
-            if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-            else
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-        }
-
-    }
-
 }
