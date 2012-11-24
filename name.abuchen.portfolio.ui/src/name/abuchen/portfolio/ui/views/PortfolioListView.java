@@ -15,6 +15,8 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
@@ -26,15 +28,11 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -93,22 +91,53 @@ public class PortfolioListView extends AbstractListView
 
     protected void createTopTable(Composite parent)
     {
-        portfolios = new TableViewer(parent, SWT.FULL_SELECTION);
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        TableViewerColumn column = new TableViewerColumn(portfolios, SWT.None);
-        column.getColumn().setText(Messages.ColumnPortfolio);
-        column.getColumn().setWidth(100);
-        ColumnViewerSorter.create(Portfolio.class, "name").attachTo(portfolios, column, true); //$NON-NLS-1$
+        portfolios = new TableViewer(container, SWT.FULL_SELECTION);
 
-        column = new TableViewerColumn(portfolios, SWT.None);
-        column.getColumn().setText(Messages.ColumnReferenceAccount);
-        column.getColumn().setWidth(160);
-        ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(portfolios, column); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+                        portfolios, layout);
+
+        Column column = new Column(Messages.ColumnPortfolio, SWT.None, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Portfolio) e).getName();
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Portfolio.class, "name"), SWT.DOWN); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnReferenceAccount, SWT.None, 160);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Portfolio p = (Portfolio) e;
+                return p.getReferenceAccount() != null ? p.getReferenceAccount().getName() : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Portfolio.class, "referenceAccount")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        support.createColumns();
 
         portfolios.getTable().setHeaderVisible(true);
         portfolios.getTable().setLinesVisible(true);
 
-        portfolios.setLabelProvider(new PortfolioLabelProvider());
         portfolios.setContentProvider(new SimpleListContentProvider());
         portfolios.setInput(getClient().getPortfolios());
         portfolios.refresh();
@@ -177,32 +206,6 @@ public class PortfolioListView extends AbstractListView
         });
     }
 
-    static class PortfolioLabelProvider extends LabelProvider implements ITableLabelProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            if (columnIndex != 0)
-                return null;
-
-            return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            Portfolio p = (Portfolio) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return p.getName();
-                case 1:
-                    return p.getReferenceAccount() != null ? p.getReferenceAccount().getName() : null;
-            }
-            return null;
-        }
-
-    }
-
     // //////////////////////////////////////////////////////////////
     // bottom table: transactions
     // //////////////////////////////////////////////////////////////
@@ -246,10 +249,10 @@ public class PortfolioListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        TableViewerColumn column = new TableViewerColumn(transactions, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnDate);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-        column.getColumn().setMoveable(true);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+                        transactions, layout);
+
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -264,12 +267,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "date").attachTo(transactions, column, true); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
 
-        column = new TableViewerColumn(transactions, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnTransactionType);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -284,12 +286,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "type").attachTo(transactions, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "type")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
 
-        column = new TableViewerColumn(transactions, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnSecurity);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnSecurity, SWT.None, 250);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -305,12 +306,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "security").attachTo(transactions, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "security")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
 
-        column = new TableViewerColumn(transactions, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnShares);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
         {
             @Override
@@ -325,12 +325,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "shares").attachTo(transactions, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "shares")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
 
-        column = new TableViewerColumn(transactions, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnAmount);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -345,12 +344,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(transactions, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
 
-        column = new TableViewerColumn(transactions, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnFees);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -365,12 +363,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(transactions, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "fees")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
 
-        column = new TableViewerColumn(transactions, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnPurchasePrice);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -386,7 +383,11 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice").attachTo(transactions, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
