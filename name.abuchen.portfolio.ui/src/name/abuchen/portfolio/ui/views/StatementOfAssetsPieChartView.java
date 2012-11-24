@@ -64,7 +64,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         container.setLayout(new StackLayout());
 
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
-        List<AssetCategory> categories = snapshot.groupByCategory();
+        List<AssetCategory> categories = snapshot.groupByAssetClass().asList();
 
         createPieChart(container, categories);
         createTreeMap(container, snapshot, categories);
@@ -80,10 +80,11 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
 
         List<PieChart.Slice> slices = new ArrayList<PieChart.Slice>();
 
-        for (AssetClass a : AssetClass.values())
-            slices.add(new PieChart.Slice(categories.get(a.ordinal()).getValuation(), a.name(),
-                            Colors.valueOf(a.name())));
-
+        for (AssetCategory category : categories)
+        {
+            AssetClass assetClass = category.getAssetClass();
+            slices.add(new PieChart.Slice(category.getValuation(), assetClass.name(), Colors.valueOf(assetClass.name())));
+        }
         pieChart.setSlices(slices);
         pieChart.redraw();
 
@@ -95,9 +96,6 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         root = new TreeMapItem();
         for (AssetCategory category : categories)
         {
-            if (category.getAssetClass() == null)
-                continue;
-
             TreeMapItem categoryItem = new TreeMapItem(root, category);
             root.getChildren().add(categoryItem);
 

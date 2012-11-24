@@ -9,9 +9,11 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.GroupByAssetClass;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -107,27 +109,25 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         Date[] dates = new Date[noOfDays];
         double[] totals = new double[noOfDays];
-        double[] cash = new double[noOfDays];
-        double[] equity = new double[noOfDays];
-        double[] debt = new double[noOfDays];
-        double[] realEstate = new double[noOfDays];
-        double[] commodity = new double[noOfDays];
+
+        double[][] assetClass = new double[AssetClass.values().length][noOfDays];
+        boolean[] assetClassHasValues = new boolean[assetClass.length];
 
         int index = 0;
         while (cal.getTimeInMillis() <= endDate.getTime())
         {
-
             ClientSnapshot snapshot = ClientSnapshot.create(getClient(), cal.getTime());
             dates[index] = cal.getTime();
 
             totals[index] = snapshot.getAssets() / Values.Amount.divider();
 
-            List<AssetCategory> categories = snapshot.groupByCategory();
-            cash[index] = categories.get(0).getValuation() / Values.Amount.divider();
-            debt[index] = categories.get(1).getValuation() / Values.Amount.divider();
-            equity[index] = categories.get(2).getValuation() / Values.Amount.divider();
-            realEstate[index] = categories.get(3).getValuation() / Values.Amount.divider();
-            commodity[index] = categories.get(4).getValuation() / Values.Amount.divider();
+            GroupByAssetClass byAssetClass = snapshot.groupByAssetClass();
+            for (int ii = 0; ii < assetClass.length; ii++)
+            {
+                AssetCategory c = byAssetClass.byClass(AssetClass.values()[ii]);
+                assetClass[ii][index] = c != null ? c.getValuation() / Values.Amount.divider() : 0;
+                assetClassHasValues[ii] = assetClassHasValues[ii] || c != null;
+            }
 
             cal.add(Calendar.DATE, 1);
             index++;
@@ -139,11 +139,12 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart.getLegend().setPosition(SWT.BOTTOM);
 
         chart.addDateSeries(dates, totals, Colors.TOTALS);
-        chart.addDateSeries(dates, cash, Colors.CASH);
-        chart.addDateSeries(dates, debt, Colors.DEBT);
-        chart.addDateSeries(dates, equity, Colors.EQUITY);
-        chart.addDateSeries(dates, realEstate, Colors.REAL_ESTATE);
-        chart.addDateSeries(dates, commodity, Colors.COMMODITY);
+
+        for (int ii = 0; ii < assetClass.length; ii++)
+        {
+            if (assetClassHasValues[ii])
+                chart.addDateSeries(dates, assetClass[ii], Colors.valueOf(AssetClass.values()[ii].name()));
+        }
 
         // deposits & removals
 

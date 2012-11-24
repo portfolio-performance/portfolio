@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.GroupByAssetClass;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
@@ -26,12 +27,12 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -103,9 +104,10 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isCategory())
-                    return element.getCategory().getAssetClass() != null ? element.getCategory().getAssetClass().name()
-                                    : Messages.LabelTotalSum;
+                if (element.isTotalValuation())
+                    return Messages.LabelTotalSum;
+                else if (element.isCategory())
+                    return element.getCategory().getAssetClass().name();
                 else
                     return element.getPosition().getDescription();
             }
@@ -123,7 +125,7 @@ public class StatementOfAssetsViewer
             @Override
             public Font getFont(Object e)
             {
-                return ((Element) e).isCategory() ? boldFont : null;
+                return ((Element) e).isTotalValuation() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -173,7 +175,9 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isCategory())
+                if (element.isTotalValuation())
+                    return Values.Amount.format(element.getTotalValuation());
+                else if (element.isCategory())
                     return Values.Amount.format(element.getCategory().getValuation());
                 else
                     return Values.Amount.format(element.getPosition().getValuation());
@@ -182,7 +186,7 @@ public class StatementOfAssetsViewer
             @Override
             public Font getFont(Object e)
             {
-                return ((Element) e).isCategory() ? boldFont : null;
+                return ((Element) e).isTotalValuation() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -194,6 +198,8 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
+                if (element.isTotalValuation())
+                    return Values.Percent.format(1d);
                 if (element.isCategory())
                     return Values.Percent.format(element.getCategory().getShare());
                 else
@@ -203,7 +209,7 @@ public class StatementOfAssetsViewer
             @Override
             public Font getFont(Object e)
             {
-                return ((Element) e).isCategory() ? boldFont : null;
+                return ((Element) e).isTotalValuation() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -425,7 +431,7 @@ public class StatementOfAssetsViewer
                     view.notifyModelUpdated();
             }
         });
-        
+
         manager.add(new Separator());
         manager.add(new WebLocationMenu(security));
     }
@@ -524,6 +530,7 @@ public class StatementOfAssetsViewer
 
     private static class Element implements Adaptable
     {
+        private long totalValuation;
         private AssetCategory category;
         private AssetPosition position;
 
@@ -534,6 +541,16 @@ public class StatementOfAssetsViewer
             this.category = category;
         }
 
+        private Element(AssetPosition position)
+        {
+            this.position = position;
+        }
+
+        private Element(long totalValuation)
+        {
+            this.totalValuation = totalValuation;
+        }
+
         public void setPerformance(Integer year, Record record)
         {
             performance.put(year, record);
@@ -542,11 +559,6 @@ public class StatementOfAssetsViewer
         public Record getPerformance(Integer year)
         {
             return performance.get(year);
-        }
-
-        private Element(AssetPosition position)
-        {
-            this.position = position;
         }
 
         public boolean isCategory()
@@ -584,6 +596,16 @@ public class StatementOfAssetsViewer
             return position != null ? position.getSecurity() : null;
         }
 
+        public long getTotalValuation()
+        {
+            return totalValuation;
+        }
+
+        public boolean isTotalValuation()
+        {
+            return category == null && position == null;
+        }
+
         @Override
         public <T> T adapt(Class<T> type)
         {
@@ -604,11 +626,11 @@ public class StatementOfAssetsViewer
             }
             else if (newInput instanceof ClientSnapshot)
             {
-                this.elements = asList(((ClientSnapshot) newInput).groupByCategory());
+                this.elements = flatten(((ClientSnapshot) newInput).groupByAssetClass());
             }
             else if (newInput instanceof PortfolioSnapshot)
             {
-                this.elements = asList(((PortfolioSnapshot) newInput).groupByCategory());
+                this.elements = flatten(((PortfolioSnapshot) newInput).groupByAssetClass());
             }
             else
             {
@@ -616,15 +638,16 @@ public class StatementOfAssetsViewer
             }
         }
 
-        private Element[] asList(List<AssetCategory> categories)
+        private Element[] flatten(GroupByAssetClass categories)
         {
             List<Element> answer = new ArrayList<Element>();
-            for (AssetCategory cat : categories)
+            for (AssetCategory cat : categories.asList())
             {
                 answer.add(new Element(cat));
                 for (AssetPosition p : cat.getPositions())
                     answer.add(new Element(p));
             }
+            answer.add(new Element(categories.getValuation()));
             return answer.toArray(new Element[0]);
         }
 

@@ -2,12 +2,11 @@ package name.abuchen.portfolio.snapshot;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -119,24 +118,25 @@ public class PortfolioSnapshotTest
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, referenceDate);
         assertNotNull(snapshot);
 
-        Map<AssetClass, AssetCategory> mapped = new HashMap<Security.AssetClass, AssetCategory>();
-        for (AssetCategory category : snapshot.groupByCategory())
-            mapped.put(category.getAssetClass(), category);
+        GroupByAssetClass byAssetClass = snapshot.groupByAssetClass();
 
-        AssetCategory debt = mapped.get(AssetClass.DEBT);
+        AssetCategory debt = byAssetClass.byClass(AssetClass.DEBT);
         assertNotNull(debt);
         assertEquals(10000, debt.getValuation());
         assertEquals(1, debt.getPositions().size());
 
-        AssetCategory commodities = mapped.get(AssetClass.COMMODITY);
+        AssetCategory commodities = byAssetClass.byClass(AssetClass.COMMODITY);
         assertNotNull(commodities);
         assertEquals(11000, commodities.getValuation());
         assertEquals(1, commodities.getPositions().size());
 
-        AssetCategory stocks = mapped.get(AssetClass.EQUITY);
+        AssetCategory stocks = byAssetClass.byClass(AssetClass.EQUITY);
         assertNotNull(stocks);
         assertEquals(24000, stocks.getValuation());
         assertEquals(2, stocks.getPositions().size());
+
+        AssetCategory realEstate = byAssetClass.byClass(AssetClass.REAL_ESTATE);
+        assertNull(realEstate);
     }
 
     @Test

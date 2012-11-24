@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -150,42 +149,9 @@ public class PortfolioSnapshot
         return value;
     }
 
-    private static class TotalsCategory extends AssetCategory
+    public GroupByAssetClass groupByAssetClass()
     {
-        public TotalsCategory(long valuation)
-        {
-            super(null, valuation);
-            this.setValuation(valuation);
-        }
-    }
-
-    public List<AssetCategory> groupByCategory()
-    {
-        TotalsCategory totals = new TotalsCategory(this.getValue());
-
-        List<AssetCategory> categories = new ArrayList<AssetCategory>();
-        Map<Security.AssetClass, AssetCategory> class2category = new HashMap<Security.AssetClass, AssetCategory>();
-
-        for (Security.AssetClass ac : Security.AssetClass.values())
-        {
-            AssetCategory category = new AssetCategory(ac, totals.getValuation());
-            categories.add(category);
-            class2category.put(ac, category);
-        }
-
-        // total line
-        categories.add(totals);
-
-        for (SecurityPosition pos : this.getPositions())
-        {
-            AssetCategory cat = class2category.get(pos.getSecurity().getType());
-            cat.addPosition(new AssetPosition(pos, totals.getValuation()));
-        }
-
-        for (AssetCategory cat : categories)
-            Collections.sort(cat.getPositions());
-
-        return categories;
+        return new GroupByAssetClass(this);
     }
 
     @Override

@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 
 public class ClientSnapshot
@@ -41,17 +37,6 @@ public class ClientSnapshot
             snapshot.jointPortfolio = PortfolioSnapshot.merge(snapshot.portfolios);
 
         return snapshot;
-    }
-
-    private static class TotalsCategory extends AssetCategory
-    {
-
-        public TotalsCategory(long valuation)
-        {
-            super(null, valuation);
-            this.setValuation(valuation);
-        }
-
     }
 
     // //////////////////////////////////////////////////////////////
@@ -109,48 +94,9 @@ public class ClientSnapshot
         return assets;
     }
 
-    public List<AssetCategory> groupByCategory()
+    public GroupByAssetClass groupByAssetClass()
     {
-        TotalsCategory totals = new TotalsCategory(this.getAssets());
-
-        List<AssetCategory> categories = new ArrayList<AssetCategory>();
-        Map<Security.AssetClass, AssetCategory> class2category = new HashMap<Security.AssetClass, AssetCategory>();
-
-        for (Security.AssetClass ac : Security.AssetClass.values())
-        {
-            AssetCategory category = new AssetCategory(ac, totals.getValuation());
-            categories.add(category);
-            class2category.put(ac, category);
-        }
-
-        // total line
-        categories.add(totals);
-
-        // cash
-        AssetCategory cash = class2category.get(Security.AssetClass.CASH);
-        for (AccountSnapshot a : this.getAccounts())
-        {
-            SecurityPosition sp = new SecurityPosition(null);
-            sp.setShares(Values.Share.factor());
-            sp.setPrice(new SecurityPrice(this.getTime(), a.getFunds()));
-            AssetPosition ap = new AssetPosition(sp, a.getAccount().getName(), totals.getValuation());
-            cash.addPosition(ap);
-        }
-
-        // portfolios
-        if (this.getJointPortfolio() != null)
-        {
-            for (SecurityPosition pos : this.getJointPortfolio().getPositions())
-            {
-                AssetCategory cat = class2category.get(pos.getSecurity().getType());
-                cat.addPosition(new AssetPosition(pos, totals.getValuation()));
-            }
-        }
-
-        for (AssetCategory cat : categories)
-            Collections.sort(cat.getPositions());
-
-        return categories;
+        return new GroupByAssetClass(this);
     }
 
     @Override
