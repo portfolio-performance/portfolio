@@ -68,6 +68,11 @@ public abstract class ToolBarDropdownMenu<E> extends SelectionAdapter
         select(0);
     }
 
+    public final void add(final E data, String label)
+    {
+        add(data, label, null);
+    }
+
     public final void add(final E data, String label, String imageKey)
     {
         MenuItem menuItem = new MenuItem(menu, SWT.CHECK);

@@ -155,7 +155,7 @@ public class IndustryClassificationDefinitionView extends AbstractFinanceView
 
         // add menu items
         for (IndustryClassification t : IndustryClassification.list())
-            menu.add(t, t.getName(), null);
+            menu.add(t, t.getName());
 
         menu.select(taxonomy);
 
