@@ -24,6 +24,8 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
@@ -40,15 +42,13 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -61,12 +61,10 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -356,14 +354,12 @@ public class SecurityListView extends AbstractListView
         // tab 2: historical quotes
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabHistoricalQuotes);
-        prices = createPricesTable(folder);
-        item.setControl(prices.getTable());
+        item.setControl(createPricesTable(folder));
 
         // tab 3: transactions
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabTransactions);
-        transactions = createTransactionTable(folder);
-        item.setControl(transactions.getTable());
+        item.setControl(createTransactionTable(folder));
 
         folder.setSelection(0);
     }
@@ -406,23 +402,48 @@ public class SecurityListView extends AbstractListView
     // tab item: prices
     // //////////////////////////////////////////////////////////////
 
-    protected TableViewer createPricesTable(Composite parent)
+    protected Composite createPricesTable(Composite parent)
     {
-        final TableViewer prices = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        TableColumn column = new TableColumn(prices.getTable(), SWT.None);
-        column.setText(Messages.ColumnDate);
-        column.setWidth(80);
+        prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        column = new TableColumn(prices.getTable(), SWT.None);
-        column.setText(Messages.ColumnAmount);
-        column.setAlignment(SWT.RIGHT);
-        column.setWidth(80);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@prices", //$NON-NLS-1$
+                        prices, layout);
+
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Date.format(((SecurityPrice) element).getTime());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPrice.class, "time"), SWT.UP); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnDate, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Quote.format(((SecurityPrice) element).getValue());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPrice.class, "value")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        support.createColumns();
 
         prices.getTable().setHeaderVisible(true);
         prices.getTable().setLinesVisible(true);
 
-        prices.setLabelProvider(new PriceLabelProvider());
         prices.setContentProvider(new SimpleListContentProvider(true));
 
         new CellEditorFactory(prices, SecurityPrice.class) //
@@ -453,7 +474,7 @@ public class SecurityListView extends AbstractListView
             }
         });
 
-        return prices;
+        return container;
     }
 
     private void fillPricesContextMenu(IMenuManager manager)
@@ -578,29 +599,6 @@ public class SecurityListView extends AbstractListView
         }
     }
 
-    static class PriceLabelProvider extends LabelProvider implements ITableLabelProvider
-    {
-
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            SecurityPrice p = (SecurityPrice) element;
-            switch (columnIndex)
-            {
-                case 0:
-                    return Values.Date.format(p.getTime());
-                case 1:
-                    return Values.Quote.format(p.getValue());
-            }
-            return null;
-        }
-
-    }
-
     // //////////////////////////////////////////////////////////////
     // tab item: chart
     // //////////////////////////////////////////////////////////////
@@ -698,14 +696,19 @@ public class SecurityListView extends AbstractListView
     // tab item: transactions
     // //////////////////////////////////////////////////////////////
 
-    protected TableViewer createTransactionTable(Composite parent)
+    protected Composite createTransactionTable(Composite parent)
     {
-        final TableViewer table = new TableViewer(parent, SWT.FULL_SELECTION);
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
 
-        TableViewerColumn column = new TableViewerColumn(table, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnDate);
-        column.getColumn().setWidth(80);
-        column.getColumn().setMoveable(true);
+        transactions = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
+                        + "@transactions", //$NON-NLS-1$
+                        transactions, layout);
+
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -714,12 +717,10 @@ public class SecurityListView extends AbstractListView
                 return Values.Date.format(((Transaction) element).getDate());
             }
         });
-        ColumnViewerSorter.create(Transaction.class, "date").attachTo(table, column, true); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "date"), SWT.UP); //$NON-NLS-1$
+        support.addColumn(column);
 
-        column = new TableViewerColumn(table, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnTransactionType);
-        column.getColumn().setWidth(80);
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -733,11 +734,9 @@ public class SecurityListView extends AbstractListView
                     return null;
             }
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(table, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnShares);
-        column.getColumn().setWidth(80);
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
         {
             @Override
@@ -746,11 +745,9 @@ public class SecurityListView extends AbstractListView
                 return (element instanceof PortfolioTransaction) ? ((PortfolioTransaction) element).getShares() : null;
             }
         });
+        support.addColumn(column);
 
-        column = new TableViewerColumn(table, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnAmount);
-        column.getColumn().setWidth(80);
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -759,12 +756,10 @@ public class SecurityListView extends AbstractListView
                 return Values.Amount.format(((Transaction) element).getAmount());
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(table, column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "amount")); //$NON-NLS-1$
+        support.addColumn(column);
 
-        column = new TableViewerColumn(table, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnQuote);
-        column.getColumn().setWidth(80);
-        column.getColumn().setMoveable(true);
+        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -774,12 +769,15 @@ public class SecurityListView extends AbstractListView
                                 .format(((PortfolioTransaction) element).getActualPurchasePrice()) : null;
             }
         });
+        support.addColumn(column);
 
-        table.getTable().setHeaderVisible(true);
-        table.getTable().setLinesVisible(true);
+        support.createColumns();
 
-        table.setContentProvider(new SimpleListContentProvider(true));
+        transactions.getTable().setHeaderVisible(true);
+        transactions.getTable().setLinesVisible(true);
 
-        return table;
+        transactions.setContentProvider(new SimpleListContentProvider(true));
+
+        return container;
     }
 }
