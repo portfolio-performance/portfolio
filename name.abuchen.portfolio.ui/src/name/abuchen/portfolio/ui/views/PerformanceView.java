@@ -35,7 +35,7 @@ public class PerformanceView extends AbstractHistoricView
 
     public PerformanceView()
     {
-        super(5, 0);
+        super(0);
     }
 
     @Override

@@ -13,18 +13,15 @@ import org.eclipse.swt.widgets.ToolBar;
 {
     private String identifier;
 
-    private final int numberOfYears;
-
     private int reportingPeriod;
 
-    public AbstractHistoricView(int numberOfYears)
+    public AbstractHistoricView()
     {
-        this(numberOfYears, 2);
+        this(2);
     }
 
-    public AbstractHistoricView(int numberOfYears, int defaultSelection)
+    public AbstractHistoricView(int defaultSelection)
     {
-        this.numberOfYears = numberOfYears;
         this.reportingPeriod = defaultSelection + 1;
 
         identifier = this.getClass().getSimpleName() + "-REPORTING"; //$NON-NLS-1$
@@ -72,8 +69,8 @@ import org.eclipse.swt.widgets.ToolBar;
             }
         };
 
-        for (int ii = 0; ii < numberOfYears; ii++)
-            menu.add(Integer.valueOf(ii + 1), MessageFormat.format(Messages.LabelReportingYears, ii + 1));
+        for (int year : new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20 })
+            menu.add(Integer.valueOf(year), MessageFormat.format(Messages.LabelReportingYears, year));
 
         menu.select(Integer.valueOf(reportingPeriod));
 

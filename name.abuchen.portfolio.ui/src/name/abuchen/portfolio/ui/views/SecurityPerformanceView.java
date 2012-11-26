@@ -41,7 +41,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
 
     public SecurityPerformanceView()
     {
-        super(5, 0);
+        super(0);
     }
 
     @Override

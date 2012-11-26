@@ -37,11 +37,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
     private TimelineChart chart;
 
-    public StatementOfAssetsHistoryView()
-    {
-        super(5);
-    }
-
     @Override
     protected String getTitle()
     {

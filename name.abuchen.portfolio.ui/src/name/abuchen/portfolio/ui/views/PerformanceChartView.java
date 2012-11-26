@@ -39,11 +39,6 @@ public class PerformanceChartView extends AbstractHistoricView
     private ColorWheel colorWheel;
     private TimelineChart chart;
 
-    public PerformanceChartView()
-    {
-        super(5, 2);
-    }
-
     @Override
     protected String getTitle()
     {
