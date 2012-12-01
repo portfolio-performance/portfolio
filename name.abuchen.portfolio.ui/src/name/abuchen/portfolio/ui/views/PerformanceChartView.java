@@ -319,13 +319,14 @@ public class PerformanceChartView extends AbstractHistoricView
         if (startDate.getTime() == firstDataPoint.getTime())
         {
             cal.setTime(startDate);
-            cal.add(Calendar.MONTH, -1);
+            cal.add(Calendar.DATE, -1);
             baseline = security.getSecurityPrice(cal.getTime());
         }
         else
         {
             cal.setTime(firstDataPoint);
             cal.add(Calendar.MONTH, -1);
+            cal.add(Calendar.DATE, -1);
             firstDataPoint = cal.getTime();
         }
 
