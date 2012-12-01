@@ -91,9 +91,7 @@ public class PortfolioSnapshot
                 if (pos == null)
                     securities.put(p.getSecurity(), p);
                 else
-                    securities.put(p.getSecurity(),
-                                    new SecurityPosition(pos.getSecurity(), pos.getPrice(), pos.getShares()
-                                                    + p.getShares()));
+                    securities.put(p.getSecurity(), SecurityPosition.merge(pos, p));
             }
         }
 

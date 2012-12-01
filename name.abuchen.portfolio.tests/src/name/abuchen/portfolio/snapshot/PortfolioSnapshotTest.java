@@ -22,60 +22,6 @@ import org.junit.Test;
 public class PortfolioSnapshotTest
 {
     @Test
-    public void testMergingPortfolioSnapshots()
-    {
-        // Portfolio A : Security A + Security X
-        // Portfolio B : Security B + Security X
-
-        Date referenceDate = Dates.date(2010, Calendar.JANUARY, 31);
-
-        Client client = new Client();
-
-        Security securityA = new Security();
-        securityA.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1000));
-        client.addSecurity(securityA);
-
-        Security securityB = new Security();
-        securityB.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1100));
-        client.addSecurity(securityB);
-
-        Security securityX = new Security();
-        securityX.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1200));
-        client.addSecurity(securityX);
-
-        Portfolio portfolioA = new Portfolio();
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityA,
-                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0));
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 1000000, 12000, 0));
-        client.addPortfolio(portfolioA);
-
-        Portfolio portfolioB = new Portfolio();
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityB,
-                        PortfolioTransaction.Type.BUY, 1000000, 11000, 0));
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 1000000, 12000, 0));
-        client.addPortfolio(portfolioB);
-
-        ClientSnapshot snapshot = ClientSnapshot.create(client, referenceDate);
-        assertNotNull(snapshot);
-
-        PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
-
-        SecurityPosition positionA = jointPortfolio.getPositionsBySecurity().get(securityA);
-        assertEquals(1000000, positionA.getShares());
-        assertEquals(10000, positionA.calculateValue());
-
-        SecurityPosition positionB = jointPortfolio.getPositionsBySecurity().get(securityB);
-        assertEquals(1000000, positionB.getShares());
-        assertEquals(11000, positionB.calculateValue());
-
-        SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertEquals(2000000, positionX.getShares());
-        assertEquals(24000, positionX.calculateValue());
-    }
-
-    @Test
     public void testGroupByCategories()
     {
         Date referenceDate = Dates.date(2010, Calendar.JANUARY, 31);

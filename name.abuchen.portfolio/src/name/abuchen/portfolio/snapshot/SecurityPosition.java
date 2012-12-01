@@ -169,4 +169,18 @@ public class SecurityPosition
         this.purchasePrice = sharesBought > 0 ? (value * Values.Share.factor()) / sharesBought : 0;
         this.purchaseValue = investment;
     }
+
+    public static SecurityPosition merge(SecurityPosition p1, SecurityPosition p2)
+    {
+        if (!p1.getSecurity().equals(p2.getSecurity()))
+            throw new UnsupportedOperationException();
+
+        SecurityPosition answer = new SecurityPosition(p1.getSecurity());
+        answer.price = p1.price;
+        answer.shares = p1.shares + p2.shares;
+        answer.transactions.addAll(p1.transactions);
+        answer.transactions.addAll(p2.transactions);
+        return answer;
+    }
+
 }
