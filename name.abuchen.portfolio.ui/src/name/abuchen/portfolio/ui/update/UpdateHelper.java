@@ -165,6 +165,14 @@ public class UpdateHelper
         IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent
                         .getService(IArtifactRepositoryManager.SERVICE_NAME);
 
+        // first: remove existing repositories (preferences might have changed)
+        for (URI r : repositoryManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL))
+            repositoryManager.removeRepository(r);
+
+        for (URI r : artifactManager.getKnownRepositories(IArtifactRepositoryManager.REPOSITORIES_ALL))
+            artifactManager.removeRepository(r);
+
+        // second: add repository as configured in preferences
         try
         {
             String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
