@@ -118,6 +118,8 @@ public class SecurityPerformanceSnapshot
                     case TRANSFER_OUT:
                     case BUY:
                     case SELL:
+                    case DELIVERY_INBOUND:
+                    case DELIVERY_OUTBOUND:
                         transactions.get(t.getSecurity()).add(t);
                         break;
                     default:
@@ -278,12 +280,14 @@ public class SecurityPerformanceSnapshot
                     PortfolioTransaction pt = (PortfolioTransaction) t;
                     switch (pt.getType())
                     {
-                        case TRANSFER_IN:
                         case BUY:
+                        case DELIVERY_INBOUND:
+                        case TRANSFER_IN:
                             values.add(-pt.getAmount() / Values.Amount.divider());
                             break;
-                        case TRANSFER_OUT:
                         case SELL:
+                        case DELIVERY_OUTBOUND:
+                        case TRANSFER_OUT:
                             values.add(pt.getAmount() / Values.Amount.divider());
                             break;
                         default:
@@ -316,13 +320,17 @@ public class SecurityPerformanceSnapshot
                     PortfolioTransaction pt = (PortfolioTransaction) t;
                     switch (pt.getType())
                     {
-                        case TRANSFER_IN:
                         case BUY:
+                        case DELIVERY_INBOUND:
                             delta -= pt.getAmount();
                             break;
-                        case TRANSFER_OUT:
                         case SELL:
+                        case DELIVERY_OUTBOUND:
                             delta += pt.getAmount();
+                            break;
+                        case TRANSFER_IN:
+                        case TRANSFER_OUT:
+                            // transferals do not contribute to the delta
                             break;
                         default:
                             throw new UnsupportedOperationException();

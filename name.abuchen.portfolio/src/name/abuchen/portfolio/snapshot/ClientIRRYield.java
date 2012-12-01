@@ -62,7 +62,7 @@ public class ClientIRRYield
     private List<Transaction> transactions;
     private double irr;
 
-    public ClientIRRYield(ClientSnapshot snapshotStart, ClientSnapshot snapshotEnd, List<Transaction> transactions,
+    private ClientIRRYield(ClientSnapshot snapshotStart, ClientSnapshot snapshotEnd, List<Transaction> transactions,
                     double irr)
     {
         this.snapshotStart = snapshotStart;
@@ -110,6 +110,8 @@ public class ClientIRRYield
                     {
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
+                        case DELIVERY_INBOUND:
+                        case DELIVERY_OUTBOUND:
                             transactions.add(t);
                             break;
                         case BUY:
@@ -182,7 +184,8 @@ public class ClientIRRYield
                 PortfolioTransaction pt = (PortfolioTransaction) t;
 
                 long amount = pt.getAmount();
-                if (pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
+                if (pt.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / Values.Amount.divider());
             }

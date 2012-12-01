@@ -261,6 +261,8 @@ public final class Security
                     case TRANSFER_OUT:
                     case BUY:
                     case SELL:
+                    case DELIVERY_INBOUND:
+                    case DELIVERY_OUTBOUND:
                         answer.add(t);
                         break;
                     default:

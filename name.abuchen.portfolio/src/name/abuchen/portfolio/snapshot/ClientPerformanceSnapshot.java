@@ -156,6 +156,7 @@ public class ClientPerformanceSnapshot
                     switch (t.getType())
                     {
                         case BUY:
+                        case DELIVERY_INBOUND:
                         case TRANSFER_IN:
                         {
                             Long v = valuation.get(t.getSecurity());
@@ -163,6 +164,7 @@ public class ClientPerformanceSnapshot
                             break;
                         }
                         case SELL:
+                        case DELIVERY_OUTBOUND:
                         case TRANSFER_OUT:
                         {
                             Long v = valuation.get(t.getSecurity());
@@ -284,14 +286,16 @@ public class ClientPerformanceSnapshot
                 {
                     switch (t.getType())
                     {
-                        case TRANSFER_IN:
+                        case DELIVERY_INBOUND:
                             deposits += t.getAmount();
                             break;
-                        case TRANSFER_OUT:
+                        case DELIVERY_OUTBOUND:
                             removals += t.getAmount();
                             break;
                         case BUY:
                         case SELL:
+                        case TRANSFER_IN:
+                        case TRANSFER_OUT:
                             break;
                         default:
                             throw new UnsupportedOperationException();

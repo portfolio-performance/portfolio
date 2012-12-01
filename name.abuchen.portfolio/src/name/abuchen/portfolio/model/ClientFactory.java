@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
@@ -42,7 +43,7 @@ public class ClientFactory
             addDecimalPlaces(client);
             client.setVersion(3);
         }
-        
+
         if (client.getVersion() == 3)
         {
             // do nothing --> added industry classification
@@ -61,14 +62,22 @@ public class ClientFactory
             // do nothing --> save industry taxonomy in client
             client.setVersion(6);
         }
-        
+
         if (client.getVersion() == 6)
         {
             // do nothing --> added WKN attribute to security
             client.setVersion(7);
         }
 
-        if (client.getVersion() != 7)
+        if (client.getVersion() == 7)
+        {
+            // new portfolio transaction types:
+            // DELIVERY_INBOUND, DELIVERY_OUTBOUND
+            changePortfolioTransactionTypeToDelivery(client);
+            client.setVersion(8);
+        }
+
+        if (client.getVersion() != 8)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 
@@ -95,6 +104,20 @@ public class ClientFactory
         for (Portfolio p : client.getPortfolios())
             for (PortfolioTransaction t : p.getTransactions())
                 t.setShares(t.getShares() * Values.Share.factor());
+    }
+
+    private static void changePortfolioTransactionTypeToDelivery(Client client)
+    {
+        for (Portfolio p : client.getPortfolios())
+        {
+            for (PortfolioTransaction t : p.getTransactions())
+            {
+                if (t.getType() == Type.TRANSFER_IN)
+                    t.setType(Type.DELIVERY_INBOUND);
+                else if (t.getType() == Type.TRANSFER_OUT)
+                    t.setType(Type.DELIVERY_OUTBOUND);
+            }
+        }
     }
 
     @SuppressWarnings("nls")

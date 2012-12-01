@@ -75,6 +75,8 @@ public class TransactionHelper
         {
             case BUY:
             case SELL:
+            case TRANSFER_IN:
+            case TRANSFER_OUT:
                 return true;
             default:
                 return false;
@@ -116,12 +118,16 @@ public class TransactionHelper
                 return findCounterTransactionInAccounts(client, t, AccountTransaction.Type.BUY);
             case SELL:
                 return findCounterTransactionInAccounts(client, t, AccountTransaction.Type.SELL);
+            case TRANSFER_IN:
+                return findCounterTransactionInPortfolio(client, t, PortfolioTransaction.Type.TRANSFER_OUT);
+            case TRANSFER_OUT:
+                return findCounterTransactionInPortfolio(client, t, PortfolioTransaction.Type.TRANSFER_IN);
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type " + t.getType()); //$NON-NLS-1$
         }
     }
 
-    private static List<CounterTransaction> findCounterTransactionInPortfolio(Client client, AccountTransaction t,
+    private static List<CounterTransaction> findCounterTransactionInPortfolio(Client client, Transaction t,
                     PortfolioTransaction.Type type)
     {
         List<CounterTransaction> answer = new ArrayList<CounterTransaction>();

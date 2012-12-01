@@ -675,10 +675,12 @@ public class SecurityListView extends AbstractListView
                     {
                         case BUY:
                         case TRANSFER_IN:
+                        case DELIVERY_INBOUND:
                             chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), label);
                             break;
                         case SELL:
                         case TRANSFER_OUT:
+                        case DELIVERY_OUTBOUND:
                             chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + label); //$NON-NLS-1$
                             break;
                         default:

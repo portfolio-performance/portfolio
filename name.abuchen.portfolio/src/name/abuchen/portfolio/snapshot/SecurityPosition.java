@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -70,10 +72,12 @@ public class SecurityPosition
         {
             case BUY:
             case TRANSFER_IN:
+            case DELIVERY_INBOUND:
                 shares += t.getShares();
                 break;
             case SELL:
             case TRANSFER_OUT:
+            case DELIVERY_OUTBOUND:
                 shares -= t.getShares();
                 break;
             default:
@@ -122,28 +126,73 @@ public class SecurityPosition
         }
         else
         {
-            calculatePurchaseValuePrice();
+            calculatePurchaseValuePrice(filter(transactions));
         }
 
         isDirty = false;
     }
 
-    private void calculatePurchaseValuePrice()
+    /**
+     * Remove matching transfer_in / transfer_out transactions
+     */
+    private static List<PortfolioTransaction> filter(List<PortfolioTransaction> input)
+    {
+        List<PortfolioTransaction> inbound = new ArrayList<PortfolioTransaction>();
+        for (PortfolioTransaction t : input)
+            if (t.getType() == Type.TRANSFER_IN)
+                inbound.add(t);
+
+        if (inbound.isEmpty())
+            return input;
+
+        List<PortfolioTransaction> output = new ArrayList<PortfolioTransaction>(input.size());
+        TransactionLoop: for (PortfolioTransaction t : input)
+        {
+            if (t.getType() == Type.TRANSFER_IN)
+            {
+                continue;
+            }
+            else if (t.getType() == Type.TRANSFER_OUT)
+            {
+                Iterator<PortfolioTransaction> iter = inbound.iterator();
+                while (iter.hasNext())
+                {
+                    PortfolioTransaction t_inbound = iter.next();
+                    if (t_inbound.getDate().equals(t.getDate()) && t_inbound.getShares() == t.getShares())
+                    {
+                        iter.remove();
+                        continue TransactionLoop;
+                    }
+                }
+                output.add(t);
+            }
+            else
+            {
+                output.add(t);
+            }
+        }
+
+        output.addAll(inbound);
+        Collections.sort(output);
+        return output;
+    }
+
+    private void calculatePurchaseValuePrice(List<PortfolioTransaction> input)
     {
         // assume: list is sorted, to FIFO
         long sharesSold = 0;
-        for (PortfolioTransaction t : transactions)
+        for (PortfolioTransaction t : input)
         {
-            if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL)
+            if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL || t.getType() == Type.DELIVERY_OUTBOUND)
                 sharesSold += t.getShares();
         }
 
         long sharesBought = 0;
         long value = 0;
         long investment = 0;
-        for (PortfolioTransaction t : transactions)
+        for (PortfolioTransaction t : input)
         {
-            if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY)
+            if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
             {
                 long bought = t.getShares();
 

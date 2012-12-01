@@ -7,7 +7,7 @@ public class PortfolioTransaction extends Transaction
 {
     public enum Type
     {
-        BUY, SELL, TRANSFER_IN, TRANSFER_OUT
+        BUY, SELL, TRANSFER_IN, TRANSFER_OUT, DELIVERY_INBOUND, DELIVERY_OUTBOUND
     }
 
     private Type type;
@@ -77,9 +77,11 @@ public class PortfolioTransaction extends Transaction
         {
             case BUY:
             case TRANSFER_IN:
+            case DELIVERY_INBOUND:
                 return (amount - fees) * Values.Share.factor() / shares;
             case SELL:
             case TRANSFER_OUT:
+            case DELIVERY_OUTBOUND:
                 return (amount + fees) * Values.Share.factor() / shares;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
@@ -91,7 +93,7 @@ public class PortfolioTransaction extends Transaction
     public String toString()
     {
         long v = getAmount();
-        if (EnumSet.of(Type.BUY, Type.TRANSFER_IN).contains(type))
+        if (EnumSet.of(Type.BUY, Type.TRANSFER_IN, Type.DELIVERY_INBOUND).contains(type))
             v = -v;
 
         return String.format("%tF %-12s %-18s %,10.2f", getDate(), type, getSecurity().getTickerSymbol(), //

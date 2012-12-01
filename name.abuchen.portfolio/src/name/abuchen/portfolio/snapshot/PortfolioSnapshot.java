@@ -32,6 +32,7 @@ public class PortfolioSnapshot
                 {
                     case TRANSFER_IN:
                     case BUY:
+                    case DELIVERY_INBOUND:
                     {
                         SecurityPosition p = positions.get(t.getSecurity());
                         if (p == null)
@@ -41,6 +42,7 @@ public class PortfolioSnapshot
                     }
                     case TRANSFER_OUT:
                     case SELL:
+                    case DELIVERY_OUTBOUND:
                     {
                         SecurityPosition p = positions.get(t.getSecurity());
                         if (p == null)
