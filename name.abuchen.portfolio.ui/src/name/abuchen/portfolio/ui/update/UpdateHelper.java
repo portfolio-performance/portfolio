@@ -22,8 +22,15 @@ import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -58,9 +65,12 @@ public class UpdateHelper
             {
                 public void run()
                 {
-                    doUpdate[0] = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
-                                    Messages.LabelUpdatesAvailable,
-                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion[0], newVersion[1]));
+                    Dialog dialog = new ExtendedMessageDialog(Display.getDefault().getActiveShell(),
+                                    Messages.LabelUpdatesAvailable, //
+                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion[0]), //
+                                    newVersion[1]);
+
+                    doUpdate[0] = dialog.open() == 0;
                 }
             });
 
@@ -167,6 +177,26 @@ public class UpdateHelper
         {
             IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
             throw new CoreException(status);
+        }
+    }
+
+    private static class ExtendedMessageDialog extends MessageDialog
+    {
+        private String log;
+
+        public ExtendedMessageDialog(Shell parentShell, String title, String message, String log)
+        {
+            super(parentShell, title, null, message, CONFIRM, new String[] { IDialogConstants.OK_LABEL,
+                            IDialogConstants.CANCEL_LABEL }, 0);
+            this.log = log;
+        }
+
+        @Override
+        protected Control createCustomArea(Composite parent)
+        {
+            Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
+            text.setText(log);
+            return text;
         }
     }
 }
