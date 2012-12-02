@@ -2,12 +2,20 @@ package name.abuchen.portfolio.model;
 
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.ResourceBundle;
 
 public class AccountTransaction extends Transaction
 {
     public enum Type
     {
-        DEPOSIT, REMOVAL, INTEREST, DIVIDENDS, FEES, TAXES, BUY, SELL, TRANSFER_IN, TRANSFER_OUT
+        DEPOSIT, REMOVAL, INTEREST, DIVIDENDS, FEES, TAXES, BUY, SELL, TRANSFER_IN, TRANSFER_OUT;
+
+        private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+
+        public String toString()
+        {
+            return RESOURCES.getString("account." + name()); //$NON-NLS-1$
+        }
     }
 
     private Type type;

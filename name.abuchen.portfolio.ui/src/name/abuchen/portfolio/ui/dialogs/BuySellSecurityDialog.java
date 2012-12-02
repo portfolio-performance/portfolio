@@ -203,7 +203,7 @@ public class BuySellSecurityDialog extends AbstractDialog
 
     public BuySellSecurityDialog(Shell parentShell, Client client, Security security, PortfolioTransaction.Type type)
     {
-        super(parentShell, security != null ? type.name() + " " + security.getName() : type.name(), //$NON-NLS-1$
+        super(parentShell, security != null ? type.toString() + " " + security.getName() : type.toString(), //$NON-NLS-1$
                         new Model(client, security, type));
 
         if (!(type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL))

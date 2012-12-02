@@ -107,7 +107,7 @@ public class StatementOfAssetsViewer
                 if (element.isTotalValuation())
                     return Messages.LabelTotalSum;
                 else if (element.isCategory())
-                    return element.getCategory().getAssetClass().name();
+                    return element.getCategory().getAssetClass().toString();
                 else
                     return element.getPosition().getDescription();
             }

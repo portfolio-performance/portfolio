@@ -207,11 +207,11 @@ public class SecurityPerformanceView extends AbstractHistoricView
                         return Values.Date.format(t.getDate());
                     case 4:
                         if (t instanceof PortfolioTransaction)
-                            return ((PortfolioTransaction) t).getType().name();
+                            return ((PortfolioTransaction) t).getType().toString();
                         else if (t instanceof AccountTransaction)
-                            return ((AccountTransaction) t).getType().name();
+                            return ((AccountTransaction) t).getType().toString();
                         else
-                            return "QUOTE"; //$NON-NLS-1$
+                            return Messages.LabelQuote;
                     case 5:
                         return Values.Amount.format(Math.abs(t.getAmount()));
                 }

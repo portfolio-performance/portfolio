@@ -2,12 +2,20 @@ package name.abuchen.portfolio.model;
 
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.ResourceBundle;
 
 public class PortfolioTransaction extends Transaction
 {
     public enum Type
     {
-        BUY, SELL, TRANSFER_IN, TRANSFER_OUT, DELIVERY_INBOUND, DELIVERY_OUTBOUND
+        BUY, SELL, TRANSFER_IN, TRANSFER_OUT, DELIVERY_INBOUND, DELIVERY_OUTBOUND;
+
+        private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+
+        public String toString()
+        {
+            return RESOURCES.getString("portfolio." + name()); //$NON-NLS-1$
+        }
     }
 
     private Type type;

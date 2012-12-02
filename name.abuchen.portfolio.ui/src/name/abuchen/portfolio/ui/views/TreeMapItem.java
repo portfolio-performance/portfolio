@@ -213,7 +213,7 @@ public class TreeMapItem
         else if (isAccount())
             return account.getName();
         else if (isAssetCategory())
-            return assetCategory.getAssetClass().name();
+            return assetCategory.getAssetClass().toString();
         else if (assetPosition != null)
             return assetPosition.getDescription();
         else

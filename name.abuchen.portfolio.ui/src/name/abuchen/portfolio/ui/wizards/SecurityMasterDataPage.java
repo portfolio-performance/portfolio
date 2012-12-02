@@ -179,7 +179,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
                             @Override
                             public String getText(Object element)
                             {
-                                return ((AssetClass) element).name();
+                                return ((AssetClass) element).toString();
                             }
                         }, AssetClass.values());
 

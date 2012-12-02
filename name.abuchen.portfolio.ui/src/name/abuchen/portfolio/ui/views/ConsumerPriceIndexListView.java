@@ -234,7 +234,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
             ii++;
         }
 
-        chart.addDateSeries(dates, cpis, Colors.CPI);
+        chart.addDateSeries(dates, cpis, Colors.CPI, Colors.CPI.name());
 
         chart.getAxisSet().adjustRange();
 

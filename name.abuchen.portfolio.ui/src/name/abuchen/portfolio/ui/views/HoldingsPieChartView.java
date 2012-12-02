@@ -61,7 +61,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
         for (SecurityPosition p : positions)
         {
             slices.add(new PieChart.Slice(p.calculateValue(), //
-                            p.getSecurity() == null ? Security.AssetClass.CASH.name() : p.getSecurity().getName(), //
+                            p.getSecurity() == null ? Security.AssetClass.CASH.toString() : p.getSecurity().getName(), //
                             p.getSecurity() == null ? Colors.CASH : Colors.valueOf(p.getSecurity().getType().name())));
         }
 

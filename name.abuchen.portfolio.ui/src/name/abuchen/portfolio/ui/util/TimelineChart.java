@@ -132,11 +132,6 @@ public class TimelineChart extends Chart
         this.markerLines.clear();
     }
 
-    public void addDateSeries(Date[] dates, double[] values, Colors color)
-    {
-        addDateSeries(dates, values, resources.createColor(color.swt()), false, color.name());
-    }
-
     public ILineSeries addDateSeries(Date[] dates, double[] values, Colors color, String label)
     {
         return addDateSeries(dates, values, resources.createColor(color.swt()), false, label);

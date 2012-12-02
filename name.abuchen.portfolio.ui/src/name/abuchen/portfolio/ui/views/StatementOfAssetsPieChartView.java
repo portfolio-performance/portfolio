@@ -83,7 +83,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         for (AssetCategory category : categories)
         {
             AssetClass assetClass = category.getAssetClass();
-            slices.add(new PieChart.Slice(category.getValuation(), assetClass.name(), Colors.valueOf(assetClass.name())));
+            slices.add(new PieChart.Slice(category.getValuation(), assetClass.toString(), Colors.valueOf(assetClass.name())));
         }
         pieChart.setSlices(slices);
         pieChart.redraw();

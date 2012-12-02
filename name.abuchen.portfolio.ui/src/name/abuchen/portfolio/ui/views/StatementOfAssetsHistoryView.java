@@ -133,12 +133,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart.getLegend().setVisible(true);
         chart.getLegend().setPosition(SWT.BOTTOM);
 
-        chart.addDateSeries(dates, totals, Colors.TOTALS);
+        chart.addDateSeries(dates, totals, Colors.TOTALS, Messages.LabelTotalSum);
 
         for (int ii = 0; ii < assetClass.length; ii++)
         {
             if (assetClassHasValues[ii])
-                chart.addDateSeries(dates, assetClass[ii], Colors.valueOf(AssetClass.values()[ii].name()));
+                chart.addDateSeries(dates, assetClass[ii], Colors.valueOf(AssetClass.values()[ii].name()),
+                                AssetClass.values()[ii].toString());
         }
 
         // deposits & removals

@@ -88,7 +88,7 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
                             @Override
                             public String getText(Object element)
                             {
-                                return ((AccountTransaction.Type) element).name();
+                                return ((AccountTransaction.Type) element).toString();
                             }
                         }, EnumSet.of(AccountTransaction.Type.INTEREST, //
                                         AccountTransaction.Type.DEPOSIT, //
