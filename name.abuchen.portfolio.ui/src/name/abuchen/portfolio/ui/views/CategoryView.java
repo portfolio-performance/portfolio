@@ -429,7 +429,7 @@ public class CategoryView extends AbstractFinanceView
                     case 0:
                         return cat.getName();
                     case 1:
-                        return String.format("%,10.1f", (double) cat.getPercentage()); //$NON-NLS-1$
+                        return String.format("%,10.0f", (double) cat.getPercentage()); //$NON-NLS-1$
                     case 2:
                         return Values.Amount.format(cat.getTarget());
                     case 3:
