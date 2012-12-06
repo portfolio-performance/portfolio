@@ -26,7 +26,7 @@ package name.abuchen.portfolio.math;
         double delta = 1;
         double xi = x0;
 
-        for (int ii = 0; delta > stop && ii < 20; ii++)
+        for (int ii = 0; delta > stop && ii < 500; ii++)
         {
             double fxi = f.compute(xi);
             double fdxi = fd.compute(xi);
