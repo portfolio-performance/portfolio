@@ -11,34 +11,34 @@ See http://buchen.github.com/portfolio/ for more details.
 [SWTChart](http://www.swtchart.org/)
 
 ```
-mvn install:install-file
-    -Dfile=org.swtchart_0.8.0.v20120301.jar
-    -DgroupId=org.swtchart
-    -DartifactId=org.swtchart
-    -Dversion=0.8.0
-    -Dpackaging=jar
+mvn install:install-file \
+    -Dfile=org.swtchart_0.8.0.v20120301.jar \
+    -DgroupId=org.swtchart \
+    -DartifactId=org.swtchart \
+    -Dversion=0.8.0 \
+    -Dpackaging=jar \
     -DgeneratePom=true
 ```
 
 [TreeMapLib](http://code.google.com/p/treemaplib/)
 
 ```
-mvn install:install-file
-    -Dfile=tm_core_0.0.4.jar
-    -DgroupId=de.engehausen
-    -DartifactId=de.engehausen.treemap
-    -Dversion=0.0.4
-    -Dpackaging=jar
+mvn install:install-file \
+    -Dfile=tm_core_0.0.4.jar \
+    -DgroupId=de.engehausen \
+    -DartifactId=de.engehausen.treemap \
+    -Dversion=0.0.4 \
+    -Dpackaging=jar \
     -DgeneratePom=true
 ```
 
 ```
-mvn install:install-file
-    -Dfile=tm_swt_0.0.5.jar
-    -DgroupId=de.engehausen
-    -DartifactId=de.engehausen.treemap.swt
-    -Dversion=0.0.5
-    -Dpackaging=jar
+mvn install:install-file \
+    -Dfile=tm_swt_0.0.5.jar \
+    -DgroupId=de.engehausen \
+    -DartifactId=de.engehausen.treemap.swt \
+    -Dversion=0.0.5 \
+    -Dpackaging=jar \
     -DgeneratePom=true
 ```
 
