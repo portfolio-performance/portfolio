@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 
 public class ClientPerformanceSnapshot
@@ -24,6 +25,14 @@ public class ClientPerformanceSnapshot
     {
         private long valuation;
         private String label;
+        private Security security;
+
+        public Position(Security security, long valuation)
+        {
+            this.label = security.getName();
+            this.valuation = valuation;
+            this.security = security;
+        }
 
         public Position(String label, long valuation)
         {
@@ -39,6 +48,11 @@ public class ClientPerformanceSnapshot
         public String getLabel()
         {
             return label;
+        }
+
+        public Security getSecurity()
+        {
+            return security;
         }
     }
 
@@ -80,6 +94,7 @@ public class ClientPerformanceSnapshot
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
     private EnumMap<CategoryType, Category> categories;
+    private List<Transaction> earnings;
 
     public ClientPerformanceSnapshot(Client client, Date startDate, Date endDate)
     {
@@ -87,6 +102,7 @@ public class ClientPerformanceSnapshot
         this.snapshotStart = ClientSnapshot.create(client, startDate);
         this.snapshotEnd = ClientSnapshot.create(client, endDate);
         this.categories = new EnumMap<CategoryType, Category>(CategoryType.class);
+        this.earnings = new ArrayList<Transaction>();
 
         calculate();
     }
@@ -104,6 +120,11 @@ public class ClientPerformanceSnapshot
     public List<Category> getCategories()
     {
         return new ArrayList<Category>(categories.values());
+    }
+
+    public List<Transaction> getEarnings()
+    {
+        return earnings;
     }
 
     /* package */EnumMap<CategoryType, Category> getCategoryMap()
@@ -199,7 +220,7 @@ public class ClientPerformanceSnapshot
             Long value = valuation.get(security);
             if (value == null || value == 0)
                 continue;
-            categories.get(CategoryType.CAPITAL_GAINS).positions.add(new Position(security.getName(), value));
+            categories.get(CategoryType.CAPITAL_GAINS).positions.add(new Position(security, value));
         }
     }
 
@@ -240,6 +261,7 @@ public class ClientPerformanceSnapshot
                     {
                         case DIVIDENDS:
                         case INTEREST:
+                            this.earnings.add(t);
                             earnings += t.getAmount();
                             if (t.getSecurity() != null)
                             {
@@ -311,7 +333,7 @@ public class ClientPerformanceSnapshot
             Long value = earningsBySecurity.get(security);
             if (value == null || value == 0)
                 continue;
-            categories.get(CategoryType.EARNINGS).positions.add(new Position(security.getName(), value));
+            categories.get(CategoryType.EARNINGS).positions.add(new Position(security, value));
         }
         if (otherEarnings > 0)
             categories.get(CategoryType.EARNINGS).positions.add(new Position(Messages.LabelInterest, otherEarnings));

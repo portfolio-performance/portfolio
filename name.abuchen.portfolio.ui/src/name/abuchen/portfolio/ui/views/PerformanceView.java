@@ -2,19 +2,29 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.Calendar;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -26,12 +36,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 public class PerformanceView extends AbstractHistoricView
 {
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
     private StatementOfAssetsViewer snapshotEnd;
+    private TableViewer earnings;
 
     public PerformanceView()
     {
@@ -73,6 +86,8 @@ public class PerformanceView extends AbstractHistoricView
         snapshotStart.pack();
         snapshotEnd.setInput(snapshot.getEndClientSnapshot());
         snapshotEnd.pack();
+
+        earnings.setInput(snapshot.getEarnings());
     }
 
     @Override
@@ -84,6 +99,7 @@ public class PerformanceView extends AbstractHistoricView
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
         snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
+        createEarningsItem(folder, Messages.PerformanceTabEarnings);
 
         folder.setSelection(0);
 
@@ -112,17 +128,94 @@ public class PerformanceView extends AbstractHistoricView
 
         TreeViewerColumn column = new TreeViewerColumn(calculation, SWT.NONE);
         column.getColumn().setText(Messages.ColumnLable);
-        layout.setColumnData(column.getColumn(),  new ColumnPixelData(350));
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(350));
 
         column = new TreeViewerColumn(calculation, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnValue);
-        layout.setColumnData(column.getColumn(),  new ColumnPixelData(80));
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80));
 
         calculation.getTree().setHeaderVisible(true);
         calculation.getTree().setLinesVisible(true);
 
         calculation.setLabelProvider(new PerformanceLabelProvider());
         calculation.setContentProvider(new PerformanceContentProvider());
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(title);
+        item.setControl(container);
+    }
+
+    private void createEarningsItem(CTabFolder folder, String title)
+    {
+        Composite container = new Composite(folder, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
+
+        earnings = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@earnings", //$NON-NLS-1$
+                        earnings, layout);
+
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Date.format(((Transaction) element).getDate());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "date"), SWT.UP); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((Transaction) element).getAmount());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "amount")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction transaction = (Transaction) element;
+                if (transaction.getSecurity() != null)
+                    return transaction.getSecurity().getName();
+
+                for (Account account : getClient().getAccounts())
+                {
+                    if (account.getTransactions().contains(transaction))
+                        return account.getName();
+                }
+
+                return null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                Transaction transaction = (Transaction) element;
+                return PortfolioPlugin.image(transaction.getSecurity() != null ? PortfolioPlugin.IMG_SECURITY
+                                : PortfolioPlugin.IMG_ACCOUNT);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "security")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        support.createColumns();
+
+        earnings.getTable().setHeaderVisible(true);
+        earnings.getTable().setLinesVisible(true);
+
+        earnings.setContentProvider(new SimpleListContentProvider());
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -195,6 +288,18 @@ public class PerformanceView extends AbstractHistoricView
 
         public Image getColumnImage(Object element, int columnIndex)
         {
+            if (columnIndex != 0)
+                return null;
+
+            if (element instanceof ClientPerformanceSnapshot.Category)
+            {
+                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+            }
+            else if (element instanceof ClientPerformanceSnapshot.Position)
+            {
+                ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
+                return position.getSecurity() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY) : null;
+            }
             return null;
         }
 

@@ -67,6 +67,7 @@ public class Messages extends NLS
     public static String ColumnSecurityType;
     public static String ColumnShareInPercent;
     public static String ColumnShares;
+    public static String ColumnSource;
     public static String ColumnSymbol;
     public static String ColumnTargetPercent;
     public static String ColumnTargetValue;
@@ -225,6 +226,7 @@ public class Messages extends NLS
     public static String PerformanceTabAssetsAtEnd;
     public static String PerformanceTabAssetsAtStart;
     public static String PerformanceTabCalculation;
+    public static String PerformanceTabEarnings;
     public static String PortfolioMenuAdd;
     public static String PortfolioMenuDelete;
     public static String PrefCheckOnStartup;
