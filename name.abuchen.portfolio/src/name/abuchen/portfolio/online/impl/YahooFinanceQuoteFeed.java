@@ -335,15 +335,27 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             if (item.getSymbol() != null && (symbol.equals(item.getSymbol()) || item.getSymbol().startsWith(prefix)))
             {
-                int e = item.getSymbol().indexOf('.');
-                String exchange = e >= 0 ? item.getSymbol().substring(e) : ".default"; //$NON-NLS-1$
-                String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
-
-                answer.add(new Exchange(item.getSymbol(), String.format("%s (%s)", label, item.getSymbol()))); //$NON-NLS-1$
+                answer.add(createExchange(item.getSymbol()));
             }
         }
 
+        if (answer.isEmpty())
+        {
+            // Issue #29
+            // at least add the given ticker symbol if the search returns
+            // nothing (sometimes accidentally)
+            answer.add(createExchange(subject.getTickerSymbol()));
+        }
+
         return answer;
+    }
+
+    private Exchange createExchange(String symbol)
+    {
+        int e = symbol.indexOf('.');
+        String exchange = e >= 0 ? symbol.substring(e) : ".default"; //$NON-NLS-1$
+        String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
+        return new Exchange(symbol, String.format("%s (%s)", label, symbol)); //$NON-NLS-1$
     }
 
     /* enable testing */
