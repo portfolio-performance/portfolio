@@ -209,6 +209,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
     {
         chart = new TimelineChart(parent);
         chart.getTitle().setText(Messages.LabelConsumerPriceIndex);
+        chart.getToolTip().setDateFormat("%1$tB %1$tY"); //$NON-NLS-1$
         refreshChart();
     }
 
@@ -234,7 +235,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
             ii++;
         }
 
-        chart.addDateSeries(dates, cpis, Colors.CPI, Colors.CPI.name());
+        chart.addDateSeries(dates, cpis, Colors.CPI, Messages.LabelConsumerPriceIndex);
 
         chart.getAxisSet().adjustRange();
 

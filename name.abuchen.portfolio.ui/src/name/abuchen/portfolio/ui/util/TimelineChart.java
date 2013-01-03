@@ -43,6 +43,7 @@ public class TimelineChart extends Chart
     }
 
     private List<MarkerLine> markerLines = new ArrayList<MarkerLine>();
+    private TimelineChartToolTip toolTip;
     private final LocalResourceManager resources;
 
     public TimelineChart(Composite parent)
@@ -120,6 +121,7 @@ public class TimelineChart extends Chart
             }
         });
 
+        toolTip = new TimelineChartToolTip(this);
     }
 
     public void addMarkerLine(Date date, RGB color, String label)
@@ -171,4 +173,8 @@ public class TimelineChart extends Chart
         return barSeries;
     }
 
+    public TimelineChartToolTip getToolTip()
+    {
+        return toolTip;
+    }
 }

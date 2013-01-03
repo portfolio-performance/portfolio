@@ -113,6 +113,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getTitle().setVisible(false);
         chart.getLegend().setVisible(true);
         chart.getLegend().setPosition(SWT.BOTTOM);
+        chart.getToolTip().setDateFormat("%1$tB %1$tY"); //$NON-NLS-1$
 
         // force layout, otherwise range calculation of chart does not work
         parent.layout();

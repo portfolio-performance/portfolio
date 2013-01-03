@@ -605,9 +605,9 @@ public class SecurityListView extends AbstractListView
 
     private void updateChart(Security security)
     {
-        ISeries series = chart.getSeriesSet().getSeries("prices"); //$NON-NLS-1$
+        ISeries series = chart.getSeriesSet().getSeries(Messages.ColumnQuote);
         if (series != null)
-            chart.getSeriesSet().deleteSeries("prices"); //$NON-NLS-1$
+            chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
         chart.clearMarkerLines();
 
         if (security == null || security.getPrices().isEmpty())
@@ -654,7 +654,7 @@ public class SecurityListView extends AbstractListView
             values[ii] = p.getValue() / Values.Quote.divider();
         }
 
-        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "prices"); //$NON-NLS-1$
+        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.ColumnQuote);
         lineSeries.setXDateSeries(dates);
         lineSeries.setLineWidth(2);
         lineSeries.enableArea(true);
