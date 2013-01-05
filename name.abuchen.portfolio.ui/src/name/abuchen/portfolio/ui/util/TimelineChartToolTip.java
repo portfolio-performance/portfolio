@@ -9,6 +9,7 @@ import name.abuchen.portfolio.ui.Messages;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -78,15 +79,19 @@ public class TimelineChartToolTip implements Listener
         tip.setLayout(new FillLayout());
 
         final Composite container = new Composite(tip, SWT.NONE);
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
         GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
 
-        container.setForeground(tip.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+        Color foregroundColor = tip.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+        container.setForeground(foregroundColor);
         container.setBackground(tip.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 
         Label left = new Label(container, SWT.NONE);
+        left.setForeground(foregroundColor);
         left.setText(Messages.ColumnDate);
 
         Label right = new Label(container, SWT.NONE);
+        right.setForeground(foregroundColor);
         right.setText(String.format(dateFormat, hoverDate));
 
         for (ISeries series : chart.getSeriesSet().getSeries())
@@ -97,9 +102,11 @@ public class TimelineChartToolTip implements Listener
             double value = series.getYSeries()[line];
 
             left = new Label(container, SWT.NONE);
+            left.setForeground(foregroundColor);
             left.setText(series.getId());
 
             right = new Label(container, SWT.RIGHT);
+            right.setForeground(foregroundColor);
             right.setText(String.format("%,.2f", value)); //$NON-NLS-1$
             GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
         }
