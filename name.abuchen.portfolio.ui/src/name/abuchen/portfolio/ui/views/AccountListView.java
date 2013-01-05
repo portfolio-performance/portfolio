@@ -371,6 +371,9 @@ public class AccountListView extends AbstractListView
 
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
+        if (transactions.getData(Account.class.toString()) == null)
+            return;
+
         manager.add(new AbstractDialogAction(Messages.AccountMenuTransfer)
         {
             @Override
@@ -389,35 +392,41 @@ public class AccountListView extends AbstractListView
             }
         });
 
-        manager.add(new Separator());
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
-        {
-            @Override
-            Dialog createDialog(Account account)
-            {
-                return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
-                                PortfolioTransaction.Type.BUY);
-            }
-        });
+        // show security related actions only if
+        // (a) a portfolio exists and (b) securities exist
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
+        if (!getClient().getPortfolios().isEmpty() && !getClient().getSecurities().isEmpty())
         {
-            @Override
-            Dialog createDialog(Account account)
+            manager.add(new Separator());
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
             {
-                return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
-                                PortfolioTransaction.Type.SELL);
-            }
-        });
+                @Override
+                Dialog createDialog(Account account)
+                {
+                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
+                                    PortfolioTransaction.Type.BUY);
+                }
+            });
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-        {
-            @Override
-            Dialog createDialog(Account account)
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
             {
-                return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), null);
-            }
-        });
+                @Override
+                Dialog createDialog(Account account)
+                {
+                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
+                                    PortfolioTransaction.Type.SELL);
+                }
+            });
+
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
+            {
+                @Override
+                Dialog createDialog(Account account)
+                {
+                    return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), null);
+                }
+            });
+        }
 
         manager.add(new Separator());
         manager.add(new Action(Messages.AccountMenuDeleteTransaction)

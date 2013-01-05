@@ -463,40 +463,44 @@ public class PortfolioListView extends AbstractListView
             });
         }
 
-        manager.add(new Action(Messages.MenuTransactionAdd)
+        boolean hasPortfolioSelected = transactions.getData(Portfolio.class.toString()) != null;
+        if (hasPortfolioSelected)
         {
-            @Override
-            public void run()
+            manager.add(new Action(Messages.MenuTransactionAdd)
             {
-                // if no securities exist yet, inform user
-                if (getClient().getSecurities().isEmpty())
+                @Override
+                public void run()
                 {
-                    MessageDialog.openError(getClientEditor().getSite().getShell(), Messages.LabelError,
-                                    Messages.MsgNoSecuritiesMaintained);
+                    // if no securities exist yet, inform user
+                    if (getClient().getSecurities().isEmpty())
+                    {
+                        MessageDialog.openError(getClientEditor().getSite().getShell(), Messages.LabelError,
+                                        Messages.MsgNoSecuritiesMaintained);
+                    }
+                    else
+                    {
+                        Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
+                        if (portfolio == null)
+                            return;
+
+                        PortfolioTransaction transaction = new PortfolioTransaction();
+                        transaction.setDate(Dates.today());
+                        transaction.setType(PortfolioTransaction.Type.BUY);
+                        transaction.setSecurity(getClient().getSecurities().get(0));
+
+                        portfolio.addTransaction(transaction);
+
+                        markDirty();
+
+                        portfolios.refresh(transactions.getData(Account.class.toString()));
+                        transactions.setInput(portfolio.getTransactions());
+                        transactions.editElement(transaction, 0);
+
+                        statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+                    }
                 }
-                else
-                {
-                    Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-                    if (portfolio == null)
-                        return;
-
-                    PortfolioTransaction transaction = new PortfolioTransaction();
-                    transaction.setDate(Dates.today());
-                    transaction.setType(PortfolioTransaction.Type.BUY);
-                    transaction.setSecurity(getClient().getSecurities().get(0));
-
-                    portfolio.addTransaction(transaction);
-
-                    markDirty();
-
-                    portfolios.refresh(transactions.getData(Account.class.toString()));
-                    transactions.setInput(portfolio.getTransactions());
-                    transactions.editElement(transaction, 0);
-
-                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                }
-            }
-        });
+            });
+        }
     }
 
     private Color colorFor(PortfolioTransaction t)
