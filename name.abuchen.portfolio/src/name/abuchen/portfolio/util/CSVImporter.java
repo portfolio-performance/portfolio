@@ -42,7 +42,7 @@ public class CSVImporter
         private Field field;
         private FieldFormat format;
 
-        private Column(int columnIndex, String label)
+        /* package */ Column(int columnIndex, String label)
         {
             this.columnIndex = columnIndex;
             this.label = label;
@@ -191,7 +191,7 @@ public class CSVImporter
         {
             enumMap = new EnumMap<M, String>(enumType);
             for (M element : enumType.getEnumConstants())
-                enumMap.put(element, element.name());
+                enumMap.put(element, element.toString());
         }
 
         public EnumMap<M, String> map()

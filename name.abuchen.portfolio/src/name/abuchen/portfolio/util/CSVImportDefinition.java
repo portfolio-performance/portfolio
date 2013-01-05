@@ -114,23 +114,27 @@ public abstract class CSVImportDefinition
         return value != null && value.trim().length() == 0 ? null : value;
     }
 
-    protected Security lookupSecurity(Client client, String isin, boolean doCreate)
+    protected Security lookupSecurity(Client client, String isin, String tickerSymbol, String wkn, boolean doCreate)
     {
-        Security security = null;
         for (Security s : client.getSecurities())
         {
-            if (isin.equals(s.getIsin()))
-            {
-                security = s;
-                break;
-            }
+            if (isin != null && isin.equals(s.getIsin()))
+                return s;
+            else if (tickerSymbol != null && tickerSymbol.equals(s.getTickerSymbol()))
+                return s;
+            else if (wkn != null && wkn.equals(s.getWkn()))
+                return s;
         }
-        if (security == null && doCreate)
-        {
-            security = new Security(MessageFormat.format(Messages.CSVImportedSecurityLabel, isin), isin, null,
-                            AssetClass.EQUITY, QuoteFeed.MANUAL);
-            client.addSecurity(security);
-        }
+
+        if (!doCreate)
+            return null;
+
+        String key = isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn;
+        Security security = new Security(MessageFormat.format(Messages.CSVImportedSecurityLabel, key), isin,
+                        tickerSymbol, AssetClass.EQUITY, QuoteFeed.MANUAL);
+        security.setWkn(wkn);
+        client.addSecurity(security);
+
         return security;
     }
 
@@ -147,6 +151,8 @@ public abstract class CSVImportDefinition
             List<Field> fields = getFields();
             fields.add(new DateField(Messages.CSVColumn_Date));
             fields.add(new Field(Messages.CSVColumn_ISIN).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Value));
             fields.add(new EnumField<AccountTransaction.Type>(Messages.CSVColumn_Type, AccountTransaction.Type.class)
                             .setOptional(true));
@@ -183,10 +189,14 @@ public abstract class CSVImportDefinition
             AccountTransaction transaction = new AccountTransaction();
             transaction.setDate(date);
             transaction.setAmount(Math.abs(amount));
+
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
-            if (isin != null)
+            String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+            String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
+
+            if (isin != null || tickerSymbol != null || wkn != null)
             {
-                Security security = lookupSecurity(client, isin, true);
+                Security security = lookupSecurity(client, isin, tickerSymbol, wkn, true);
                 transaction.setSecurity(security);
             }
 
@@ -210,7 +220,9 @@ public abstract class CSVImportDefinition
 
             List<Field> fields = getFields();
             fields.add(new DateField(Messages.CSVColumn_Date));
-            fields.add(new Field(Messages.CSVColumn_ISIN));
+            fields.add(new Field(Messages.CSVColumn_ISIN).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Value));
             fields.add(new AmountField(Messages.CSVColumn_Fees).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Shares));
@@ -248,9 +260,13 @@ public abstract class CSVImportDefinition
                 fees = Long.valueOf(0);
 
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
-            if (isin == null)
-                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_ISIN),
-                                0);
+            String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+            String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
+
+            if (isin == null && tickerSymbol == null && wkn == null)
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingOneOfManyFields,
+                                Messages.CSVColumn_ISIN + ", " + Messages.CSVColumn_TickerSymbol + ", " //$NON-NLS-1$ //$NON-NLS-2$
+                                                + Messages.CSVColumn_WKN), 0);
 
             Long shares = convertShares(Messages.CSVColumn_Shares, rawValues, field2column);
             if (shares == null)
@@ -263,7 +279,7 @@ public abstract class CSVImportDefinition
             PortfolioTransaction transaction = new PortfolioTransaction();
             transaction.setDate(date);
             transaction.setAmount(Math.abs(amount));
-            transaction.setSecurity(lookupSecurity(client, isin, true));
+            transaction.setSecurity(lookupSecurity(client, isin, tickerSymbol, wkn, true));
             transaction.setShares(Math.abs(shares));
             transaction.setFees(Math.abs(fees));
 
@@ -323,10 +339,10 @@ public abstract class CSVImportDefinition
             super(Messages.CSVDefSecurities);
 
             List<Field> fields = getFields();
-            fields.add(new Field(Messages.CSVColumn_ISIN));
-            fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_ISIN).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
             fields.add(new EnumField<AssetClass>(Messages.CSVColumn_Type, AssetClass.class).setOptional(true));
         }
 
@@ -344,20 +360,23 @@ public abstract class CSVImportDefinition
                 throw new IllegalArgumentException();
 
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
-            if (isin == null)
-                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_ISIN),
-                                0);
+            String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+            String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
 
-            Security security = lookupSecurity(client, isin, false);
+            if (isin == null && tickerSymbol == null && wkn == null)
+                throw new ParseException(MessageFormat.format(Messages.CSVImportMissingOneOfManyFields,
+                                Messages.CSVColumn_ISIN + ", " + Messages.CSVColumn_TickerSymbol + ", " //$NON-NLS-1$ //$NON-NLS-2$
+                                                + Messages.CSVColumn_WKN), 0);
+
+            Security security = lookupSecurity(client, isin, tickerSymbol, wkn, false);
             if (security != null)
-                throw new ParseException(MessageFormat.format(Messages.CSVImportISINExists, isin), 0);
+                throw new ParseException(MessageFormat.format(Messages.CSVImportSecurityExists, security.getName(),
+                                isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn), 0);
 
             String description = getTextValue(Messages.CSVColumn_Description, rawValues, field2column);
             if (description == null)
-                description = MessageFormat.format(Messages.CSVImportedSecurityLabel, isin);
-
-            String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
-            String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
+                description = MessageFormat.format(Messages.CSVImportedSecurityLabel, isin != null ? isin
+                                : tickerSymbol != null ? tickerSymbol : wkn);
 
             AssetClass assetClass = convertEnum(Messages.CSVColumn_Type, AssetClass.class, rawValues, field2column);
             if (assetClass == null)

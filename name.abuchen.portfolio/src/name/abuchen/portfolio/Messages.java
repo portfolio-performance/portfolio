@@ -35,8 +35,9 @@ public class Messages extends NLS
     public static String CSVImportedSecurityLabel;
     public static String CSVImportError;
     public static String CSVImportGenericColumnLabel;
-    public static String CSVImportISINExists;
+    public static String CSVImportSecurityExists;
     public static String CSVImportMissingField;
+    public static String CSVImportMissingOneOfManyFields;
     public static String LabelDeposits;
     public static String LabelIndustryClassification;
     public static String LabelInterest;

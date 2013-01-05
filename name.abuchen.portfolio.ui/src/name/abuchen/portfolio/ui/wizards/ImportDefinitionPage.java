@@ -754,7 +754,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
             public String getKey()
             {
-                return key.name();
+                return key.toString();
             }
 
             public String getValue()
