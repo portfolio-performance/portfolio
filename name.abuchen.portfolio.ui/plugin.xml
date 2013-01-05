@@ -261,18 +261,38 @@
       <handler
             class="name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler"
             commandId="name.abuchen.portfolio.ui.commands.updateQuotesCommand">
+         <activeWhen>
+            <with variable="activeEditorId">
+               <equals value="name.abuchen.portfolio.ui.editor"/>
+            </with>
+         </activeWhen>
       </handler>
       <handler
             class="name.abuchen.portfolio.ui.handlers.UpdateCPIHandler"
             commandId="name.abuchen.portfolio.ui.commands.updateCPICommand">
+         <activeWhen>
+            <with variable="activeEditorId">
+               <equals value="name.abuchen.portfolio.ui.editor"/>
+            </with>
+         </activeWhen>
       </handler>
       <handler
             class="name.abuchen.portfolio.ui.handlers.ImportHandler"
             commandId="name.abuchen.portfolio.ui.commands.importCommand">
+         <activeWhen>
+            <with variable="activeEditorId">
+               <equals value="name.abuchen.portfolio.ui.editor"/>
+            </with>
+         </activeWhen>
       </handler>
       <handler
             class="name.abuchen.portfolio.ui.handlers.ExportHandler"
             commandId="name.abuchen.portfolio.ui.commands.exportCommand">
+         <activeWhen>
+            <with variable="activeEditorId">
+               <equals value="name.abuchen.portfolio.ui.editor"/>
+            </with>
+         </activeWhen>
       </handler>
       <handler
             class="name.abuchen.portfolio.ui.handlers.UpdateHandler"
