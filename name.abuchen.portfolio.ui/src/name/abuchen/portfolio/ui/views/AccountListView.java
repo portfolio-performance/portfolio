@@ -374,21 +374,31 @@ public class AccountListView extends AbstractListView
         if (transactions.getData(Account.class.toString()) == null)
             return;
 
+        for (final AccountTransaction.Type type : EnumSet.of( //
+                        AccountTransaction.Type.INTEREST, //
+                        AccountTransaction.Type.DEPOSIT, //
+                        AccountTransaction.Type.REMOVAL, //
+                        AccountTransaction.Type.TAXES, //
+                        AccountTransaction.Type.FEES))
+        {
+            manager.add(new AbstractDialogAction(type.toString() + "...") //$NON-NLS-1$
+            {
+                @Override
+                Dialog createDialog(Account account)
+                {
+                    return new OtherAccountTransactionsDialog(getClientEditor().getSite().getShell(), getClient(),
+                                    account, type);
+                }
+            });
+        }
+
+        manager.add(new Separator());
         manager.add(new AbstractDialogAction(Messages.AccountMenuTransfer)
         {
             @Override
             Dialog createDialog(Account account)
             {
                 return new TransferDialog(getClientEditor().getSite().getShell(), getClient(), account);
-            }
-        });
-
-        manager.add(new AbstractDialogAction(Messages.AccountMenuOther)
-        {
-            @Override
-            Dialog createDialog(Account account)
-            {
-                return new OtherAccountTransactionsDialog(getClientEditor().getSite().getShell(), getClient(), account);
             }
         });
 

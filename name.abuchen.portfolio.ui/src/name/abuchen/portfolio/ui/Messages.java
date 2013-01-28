@@ -8,7 +8,6 @@ public class Messages extends NLS
     public static String AccountMenuAdd;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
-    public static String AccountMenuOther;
     public static String AccountMenuTransfer;
     public static String AssetAllocationMenuAddNewCategory;
     public static String AssetAllocationMenuAssignAccount;

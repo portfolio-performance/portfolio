@@ -23,12 +23,12 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
         private long amount;
         private Date date = Dates.today();
 
-        public Model(Client client, Account account)
+        public Model(Client client, Account account, AccountTransaction.Type defaultSelection)
         {
             super(client);
 
             this.account = account;
-            this.type = AccountTransaction.Type.INTEREST;
+            this.type = defaultSelection;
         }
 
         public AccountTransaction.Type getType()
@@ -74,9 +74,10 @@ public class OtherAccountTransactionsDialog extends AbstractDialog
         }
     }
 
-    public OtherAccountTransactionsDialog(Shell parentShell, Client client, Account account)
+    public OtherAccountTransactionsDialog(Shell parentShell, Client client, Account account,
+                    AccountTransaction.Type defaultSelection)
     {
-        super(parentShell, Messages.LabelOther, new Model(client, account));
+        super(parentShell, Messages.LabelOther, new Model(client, account, defaultSelection));
     }
 
     @Override
