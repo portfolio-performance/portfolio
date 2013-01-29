@@ -51,6 +51,8 @@ public final class Security
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
 
+    private boolean isRetired = false;
+
     public Security()
     {
         this.uuid = UUID.randomUUID().toString();
@@ -222,6 +224,16 @@ public final class Security
     public void setLatest(LatestSecurityPrice latest)
     {
         this.latest = latest;
+    }
+
+    public boolean isRetired()
+    {
+        return isRetired;
+    }
+
+    public void setRetired(boolean isRetired)
+    {
+        this.isRetired = isRetired;
     }
 
     public List<Transaction> getTransactions(Client client)

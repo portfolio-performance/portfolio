@@ -53,31 +53,45 @@ public final class ColumnViewerSorter extends ViewerComparator
 
         private BeanComparator(Class<?> clazz, String attribute)
         {
+            Method readMethod = null;
+            String camelCaseAttribute = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
             try
             {
-                this.clazz = clazz;
-                method = clazz.getMethod("get" + Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1)); //$NON-NLS-1$
-                Class<?> returnType = method.getReturnType();
-
-                if (returnType.isAssignableFrom(String.class))
-                    type = 1;
-                else if (returnType.isAssignableFrom(Enum.class))
-                    type = 2;
-                else if (returnType.isAssignableFrom(Integer.class) || returnType.isAssignableFrom(int.class))
-                    type = 3;
-                else if (returnType.isAssignableFrom(Double.class) || returnType.isAssignableFrom(double.class))
-                    type = 4;
-                else if (returnType.isAssignableFrom(Date.class))
-                    type = 5;
-                else if (returnType.isAssignableFrom(Long.class) || returnType.isAssignableFrom(long.class))
-                    type = 6;
-                else
-                    type = 0;
+                readMethod = clazz.getMethod("get" + camelCaseAttribute); //$NON-NLS-1$
             }
             catch (NoSuchMethodException e)
             {
-                throw new UnsupportedOperationException(e);
+                try
+                {
+                    readMethod = clazz.getMethod("is" + camelCaseAttribute); //$NON-NLS-1$
+                }
+                catch (NoSuchMethodException e1)
+                {
+                    throw new UnsupportedOperationException(e);
+                }
             }
+
+            this.clazz = clazz;
+            this.method = readMethod;
+
+            Class<?> returnType = method.getReturnType();
+
+            if (returnType.isAssignableFrom(String.class))
+                type = 1;
+            else if (returnType.isAssignableFrom(Enum.class))
+                type = 2;
+            else if (returnType.isAssignableFrom(Integer.class) || returnType.isAssignableFrom(int.class))
+                type = 3;
+            else if (returnType.isAssignableFrom(Double.class) || returnType.isAssignableFrom(double.class))
+                type = 4;
+            else if (returnType.isAssignableFrom(Date.class))
+                type = 5;
+            else if (returnType.isAssignableFrom(Long.class) || returnType.isAssignableFrom(long.class))
+                type = 6;
+            else if (returnType.isAssignableFrom(Boolean.class) || returnType.isAssignableFrom(boolean.class))
+                type = 7;
+            else
+                type = 0;
         }
 
         @Override
@@ -110,6 +124,8 @@ public final class ColumnViewerSorter extends ViewerComparator
                         return ((Date) attribute1).compareTo((Date) attribute2);
                     case 6:
                         return ((Long) attribute1).compareTo((Long) attribute2);
+                    case 7:
+                        return ((Boolean) attribute1).compareTo((Boolean) attribute2);
                     default:
                         return String.valueOf(attribute1).compareTo(String.valueOf(attribute2));
                 }

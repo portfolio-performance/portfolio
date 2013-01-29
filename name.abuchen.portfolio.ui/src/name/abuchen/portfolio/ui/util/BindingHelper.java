@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -313,4 +314,18 @@ public class BindingHelper
                         null);
         return txtValue;
     }
+
+    public final Control bindBooleanInput(Composite editArea, final String label, String property)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+
+        final Button btnCheckbox = new Button(editArea, SWT.CHECK);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(btnCheckbox);
+
+        context.bindValue(SWTObservables.observeSelection(btnCheckbox), //
+                        BeansObservables.observeValue(model, property));
+        return btnCheckbox;
+    }
+
 }

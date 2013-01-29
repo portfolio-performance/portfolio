@@ -34,6 +34,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         private String tickerSymbol;
         private String wkn;
         private AssetClass type;
+        private boolean isRetired;
 
         public Model(Client client, Security security)
         {
@@ -46,6 +47,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             tickerSymbol = security.getTickerSymbol();
             wkn = security.getWkn();
             type = security.getType();
+            isRetired = security.isRetired();
         }
 
         public String getName()
@@ -98,6 +100,16 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             firePropertyChange("type", this.type, this.type = type); //$NON-NLS-1$
         }
 
+        public boolean isRetired()
+        {
+            return isRetired;
+        }
+
+        public void setRetired(boolean isRetired)
+        {
+            firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$
+        }
+
         @Override
         public void applyChanges()
         {
@@ -106,6 +118,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             security.setTickerSymbol(tickerSymbol);
             security.setWkn(wkn);
             security.setType(type);
+            security.setRetired(isRetired);
         }
 
         public void readFromSecurity()
@@ -115,6 +128,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             setTickerSymbol(security.getTickerSymbol());
             setWkn(security.getWkn());
             setType(security.getType());
+            setRetired(security.isRetired());
         }
 
     }
@@ -174,6 +188,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn"); //$NON-NLS-1$
+        bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
         bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override

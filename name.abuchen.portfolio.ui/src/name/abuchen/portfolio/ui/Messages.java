@@ -61,6 +61,7 @@ public class Messages extends NLS
     public static String ColumnPurchaseValue;
     public static String ColumnQuote;
     public static String ColumnReferenceAccount;
+    public static String ColumnRetired;
     public static String ColumnSecurity;
     public static String ColumnSecurityExchange;
     public static String ColumnSecurityType;

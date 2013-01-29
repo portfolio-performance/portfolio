@@ -77,7 +77,13 @@ public class ClientFactory
             client.setVersion(8);
         }
 
-        if (client.getVersion() != 8)
+        if (client.getVersion() == 8)
+        {
+            // do nothing --> added 'retired' property to securities
+            client.setVersion(9);
+        }
+
+        if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
 

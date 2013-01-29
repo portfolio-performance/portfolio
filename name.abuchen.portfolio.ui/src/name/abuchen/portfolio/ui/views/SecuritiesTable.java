@@ -226,6 +226,19 @@ public class SecuritiesTable
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnRetired, SWT.LEFT, 40);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         securities.getTable().setHeaderVisible(true);
