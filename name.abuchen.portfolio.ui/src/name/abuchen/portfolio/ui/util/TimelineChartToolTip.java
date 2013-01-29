@@ -11,8 +11,10 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -24,8 +26,11 @@ import org.swtchart.ISeries;
 
 public class TimelineChartToolTip implements Listener
 {
+    public static final int PADDING = 5;
+
     private Chart chart = null;
     private Shell tip = null;
+    private Date tipDate = null;
     private String dateFormat = "%tF"; //$NON-NLS-1$
 
     public TimelineChartToolTip(Chart chart)
@@ -33,10 +38,10 @@ public class TimelineChartToolTip implements Listener
         this.chart = chart;
 
         Composite plotArea = chart.getPlotArea();
-        plotArea.addListener(SWT.Dispose, this);
-        plotArea.addListener(SWT.KeyDown, this);
+        plotArea.addListener(SWT.MouseDown, this);
         plotArea.addListener(SWT.MouseMove, this);
-        plotArea.addListener(SWT.MouseHover, this);
+        plotArea.addListener(SWT.MouseUp, this);
+        plotArea.addListener(SWT.Dispose, this);
     }
 
     public void handleEvent(Event event)
@@ -44,12 +49,14 @@ public class TimelineChartToolTip implements Listener
         switch (event.type)
         {
             case SWT.Dispose:
-            case SWT.KeyDown:
-            case SWT.MouseMove:
+            case SWT.MouseUp:
                 closeToolTip();
                 break;
-            case SWT.MouseHover:
-                onMouseHover(event);
+            case SWT.MouseMove:
+                moveToolTip(event);
+                break;
+            case SWT.MouseDown:
+                showToolTip(event);
                 break;
         }
     }
@@ -68,9 +75,9 @@ public class TimelineChartToolTip implements Listener
         }
     }
 
-    private void onMouseHover(Event event)
+    private void showToolTip(Event event)
     {
-        Date hoverDate = getHoverDate(event);
+        tipDate = getDateAt(event);
 
         if (tip != null && !tip.isDisposed())
             tip.dispose();
@@ -78,57 +85,44 @@ public class TimelineChartToolTip implements Listener
         tip = new Shell(Display.getDefault().getActiveShell(), SWT.ON_TOP | SWT.TOOL);
         tip.setLayout(new FillLayout());
 
-        final Composite container = new Composite(tip, SWT.NONE);
-        container.setBackgroundMode(SWT.INHERIT_FORCE);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
+        Point size = createComposite();
+        Rectangle bounds = calculateBounds(event, size);
 
-        Color foregroundColor = tip.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
-        container.setForeground(foregroundColor);
-        container.setBackground(tip.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-
-        Label left = new Label(container, SWT.NONE);
-        left.setForeground(foregroundColor);
-        left.setText(Messages.ColumnDate);
-
-        Label right = new Label(container, SWT.NONE);
-        right.setForeground(foregroundColor);
-        right.setText(String.format(dateFormat, hoverDate));
-
-        for (ISeries series : chart.getSeriesSet().getSeries())
-        {
-            int line = Arrays.binarySearch(series.getXDateSeries(), hoverDate);
-            if (line < 0)
-                continue;
-            double value = series.getYSeries()[line];
-
-            left = new Label(container, SWT.NONE);
-            left.setForeground(foregroundColor);
-            left.setText(series.getId());
-
-            right = new Label(container, SWT.RIGHT);
-            right.setForeground(foregroundColor);
-            right.setText(String.format("%,.2f", value)); //$NON-NLS-1$
-            GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
-        }
-
-        Point size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        Point pt = chart.getPlotArea().toDisplay(event.x, event.y);
-        tip.setBounds(pt.x, pt.y, size.x, size.y);
+        tip.setBounds(bounds);
         tip.setVisible(true);
-
-        // close tool tip if focus is lost (e.g. when application is switched)
-        container.addListener(SWT.FocusOut, new Listener()
-        {
-            @Override
-            public void handleEvent(Event event)
-            {
-                closeToolTip();
-            }
-        });
-        container.forceFocus();
     }
 
-    private Date getHoverDate(Event event)
+    private void moveToolTip(Event event)
+    {
+        if (tip == null || tip.isDisposed())
+            return;
+
+        Date newTipDate = getDateAt(event);
+        boolean dateChanged = tipDate != null && !tipDate.equals(newTipDate);
+
+        if (dateChanged)
+        {
+            // delete composite
+            for (Control c : tip.getChildren())
+                c.dispose();
+
+            // re-create labels
+            tipDate = newTipDate;
+            Point size = createComposite();
+
+            size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+            Rectangle bounds = calculateBounds(event, size);
+            tip.setBounds(bounds);
+        }
+        else
+        {
+            Point size = tip.getSize();
+            Rectangle bounds = calculateBounds(event, size);
+            tip.setLocation(new Point(bounds.x, bounds.y));
+        }
+    }
+
+    private Date getDateAt(Event event)
     {
         IAxis xAxis = chart.getAxisSet().getXAxes()[0];
 
@@ -153,6 +147,10 @@ public class TimelineChartToolTip implements Listener
         if (line == 0)
             return timeSeries.getXDateSeries()[line];
 
+        int length = timeSeries.getXDateSeries().length;
+        if (line >= length)
+            return timeSeries.getXDateSeries()[length - 1];
+
         // check which date is closer to the targeted date
         long target = cal.getTimeInMillis();
         Date left = timeSeries.getXDateSeries()[line - 1];
@@ -160,4 +158,59 @@ public class TimelineChartToolTip implements Listener
 
         return target - left.getTime() < right.getTime() - target ? left : right;
     }
+
+    private Point createComposite()
+    {
+        final Composite container = new Composite(tip, SWT.NONE);
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
+        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
+
+        Color foregroundColor = tip.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+        container.setForeground(foregroundColor);
+        container.setBackground(tip.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+
+        Label left = new Label(container, SWT.NONE);
+        left.setForeground(foregroundColor);
+        left.setText(Messages.ColumnDate);
+
+        Label right = new Label(container, SWT.NONE);
+        right.setForeground(foregroundColor);
+        right.setText(String.format(dateFormat, tipDate));
+
+        for (ISeries series : chart.getSeriesSet().getSeries())
+        {
+            int line = Arrays.binarySearch(series.getXDateSeries(), tipDate);
+            if (line < 0)
+                continue;
+            double value = series.getYSeries()[line];
+
+            left = new Label(container, SWT.NONE);
+            left.setForeground(foregroundColor);
+            left.setText(series.getId());
+
+            right = new Label(container, SWT.RIGHT);
+            right.setForeground(foregroundColor);
+            right.setText(String.format("%,.2f", value)); //$NON-NLS-1$
+            GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
+        }
+
+        tip.layout();
+        return tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+    }
+
+    private Rectangle calculateBounds(Event event, Point size)
+    {
+        Rectangle plotArea = chart.getPlotArea().getClientArea();
+
+        int x = event.x + (size.x / 2) > plotArea.width ? plotArea.width - size.x : event.x - (size.x / 2);
+        x = Math.max(x, 0);
+
+        int y = event.y + size.y + PADDING > plotArea.height ? event.y - size.y - PADDING : event.y + PADDING;
+        y = Math.max(y, 0);
+        y = Math.min(y, plotArea.height - size.y - PADDING);
+
+        Point pt = chart.getPlotArea().toDisplay(x, y);
+        return new Rectangle(pt.x, pt.y, size.x, size.y);
+    }
+
 }
