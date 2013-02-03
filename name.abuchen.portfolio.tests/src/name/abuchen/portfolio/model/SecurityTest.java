@@ -32,13 +32,15 @@ public class SecurityTest
             if ("UUID".equals(p.getName())) //$NON-NLS-1$
                 continue;
 
-            if (p.getPropertyType() == String.class)
+            if (p.getPropertyType() == String.class && p.getWriteMethod() != null)
                 p.getWriteMethod().invoke(source, UUID.randomUUID().toString());
+            else if (p.getPropertyType() == boolean.class)
+                p.getWriteMethod().invoke(source, true);
             else
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(4));
+        assertThat(skipped, equalTo(5));
 
         Security target = source.deepCopy();
 
@@ -50,7 +52,7 @@ public class SecurityTest
             if ("UUID".equals(p.getName())) //$NON-NLS-1$
                 continue;
 
-            if (p.getPropertyType() != String.class)
+            if (p.getPropertyType() != String.class && p.getPropertyType() != boolean.class)
                 continue;
 
             Object sourceValue = p.getReadMethod().invoke(source);

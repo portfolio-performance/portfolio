@@ -118,6 +118,21 @@ public final class Security
         this.wkn = wkn;
     }
 
+    /**
+     * Returns ISIN, Ticker or WKN - whatever is available.
+     */
+    public String getExternalIdentifier()
+    {
+        if (isin != null && isin.length() > 0)
+            return isin;
+        else if (tickerSymbol != null && tickerSymbol.length() > 0)
+            return tickerSymbol;
+        else if (wkn != null && wkn.length() > 0)
+            return wkn;
+        else
+            return name;
+    }
+
     public String getIndustryClassification()
     {
         return industryClassification;
@@ -308,6 +323,8 @@ public final class Security
         answer.feed = feed;
         answer.prices = new ArrayList<SecurityPrice>(prices);
         answer.latest = latest;
+
+        answer.isRetired = isRetired;
 
         return answer;
     }
