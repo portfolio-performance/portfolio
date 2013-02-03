@@ -144,7 +144,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                 else if (parentElement == PortfolioTransaction.class)
                     return client.getPortfolios().toArray();
                 else if (parentElement == Security.class)
-                    return new String[] { Messages.ExportWizardSecurityMasterData };
+                    return new String[] { Messages.ExportWizardSecurityMasterData,
+                                    Messages.ExportWizardMergedSecurityPrices };
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().toArray();
             }

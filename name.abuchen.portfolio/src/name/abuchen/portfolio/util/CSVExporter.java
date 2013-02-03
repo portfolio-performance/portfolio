@@ -10,6 +10,10 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
@@ -185,6 +189,93 @@ public class CSVExporter
     {
         for (Security security : securities)
             exportSecurityPrices(new File(directory, security.getIsin() + ".csv"), security); //$NON-NLS-1$
+    }
+
+    public void exportMergedSecurityPrices(File file, List<Security> securities) throws IOException
+    {
+        // prepare: (a) find earliest date (b) ignore securities w/o quotes
+        Date earliestDate = null;
+        List<Security> export = new ArrayList<Security>(securities.size());
+
+        for (Security s : securities)
+        {
+            List<SecurityPrice> prices = s.getPrices();
+            if (!prices.isEmpty())
+            {
+                export.add(s);
+
+                Date quoteDate = prices.get(0).getTime();
+                if (earliestDate == null)
+                    earliestDate = quoteDate;
+                else
+                    earliestDate = earliestDate.after(quoteDate) ? quoteDate : earliestDate;
+            }
+        }
+
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
+
+        try
+        {
+            CSVPrinter printer = new CSVPrinter(writer);
+            printer.setStrategy(strategy);
+
+            // write header
+            printer.print(Messages.CSVColumn_Date);
+            for (Security security : export)
+                printer.print(security.getExternalIdentifier());
+            printer.println();
+            
+            // stop if no securities exist
+            if (earliestDate == null)
+                return;
+
+            // write quotes
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(earliestDate);
+
+            Date today = Dates.today();
+
+            while (cal.getTimeInMillis() <= today.getTime())
+            {
+                // check if any quotes exist for that day at all
+                int[] indeces = new int[export.size()];
+
+                int ii = 0;
+                for (Security security : export)
+                {
+                    SecurityPrice p = new SecurityPrice(cal.getTime(), 0);
+                    indeces[ii] = Collections.binarySearch(security.getPrices(), p);
+                    ii++;
+                }
+
+                boolean hasValues = false;
+                for (ii = 0; ii < indeces.length && !hasValues; ii++)
+                    hasValues = indeces[ii] >= 0;
+
+                if (hasValues)
+                {
+                    printer.print(Values.Date.format(cal.getTime()));
+
+                    for (ii = 0; ii < indeces.length; ii++)
+                    {
+                        if (indeces[ii] < 0)
+                            printer.print(""); //$NON-NLS-1$
+                        else
+                            printer.print(Values.Quote.format(export.get(ii).getPrices().get(indeces[ii]).getValue()));
+                    }
+
+                    printer.println();
+                }
+
+                cal.add(Calendar.DATE, 1);
+            }
+
+        }
+        finally
+        {
+            writer.close();
+        }
+
     }
 
 }

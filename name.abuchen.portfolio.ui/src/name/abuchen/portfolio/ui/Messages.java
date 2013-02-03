@@ -115,6 +115,7 @@ public class Messages extends NLS
     public static String ExportWizardDescription;
     public static String ExportWizardErrorExporting;
     public static String ExportWizardHistoricalQuotes;
+    public static String ExportWizardMergedSecurityPrices;
     public static String ExportWizardPortfolioTransactions;
     public static String ExportWizardSecurities;
     public static String ExportWizardSecurityMasterData;

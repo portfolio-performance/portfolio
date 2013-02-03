@@ -49,26 +49,54 @@ public class ExportWizard extends Wizard
 
         try
         {
+            // account transactions
             if (exportItem == AccountTransaction.class)
+            {
                 new CSVExporter().exportAccountTransactions(file, client.getAccounts());
+            }
             else if (exportClass == AccountTransaction.class)
+            {
                 new CSVExporter().exportAccountTransactions(file, (Account) exportItem);
+            }
+
+            // portfolio transactions
             else if (exportItem == PortfolioTransaction.class)
+            {
                 new CSVExporter().exportPortfolioTransactions(file, client.getPortfolios());
+            }
             else if (exportClass == PortfolioTransaction.class)
+            {
                 new CSVExporter().exportPortfolioTransactions(file, (Portfolio) exportItem);
+            }
+
+            // master data
             else if (exportItem == Security.class)
+            {
                 new CSVExporter().exportSecurityMasterData(new File(file, Messages.ExportWizardSecurityMasterData
                                 + ".csv"), client.getSecurities()); //$NON-NLS-1$
+            }
             else if (exportClass == Security.class)
-                new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
+            {
+                if (Messages.ExportWizardSecurityMasterData.equals(exportItem))
+                    new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
+                else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
+                    new CSVExporter().exportMergedSecurityPrices(file, client.getSecurities());
+            }
+
+            // historical quotes
             else if (exportItem == SecurityPrice.class)
+            {
                 new CSVExporter().exportSecurityPrices(file, client.getSecurities());
+            }
             else if (exportClass == SecurityPrice.class)
+            {
                 new CSVExporter().exportSecurityPrices(file, (Security) exportItem);
+            }
             else
+            {
                 throw new UnsupportedOperationException(MessageFormat.format(Messages.ExportWizardUnsupportedExport,
                                 exportClass, exportItem));
+            }
         }
         catch (IOException e)
         {
