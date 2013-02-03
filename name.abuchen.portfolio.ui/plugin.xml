@@ -73,7 +73,7 @@
                value="icons/pp_16.gif,icons/pp_32.gif,icons/pp_48.gif,icons/pp_128.gif"/>
          <property
                name="aboutText"
-               value="Portfolio Performance&#x0A;&#x0A;(c) Copyright Andreas Buchen 2012.  All rights reserved.&#x0A;&#x0A;This product includes software developed by the&#x0A;Eclipse Foundation http://eclipse.org/&#x0A;Apache Software Foundation http://apache.org/&#x0A;SWT Chart Project http://www.swtchart.org/&#x0A;Tree Map Library http://code.google.com/p/treemaplib/&#x0A;&#x0A;Some icons are based on&#x0A;FatCow Hosting Icons http://www.fatcow.com/free-icons&#x0A;(Creative Commons Attribution 3.0 United States)&#x0A;&#x0A;This product is published under the Eclipse Public License&#x0A;http://www.eclipse.org/legal/epl-v10.html">
+               value="Portfolio Performance&#x0A;&#x0A;Version {0}&#x0A;&#x0A;(c) Copyright Andreas Buchen 2012.  All rights reserved.&#x0A;&#x0A;This product includes software developed by the&#x0A;Eclipse Foundation http://eclipse.org/&#x0A;Apache Software Foundation http://apache.org/&#x0A;SWT Chart Project http://www.swtchart.org/&#x0A;Tree Map Library http://code.google.com/p/treemaplib/&#x0A;&#x0A;Some icons are based on&#x0A;FatCow Hosting Icons http://www.fatcow.com/free-icons&#x0A;(Creative Commons Attribution 3.0 United States)&#x0A;&#x0A;This product is published under the Eclipse Public License&#x0A;http://www.eclipse.org/legal/epl-v10.html">
          </property>
          <property
                name="preferenceCustomization"
