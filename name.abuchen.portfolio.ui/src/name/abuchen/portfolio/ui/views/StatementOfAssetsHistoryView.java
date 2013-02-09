@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByAssetClass;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -89,14 +90,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
     protected TimelineChart buildChart(Composite parent)
     {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(Dates.today());
-        cal.add(Calendar.YEAR, -getReportingYears());
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.add(Calendar.DATE, -1);
-
-        Date startDate = cal.getTime();
-        Date endDate = Dates.today();
+        ReportingPeriod period = getReportingPeriod();
+        Date startDate = period.getStartDate();
+        Date endDate = period.getEndDate();
 
         int noOfDays = Dates.daysBetween(startDate, endDate) + 1;
 
@@ -107,6 +103,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         double[][] assetClass = new double[AssetClass.values().length][noOfDays];
         boolean[] assetClassHasValues = new boolean[assetClass.length];
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
 
         int index = 0;
         while (cal.getTimeInMillis() <= endDate.getTime())

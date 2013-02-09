@@ -1,31 +1,27 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.text.MessageFormat;
+import java.io.IOException;
+import java.util.LinkedList;
 
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.ToolBarDropdownMenu;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.ToolBar;
 
 /* package */abstract class AbstractHistoricView extends AbstractFinanceView
 {
-    private String identifier;
+    private static final String IDENTIFIER = AbstractHistoricView.class.getSimpleName();
 
-    private int reportingPeriod;
-
-    public AbstractHistoricView()
-    {
-        this(2);
-    }
-
-    public AbstractHistoricView(int defaultSelection)
-    {
-        this.reportingPeriod = defaultSelection + 1;
-
-        identifier = this.getClass().getSimpleName() + "-REPORTING"; //$NON-NLS-1$
-    }
+    private LinkedList<ReportingPeriod> periods = new LinkedList<ReportingPeriod>();
 
     @Override
     public void init(ClientEditor clientEditor, Object parameter)
@@ -37,17 +33,41 @@ import org.eclipse.swt.widgets.ToolBar;
     @Override
     public void dispose()
     {
-        getClientEditor().getPreferenceStore().setValue(identifier, String.valueOf(reportingPeriod) + 'Y');
+        StringBuilder buf = new StringBuilder();
+        for (ReportingPeriod p : periods)
+        {
+            p.writeTo(buf);
+            buf.append(';');
+        }
+
+        getClientEditor().getPreferenceStore().setValue(IDENTIFIER, buf.toString());
         super.dispose();
     }
 
     private void load()
     {
-        String config = getClientEditor().getPreferenceStore().getString(identifier);
-        if (config == null || config.trim().length() == 0)
-            return;
+        String config = getClientEditor().getPreferenceStore().getString(IDENTIFIER);
+        if (config != null && config.trim().length() > 0)
+        {
+            String[] codes = config.split(";"); //$NON-NLS-1$
+            for (String c : codes)
+            {
+                try
+                {
+                    periods.add(ReportingPeriod.from(c));
+                }
+                catch (IOException ignore)
+                {
+                    PortfolioPlugin.log(ignore);
+                }
+            }
+        }
 
-        this.reportingPeriod = Integer.parseInt(config.substring(0, config.length() - 1));
+        if (periods.isEmpty())
+        {
+            for (int ii = 1; ii <= 5; ii++)
+                periods.add(new ReportingPeriod.LastX(ii, 0));
+        }
     }
 
     protected abstract void reportingPeriodUpdated();
@@ -55,31 +75,58 @@ import org.eclipse.swt.widgets.ToolBar;
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        final boolean[] active = new boolean[] { false };
-
-        ToolBarDropdownMenu<Integer> menu = new ToolBarDropdownMenu<Integer>(toolBar)
+        new AbstractDropDown(toolBar, periods.getFirst().toString())
         {
             @Override
-            protected void itemSelected(Integer data)
+            public void menuAboutToShow(IMenuManager manager)
             {
-                if (!active[0])
-                    return;
-                reportingPeriod = data.intValue();
-                reportingPeriodUpdated();
+                boolean isFirst = true;
+                for (final ReportingPeriod period : periods)
+                {
+                    Action action = new Action(period.toString())
+                    {
+                        @Override
+                        public void run()
+                        {
+                            periods.remove(period);
+                            periods.addFirst(period);
+                            setLabel(period.toString());
+                            reportingPeriodUpdated();
+                        }
+                    };
+                    if (isFirst)
+                        action.setChecked(true);
+                    isFirst = false;
+
+                    manager.add(action);
+                }
+
+                manager.add(new Separator());
+                manager.add(new Action(Messages.LabelReportingAddPeriod)
+                {
+                    @Override
+                    public void run()
+                    {
+                        ReportingPeriodDialog dialog = new ReportingPeriodDialog(toolBar.getShell(), periods.getFirst());
+
+                        if (dialog.open() == Dialog.OK)
+                        {
+                            ReportingPeriod period = dialog.getReportingPeriod();
+                            periods.addFirst(period);
+                            setLabel(period.toString());
+                            reportingPeriodUpdated();
+
+                            if (periods.size() > 5)
+                                periods.removeLast();
+                        }
+                    }
+                });
             }
         };
-
-        for (int year : new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20 })
-            menu.add(Integer.valueOf(year), MessageFormat.format(Messages.LabelReportingYears, year));
-
-        menu.select(Integer.valueOf(reportingPeriod));
-
-        active[0] = true;
     }
 
-    protected final int getReportingYears()
+    protected final ReportingPeriod getReportingPeriod()
     {
-        return reportingPeriod;
+        return periods.getFirst();
     }
-
 }

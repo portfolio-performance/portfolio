@@ -69,4 +69,27 @@ public class Dates
         return answer;
     }
 
+    public static int monthsBetween(Date start, Date end)
+    {
+        int answer = 0;
+
+        if (start.after(end))
+        {
+            Date temp = start;
+            start = end;
+            end = temp;
+        }
+
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(start);
+
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(end);
+
+        answer += (c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR)) * 12;
+        answer += c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
+        answer += c2.get(Calendar.DAY_OF_MONTH) >= c1.get(Calendar.DAY_OF_MONTH) ? 0 : -1;
+
+        return answer;
+    }
 }

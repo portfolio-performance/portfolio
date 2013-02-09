@@ -44,6 +44,10 @@ public class Messages extends NLS
     public static String LabelJointPortfolio;
     public static String LabelPortfolio;
     public static String LabelRemovals;
+    public static String LabelReportingPeriodFromXtoY;
+    public static String LabelReportingPeriodMonths;
+    public static String LabelReportingPeriodSince;
+    public static String LabelReportingPeriodYears;
     public static String LabelYahooFinance;
     public static String MsgErrorsConvertingValue;
     public static String MsgMissingResponse;

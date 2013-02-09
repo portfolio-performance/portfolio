@@ -106,6 +106,11 @@ public class ClientPerformanceSnapshot
 
         calculate();
     }
+    
+    public ClientPerformanceSnapshot(Client client, ReportingPeriod period)
+    {
+        this(client, period.getStartDate(), period.getEndDate());
+    }
 
     public ClientSnapshot getStartClientSnapshot()
     {

@@ -1,13 +1,12 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.ui.Messages;
@@ -16,7 +15,6 @@ import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -39,11 +37,6 @@ public class SecurityPerformanceView extends AbstractHistoricView
 {
     private TreeViewer tree;
 
-    public SecurityPerformanceView()
-    {
-        super(0);
-    }
-
     @Override
     protected String getTitle()
     {
@@ -64,15 +57,8 @@ public class SecurityPerformanceView extends AbstractHistoricView
     @Override
     protected void reportingPeriodUpdated()
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -getReportingYears());
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.add(Calendar.DATE, -1);
-
-        Date startDate = cal.getTime();
-        Date today = Dates.today();
-
-        tree.setInput(SecurityPerformanceSnapshot.create(getClient(), startDate, today).getRecords());
+        ReportingPeriod period = getReportingPeriod();
+        tree.setInput(SecurityPerformanceSnapshot.create(getClient(), period).getRecords());
         tree.refresh();
     }
 

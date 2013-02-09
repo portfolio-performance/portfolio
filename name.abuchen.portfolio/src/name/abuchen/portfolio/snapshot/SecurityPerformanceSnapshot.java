@@ -23,9 +23,12 @@ import name.abuchen.portfolio.model.Values;
 
 public class SecurityPerformanceSnapshot
 {
-    public static SecurityPerformanceSnapshot create(Client client, Date startDate, Date endDate)
+    public static SecurityPerformanceSnapshot create(Client client, ReportingPeriod period)
     {
         Map<Security, Record> transactions = initRecords(client);
+        
+        Date startDate = period.getStartDate();
+        Date endDate = period.getEndDate();
 
         for (Account account : client.getAccounts())
             extractSecurityRelatedAccountTransactions(account, startDate, endDate, transactions);

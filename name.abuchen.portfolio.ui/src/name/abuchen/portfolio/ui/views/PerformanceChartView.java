@@ -11,12 +11,12 @@ import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.snapshot.ClientIRRYield;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -136,16 +136,14 @@ public class PerformanceChartView extends AbstractHistoricView
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
+            ReportingPeriod period = getReportingPeriod();
+
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.YEAR, -getReportingYears());
+            cal.setTime(period.getStartDate());
             cal.set(Calendar.DAY_OF_MONTH, 1);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
 
             Date startDate = cal.getTime();
-            Date endDate = Dates.today();
+            Date endDate = period.getEndDate();
 
             // TODO refactor
             // - re-use date array

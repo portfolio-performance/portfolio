@@ -1,11 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.Calendar;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
@@ -13,7 +12,6 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -46,11 +44,6 @@ public class PerformanceView extends AbstractHistoricView
     private StatementOfAssetsViewer snapshotEnd;
     private TableViewer earnings;
 
-    public PerformanceView()
-    {
-        super(0);
-    }
-
     @Override
     protected String getTitle()
     {
@@ -60,14 +53,8 @@ public class PerformanceView extends AbstractHistoricView
     @Override
     protected void reportingPeriodUpdated()
     {
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTime(Dates.today());
-        startDate.add(Calendar.YEAR, -getReportingYears());
-        startDate.set(Calendar.DAY_OF_MONTH, 1);
-        startDate.add(Calendar.DATE, -1);
-
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), startDate.getTime(),
-                        Dates.today());
+        ReportingPeriod period = getReportingPeriod();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), period);
 
         try
         {

@@ -171,6 +171,13 @@ public class Messages extends NLS
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
+    public static String LabelReportingAddPeriod;
+    public static String LabelReportingDialogFrom;
+    public static String LabelReportingDialogLast;
+    public static String LabelReportingDialogMonths;
+    public static String LabelReportingDialogSince;
+    public static String LabelReportingDialogUntil;
+    public static String LabelReportingDialogYears;
     public static String LabelReportingYears;
     public static String LabelSampleData;
     public static String LabelSearch;

@@ -17,6 +17,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByAssetClass;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -505,7 +506,7 @@ public class StatementOfAssetsViewer
         SecurityPerformanceSnapshot sps = null;
 
         if (clientSnapshot != null)
-            sps = SecurityPerformanceSnapshot.create(client, cal.getTime(), endDate);
+            sps = SecurityPerformanceSnapshot.create(client, new ReportingPeriod.FromXtoY(cal.getTime(), endDate));
         else
             sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getSource(), cal.getTime(), endDate);
 
