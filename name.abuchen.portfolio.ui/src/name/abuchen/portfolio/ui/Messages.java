@@ -199,7 +199,9 @@ public class Messages extends NLS
     public static String LabelViewTreeMap;
     public static String LabelWithoutClassification;
     public static String MenuConfigureChart;
+    public static String MenuExportChartData;
     public static String MenuExportData;
+    public static String MenuExportPerformanceCalculation;
     public static String MenuOpenSecurityOnSite;
     public static String MenuResetColumns;
     public static String MenuShowHideColumns;

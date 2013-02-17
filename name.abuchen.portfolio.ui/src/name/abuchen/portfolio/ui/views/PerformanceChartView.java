@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,14 +13,18 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.IBarSeries;
@@ -36,6 +42,8 @@ public class PerformanceChartView extends AbstractHistoricView
     private ColorWheel colorWheel;
     private TimelineChart chart;
 
+    private ClientIndex index;
+
     @Override
     protected String getTitle()
     {
@@ -50,24 +58,51 @@ public class PerformanceChartView extends AbstractHistoricView
         addConfigButton(toolBar);
     }
 
-    private void addExportButton(ToolBar toolBar)
+    private void addExportButton(final ToolBar toolBar)
     {
-        Action export = new Action()
+        new AbstractDropDown(toolBar, Messages.MenuExportData, //
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_EXPORT), SWT.NONE)
         {
             @Override
-            public void run()
+            public void menuAboutToShow(IMenuManager manager)
             {
-                TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
-                exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
-                exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
-                exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
-                exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+                manager.add(new Action(Messages.MenuExportChartData)
+                {
+                    @Override
+                    public void run()
+                    {
+                        TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
+                        exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
+                        exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
+                        exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
+                        exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+                    }
+                });
+
+                manager.add(new Action(Messages.MenuExportPerformanceCalculation)
+                {
+                    @Override
+                    public void run()
+                    {
+                        AbstractCSVExporter exporter = new AbstractCSVExporter()
+                        {
+                            @Override
+                            protected void writeToFile(File file) throws IOException
+                            {
+                                index.exportTo(file);
+                            }
+
+                            @Override
+                            protected Control getControl()
+                            {
+                                return toolBar;
+                            }
+                        };
+                        exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+                    }
+                });
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
-        export.setToolTipText(Messages.MenuExportData);
-
-        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     private void addConfigButton(ToolBar toolBar)
@@ -138,7 +173,7 @@ public class PerformanceChartView extends AbstractHistoricView
             ArrayList<Exception> warnings = new ArrayList<Exception>();
 
             ReportingPeriod interval = getReportingPeriod();
-            ClientIndex index = ClientIndex.forPeriod(getClient(), interval, warnings);
+            index = ClientIndex.forPeriod(getClient(), interval, warnings);
 
             addYieldSeries(index);
             addCPISeries(CPIIndex.forClient(index, warnings));

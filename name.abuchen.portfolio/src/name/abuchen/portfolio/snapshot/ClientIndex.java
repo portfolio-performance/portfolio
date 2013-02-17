@@ -1,5 +1,11 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +16,10 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Values;
 
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -29,6 +38,7 @@ public class ClientIndex
 
     private Date[] dates;
     private long[] totals;
+    private long[] transferals;
     private double[] accumulated;
     private double[] delta;
 
@@ -74,6 +84,40 @@ public class ClientIndex
         return reportInterval.toInterval();
     }
 
+    public void exportTo(File file) throws IOException
+    {
+        CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED, CSVStrategy.ESCAPE_DISABLED,
+                        false, false, false, false);
+
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
+
+        try
+        {
+            CSVPrinter printer = new CSVPrinter(writer);
+            printer.setStrategy(strategy);
+
+            printer.println(new String[] { Messages.CSVColumn_Date, //
+                            Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_Transferals, //
+                            Messages.CSVColumn_DeltaInPercent, //
+                            Messages.CSVColumn_CumulatedPerformanceInPercent });
+
+            for (int ii = 0; ii < totals.length; ii++)
+            {
+                printer.print(Values.Date.format(dates[ii]));
+                printer.print(Values.Amount.format(totals[ii]));
+                printer.print(Values.Amount.format(transferals[ii]));
+                printer.print(Values.Percent.format(delta[ii]));
+                printer.print(Values.Percent.format(accumulated[ii]));
+                printer.println();
+            }
+        }
+        finally
+        {
+            writer.close();
+        }
+    }
+
     private void calculate(List<Exception> warnings)
     {
         Interval interval = reportInterval.toInterval();
@@ -84,7 +128,7 @@ public class ClientIndex
         delta = new double[size];
         accumulated = new double[size];
 
-        long[] transferals = collectTransferals(size, interval);
+        transferals = collectTransferals(size, interval);
 
         // first value = reference value
         dates[0] = interval.getStart().toDate();

@@ -5,6 +5,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
@@ -19,10 +20,25 @@ public abstract class AbstractDropDown implements IMenuListener
 
     public AbstractDropDown(ToolBar toolBar, String label)
     {
+        this(toolBar, label, null, SWT.DROP_DOWN);
+    }
+
+    public AbstractDropDown(ToolBar toolBar, String label, Image image, int style)
+    {
         this.toolBar = toolBar;
 
-        dropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
-        dropdown.setText(label);
+        dropdown = new ToolItem(toolBar, style);
+
+        if (image != null)
+        {
+            dropdown.setImage(image);
+            dropdown.setToolTipText(label);
+        }
+        else
+        {
+            dropdown.setText(label);
+        }
+
         dropdown.addSelectionListener(new SelectionAdapter()
         {
             @Override
@@ -60,7 +76,10 @@ public abstract class AbstractDropDown implements IMenuListener
 
     public void setLabel(String label)
     {
-        dropdown.setText(label);
+        if (dropdown.getImage() != null)
+            dropdown.setToolTipText(label);
+        else
+            dropdown.setText(label);
         toolBar.getParent().layout();
     }
 }
