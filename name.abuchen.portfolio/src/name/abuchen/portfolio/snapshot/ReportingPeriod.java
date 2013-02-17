@@ -11,6 +11,8 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
+import org.joda.time.Interval;
+
 public abstract class ReportingPeriod
 {
     public static final ReportingPeriod from(String code) throws IOException
@@ -44,6 +46,11 @@ public abstract class ReportingPeriod
     public final Date getEndDate()
     {
         return endDate;
+    }
+
+    public final Interval toInterval()
+    {
+        return new Interval(startDate.getTime(), endDate.getTime());
     }
 
     public abstract void writeTo(StringBuilder buffer);

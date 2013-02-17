@@ -212,6 +212,7 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.swtchart"/>
       <plugin id="de.engehausen.treemap"/>
       <plugin id="de.engehausen.treemap.swt"/>
+      <plugin id="joda-time"/>
 
       <plugin id="com.bandlem.eclipse.fullscreen.ui" os="macosx" ws="cocoa" arch="x86_64"/>
    </plugins>
