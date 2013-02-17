@@ -158,13 +158,13 @@ public class Messages extends NLS
     public static String LabelExchange;
     public static String LabelFullClassification;
     public static String LabelInfo;
-    public static String LabelInternalRateOfReturn;
     public static String LabelNewCategory;
     public static String LabelNoClassification;
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelOther;
     public static String LabelPerformanceCalculation;
+    public static String LabelPerformanceChart;
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;

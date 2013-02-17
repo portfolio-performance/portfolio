@@ -3,15 +3,12 @@ package name.abuchen.portfolio.ui.views;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.snapshot.ClientIRRYield;
+import name.abuchen.portfolio.snapshot.CPIIndex;
+import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.SecurityIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -42,7 +39,7 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     protected String getTitle()
     {
-        return Messages.LabelInternalRateOfReturn;
+        return Messages.LabelPerformanceChart;
     }
 
     @Override
@@ -61,7 +58,8 @@ public class PerformanceChartView extends AbstractHistoricView
             public void run()
             {
                 TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
-                exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-01")); //$NON-NLS-1$
+                exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
+                exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
                 exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
                 exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
             }
@@ -110,10 +108,11 @@ public class PerformanceChartView extends AbstractHistoricView
         colorWheel = new ColorWheel(parent, NUM_OF_COLORS);
 
         chart = new TimelineChart(parent);
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
         chart.getLegend().setVisible(true);
         chart.getLegend().setPosition(SWT.BOTTOM);
-        chart.getToolTip().setDateFormat("%1$tB %1$tY"); //$NON-NLS-1$
+        chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
         // force layout, otherwise range calculation of chart does not work
         parent.layout();
@@ -136,25 +135,24 @@ public class PerformanceChartView extends AbstractHistoricView
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            ReportingPeriod period = getReportingPeriod();
+            ArrayList<Exception> warnings = new ArrayList<Exception>();
 
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(period.getStartDate());
-            cal.set(Calendar.DAY_OF_MONTH, 1);
+            ReportingPeriod interval = getReportingPeriod();
+            ClientIndex index = ClientIndex.forPeriod(getClient(), interval, warnings);
 
-            Date startDate = cal.getTime();
-            Date endDate = period.getEndDate();
-
-            // TODO refactor
-            // - re-use date array
-            // - don't show flat line for not yet existing CPI values
-
-            Date firstDataPoint = addYieldSeries(startDate, endDate);
-
-            addCPISeries(startDate, endDate, firstDataPoint);
-
+            addYieldSeries(index);
+            addCPISeries(CPIIndex.forClient(index, warnings));
             for (Security security : picker.getSelectedSecurities())
-                addSecuritySeries(startDate, endDate, firstDataPoint, security);
+            {
+                SecurityIndex si = SecurityIndex.forClient(index, security, warnings);
+                addSecuritySeries(security, si);
+            }
+
+            if (!warnings.isEmpty())
+            {
+                for (Exception e : warnings)
+                    PortfolioPlugin.log(e);
+            }
 
             chart.getSeriesSet().bringToFront(Messages.PerformanceChartLabelCPI);
             chart.getSeriesSet().bringToFront(Messages.PerformanceChartLabelAccumulatedIRR);
@@ -168,212 +166,32 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.redraw();
     }
 
-    private Date addYieldSeries(final Date startDate, final Date endDate)
+    private void addYieldSeries(ClientIndex index)
     {
-        List<ClientIRRYield> yields = new ArrayList<ClientIRRYield>();
-        Date firstDataPoint = null;
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startDate);
-        cal.add(Calendar.DATE, -1);
-
-        while (cal.getTimeInMillis() < endDate.getTime())
-        {
-            Date start = cal.getTime();
-
-            cal.add(Calendar.DATE, 1);
-            cal.add(Calendar.MONTH, 1);
-            cal.add(Calendar.DATE, -1);
-            if (cal.getTimeInMillis() > endDate.getTime())
-                cal.setTime(endDate);
-
-            ClientIRRYield yield = ClientIRRYield.create(getClient(), start, cal.getTime());
-            yields.add(yield);
-
-            if (yield.getIrr() != 0.0 && firstDataPoint == null)
-                firstDataPoint = start;
-        }
-
-        // if file has no data points at all
-        if (firstDataPoint == null)
-        {
-            firstDataPoint = startDate;
-        }
-        else
-        {
-            cal.setTime(firstDataPoint);
-            cal.add(Calendar.DATE, 1);
-            firstDataPoint = cal.getTime();
-        }
-
-        // dates
-        Date[] dates = new Date[yields.size()];
-        double[] irr = new double[yields.size()];
-        double[] irrAccumulated = new double[yields.size()];
-
-        double accumulated = 0;
-
-        int index = 0;
-        for (ClientIRRYield y : yields)
-        {
-            cal.setTime(y.getSnapshotStart().getTime());
-            cal.add(Calendar.DATE, 15);
-            dates[index] = cal.getTime();
-            irr[index] = y.getIrr();
-
-            accumulated += y.getIrr();
-            irrAccumulated[index] = accumulated;
-
-            index++;
-        }
-
-        IBarSeries barSeries = chart.addDateBarSeries(dates, irr, Messages.PerformanceChartLabelMonthly);
+        IBarSeries barSeries = chart.addDateBarSeries(index.getDates(), //
+                        index.getDeltaPercentage(), //
+                        Messages.PerformanceChartLabelMonthly);
         barSeries.setBarPadding(50);
         barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 
-        chart.addDateSeries(dates, irrAccumulated, Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
-        return firstDataPoint;
+        chart.addDateSeries(index.getDates(), //
+                        index.getAccumulatedPercentage(), //
+                        Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
     }
 
-    private void addCPISeries(final Date startDate, final Date endDate, Date firstDataPoint)
+    private void addCPISeries(CPIIndex cpiIndex)
     {
-        List<ConsumerPriceIndex> rawData = getClient().getConsumerPriceIndeces();
-
-        Calendar cal = Calendar.getInstance();
-
-        ConsumerPriceIndex baseline = null;
-        if (startDate.getTime() == firstDataPoint.getTime())
-        {
-            // set a baseline only if the first data point already contains data
-            cal.setTime(startDate);
-            cal.add(Calendar.MONTH, -1);
-            baseline = lookup(cal, rawData);
-        }
-        else
-        {
-            // baseline must be set one month before first data point in order
-            // to include the first month
-
-            cal.setTime(firstDataPoint);
-            cal.add(Calendar.MONTH, -1);
-            firstDataPoint = cal.getTime();
-        }
-
-        List<Date> cpiDates = new ArrayList<Date>();
-        List<Double> cpiSeries = new ArrayList<Double>();
-
-        cal.setTime(startDate);
-        while (cal.getTimeInMillis() < endDate.getTime())
-        {
-            ConsumerPriceIndex cpi = lookup(cal, rawData);
-
-            if (cal.getTimeInMillis() < firstDataPoint.getTime())
-            {
-                // if no yields available, start with first yield
-                cpiSeries.add(0d);
-            }
-            else if (cpi != null)
-            {
-                // if no data is available, start at first data point
-                if (baseline == null)
-                    baseline = cpi;
-                cpiSeries.add((((double) cpi.getIndex() / (double) baseline.getIndex()) - 1) * 100);
-            }
-            else if (!cpiSeries.isEmpty())
-            {
-                cpiSeries.add(cpiSeries.get(cpiSeries.size() - 1));
-            }
-            else
-            {
-                cpiSeries.add(0d);
-            }
-
-            cal.set(Calendar.DAY_OF_MONTH, 15);
-            cpiDates.add(cal.getTime());
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-            cal.add(Calendar.MONTH, 1);
-        }
-
-        double[] values = new double[cpiSeries.size()];
-        for (int ii = 0; ii < values.length; ii++)
-            values[ii] = cpiSeries.get(ii);
-
-        chart.addDateSeries(cpiDates.toArray(new Date[0]), values, Colors.CPI, Messages.PerformanceChartLabelCPI) //
+        chart.addDateSeries(cpiIndex.getDates(), //
+                        cpiIndex.getAccumulatedPercentage(), //
+                        Colors.CPI, Messages.PerformanceChartLabelCPI) //
                         .setLineStyle(LineStyle.DASHDOTDOT);
     }
 
-    private ConsumerPriceIndex lookup(Calendar cal, List<ConsumerPriceIndex> rates)
+    private void addSecuritySeries(Security security, SecurityIndex securityIndex)
     {
-        for (ConsumerPriceIndex r : rates)
-            if (r.getYear() == cal.get(Calendar.YEAR) && r.getMonth() == cal.get(Calendar.MONTH))
-                return r;
-        return null;
-    }
-
-    private void addSecuritySeries(Date startDate, Date endDate, Date firstDataPoint, Security security)
-    {
-        Calendar cal = Calendar.getInstance();
-
-        SecurityPrice baseline = null;
-        if (startDate.getTime() == firstDataPoint.getTime())
-        {
-            cal.setTime(startDate);
-            cal.add(Calendar.DATE, -1);
-            baseline = security.getSecurityPrice(cal.getTime());
-        }
-        else
-        {
-            cal.setTime(firstDataPoint);
-            cal.add(Calendar.MONTH, -1);
-            cal.add(Calendar.DATE, -1);
-            firstDataPoint = cal.getTime();
-        }
-
-        List<Date> dates = new ArrayList<Date>();
-        List<Double> series = new ArrayList<Double>();
-
-        cal.setTime(startDate);
-        while (cal.getTimeInMillis() < endDate.getTime())
-        {
-            // get last day of month
-            cal.add(Calendar.MONTH, 1);
-            cal.add(Calendar.DATE, -1);
-            SecurityPrice price = security.getSecurityPrice(cal.getTime());
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-
-            if (cal.getTimeInMillis() < firstDataPoint.getTime())
-            {
-                series.add(0d);
-            }
-            else if (price != null)
-            {
-                if (baseline == null)
-                    baseline = price;
-                series.add((((double) price.getValue() / (double) baseline.getValue()) - 1) * 100);
-            }
-            else if (!series.isEmpty())
-            {
-                series.add(series.get(series.size() - 1));
-            }
-            else
-            {
-                series.add(0d);
-            }
-
-            cal.set(Calendar.DAY_OF_MONTH, 15);
-            dates.add(cal.getTime());
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-            cal.add(Calendar.MONTH, 1);
-        }
-
-        double[] values = new double[series.size()];
-        for (int ii = 0; ii < values.length; ii++)
-            values[ii] = series.get(ii);
-
         int index = getClient().getSecurities().indexOf(security);
-
-        chart.addDateSeries(dates.toArray(new Date[0]), //
-                        values, //
+        chart.addDateSeries(securityIndex.getDates(), //
+                        securityIndex.getAccumulatedPercentage(), //
                         colorWheel.getSegment(index).getColor(), security.getName()) //
                         .setLineStyle(LINE_STYLES[(index / NUM_OF_COLORS) % LINE_STYLES.length]);
     }

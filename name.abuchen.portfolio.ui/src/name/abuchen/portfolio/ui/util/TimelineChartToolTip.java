@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +32,9 @@ public class TimelineChartToolTip implements Listener
     private Chart chart = null;
     private Shell tip = null;
     private Date tipDate = null;
+
     private String dateFormat = "%tF"; //$NON-NLS-1$
+    private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
     public TimelineChartToolTip(Chart chart)
     {
@@ -64,6 +67,11 @@ public class TimelineChartToolTip implements Listener
     public void setDateFormat(String dateFormat)
     {
         this.dateFormat = dateFormat;
+    }
+
+    public void setValueFormat(DecimalFormat valueFormat)
+    {
+        this.valueFormat = valueFormat;
     }
 
     private void closeToolTip()
@@ -190,7 +198,7 @@ public class TimelineChartToolTip implements Listener
 
             right = new Label(container, SWT.RIGHT);
             right.setForeground(foregroundColor);
-            right.setText(String.format("%,.2f", value)); //$NON-NLS-1$
+            right.setText(valueFormat.format(value));
             GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
         }
 
