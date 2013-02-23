@@ -149,6 +149,7 @@ public class Messages extends NLS
     public static String JobMsgLoadingExchanges;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String LabelAccounts;
+    public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
     public static String LabelAssetAllocation;
     public static String LabelAssetClasses;

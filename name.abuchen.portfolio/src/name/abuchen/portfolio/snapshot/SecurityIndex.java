@@ -3,38 +3,31 @@ package name.abuchen.portfolio.snapshot;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.Days;
 
-public class SecurityIndex
+public class SecurityIndex extends PerformanceIndex
 {
     public static SecurityIndex forClient(ClientIndex clientIndex, Security security, List<Exception> warnings)
     {
-        SecurityIndex index = new SecurityIndex();
+        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getReportInterval());
         index.calculate(clientIndex, security, warnings);
         return index;
     }
 
-    private Date[] dates = new Date[0];
-    private double[] accumulated = new double[0];
-    private double[] delta = new double[0];
-
-    public Date[] getDates()
+    public SecurityIndex(Client client, ReportingPeriod reportInterval)
     {
-        return dates;
-    }
+        super(client, reportInterval);
 
-    public double[] getAccumulatedPercentage()
-    {
-        return accumulated;
-    }
-
-    public double[] getDeltaPercentage()
-    {
-        return delta;
+        dates = new Date[0];
+        delta = new double[0];
+        accumulated = new double[0];
+        transferals = new long[0];
+        totals = new long[0];
     }
 
     private void calculate(ClientIndex clientIndex, Security security, List<Exception> warnings)
@@ -44,14 +37,14 @@ public class SecurityIndex
             return;
 
         DateMidnight firstPricePoint = new DateMidnight(prices.get(0).getTime());
-        if (firstPricePoint.isAfter(clientIndex.getInterval().getEndMillis()))
+        if (firstPricePoint.isAfter(clientIndex.getReportInterval().getEndDate().getTime()))
             return;
 
         DateMidnight startDate = clientIndex.getFirstDataPoint().toDateMidnight();
         if (firstPricePoint.isAfter(startDate))
             startDate = firstPricePoint;
 
-        DateMidnight endDate = clientIndex.getInterval().getEnd().toDateMidnight();
+        DateMidnight endDate = new DateMidnight(clientIndex.getReportInterval().getEndDate());
         DateMidnight lastPricePoint = new DateMidnight(prices.get(prices.size() - 1).getTime());
 
         if (lastPricePoint.isBefore(endDate))
@@ -62,9 +55,11 @@ public class SecurityIndex
         dates = new Date[size];
         delta = new double[size];
         accumulated = new double[size];
+        transferals = new long[size];
+        totals = new long[size];
 
         final double adjustment = clientIndex.getAccumulatedPercentage()[Days.daysBetween(
-                        clientIndex.getInterval().getStart(), startDate).getDays()];
+                        new DateMidnight(clientIndex.getReportInterval().getStartDate()), startDate).getDays()];
 
         // first value = reference value
         dates[0] = startDate.toDate();

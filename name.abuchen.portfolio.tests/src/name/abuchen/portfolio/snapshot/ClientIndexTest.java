@@ -67,7 +67,7 @@ public class ClientIndexTest
 
         assertNotNull(index);
 
-        assertThat(period.toInterval(), is(index.getInterval()));
+        assertThat(period.toInterval(), is(index.getReportInterval().toInterval()));
         assertThat(client, is(index.getClient()));
 
         Date[] dates = index.getDates();
@@ -243,6 +243,29 @@ public class ClientIndexTest
 
         assertThat((double) (lastPrice - startPrice) / (double) startPrice,
                         IsCloseTo.closeTo(accumulated[accumulated.length - 1], PRECISION));
+    }
+
+    @Test
+    public void testExcelSampleAggregatedWeekly()
+    {
+        Client client = createClient();
+
+        ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(Dates.date(2011, Calendar.DECEMBER, 31), //
+                        Dates.date(2012, Calendar.JANUARY, 8));
+        PerformanceIndex index = ClientIndex.forPeriod(client, reportInterval, new ArrayList<Exception>());
+
+        index = Aggregation.aggregate(index, Aggregation.Period.WEEKLY);
+
+        assertNotNull(index);
+
+        double[] delta = index.getDeltaPercentage();
+        assertThat(delta.length, is(2));
+        assertThat(delta[0], IsCloseTo.closeTo(0.023d, PRECISION));
+        assertThat(delta[1], IsCloseTo.closeTo(-0.0713587d, PRECISION));
+
+        double[] accumulated = index.getAccumulatedPercentage();
+        assertThat(accumulated[0], IsCloseTo.closeTo(0.023d, PRECISION));
+        assertThat(accumulated[1], IsCloseTo.closeTo(-0.05d, PRECISION));
     }
 
 }

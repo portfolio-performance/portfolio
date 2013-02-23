@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.CPIIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -42,7 +46,9 @@ public class PerformanceChartView extends AbstractHistoricView
     private ColorWheel colorWheel;
     private TimelineChart chart;
 
-    private ClientIndex index;
+    private Aggregation.Period aggregationPeriod;
+
+    private Map<Object, Object> dataCache = new HashMap<Object, Object>();
 
     @Override
     protected String getTitle()
@@ -54,55 +60,9 @@ public class PerformanceChartView extends AbstractHistoricView
     protected void addButtons(ToolBar toolBar)
     {
         super.addButtons(toolBar);
-        addExportButton(toolBar);
+        new AggregationPeriodDropDown(toolBar);
+        new ExportDropDown(toolBar);
         addConfigButton(toolBar);
-    }
-
-    private void addExportButton(final ToolBar toolBar)
-    {
-        new AbstractDropDown(toolBar, Messages.MenuExportData, //
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_EXPORT), SWT.NONE)
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                manager.add(new Action(Messages.MenuExportChartData)
-                {
-                    @Override
-                    public void run()
-                    {
-                        TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
-                        exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
-                        exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
-                        exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
-                        exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
-                    }
-                });
-
-                manager.add(new Action(Messages.MenuExportPerformanceCalculation)
-                {
-                    @Override
-                    public void run()
-                    {
-                        AbstractCSVExporter exporter = new AbstractCSVExporter()
-                        {
-                            @Override
-                            protected void writeToFile(File file) throws IOException
-                            {
-                                index.exportTo(file);
-                            }
-
-                            @Override
-                            protected Control getControl()
-                            {
-                                return toolBar;
-                            }
-                        };
-                        exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
-                    }
-                });
-            }
-        };
     }
 
     private void addConfigButton(ToolBar toolBar)
@@ -130,12 +90,21 @@ public class PerformanceChartView extends AbstractHistoricView
             @Override
             public void onAddition(Security[] securities)
             {
+                ClientIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
+                ArrayList<Exception> warnings = new ArrayList<Exception>();
+                for (Security security : securities)
+                    dataCache.put(security, SecurityIndex.forClient(index, security, warnings));
+                PortfolioPlugin.log(warnings);
+
                 refreshChart();
             }
 
             @Override
             public void onRemoval(Security[] securities)
             {
+                for (Security security : securities)
+                    dataCache.remove(security);
+
                 refreshChart();
             }
         });
@@ -151,6 +120,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         // force layout, otherwise range calculation of chart does not work
         parent.layout();
+        rebuildDailyData();
         refreshChart();
         return chart;
     }
@@ -158,7 +128,29 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     protected void reportingPeriodUpdated()
     {
+        rebuildDailyData();
         refreshChart();
+    }
+
+    protected void rebuildDailyData()
+    {
+        dataCache.clear();
+
+        ArrayList<Exception> warnings = new ArrayList<Exception>();
+
+        ReportingPeriod interval = getReportingPeriod();
+        ClientIndex index = ClientIndex.forPeriod(getClient(), interval, warnings);
+        dataCache.put(ClientIndex.class, index);
+
+        dataCache.put(CPIIndex.class, CPIIndex.forClient(index, warnings));
+
+        for (Security security : picker.getSelectedSecurities())
+        {
+            SecurityIndex si = SecurityIndex.forClient(index, security, warnings);
+            dataCache.put(security, si);
+        }
+
+        PortfolioPlugin.log(warnings);
     }
 
     protected void refreshChart()
@@ -170,27 +162,20 @@ public class PerformanceChartView extends AbstractHistoricView
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            ArrayList<Exception> warnings = new ArrayList<Exception>();
+            ClientIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
 
-            ReportingPeriod interval = getReportingPeriod();
-            index = ClientIndex.forPeriod(getClient(), interval, warnings);
-
-            addYieldSeries(index);
-            addCPISeries(CPIIndex.forClient(index, warnings));
             for (Security security : picker.getSelectedSecurities())
             {
-                SecurityIndex si = SecurityIndex.forClient(index, security, warnings);
-                addSecuritySeries(security, si);
+                PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
+                addSecuritySeries(security, //
+                                aggregationPeriod != null ? Aggregation.aggregate(securityIndex, aggregationPeriod)
+                                                : securityIndex);
             }
 
-            if (!warnings.isEmpty())
-            {
-                for (Exception e : warnings)
-                    PortfolioPlugin.log(e);
-            }
+            if (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY)
+                addCPISeries((CPIIndex) dataCache.get(CPIIndex.class));
 
-            chart.getSeriesSet().bringToFront(Messages.PerformanceChartLabelCPI);
-            chart.getSeriesSet().bringToFront(Messages.PerformanceChartLabelAccumulatedIRR);
+            addYieldSeries(aggregationPeriod != null ? Aggregation.aggregate(index, aggregationPeriod) : index);
 
             chart.getAxisSet().adjustRange();
         }
@@ -201,7 +186,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.redraw();
     }
 
-    private void addYieldSeries(ClientIndex index)
+    private void addYieldSeries(PerformanceIndex index)
     {
         IBarSeries barSeries = chart.addDateBarSeries(index.getDates(), //
                         index.getDeltaPercentage(), //
@@ -222,7 +207,7 @@ public class PerformanceChartView extends AbstractHistoricView
                         .setLineStyle(LineStyle.DASHDOTDOT);
     }
 
-    private void addSecuritySeries(Security security, SecurityIndex securityIndex)
+    private void addSecuritySeries(Security security, PerformanceIndex securityIndex)
     {
         int index = getClient().getSecurities().indexOf(security);
         chart.addDateSeries(securityIndex.getDates(), //
@@ -231,4 +216,91 @@ public class PerformanceChartView extends AbstractHistoricView
                         .setLineStyle(LINE_STYLES[(index / NUM_OF_COLORS) % LINE_STYLES.length]);
     }
 
+    private final class AggregationPeriodDropDown extends AbstractDropDown
+    {
+        private AggregationPeriodDropDown(ToolBar toolBar)
+        {
+            super(toolBar, Messages.LabelAggregationDaily);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new Action(Messages.LabelAggregationDaily)
+            {
+                @Override
+                public void run()
+                {
+                    setLabel(Messages.LabelAggregationDaily);
+                    aggregationPeriod = null;
+                    refreshChart();
+                }
+            });
+
+            for (final Aggregation.Period period : Aggregation.Period.values())
+            {
+                manager.add(new Action(period.toString())
+                {
+                    @Override
+                    public void run()
+                    {
+                        setLabel(period.toString());
+                        aggregationPeriod = period;
+                        refreshChart();
+                    }
+                });
+            }
+        }
+    }
+
+    private final class ExportDropDown extends AbstractDropDown
+    {
+        private ExportDropDown(ToolBar toolBar)
+        {
+            super(toolBar, Messages.MenuExportData, PortfolioPlugin.image(PortfolioPlugin.IMG_EXPORT), SWT.NONE);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new Action(Messages.MenuExportChartData)
+            {
+                @Override
+                public void run()
+                {
+                    TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
+                    exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
+                    exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
+                    exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
+                    exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+                }
+            });
+
+            manager.add(new Action(Messages.MenuExportPerformanceCalculation)
+            {
+                @Override
+                public void run()
+                {
+                    AbstractCSVExporter exporter = new AbstractCSVExporter()
+                    {
+                        @Override
+                        protected void writeToFile(File file) throws IOException
+                        {
+                            PerformanceIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
+                            if (aggregationPeriod != null)
+                                index = Aggregation.aggregate(index, aggregationPeriod);
+                            index.exportTo(file);
+                        }
+
+                        @Override
+                        protected Control getControl()
+                        {
+                            return ExportDropDown.this.getToolBar();
+                        }
+                    };
+                    exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+                }
+            });
+        }
+    }
 }

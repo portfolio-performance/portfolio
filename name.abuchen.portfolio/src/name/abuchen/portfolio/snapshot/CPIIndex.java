@@ -34,7 +34,8 @@ public class CPIIndex
 
     private void calculate(ClientIndex clientIndex, List<Exception> warnings)
     {
-        Interval interval = new Interval(clientIndex.getFirstDataPoint(), clientIndex.getInterval().getEnd());
+        Interval interval = new Interval(clientIndex.getFirstDataPoint(), clientIndex.getReportInterval().toInterval()
+                        .getEnd());
 
         List<ConsumerPriceIndex> cpiSeries = clientIndex.getClient().getConsumerPriceIndeces();
         Collections.sort(cpiSeries);

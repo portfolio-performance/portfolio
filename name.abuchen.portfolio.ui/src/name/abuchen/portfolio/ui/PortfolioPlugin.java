@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -137,6 +138,12 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static void log(Throwable t)
     {
         log(new Status(Status.ERROR, PLUGIN_ID, t.getMessage(), t));
+    }
+    
+    public static void log(ArrayList<Exception> errors)
+    {
+        for (Exception e : errors)
+            log(e);
     }
 
     public static ImageDescriptor descriptor(String key)

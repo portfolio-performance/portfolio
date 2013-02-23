@@ -1,11 +1,5 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,15 +10,12 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Values;
 
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 
-public class ClientIndex
+public class ClientIndex extends PerformanceIndex
 {
     public static ClientIndex forPeriod(Client client, ReportingPeriod reportInterval, List<Exception> warnings)
     {
@@ -33,39 +24,9 @@ public class ClientIndex
         return index;
     }
 
-    private Client client;
-    private ReportingPeriod reportInterval;
-
-    private Date[] dates;
-    private long[] totals;
-    private long[] transferals;
-    private double[] accumulated;
-    private double[] delta;
-
     private ClientIndex(Client client, ReportingPeriod reportInterval)
     {
-        this.client = client;
-        this.reportInterval = reportInterval;
-    }
-
-    public Client getClient()
-    {
-        return client;
-    }
-
-    public Date[] getDates()
-    {
-        return dates;
-    }
-
-    public double[] getAccumulatedPercentage()
-    {
-        return accumulated;
-    }
-
-    public double[] getDeltaPercentage()
-    {
-        return delta;
+        super(client, reportInterval);
     }
 
     public DateTime getFirstDataPoint()
@@ -79,48 +40,9 @@ public class ClientIndex
         return null;
     }
 
-    public Interval getInterval()
-    {
-        return reportInterval.toInterval();
-    }
-
-    public void exportTo(File file) throws IOException
-    {
-        CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED, CSVStrategy.ESCAPE_DISABLED,
-                        false, false, false, false);
-
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
-        {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(strategy);
-
-            printer.println(new String[] { Messages.CSVColumn_Date, //
-                            Messages.CSVColumn_Value, //
-                            Messages.CSVColumn_Transferals, //
-                            Messages.CSVColumn_DeltaInPercent, //
-                            Messages.CSVColumn_CumulatedPerformanceInPercent });
-
-            for (int ii = 0; ii < totals.length; ii++)
-            {
-                printer.print(Values.Date.format(dates[ii]));
-                printer.print(Values.Amount.format(totals[ii]));
-                printer.print(Values.Amount.format(transferals[ii]));
-                printer.print(Values.Percent.format(delta[ii]));
-                printer.print(Values.Percent.format(accumulated[ii]));
-                printer.println();
-            }
-        }
-        finally
-        {
-            writer.close();
-        }
-    }
-
     private void calculate(List<Exception> warnings)
     {
-        Interval interval = reportInterval.toInterval();
+        Interval interval = getReportInterval().toInterval();
         int size = Days.daysBetween(interval.getStart(), interval.getEnd()).getDays() + 1;
 
         dates = new Date[size];
@@ -134,7 +56,7 @@ public class ClientIndex
         dates[0] = interval.getStart().toDate();
         delta[0] = 0;
         accumulated[0] = 0;
-        long valuation = totals[0] = ClientSnapshot.create(client, dates[0]).getAssets();
+        long valuation = totals[0] = ClientSnapshot.create(getClient(), dates[0]).getAssets();
 
         // calculate series
         int index = 1;
@@ -143,7 +65,7 @@ public class ClientIndex
         {
             dates[index] = date.toDate();
 
-            long thisValuation = totals[index] = ClientSnapshot.create(client, dates[index]).getAssets();
+            long thisValuation = totals[index] = ClientSnapshot.create(getClient(), dates[index]).getAssets();
             long thisDelta = thisValuation - transferals[index] - valuation;
 
             if (valuation == 0)
@@ -173,7 +95,7 @@ public class ClientIndex
     {
         long[] transferals = new long[size];
 
-        for (Account a : client.getAccounts())
+        for (Account a : getClient().getAccounts())
         {
             for (AccountTransaction t : a.getTransactions())
             {
@@ -201,7 +123,7 @@ public class ClientIndex
             }
         }
 
-        for (Portfolio p : client.getPortfolios())
+        for (Portfolio p : getClient().getPortfolios())
         {
             for (PortfolioTransaction t : p.getTransactions())
             {
@@ -233,5 +155,4 @@ public class ClientIndex
 
         return transferals;
     }
-
 }
