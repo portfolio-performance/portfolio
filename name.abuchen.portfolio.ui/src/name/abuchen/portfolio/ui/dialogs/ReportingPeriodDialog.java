@@ -44,6 +44,12 @@ public class ReportingPeriodDialog extends Dialog
         this.template = template != null ? template : new ReportingPeriod.LastX(1, 0);
     }
 
+    protected void configureShell(Shell shell)
+    {
+        super.configureShell(shell);
+        shell.setText(Messages.LabelReportInterval);
+    }
+
     @Override
     protected Control createDialogArea(Composite parent)
     {
