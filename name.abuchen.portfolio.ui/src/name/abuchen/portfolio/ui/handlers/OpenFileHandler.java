@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.intro.IIntroManager;
 
 public class OpenFileHandler extends AbstractHandler
 {
@@ -35,6 +36,10 @@ public class OpenFileHandler extends AbstractHandler
                 IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
                 IWorkbenchPage page = window.getActivePage();
                 page.openEditor(new ClientEditorInput(new Path(fileSelected)), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
+
+                IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
+                if (introManager.getIntro() != null)
+                    introManager.closeIntro(introManager.getIntro());
             }
 
             return fileSelected;
