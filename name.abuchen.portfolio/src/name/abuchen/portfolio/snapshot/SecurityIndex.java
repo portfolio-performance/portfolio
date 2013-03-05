@@ -22,23 +22,23 @@ public class SecurityIndex extends PerformanceIndex
     public SecurityIndex(Client client, ReportingPeriod reportInterval)
     {
         super(client, reportInterval);
-
-        dates = new Date[0];
-        delta = new double[0];
-        accumulated = new double[0];
-        transferals = new long[0];
-        totals = new long[0];
     }
 
     private void calculate(ClientIndex clientIndex, Security security, List<Exception> warnings)
     {
         List<SecurityPrice> prices = security.getPrices();
         if (prices.isEmpty())
+        {
+            initEmpty(clientIndex);
             return;
+        }
 
         DateMidnight firstPricePoint = new DateMidnight(prices.get(0).getTime());
         if (firstPricePoint.isAfter(clientIndex.getReportInterval().getEndDate().getTime()))
+        {
+            initEmpty(clientIndex);
             return;
+        }
 
         DateMidnight startDate = clientIndex.getFirstDataPoint().toDateMidnight();
         if (firstPricePoint.isAfter(startDate))
@@ -84,5 +84,16 @@ public class SecurityIndex extends PerformanceIndex
             valuation = thisValuation;
             index++;
         }
+    }
+
+    private void initEmpty(ClientIndex clientIndex)
+    {
+        DateMidnight startDate = clientIndex.getFirstDataPoint().toDateMidnight();
+
+        dates = new Date[] { startDate.toDate() };
+        delta = new double[] { 0d };
+        accumulated = new double[] { 0d };
+        transferals = new long[] { 0 };
+        totals = new long[] { 0 };
     }
 }

@@ -207,6 +207,7 @@ public class SecurityIndexTest
         // asserts
 
         assertTrue(warnings.isEmpty());
-        assertThat(securityIndex.getDates().length, is(0));
+        assertThat(securityIndex.getDates().length, is(1));
+        assertThat(securityIndex.getDates()[0], is(clientIndex.getFirstDataPoint().toDate()));
     }
 }
