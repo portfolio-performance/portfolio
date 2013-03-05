@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.JunitLaunchConfig">
+<setAttribute key="additional_plugins"/>
+<booleanAttribute key="append.args" value="true"/>
+<stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
+<booleanAttribute key="askclear" value="false"/>
+<booleanAttribute key="automaticAdd" value="true"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="true"/>
+<booleanAttribute key="clearws" value="true"/>
+<booleanAttribute key="clearwslog" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
+<booleanAttribute key="default" value="false"/>
+<stringAttribute key="featureDefaultLocation" value="workspace"/>
+<stringAttribute key="featurePluginResolution" value="workspace"/>
+<booleanAttribute key="includeOptional" value="true"/>
+<stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/name.abuchen.portfolio.tests"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=name.abuchen.portfolio.tests"/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="name.abuchen.portfolio.tests"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<stringAttribute key="product" value="name.abuchen.portfolio.ui.product"/>
+<booleanAttribute key="run_in_ui_thread" value="true"/>
+<setAttribute key="selected_features">
+<setEntry value="com.android.ide.eclipse.adt:default"/>
+<setEntry value="com.android.ide.eclipse.ddms:default"/>
+<setEntry value="com.android.ide.eclipse.hierarchyviewer:default"/>
+<setEntry value="com.android.ide.eclipse.traceview:default"/>
+<setEntry value="com.bandlem.eclipse.fullscreen.feature:default"/>
+<setEntry value="com.mountainminds.eclemma.feature:default"/>
+<setEntry value="com.wdev91.eclipse.copyright.feature:default"/>
+<setEntry value="edu.umd.cs.findbugs.plugin.eclipse:default"/>
+<setEntry value="jd.edi.eclipse.feature:default"/>
+<setEntry value="name.njbartlett.eclipse.macbadge.feature:default"/>
+<setEntry value="org.eclipse.cvs:default"/>
+<setEntry value="org.eclipse.egit.mylyn:default"/>
+<setEntry value="org.eclipse.egit.psf:default"/>
+<setEntry value="org.eclipse.egit:default"/>
+<setEntry value="org.eclipse.epp.mpc:default"/>
+<setEntry value="org.eclipse.epp.package.common.feature:default"/>
+<setEntry value="org.eclipse.epp.package.java.feature:default"/>
+<setEntry value="org.eclipse.epp.usagedata.feature:default"/>
+<setEntry value="org.eclipse.equinox.p2.core.feature:default"/>
+<setEntry value="org.eclipse.equinox.p2.discovery.feature:default"/>
+<setEntry value="org.eclipse.equinox.p2.extras.feature:default"/>
+<setEntry value="org.eclipse.equinox.p2.rcp.feature:default"/>
+<setEntry value="org.eclipse.equinox.p2.user.ui:default"/>
+<setEntry value="org.eclipse.help:default"/>
+<setEntry value="org.eclipse.jdt:default"/>
+<setEntry value="org.eclipse.jgit:default"/>
+<setEntry value="org.eclipse.jst.enterprise_core.feature:default"/>
+<setEntry value="org.eclipse.jst.enterprise_ui.feature:default"/>
+<setEntry value="org.eclipse.jst.enterprise_userdoc.feature:default"/>
+<setEntry value="org.eclipse.jst.server_adapters.ext.feature:default"/>
+<setEntry value="org.eclipse.jst.server_adapters.feature:default"/>
+<setEntry value="org.eclipse.jst.server_core.feature:default"/>
+<setEntry value="org.eclipse.jst.server_ui.feature:default"/>
+<setEntry value="org.eclipse.jst.server_userdoc.feature:default"/>
+<setEntry value="org.eclipse.jst.web_core.feature:default"/>
+<setEntry value="org.eclipse.jst.web_ui.feature:default"/>
+<setEntry value="org.eclipse.jst.web_userdoc.feature:default"/>
+<setEntry value="org.eclipse.m2e.feature:default"/>
+<setEntry value="org.eclipse.m2e.logback.feature:default"/>
+<setEntry value="org.eclipse.mylyn.bugzilla_feature:default"/>
+<setEntry value="org.eclipse.mylyn.context_feature:default"/>
+<setEntry value="org.eclipse.mylyn.ide_feature:default"/>
+<setEntry value="org.eclipse.mylyn.java_feature:default"/>
+<setEntry value="org.eclipse.mylyn.team_feature:default"/>
+<setEntry value="org.eclipse.mylyn.wikitext_feature:default"/>
+<setEntry value="org.eclipse.mylyn_feature:default"/>
+<setEntry value="org.eclipse.pde.api.tools.ee.fragments:default"/>
+<setEntry value="org.eclipse.pde:default"/>
+<setEntry value="org.eclipse.platform:default"/>
+<setEntry value="org.eclipse.rcp.source:default"/>
+<setEntry value="org.eclipse.rcp:default"/>
+<setEntry value="org.eclipse.wb.core.feature:default"/>
+<setEntry value="org.eclipse.wb.core.ui.feature:default"/>
+<setEntry value="org.eclipse.wb.layout.group.feature:default"/>
+<setEntry value="org.eclipse.wb.rcp.feature:default"/>
+<setEntry value="org.eclipse.wb.swing.feature:default"/>
+<setEntry value="org.eclipse.wb.swt.feature:default"/>
+<setEntry value="org.eclipse.wst.common_core.feature:default"/>
+<setEntry value="org.eclipse.wst.common_ui.feature:default"/>
+<setEntry value="org.eclipse.wst.jsdt.feature:default"/>
+<setEntry value="org.eclipse.wst.server_core.feature:default"/>
+<setEntry value="org.eclipse.wst.server_ui.feature:default"/>
+<setEntry value="org.eclipse.wst.server_userdoc.feature:default"/>
+<setEntry value="org.eclipse.wst.web_core.feature:default"/>
+<setEntry value="org.eclipse.wst.web_ui.feature:default"/>
+<setEntry value="org.eclipse.wst.web_userdoc.feature:default"/>
+<setEntry value="org.eclipse.wst.ws_core.feature:default"/>
+<setEntry value="org.eclipse.wst.ws_ui.feature:default"/>
+<setEntry value="org.eclipse.wst.ws_userdoc.feature:default"/>
+<setEntry value="org.eclipse.wst.ws_wsdl15.feature:default"/>
+<setEntry value="org.eclipse.wst.xml.xpath2.processor.feature:default"/>
+<setEntry value="org.eclipse.wst.xml_core.feature:default"/>
+<setEntry value="org.eclipse.wst.xml_ui.feature:default"/>
+<setEntry value="org.eclipse.wst.xml_userdoc.feature:default"/>
+<setEntry value="org.eclipse.wst.xsl.feature:default"/>
+<setEntry value="org.eclipselabs.tapiji.tools.feature:default"/>
+<setEntry value="org.jboss.ide.eclipse.archives.feature:default"/>
+<setEntry value="org.jboss.ide.eclipse.as.archives.integration.feature:default"/>
+<setEntry value="org.jboss.ide.eclipse.as.feature:default"/>
+<setEntry value="org.jboss.ide.eclipse.as.jmx.integration.feature:default"/>
+<setEntry value="org.jboss.ide.eclipse.as.server.rse.integration.feature:default"/>
+<setEntry value="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature:default"/>
+<setEntry value="org.jboss.tools.forge.feature:default"/>
+<setEntry value="org.jboss.tools.jmx.feature:default"/>
+<setEntry value="org.sonatype.m2e.mavenarchiver.feature:default"/>
+<setEntry value="org.sonatype.m2e.plexus.annotations.feature:default"/>
+<setEntry value="org.sonatype.tycho.m2e.feature:default"/>
+</setAttribute>
+<stringAttribute key="selected_target_plugins" value="com.ibm.icu@default:default,com.springsource.com.thoughtworks.xstream@default:default,com.springsource.javax.xml.stream@default:default,com.springsource.org.apache.commons.csv@default:default,com.springsource.org.htmlparser@default:default,com.springsource.org.xmlpull@default:default,com.thoughtworks.qdox@default:default,de.engehausen.treemap.swt@default:default,de.engehausen.treemap@default:default,javax.servlet@default:default,joda-time@default:default,org.apache.ant@default:default,org.eclipse.ant.core.nl_de@default:false,org.eclipse.ant.core@default:default,org.eclipse.core.commands.nl_de@default:false,org.eclipse.core.commands@default:default,org.eclipse.core.contenttype.nl_de@default:false,org.eclipse.core.contenttype@default:default,org.eclipse.core.databinding.beans.nl_de@default:false,org.eclipse.core.databinding.beans@default:default,org.eclipse.core.databinding.nl_de@default:false,org.eclipse.core.databinding.observable.nl_de@default:false,org.eclipse.core.databinding.observable@default:default,org.eclipse.core.databinding.property.nl_de@default:false,org.eclipse.core.databinding.property@default:default,org.eclipse.core.databinding@default:default,org.eclipse.core.expressions.nl_de@default:false,org.eclipse.core.expressions@default:default,org.eclipse.core.filesystem.macosx.nl_de@default:false,org.eclipse.core.filesystem.macosx@default:false,org.eclipse.core.filesystem.nl_de@default:false,org.eclipse.core.filesystem@default:default,org.eclipse.core.jobs.nl_de@default:false,org.eclipse.core.jobs@default:default,org.eclipse.core.resources.nl_de@default:false,org.eclipse.core.resources@default:default,org.eclipse.core.runtime.compatibility.auth.nl_de@default:false,org.eclipse.core.runtime.compatibility.auth@default:default,org.eclipse.core.runtime.compatibility.registry@default:false,org.eclipse.core.runtime.nl_de@default:false,org.eclipse.core.runtime@default:true,org.eclipse.core.variables.nl_de@default:false,org.eclipse.core.variables@default:default,org.eclipse.equinox.app.nl_de@default:false,org.eclipse.equinox.app@default:default,org.eclipse.equinox.common.nl_de@default:false,org.eclipse.equinox.common@2:true,org.eclipse.equinox.p2.core.nl_de@default:false,org.eclipse.equinox.p2.core@default:default,org.eclipse.equinox.p2.director.nl_de@default:false,org.eclipse.equinox.p2.director@default:default,org.eclipse.equinox.p2.engine.nl_de@default:false,org.eclipse.equinox.p2.engine@default:default,org.eclipse.equinox.p2.metadata.nl_de@default:false,org.eclipse.equinox.p2.metadata.repository.nl_de@default:false,org.eclipse.equinox.p2.metadata.repository@default:default,org.eclipse.equinox.p2.metadata@default:default,org.eclipse.equinox.p2.operations.nl_de@default:false,org.eclipse.equinox.p2.operations@default:default,org.eclipse.equinox.p2.repository.nl_de@default:false,org.eclipse.equinox.p2.repository@default:default,org.eclipse.equinox.preferences.nl_de@default:false,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.registry.nl_de@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.security.macosx.nl_de@default:false,org.eclipse.equinox.security.macosx@default:false,org.eclipse.equinox.security.nl_de@default:false,org.eclipse.equinox.security@default:default,org.eclipse.equinox.simpleconfigurator.nl_de@default:false,org.eclipse.equinox.simpleconfigurator@1:true,org.eclipse.help.nl_de@default:false,org.eclipse.help@default:default,org.eclipse.jface.databinding.nl_de@default:false,org.eclipse.jface.databinding@default:default,org.eclipse.jface.nl_de@default:false,org.eclipse.jface.text.nl_de@default:false,org.eclipse.jface.text@default:default,org.eclipse.jface@default:default,org.eclipse.osgi.nl_de@default:false,org.eclipse.osgi.services.nl_de@default:false,org.eclipse.osgi.services@default:default,org.eclipse.osgi@-1:true,org.eclipse.swt.cocoa.macosx.nl_de@default:false,org.eclipse.swt.cocoa.macosx.x86_64.nl_de@default:false,org.eclipse.swt.cocoa.macosx.x86_64@default:false,org.eclipse.swt.nl_de@default:false,org.eclipse.swt@default:default,org.eclipse.text.nl_de@default:false,org.eclipse.text@default:default,org.eclipse.ui.cocoa.nl_de@default:false,org.eclipse.ui.cocoa@default:false,org.eclipse.ui.forms.nl_de@default:false,org.eclipse.ui.forms@default:default,org.eclipse.ui.ide.nl_de@default:false,org.eclipse.ui.ide@default:default,org.eclipse.ui.nl_de@default:false,org.eclipse.ui.views.log.nl_de@default:false,org.eclipse.ui.views.log@default:default,org.eclipse.ui.views.nl_de@default:false,org.eclipse.ui.views@default:default,org.eclipse.ui.workbench.nl_de@default:false,org.eclipse.ui.workbench@default:default,org.eclipse.ui@default:default,org.hamcrest.core@default:default,org.hamcrest.generator@default:default,org.hamcrest.integration@default:default,org.hamcrest.library@default:default,org.hamcrest.text@default:default,org.hamcrest@default:default,org.junit*4.10.0.v4_10_0_v20120426-0900@default:default,org.mockito@default:default,org.objenesis@default:default,org.sat4j.core@default:default,org.sat4j.pb@default:default,org.swtchart@default:default"/>
+<stringAttribute key="selected_workspace_plugins" value="name.abuchen.portfolio.tests@default:false,name.abuchen.portfolio.ui@default:default,name.abuchen.portfolio@default:default"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfig" value="true"/>
+<booleanAttribute key="useDefaultConfigArea" value="false"/>
+<booleanAttribute key="useProduct" value="false"/>
+</launchConfiguration>

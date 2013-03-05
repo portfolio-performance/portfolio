@@ -56,7 +56,7 @@ export LANG=en_US.UTF-8
 Run Maven 3.0.x in the 'portfolio-app' directory:
 
 ```
-mvn clean verify
+mvn clean install
 ```
 
 
@@ -70,15 +70,36 @@ mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z-SNAPS
 
 ## Developing with Eclipse
 
-Download [Eclipse 3.7.2](http://eclipse.org/downloads/) including the RCP Tools.
+### Setup
 
-Clone the git repository and import the projects.
+To develop, use [Eclipse 3.7.2 or later](http://eclipse.org/downloads/) plus the Plug-in Development Tools (PDT).
 
-Setup a target platform (Preferences -> Plug-in Development -> Target Platform) including
+Clone the git repository.
 
-* an Eclipse 3.7.2 installation
-* a directory containing the following 3rd party libraries (com.springsource.* and org.swtchart.* bundle)
-* (optionally) add the Eclipse Babel language pack
+Import projects by
+* selecting "Import Projects..." on the Git repository in the Git perspective
+* choosing "File" > "Import..." > "Existing Projects into Workspace" from the menu 
+
+After importing the Portfolio Performance projects in Eclipse, they will not compile due to missing dependencies: the target platform is missing.
+
+### Generate Target Platform
+
+Run Maven *once* with the following parameter:
+```
+mvn clean install -Dgenerate-target-platform=true
+```
+
+### Set Target Platform
+
+* Open the portfolio-app project
+* Open the ide-target-platform/portfolio-ide.target file (this may take a while as it requires Internet access)
+* In the resulting editor, click on the Set as Target Platform link at the top right (this may also take a while)
+
+### Run Program
+
+Right-click portfolio-app/PortfolioPerformance.launch and choose "Run As...".
+
+To run the unit tests, use name.abuchen.portfolio.tests/name.abuchen.portfolio.tests.launch.
 
 ## License
  
