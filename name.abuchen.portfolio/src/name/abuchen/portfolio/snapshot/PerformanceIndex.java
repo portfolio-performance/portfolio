@@ -25,6 +25,7 @@ public class PerformanceIndex
     protected long[] transferals;
     protected double[] accumulated;
     protected double[] delta;
+    protected double[] invested;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -60,6 +61,10 @@ public class PerformanceIndex
     public long[] getTotals()
     {
         return totals;
+    }
+    
+    public double[] getInvested() {
+        return invested;
     }
 
     public long[] getTransferals()

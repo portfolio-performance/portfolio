@@ -17,6 +17,8 @@ import org.joda.time.Interval;
 
 public class ClientIndex extends PerformanceIndex
 {
+    
+    
     public static ClientIndex forPeriod(Client client, ReportingPeriod reportInterval, List<Exception> warnings)
     {
         ClientIndex index = new ClientIndex(client, reportInterval);
@@ -39,6 +41,8 @@ public class ClientIndex extends PerformanceIndex
 
         return null;
     }
+    
+   
 
     private void calculate(List<Exception> warnings)
     {
@@ -51,6 +55,7 @@ public class ClientIndex extends PerformanceIndex
         accumulated = new double[size];
 
         transferals = collectTransferals(size, interval);
+        invested = collectInvested(size, interval);
 
         // first value = reference value
         dates[0] = interval.getStart().toDate();
@@ -89,6 +94,35 @@ public class ClientIndex extends PerformanceIndex
             valuation = thisValuation;
             index++;
         }
+    }
+    
+    private double[] collectInvested(int size, Interval interval) {
+        double[] invested = new double[size];
+        for (Portfolio p : getClient().getPortfolios()) {
+            for (PortfolioTransaction t : p.getTransactions()){
+                if (interval.contains(t.getDate().getTime())){
+                    long delta = 0;
+                    switch (t.getType())
+                    {
+                        case BUY:
+                            delta = t.getAmount();
+                            break;
+                        case SELL:
+                            delta = -t.getAmount();
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    if (delta != 0){
+                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
+                        for (int i=ii;i<invested.length;i++) {
+                            invested[i] += delta;
+                        }
+                    }
+                }
+            }
+        }
+        return invested;
     }
 
     private long[] collectTransferals(int size, Interval interval)

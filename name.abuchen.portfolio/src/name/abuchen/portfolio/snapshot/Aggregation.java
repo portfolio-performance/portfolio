@@ -97,6 +97,7 @@ public class Aggregation
         double[] delta = index.getDeltaPercentage();
         long[] transferals = index.getTransferals();
         long[] totals = index.getTotals();
+        double[] invested = index.getInvested();
 
         DateMidnight start = period.getStartDateFor(new DateMidnight(dates[0])).plus(period.getPeriod());
         DateMidnight kill = start.minusDays(1);
@@ -106,6 +107,7 @@ public class Aggregation
         List<Double> cDelta = new ArrayList<Double>();
         List<Long> cTransferals = new ArrayList<Long>();
         List<Long> cTotals = new ArrayList<Long>();
+        List<Double> cInvested = new ArrayList<Double>();
 
         double d = 0d;
         long t = 0;
@@ -123,6 +125,7 @@ public class Aggregation
                 cDelta.add(d);
                 cTransferals.add(t);
                 cTotals.add(totals[ii]);
+                cInvested.add(invested[ii]);
 
                 d = 0d;
                 t = 0;
@@ -138,6 +141,7 @@ public class Aggregation
         answer.delta = asArrayD(cDelta);
         answer.transferals = asArrayL(cTransferals);
         answer.totals = asArrayL(cTotals);
+        answer.invested = asArrayD(cInvested);
         return answer;
     }
 

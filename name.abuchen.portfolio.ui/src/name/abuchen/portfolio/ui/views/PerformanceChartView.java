@@ -198,6 +198,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.addDateSeries(index.getDates(), //
                         index.getAccumulatedPercentage(), //
                         Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
+        chart.addDateSeries(index.getDates(), index.getInvested(), Colors.IRR, "Invested");
     }
 
     private void addCPISeries(CPIIndex cpiIndex)
