@@ -117,6 +117,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getLegend().setVisible(true);
         chart.getLegend().setPosition(SWT.BOTTOM);
         chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getToolTip().setReferenceSeries(Messages.PerformanceChartLabelAccumulatedIRR);
 
         // force layout, otherwise range calculation of chart does not work
         parent.layout();
@@ -190,7 +191,7 @@ public class PerformanceChartView extends AbstractHistoricView
     {
         IBarSeries barSeries = chart.addDateBarSeries(index.getDates(), //
                         index.getDeltaPercentage(), //
-                        Messages.PerformanceChartLabelMonthly);
+                        aggregationPeriod != null ? aggregationPeriod.toString() : Messages.LabelAggregationDaily);
         barSeries.setBarPadding(50);
         barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 

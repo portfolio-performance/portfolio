@@ -234,7 +234,6 @@ public class Messages extends NLS
     public static String MsgRestartRequired;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
-    public static String PerformanceChartLabelMonthly;
     public static String PerformanceTabAssetsAtEnd;
     public static String PerformanceTabAssetsAtStart;
     public static String PerformanceTabCalculation;

@@ -36,6 +36,8 @@ public class TimelineChartToolTip implements Listener
     private String dateFormat = "%tF"; //$NON-NLS-1$
     private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
+    private String referenceSeriesId;
+
     public TimelineChartToolTip(Chart chart)
     {
         this.chart = chart;
@@ -72,6 +74,11 @@ public class TimelineChartToolTip implements Listener
     public void setValueFormat(DecimalFormat valueFormat)
     {
         this.valueFormat = valueFormat;
+    }
+
+    public void setReferenceSeries(String id)
+    {
+        this.referenceSeriesId = id;
     }
 
     private void closeToolTip()
@@ -143,7 +150,8 @@ public class TimelineChartToolTip implements Listener
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        ISeries timeSeries = chart.getSeriesSet().getSeries()[0];
+        ISeries timeSeries = referenceSeriesId != null ? chart.getSeriesSet().getSeries(referenceSeriesId) : chart
+                        .getSeriesSet().getSeries()[0];
         int line = Arrays.binarySearch(timeSeries.getXDateSeries(), cal.getTime());
 
         if (line >= 0)
