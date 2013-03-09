@@ -83,6 +83,12 @@ public class ClientFactory
             client.setVersion(9);
         }
 
+        if (client.getVersion() == 9)
+        {
+            // do nothing --> added 'cross entries' to transactions
+            client.setVersion(10);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
@@ -165,6 +171,10 @@ public class ClientFactory
 
                     xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }));
                     xstream.registerConverter(new AssetClassConverter());
+
+                    xstream.alias("buysell", BuySellEntry.class);
+                    xstream.alias("account-transfer", AccountTransferEntry.class);
+                    xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
                 }
             }
         }
@@ -198,6 +208,5 @@ public class ClientFactory
                 value = "DEBT"; //$NON-NLS-1$
             return AssetClass.valueOf(value);
         }
-
     }
 }

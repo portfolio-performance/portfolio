@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -170,33 +170,17 @@ public class BuySellSecurityDialog extends AbstractDialog
         {
             if (security == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
+            if (portfolio.getReferenceAccount() == null)
+                throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
 
-            AccountTransaction ta = null;
-            if (portfolio.getReferenceAccount() != null)
-            {
-                ta = new AccountTransaction();
-                ta.setDate(date);
-                ta.setSecurity(security);
-                ta.setAmount(total);
-
-                if (this.type == PortfolioTransaction.Type.BUY)
-                    ta.setType(AccountTransaction.Type.BUY);
-                else if (this.type == PortfolioTransaction.Type.SELL)
-                    ta.setType(AccountTransaction.Type.SELL);
-                else
-                    throw new UnsupportedOperationException("Unsupported type " + this.type); //$NON-NLS-1$
-
-                portfolio.getReferenceAccount().addTransaction(ta);
-            }
-
-            PortfolioTransaction tp = new PortfolioTransaction();
-            tp.setDate(date);
-            tp.setSecurity(security);
-            tp.setShares(shares);
-            tp.setFees(fees);
-            tp.setAmount(total);
-            tp.setType(type);
-            portfolio.addTransaction(tp);
+            BuySellEntry t = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
+            t.setDate(date);
+            t.setSecurity(security);
+            t.setShares(shares);
+            t.setFees(fees);
+            t.setAmount(total);
+            t.setType(type);
+            t.insert();
         }
     }
 

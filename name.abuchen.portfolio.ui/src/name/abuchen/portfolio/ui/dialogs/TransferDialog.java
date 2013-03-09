@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.util.Date;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
@@ -96,17 +96,10 @@ public class TransferDialog extends AbstractDialog
             if (accountTo == null)
                 throw new UnsupportedOperationException(Messages.MsgAccountToMissing);
 
-            AccountTransaction from = new AccountTransaction();
-            from.setAmount(amount);
-            from.setDate(date);
-            from.setType(AccountTransaction.Type.TRANSFER_OUT);
-            accountFrom.addTransaction(from);
-
-            AccountTransaction to = new AccountTransaction();
-            to.setAmount(amount);
-            to.setDate(date);
-            to.setType(AccountTransaction.Type.TRANSFER_IN);
-            accountTo.addTransaction(to);
+            AccountTransferEntry t = new AccountTransferEntry(accountFrom, accountTo);
+            t.setDate(date);
+            t.setAmount(amount);
+            t.insert();
         }
     }
 

@@ -226,6 +226,7 @@ public class Messages extends NLS
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningEditor;
     public static String MsgMissingAccount;
+    public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
     public static String MsgNoProfileFound;
     public static String MsgNoSecuritiesMaintained;

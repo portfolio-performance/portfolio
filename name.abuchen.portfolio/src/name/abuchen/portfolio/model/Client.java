@@ -8,8 +8,8 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */ static final int CURRENT_VERSION = 9;
-    
+    /* package */static final int CURRENT_VERSION = 10;
+
     private int version = CURRENT_VERSION;
 
     private List<Security> securities = new ArrayList<Security>();

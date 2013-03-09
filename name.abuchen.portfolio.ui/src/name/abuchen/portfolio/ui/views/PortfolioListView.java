@@ -18,7 +18,6 @@ import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
@@ -403,6 +402,10 @@ public class PortfolioListView extends AbstractListView
                         {
                             public void onModified(Object element, String property)
                             {
+                                PortfolioTransaction t = (PortfolioTransaction) element;
+                                if (t.getCrossEntry() != null)
+                                    t.getCrossEntry().updateFrom(t);
+
                                 markDirty();
                                 Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
                                 portfolios.refresh(portfolio);
@@ -412,7 +415,7 @@ public class PortfolioListView extends AbstractListView
                             }
                         }) //
                         .editable("date") // //$NON-NLS-1$
-                        .editable("type") // //$NON-NLS-1$
+                        .readonly("type") // //$NON-NLS-1$
                         .combobox("security", securities) // //$NON-NLS-1$
                         .shares("shares") // //$NON-NLS-1$
                         .amount("amount") // //$NON-NLS-1$
@@ -447,11 +450,10 @@ public class PortfolioListView extends AbstractListView
                     if (transaction == null || portfolio == null)
                         return;
 
-                    if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(),
-                                    getClient(), transaction))
-                        return;
-
-                    portfolio.getTransactions().remove(transaction);
+                    if (transaction.getCrossEntry() != null)
+                        transaction.getCrossEntry().delete();
+                    else
+                        portfolio.getTransactions().remove(transaction);
                     markDirty();
 
                     portfolios.refresh(transactions.getData(Portfolio.class.toString()));

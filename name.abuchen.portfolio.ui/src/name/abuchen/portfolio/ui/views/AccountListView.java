@@ -22,7 +22,6 @@ import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -309,15 +308,19 @@ public class AccountListView extends AbstractListView
                         {
                             public void onModified(Object element, String property)
                             {
+                                AccountTransaction t = (AccountTransaction) element;
+                                if (t.getCrossEntry() != null)
+                                    t.getCrossEntry().updateFrom(t);
+
                                 markDirty();
-                                accounts.refresh(transactions.getData(Account.class.toString()));
+                                accounts.refresh();
                                 transactions.refresh(element);
                             }
                         }) //
-                        .editable("date") // //$NON-NLS-1$
-                        .editable("type") // //$NON-NLS-1$
-                        .amount("amount") // //$NON-NLS-1$
-                        .combobox("security", securities, true) // //$NON-NLS-1$
+                        .editable("date") //$NON-NLS-1$
+                        .readonly("type") //$NON-NLS-1$
+                        .amount("amount") //$NON-NLS-1$
+                        .combobox("security", securities, true) //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()
@@ -451,11 +454,10 @@ public class AccountListView extends AbstractListView
                 if (transaction == null || account == null)
                     return;
 
-                if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(), getClient(),
-                                transaction))
-                    return;
-
-                account.getTransactions().remove(transaction);
+                if (transaction.getCrossEntry() != null)
+                    transaction.getCrossEntry().delete();
+                else
+                    account.getTransactions().remove(transaction);
                 markDirty();
 
                 accounts.refresh();
