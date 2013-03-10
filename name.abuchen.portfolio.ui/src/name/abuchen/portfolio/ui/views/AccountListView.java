@@ -441,28 +441,32 @@ public class AccountListView extends AbstractListView
             });
         }
 
-        manager.add(new Separator());
-        manager.add(new Action(Messages.AccountMenuDeleteTransaction)
+        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
+        if (hasTransactionSelected)
         {
-            @Override
-            public void run()
+            manager.add(new Separator());
+            manager.add(new Action(Messages.AccountMenuDeleteTransaction)
             {
-                AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
-                                .getSelection()).getFirstElement();
-                Account account = (Account) transactions.getData(Account.class.toString());
+                @Override
+                public void run()
+                {
+                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+                    Account account = (Account) transactions.getData(Account.class.toString());
 
-                if (transaction == null || account == null)
-                    return;
+                    if (transaction == null || account == null)
+                        return;
 
-                if (transaction.getCrossEntry() != null)
-                    transaction.getCrossEntry().delete();
-                else
-                    account.getTransactions().remove(transaction);
-                markDirty();
+                    if (transaction.getCrossEntry() != null)
+                        transaction.getCrossEntry().delete();
+                    else
+                        account.getTransactions().remove(transaction);
+                    markDirty();
 
-                accounts.refresh();
-                transactions.setInput(account.getTransactions());
-            }
-        });
+                    accounts.refresh();
+                    transactions.setInput(account.getTransactions());
+                }
+            });
+        }
     }
 }

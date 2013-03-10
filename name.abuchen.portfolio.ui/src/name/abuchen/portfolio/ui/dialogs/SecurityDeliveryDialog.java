@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -13,8 +12,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
@@ -31,7 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-public class BuySellSecurityDialog extends AbstractDialog
+public class SecurityDeliveryDialog extends AbstractDialog
 {
     static class Model extends BindingHelper.Model
     {
@@ -41,40 +38,25 @@ public class BuySellSecurityDialog extends AbstractDialog
         private Security security;
         private long shares;
         private long price;
-        private long fees;
         private long total;
         private Date date = Dates.today();
 
-        public Model(Client client, Portfolio portfolio, Security security, Type type)
+        public Model(Client client, Portfolio portfolio, Type type)
         {
             super(client);
 
             this.portfolio = portfolio;
-            this.security = security;
             this.type = type;
 
-            if (type == PortfolioTransaction.Type.SELL && security != null)
-            {
-                ClientSnapshot snapshot = ClientSnapshot.create(client, Dates.today());
-                for (PortfolioSnapshot p : snapshot.getPortfolios())
-                {
-                    SecurityPosition position = p.getPositionsBySecurity().get(security);
-                    if (position != null && p.getSource().equals(portfolio))
-                    {
-                        setShares(position.getShares());
-                        setPortfolio(p.getSource());
-                        setTotal(position.calculateValue());
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                if (portfolio == null && !client.getPortfolios().isEmpty())
-                    setPortfolio(client.getPortfolios().get(0));
-                if (security == null && !client.getSecurities().isEmpty())
-                    setSecurity(client.getSecurities().get(0));
-            }
+            if (portfolio == null && !client.getPortfolios().isEmpty())
+                setPortfolio(client.getPortfolios().get(0));
+            if (security == null && !client.getSecurities().isEmpty())
+                setSecurity(client.getSecurities().get(0));
+        }
+
+        public PortfolioTransaction.Type getType()
+        {
+            return type;
         }
 
         public long getPrice()
@@ -84,23 +66,7 @@ public class BuySellSecurityDialog extends AbstractDialog
 
         private long calculatePrice()
         {
-            if (shares == 0)
-            {
-                return 0;
-            }
-            else
-            {
-                switch (type)
-                {
-                    case BUY:
-                        return Math.max(0, (total - fees) * Values.Share.factor() / shares);
-                    case SELL:
-                        return Math.max(0, (total + fees) * Values.Share.factor() / shares);
-                    default:
-                        throw new RuntimeException("Unsupported transaction type for dialog " + type); //$NON-NLS-1$
-                }
-            }
-
+            return shares == 0 ? 0 : Math.max(0, total * Values.Share.factor() / shares);
         }
 
         public Portfolio getPortfolio()
@@ -134,17 +100,6 @@ public class BuySellSecurityDialog extends AbstractDialog
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
         }
 
-        public long getFees()
-        {
-            return fees;
-        }
-
-        public void setFees(long fees)
-        {
-            firePropertyChange("fees", this.fees, this.fees = fees); //$NON-NLS-1$
-            firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
-        }
-
         public long getTotal()
         {
             return total;
@@ -171,64 +126,52 @@ public class BuySellSecurityDialog extends AbstractDialog
         {
             if (security == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
-            if (portfolio.getReferenceAccount() == null)
-                throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
 
-            BuySellEntry t = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
+            PortfolioTransaction t = new PortfolioTransaction();
+            t.setType(type);
             t.setDate(date);
             t.setSecurity(security);
             t.setShares(shares);
-            t.setFees(fees);
             t.setAmount(total);
-            t.setType(type);
-            t.insert();
+
+            portfolio.addTransaction(t);
         }
     }
 
-    private boolean allowSelectionOfSecurity = false;
-
-    public BuySellSecurityDialog(Shell parentShell, Client client, Security security, PortfolioTransaction.Type type)
+    public SecurityDeliveryDialog(Shell parentShell, Client client, Portfolio portfolio, PortfolioTransaction.Type type)
     {
-        this(parentShell, client, null, security, type);
-    }
+        super(parentShell, type.toString(), new Model(client, portfolio, type));
 
-    public BuySellSecurityDialog(Shell parentShell, Client client, Portfolio portfolio, Security security,
-                    PortfolioTransaction.Type type)
-    {
-        super(parentShell, security != null ? type.toString() + " " + security.getName() : type.toString(), //$NON-NLS-1$
-                        new Model(client, portfolio, security, type));
-
-        if (!(type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL))
-            throw new UnsupportedOperationException("dialog supports only BUY or SELL operation"); //$NON-NLS-1$
-
-        this.allowSelectionOfSecurity = security == null;
+        if (!(type == PortfolioTransaction.Type.DELIVERY_INBOUND || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND))
+            throw new UnsupportedOperationException();
     }
 
     @Override
     protected void createFormElements(Composite editArea)
     {
         // security selection
-        if (!allowSelectionOfSecurity)
+        List<Security> securities = new ArrayList<Security>();
+        if (((Model) getModel()).getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
         {
-            bindings().createLabel(editArea, ((Model) getModel()).getSecurity().getName());
-        }
-        else
-        {
-            List<Security> securities = new ArrayList<Security>();
             for (Security s : getModel().getClient().getSecurities())
                 if (!s.isRetired())
                     securities.add(s);
-            Collections.sort(securities, new Security.ByName());
-
-            bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
-                            {
-                                @Override
-                                public String getText(Object element)
-                                {
-                                    return ((Security) element).getName();
-                                }
-                            }, securities.toArray());
         }
+        else
+        {
+            securities.addAll(ClientSnapshot.create(getModel().getClient(), Dates.today()).getJointPortfolio()
+                            .getPositionsBySecurity().keySet());
+        }
+        Collections.sort(securities, new Security.ByName());
+
+        bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                return ((Security) element).getName();
+                            }
+                        }, securities.toArray());
 
         // portfolio selection
         bindings().bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
@@ -256,9 +199,6 @@ public class BuySellSecurityDialog extends AbstractDialog
                                         .setConverter(new StringToCurrencyConverter(Values.Amount)), //
                         new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_UPDATE)
                                         .setConverter(new CurrencyToStringConverter(Values.Amount)));
-
-        // fee
-        bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$

@@ -12,6 +12,10 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
+import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
+import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
@@ -25,7 +29,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -433,11 +438,101 @@ public class PortfolioListView extends AbstractListView
         return container;
     }
 
+    private abstract class AbstractDialogAction extends Action
+    {
+        public AbstractDialogAction(String text)
+        {
+            super(text);
+        }
+
+        @Override
+        public final void run()
+        {
+            Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
+            if (portfolio == null)
+                return;
+
+            Dialog dialog = createDialog(portfolio);
+            if (dialog.open() == TransferDialog.OK)
+            {
+                markDirty();
+
+                portfolios.refresh(transactions.getData(Portfolio.class.toString()));
+                transactions.setInput(portfolio.getTransactions());
+                statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+            }
+        }
+
+        abstract Dialog createDialog(Portfolio portfolio);
+    }
+
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
+        if (transactions.getData(Portfolio.class.toString()) == null)
+            return;
+
+        if (!getClient().getSecurities().isEmpty())
+        {
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
+            {
+                @Override
+                Dialog createDialog(Portfolio portfolio)
+                {
+                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
+                                    null, PortfolioTransaction.Type.BUY);
+                }
+            });
+
+            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
+            {
+                @Override
+                Dialog createDialog(Portfolio portfolio)
+                {
+                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
+                                    null, PortfolioTransaction.Type.SELL);
+                }
+            });
+
+            if (getClient().getPortfolios().size() > 1)
+            {
+                manager.add(new Separator());
+                manager.add(new AbstractDialogAction(Messages.SecurityMenuTransfer)
+                {
+                    @Override
+                    Dialog createDialog(Portfolio portfolio)
+                    {
+                        return new SecurityTransferDialog(getClientEditor().getSite().getShell(), getClient(),
+                                        portfolio);
+                    }
+                });
+            }
+
+            manager.add(new Separator());
+            manager.add(new AbstractDialogAction(PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
+            {
+                @Override
+                Dialog createDialog(Portfolio portfolio)
+                {
+                    return new SecurityDeliveryDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
+                                    PortfolioTransaction.Type.DELIVERY_INBOUND);
+                }
+            });
+
+            manager.add(new AbstractDialogAction(PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
+            {
+                @Override
+                Dialog createDialog(Portfolio portfolio)
+                {
+                    return new SecurityDeliveryDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
+                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                }
+            });
+        }
+
         boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
         if (hasTransactionSelected)
         {
+            manager.add(new Separator());
             manager.add(new Action(Messages.MenuTransactionDelete)
             {
                 @Override
@@ -461,45 +556,6 @@ public class PortfolioListView extends AbstractListView
                     transactions.setSelection(new StructuredSelection(transaction), true);
 
                     statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                }
-            });
-        }
-
-        boolean hasPortfolioSelected = transactions.getData(Portfolio.class.toString()) != null;
-        if (hasPortfolioSelected)
-        {
-            manager.add(new Action(Messages.MenuTransactionAdd)
-            {
-                @Override
-                public void run()
-                {
-                    // if no securities exist yet, inform user
-                    if (getClient().getSecurities().isEmpty())
-                    {
-                        MessageDialog.openError(getClientEditor().getSite().getShell(), Messages.LabelError,
-                                        Messages.MsgNoSecuritiesMaintained);
-                    }
-                    else
-                    {
-                        Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-                        if (portfolio == null)
-                            return;
-
-                        PortfolioTransaction transaction = new PortfolioTransaction();
-                        transaction.setDate(Dates.today());
-                        transaction.setType(PortfolioTransaction.Type.BUY);
-                        transaction.setSecurity(getClient().getSecurities().get(0));
-
-                        portfolio.addTransaction(transaction);
-
-                        markDirty();
-
-                        portfolios.refresh(transactions.getData(Account.class.toString()));
-                        transactions.setInput(portfolio.getTransactions());
-                        transactions.editElement(transaction, 0);
-
-                        statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                    }
                 }
             });
         }

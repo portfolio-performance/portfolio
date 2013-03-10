@@ -54,6 +54,8 @@ public class Messages extends NLS
     public static String ColumnMonth;
     public static String ColumnName;
     public static String ColumnPortfolio;
+    public static String ColumnPortfolioFrom;
+    public static String ColumnPortfolioTo;
     public static String ColumnPreviousClose;
     public static String ColumnPrice;
     public static String ColumnProfitLoss;
@@ -232,6 +234,9 @@ public class Messages extends NLS
     public static String MsgNoSecuritiesMaintained;
     public static String MsgNoUpdatesAvailable;
     public static String MsgPickOneOfMultipleCounterTransactions;
+    public static String MsgPortfolioFromMissing;
+    public static String MsgPortfolioMustBeDifferent;
+    public static String MsgPortfolioToMissing;
     public static String MsgRestartRequired;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
@@ -256,6 +261,7 @@ public class Messages extends NLS
     public static String SecurityMenuImportQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
     public static String SecurityMenuSell;
+    public static String SecurityMenuTransfer;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityPickerMenuAddSecurity;
     public static String SecurityPickerTitle;
