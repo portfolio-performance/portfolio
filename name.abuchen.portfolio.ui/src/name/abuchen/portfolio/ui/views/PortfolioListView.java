@@ -256,6 +256,7 @@ public class PortfolioListView extends AbstractListView
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
                         transactions, layout);
+        support.setDoSaveState(false);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -392,6 +393,25 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                PortfolioTransaction t = (PortfolioTransaction) e;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
@@ -425,6 +445,7 @@ public class PortfolioListView extends AbstractListView
                         .shares("shares") // //$NON-NLS-1$
                         .amount("amount") // //$NON-NLS-1$
                         .amount("fees") // //$NON-NLS-1$
+                        .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()

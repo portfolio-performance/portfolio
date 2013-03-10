@@ -92,4 +92,25 @@ public class BuySellEntry implements CrossEntry
         }
     }
 
+    @Override
+    public Transaction getCrossTransaction(Transaction t)
+    {
+        if (t.equals(portfolioTransaction))
+            return accountTransaction;
+        else if (t.equals(accountTransaction))
+            return portfolioTransaction;
+        else
+            throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object getCrossEntity(Transaction t)
+    {
+        if (t.equals(portfolioTransaction))
+            return account;
+        else if (t.equals(accountTransaction))
+            return portfolio;
+        else
+            throw new UnsupportedOperationException();
+    }
 }

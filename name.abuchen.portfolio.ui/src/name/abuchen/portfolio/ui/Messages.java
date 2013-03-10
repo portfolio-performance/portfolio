@@ -53,6 +53,7 @@ public class Messages extends NLS
     public static String ColumnMarketValue;
     public static String ColumnMonth;
     public static String ColumnName;
+    public static String ColumnOffsetAccount;
     public static String ColumnPortfolio;
     public static String ColumnPortfolioFrom;
     public static String ColumnPortfolioTo;

@@ -209,6 +209,7 @@ public class AccountListView extends AbstractListView
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
                         transactions, layout);
+        support.setDoSaveState(false);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -293,6 +294,25 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
@@ -321,6 +341,7 @@ public class AccountListView extends AbstractListView
                         .readonly("type") //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
                         .combobox("security", securities, true) //$NON-NLS-1$
+                        .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()

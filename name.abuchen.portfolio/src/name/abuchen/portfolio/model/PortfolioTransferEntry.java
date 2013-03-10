@@ -87,4 +87,25 @@ public class PortfolioTransferEntry implements CrossEntry
         }
     }
 
+    @Override
+    public Transaction getCrossTransaction(Transaction t)
+    {
+        if (t.equals(transactionFrom))
+            return transactionTo;
+        else if (t.equals(transactionTo))
+            return transactionFrom;
+        else
+            throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object getCrossEntity(Transaction t)
+    {
+        if (t.equals(transactionFrom))
+            return portfolioTo;
+        else if (t.equals(transactionTo))
+            return portfolioFrom;
+        else
+            throw new UnsupportedOperationException();
+    }
 }
