@@ -9,14 +9,14 @@ public class PortfolioTransferEntry implements CrossEntry
     private Portfolio portfolioTo;
     private PortfolioTransaction transactionTo;
 
-    public PortfolioTransferEntry(Portfolio accountFrom, Portfolio accountTo)
+    public PortfolioTransferEntry(Portfolio portfolioFrom, Portfolio portfolioTo)
     {
-        this.portfolioFrom = accountFrom;
+        this.portfolioFrom = portfolioFrom;
         this.transactionFrom = new PortfolioTransaction();
         this.transactionFrom.setType(PortfolioTransaction.Type.TRANSFER_OUT);
         this.transactionFrom.setCrossEntry(this);
 
-        this.portfolioTo = accountTo;
+        this.portfolioTo = portfolioTo;
         this.transactionTo = new PortfolioTransaction();
         this.transactionTo.setType(PortfolioTransaction.Type.TRANSFER_IN);
         this.transactionTo.setCrossEntry(this);
