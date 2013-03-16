@@ -202,10 +202,11 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addCPISeries(CPIIndex cpiIndex)
     {
-        chart.addDateSeries(cpiIndex.getDates(), //
-                        cpiIndex.getAccumulatedPercentage(), //
-                        Colors.CPI, Messages.PerformanceChartLabelCPI) //
-                        .setLineStyle(LineStyle.DASHDOTDOT);
+        if (cpiIndex.getDates().length > 0)
+            chart.addDateSeries(cpiIndex.getDates(), //
+                            cpiIndex.getAccumulatedPercentage(), //
+                            Colors.CPI, Messages.PerformanceChartLabelCPI) //
+                            .setLineStyle(LineStyle.DASHDOTDOT);
     }
 
     private void addSecuritySeries(Security security, PerformanceIndex securityIndex)
