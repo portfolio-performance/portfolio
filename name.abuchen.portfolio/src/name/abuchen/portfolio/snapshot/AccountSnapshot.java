@@ -4,7 +4,6 @@ import java.util.Date;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Values;
 
 public class AccountSnapshot
 {
@@ -74,23 +73,4 @@ public class AccountSnapshot
     {
         return funds;
     }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        StringBuilder buf = new StringBuilder();
-        buf.append("-----------------------------------------------------\n");
-        buf.append(account.getName()).append("\n");
-        buf.append(String.format("Date: %tF\n", time));
-        buf.append("-----------------------------------------------------\n");
-
-        buf.append("                                           ");
-        buf.append(String.format("%,10.2f\n", funds / Values.Amount.divider()));
-
-        buf.append("-----------------------------------------------------\n");
-
-        return buf.toString();
-    }
-
 }

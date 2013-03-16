@@ -17,7 +17,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
 
 public class ClientPerformanceSnapshot
 {
@@ -106,7 +105,7 @@ public class ClientPerformanceSnapshot
 
         calculate();
     }
-    
+
     public ClientPerformanceSnapshot(Client client, ReportingPeriod period)
     {
         this(client, period.getStartDate(), period.getEndDate());
@@ -350,15 +349,5 @@ public class ClientPerformanceSnapshot
         categories.get(CategoryType.TRANSFERS).valuation = deposits - removals;
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits));
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals));
-    }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        StringBuilder buf = new StringBuilder();
-        for (Category c : categories.values())
-            buf.append(String.format("%-53s %,10.2f\n", c.label, c.valuation / Values.Amount.divider()));
-        return buf.toString();
     }
 }

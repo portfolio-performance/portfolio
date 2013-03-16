@@ -91,13 +91,6 @@ public class ClientIRRYield
         return irr;
     }
 
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        return String.format("%TD - %TD: %,.3f %%", snapshotStart.getTime(), snapshotEnd.getTime(), getIrr());
-    }
-
     private static void collectPortfolioTransactions(Client client, Date start, Date end, List<Transaction> transactions)
     {
         for (Portfolio portfolio : client.getPortfolios())

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.model;
 
-import java.text.DateFormatSymbols;
 
 public class ConsumerPriceIndex implements Comparable<ConsumerPriceIndex>
 {
@@ -46,13 +45,5 @@ public class ConsumerPriceIndex implements Comparable<ConsumerPriceIndex>
         if (this.month != o.month)
             return Integer.valueOf(this.month).compareTo(o.month);
         return Integer.valueOf(this.index).compareTo(o.index);
-    }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        return String.format("%d-%s %,.2f", getYear(), new DateFormatSymbols().getMonths()[getMonth()], getIndex()
-                        / Values.Index.divider());
     }
 }
