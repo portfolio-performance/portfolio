@@ -112,6 +112,14 @@
                   commandId="org.eclipse.ui.file.saveAs">
             </command>
             <separator
+                  name="name.abuchen.portfolio.ui.menus.operationsSeparator"
+                  visible="true">
+            </separator>
+            <command
+                  id="name.abuchen.portfolio.ui.commands.consistencyChecksCommand"
+                  commandId="name.abuchen.portfolio.ui.commands.consistencyChecksCommand">
+            </command>
+            <separator
                   name="name.abuchen.portfolio.ui.menus.exportSeparator"
                   visible="true">
             </separator>
@@ -242,6 +250,11 @@
             id="name.abuchen.portfolio.ui.commands.updateCommand"
             name="%command.update.name">
       </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.commands.consistencyChecksCommand"
+            name="%command.consistencyChecks.name">
+      </command>
    </extension>
 
    <extension
@@ -297,6 +310,15 @@
       <handler
             class="name.abuchen.portfolio.ui.handlers.UpdateHandler"
             commandId="name.abuchen.portfolio.ui.commands.updateCommand">
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.RunConsistencyChecksHandler"
+            commandId="name.abuchen.portfolio.ui.commands.consistencyChecksCommand">
+         <activeWhen>
+            <with variable="activeEditorId">
+               <equals value="name.abuchen.portfolio.ui.editor"/>
+            </with>
+         </activeWhen>
       </handler>
    </extension>
 

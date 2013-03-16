@@ -39,12 +39,15 @@ public class Messages extends NLS
     public static String ColumnDelta;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaValue;
+    public static String ColumnEntity;
     public static String ColumnFees;
+    public static String ColumnFix;
     public static String ColumnIndex;
     public static String ColumnIRR;
     public static String ColumnIRRPerformance;
     public static String ColumnIRRPerformanceOption;
     public static String ColumnISIN;
+    public static String ColumnIssue;
     public static String ColumnLable;
     public static String ColumnLastTrade;
     public static String ColumnLatest;
@@ -104,6 +107,8 @@ public class Messages extends NLS
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
     public static String CurrencyConverter_MsgNotANumber;
+    public static String DialogConsistencyChecksTitle;
+    public static String DialogConssitencyChecksMessage;
     public static String DialogTitleCounterTransactionNotFound;
     public static String DialogTitleMultipleCounterTransactions;
     public static String EditWizardIndustryClassificationDescription;
@@ -150,6 +155,7 @@ public class Messages extends NLS
     public static String JobMsgErrorUpdatingIndeces;
     public static String JobMsgErrorUpdatingQuotes;
     public static String JobMsgLoadingExchanges;
+    public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String LabelAccounts;
     public static String LabelAggregationDaily;
@@ -231,6 +237,7 @@ public class Messages extends NLS
     public static String MsgMissingAccount;
     public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
+    public static String MsgNoIssuesFound;
     public static String MsgNoProfileFound;
     public static String MsgNoSecuritiesMaintained;
     public static String MsgNoUpdatesAvailable;
