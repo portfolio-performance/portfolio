@@ -49,7 +49,7 @@ public class ClientPerformanceSnapshotTest
 
         List<Category> categories = snapshot.getCategories();
         assertNotNull(categories);
-        assertEquals(8, categories.size());
+        assertEquals(9, categories.size());
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());

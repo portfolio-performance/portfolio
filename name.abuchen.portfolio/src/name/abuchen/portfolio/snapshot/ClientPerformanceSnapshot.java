@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Values;
 
 public class ClientPerformanceSnapshot
 {
@@ -86,7 +87,7 @@ public class ClientPerformanceSnapshot
 
     /* package */enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IZF
     }
 
     private Client client;
@@ -151,7 +152,14 @@ public class ClientPerformanceSnapshot
                         String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), snapshotEnd.getAssets()));
 
         ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, (int) (yield.getIrr() * 100)));
+        categories.put(CategoryType.PERFORMANCE_IZF, new Category(Messages.ColumnPerformanceIZF,
+                        (int) (yield.getIrr() * Values.Amount.factor())));
+
+        ClientIndex index = ClientIndex.forPeriod(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
+                        snapshotEnd.getTime()), new ArrayList<Exception>());
+        categories.put(CategoryType.PERFORMANCE,
+                        new Category(Messages.ColumnPerformance, (int) (index.getAccumulatedPercentage()[index
+                                        .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100)));
 
         addCapitalGains();
         addEarnings();
