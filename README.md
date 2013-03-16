@@ -93,13 +93,17 @@ mvn clean install -Dgenerate-target-platform=true
 
 * Open the portfolio-app project
 * Open the ide-target-platform/portfolio-ide.target file (this may take a while as it requires Internet access)
-* In the resulting editor, click on the Set as Target Platform link at the top right (this may also take a while)
+* In the resulting editor, click on the "Set as Target Platform" link at the top right (this may also take a while)
 
 ### Run Program
 
-Right-click portfolio-app/PortfolioPerformance.launch and choose "Run As...".
+* Open the portfolio-product project
+* Open the name.abuchen.portfolio.product file
+* In the resulting editor, click on the "Launch an Eclipse application" link
 
-To run the unit tests, use name.abuchen.portfolio.tests/name.abuchen.portfolio.tests.launch.
+To run the unit tests
+* Right click on the name.abuchen.portfolio.tests project
+* Choose "Run As..." -> "JUnit Plug-in Test".
 
 ## License
  
