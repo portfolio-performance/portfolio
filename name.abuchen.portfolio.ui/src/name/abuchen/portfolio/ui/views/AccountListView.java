@@ -58,7 +58,7 @@ public class AccountListView extends AbstractListView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        Action createPortfolio = new Action()
+        Action action = new Action()
         {
             @Override
             public void run()
@@ -73,10 +73,10 @@ public class AccountListView extends AbstractListView
                 accounts.editElement(account, 0);
             }
         };
-        createPortfolio.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        createPortfolio.setToolTipText(Messages.AccountMenuAdd);
+        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setToolTipText(Messages.AccountMenuAdd);
 
-        new ActionContributionItem(createPortfolio).fill(toolBar, -1);
+        new ActionContributionItem(action).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////

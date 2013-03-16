@@ -164,6 +164,7 @@ public class Messages extends NLS
     public static String LabelAssetClasses;
     public static String LabelChoose;
     public static String LabelConsumerPriceIndex;
+    public static String LabelDefaultReferenceAccountName;
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelFullClassification;

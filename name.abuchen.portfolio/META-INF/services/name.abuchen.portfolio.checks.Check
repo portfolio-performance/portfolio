@@ -1,1 +1,2 @@
 name.abuchen.portfolio.checks.impl.CrossEntryCheck
+name.abuchen.portfolio.checks.impl.ReferenceAccountCheck

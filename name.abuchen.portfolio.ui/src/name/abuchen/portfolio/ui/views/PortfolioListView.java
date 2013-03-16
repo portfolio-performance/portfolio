@@ -69,13 +69,25 @@ public class PortfolioListView extends AbstractListView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        Action createPortfolio = new Action()
+        Action action = new Action()
         {
             @Override
             public void run()
             {
                 Portfolio portfolio = new Portfolio();
                 portfolio.setName(Messages.LabelNoName);
+
+                if (!getClient().getAccounts().isEmpty())
+                {
+                    portfolio.setReferenceAccount(getClient().getAccounts().get(0));
+                }
+                else
+                {
+                    Account account = new Account();
+                    account.setName(Messages.LabelDefaultReferenceAccountName);
+                    getClient().addAccount(account);
+                    portfolio.setReferenceAccount(account);
+                }
 
                 getClient().addPortfolio(portfolio);
                 markDirty();
@@ -84,10 +96,10 @@ public class PortfolioListView extends AbstractListView
                 portfolios.editElement(portfolio, 0);
             }
         };
-        createPortfolio.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        createPortfolio.setToolTipText(Messages.PortfolioMenuAdd);
+        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setToolTipText(Messages.PortfolioMenuAdd);
 
-        new ActionContributionItem(createPortfolio).fill(toolBar, -1);
+        new ActionContributionItem(action).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////

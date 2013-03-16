@@ -23,7 +23,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     @Override
     public Date getDate()
     {
-        return transaction.getDate();
+        return transaction != null ? transaction.getDate() : null;
     }
 
     @Override
@@ -35,6 +35,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     @Override
     public Long getAmount()
     {
-        return transaction.getAmount();
+        return transaction != null ? transaction.getAmount() : null;
     }
 }

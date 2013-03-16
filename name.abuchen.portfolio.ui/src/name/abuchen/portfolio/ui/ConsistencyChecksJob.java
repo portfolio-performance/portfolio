@@ -180,7 +180,8 @@ public class ConsistencyChecksJob extends Job
                 @Override
                 public String getText(Object element)
                 {
-                    return Values.Date.format(((ReportedIssue) element).getDate());
+                    Date date = ((ReportedIssue) element).getDate();
+                    return date != null ? Values.Date.format(date) : null;
                 }
             });
             layout.setColumnData(col.getColumn(), new ColumnPixelData(80));
