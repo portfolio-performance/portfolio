@@ -86,7 +86,7 @@ public class StatementOfAssetsViewer
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), assets, layout);
 
-        Column column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
+        Column column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
         {
             @Override

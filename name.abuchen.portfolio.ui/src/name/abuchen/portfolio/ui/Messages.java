@@ -73,6 +73,7 @@ public class Messages extends NLS
     public static String ColumnSecurityType;
     public static String ColumnShareInPercent;
     public static String ColumnShares;
+    public static String ColumnSharesOwned;
     public static String ColumnSource;
     public static String ColumnSymbol;
     public static String ColumnTargetPercent;

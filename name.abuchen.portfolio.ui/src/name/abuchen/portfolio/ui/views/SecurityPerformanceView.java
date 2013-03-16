@@ -89,9 +89,16 @@ public class SecurityPerformanceView extends AbstractHistoricView
         column.setText(Messages.ColumnTransactionType);
         column.setWidth(80);
 
-        column = new TreeColumn(tree.getTree(), SWT.None);
+        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText(Messages.ColumnAmount);
-        column.setAlignment(SWT.RIGHT);
+        column.setWidth(80);
+
+        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column.setText(Messages.ColumnShares);
+        column.setWidth(80);
+
+        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column.setText(Messages.ColumnQuote);
         column.setWidth(80);
 
         tree.getTree().setHeaderVisible(true);
@@ -200,6 +207,16 @@ public class SecurityPerformanceView extends AbstractHistoricView
                             return Messages.LabelQuote;
                     case 5:
                         return Values.Amount.format(Math.abs(t.getAmount()));
+                    case 6:
+                        if (t instanceof PortfolioTransaction)
+                            return Values.Share.format(((PortfolioTransaction) t).getShares());
+                        else
+                            return null;
+                    case 7:
+                        if (t instanceof PortfolioTransaction)
+                            return Values.Quote.format(((PortfolioTransaction) t).getActualPurchasePrice());
+                        else
+                            return null;
                 }
 
             }
