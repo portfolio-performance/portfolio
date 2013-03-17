@@ -94,12 +94,15 @@ public class ConsistencyChecksJob extends Job
                                     issues);
                     dialog.open();
 
-                    for (ReportedIssue issue : dialog.issues)
+                    if (editor != null)
                     {
-                        if (issue.isFixed())
+                        for (ReportedIssue issue : dialog.issues)
                         {
-                            editor.markDirty();
-                            break;
+                            if (issue.isFixed())
+                            {
+                                editor.markDirty();
+                                break;
+                            }
                         }
                     }
                 }
