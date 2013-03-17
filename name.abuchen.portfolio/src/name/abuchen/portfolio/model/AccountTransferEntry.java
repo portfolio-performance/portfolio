@@ -9,6 +9,9 @@ public class AccountTransferEntry implements CrossEntry
     private Account accountTo;
     private AccountTransaction transactionTo;
 
+    public AccountTransferEntry()
+    {}
+
     public AccountTransferEntry(Account accountFrom, Account accountTo)
     {
         this.accountFrom = accountFrom;

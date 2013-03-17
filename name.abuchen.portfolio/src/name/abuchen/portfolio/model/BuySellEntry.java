@@ -11,6 +11,9 @@ public class BuySellEntry implements CrossEntry
     private Account account;
     private AccountTransaction accountTransaction;
 
+    public BuySellEntry()
+    {}
+
     public BuySellEntry(Portfolio portfolio, Account account)
     {
         this.portfolio = portfolio;
