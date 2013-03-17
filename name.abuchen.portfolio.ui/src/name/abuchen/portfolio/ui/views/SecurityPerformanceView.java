@@ -4,6 +4,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -14,8 +15,12 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.SecurityContextMenu;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -52,6 +57,12 @@ public class SecurityPerformanceView extends AbstractHistoricView
         ViewerHelper.pack(tree);
 
         return tree.getControl();
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        reportingPeriodUpdated();
     }
 
     @Override
@@ -111,7 +122,25 @@ public class SecurityPerformanceView extends AbstractHistoricView
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(tree));
 
+        hookContextMenu(tree.getTree(), new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillContextMenu(manager);
+            }
+        });
+
         return tree;
+    }
+
+    private void fillContextMenu(IMenuManager manager)
+    {
+        Object selection = ((IStructuredSelection) tree.getSelection()).getFirstElement();
+        if (selection == null || !(selection instanceof Record))
+            return;
+
+        Security security = ((Record) selection).getSecurity();
+        new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 
     private static class SecurityPerformanceContentProvider implements ITreeContentProvider

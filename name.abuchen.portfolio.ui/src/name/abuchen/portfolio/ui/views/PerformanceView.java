@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
@@ -8,16 +9,20 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.SecurityContextMenu;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -78,6 +83,12 @@ public class PerformanceView extends AbstractHistoricView
     }
 
     @Override
+    public void notifyModelUpdated()
+    {
+        reportingPeriodUpdated();
+    }
+
+    @Override
     protected Control createBody(Composite parent)
     {
         // result tabs
@@ -130,6 +141,24 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+
+        hookContextMenu(calculation.getTree(), new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillContextMenu(manager);
+            }
+        });
+    }
+
+    private void fillContextMenu(IMenuManager manager)
+    {
+        Object selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
+        if (selection == null || !(selection instanceof ClientPerformanceSnapshot.Position))
+            return;
+
+        Security security = ((ClientPerformanceSnapshot.Position) selection).getSecurity();
+        new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 
     private void createEarningsItem(CTabFolder folder, String title)

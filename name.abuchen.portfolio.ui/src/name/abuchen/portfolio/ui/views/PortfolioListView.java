@@ -12,12 +12,9 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
-import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.SecurityContextMenu;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
@@ -30,7 +27,6 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -210,6 +206,9 @@ public class PortfolioListView extends AbstractListView
         if (portfolio == null)
             return;
 
+        new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
+
+        manager.add(new Separator());
         manager.add(new Action(Messages.PortfolioMenuDelete)
         {
             @Override
@@ -471,99 +470,18 @@ public class PortfolioListView extends AbstractListView
         return container;
     }
 
-    private abstract class AbstractDialogAction extends Action
-    {
-        public AbstractDialogAction(String text)
-        {
-            super(text);
-        }
-
-        @Override
-        public final void run()
-        {
-            Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-            if (portfolio == null)
-                return;
-
-            Dialog dialog = createDialog(portfolio);
-            if (dialog.open() == TransferDialog.OK)
-            {
-                markDirty();
-
-                portfolios.refresh(transactions.getData(Portfolio.class.toString()));
-                transactions.setInput(portfolio.getTransactions());
-                statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-            }
-        }
-
-        abstract Dialog createDialog(Portfolio portfolio);
-    }
-
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
-        if (transactions.getData(Portfolio.class.toString()) == null)
+        final Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
+        if (portfolio == null)
             return;
 
-        if (!getClient().getSecurities().isEmpty())
-        {
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
-            {
-                @Override
-                Dialog createDialog(Portfolio portfolio)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
-                                    null, PortfolioTransaction.Type.BUY);
-                }
-            });
+        final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
+                        .getSelection()).getFirstElement();
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-            {
-                @Override
-                Dialog createDialog(Portfolio portfolio)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
-                                    null, PortfolioTransaction.Type.SELL);
-                }
-            });
+        new SecurityContextMenu(this).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
 
-            if (getClient().getPortfolios().size() > 1)
-            {
-                manager.add(new Separator());
-                manager.add(new AbstractDialogAction(Messages.SecurityMenuTransfer)
-                {
-                    @Override
-                    Dialog createDialog(Portfolio portfolio)
-                    {
-                        return new SecurityTransferDialog(getClientEditor().getSite().getShell(), getClient(),
-                                        portfolio);
-                    }
-                });
-            }
-
-            manager.add(new Separator());
-            manager.add(new AbstractDialogAction(PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                Dialog createDialog(Portfolio portfolio)
-                {
-                    return new SecurityDeliveryDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
-                                    PortfolioTransaction.Type.DELIVERY_INBOUND);
-                }
-            });
-
-            manager.add(new AbstractDialogAction(PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                Dialog createDialog(Portfolio portfolio)
-                {
-                    return new SecurityDeliveryDialog(getClientEditor().getSite().getShell(), getClient(), portfolio,
-                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                }
-            });
-        }
-
-        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
-        if (hasTransactionSelected)
+        if (transaction != null)
         {
             manager.add(new Separator());
             manager.add(new Action(Messages.MenuTransactionDelete)
@@ -571,13 +489,6 @@ public class PortfolioListView extends AbstractListView
                 @Override
                 public void run()
                 {
-                    PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
-                                    .getSelection()).getFirstElement();
-                    Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-
-                    if (transaction == null || portfolio == null)
-                        return;
-
                     if (transaction.getCrossEntry() != null)
                         transaction.getCrossEntry().delete();
                     else

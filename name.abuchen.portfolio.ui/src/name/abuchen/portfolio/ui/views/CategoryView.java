@@ -11,7 +11,6 @@ import java.util.Stack;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Category;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
@@ -21,10 +20,9 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.util.AccountContextMenu;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.SecurityContextMenu;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
@@ -55,7 +53,6 @@ import org.eclipse.ui.PlatformUI;
 public class CategoryView extends AbstractFinanceView
 {
     private TreeViewer assets;
-    private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
     private ClientSnapshot snapshot;
     private CategoryModel model;
@@ -265,41 +262,7 @@ public class CategoryView extends AbstractFinanceView
         {
             final Security security = (Security) selection;
 
-            manager.add(new Action(Messages.SecurityMenuBuy)
-            {
-                @Override
-                public void run()
-                {
-                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(getClientEditor().getSite().getShell(),
-                                    getClient(), security, PortfolioTransaction.Type.BUY);
-                    if (dialog.open() == BuySellSecurityDialog.OK)
-                        notifyModelUpdated();
-                }
-            });
-
-            manager.add(new Action(Messages.SecurityMenuSell)
-            {
-                @Override
-                public void run()
-                {
-                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(getClientEditor().getSite().getShell(),
-                                    getClient(), security, PortfolioTransaction.Type.SELL);
-                    if (dialog.open() == BuySellSecurityDialog.OK)
-                        notifyModelUpdated();
-                }
-            });
-
-            manager.add(new Action(Messages.SecurityMenuDividends)
-            {
-                @Override
-                public void run()
-                {
-                    DividendsDialog dialog = new DividendsDialog(getClientEditor().getSite().getShell(), getClient(),
-                                    security);
-                    if (dialog.open() == DividendsDialog.OK)
-                        notifyModelUpdated();
-                }
-            });
+            new SecurityContextMenu(this).menuAboutToShow(manager, security);
 
             manager.add(new Separator());
             manager.add(new Action(Messages.AssetAllocationMenuRemove)
@@ -316,7 +279,8 @@ public class CategoryView extends AbstractFinanceView
         {
             final Account account = (Account) selection;
 
-            accountMenu.menuAboutToShow(manager, account);
+            new AccountContextMenu(this).menuAboutToShow(manager, account);
+
             manager.add(new Separator());
             manager.add(new Action(Messages.AssetAllocationMenuRemove)
             {

@@ -10,7 +10,6 @@ import java.util.Map;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
@@ -25,21 +24,17 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.AccountContextMenu;
+import name.abuchen.portfolio.ui.util.SecurityContextMenu;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -399,51 +394,11 @@ public class StatementOfAssetsViewer
 
         if (element.isAccount())
         {
-            AccountContextMenu accountMenu = new AccountContextMenu(view);
-            accountMenu.menuAboutToShow(manager, element.getAccount());
+            new AccountContextMenu(view).menuAboutToShow(manager, element.getAccount());
         }
         else if (element.isSecurity())
         {
-            final Security security = element.getSecurity();
-
-            manager.add(new Action(Messages.SecurityMenuBuy)
-            {
-                @Override
-                public void run()
-                {
-                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(view.getClientEditor().getSite()
-                                    .getShell(), view.getClient(), security, PortfolioTransaction.Type.BUY);
-                    if (dialog.open() == BuySellSecurityDialog.OK)
-                        view.notifyModelUpdated();
-                }
-            });
-
-            manager.add(new Action(Messages.SecurityMenuSell)
-            {
-                @Override
-                public void run()
-                {
-                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(view.getClientEditor().getSite()
-                                    .getShell(), view.getClient(), security, PortfolioTransaction.Type.SELL);
-                    if (dialog.open() == BuySellSecurityDialog.OK)
-                        view.notifyModelUpdated();
-                }
-            });
-
-            manager.add(new Action(Messages.SecurityMenuDividends)
-            {
-                @Override
-                public void run()
-                {
-                    DividendsDialog dialog = new DividendsDialog(view.getClientEditor().getSite().getShell(), view
-                                    .getClient(), security);
-                    if (dialog.open() == DividendsDialog.OK)
-                        view.notifyModelUpdated();
-                }
-            });
-
-            manager.add(new Separator());
-            manager.add(new WebLocationMenu(security));
+            new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity());
         }
     }
 
