@@ -1,28 +1,29 @@
 package name.abuchen.portfolio.snapshot;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 
 public class AssetPosition implements Comparable<AssetPosition>
 {
     private final SecurityPosition position;
+    private final Account account;
     private final long valuation;
     private final long totalAssets;
-    private final String description;
 
     /* package */AssetPosition(SecurityPosition position, long totalAssets)
     {
         this.position = position;
+        this.account = null;
         this.totalAssets = totalAssets;
         this.valuation = position.calculateValue();
-        this.description = position.getSecurity().getName();
     }
 
-    /* package */AssetPosition(SecurityPosition position, String description, long totalAssets)
+    /* package */AssetPosition(SecurityPosition position, Account account, long totalAssets)
     {
         this.position = position;
+        this.account = account;
         this.totalAssets = totalAssets;
         this.valuation = position.calculateValue();
-        this.description = description;
     }
 
     public long getValuation()
@@ -37,7 +38,7 @@ public class AssetPosition implements Comparable<AssetPosition>
 
     public String getDescription()
     {
-        return description;
+        return account != null ? account.getName() : position.getSecurity().getName();
     }
 
     public Security getSecurity()
@@ -50,8 +51,13 @@ public class AssetPosition implements Comparable<AssetPosition>
         return position;
     }
 
+    public Account getAccount()
+    {
+        return account;
+    }
+
     public int compareTo(AssetPosition o)
     {
-        return description.compareTo(o.description);
+        return getDescription().compareTo(o.getDescription());
     }
 }

@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.util.AccountContextMenu;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
@@ -54,6 +55,7 @@ import org.eclipse.ui.PlatformUI;
 public class CategoryView extends AbstractFinanceView
 {
     private TreeViewer assets;
+    private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
     private ClientSnapshot snapshot;
     private CategoryModel model;
@@ -314,6 +316,8 @@ public class CategoryView extends AbstractFinanceView
         {
             final Account account = (Account) selection;
 
+            accountMenu.menuAboutToShow(manager, account);
+            manager.add(new Separator());
             manager.add(new Action(Messages.AssetAllocationMenuRemove)
             {
                 @Override

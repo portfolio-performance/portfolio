@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -28,6 +29,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.AccountContextMenu;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
@@ -392,49 +394,57 @@ public class StatementOfAssetsViewer
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
     {
         Element element = (Element) ((IStructuredSelection) assets.getSelection()).getFirstElement();
-        if (element == null || !element.isSecurity())
+        if (element == null)
             return;
 
-        final Security security = element.getSecurity();
-
-        manager.add(new Action(Messages.SecurityMenuBuy)
+        if (element.isAccount())
         {
-            @Override
-            public void run()
-            {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(view.getClientEditor().getSite().getShell(),
-                                view.getClient(), security, PortfolioTransaction.Type.BUY);
-                if (dialog.open() == BuySellSecurityDialog.OK)
-                    view.notifyModelUpdated();
-            }
-        });
-
-        manager.add(new Action(Messages.SecurityMenuSell)
+            AccountContextMenu accountMenu = new AccountContextMenu(view);
+            accountMenu.menuAboutToShow(manager, element.getAccount());
+        }
+        else if (element.isSecurity())
         {
-            @Override
-            public void run()
-            {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(view.getClientEditor().getSite().getShell(),
-                                view.getClient(), security, PortfolioTransaction.Type.SELL);
-                if (dialog.open() == BuySellSecurityDialog.OK)
-                    view.notifyModelUpdated();
-            }
-        });
+            final Security security = element.getSecurity();
 
-        manager.add(new Action(Messages.SecurityMenuDividends)
-        {
-            @Override
-            public void run()
+            manager.add(new Action(Messages.SecurityMenuBuy)
             {
-                DividendsDialog dialog = new DividendsDialog(view.getClientEditor().getSite().getShell(), view
-                                .getClient(), security);
-                if (dialog.open() == DividendsDialog.OK)
-                    view.notifyModelUpdated();
-            }
-        });
+                @Override
+                public void run()
+                {
+                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(view.getClientEditor().getSite()
+                                    .getShell(), view.getClient(), security, PortfolioTransaction.Type.BUY);
+                    if (dialog.open() == BuySellSecurityDialog.OK)
+                        view.notifyModelUpdated();
+                }
+            });
 
-        manager.add(new Separator());
-        manager.add(new WebLocationMenu(security));
+            manager.add(new Action(Messages.SecurityMenuSell)
+            {
+                @Override
+                public void run()
+                {
+                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(view.getClientEditor().getSite()
+                                    .getShell(), view.getClient(), security, PortfolioTransaction.Type.SELL);
+                    if (dialog.open() == BuySellSecurityDialog.OK)
+                        view.notifyModelUpdated();
+                }
+            });
+
+            manager.add(new Action(Messages.SecurityMenuDividends)
+            {
+                @Override
+                public void run()
+                {
+                    DividendsDialog dialog = new DividendsDialog(view.getClientEditor().getSite().getShell(), view
+                                    .getClient(), security);
+                    if (dialog.open() == DividendsDialog.OK)
+                        view.notifyModelUpdated();
+                }
+            });
+
+            manager.add(new Separator());
+            manager.add(new WebLocationMenu(security));
+        }
     }
 
     public void pack()
@@ -577,6 +587,11 @@ public class StatementOfAssetsViewer
             return position != null && position.getSecurity() != null;
         }
 
+        public boolean isAccount()
+        {
+            return position != null && position.getAccount() != null;
+        }
+
         public AssetCategory getCategory()
         {
             return category;
@@ -595,6 +610,11 @@ public class StatementOfAssetsViewer
         public Security getSecurity()
         {
             return position != null ? position.getSecurity() : null;
+        }
+
+        public Account getAccount()
+        {
+            return position != null ? position.getAccount() : null;
         }
 
         public long getTotalValuation()

@@ -8,15 +8,11 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
-import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
-import name.abuchen.portfolio.ui.dialogs.TransferDialog;
+import name.abuchen.portfolio.ui.util.AccountContextMenu;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
@@ -29,7 +25,6 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -48,6 +43,7 @@ public class AccountListView extends AbstractListView
 {
     private TableViewer accounts;
     private TableViewer transactions;
+    private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
     @Override
     protected String getTitle()
@@ -77,6 +73,18 @@ public class AccountListView extends AbstractListView
         action.setToolTipText(Messages.AccountMenuAdd);
 
         new ActionContributionItem(action).fill(toolBar, -1);
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        accounts.setInput(getClient().getAccounts());
+
+        Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
+        if (getClient().getAccounts().contains(account))
+            accounts.setSelection(new StructuredSelection(account));
+        else
+            accounts.setSelection(StructuredSelection.EMPTY);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -181,6 +189,9 @@ public class AccountListView extends AbstractListView
         final Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (account == null)
             return;
+
+        accountMenu.menuAboutToShow(manager, account);
+        manager.add(new Separator());
 
         manager.add(new Action(Messages.AccountMenuDelete)
         {
@@ -365,102 +376,13 @@ public class AccountListView extends AbstractListView
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
-    private abstract class AbstractDialogAction extends Action
-    {
-
-        public AbstractDialogAction(String text)
-        {
-            super(text);
-        }
-
-        @Override
-        public final void run()
-        {
-            Account account = (Account) transactions.getData(Account.class.toString());
-
-            if (account == null)
-                return;
-
-            Dialog dialog = createDialog(account);
-            if (dialog.open() == TransferDialog.OK)
-            {
-                markDirty();
-                accounts.refresh();
-                transactions.setInput(account.getTransactions());
-            }
-        }
-
-        abstract Dialog createDialog(Account account);
-    }
-
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
-        if (transactions.getData(Account.class.toString()) == null)
+        Account account = (Account) transactions.getData(Account.class.toString());
+        if (account == null)
             return;
 
-        for (final AccountTransaction.Type type : EnumSet.of( //
-                        AccountTransaction.Type.INTEREST, //
-                        AccountTransaction.Type.DEPOSIT, //
-                        AccountTransaction.Type.REMOVAL, //
-                        AccountTransaction.Type.TAXES, //
-                        AccountTransaction.Type.FEES))
-        {
-            manager.add(new AbstractDialogAction(type.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new OtherAccountTransactionsDialog(getClientEditor().getSite().getShell(), getClient(),
-                                    account, type);
-                }
-            });
-        }
-
-        manager.add(new Separator());
-        manager.add(new AbstractDialogAction(Messages.AccountMenuTransfer)
-        {
-            @Override
-            Dialog createDialog(Account account)
-            {
-                return new TransferDialog(getClientEditor().getSite().getShell(), getClient(), account);
-            }
-        });
-
-        // show security related actions only if
-        // (a) a portfolio exists and (b) securities exist
-
-        if (!getClient().getPortfolios().isEmpty() && !getClient().getSecurities().isEmpty())
-        {
-            manager.add(new Separator());
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
-                                    PortfolioTransaction.Type.BUY);
-                }
-            });
-
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
-                                    PortfolioTransaction.Type.SELL);
-                }
-            });
-
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), null);
-                }
-            });
-        }
+        accountMenu.menuAboutToShow(manager, account);
 
         boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
         if (hasTransactionSelected)
