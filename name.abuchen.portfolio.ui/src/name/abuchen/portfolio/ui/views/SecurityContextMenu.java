@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.views;
 
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -9,6 +9,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
