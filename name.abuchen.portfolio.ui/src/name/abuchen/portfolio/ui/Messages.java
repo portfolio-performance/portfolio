@@ -183,6 +183,7 @@ public class Messages extends NLS
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
+    public static String LabelRefresh;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogFrom;
     public static String LabelReportingDialogLast;

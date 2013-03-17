@@ -131,6 +131,7 @@ public class ConsistencyChecksJob extends Job
         protected void createButtonsForButtonBar(Composite parent)
         {
             createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+            createButton(parent, IDialogConstants.RETRY_ID, Messages.LabelRefresh, false);
         }
 
         @Override
@@ -330,6 +331,24 @@ public class ConsistencyChecksJob extends Job
 
             contextMenu.setVisible(true);
         }
+
+        @Override
+        protected void buttonPressed(int buttonId)
+        {
+            if (buttonId == IDialogConstants.RETRY_ID)
+            {
+                List<Issue> list = Checker.runAll(editor.getClient());
+                issues.clear();
+                for (Issue issue : list)
+                    this.issues.add(new ReportedIssue(issue));
+                tableViewer.setInput(issues);
+            }
+            else
+            {
+                super.buttonPressed(buttonId);
+            }
+        }
+
     }
 
     public static class ReportedIssue
