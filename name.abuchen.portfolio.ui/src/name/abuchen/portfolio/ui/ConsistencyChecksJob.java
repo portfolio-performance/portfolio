@@ -91,20 +91,8 @@ public class ConsistencyChecksJob extends Job
                 public void run()
                 {
                     SelectQuickFixDialog dialog = new SelectQuickFixDialog(Display.getCurrent().getActiveShell(),
-                                    issues);
+                                    editor, issues);
                     dialog.open();
-
-                    if (editor != null)
-                    {
-                        for (ReportedIssue issue : dialog.issues)
-                        {
-                            if (issue.isFixed())
-                            {
-                                editor.markDirty();
-                                break;
-                            }
-                        }
-                    }
                 }
             });
 
@@ -115,16 +103,19 @@ public class ConsistencyChecksJob extends Job
 
     private static class SelectQuickFixDialog extends TitleAreaDialog
     {
+        private final ClientEditor editor;
         private final List<ReportedIssue> issues;
+
         private Menu contextMenu;
         private TableViewer tableViewer;
 
         private ReportedIssue currentIssue;
 
-        public SelectQuickFixDialog(Shell shell, List<Issue> issues)
+        public SelectQuickFixDialog(Shell shell, ClientEditor editor, List<Issue> issues)
         {
             super(shell);
 
+            this.editor = editor;
             this.issues = new ArrayList<ReportedIssue>();
             for (Issue issue : issues)
                 this.issues.add(new ReportedIssue(issue));
@@ -133,7 +124,8 @@ public class ConsistencyChecksJob extends Job
         @Override
         protected void setShellStyle(int newShellStyle)
         {
-            super.setShellStyle(newShellStyle | SWT.RESIZE);
+            super.setShellStyle((newShellStyle & ~SWT.APPLICATION_MODAL) | SWT.RESIZE);
+            setBlockOnOpen(false);
         }
 
         protected void createButtonsForButtonBar(Composite parent)
@@ -321,6 +313,11 @@ public class ConsistencyChecksJob extends Job
                                 {
                                     fix.execute();
                                     currentIssue.setFixedMessage(fix.getDoneLabel());
+                                    if (editor != null)
+                                    {
+                                        editor.markDirty();
+                                        editor.notifyModelUpdated();
+                                    }
                                     tableViewer.refresh(currentIssue);
                                 }
                             });
