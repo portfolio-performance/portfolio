@@ -214,7 +214,7 @@ public class PortfolioListView extends AbstractListView
             @Override
             public void run()
             {
-                getClient().getPortfolios().remove(portfolio);
+                getClient().removePortfolio(portfolio);
                 markDirty();
 
                 portfolios.setInput(getClient().getPortfolios());

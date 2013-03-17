@@ -198,7 +198,7 @@ public class AccountListView extends AbstractListView
             @Override
             public void run()
             {
-                getClient().getAccounts().remove(account);
+                getClient().removeAccount(account);
                 markDirty();
 
                 accounts.setInput(getClient().getAccounts());
