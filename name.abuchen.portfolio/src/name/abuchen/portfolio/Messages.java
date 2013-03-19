@@ -56,6 +56,7 @@ public class Messages extends NLS
     public static String FixDeleteTransaction;
     public static String FixDeleteTransactionDone;
     public static String FixReferenceAccountNameProposal;
+    public static String IssueBuySellWithoutSecurity;
     public static String IssueMissingAccountTransfer;
     public static String IssueMissingBuySellInAccount;
     public static String IssueMissingBuySellInPortfolio;

@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;
@@ -238,6 +239,25 @@ public class CrossEntryCheckTest
         assertThat(second.getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
 
         applyFixes(client, issues);
+    }
+
+    @Test
+    public void testThatAccountTransactionsWithoutSecurity()
+    {
+        Portfolio second = new Portfolio();
+        client.addPortfolio(second);
+
+        account.addTransaction(new AccountTransaction(Dates.today(), null, //
+                        AccountTransaction.Type.BUY, 1));
+
+        List<Issue> issues = new CrossEntryCheck().execute(client);
+
+        assertThat(issues.size(), is(1));
+        assertThat(issues.get(0).getAvailableFixes().get(0), is(DeleteTransactionFix.class));
+
+        applyFixes(client, issues);
+
+        ClientSnapshot.create(client, Dates.today());
     }
 
     private void applyFixes(Client client, List<Issue> issues)

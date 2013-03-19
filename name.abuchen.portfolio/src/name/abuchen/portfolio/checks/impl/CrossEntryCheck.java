@@ -133,6 +133,13 @@ public class CrossEntryCheck implements Check
                                 && suspect.transaction.getType() != AccountTransaction.Type.SELL)
                     continue;
 
+                if (suspect.transaction.getSecurity() == null)
+                {
+                    issues.add(new BuySellMissingSecurityIssue(client, suspect.account, suspect.transaction));
+                    iterAccount.remove();
+                    continue;
+                }
+
                 PortfolioTransaction.Type neededType = PortfolioTransaction.Type.valueOf(suspect.transaction.getType()
                                 .name());
 
