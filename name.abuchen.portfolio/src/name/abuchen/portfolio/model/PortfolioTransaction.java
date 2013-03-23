@@ -75,23 +75,28 @@ public class PortfolioTransaction extends Transaction
         this.fees = fees;
     }
 
-    public long getActualPurchasePrice()
+    public long getLumpSumPrice()
     {
-        if (shares == 0)
-            return 0;
-
         switch (this.type)
         {
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return (amount - fees) * Values.Share.factor() / shares;
+                return amount - fees;
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return (amount + fees) * Values.Share.factor() / shares;
+                return amount + fees;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }
+    }
+
+    public long getActualPurchasePrice()
+    {
+        if (shares == 0)
+            return 0;
+
+        return getLumpSumPrice() * Values.Share.factor() / shares;
     }
 }

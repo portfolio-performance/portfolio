@@ -264,7 +264,7 @@ public class PortfolioListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom2", //$NON-NLS-1$
                         transactions, layout);
         support.setDoSaveState(false);
 
@@ -345,13 +345,14 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((PortfolioTransaction) element).getAmount());
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
             }
 
             @Override
@@ -360,7 +361,26 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((PortfolioTransaction) element).getLumpSumPrice());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice")); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
 
@@ -383,14 +403,13 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                PortfolioTransaction t = (PortfolioTransaction) element;
-                return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
+                return Values.Amount.format(((PortfolioTransaction) element).getAmount());
             }
 
             @Override
@@ -399,7 +418,7 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
 
