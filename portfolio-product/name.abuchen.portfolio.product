@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.7.7.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.7.10.qualifier" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icons/about.gif"/>
@@ -33,7 +33,7 @@ http://www.eclipse.org/legal/epl-v10.html
       <programArgs>-nl de_DE</programArgs>
       <programArgsMac>-os macosx -ws cocoa -arch x86_64</programArgsMac>
       <vmArgs>-Xms40m -Xmx512m</vmArgs>
-      <vmArgsMac>-Xdock:icon=../Resources/pp.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="icons/pp_16.gif" i32="icons/pp_32.gif" i48="icons/pp_48.gif" i128="icons/pp_128.gif"/>
@@ -62,6 +62,8 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.apache.commons.codec"/>
       <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.commons.httpclient"/>
+      <plugin id="org.eclipse.ant.core"/>
+      <plugin id="org.eclipse.ant.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.commands.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -98,6 +100,7 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.core.resources.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.resources.win32.x86" fragment="true" os="win32" arch="x86"/>
       <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
       <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
@@ -115,6 +118,12 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.app.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.common.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.concurrent"/>
+      <plugin id="org.eclipse.equinox.concurrent.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.launcher"/>
       <plugin id="org.eclipse.equinox.launcher.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.launcher.cocoa.macosx.x86_64" fragment="true" os="macosx" ws="cocoa" arch="x86_64"/>
@@ -131,6 +140,10 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.p2.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
+      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
+      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
@@ -143,6 +156,8 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.p2.director.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.operations"/>
       <plugin id="org.eclipse.equinox.p2.operations.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.publisher"/>
+      <plugin id="org.eclipse.equinox.p2.publisher.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.natives"/>
@@ -152,6 +167,8 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.ds"/>
       <plugin id="org.eclipse.equinox.ds.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.preferences.nl_de" fragment="true"/>
@@ -165,6 +182,8 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.security.win32.x86_64.nl_de" fragment="true"  os="win32" arch="x86_64"/>
       <plugin id="org.eclipse.equinox.security"/>
       <plugin id="org.eclipse.equinox.security.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.util"/>
+      <plugin id="org.eclipse.equinox.util.nl_de" fragment="true"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.help.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface"/>
@@ -203,7 +222,9 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.ui.views.log.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.nl_de" fragment="true"/>
-      
+      <plugin id="org.sat4j.core"/>
+      <plugin id="org.sat4j.pb"/>
+
       <plugin id="com.springsource.org.htmlparser"/>
       <plugin id="com.springsource.com.thoughtworks.xstream"/>
       <plugin id="com.springsource.javax.xml.stream"/>
@@ -225,6 +246,5 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
    </configurations>
-
 
 </product>

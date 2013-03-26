@@ -8,21 +8,15 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
-import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
-import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -30,7 +24,6 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -49,6 +42,7 @@ public class AccountListView extends AbstractListView
 {
     private TableViewer accounts;
     private TableViewer transactions;
+    private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
     @Override
     protected String getTitle()
@@ -59,7 +53,7 @@ public class AccountListView extends AbstractListView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        Action createPortfolio = new Action()
+        Action action = new Action()
         {
             @Override
             public void run()
@@ -74,10 +68,22 @@ public class AccountListView extends AbstractListView
                 accounts.editElement(account, 0);
             }
         };
-        createPortfolio.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        createPortfolio.setToolTipText(Messages.AccountMenuAdd);
+        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setToolTipText(Messages.AccountMenuAdd);
 
-        new ActionContributionItem(createPortfolio).fill(toolBar, -1);
+        new ActionContributionItem(action).fill(toolBar, -1);
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        accounts.setInput(getClient().getAccounts());
+
+        Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
+        if (getClient().getAccounts().contains(account))
+            accounts.setSelection(new StructuredSelection(account));
+        else
+            accounts.setSelection(StructuredSelection.EMPTY);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -183,12 +189,15 @@ public class AccountListView extends AbstractListView
         if (account == null)
             return;
 
+        accountMenu.menuAboutToShow(manager, account);
+        manager.add(new Separator());
+
         manager.add(new Action(Messages.AccountMenuDelete)
         {
             @Override
             public void run()
             {
-                getClient().getAccounts().remove(account);
+                getClient().removeAccount(account);
                 markDirty();
 
                 accounts.setInput(getClient().getAccounts());
@@ -210,6 +219,7 @@ public class AccountListView extends AbstractListView
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
                         transactions, layout);
+        support.setDoSaveState(false);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -294,6 +304,25 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
@@ -309,15 +338,20 @@ public class AccountListView extends AbstractListView
                         {
                             public void onModified(Object element, String property)
                             {
+                                AccountTransaction t = (AccountTransaction) element;
+                                if (t.getCrossEntry() != null)
+                                    t.getCrossEntry().updateFrom(t);
+
                                 markDirty();
-                                accounts.refresh(transactions.getData(Account.class.toString()));
+                                accounts.refresh();
                                 transactions.refresh(element);
                             }
                         }) //
-                        .editable("date") // //$NON-NLS-1$
-                        .editable("type") // //$NON-NLS-1$
-                        .amount("amount") // //$NON-NLS-1$
-                        .combobox("security", securities, true) // //$NON-NLS-1$
+                        .editable("date") //$NON-NLS-1$
+                        .readonly("type") //$NON-NLS-1$
+                        .amount("amount") //$NON-NLS-1$
+                        .combobox("security", securities, true) //$NON-NLS-1$
+                        .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()
@@ -341,126 +375,40 @@ public class AccountListView extends AbstractListView
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
-    private abstract class AbstractDialogAction extends Action
-    {
-
-        public AbstractDialogAction(String text)
-        {
-            super(text);
-        }
-
-        @Override
-        public final void run()
-        {
-            Account account = (Account) transactions.getData(Account.class.toString());
-
-            if (account == null)
-                return;
-
-            Dialog dialog = createDialog(account);
-            if (dialog.open() == TransferDialog.OK)
-            {
-                markDirty();
-                accounts.refresh();
-                transactions.setInput(account.getTransactions());
-            }
-        }
-
-        abstract Dialog createDialog(Account account);
-    }
-
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
-        if (transactions.getData(Account.class.toString()) == null)
+        Account account = (Account) transactions.getData(Account.class.toString());
+        if (account == null)
             return;
 
-        for (final AccountTransaction.Type type : EnumSet.of( //
-                        AccountTransaction.Type.INTEREST, //
-                        AccountTransaction.Type.DEPOSIT, //
-                        AccountTransaction.Type.REMOVAL, //
-                        AccountTransaction.Type.TAXES, //
-                        AccountTransaction.Type.FEES))
-        {
-            manager.add(new AbstractDialogAction(type.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new OtherAccountTransactionsDialog(getClientEditor().getSite().getShell(), getClient(),
-                                    account, type);
-                }
-            });
-        }
+        accountMenu.menuAboutToShow(manager, account);
 
-        manager.add(new Separator());
-        manager.add(new AbstractDialogAction(Messages.AccountMenuTransfer)
-        {
-            @Override
-            Dialog createDialog(Account account)
-            {
-                return new TransferDialog(getClientEditor().getSite().getShell(), getClient(), account);
-            }
-        });
-
-        // show security related actions only if
-        // (a) a portfolio exists and (b) securities exist
-
-        if (!getClient().getPortfolios().isEmpty() && !getClient().getSecurities().isEmpty())
+        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
+        if (hasTransactionSelected)
         {
             manager.add(new Separator());
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
+            manager.add(new Action(Messages.AccountMenuDeleteTransaction)
             {
                 @Override
-                Dialog createDialog(Account account)
+                public void run()
                 {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
-                                    PortfolioTransaction.Type.BUY);
-                }
-            });
+                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+                    Account account = (Account) transactions.getData(Account.class.toString());
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new BuySellSecurityDialog(getClientEditor().getSite().getShell(), getClient(), null,
-                                    PortfolioTransaction.Type.SELL);
-                }
-            });
+                    if (transaction == null || account == null)
+                        return;
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-            {
-                @Override
-                Dialog createDialog(Account account)
-                {
-                    return new DividendsDialog(getClientEditor().getSite().getShell(), getClient(), null);
+                    if (transaction.getCrossEntry() != null)
+                        transaction.getCrossEntry().delete();
+                    else
+                        account.getTransactions().remove(transaction);
+                    markDirty();
+
+                    accounts.refresh();
+                    transactions.setInput(account.getTransactions());
                 }
             });
         }
-
-        manager.add(new Separator());
-        manager.add(new Action(Messages.AccountMenuDeleteTransaction)
-        {
-            @Override
-            public void run()
-            {
-                AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
-                                .getSelection()).getFirstElement();
-                Account account = (Account) transactions.getData(Account.class.toString());
-
-                if (transaction == null || account == null)
-                    return;
-
-                if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(), getClient(),
-                                transaction))
-                    return;
-
-                account.getTransactions().remove(transaction);
-                markDirty();
-
-                accounts.refresh();
-                transactions.setInput(account.getTransactions());
-            }
-        });
     }
 }

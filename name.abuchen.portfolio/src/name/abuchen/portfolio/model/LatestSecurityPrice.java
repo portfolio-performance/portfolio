@@ -90,14 +90,4 @@ public class LatestSecurityPrice extends SecurityPrice
             return false;
         return true;
     }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        return String.format("%tF: %,10.2f (High: %,10.2f, Low: %,10.2f, Volume: %,10d, Prev Close: %,10.2f)",
-                        getTime(), getValue() / Values.Quote.divider(), high / Values.Quote.divider(), //
-                        low / Values.Quote.divider(), volume, previousClose / Values.Quote.divider());
-    }
-
 }

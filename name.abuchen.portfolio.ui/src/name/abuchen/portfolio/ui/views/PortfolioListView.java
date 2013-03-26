@@ -18,7 +18,6 @@ import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.UITransactionHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
@@ -26,7 +25,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -65,13 +64,25 @@ public class PortfolioListView extends AbstractListView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        Action createPortfolio = new Action()
+        Action action = new Action()
         {
             @Override
             public void run()
             {
                 Portfolio portfolio = new Portfolio();
                 portfolio.setName(Messages.LabelNoName);
+
+                if (!getClient().getAccounts().isEmpty())
+                {
+                    portfolio.setReferenceAccount(getClient().getAccounts().get(0));
+                }
+                else
+                {
+                    Account account = new Account();
+                    account.setName(Messages.LabelDefaultReferenceAccountName);
+                    getClient().addAccount(account);
+                    portfolio.setReferenceAccount(account);
+                }
 
                 getClient().addPortfolio(portfolio);
                 markDirty();
@@ -80,10 +91,10 @@ public class PortfolioListView extends AbstractListView
                 portfolios.editElement(portfolio, 0);
             }
         };
-        createPortfolio.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        createPortfolio.setToolTipText(Messages.PortfolioMenuAdd);
+        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setToolTipText(Messages.PortfolioMenuAdd);
 
-        new ActionContributionItem(createPortfolio).fill(toolBar, -1);
+        new ActionContributionItem(action).fill(toolBar, -1);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -194,12 +205,15 @@ public class PortfolioListView extends AbstractListView
         if (portfolio == null)
             return;
 
+        new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
+
+        manager.add(new Separator());
         manager.add(new Action(Messages.PortfolioMenuDelete)
         {
             @Override
             public void run()
             {
-                getClient().getPortfolios().remove(portfolio);
+                getClient().removePortfolio(portfolio);
                 markDirty();
 
                 portfolios.setInput(getClient().getPortfolios());
@@ -250,8 +264,9 @@ public class PortfolioListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom2", //$NON-NLS-1$
                         transactions, layout);
+        support.setDoSaveState(false);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -330,13 +345,14 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((PortfolioTransaction) element).getAmount());
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
             }
 
             @Override
@@ -345,7 +361,26 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((PortfolioTransaction) element).getLumpSumPrice());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice")); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
 
@@ -368,14 +403,13 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                PortfolioTransaction t = (PortfolioTransaction) element;
-                return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
+                return Values.Amount.format(((PortfolioTransaction) element).getAmount());
             }
 
             @Override
@@ -384,7 +418,26 @@ public class PortfolioListView extends AbstractListView
                 return colorFor((PortfolioTransaction) element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                PortfolioTransaction t = (PortfolioTransaction) e;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((PortfolioTransaction) element);
+            }
+        });
         column.setMoveable(false);
         support.addColumn(column);
 
@@ -403,6 +456,10 @@ public class PortfolioListView extends AbstractListView
                         {
                             public void onModified(Object element, String property)
                             {
+                                PortfolioTransaction t = (PortfolioTransaction) element;
+                                if (t.getCrossEntry() != null)
+                                    t.getCrossEntry().updateFrom(t);
+
                                 markDirty();
                                 Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
                                 portfolios.refresh(portfolio);
@@ -412,11 +469,12 @@ public class PortfolioListView extends AbstractListView
                             }
                         }) //
                         .editable("date") // //$NON-NLS-1$
-                        .editable("type") // //$NON-NLS-1$
+                        .readonly("type") // //$NON-NLS-1$
                         .combobox("security", securities) // //$NON-NLS-1$
                         .shares("shares") // //$NON-NLS-1$
                         .amount("amount") // //$NON-NLS-1$
                         .amount("fees") // //$NON-NLS-1$
+                        .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()
@@ -432,26 +490,27 @@ public class PortfolioListView extends AbstractListView
 
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
-        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
-        if (hasTransactionSelected)
+        final Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
+        if (portfolio == null)
+            return;
+
+        final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
+                        .getSelection()).getFirstElement();
+
+        new SecurityContextMenu(this).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
+
+        if (transaction != null)
         {
+            manager.add(new Separator());
             manager.add(new Action(Messages.MenuTransactionDelete)
             {
                 @Override
                 public void run()
                 {
-                    PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
-                                    .getSelection()).getFirstElement();
-                    Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-
-                    if (transaction == null || portfolio == null)
-                        return;
-
-                    if (!UITransactionHelper.deleteCounterTransaction(getClientEditor().getSite().getShell(),
-                                    getClient(), transaction))
-                        return;
-
-                    portfolio.getTransactions().remove(transaction);
+                    if (transaction.getCrossEntry() != null)
+                        transaction.getCrossEntry().delete();
+                    else
+                        portfolio.getTransactions().remove(transaction);
                     markDirty();
 
                     portfolios.refresh(transactions.getData(Portfolio.class.toString()));
@@ -459,45 +518,6 @@ public class PortfolioListView extends AbstractListView
                     transactions.setSelection(new StructuredSelection(transaction), true);
 
                     statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                }
-            });
-        }
-
-        boolean hasPortfolioSelected = transactions.getData(Portfolio.class.toString()) != null;
-        if (hasPortfolioSelected)
-        {
-            manager.add(new Action(Messages.MenuTransactionAdd)
-            {
-                @Override
-                public void run()
-                {
-                    // if no securities exist yet, inform user
-                    if (getClient().getSecurities().isEmpty())
-                    {
-                        MessageDialog.openError(getClientEditor().getSite().getShell(), Messages.LabelError,
-                                        Messages.MsgNoSecuritiesMaintained);
-                    }
-                    else
-                    {
-                        Portfolio portfolio = (Portfolio) transactions.getData(Portfolio.class.toString());
-                        if (portfolio == null)
-                            return;
-
-                        PortfolioTransaction transaction = new PortfolioTransaction();
-                        transaction.setDate(Dates.today());
-                        transaction.setType(PortfolioTransaction.Type.BUY);
-                        transaction.setSecurity(getClient().getSecurities().get(0));
-
-                        portfolio.addTransaction(transaction);
-
-                        markDirty();
-
-                        portfolios.refresh(transactions.getData(Account.class.toString()));
-                        transactions.setInput(portfolio.getTransactions());
-                        transactions.editElement(transaction, 0);
-
-                        statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
-                    }
                 }
             });
         }

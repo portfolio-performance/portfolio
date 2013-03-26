@@ -26,7 +26,7 @@ public class SecurityPerformanceSnapshot
     public static SecurityPerformanceSnapshot create(Client client, ReportingPeriod period)
     {
         Map<Security, Record> transactions = initRecords(client);
-        
+
         Date startDate = period.getStartDate();
         Date endDate = period.getEndDate();
 
@@ -161,20 +161,6 @@ public class SecurityPerformanceSnapshot
         return new ArrayList<Record>(calculations);
     }
 
-    @Override
-    public String toString()
-    {
-        StringBuilder buf = new StringBuilder();
-
-        for (Record record : calculations)
-        {
-            buf.append(record.toString());
-            buf.append("\n\n"); //$NON-NLS-1$
-        }
-
-        return buf.toString();
-    }
-
     private static class SecurityPositionTransaction extends Transaction
     {
         private boolean isStart;
@@ -193,15 +179,6 @@ public class SecurityPerformanceSnapshot
         {
             return position.calculateValue() * (isStart ? -1 : 1);
         }
-
-        @Override
-        @SuppressWarnings("nls")
-        public String toString()
-        {
-            return String.format("%tF                                 %,10.2f", getDate(),
-                            getAmount() / Values.Amount.divider());
-        }
-
     }
 
     public static class Record implements Adaptable
@@ -345,28 +322,5 @@ public class SecurityPerformanceSnapshot
                 }
             }
         }
-
-        @Override
-        @SuppressWarnings("nls")
-        public String toString()
-        {
-            StringBuilder buf = new StringBuilder();
-
-            buf.append(security.getName()).append("\n");
-
-            if (!transactions.isEmpty())
-            {
-                buf.append(String.format("%-46s %,10.2f\n", "Absolute", delta / Values.Amount.divider()));
-                buf.append(String.format("%-46s %,10.2f\n", "IRR", irr * 100));
-
-                for (Transaction t : transactions)
-                {
-                    buf.append("\t").append(String.valueOf(t)).append("\n");
-                }
-            }
-
-            return buf.toString();
-        }
-
     }
 }

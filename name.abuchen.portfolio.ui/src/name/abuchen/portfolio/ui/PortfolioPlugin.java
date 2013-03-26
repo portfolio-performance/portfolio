@@ -88,6 +88,9 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static final String IMG_VIEW_TREEMAP = "view_treemap"; //$NON-NLS-1$
     public static final String IMG_VIEW_PIECHART = "view_piechart"; //$NON-NLS-1$
 
+    public static final String IMG_CHECK = "check"; //$NON-NLS-1$
+    public static final String IMG_QUICKFIX = "quickfix"; //$NON-NLS-1$
+
     private static PortfolioPlugin instance;
 
     public PortfolioPlugin()
@@ -116,7 +119,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
         for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST, IMG_PLUS,
-                        IMG_CONFIG, IMG_EXPORT, IMG_VIEW_TABLE, IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART })
+                        IMG_CONFIG, IMG_EXPORT, IMG_VIEW_TABLE, IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_CHECK,
+                        IMG_QUICKFIX })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);
@@ -139,7 +143,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
     {
         log(new Status(Status.ERROR, PLUGIN_ID, t.getMessage(), t));
     }
-    
+
     public static void log(ArrayList<Exception> errors)
     {
         for (Exception e : errors)

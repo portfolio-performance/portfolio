@@ -84,7 +84,7 @@ public class ShowHideColumnHelper implements IMenuListener
         {
             this.isVisible = isVisible;
         }
-        
+
         public void setMoveable(boolean isMoveable)
         {
             this.isMoveable = isMoveable;
@@ -162,7 +162,7 @@ public class ShowHideColumnHelper implements IMenuListener
         {
             return optionsMenuLabel;
         }
-        
+
         private void create(TableViewer viewer, TableColumnLayout layout, Object option)
         {
             create(viewer, layout, option, defaultSortDirection, getDefaultWidth());
@@ -216,6 +216,7 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private String identifier;
     private boolean isUserConfigured = false;
+    private boolean doSaveState = true;
 
     private List<Column> columns = new ArrayList<Column>();
 
@@ -241,10 +242,16 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private void widgetDisposed()
     {
-        persistColumnConfig();
+        if (doSaveState)
+            persistColumnConfig();
 
         if (contextMenu != null)
             contextMenu.dispose();
+    }
+
+    public void setDoSaveState(boolean doSaveState)
+    {
+        this.doSaveState = doSaveState;
     }
 
     public void showHideShowColumnsMenu(Shell shell)
@@ -372,7 +379,8 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public void createColumns()
     {
-        createFromColumnConfig();
+        if (doSaveState)
+            createFromColumnConfig();
 
         if (viewer.getTable().getColumnCount() > 0)
         {
@@ -402,21 +410,21 @@ public class ShowHideColumnHelper implements IMenuListener
                 Matcher matcher = CONFIG_PATTERN.matcher(tokens.nextToken());
                 if (!matcher.matches())
                     continue;
-                
+
                 // index
                 Column col = columns.get(Integer.parseInt(matcher.group(1)));
 
                 // option
                 String o = matcher.group(2);
                 Integer option = o != null ? Integer.parseInt(o) : null;
-                
+
                 // direction
                 String d = matcher.group(3);
                 Integer direction = d != null ? Integer.parseInt(d) : null;
-                
+
                 // width
                 int width = Integer.parseInt(matcher.group(4));
-                
+
                 col.create(viewer, layout, option, direction, width);
             }
         }

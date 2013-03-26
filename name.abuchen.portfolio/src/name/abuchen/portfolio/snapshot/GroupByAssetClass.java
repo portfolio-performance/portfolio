@@ -29,7 +29,7 @@ public class GroupByAssetClass
             SecurityPosition sp = new SecurityPosition(null);
             sp.setShares(Values.Share.factor());
             sp.setPrice(new SecurityPrice(snapshot.getTime(), a.getFunds()));
-            AssetPosition ap = new AssetPosition(sp, a.getAccount().getName(), valuation);
+            AssetPosition ap = new AssetPosition(sp, a.getAccount(), valuation);
             cash.addPosition(ap);
         }
 

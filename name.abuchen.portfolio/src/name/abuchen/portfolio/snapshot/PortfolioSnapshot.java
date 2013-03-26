@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Values;
 
 public class PortfolioSnapshot
 {
@@ -152,27 +151,5 @@ public class PortfolioSnapshot
     public GroupByAssetClass groupByAssetClass()
     {
         return new GroupByAssetClass(this);
-    }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        StringBuilder buf = new StringBuilder();
-        buf.append("-----------------------------------------------------\n");
-        buf.append(portfolio.getName()).append("\n");
-        buf.append(String.format("Date: %tF\n", time));
-        buf.append("-----------------------------------------------------\n");
-
-        for (SecurityPosition p : positions)
-            buf.append(String.format("%5d %-25s %,10.2f %,10.2f\n", //
-                            p.getShares(), //
-                            p.getSecurity().getName(), //
-                            p.getPrice().getValue() / Values.Quote.divider(), //
-                            p.calculateValue() / Values.Amount.divider()));
-
-        buf.append("-----------------------------------------------------\n");
-
-        return buf.toString();
     }
 }

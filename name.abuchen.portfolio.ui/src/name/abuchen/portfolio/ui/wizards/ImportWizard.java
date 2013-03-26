@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.CSVImporter;
@@ -50,6 +51,8 @@ public class ImportWizard extends Wizard
             ErrorDialog.openError(getShell(), Messages.LabelError, null, new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1,
                             status, message, null));
         }
+
+        new ConsistencyChecksJob(null, importer.getClient(), false).schedule();
 
         return true;
     }

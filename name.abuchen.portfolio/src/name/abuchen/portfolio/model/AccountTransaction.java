@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.model;
 
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.ResourceBundle;
 
 public class AccountTransaction extends Transaction
@@ -52,16 +51,4 @@ public class AccountTransaction extends Transaction
     {
         this.amount = amount;
     }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        long v = amount;
-        if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.TRANSFER_OUT, Type.BUY).contains(type))
-            v = -v;
-
-        return String.format("%tF                                 %,10.2f", getDate(), v / Values.Amount.divider());
-    }
-
 }

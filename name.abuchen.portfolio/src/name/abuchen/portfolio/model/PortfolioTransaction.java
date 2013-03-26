@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.model;
 
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.ResourceBundle;
 
 public class PortfolioTransaction extends Transaction
@@ -76,36 +75,28 @@ public class PortfolioTransaction extends Transaction
         this.fees = fees;
     }
 
-    public long getActualPurchasePrice()
+    public long getLumpSumPrice()
     {
-        if (shares == 0)
-            return 0;
-
         switch (this.type)
         {
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return (amount - fees) * Values.Share.factor() / shares;
+                return amount - fees;
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return (amount + fees) * Values.Share.factor() / shares;
+                return amount + fees;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }
     }
 
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
+    public long getActualPurchasePrice()
     {
-        long v = getAmount();
-        if (EnumSet.of(Type.BUY, Type.TRANSFER_IN, Type.DELIVERY_INBOUND).contains(type))
-            v = -v;
+        if (shares == 0)
+            return 0;
 
-        return String.format("%tF %-12s %-18s %,10.2f", getDate(), type, getSecurity().getTickerSymbol(), //
-                        v / Values.Amount.divider());
+        return getLumpSumPrice() * Values.Share.factor() / shares;
     }
-
 }

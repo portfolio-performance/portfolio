@@ -133,7 +133,8 @@ public class ClientIndex extends PerformanceIndex
         {
             for (AccountTransaction t : a.getTransactions())
             {
-                if (interval.contains(t.getDate().getTime()))
+                if (t.getDate().getTime() >= interval.getStartMillis()
+                                && t.getDate().getTime() <= interval.getEndMillis())
                 {
                     long transferal = 0;
                     switch (t.getType())
@@ -161,7 +162,8 @@ public class ClientIndex extends PerformanceIndex
         {
             for (PortfolioTransaction t : p.getTransactions())
             {
-                if (interval.contains(t.getDate().getTime()))
+                if (t.getDate().getTime() >= interval.getStartMillis()
+                                && t.getDate().getTime() <= interval.getEndMillis())
                 {
                     long transferal = 0;
 

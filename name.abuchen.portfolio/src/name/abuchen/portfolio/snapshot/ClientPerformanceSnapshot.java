@@ -87,7 +87,7 @@ public class ClientPerformanceSnapshot
 
     /* package */enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IZF
     }
 
     private Client client;
@@ -106,7 +106,7 @@ public class ClientPerformanceSnapshot
 
         calculate();
     }
-    
+
     public ClientPerformanceSnapshot(Client client, ReportingPeriod period)
     {
         this(client, period.getStartDate(), period.getEndDate());
@@ -152,7 +152,14 @@ public class ClientPerformanceSnapshot
                         String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), snapshotEnd.getAssets()));
 
         ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, (int) (yield.getIrr() * 100)));
+        categories.put(CategoryType.PERFORMANCE_IZF, new Category(Messages.ColumnPerformanceIZF,
+                        (int) (yield.getIrr() * Values.Amount.factor())));
+
+        ClientIndex index = ClientIndex.forPeriod(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
+                        snapshotEnd.getTime()), new ArrayList<Exception>());
+        categories.put(CategoryType.PERFORMANCE,
+                        new Category(Messages.ColumnPerformance, (int) (index.getAccumulatedPercentage()[index
+                                        .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100)));
 
         addCapitalGains();
         addEarnings();
@@ -350,15 +357,5 @@ public class ClientPerformanceSnapshot
         categories.get(CategoryType.TRANSFERS).valuation = deposits - removals;
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits));
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals));
-    }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        StringBuilder buf = new StringBuilder();
-        for (Category c : categories.values())
-            buf.append(String.format("%-53s %,10.2f\n", c.label, c.valuation / Values.Amount.divider()));
-        return buf.toString();
     }
 }

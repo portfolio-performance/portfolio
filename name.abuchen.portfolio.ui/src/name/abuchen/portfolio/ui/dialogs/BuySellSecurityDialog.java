@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -45,23 +45,24 @@ public class BuySellSecurityDialog extends AbstractDialog
         private long total;
         private Date date = Dates.today();
 
-        public Model(Client client, Security security, Type type)
+        public Model(Client client, Portfolio portfolio, Security security, Type type)
         {
             super(client);
 
+            this.portfolio = portfolio;
             this.security = security;
             this.type = type;
 
             if (type == PortfolioTransaction.Type.SELL && security != null)
             {
                 ClientSnapshot snapshot = ClientSnapshot.create(client, Dates.today());
-                for (PortfolioSnapshot portfolio : snapshot.getPortfolios())
+                for (PortfolioSnapshot p : snapshot.getPortfolios())
                 {
-                    SecurityPosition position = portfolio.getPositionsBySecurity().get(security);
-                    if (position != null)
+                    SecurityPosition position = p.getPositionsBySecurity().get(security);
+                    if (position != null && p.getSource().equals(portfolio))
                     {
                         setShares(position.getShares());
-                        setPortfolio(portfolio.getSource());
+                        setPortfolio(p.getSource());
                         setTotal(position.calculateValue());
                         break;
                     }
@@ -69,7 +70,7 @@ public class BuySellSecurityDialog extends AbstractDialog
             }
             else
             {
-                if (!client.getPortfolios().isEmpty())
+                if (portfolio == null && !client.getPortfolios().isEmpty())
                     setPortfolio(client.getPortfolios().get(0));
                 if (security == null && !client.getSecurities().isEmpty())
                     setSecurity(client.getSecurities().get(0));
@@ -170,33 +171,17 @@ public class BuySellSecurityDialog extends AbstractDialog
         {
             if (security == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
+            if (portfolio.getReferenceAccount() == null)
+                throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
 
-            AccountTransaction ta = null;
-            if (portfolio.getReferenceAccount() != null)
-            {
-                ta = new AccountTransaction();
-                ta.setDate(date);
-                ta.setSecurity(security);
-                ta.setAmount(total);
-
-                if (this.type == PortfolioTransaction.Type.BUY)
-                    ta.setType(AccountTransaction.Type.BUY);
-                else if (this.type == PortfolioTransaction.Type.SELL)
-                    ta.setType(AccountTransaction.Type.SELL);
-                else
-                    throw new UnsupportedOperationException("Unsupported type " + this.type); //$NON-NLS-1$
-
-                portfolio.getReferenceAccount().addTransaction(ta);
-            }
-
-            PortfolioTransaction tp = new PortfolioTransaction();
-            tp.setDate(date);
-            tp.setSecurity(security);
-            tp.setShares(shares);
-            tp.setFees(fees);
-            tp.setAmount(total);
-            tp.setType(type);
-            portfolio.addTransaction(tp);
+            BuySellEntry t = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
+            t.setDate(date);
+            t.setSecurity(security);
+            t.setShares(shares);
+            t.setFees(fees);
+            t.setAmount(total);
+            t.setType(type);
+            t.insert();
         }
     }
 
@@ -204,8 +189,14 @@ public class BuySellSecurityDialog extends AbstractDialog
 
     public BuySellSecurityDialog(Shell parentShell, Client client, Security security, PortfolioTransaction.Type type)
     {
+        this(parentShell, client, null, security, type);
+    }
+
+    public BuySellSecurityDialog(Shell parentShell, Client client, Portfolio portfolio, Security security,
+                    PortfolioTransaction.Type type)
+    {
         super(parentShell, security != null ? type.toString() + " " + security.getName() : type.toString(), //$NON-NLS-1$
-                        new Model(client, security, type));
+                        new Model(client, portfolio, security, type));
 
         if (!(type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL))
             throw new UnsupportedOperationException("dialog supports only BUY or SELL operation"); //$NON-NLS-1$

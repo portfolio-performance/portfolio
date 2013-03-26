@@ -21,6 +21,7 @@ public abstract class Transaction implements Comparable<Transaction>
 
     private Date date;
     private Security security;
+    private CrossEntry crossEntry;
 
     public Transaction()
     {}
@@ -49,6 +50,16 @@ public abstract class Transaction implements Comparable<Transaction>
     public void setSecurity(Security security)
     {
         this.security = security;
+    }
+
+    public CrossEntry getCrossEntry()
+    {
+        return crossEntry;
+    }
+
+    /* package */void setCrossEntry(CrossEntry crossEntry)
+    {
+        this.crossEntry = crossEntry;
     }
 
     public abstract long getAmount();

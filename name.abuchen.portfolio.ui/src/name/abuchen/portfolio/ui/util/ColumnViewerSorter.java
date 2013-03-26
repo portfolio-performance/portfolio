@@ -76,7 +76,9 @@ public final class ColumnViewerSorter extends ViewerComparator
 
             Class<?> returnType = method.getReturnType();
 
-            if (returnType.isAssignableFrom(String.class))
+            if (returnType.equals(Object.class))
+                type = 0;
+            else if (returnType.isAssignableFrom(String.class))
                 type = 1;
             else if (returnType.isAssignableFrom(Enum.class))
                 type = 2;
@@ -148,8 +150,7 @@ public final class ColumnViewerSorter extends ViewerComparator
         for (String attribute : attributes)
             comparators.add(new BeanComparator(clazz, attribute));
 
-        return new ColumnViewerSorter(comparators.size() == 1 ? comparators.get(0) : new ChainedComparator(
-                        comparators));
+        return new ColumnViewerSorter(comparators.size() == 1 ? comparators.get(0) : new ChainedComparator(comparators));
     }
 
     public static ColumnViewerSorter create(Comparator<Object> comparator)

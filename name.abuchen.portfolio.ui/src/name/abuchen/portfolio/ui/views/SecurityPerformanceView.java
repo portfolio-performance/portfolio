@@ -4,6 +4,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -16,6 +17,9 @@ import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -55,6 +59,12 @@ public class SecurityPerformanceView extends AbstractHistoricView
     }
 
     @Override
+    public void notifyModelUpdated()
+    {
+        reportingPeriodUpdated();
+    }
+
+    @Override
     protected void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
@@ -89,9 +99,16 @@ public class SecurityPerformanceView extends AbstractHistoricView
         column.setText(Messages.ColumnTransactionType);
         column.setWidth(80);
 
-        column = new TreeColumn(tree.getTree(), SWT.None);
+        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText(Messages.ColumnAmount);
-        column.setAlignment(SWT.RIGHT);
+        column.setWidth(80);
+
+        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column.setText(Messages.ColumnShares);
+        column.setWidth(80);
+
+        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column.setText(Messages.ColumnQuote);
         column.setWidth(80);
 
         tree.getTree().setHeaderVisible(true);
@@ -104,7 +121,25 @@ public class SecurityPerformanceView extends AbstractHistoricView
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(tree));
 
+        hookContextMenu(tree.getTree(), new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillContextMenu(manager);
+            }
+        });
+
         return tree;
+    }
+
+    private void fillContextMenu(IMenuManager manager)
+    {
+        Object selection = ((IStructuredSelection) tree.getSelection()).getFirstElement();
+        if (selection == null || !(selection instanceof Record))
+            return;
+
+        Security security = ((Record) selection).getSecurity();
+        new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 
     private static class SecurityPerformanceContentProvider implements ITreeContentProvider
@@ -200,6 +235,16 @@ public class SecurityPerformanceView extends AbstractHistoricView
                             return Messages.LabelQuote;
                     case 5:
                         return Values.Amount.format(Math.abs(t.getAmount()));
+                    case 6:
+                        if (t instanceof PortfolioTransaction)
+                            return Values.Share.format(((PortfolioTransaction) t).getShares());
+                        else
+                            return null;
+                    case 7:
+                        if (t instanceof PortfolioTransaction)
+                            return Values.Quote.format(((PortfolioTransaction) t).getActualPurchasePrice());
+                        else
+                            return null;
                 }
 
             }

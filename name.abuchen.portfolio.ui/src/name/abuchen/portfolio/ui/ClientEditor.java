@@ -86,6 +86,7 @@ public class ClientEditor extends EditorPart
         else
             setPartName(Messages.LabelUnsavedFile);
 
+        new ConsistencyChecksJob(this, client, false).schedule(100);
         scheduleOnlineUpdateJobs();
     }
 

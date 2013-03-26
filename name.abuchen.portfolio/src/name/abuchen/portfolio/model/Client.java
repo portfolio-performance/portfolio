@@ -8,8 +8,8 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */ static final int CURRENT_VERSION = 9;
-    
+    /* package */static final int CURRENT_VERSION = 10;
+
     private int version = CURRENT_VERSION;
 
     private List<Security> securities = new ArrayList<Security>();
@@ -82,6 +82,12 @@ public class Client
         accounts.add(account);
     }
 
+    public void removeAccount(Account account)
+    {
+        deleteCrossEntries(account.getTransactions());
+        accounts.remove(account);
+    }
+
     public List<Account> getAccounts()
     {
         return accounts;
@@ -90,6 +96,12 @@ public class Client
     public void addPortfolio(Portfolio portfolio)
     {
         portfolios.add(portfolio);
+    }
+
+    public void removePortfolio(Portfolio portfolio)
+    {
+        deleteCrossEntries(portfolio.getTransactions());
+        portfolios.remove(portfolio);
     }
 
     public List<Portfolio> getPortfolios()
@@ -115,5 +127,15 @@ public class Client
     public IndustryClassification getIndustryTaxonomy()
     {
         return IndustryClassification.lookup(industryTaxonomyId);
+    }
+
+    private void deleteCrossEntries(List<? extends Transaction> transactions)
+    {
+        // crossEntry.delete modifies list
+        for (Transaction t : new ArrayList<Transaction>(transactions))
+        {
+            if (t.getCrossEntry() != null)
+                t.getCrossEntry().delete();
+        }
     }
 }
