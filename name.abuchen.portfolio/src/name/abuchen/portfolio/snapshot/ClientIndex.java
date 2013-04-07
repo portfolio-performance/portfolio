@@ -79,16 +79,18 @@ public class ClientIndex extends PerformanceIndex
 
                 if (thisDelta != 0d)
                 {
+                    delta[index] = (double) thisDelta / (double) Math.abs(transferals[index]);
                     warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets, thisDelta,
                                     date.toDate())));
                 }
             }
             else
             {
-                delta[index] = (double) thisDelta / (double) valuation;
+                delta[index] = (double) thisDelta / (double) Math.abs(valuation);
             }
 
-            accumulated[index] = ((accumulated[index - 1] + 1) * (delta[index] + 1)) - 1;
+            accumulated[index] = ((accumulated[index - 1] + 1) * ((accumulated[index - 1] + 1) < 0 ? (delta[index] - 1)
+                                             : (delta[index] + 1))) - 1;
 
             date = date.plusDays(1);
             valuation = thisValuation;
