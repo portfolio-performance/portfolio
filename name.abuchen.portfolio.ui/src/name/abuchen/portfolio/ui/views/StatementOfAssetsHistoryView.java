@@ -1,26 +1,19 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.AssetCategory;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.GroupByAssetClass;
+import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -28,15 +21,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
-import org.swtchart.IAxis;
-import org.swtchart.Range;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
-    // 10 days before and after
-    private static final int OFFSET = 1000 * 60 * 60 * 24 * 10;
-
     private TimelineChart chart;
+    private ChartSeriesPicker picker;
+
+    private Map<Object, Object> dataCache = new HashMap<Object, Object>();
 
     @Override
     protected String getTitle()
@@ -48,6 +39,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     {
         super.addButtons(toolBar);
         addExportButton(toolBar);
+        addConfigButton(toolBar);
     }
 
     private void addExportButton(ToolBar toolBar)
@@ -68,9 +60,41 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         new ActionContributionItem(export).fill(toolBar, -1);
     }
 
+    private void addConfigButton(ToolBar toolBar)
+    {
+        Action config = new Action()
+        {
+            @Override
+            public void run()
+            {
+                picker.showMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setToolTipText(Messages.MenuConfigureChart);
+
+        new ActionContributionItem(config).fill(toolBar, -1);
+    }
+
     @Override
     protected Composite createBody(Composite parent)
     {
+        picker = new ChartSeriesPicker(StatementOfAssetsHistoryView.class.getSimpleName(), parent, getClientEditor());
+        picker.setListener(new ChartSeriesPicker.Listener()
+        {
+            @Override
+            public void onAddition(ChartSeriesPicker.Item[] items)
+            {
+                rebuildChart();
+            }
+
+            @Override
+            public void onRemoval(ChartSeriesPicker.Item[] items)
+            {
+                rebuildChart();
+            }
+        });
+
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
@@ -82,6 +106,12 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Override
     protected void reportingPeriodUpdated()
     {
+        dataCache.clear();
+        rebuildChart();
+    }
+
+    private void rebuildChart()
+    {
         Composite parent = chart.getParent();
         chart.dispose();
         chart = buildChart(parent);
@@ -90,133 +120,63 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
     protected TimelineChart buildChart(Composite parent)
     {
-        ReportingPeriod period = getReportingPeriod();
-        Date startDate = period.getStartDate();
-        Date endDate = period.getEndDate();
-
-        int noOfDays = Dates.daysBetween(startDate, endDate) + 1;
-
-        // collect data for line series
-
-        Date[] dates = new Date[noOfDays];
-        double[] totals = new double[noOfDays];
-
-        double[][] assetClass = new double[AssetClass.values().length][noOfDays];
-        boolean[] assetClassHasValues = new boolean[assetClass.length];
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startDate);
-
-        int index = 0;
-        while (cal.getTimeInMillis() <= endDate.getTime())
-        {
-            ClientSnapshot snapshot = ClientSnapshot.create(getClient(), cal.getTime());
-            dates[index] = cal.getTime();
-
-            totals[index] = snapshot.getAssets() / Values.Amount.divider();
-
-            GroupByAssetClass byAssetClass = snapshot.groupByAssetClass();
-            for (int ii = 0; ii < assetClass.length; ii++)
-            {
-                AssetCategory c = byAssetClass.byClass(AssetClass.values()[ii]);
-                assetClass[ii][index] = c != null ? c.getValuation() / Values.Amount.divider() : 0;
-                assetClassHasValues[ii] = assetClassHasValues[ii] || c != null;
-            }
-
-            cal.add(Calendar.DATE, 1);
-            index++;
-        }
-
         TimelineChart chart = new TimelineChart(parent);
         chart.getTitle().setVisible(false);
         chart.getLegend().setVisible(true);
         chart.getLegend().setPosition(SWT.BOTTOM);
 
-        chart.addDateSeries(dates, totals, Colors.TOTALS, Messages.LabelTotalSum);
+        ReportingPeriod period = getReportingPeriod();
 
-        for (int ii = 0; ii < assetClass.length; ii++)
+        for (ChartSeriesPicker.Item item : picker.getSelectedItems())
         {
-            if (assetClassHasValues[ii])
-                chart.addDateSeries(dates, assetClass[ii], Colors.valueOf(AssetClass.values()[ii].name()),
-                                AssetClass.values()[ii].toString());
-        }
-
-        // deposits & removals
-
-        EnumSet<AccountTransaction.Type> relevantTypes = EnumSet.of(AccountTransaction.Type.DEPOSIT,
-                        AccountTransaction.Type.REMOVAL);
-
-        List<AccountTransaction> transactions = new ArrayList<AccountTransaction>();
-        for (Account a : getClient().getAccounts())
-        {
-            for (AccountTransaction t : a.getTransactions())
-                if (relevantTypes.contains(t.getType()) && !t.getDate().before(startDate))
-                    transactions.add(t);
-        }
-        Collections.sort(transactions);
-
-        List<Date> transferals_dates = new ArrayList<Date>();
-        List<Long> transferals = new ArrayList<Long>();
-        int tIndex = 0;
-
-        cal.setTime(startDate);
-        while (cal.getTimeInMillis() <= endDate.getTime())
-        {
-            long amount = 0;
-            while (tIndex < transactions.size()
-                            && transactions.get(tIndex).getDate().getTime() <= cal.getTimeInMillis())
+            if (item.getType() == Client.class)
             {
-                AccountTransaction t = transactions.get(tIndex);
-                switch (t.getType())
+                ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
+                if (clientIndex == null)
                 {
-                    case DEPOSIT:
-                        amount += t.getAmount();
-                        break;
-                    case REMOVAL:
-                        amount -= t.getAmount();
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
+                    clientIndex = ClientIndex.forPeriod(getClient(), period, new ArrayList<Exception>());
+                    dataCache.put(ClientIndex.class, clientIndex);
                 }
-                tIndex++;
-            }
-            if (amount != 0)
-            {
-                transferals_dates.add(cal.getTime());
-                transferals.add(amount);
-            }
 
-            cal.add(Calendar.DATE, 1);
+                if (item.getInstance() != null)
+                {
+                    chart.addDateSeries(clientIndex.getDates(),
+                                    toDouble(clientIndex.getTotals(), Values.Amount.divider()), Colors.TOTALS,
+                                    Messages.LabelTotalSum);
+                }
+                else
+                {
+                    chart.addDateBarSeries(clientIndex.getDates(),
+                                    toDouble(clientIndex.getTransferals(), Values.Amount.divider()),
+                                    Messages.LabelTransferals);
+                }
+            }
+            else if (item.getType() == AssetClass.class)
+            {
+                ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
+                if (clientIndex == null)
+                {
+                    clientIndex = ClientIndex.forPeriod(getClient(), period, new ArrayList<Exception>());
+                    dataCache.put(ClientIndex.class, clientIndex);
+                }
+
+                AssetClass assetClass = (AssetClass) item.getInstance();
+
+                chart.addDateSeries(clientIndex.getDates(),
+                                toDouble(clientIndex.byAssetClass(assetClass), Values.Amount.divider()),
+                                Colors.valueOf(assetClass.name()), assetClass.toString());
+            }
         }
 
-        double[] d_transferals = new double[transferals.size()];
-        for (int ii = 0; ii < d_transferals.length; ii++)
-            d_transferals[ii] = transferals.get(ii) / Values.Amount.divider();
-        chart.addDateBarSeries(transferals_dates.toArray(new Date[0]), d_transferals, Messages.LabelTransferals);
-
-        // for one reason or another, the ranges are not calculated properly if
-        // done automatically
-        IAxis xAxis = chart.getAxisSet().getXAxis(0);
-        xAxis.setRange(new Range(startDate.getTime() - OFFSET, endDate.getTime() + OFFSET));
-
-        double[] range = new double[] { 0, 0 };
-        updateRange(range, totals);
-        updateRange(range, d_transferals);
-        IAxis yAxis = chart.getAxisSet().getYAxis(0);
-        yAxis.setRange(new Range(range[0] - 3000, range[1] + 3000));
-
+        chart.getAxisSet().adjustRange();
         return chart;
     }
 
-    private void updateRange(double[] range, final double[] values)
+    private double[] toDouble(long[] input, double divider)
     {
-        for (int ii = 0; ii < values.length; ii++)
-        {
-            if (values[ii] < range[0])
-                range[0] = values[ii];
-            if (values[ii] > range[1])
-                range[1] = values[ii];
-        }
+        double[] answer = new double[input.length];
+        for (int ii = 0; ii < answer.length; ii++)
+            answer[ii] = input[ii] / divider;
+        return answer;
     }
-
 }

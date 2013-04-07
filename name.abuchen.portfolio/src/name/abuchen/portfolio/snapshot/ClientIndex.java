@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security.AssetClass;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -23,6 +24,8 @@ public class ClientIndex extends PerformanceIndex
         index.calculate(warnings);
         return index;
     }
+
+    private long[][] assetClasses;
 
     private ClientIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -40,6 +43,11 @@ public class ClientIndex extends PerformanceIndex
         return null;
     }
 
+    public long[] byAssetClass(AssetClass assetClass)
+    {
+        return assetClasses[assetClass.ordinal()];
+    }
+
     private void calculate(List<Exception> warnings)
     {
         Interval interval = getReportInterval().toInterval();
@@ -47,6 +55,7 @@ public class ClientIndex extends PerformanceIndex
 
         dates = new Date[size];
         totals = new long[size];
+        assetClasses = new long[AssetClass.values().length][size];
         delta = new double[size];
         accumulated = new double[size];
 
@@ -56,7 +65,9 @@ public class ClientIndex extends PerformanceIndex
         dates[0] = interval.getStart().toDate();
         delta[0] = 0;
         accumulated[0] = 0;
-        long valuation = totals[0] = ClientSnapshot.create(getClient(), dates[0]).getAssets();
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), dates[0]);
+        long valuation = totals[0] = snapshot.getAssets();
+        fillAssetClasses(snapshot, 0);
 
         // calculate series
         int index = 1;
@@ -65,8 +76,11 @@ public class ClientIndex extends PerformanceIndex
         {
             dates[index] = date.toDate();
 
-            long thisValuation = totals[index] = ClientSnapshot.create(getClient(), dates[index]).getAssets();
+            snapshot = ClientSnapshot.create(getClient(), dates[index]);
+            long thisValuation = totals[index] = snapshot.getAssets();
             long thisDelta = thisValuation - transferals[index] - valuation;
+
+            fillAssetClasses(snapshot, index);
 
             if (valuation == 0)
             {
@@ -91,6 +105,16 @@ public class ClientIndex extends PerformanceIndex
             date = date.plusDays(1);
             valuation = thisValuation;
             index++;
+        }
+    }
+
+    private void fillAssetClasses(ClientSnapshot snapshot, int index)
+    {
+        GroupByAssetClass byAssetClass = snapshot.groupByAssetClass();
+        for (int ii = 0; ii < assetClasses.length; ii++)
+        {
+            AssetCategory c = byAssetClass.byClass(AssetClass.values()[ii]);
+            assetClasses[ii][index] = c != null ? c.getValuation() : 0;
         }
     }
 
