@@ -74,8 +74,11 @@ public class ClientIndex extends PerformanceIndex
 
                 if (thisDelta != 0d)
                 {
-                    warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets, thisDelta,
-                                    date.toDate())));
+                    if (transferals[index] != 0)
+                        delta[index] = (double) thisDelta / (double) transferals[index];
+                    else
+                        warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets,
+                                        thisDelta, date.toDate())));
                 }
             }
             else
