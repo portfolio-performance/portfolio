@@ -287,4 +287,23 @@ public class ClientIndexTest
         assertThat(accumulated[accumulated.length - 2], IsCloseTo.closeTo(0.1d, PRECISION));
         assertThat(accumulated[accumulated.length - 1], IsCloseTo.closeTo(0.1d, PRECISION));
     }
+
+    @Test
+    public void testChangesOnFirstDayOfInvestment()
+    {
+        Client client = new Client();
+        Account account = new Account();
+        client.addAccount(account);
+
+        addT(account, 2012, Calendar.JANUARY, 2, Type.DEPOSIT, 10000);
+        addT(account, 2012, Calendar.JANUARY, 2, Type.INTEREST, 1000);
+
+        ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(Dates.date(2012, Calendar.JANUARY, 1), //
+                        Dates.date(2012, Calendar.JANUARY, 10));
+        PerformanceIndex index = ClientIndex.forPeriod(client, reportInterval, new ArrayList<Exception>());
+
+        double[] accumulated = index.getAccumulatedPercentage();
+        assertThat(accumulated[accumulated.length - 1], IsCloseTo.closeTo(0.1d, PRECISION));
+    }
+
 }
