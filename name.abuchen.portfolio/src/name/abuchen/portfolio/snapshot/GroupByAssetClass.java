@@ -38,7 +38,8 @@ public class GroupByAssetClass
         {
             for (SecurityPosition pos : snapshot.getJointPortfolio().getPositions())
             {
-                AssetCategory cat = class2category.get(pos.getSecurity().getType());
+                AssetClass type = pos.getSecurity().getType();
+                AssetCategory cat = class2category.get(type != null ? type : AssetClass.EQUITY);
                 cat.addPosition(new AssetPosition(pos, valuation));
             }
         }

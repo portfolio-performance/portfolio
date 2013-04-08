@@ -2,13 +2,19 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -23,6 +29,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 /* package */class ChartSeriesPicker implements IMenuListener
@@ -72,15 +80,32 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
         public Image getImage()
         {
-            return null;
+            if (type == Security.class)
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+            else if (type == Account.class)
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+            else if (type == Portfolio.class)
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+            else if (type == Category.class)
+                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+            else
+                return null;
         }
 
         public String getUUID()
         {
-            if (type == AssetClass.class)
+            if (type == Security.class)
+                return Security.class.getSimpleName() + ((Security) instance).getUUID();
+            else if (type == AssetClass.class)
                 return AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
             else if (type == Client.class)
                 return Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
+            else if (type == Account.class)
+                return Account.class.getSimpleName() + ((Account) instance).getName();
+            else if (type == Portfolio.class)
+                return Portfolio.class.getSimpleName() + ((Portfolio) instance).getName();
+            else if (type == Category.class)
+                return Category.class.getSimpleName() + ((Category) instance).getName();
 
             throw new UnsupportedOperationException();
         }
@@ -172,6 +197,28 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
             availableItems.add(new Item(AssetClass.class, assetClass, assetClass.toString()));
 
         availableItems.add(new Item(Client.class, null, Messages.LabelTransferals));
+
+        for (Security security : client.getSecurities())
+            availableItems.add(new Item(Security.class, security, security.getName()));
+
+        for (Account account : client.getAccounts())
+            availableItems.add(new Item(Account.class, account, account.getName()));
+
+        for (Portfolio portfolio : client.getPortfolios())
+            availableItems.add(new Item(Portfolio.class, portfolio, portfolio.getName()));
+
+        LinkedList<Category> stack = new LinkedList<Category>();
+        stack.add(client.getRootCategory());
+
+        while (!stack.isEmpty())
+        {
+            Category category = stack.removeFirst();
+            for (Category child : category.getChildren())
+            {
+                availableItems.add(new Item(Category.class, child, child.getName()));
+                stack.add(child);
+            }
+        }
     }
 
     private void load()

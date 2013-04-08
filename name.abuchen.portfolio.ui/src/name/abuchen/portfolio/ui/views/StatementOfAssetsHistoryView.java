@@ -4,11 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.snapshot.AccountIndex;
+import name.abuchen.portfolio.snapshot.CategoryIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
+import name.abuchen.portfolio.snapshot.PortfolioIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.SecurityInvestmentIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -26,6 +34,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
     private TimelineChart chart;
     private ChartSeriesPicker picker;
+    private ColorWheel colorWheel;
+    private ColorWheel securityColorWheel;
 
     private Map<Object, Object> dataCache = new HashMap<Object, Object>();
 
@@ -98,6 +108,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
+        colorWheel = new ColorWheel(container, 30);
+        securityColorWheel = new ColorWheel(container, 10);
+
         chart = buildChart(container);
 
         return container;
@@ -165,6 +178,69 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 chart.addDateSeries(clientIndex.getDates(),
                                 toDouble(clientIndex.byAssetClass(assetClass), Values.Amount.divider()),
                                 Colors.valueOf(assetClass.name()), assetClass.toString());
+            }
+            else if (item.getType() == Portfolio.class)
+            {
+                Portfolio portfolio = (Portfolio) item.getInstance();
+                PortfolioIndex portfolioIndex = (PortfolioIndex) dataCache.get(portfolio);
+                if (portfolioIndex == null)
+                {
+                    portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, period,
+                                    new ArrayList<Exception>());
+                    dataCache.put(portfolio, portfolioIndex);
+                }
+
+                chart.addDateSeries(portfolioIndex.getDates(),
+                                toDouble(portfolioIndex.getTotals(), Values.Amount.divider()),
+                                colorWheel.getSegment(getClient().getPortfolios().indexOf(portfolio)).getColor(),
+                                portfolio.getName());
+            }
+            else if (item.getType() == Account.class)
+            {
+                Account account = (Account) item.getInstance();
+                AccountIndex accountIndex = (AccountIndex) dataCache.get(account);
+                if (accountIndex == null)
+                {
+                    accountIndex = AccountIndex.forPeriod(getClient(), account, period, new ArrayList<Exception>());
+                    dataCache.put(account, accountIndex);
+                }
+
+                chart.addDateSeries(accountIndex.getDates(),
+                                toDouble(accountIndex.getTotals(), Values.Amount.divider()),
+                                colorWheel.getSegment(getClient().getAccounts().indexOf(account) + 10).getColor(),
+                                account.getName());
+            }
+            else if (item.getType() == Category.class)
+            {
+                Category category = (Category) item.getInstance();
+                CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
+                if (categoryIndex == null)
+                {
+                    categoryIndex = CategoryIndex.forPeriod(getClient(), category, period, new ArrayList<Exception>());
+                    dataCache.put(category, categoryIndex);
+                }
+
+                chart.addDateSeries(categoryIndex.getDates(),
+                                toDouble(categoryIndex.getTotals(), Values.Amount.divider()),
+                                colorWheel.getSegment(getClient().getRootCategory().flatten().indexOf(category))
+                                                .getColor(), category.getName());
+
+            }
+            else if (item.getType() == Security.class)
+            {
+                Security security = (Security) item.getInstance();
+                SecurityInvestmentIndex securityIndex = (SecurityInvestmentIndex) dataCache.get(security);
+                if (securityIndex == null)
+                {
+                    securityIndex = SecurityInvestmentIndex.forPeriod(getClient(), security, period,
+                                    new ArrayList<Exception>());
+                    dataCache.put(security, securityIndex);
+                }
+
+                chart.addDateSeries(securityIndex.getDates(),
+                                toDouble(securityIndex.getTotals(), Values.Amount.divider()), securityColorWheel
+                                                .getSegment(getClient().getSecurities().indexOf(security)).getColor(),
+                                security.getName());
             }
         }
 

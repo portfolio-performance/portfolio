@@ -96,6 +96,24 @@ public class Category
         return answer;
     }
 
+    public List<Category> flatten()
+    {
+        List<Category> answer = new ArrayList<Category>();
+        answer.add(this);
+
+        Stack<Category> stack = new Stack<Category>();
+        stack.push(this);
+
+        while (!stack.isEmpty())
+        {
+            Category c = stack.pop();
+            answer.addAll(c.children);
+            stack.addAll(c.children);
+        }
+
+        return answer;
+    }
+
     public void addSecurity(Security security)
     {
         this.elements.add(security);
