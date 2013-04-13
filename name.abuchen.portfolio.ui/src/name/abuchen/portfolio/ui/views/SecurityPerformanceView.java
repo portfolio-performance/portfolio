@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.SecurityPositionTransaction;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
@@ -238,11 +239,16 @@ public class SecurityPerformanceView extends AbstractHistoricView
                     case 6:
                         if (t instanceof PortfolioTransaction)
                             return Values.Share.format(((PortfolioTransaction) t).getShares());
+                        else if (t instanceof SecurityPositionTransaction)
+                            return Values.Share.format(((SecurityPositionTransaction) t).getPosition().getShares());
                         else
                             return null;
                     case 7:
                         if (t instanceof PortfolioTransaction)
                             return Values.Quote.format(((PortfolioTransaction) t).getActualPurchasePrice());
+                        else if (t instanceof SecurityPositionTransaction)
+                            return Values.Quote.format(((SecurityPositionTransaction) t).getPosition().getPrice()
+                                            .getValue());
                         else
                             return null;
                 }

@@ -161,7 +161,7 @@ public class SecurityPerformanceSnapshot
         return new ArrayList<Record>(calculations);
     }
 
-    private static class SecurityPositionTransaction extends Transaction
+    public static class SecurityPositionTransaction extends Transaction
     {
         private boolean isStart;
         private SecurityPosition position;
@@ -178,6 +178,11 @@ public class SecurityPerformanceSnapshot
         public long getAmount()
         {
             return position.calculateValue() * (isStart ? -1 : 1);
+        }
+
+        public SecurityPosition getPosition()
+        {
+            return position;
         }
     }
 
