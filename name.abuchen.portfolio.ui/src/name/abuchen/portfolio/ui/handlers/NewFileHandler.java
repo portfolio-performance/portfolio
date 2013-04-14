@@ -24,21 +24,23 @@ public class NewFileHandler extends AbstractHandler
         
         try
         {
+            IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+            IWorkbenchPage page = window.getActivePage();
+            
             NewClientWizard wizard = new NewClientWizard();
             WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell(), wizard);
             int d = dialog.open();
 //            int d = 1;
             if (d  == Window.OK) {
                 System.out.println("df");
+                page.openEditor(new ClientEditorInput(wizard.getClient()), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
+
+                IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
+                if (introManager.getIntro() != null)
+                    introManager.closeIntro(introManager.getIntro());
+
             }
-            IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-            IWorkbenchPage page = window.getActivePage();
-            page.openEditor(new ClientEditorInput(), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
-
-            IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
-            if (introManager.getIntro() != null)
-                introManager.closeIntro(introManager.getIntro());
-
+            
             return null;
         }
         catch (PartInitException e)

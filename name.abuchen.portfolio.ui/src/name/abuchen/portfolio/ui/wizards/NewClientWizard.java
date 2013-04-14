@@ -18,6 +18,10 @@ public class NewClientWizard extends Wizard
     {
         return true;
     }
+    
+    public Client getClient() {
+        return client;
+    }
 
     @Override
     public void addPages()
