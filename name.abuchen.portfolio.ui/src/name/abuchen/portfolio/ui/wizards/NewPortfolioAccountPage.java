@@ -67,6 +67,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
                   new Label(pairs, SWT.NULL).setText(portName);
                   new Label(pairs, SWT.NULL).setText("-->");
                   new Label(pairs, SWT.NULL).setText(acnName);
+                  pairs.pack();
                   setPageComplete(true);
               }
           }
