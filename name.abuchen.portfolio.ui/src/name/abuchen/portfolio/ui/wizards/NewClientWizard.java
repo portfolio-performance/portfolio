@@ -8,6 +8,7 @@ public class NewClientWizard extends Wizard
 {
     Client client;
     NewPortfolioAccountPage pfAccPage;
+    NewAccountPage accPage;
     
     public NewClientWizard() {
         client = new Client();
@@ -28,6 +29,8 @@ public class NewClientWizard extends Wizard
     {
         pfAccPage = new NewPortfolioAccountPage(client);
         addPage(pfAccPage);
+        accPage = new NewAccountPage(client);
+        addPage(accPage);
     }
     
 

@@ -23,27 +23,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
-public class NewPortfolioAccountPage extends AbstractWizardPage
+public class NewAccountPage extends AbstractWizardPage
 {
     Client client;
-    Text portfolioName, accountName;
+    Text accountName;
     Account currentAccount;
-    Portfolio currentPortfolio;
    
-    public NewPortfolioAccountPage(Client client)
+    public NewAccountPage(Client client)
     {
         super("New ...");
         this.client = client;
-        setTitle("Create Pairs of Portfolio and Reference Account");
+        setTitle("Create Accounts wihtout a reference to a Portfolio");
     }
     
-    class Pair {
-        public String portfolio, account;
-        public Pair(String p, String a) {
-            portfolio = p;
-            account = a;
-        }
-    }
     
     @Override
     public void createControl(Composite parent)
@@ -58,15 +50,11 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         inputRowLayout.spacing = 5;
         inputRowLayout.center = true;
         inputRow.setLayout(inputRowLayout);
-        Label lblPort = new Label(inputRow, SWT.NULL);
-        lblPort.setText("Portfolio");
-        portfolioName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
-        portfolioName.setText("");
         Label lblAcc = new Label(inputRow, SWT.NULL);
         lblAcc.setText("Account");
         accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
         accountName.setText("");
-        final List<Pair> data = new ArrayList<Pair>();
+        final List<Account> data = new ArrayList<Account>();
         Button button =  new Button(inputRow, SWT.PUSH);
         button.setText("+");
         final TableViewer tViewer = new TableViewer(container);
@@ -74,19 +62,13 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         button.addSelectionListener(new SelectionAdapter() {
           @Override
           public void widgetSelected(SelectionEvent e) {
-              String portName = portfolioName.getText();
               String acnName = accountName.getText();
-              if (portName.length() > 0 && acnName.length()>0) {
+              if (acnName.length()>0) {
                   currentAccount = new Account();
                   currentAccount.setName(acnName);
-                  currentPortfolio = new Portfolio();
-                  currentPortfolio.setName(portName);
-                  currentPortfolio.setReferenceAccount(currentAccount);
                   client.addAccount(currentAccount);
-                  client.addPortfolio(currentPortfolio);
-                  data.add(new Pair(portName,acnName));
+                  data.add(currentAccount);
                   tViewer.refresh();
-                  setPageComplete(true);
               }
           }
         }); 
@@ -98,28 +80,18 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         table.setLayoutData(gridData);
         tViewer.setContentProvider(ArrayContentProvider.getInstance());
         tViewer.setInput(data);
-        TableViewerColumn pCol = new TableViewerColumn(tViewer, SWT.NONE);
-        pCol.getColumn().setText("Portfolio");
-        pCol.getColumn().setWidth(200);
-        pCol.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Pair) element).portfolio;
-            }
-        });
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
-        aCol.getColumn().setText("Reference Account");
+        aCol.getColumn().setText("Account");
         aCol.getColumn().setWidth(200);
         aCol.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element)
             {
-                return ((Pair) element).account;
+                return ((Account) element).getName();
             }
         });
         container.pack();
-        setPageComplete(false);
+        setPageComplete(true);
     }
 
 }
