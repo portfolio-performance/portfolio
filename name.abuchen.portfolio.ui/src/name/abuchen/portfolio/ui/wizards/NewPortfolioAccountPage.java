@@ -1,17 +1,26 @@
 package name.abuchen.portfolio.ui.wizards;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 public class NewPortfolioAccountPage extends AbstractWizardPage
@@ -20,8 +29,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
     Text portfolioName, accountName;
     Account currentAccount;
     Portfolio currentPortfolio;
-    Composite pairs;
-
+   
     public NewPortfolioAccountPage(Client client)
     {
         super("New ...");
@@ -29,28 +37,41 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         setTitle("Create Pairs of Portfolio and Reference Account");
     }
     
+    class IdentityColumLabelProvider extends ColumnLabelProvider {
+        @Override
+        public String getText(Object element)
+        {
+            return element.toString();
+        }
+    }
+
+    
     @Override
     public void createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
-        GridLayout layout = new GridLayout();
-        container.setLayout(layout);
-        layout.numColumns = 5;
-        Label lblPort = new Label(container, SWT.NULL);
+        container.setLayout(new GridLayout());
+        Composite inputRow = new Composite(container, SWT.NULL);
+        RowLayout inputRowLayout = new RowLayout();
+        inputRowLayout.type = SWT.HORIZONTAL;
+        inputRowLayout.marginHeight = 10;
+        inputRowLayout.spacing = 5;
+        inputRowLayout.center = true;
+        inputRow.setLayout(inputRowLayout);
+        Label lblPort = new Label(inputRow, SWT.NULL);
         lblPort.setText("Portfolio");
-        portfolioName = new Text(container, SWT.BORDER | SWT.SINGLE);
+        portfolioName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
         portfolioName.setText("");
-        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-        portfolioName.setLayoutData(gd);
-        Label lblAcc = new Label(container, SWT.NULL);
+        Label lblAcc = new Label(inputRow, SWT.NULL);
         lblAcc.setText("Account");
-        accountName = new Text(container, SWT.BORDER | SWT.SINGLE);
+        accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
         accountName.setText("");
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        accountName.setLayoutData(gd);
-        Button button =  new Button(container, SWT.PUSH);
+        final List<String> data = new ArrayList<String>();
+        Button button =  new Button(inputRow, SWT.PUSH);
         button.setText("+");
+        final TableViewer tViewer = new TableViewer(container);
+        inputRow.pack();
         button.addSelectionListener(new SelectionAdapter() {
           @Override
           public void widgetSelected(SelectionEvent e) {
@@ -64,22 +85,32 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
                   currentPortfolio.setReferenceAccount(currentAccount);
                   client.addAccount(currentAccount);
                   client.addPortfolio(currentPortfolio);
-                  new Label(pairs, SWT.NULL).setText(portName);
-                  new Label(pairs, SWT.NULL).setText("-->");
-                  new Label(pairs, SWT.NULL).setText(acnName);
-                  pairs.pack();
+                  data.add(portName);
+                  data.add(acnName);
+                  tViewer.refresh();
                   setPageComplete(true);
               }
           }
         }); 
-        pairs = new Composite(container, SWT.NULL);
-        layout = new GridLayout();
-        layout.numColumns = 3;
-        pairs.setLayout(layout);
-        new Label(pairs, SWT.NULL).setText("Portfolios");
-        new Label(pairs, SWT.NULL).setText("-->");
-        new Label(pairs, SWT.NULL).setText("Accounts");
+        Table table = tViewer.getTable();
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+        GridData gridData = new GridData();
+        gridData.heightHint = 300;
+        table.setLayoutData(gridData);
+        tViewer.setContentProvider(ArrayContentProvider.getInstance());
+        tViewer.setInput(data);
+        TableViewerColumn pCol = new TableViewerColumn(tViewer, SWT.NONE);
+        pCol.getColumn().setText("Portfolio");
+        pCol.getColumn().setWidth(200);
+        pCol.setLabelProvider(new IdentityColumLabelProvider());
+        TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
+        aCol.getColumn().setText("Referenzkonto");
+        aCol.getColumn().setWidth(200);
+        aCol.setLabelProvider(new IdentityColumLabelProvider());
+        container.pack();
         setPageComplete(false);
     }
 
 }
+
