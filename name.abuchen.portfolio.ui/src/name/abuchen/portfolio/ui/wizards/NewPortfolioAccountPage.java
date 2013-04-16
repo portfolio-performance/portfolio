@@ -37,14 +37,13 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         setTitle("Create Pairs of Portfolio and Reference Account");
     }
     
-    class IdentityColumLabelProvider extends ColumnLabelProvider {
-        @Override
-        public String getText(Object element)
-        {
-            return element.toString();
+    class Pair {
+        public String portfolio, account;
+        public Pair(String p, String a) {
+            portfolio = p;
+            account = a;
         }
     }
-
     
     @Override
     public void createControl(Composite parent)
@@ -67,7 +66,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         lblAcc.setText("Account");
         accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
         accountName.setText("");
-        final List<String> data = new ArrayList<String>();
+        final List<Pair> data = new ArrayList<Pair>();
         Button button =  new Button(inputRow, SWT.PUSH);
         button.setText("+");
         final TableViewer tViewer = new TableViewer(container);
@@ -85,8 +84,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
                   currentPortfolio.setReferenceAccount(currentAccount);
                   client.addAccount(currentAccount);
                   client.addPortfolio(currentPortfolio);
-                  data.add(portName);
-                  data.add(acnName);
+                  data.add(new Pair(portName,acnName));
                   tViewer.refresh();
                   setPageComplete(true);
               }
@@ -103,11 +101,23 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         TableViewerColumn pCol = new TableViewerColumn(tViewer, SWT.NONE);
         pCol.getColumn().setText("Portfolio");
         pCol.getColumn().setWidth(200);
-        pCol.setLabelProvider(new IdentityColumLabelProvider());
+        pCol.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Pair) element).portfolio;
+            }
+        });
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
         aCol.getColumn().setText("Referenzkonto");
         aCol.getColumn().setWidth(200);
-        aCol.setLabelProvider(new IdentityColumLabelProvider());
+        aCol.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Pair) element).account;
+            }
+        });
         container.pack();
         setPageComplete(false);
     }
