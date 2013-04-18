@@ -180,6 +180,15 @@ public class ClientFactory
         }
         return xstream;
     }
+    
+    
+    
+    public static void loadSuggestedSecurities() throws Exception {
+        String path = "/home/bastian/workspace_rcp/portfolio/name.abuchen.portfolio/test.xml";
+        System.out.println(path);
+        xstream().fromXML(
+                        new InputStreamReader(new FileInputStream(path), Charset.forName("UTF-8"))); //$NON-NLS-1$
+    }
 
     private static class AssetClassConverter implements Converter
     {
@@ -207,6 +216,17 @@ public class ClientFactory
             else if ("BOND".equals(value)) //$NON-NLS-1$
                 value = "DEBT"; //$NON-NLS-1$
             return AssetClass.valueOf(value);
+        }
+    }
+    
+    public static void main(String[] args) {
+        try
+        {
+            loadSuggestedSecurities();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 }

@@ -9,6 +9,7 @@ public class NewClientWizard extends Wizard
     Client client;
     NewPortfolioAccountPage pfAccPage;
     NewAccountPage accPage;
+    ImportIndizesPage indPage;
     
     public NewClientWizard() {
         client = new Client();
@@ -31,6 +32,8 @@ public class NewClientWizard extends Wizard
         addPage(pfAccPage);
         accPage = new NewAccountPage(client);
         addPage(accPage);
+        indPage = new ImportIndizesPage(client);
+        addPage(indPage);
     }
     
 
