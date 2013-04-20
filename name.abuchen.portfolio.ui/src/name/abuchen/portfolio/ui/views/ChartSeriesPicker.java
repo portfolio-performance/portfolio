@@ -9,6 +9,7 @@ import java.util.Map;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
@@ -50,7 +51,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
         }
     }
 
-    public class Item
+    public static class Item
     {
         private Class<?> type;
         private Object instance;
@@ -106,8 +107,10 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                 return Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
             else if (type == Category.class)
                 return Category.class.getSimpleName() + ((Category) instance).getUUID();
+            else if (type == ConsumerPriceIndex.class)
+                return ConsumerPriceIndex.class.getSimpleName();
 
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(type.getName());
         }
     }
 
@@ -118,9 +121,15 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
         void onRemoval(Item[] items);
     }
 
+    public enum Mode
+    {
+        STATEMENT_OF_ASSETS, PERFORMANCE
+    }
+
     private final String identifier;
     private final ClientEditor clientEditor;
     private final Client client;
+    private final Mode mode;
 
     private ChartSeriesPicker.Listener listener;
 
@@ -129,11 +138,12 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
     private Menu contextMenu;
 
-    public ChartSeriesPicker(String identifier, Control owner, ClientEditor clientEditor)
+    public ChartSeriesPicker(String identifier, Control owner, ClientEditor clientEditor, Mode mode)
     {
         this.identifier = identifier + "-PICKER"; //$NON-NLS-1$
         this.clientEditor = clientEditor;
         this.client = clientEditor.getClient();
+        this.mode = mode;
 
         owner.addDisposeListener(new DisposeListener()
         {
@@ -151,7 +161,8 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
         {
             for (Item item : availableItems)
             {
-                if (item.getType() == Client.class || item.getType() == AssetClass.class)
+                if (item.getType() == Client.class || item.getType() == AssetClass.class
+                                || item.getType() == ConsumerPriceIndex.class)
                     selectedItems.add(item);
             }
         }
@@ -191,34 +202,48 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
     private void buildAvailableItemList()
     {
-        availableItems.add(new Item(Client.class, client, Messages.LabelTotalSum));
+        switch (mode)
+        {
+            case STATEMENT_OF_ASSETS:
+            {
+                availableItems.add(new Item(Client.class, client, Messages.LabelTotalSum));
 
-        for (AssetClass assetClass : AssetClass.values())
-            availableItems.add(new Item(AssetClass.class, assetClass, assetClass.toString()));
+                for (AssetClass assetClass : AssetClass.values())
+                    availableItems.add(new Item(AssetClass.class, assetClass, assetClass.toString()));
 
-        availableItems.add(new Item(Client.class, null, Messages.LabelTransferals));
+                availableItems.add(new Item(Client.class, null, Messages.LabelTransferals));
+
+                for (Account account : client.getAccounts())
+                    availableItems.add(new Item(Account.class, account, account.getName()));
+
+                for (Portfolio portfolio : client.getPortfolios())
+                    availableItems.add(new Item(Portfolio.class, portfolio, portfolio.getName()));
+
+                LinkedList<Category> stack = new LinkedList<Category>();
+                stack.add(client.getRootCategory());
+
+                while (!stack.isEmpty())
+                {
+                    Category category = stack.removeFirst();
+                    for (Category child : category.getChildren())
+                    {
+                        availableItems.add(new Item(Category.class, child, child.getName()));
+                        stack.add(child);
+                    }
+                }
+                break;
+            }
+            case PERFORMANCE:
+            {
+                availableItems.add(new Item(Client.class, client, Messages.PerformanceChartLabelAccumulatedIRR));
+                availableItems.add(new Item(Client.class, null, Messages.LabelAggregationDaily));
+                availableItems.add(new Item(ConsumerPriceIndex.class, null, Messages.LabelConsumerPriceIndex));
+                break;
+            }
+        }
 
         for (Security security : client.getSecurities())
             availableItems.add(new Item(Security.class, security, security.getName()));
-
-        for (Account account : client.getAccounts())
-            availableItems.add(new Item(Account.class, account, account.getName()));
-
-        for (Portfolio portfolio : client.getPortfolios())
-            availableItems.add(new Item(Portfolio.class, portfolio, portfolio.getName()));
-
-        LinkedList<Category> stack = new LinkedList<Category>();
-        stack.add(client.getRootCategory());
-
-        while (!stack.isEmpty())
-        {
-            Category category = stack.removeFirst();
-            for (Category child : category.getChildren())
-            {
-                availableItems.add(new Item(Category.class, child, child.getName()));
-                stack.add(child);
-            }
-        }
     }
 
     private void load()

@@ -277,8 +277,6 @@ public class Messages extends NLS
     public static String SecurityMenuSell;
     public static String SecurityMenuTransfer;
     public static String SecurityMenuUpdateQuotes;
-    public static String SecurityPickerMenuAddSecurity;
-    public static String SecurityPickerTitle;
     public static String SecurityTabChart;
     public static String SecurityTabChart10Y;
     public static String SecurityTabChart1M;

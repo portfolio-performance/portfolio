@@ -89,7 +89,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Override
     protected Composite createBody(Composite parent)
     {
-        picker = new ChartSeriesPicker(StatementOfAssetsHistoryView.class.getSimpleName(), parent, getClientEditor());
+        picker = new ChartSeriesPicker(StatementOfAssetsHistoryView.class.getSimpleName(), parent, getClientEditor(),
+                        ChartSeriesPicker.Mode.STATEMENT_OF_ASSETS);
         picker.setListener(new ChartSeriesPicker.Listener()
         {
             @Override
