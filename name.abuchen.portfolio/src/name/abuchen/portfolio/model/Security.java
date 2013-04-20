@@ -60,6 +60,7 @@ public final class Security
 
     public Security(String name, String isin, String tickerSymbol, AssetClass type, String feed)
     {
+        this();
         this.name = name;
         this.isin = isin;
         this.tickerSymbol = tickerSymbol;

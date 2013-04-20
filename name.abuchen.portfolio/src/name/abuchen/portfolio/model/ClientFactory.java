@@ -89,6 +89,17 @@ public class ClientFactory
             client.setVersion(10);
         }
 
+        if (client.getVersion() == 10)
+        {
+            for (Account a : client.getAccounts())
+                a.generateUUID();
+            for (Portfolio p : client.getPortfolios())
+                p.generateUUID();
+            for (Category c : client.getRootCategory().flatten())
+                c.generateUUID();
+            client.setVersion(11);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));

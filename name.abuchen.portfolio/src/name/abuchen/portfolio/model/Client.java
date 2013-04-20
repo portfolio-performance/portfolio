@@ -8,7 +8,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 10;
+    /* package */static final int CURRENT_VERSION = 11;
 
     private int version = CURRENT_VERSION;
 

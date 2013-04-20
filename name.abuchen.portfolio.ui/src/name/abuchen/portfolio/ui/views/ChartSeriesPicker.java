@@ -101,11 +101,11 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
             else if (type == Client.class)
                 return Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
             else if (type == Account.class)
-                return Account.class.getSimpleName() + ((Account) instance).getName();
+                return Account.class.getSimpleName() + ((Account) instance).getUUID();
             else if (type == Portfolio.class)
-                return Portfolio.class.getSimpleName() + ((Portfolio) instance).getName();
+                return Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
             else if (type == Category.class)
-                return Category.class.getSimpleName() + ((Category) instance).getName();
+                return Category.class.getSimpleName() + ((Category) instance).getUUID();
 
             throw new UnsupportedOperationException();
         }
