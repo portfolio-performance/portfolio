@@ -280,17 +280,17 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        for (final Item security : selectedItems)
+        for (final Item item : selectedItems)
         {
-            Action action = new Action(security.getLabel())
+            Action action = new Action(item.getLabel())
             {
                 @Override
                 public void run()
                 {
-                    selectedItems.remove(security);
+                    selectedItems.remove(item);
 
                     if (listener != null)
-                        listener.onRemoval(new Item[] { security });
+                        listener.onRemoval(new Item[] { item });
                 }
             };
             action.setChecked(true);
@@ -328,6 +328,24 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                     System.arraycopy(result, 0, s, 0, result.length);
                     listener.onAddition(s);
                 }
+            }
+        });
+
+        manager.add(new Action(Messages.MenuResetChartSeries)
+        {
+            @Override
+            public void run()
+            {
+                Item[] removed = selectedItems.toArray(new Item[0]);
+                selectedItems.clear();
+                listener.onRemoval(removed);
+                for (Item item : availableItems)
+                {
+                    if (item.getType() == Client.class || item.getType() == AssetClass.class
+                                    || item.getType() == ConsumerPriceIndex.class)
+                        selectedItems.add(item);
+                }
+                listener.onAddition(selectedItems.toArray(new Item[0]));
             }
         });
     }
