@@ -17,16 +17,28 @@ public class PredefinedSecurity
         while (securities.hasMoreElements()) {
             String security = securities.nextElement();
             String name = bundle.getString(security);
-            System.out.println(security + ": " + name);
+            PREDEFINED_SECURITIES.put(security, new PredefinedSecurity(security, name));
         }
         return PREDEFINED_SECURITIES;
     }
     
-    public PredefinedSecurity(String identifier)
+    String symbol, name;
+    
+    public PredefinedSecurity(String symbol, String name)
     {
-        
+        this.symbol = symbol;
+        this.name = name;
     }
+
+    public String getSymbol()
+    {
+        return symbol;
+    }
+
     
-    
+    public String getName()
+    {
+        return name;
+    }
 
 }
