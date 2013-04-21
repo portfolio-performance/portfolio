@@ -195,16 +195,19 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
                 else if (item.getType() == Client.class)
                 {
+                    PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(index,
+                                    aggregationPeriod) : index;
+
                     if (item.getInstance() != null)
                     {
-                        chart.addDateSeries(index.getDates(), //
-                                        index.getAccumulatedPercentage(), //
+                        chart.addDateSeries(aggregatedIndex.getDates(), //
+                                        aggregatedIndex.getAccumulatedPercentage(), //
                                         Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
                     }
                     else
                     {
-                        IBarSeries barSeries = chart.addDateBarSeries(index.getDates(), //
-                                        index.getDeltaPercentage(), //
+                        IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
+                                        aggregatedIndex.getDeltaPercentage(), //
                                         aggregationPeriod != null ? aggregationPeriod.toString()
                                                         : Messages.LabelAggregationDaily);
                         barSeries.setBarPadding(50);
