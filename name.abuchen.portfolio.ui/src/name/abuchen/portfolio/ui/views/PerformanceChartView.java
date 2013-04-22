@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.CPIIndex;
+import name.abuchen.portfolio.snapshot.CategoryIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -40,14 +42,10 @@ import org.swtchart.LineStyle;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
-    private static final int NUM_OF_COLORS = 10;
-    private static final LineStyle[] LINE_STYLES = new LineStyle[] { LineStyle.SOLID, LineStyle.DOT, LineStyle.DASH,
-                    LineStyle.DASHDOT, LineStyle.DASHDOTDOT };
-
-    private ChartSeriesPicker picker;
-
-    private ColorWheel colorWheel;
     private TimelineChart chart;
+    private ChartSeriesPicker picker;
+    private ColorWheel colorWheel;
+    private ColorWheel securityColorWheel;
 
     private Aggregation.Period aggregationPeriod;
 
@@ -100,8 +98,15 @@ public class PerformanceChartView extends AbstractHistoricView
                 for (Item item : items)
                 {
                     if (item.getType() == Security.class)
-                        dataCache.put((Security) item.getInstance(),
+                    {
+                        dataCache.put(item.getInstance(),
                                         SecurityIndex.forClient(index, (Security) item.getInstance(), warnings));
+                    }
+                    else if (item.getType() == Category.class)
+                    {
+                        dataCache.put(item.getInstance(), CategoryIndex.forPeriod(getClient(),
+                                        (Category) item.getInstance(), getReportingPeriod(), warnings));
+                    }
                 }
                 PortfolioPlugin.log(warnings);
 
@@ -118,7 +123,8 @@ public class PerformanceChartView extends AbstractHistoricView
             }
         });
 
-        colorWheel = new ColorWheel(parent, NUM_OF_COLORS);
+        colorWheel = new ColorWheel(parent, 30);
+        securityColorWheel = new ColorWheel(parent, 10);
 
         chart = new TimelineChart(parent);
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
@@ -159,8 +165,13 @@ public class PerformanceChartView extends AbstractHistoricView
             if (item.getType() == Security.class)
             {
                 Security security = (Security) item.getInstance();
-                SecurityIndex si = SecurityIndex.forClient(index, security, warnings);
-                dataCache.put(security, si);
+                dataCache.put(security, SecurityIndex.forClient(index, security, warnings));
+            }
+            else if (item.getType() == Category.class)
+            {
+                Category category = (Category) item.getInstance();
+                dataCache.put(item.getInstance(),
+                                CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(), warnings));
             }
         }
 
@@ -214,6 +225,18 @@ public class PerformanceChartView extends AbstractHistoricView
                         barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
                     }
                 }
+                else if (item.getType() == Category.class)
+                {
+                    Category category = (Category) item.getInstance();
+                    CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
+
+                    PerformanceIndex pindex = aggregationPeriod != null ? Aggregation.aggregate(categoryIndex,
+                                    aggregationPeriod) : categoryIndex;
+
+                    chart.addDateSeries(pindex.getDates(), pindex.getAccumulatedPercentage(),
+                                    colorWheel.getSegment(getClient().getRootCategory().flatten().indexOf(category))
+                                                    .getColor(), category.getName());
+                }
             }
 
             chart.getAxisSet().adjustRange();
@@ -239,8 +262,7 @@ public class PerformanceChartView extends AbstractHistoricView
         int index = getClient().getSecurities().indexOf(security);
         chart.addDateSeries(securityIndex.getDates(), //
                         securityIndex.getAccumulatedPercentage(), //
-                        colorWheel.getSegment(index).getColor(), security.getName()) //
-                        .setLineStyle(LINE_STYLES[(index / NUM_OF_COLORS) % LINE_STYLES.length]);
+                        securityColorWheel.getSegment(index).getColor(), security.getName());
     }
 
     private final class AggregationPeriodDropDown extends AbstractDropDown

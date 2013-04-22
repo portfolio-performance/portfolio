@@ -219,18 +219,6 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                 for (Portfolio portfolio : client.getPortfolios())
                     availableItems.add(new Item(Portfolio.class, portfolio, portfolio.getName()));
 
-                LinkedList<Category> stack = new LinkedList<Category>();
-                stack.add(client.getRootCategory());
-
-                while (!stack.isEmpty())
-                {
-                    Category category = stack.removeFirst();
-                    for (Category child : category.getChildren())
-                    {
-                        availableItems.add(new Item(Category.class, child, child.getName()));
-                        stack.add(child);
-                    }
-                }
                 break;
             }
             case PERFORMANCE:
@@ -244,6 +232,19 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
         for (Security security : client.getSecurities())
             availableItems.add(new Item(Security.class, security, security.getName()));
+
+        LinkedList<Category> stack = new LinkedList<Category>();
+        stack.add(client.getRootCategory());
+
+        while (!stack.isEmpty())
+        {
+            Category category = stack.removeFirst();
+            for (Category child : category.getChildren())
+            {
+                availableItems.add(new Item(Category.class, child, child.getName()));
+                stack.add(child);
+            }
+        }
     }
 
     private void load()
