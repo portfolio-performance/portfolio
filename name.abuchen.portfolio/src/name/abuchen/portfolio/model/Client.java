@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +41,10 @@ public class Client
     public void addSecurity(Security security)
     {
         securities.add(security);
+    }
+    
+    public void addSecurities(Collection<Security> sec) {
+        securities.addAll(sec);
     }
 
     public void removeSecurity(Security security)

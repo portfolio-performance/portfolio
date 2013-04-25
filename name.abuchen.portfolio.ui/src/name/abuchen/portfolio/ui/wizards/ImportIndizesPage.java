@@ -20,6 +20,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -62,7 +63,7 @@ public class ImportIndizesPage extends AbstractWizardPage
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
         container.setLayout(new GridLayout());
-        Combo comboDropDown = new Combo(container, SWT.DROP_DOWN | SWT.BORDER);
+        final Combo comboDropDown = new Combo(container, SWT.DROP_DOWN | SWT.BORDER);
         for (Entry<String, List<Security>> entry : secs.entrySet()) {
             comboDropDown.add(entry.getKey());
             comboDropDown.setData(entry.getKey(), entry.getValue());
@@ -82,7 +83,6 @@ public class ImportIndizesPage extends AbstractWizardPage
             @Override
             public void widgetDefaultSelected(SelectionEvent e)
             {
-                System.out.println("default " + e);
             }
             
         });
@@ -93,7 +93,6 @@ public class ImportIndizesPage extends AbstractWizardPage
         gridData.heightHint = 300;
         table.setLayoutData(gridData);
         tViewer.setContentProvider(ArrayContentProvider.getInstance());
-        
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
         aCol.getColumn().setText("Security");
         aCol.getColumn().setWidth(200);
@@ -103,6 +102,23 @@ public class ImportIndizesPage extends AbstractWizardPage
             {
                 return ((Security) element).getName();
             }
+        });
+        Button button =  new Button(container, SWT.PUSH);
+        button.setText("Add Securities");
+        button.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                String text = comboDropDown.getText();
+                List<Security> secList = (List<Security>) comboDropDown.getData(text);
+                client.addSecurities(secList);
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+            }
+
         });
         container.pack();
         setPageComplete(true);
