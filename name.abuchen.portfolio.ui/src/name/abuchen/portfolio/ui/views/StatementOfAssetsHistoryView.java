@@ -94,13 +94,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         picker.setListener(new ChartSeriesPicker.Listener()
         {
             @Override
-            public void onAddition(ChartSeriesPicker.Item[] items)
-            {
-                rebuildChart();
-            }
-
-            @Override
-            public void onRemoval(ChartSeriesPicker.Item[] items)
+            public void onUpdate()
             {
                 rebuildChart();
             }

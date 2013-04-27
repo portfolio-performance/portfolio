@@ -116,9 +116,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
     public interface Listener
     {
-        void onAddition(Item[] items);
-
-        void onRemoval(Item[] items);
+        void onUpdate();
     }
 
     public enum Mode
@@ -291,7 +289,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                     selectedItems.remove(item);
 
                     if (listener != null)
-                        listener.onRemoval(new Item[] { item });
+                        listener.onUpdate();
                 }
             };
             action.setChecked(true);
@@ -324,11 +322,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                     selectedItems.add((Item) object);
 
                 if (listener != null && result.length != 0)
-                {
-                    Item[] s = new Item[result.length];
-                    System.arraycopy(result, 0, s, 0, result.length);
-                    listener.onAddition(s);
-                }
+                    listener.onUpdate();
             }
         });
 
@@ -337,16 +331,15 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
             @Override
             public void run()
             {
-                Item[] removed = selectedItems.toArray(new Item[0]);
                 selectedItems.clear();
-                listener.onRemoval(removed);
+                listener.onUpdate();
                 for (Item item : availableItems)
                 {
                     if (item.getType() == Client.class || item.getType() == AssetClass.class
                                     || item.getType() == ConsumerPriceIndex.class)
                         selectedItems.add(item);
                 }
-                listener.onAddition(selectedItems.toArray(new Item[0]));
+                listener.onUpdate();
             }
         });
     }

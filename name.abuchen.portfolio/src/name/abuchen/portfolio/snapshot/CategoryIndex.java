@@ -56,6 +56,7 @@ public class CategoryIndex extends PerformanceIndex
     private void addSecurity(Client pseudoClient, Security security)
     {
         Account pseudoAccount = new Account();
+        pseudoAccount.setName(""); //$NON-NLS-1$
         pseudoClient.addAccount(pseudoAccount);
 
         Portfolio pseudoPortfolio = new Portfolio();
@@ -135,6 +136,7 @@ public class CategoryIndex extends PerformanceIndex
     private void addAccount(Client pseudoClient, Account account)
     {
         Account pseudoAccount = new Account();
+        pseudoAccount.setName(""); //$NON-NLS-1$
         pseudoClient.addAccount(pseudoAccount);
 
         for (AccountTransaction t : account.getTransactions())

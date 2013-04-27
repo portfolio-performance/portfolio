@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.model.Category;
@@ -90,36 +91,9 @@ public class PerformanceChartView extends AbstractHistoricView
         picker.setListener(new ChartSeriesPicker.Listener()
         {
             @Override
-            public void onAddition(Item[] items)
+            public void onUpdate()
             {
-                ClientIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
-
-                ArrayList<Exception> warnings = new ArrayList<Exception>();
-                for (Item item : items)
-                {
-                    if (item.getType() == Security.class)
-                    {
-                        dataCache.put(item.getInstance(),
-                                        SecurityIndex.forClient(index, (Security) item.getInstance(), warnings));
-                    }
-                    else if (item.getType() == Category.class)
-                    {
-                        dataCache.put(item.getInstance(), CategoryIndex.forPeriod(getClient(),
-                                        (Category) item.getInstance(), getReportingPeriod(), warnings));
-                    }
-                }
-                PortfolioPlugin.log(warnings);
-
-                refreshChart();
-            }
-
-            @Override
-            public void onRemoval(Item[] items)
-            {
-                for (Item item : items)
-                    dataCache.remove(item.getInstance());
-
-                refreshChart();
+                updateChart();
             }
         });
 
@@ -136,108 +110,48 @@ public class PerformanceChartView extends AbstractHistoricView
 
         // force layout, otherwise range calculation of chart does not work
         parent.layout();
-        rebuildDailyData();
-        refreshChart();
+        updateChart();
+
         return chart;
     }
 
     @Override
     protected void reportingPeriodUpdated()
     {
-        rebuildDailyData();
-        refreshChart();
+        dataCache.clear();
+        updateChart();
     }
 
-    protected void rebuildDailyData()
+    @Override
+    public void notifyModelUpdated()
     {
         dataCache.clear();
-
-        ArrayList<Exception> warnings = new ArrayList<Exception>();
-
-        ReportingPeriod interval = getReportingPeriod();
-        ClientIndex index = ClientIndex.forPeriod(getClient(), interval, warnings);
-        dataCache.put(ClientIndex.class, index);
-
-        dataCache.put(CPIIndex.class, CPIIndex.forClient(index, warnings));
-
-        for (Item item : picker.getSelectedItems())
-        {
-            if (item.getType() == Security.class)
-            {
-                Security security = (Security) item.getInstance();
-                dataCache.put(security, SecurityIndex.forClient(index, security, warnings));
-            }
-            else if (item.getType() == Category.class)
-            {
-                Category category = (Category) item.getInstance();
-                dataCache.put(item.getInstance(),
-                                CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(), warnings));
-            }
-        }
-
-        PortfolioPlugin.log(warnings);
+        updateChart();
     }
 
-    protected void refreshChart()
+    private void updateChart()
     {
         try
         {
             chart.suspendUpdate(true);
-
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            ClientIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
+            List<Exception> warnings = new ArrayList<Exception>();
 
             for (Item item : picker.getSelectedItems())
             {
-                if (item.getType() == Security.class)
-                {
-                    Security security = (Security) item.getInstance();
-                    PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
-                    addSecuritySeries(security, //
-                                    aggregationPeriod != null ? Aggregation.aggregate(securityIndex, aggregationPeriod)
-                                                    : securityIndex);
-                }
+                if (item.getType() == Client.class)
+                    addClient((Client) item.getInstance(), warnings);
                 else if (item.getType() == ConsumerPriceIndex.class)
-                {
-                    if (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY)
-                        addCPISeries((CPIIndex) dataCache.get(CPIIndex.class));
-                }
-                else if (item.getType() == Client.class)
-                {
-                    PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(index,
-                                    aggregationPeriod) : index;
-
-                    if (item.getInstance() != null)
-                    {
-                        chart.addDateSeries(aggregatedIndex.getDates(), //
-                                        aggregatedIndex.getAccumulatedPercentage(), //
-                                        Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
-                    }
-                    else
-                    {
-                        IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
-                                        aggregatedIndex.getDeltaPercentage(), //
-                                        aggregationPeriod != null ? aggregationPeriod.toString()
-                                                        : Messages.LabelAggregationDaily);
-                        barSeries.setBarPadding(50);
-                        barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
-                    }
-                }
+                    addConsumerPriceIndex(warnings);
+                else if (item.getType() == Security.class)
+                    addSecurity((Security) item.getInstance(), warnings);
                 else if (item.getType() == Category.class)
-                {
-                    Category category = (Category) item.getInstance();
-                    CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
-
-                    PerformanceIndex pindex = aggregationPeriod != null ? Aggregation.aggregate(categoryIndex,
-                                    aggregationPeriod) : categoryIndex;
-
-                    chart.addDateSeries(pindex.getDates(), pindex.getAccumulatedPercentage(),
-                                    colorWheel.getSegment(getClient().getRootCategory().flatten().indexOf(category))
-                                                    .getColor(), category.getName());
-                }
+                    addCategory((Category) item.getInstance(), warnings);
             }
+
+            PortfolioPlugin.log(warnings);
 
             chart.getAxisSet().adjustRange();
         }
@@ -248,21 +162,96 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.redraw();
     }
 
-    private void addCPISeries(CPIIndex cpiIndex)
+    private ClientIndex getClientIndex(List<Exception> warnings)
     {
-        if (cpiIndex.getDates().length > 0)
+        ClientIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
+        if (index == null)
+        {
+            ReportingPeriod interval = getReportingPeriod();
+            index = ClientIndex.forPeriod(getClient(), interval, warnings);
+            dataCache.put(ClientIndex.class, index);
+        }
+        return index;
+    }
+
+    private void addClient(Client client, List<Exception> warnings)
+    {
+        ClientIndex clientIndex = getClientIndex(warnings);
+        PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(clientIndex,
+                        aggregationPeriod) : clientIndex;
+
+        if (client != null)
+        {
+            chart.addDateSeries(aggregatedIndex.getDates(), //
+                            aggregatedIndex.getAccumulatedPercentage(), //
+                            Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
+        }
+        else
+        {
+            IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
+                            aggregatedIndex.getDeltaPercentage(), //
+                            aggregationPeriod != null ? aggregationPeriod.toString() : Messages.LabelAggregationDaily);
+            barSeries.setBarPadding(50);
+            barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
+        }
+    }
+
+    private void addConsumerPriceIndex(List<Exception> warnings)
+    {
+        CPIIndex cpiIndex = (CPIIndex) dataCache.get(CPIIndex.class);
+
+        if (cpiIndex == null)
+        {
+            ClientIndex clientIndex = getClientIndex(warnings);
+            cpiIndex = CPIIndex.forClient(clientIndex, warnings);
+            dataCache.put(CPIIndex.class, cpiIndex);
+        }
+
+        if (cpiIndex.getDates().length > 0
+                        && (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY))
+        {
             chart.addDateSeries(cpiIndex.getDates(), //
                             cpiIndex.getAccumulatedPercentage(), //
                             Colors.CPI, Messages.PerformanceChartLabelCPI) //
                             .setLineStyle(LineStyle.DASHDOTDOT);
+        }
     }
 
-    private void addSecuritySeries(Security security, PerformanceIndex securityIndex)
+    private void addSecurity(Security security, List<Exception> warnings)
     {
+        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
+
+        if (securityIndex == null)
+        {
+            ClientIndex clientIndex = getClientIndex(warnings);
+            securityIndex = SecurityIndex.forClient(clientIndex, security, warnings);
+            dataCache.put(security, securityIndex);
+        }
+
+        if (aggregationPeriod != null)
+            securityIndex = Aggregation.aggregate(securityIndex, aggregationPeriod);
+
         int index = getClient().getSecurities().indexOf(security);
         chart.addDateSeries(securityIndex.getDates(), //
                         securityIndex.getAccumulatedPercentage(), //
                         securityColorWheel.getSegment(index).getColor(), security.getName());
+    }
+
+    private void addCategory(Category category, List<Exception> warnings)
+    {
+        PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
+        if (categoryIndex == null)
+        {
+            categoryIndex = CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(), warnings);
+            dataCache.put(category, categoryIndex);
+        }
+
+        if (aggregationPeriod != null)
+            categoryIndex = Aggregation.aggregate(categoryIndex, aggregationPeriod);
+
+        chart.addDateSeries(categoryIndex.getDates(), categoryIndex.getAccumulatedPercentage(),
+                        colorWheel.getSegment(getClient().getRootCategory().flatten().indexOf(category)).getColor(),
+                        category.getName());
     }
 
     private final class AggregationPeriodDropDown extends AbstractDropDown
@@ -282,7 +271,7 @@ public class PerformanceChartView extends AbstractHistoricView
                 {
                     setLabel(Messages.LabelAggregationDaily);
                     aggregationPeriod = null;
-                    refreshChart();
+                    updateChart();
                 }
             });
 
@@ -295,7 +284,7 @@ public class PerformanceChartView extends AbstractHistoricView
                     {
                         setLabel(period.toString());
                         aggregationPeriod = period;
-                        refreshChart();
+                        updateChart();
                     }
                 });
             }
