@@ -365,7 +365,7 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -403,7 +403,7 @@ public class PortfolioListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
