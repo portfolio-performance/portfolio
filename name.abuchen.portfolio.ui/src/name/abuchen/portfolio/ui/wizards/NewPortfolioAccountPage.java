@@ -25,26 +25,29 @@ import org.eclipse.swt.widgets.Text;
 
 public class NewPortfolioAccountPage extends AbstractWizardPage
 {
-    Client client;
-    Text portfolioName, accountName;
-    Account currentAccount;
-    Portfolio currentPortfolio;
-   
+    private Client client;
+    private Text portfolioName, accountName;
+    private Account currentAccount;
+    private Portfolio currentPortfolio;
+
     public NewPortfolioAccountPage(Client client)
     {
         super("New ...");
         this.client = client;
         setTitle("Create Pairs of Portfolio and Reference Account");
     }
-    
-    class Pair {
+
+    class Pair
+    {
         public String portfolio, account;
-        public Pair(String p, String a) {
+
+        public Pair(String p, String a)
+        {
             portfolio = p;
             account = a;
         }
     }
-    
+
     @Override
     public void createControl(Composite parent)
     {
@@ -67,29 +70,32 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
         accountName.setText("");
         final List<Pair> data = new ArrayList<Pair>();
-        Button button =  new Button(inputRow, SWT.PUSH);
+        Button button = new Button(inputRow, SWT.PUSH);
         button.setText("+");
         final TableViewer tViewer = new TableViewer(container);
         inputRow.pack();
-        button.addSelectionListener(new SelectionAdapter() {
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-              String portName = portfolioName.getText();
-              String acnName = accountName.getText();
-              if (portName.length() > 0 && acnName.length()>0) {
-                  currentAccount = new Account();
-                  currentAccount.setName(acnName);
-                  currentPortfolio = new Portfolio();
-                  currentPortfolio.setName(portName);
-                  currentPortfolio.setReferenceAccount(currentAccount);
-                  client.addAccount(currentAccount);
-                  client.addPortfolio(currentPortfolio);
-                  data.add(new Pair(portName,acnName));
-                  tViewer.refresh();
-                  setPageComplete(true);
-              }
-          }
-        }); 
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                String portName = portfolioName.getText();
+                String acnName = accountName.getText();
+                if (portName.length() > 0 && acnName.length() > 0)
+                {
+                    currentAccount = new Account();
+                    currentAccount.setName(acnName);
+                    currentPortfolio = new Portfolio();
+                    currentPortfolio.setName(portName);
+                    currentPortfolio.setReferenceAccount(currentAccount);
+                    client.addAccount(currentAccount);
+                    client.addPortfolio(currentPortfolio);
+                    data.add(new Pair(portName, acnName));
+                    tViewer.refresh();
+                    setPageComplete(true);
+                }
+            }
+        });
         Table table = tViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -101,7 +107,8 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         TableViewerColumn pCol = new TableViewerColumn(tViewer, SWT.NONE);
         pCol.getColumn().setText("Portfolio");
         pCol.getColumn().setWidth(200);
-        pCol.setLabelProvider(new ColumnLabelProvider() {
+        pCol.setLabelProvider(new ColumnLabelProvider()
+        {
             @Override
             public String getText(Object element)
             {
@@ -111,7 +118,8 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
         aCol.getColumn().setText("Reference Account");
         aCol.getColumn().setWidth(200);
-        aCol.setLabelProvider(new ColumnLabelProvider() {
+        aCol.setLabelProvider(new ColumnLabelProvider()
+        {
             @Override
             public String getText(Object element)
             {
@@ -123,4 +131,3 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
     }
 
 }
-

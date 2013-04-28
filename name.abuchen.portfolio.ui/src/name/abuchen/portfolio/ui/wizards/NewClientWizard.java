@@ -10,8 +10,9 @@ public class NewClientWizard extends Wizard
     NewPortfolioAccountPage pfAccPage;
     NewAccountPage accPage;
     ImportIndizesPage indPage;
-    
-    public NewClientWizard() {
+
+    public NewClientWizard()
+    {
         client = new Client();
     }
 
@@ -20,8 +21,9 @@ public class NewClientWizard extends Wizard
     {
         return true;
     }
-    
-    public Client getClient() {
+
+    public Client getClient()
+    {
         return client;
     }
 
@@ -35,6 +37,5 @@ public class NewClientWizard extends Wizard
         indPage = new ImportIndizesPage(client);
         addPage(indPage);
     }
-    
 
 }
