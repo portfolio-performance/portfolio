@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-
 public final class Security
 {
     public static final class ByName implements Comparator<Security>, Serializable
@@ -36,11 +34,6 @@ public final class Security
         {
             return RESOURCES.getString("asset." + name()); //$NON-NLS-1$
         }
-    }
-    
-    public static Security fromResultItem(ResultItem res) {
-        Security result = new Security(res.getName(), res.getIsin(), res.getSymbol(), AssetClass.EQUITY,"YAHOO");
-        return result;
     }
 
     private String uuid;

@@ -12,7 +12,7 @@ import org.eclipse.ui.IPersistableElement;
 public class ClientEditorInput extends PlatformObject implements IPathEditorInput, IPersistableElement
 {
     private IPath path;
-    Client client;
+    private Client client;
 
     public ClientEditorInput(Client client)
     {

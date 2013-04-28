@@ -24,18 +24,17 @@ import org.eclipse.swt.widgets.Text;
 
 public class NewAccountPage extends AbstractWizardPage
 {
-    Client client;
-    Text accountName;
-    Account currentAccount;
-   
+    private Client client;
+    private Text accountName;
+    private Account currentAccount;
+
     public NewAccountPage(Client client)
     {
         super("New ...");
         this.client = client;
         setTitle("Create Accounts wihtout a reference to a Portfolio");
     }
-    
-    
+
     @Override
     public void createControl(Composite parent)
     {
@@ -54,26 +53,29 @@ public class NewAccountPage extends AbstractWizardPage
         accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
         accountName.setText("");
         final List<Account> data = new ArrayList<Account>();
-        Button button =  new Button(inputRow, SWT.PUSH);
-        button.setText("+");
+        Button button = new Button(inputRow, SWT.PUSH);
+        button.setText("Add");
         final TableViewer tViewer = new TableViewer(container);
         inputRow.pack();
-        button.addSelectionListener(new SelectionAdapter() {
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-              String acnName = accountName.getText();
-              if (acnName.length()>0) {
-                  currentAccount = new Account();
-                  currentAccount.setName(acnName);
-                  client.addAccount(currentAccount);
-                  data.add(currentAccount);
-                  tViewer.refresh();
-              }
-          }
-        }); 
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                String acnName = accountName.getText();
+                if (acnName.length() > 0)
+                {
+                    currentAccount = new Account();
+                    currentAccount.setName(acnName);
+                    client.addAccount(currentAccount);
+                    data.add(currentAccount);
+                    tViewer.refresh();
+                }
+            }
+        });
         Table table = tViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setEnabled(false);
         GridData gridData = new GridData();
         gridData.heightHint = 300;
         table.setLayoutData(gridData);
@@ -82,7 +84,8 @@ public class NewAccountPage extends AbstractWizardPage
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
         aCol.getColumn().setText("Account");
         aCol.getColumn().setWidth(200);
-        aCol.setLabelProvider(new ColumnLabelProvider() {
+        aCol.setLabelProvider(new ColumnLabelProvider()
+        {
             @Override
             public String getText(Object element)
             {
@@ -94,4 +97,3 @@ public class NewAccountPage extends AbstractWizardPage
     }
 
 }
-

@@ -24,39 +24,37 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
-
 
 public class ImportIndizesPage extends AbstractWizardPage
 {
-    Client client;
-    Text accountName;
-    Map<String, List<Security>> secs = null;
-   
+    private Client client;
+    private Map<String, List<Security>> secs = null;
+    private List<List<Security>> alreadyAdded = new ArrayList<List<Security>>();
+
     public ImportIndizesPage(Client client)
     {
         super("New ...");
         secs = new HashMap<String, List<Security>>();
         this.client = client;
         setTitle("Import standard securities into client");
-        ResourceBundle bundle = ResourceBundle
-                        .getBundle("name.abuchen.portfolio.model.index");
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.ui.wizards.index");
         String indices = bundle.getString("indices");
         String[] indAr = indices.split(",");
-        for (String index: indAr) {
+        for (String index : indAr)
+        {
             List<Security> indexSec = new ArrayList<Security>();
             String indexWerte = bundle.getString(index);
             String[] werte = indexWerte.split(",");
-            for (String ticker: werte) {
+            for (String ticker : werte)
+            {
                 String name = bundle.getString(index + "." + ticker + ".name");
                 String isin = bundle.getString(index + "." + ticker + ".isin");
-                indexSec.add(new Security(name, isin, ticker, AssetClass.EQUITY,"YAHOO"));
+                indexSec.add(new Security(name, isin, ticker, AssetClass.EQUITY, "YAHOO"));
             }
             secs.put(index, indexSec);
         }
     }
-    
-    
+
     @Override
     public void createControl(Composite parent)
     {
@@ -64,12 +62,14 @@ public class ImportIndizesPage extends AbstractWizardPage
         setControl(container);
         container.setLayout(new GridLayout());
         final Combo comboDropDown = new Combo(container, SWT.DROP_DOWN | SWT.BORDER);
-        for (Entry<String, List<Security>> entry : secs.entrySet()) {
+        for (Entry<String, List<Security>> entry : secs.entrySet())
+        {
             comboDropDown.add(entry.getKey());
             comboDropDown.setData(entry.getKey(), entry.getValue());
         }
         final TableViewer tViewer = new TableViewer(container);
-        comboDropDown.addSelectionListener(new SelectionListener() {
+        comboDropDown.addSelectionListener(new SelectionListener()
+        {
 
             @Override
             public void widgetSelected(SelectionEvent e)
@@ -82,13 +82,12 @@ public class ImportIndizesPage extends AbstractWizardPage
 
             @Override
             public void widgetDefaultSelected(SelectionEvent e)
-            {
-            }
-            
+            {}
+
         });
         Table table = tViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setEnabled(false);
         GridData gridData = new GridData();
         gridData.heightHint = 300;
         table.setLayoutData(gridData);
@@ -96,28 +95,33 @@ public class ImportIndizesPage extends AbstractWizardPage
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
         aCol.getColumn().setText("Security");
         aCol.getColumn().setWidth(200);
-        aCol.setLabelProvider(new ColumnLabelProvider() {
+        aCol.setLabelProvider(new ColumnLabelProvider()
+        {
             @Override
             public String getText(Object element)
             {
                 return ((Security) element).getName();
             }
         });
-        Button button =  new Button(container, SWT.PUSH);
+        Button button = new Button(container, SWT.PUSH);
         button.setText("Add Securities");
-        button.addSelectionListener(new SelectionListener() {
+        button.addSelectionListener(new SelectionListener()
+        {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
                 String text = comboDropDown.getText();
                 List<Security> secList = (List<Security>) comboDropDown.getData(text);
-                client.addSecurities(secList);
+                if (!alreadyAdded.contains(secList))
+                {
+                    client.addSecurities(secList);
+                    alreadyAdded.add(secList);
+                }
             }
 
             @Override
             public void widgetDefaultSelected(SelectionEvent e)
-            {
-            }
+            {}
 
         });
         container.pack();
@@ -125,4 +129,3 @@ public class ImportIndizesPage extends AbstractWizardPage
     }
 
 }
-
