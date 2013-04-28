@@ -94,7 +94,6 @@ public class CategoryIndex extends PerformanceIndex
                         default:
                             throw new UnsupportedOperationException();
                     }
-
                 }
             }
         }
@@ -145,6 +144,7 @@ public class CategoryIndex extends PerformanceIndex
             {
                 case BUY:
                 case TRANSFER_IN:
+                case DIVIDENDS:
                     pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
                                     AccountTransaction.Type.DEPOSIT, t.getAmount()));
                     break;
@@ -152,10 +152,6 @@ public class CategoryIndex extends PerformanceIndex
                 case TRANSFER_OUT:
                     pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
                                     AccountTransaction.Type.REMOVAL, t.getAmount()));
-                    break;
-                case DIVIDENDS:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                    AccountTransaction.Type.DEPOSIT, t.getAmount()));
                     break;
                 case DEPOSIT:
                 case REMOVAL:

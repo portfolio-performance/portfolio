@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
-
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Interval;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 
 public class PortfolioIndex extends PerformanceIndex
 {
@@ -30,30 +30,57 @@ public class PortfolioIndex extends PerformanceIndex
 
     private void calculate(List<Exception> warnings)
     {
-        Interval interval = getReportInterval().toInterval();
-        int size = Days.daysBetween(interval.getStart(), interval.getEnd()).getDays() + 1;
+        Client pseudoClient = new Client();
 
-        dates = new Date[size];
-        totals = new long[size];
-        delta = new double[size];
-        accumulated = new double[size];
-        transferals = new long[size];
+        Account pseudoAccount = new Account();
+        pseudoAccount.setName(""); //$NON-NLS-1$
+        pseudoClient.addAccount(pseudoAccount);
 
-        // first value = reference value
-        dates[0] = interval.getStart().toDate();
-        totals[0] = PortfolioSnapshot.create(portfolio, dates[0]).getValue();
+        Portfolio pseudoPortfolio = new Portfolio();
+        pseudoPortfolio.setReferenceAccount(pseudoAccount);
+        pseudoClient.addPortfolio(pseudoPortfolio);
 
-        // calculate series
-        int index = 1;
-        DateTime date = interval.getStart().plusDays(1);
-        while (date.compareTo(interval.getEnd()) <= 0)
+        Set<Security> securities = new HashSet<Security>();
+
+        for (PortfolioTransaction t : portfolio.getTransactions())
         {
-            dates[index] = date.toDate();
-            totals[index] = PortfolioSnapshot.create(portfolio, dates[index]).getValue();
+            securities.add(t.getSecurity());
 
-            date = date.plusDays(1);
-            index++;
+            switch (t.getType())
+            {
+                case BUY:
+                case TRANSFER_IN:
+                {
+                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
+                                    PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
+                                                    .getFees()));
+                    break;
+                }
+                case SELL:
+                case TRANSFER_OUT:
+                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
+                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(), t
+                                                    .getFees()));
+                    break;
+                case DELIVERY_INBOUND:
+                case DELIVERY_OUTBOUND:
+                    pseudoPortfolio.addTransaction(t);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
+
+        for (Security security : securities)
+            pseudoClient.addSecurity(security);
+
+        ClientIndex clientIndex = ClientIndex.forPeriod(pseudoClient, getReportInterval(), warnings);
+
+        dates = clientIndex.getDates();
+        totals = clientIndex.getTotals();
+        accumulated = clientIndex.getAccumulatedPercentage();
+        delta = clientIndex.getDeltaPercentage();
+        transferals = clientIndex.getTransferals();
     }
 
 }

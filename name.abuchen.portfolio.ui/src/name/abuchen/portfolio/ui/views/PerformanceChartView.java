@@ -12,12 +12,14 @@ import java.util.Map;
 import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.CPIIndex;
 import name.abuchen.portfolio.snapshot.CategoryIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.PortfolioIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -147,6 +149,8 @@ public class PerformanceChartView extends AbstractHistoricView
                     addConsumerPriceIndex(warnings);
                 else if (item.getType() == Security.class)
                     addSecurity((Security) item.getInstance(), warnings);
+                else if (item.getType() == Portfolio.class)
+                    addPortfolio((Portfolio) item.getInstance(), warnings);
                 else if (item.getType() == Category.class)
                     addCategory((Category) item.getInstance(), warnings);
             }
@@ -235,6 +239,26 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.addDateSeries(securityIndex.getDates(), //
                         securityIndex.getAccumulatedPercentage(), //
                         securityColorWheel.getSegment(index).getColor(), security.getName());
+    }
+
+    private void addPortfolio(Portfolio portfolio, List<Exception> warnings)
+    {
+        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(portfolio);
+
+        if (portfolioIndex == null)
+        {
+            portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, getReportingPeriod(), warnings);
+            dataCache.put(portfolio, portfolioIndex);
+        }
+
+        if (aggregationPeriod != null)
+            portfolioIndex = Aggregation.aggregate(portfolioIndex, aggregationPeriod);
+
+        chart.addDateSeries(
+                        portfolioIndex.getDates(), //
+                        portfolioIndex.getAccumulatedPercentage(), //
+                        colorWheel.getSegment(getClient().getPortfolios().indexOf(portfolio)).getColor(),
+                        portfolio.getName());
     }
 
     private void addCategory(Category category, List<Exception> warnings)
