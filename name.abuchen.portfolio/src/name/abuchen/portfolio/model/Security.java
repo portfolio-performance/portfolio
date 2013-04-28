@@ -38,11 +38,6 @@ public final class Security
         }
     }
     
-    public static Security fromResultItem(ResultItem res) {
-        Security result = new Security(res.getName(), res.getIsin(), res.getSymbol(), AssetClass.EQUITY,"YAHOO");
-        return result;
-    }
-
     private String uuid;
 
     private String name;

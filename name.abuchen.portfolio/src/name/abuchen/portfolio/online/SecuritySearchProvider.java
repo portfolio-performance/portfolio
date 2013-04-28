@@ -16,14 +16,7 @@ public interface SecuritySearchProvider
         private long lastTrade;
         private String type;
         private String exchange;
-        
-        @Override
-        public String toString()
-        {
-            return "ResultItem [symbol=" + symbol + ", name=" + name + ", isin=" + isin + ", lastTrade=" + lastTrade
-                            + ", type=" + type + ", exchange=" + exchange + "]";
-        }
-
+    
         public String getSymbol()
         {
             return symbol;

@@ -38,7 +38,7 @@ public class ImportIndizesPage extends AbstractWizardPage
         secs = new HashMap<String, List<Security>>();
         this.client = client;
         setTitle("Import standard securities into client");
-        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.model.index");
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.ui.wizards.index");
         String indices = bundle.getString("indices");
         String[] indAr = indices.split(",");
         for (String index : indAr)
