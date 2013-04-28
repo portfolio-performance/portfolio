@@ -30,10 +30,10 @@ public class NewFileHandler extends AbstractHandler
             WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell(), wizard);
             if (dialog.open() == Window.OK) {
                 page.openEditor(new ClientEditorInput(wizard.getClient()), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
+                IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
+                if (introManager.getIntro() != null)
+                    introManager.closeIntro(introManager.getIntro());
             }
-            IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
-            if (introManager.getIntro() != null)
-                introManager.closeIntro(introManager.getIntro());
             return null;
         }
         catch (PartInitException e)
