@@ -210,10 +210,6 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
                     availableItems.add(new Item(AssetClass.class, assetClass, assetClass.toString()));
 
                 availableItems.add(new Item(Client.class, null, Messages.LabelTransferals));
-
-                for (Account account : client.getAccounts())
-                    availableItems.add(new Item(Account.class, account, account.getName()));
-
                 break;
             }
             case PERFORMANCE:
@@ -230,6 +226,9 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
         for (Portfolio portfolio : client.getPortfolios())
             availableItems.add(new Item(Portfolio.class, portfolio, portfolio.getName()));
+
+        for (Account account : client.getAccounts())
+            availableItems.add(new Item(Account.class, account, account.getName()));
 
         LinkedList<Category> stack = new LinkedList<Category>();
         stack.add(client.getRootCategory());

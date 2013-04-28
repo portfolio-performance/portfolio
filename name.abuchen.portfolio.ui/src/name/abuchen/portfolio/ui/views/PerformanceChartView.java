@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.snapshot.AccountIndex;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.CPIIndex;
 import name.abuchen.portfolio.snapshot.CategoryIndex;
@@ -151,6 +153,8 @@ public class PerformanceChartView extends AbstractHistoricView
                     addSecurity((Security) item.getInstance(), warnings);
                 else if (item.getType() == Portfolio.class)
                     addPortfolio((Portfolio) item.getInstance(), warnings);
+                else if (item.getType() == Account.class)
+                    addAccount((Account) item.getInstance(), warnings);
                 else if (item.getType() == Category.class)
                     addCategory((Category) item.getInstance(), warnings);
             }
@@ -259,6 +263,26 @@ public class PerformanceChartView extends AbstractHistoricView
                         portfolioIndex.getAccumulatedPercentage(), //
                         colorWheel.getSegment(getClient().getPortfolios().indexOf(portfolio)).getColor(),
                         portfolio.getName());
+    }
+
+    private void addAccount(Account account, List<Exception> warnings)
+    {
+        PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
+
+        if (accountIndex == null)
+        {
+            accountIndex = AccountIndex.forPeriod(getClient(), account, getReportingPeriod(), warnings);
+            dataCache.put(account, accountIndex);
+        }
+
+        if (aggregationPeriod != null)
+            accountIndex = Aggregation.aggregate(accountIndex, aggregationPeriod);
+
+        chart.addDateSeries(
+                        accountIndex.getDates(), //
+                        accountIndex.getAccumulatedPercentage(), //
+                        colorWheel.getSegment(getClient().getAccounts().indexOf(account) + 10).getColor(),
+                        account.getName());
     }
 
     private void addCategory(Category category, List<Exception> warnings)
