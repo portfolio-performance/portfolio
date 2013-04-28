@@ -21,14 +21,15 @@ public class NewFileHandler extends AbstractHandler
 
     public Object execute(ExecutionEvent event) throws ExecutionException
     {
-        
-        try
+    try
         {
             IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
             IWorkbenchPage page = window.getActivePage();
             NewClientWizard wizard = new NewClientWizard();
-            WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell(), wizard);
-            if (dialog.open() == Window.OK) {
+            WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell(),
+                            wizard);
+            if (dialog.open() == Window.OK)
+            {
                 page.openEditor(new ClientEditorInput(wizard.getClient()), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
                 IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
                 if (introManager.getIntro() != null)
