@@ -6,11 +6,8 @@ import org.eclipse.jface.wizard.Wizard;
 
 public class NewClientWizard extends Wizard
 {
-    Client client;
-    NewPortfolioAccountPage pfAccPage;
-    NewAccountPage accPage;
-    ImportIndizesPage indPage;
-
+    private Client client;
+   
     public NewClientWizard()
     {
         client = new Client();
@@ -30,12 +27,9 @@ public class NewClientWizard extends Wizard
     @Override
     public void addPages()
     {
-        pfAccPage = new NewPortfolioAccountPage(client);
-        addPage(pfAccPage);
-        accPage = new NewAccountPage(client);
-        addPage(accPage);
-        indPage = new ImportIndizesPage(client);
-        addPage(indPage);
+        addPage(new NewPortfolioAccountPage(client));
+        addPage(new NewAccountPage(client));
+        addPage(new ImportIndizesPage(client));
     }
 
 }

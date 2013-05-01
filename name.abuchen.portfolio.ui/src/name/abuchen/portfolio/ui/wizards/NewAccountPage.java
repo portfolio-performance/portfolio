@@ -54,7 +54,7 @@ public class NewAccountPage extends AbstractWizardPage
         accountName.setText("");
         final List<Account> data = new ArrayList<Account>();
         Button button = new Button(inputRow, SWT.PUSH);
-        button.setText("+");
+        button.setText("Add");
         final TableViewer tViewer = new TableViewer(container);
         inputRow.pack();
         button.addSelectionListener(new SelectionAdapter()
@@ -75,7 +75,7 @@ public class NewAccountPage extends AbstractWizardPage
         });
         Table table = tViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setEnabled(false);
         GridData gridData = new GridData();
         gridData.heightHint = 300;
         table.setLayoutData(gridData);

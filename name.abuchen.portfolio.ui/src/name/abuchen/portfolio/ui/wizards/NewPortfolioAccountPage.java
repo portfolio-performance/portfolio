@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -27,8 +28,8 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
 {
     private Client client;
     private Text portfolioName, accountName;
-    private Account currentAccount;
-    private Portfolio currentPortfolio;
+    private Account account;
+    private Portfolio portfolio;
 
     public NewPortfolioAccountPage(Client client)
     {
@@ -71,7 +72,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         accountName.setText("");
         final List<Pair> data = new ArrayList<Pair>();
         Button button = new Button(inputRow, SWT.PUSH);
-        button.setText("+");
+        button.setText("Add");
         final TableViewer tViewer = new TableViewer(container);
         inputRow.pack();
         button.addSelectionListener(new SelectionAdapter()
@@ -83,13 +84,13 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
                 String acnName = accountName.getText();
                 if (portName.length() > 0 && acnName.length() > 0)
                 {
-                    currentAccount = new Account();
-                    currentAccount.setName(acnName);
-                    currentPortfolio = new Portfolio();
-                    currentPortfolio.setName(portName);
-                    currentPortfolio.setReferenceAccount(currentAccount);
-                    client.addAccount(currentAccount);
-                    client.addPortfolio(currentPortfolio);
+                    account = new Account();
+                    account.setName(acnName);
+                    portfolio = new Portfolio();
+                    portfolio.setName(portName);
+                    portfolio.setReferenceAccount(account);
+                    client.addAccount(account);
+                    client.addPortfolio(portfolio);
                     data.add(new Pair(portName, acnName));
                     tViewer.refresh();
                     setPageComplete(true);
@@ -97,8 +98,9 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
             }
         });
         Table table = tViewer.getTable();
+        table.setEnabled(false);
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(false);
         GridData gridData = new GridData();
         gridData.heightHint = 300;
         table.setLayoutData(gridData);

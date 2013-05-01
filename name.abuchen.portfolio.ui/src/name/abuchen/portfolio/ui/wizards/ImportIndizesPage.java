@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.Text;
 
 public class ImportIndizesPage extends AbstractWizardPage
 {
-    Client client;
-    Text accountName;
-    Map<String, List<Security>> secs = null;
+    private Client client;
+    private Map<String, List<Security>> secs = null;
+    private List<List<Security>> alreadyAdded = new ArrayList<List<Security>>();
 
     public ImportIndizesPage(Client client)
     {
@@ -88,7 +88,7 @@ public class ImportIndizesPage extends AbstractWizardPage
         });
         Table table = tViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setEnabled(false);
         GridData gridData = new GridData();
         gridData.heightHint = 300;
         table.setLayoutData(gridData);
@@ -113,7 +113,10 @@ public class ImportIndizesPage extends AbstractWizardPage
             {
                 String text = comboDropDown.getText();
                 List<Security> secList = (List<Security>) comboDropDown.getData(text);
-                client.addSecurities(secList);
+                if (!alreadyAdded.contains(secList)) {
+                    client.addSecurities(secList);
+                    alreadyAdded.add(secList);
+                }
             }
 
             @Override
