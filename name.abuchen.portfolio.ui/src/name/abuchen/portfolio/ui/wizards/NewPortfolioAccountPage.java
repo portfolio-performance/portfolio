@@ -1,0 +1,135 @@
+package name.abuchen.portfolio.ui.wizards;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
+
+public class NewPortfolioAccountPage extends AbstractWizardPage
+{
+    private Client client;
+    private Text portfolioName, accountName;
+    private Account account;
+    private Portfolio portfolio;
+
+    public NewPortfolioAccountPage(Client client)
+    {
+        super("New ...");
+        this.client = client;
+        setTitle("Create Pairs of Portfolio and Reference Account");
+    }
+
+    class Pair
+    {
+        public String portfolio, account;
+
+        public Pair(String p, String a)
+        {
+            portfolio = p;
+            account = a;
+        }
+    }
+
+    @Override
+    public void createControl(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NULL);
+        setControl(container);
+        container.setLayout(new GridLayout());
+        Composite inputRow = new Composite(container, SWT.NULL);
+        RowLayout inputRowLayout = new RowLayout();
+        inputRowLayout.type = SWT.HORIZONTAL;
+        inputRowLayout.marginHeight = 10;
+        inputRowLayout.spacing = 5;
+        inputRowLayout.center = true;
+        inputRow.setLayout(inputRowLayout);
+        Label lblPort = new Label(inputRow, SWT.NULL);
+        lblPort.setText("Portfolio");
+        portfolioName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
+        portfolioName.setText("");
+        Label lblAcc = new Label(inputRow, SWT.NULL);
+        lblAcc.setText("Account");
+        accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
+        accountName.setText("");
+        final List<Pair> data = new ArrayList<Pair>();
+        Button button = new Button(inputRow, SWT.PUSH);
+        button.setText("Add");
+        final TableViewer tViewer = new TableViewer(container);
+        inputRow.pack();
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                String portName = portfolioName.getText();
+                String acnName = accountName.getText();
+                if (portName.length() > 0 && acnName.length() > 0)
+                {
+                    account = new Account();
+                    account.setName(acnName);
+                    portfolio = new Portfolio();
+                    portfolio.setName(portName);
+                    portfolio.setReferenceAccount(account);
+                    client.addAccount(account);
+                    client.addPortfolio(portfolio);
+                    data.add(new Pair(portName, acnName));
+                    tViewer.refresh();
+                    setPageComplete(true);
+                }
+            }
+        });
+        Table table = tViewer.getTable();
+        table.setEnabled(false);
+        table.setHeaderVisible(true);
+        table.setLinesVisible(false);
+        GridData gridData = new GridData();
+        gridData.heightHint = 300;
+        table.setLayoutData(gridData);
+        tViewer.setContentProvider(ArrayContentProvider.getInstance());
+        tViewer.setInput(data);
+        TableViewerColumn pCol = new TableViewerColumn(tViewer, SWT.NONE);
+        pCol.getColumn().setText("Portfolio");
+        pCol.getColumn().setWidth(200);
+        pCol.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Pair) element).portfolio;
+            }
+        });
+        TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
+        aCol.getColumn().setText("Reference Account");
+        aCol.getColumn().setWidth(200);
+        aCol.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Pair) element).account;
+            }
+        });
+        container.pack();
+        setPageComplete(false);
+    }
+
+}

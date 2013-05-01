@@ -61,7 +61,7 @@ public class ClientEditor extends EditorPart
                 if (clientFile != null)
                     client = ClientFactory.load(clientFile.toFile());
                 else
-                    client = new Client();
+                    client = ((ClientEditorInput) input).getClient();
             }
             else if (input instanceof IPathEditorInput)
             {

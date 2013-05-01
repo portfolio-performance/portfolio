@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui;
 
+import name.abuchen.portfolio.model.Client;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -10,9 +12,16 @@ import org.eclipse.ui.IPersistableElement;
 public class ClientEditorInput extends PlatformObject implements IPathEditorInput, IPersistableElement
 {
     private IPath path;
+    private Client client;
 
-    public ClientEditorInput()
-    {}
+    public ClientEditorInput(Client client)
+    {
+        this.client = client;
+    }
+    
+    public Client getClient() {
+        return client;
+    }
 
     public ClientEditorInput(IPath path)
     {
