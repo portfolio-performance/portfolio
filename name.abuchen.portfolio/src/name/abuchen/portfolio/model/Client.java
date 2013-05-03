@@ -19,6 +19,7 @@ public class Client
 
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
+    private List<InvestmentPlan> plans = new ArrayList<InvestmentPlan>();
     private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
 
     private String industryTaxonomyId;
@@ -31,6 +32,16 @@ public class Client
     public void setVersion(int version)
     {
         this.version = version;
+    }
+    
+    public List<InvestmentPlan> getPlans()
+    {
+        return plans;
+    }
+    
+    public void addPlan(InvestmentPlan plan)
+    {
+        plans.add(plan);
     }
 
     public List<Security> getSecurities()
