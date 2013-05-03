@@ -18,6 +18,15 @@ public class Dates
         return cal.getTime();
     }
 
+    public static Date progress(Date today, int period)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(today);
+        cal.add(Calendar.MONTH, 1);
+        cal.set(Calendar.DAY_OF_MONTH, period);
+        return cal.getTime();
+    }
+
     public static Calendar cal(int year, int month, int day)
     {
         Calendar cal = Calendar.getInstance();
@@ -92,5 +101,14 @@ public class Dates
         answer += c2.get(Calendar.DAY_OF_MONTH) >= c1.get(Calendar.DAY_OF_MONTH) ? 0 : -1;
 
         return answer;
+    }
+
+    public static boolean isSameMonth(Date current, Date date)
+    {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(current);
+        c2.setTime(date);
+        return c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH);
     }
 }

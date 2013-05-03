@@ -116,4 +116,14 @@ public class BuySellEntry implements CrossEntry
         else
             throw new UnsupportedOperationException();
     }
+
+    public PortfolioTransaction getPortfolioTransaction()
+    {
+        return portfolioTransaction;
+    }
+
+    public AccountTransaction getAccountTransaction()
+    {
+        return accountTransaction;
+    }
 }
