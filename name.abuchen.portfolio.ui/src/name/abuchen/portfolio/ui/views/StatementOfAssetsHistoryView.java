@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
@@ -15,27 +16,29 @@ import name.abuchen.portfolio.snapshot.AccountIndex;
 import name.abuchen.portfolio.snapshot.CategoryIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.PortfolioIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityInvestmentIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
+import org.swtchart.IBarSeries;
+import org.swtchart.ILineSeries;
+import org.swtchart.ISeries;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
     private TimelineChart chart;
-    private ChartSeriesPicker picker;
-    private ColorWheel colorWheel;
-    private ColorWheel securityColorWheel;
+    private ChartConfigurator picker;
 
     private Map<Object, Object> dataCache = new HashMap<Object, Object>();
 
@@ -89,158 +92,185 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Override
     protected Composite createBody(Composite parent)
     {
-        picker = new ChartSeriesPicker(StatementOfAssetsHistoryView.class.getSimpleName(), parent, getClientEditor(),
-                        ChartSeriesPicker.Mode.STATEMENT_OF_ASSETS);
-        picker.setListener(new ChartSeriesPicker.Listener()
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+        chart = new TimelineChart(composite);
+        chart.getTitle().setVisible(false);
+
+        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.STATEMENT_OF_ASSETS);
+        picker.setListener(new ChartConfigurator.Listener()
         {
             @Override
             public void onUpdate()
             {
-                rebuildChart();
+                updateChart();
             }
         });
 
-        Composite container = new Composite(parent, SWT.NONE);
-        container.setLayout(new FillLayout());
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
 
-        colorWheel = new ColorWheel(container, 30);
-        securityColorWheel = new ColorWheel(container, 10);
+        // force layout, otherwise range calculation of chart does not work
+        composite.layout();
+        updateChart();
 
-        chart = buildChart(container);
-
-        return container;
+        return composite;
     }
 
     @Override
     protected void reportingPeriodUpdated()
     {
         dataCache.clear();
-        rebuildChart();
+        updateChart();
     }
 
-    private void rebuildChart()
+    private void updateChart()
     {
-        Composite parent = chart.getParent();
-        chart.dispose();
-        chart = buildChart(parent);
-        parent.layout(true);
-    }
-
-    protected TimelineChart buildChart(Composite parent)
-    {
-        TimelineChart chart = new TimelineChart(parent);
-        chart.getTitle().setVisible(false);
-        chart.getLegend().setVisible(true);
-        chart.getLegend().setPosition(SWT.BOTTOM);
-
-        ReportingPeriod period = getReportingPeriod();
-
-        for (ChartSeriesPicker.Item item : picker.getSelectedItems())
+        try
         {
-            if (item.getType() == Client.class)
+            chart.suspendUpdate(true);
+            for (ISeries s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
+
+            List<Exception> warnings = new ArrayList<Exception>();
+
+            for (DataSeries item : picker.getSelectedDataSeries())
             {
-                ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
-                if (clientIndex == null)
-                {
-                    clientIndex = ClientIndex.forPeriod(getClient(), period, new ArrayList<Exception>());
-                    dataCache.put(ClientIndex.class, clientIndex);
-                }
-
-                if (item.getInstance() != null)
-                {
-                    chart.addDateSeries(clientIndex.getDates(),
-                                    toDouble(clientIndex.getTotals(), Values.Amount.divider()), Colors.TOTALS,
-                                    Messages.LabelTotalSum);
-                }
-                else
-                {
-                    chart.addDateBarSeries(clientIndex.getDates(),
-                                    toDouble(clientIndex.getTransferals(), Values.Amount.divider()),
-                                    Messages.LabelTransferals);
-                }
+                if (item.getType() == Client.class)
+                    addClient(item, (Client) item.getInstance(), warnings);
+                else if (item.getType() == AssetClass.class)
+                    addAssetClass(item, (AssetClass) item.getInstance(), warnings);
+                else if (item.getType() == Security.class)
+                    addSecurity(item, (Security) item.getInstance(), warnings);
+                else if (item.getType() == Portfolio.class)
+                    addPortfolio(item, (Portfolio) item.getInstance(), warnings);
+                else if (item.getType() == Account.class)
+                    addAccount(item, (Account) item.getInstance(), warnings);
+                else if (item.getType() == Category.class)
+                    addCategory(item, (Category) item.getInstance(), warnings);
             }
-            else if (item.getType() == AssetClass.class)
-            {
-                ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
-                if (clientIndex == null)
-                {
-                    clientIndex = ClientIndex.forPeriod(getClient(), period, new ArrayList<Exception>());
-                    dataCache.put(ClientIndex.class, clientIndex);
-                }
 
-                AssetClass assetClass = (AssetClass) item.getInstance();
+            PortfolioPlugin.log(warnings);
 
-                chart.addDateSeries(clientIndex.getDates(),
-                                toDouble(clientIndex.byAssetClass(assetClass), Values.Amount.divider()),
-                                Colors.valueOf(assetClass.name()), assetClass.toString());
-            }
-            else if (item.getType() == Portfolio.class)
-            {
-                Portfolio portfolio = (Portfolio) item.getInstance();
-                PortfolioIndex portfolioIndex = (PortfolioIndex) dataCache.get(portfolio);
-                if (portfolioIndex == null)
-                {
-                    portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, period,
-                                    new ArrayList<Exception>());
-                    dataCache.put(portfolio, portfolioIndex);
-                }
+            chart.getAxisSet().adjustRange();
+        }
+        finally
+        {
+            chart.suspendUpdate(false);
+        }
+        chart.redraw();
+    }
 
-                chart.addDateSeries(portfolioIndex.getDates(),
-                                toDouble(portfolioIndex.getTotals(), Values.Amount.divider()),
-                                colorWheel.getSegment(getClient().getPortfolios().indexOf(portfolio)).getColor(),
-                                portfolio.getName());
-            }
-            else if (item.getType() == Account.class)
-            {
-                Account account = (Account) item.getInstance();
-                AccountIndex accountIndex = (AccountIndex) dataCache.get(account);
-                if (accountIndex == null)
-                {
-                    accountIndex = AccountIndex.forPeriod(getClient(), account, period, new ArrayList<Exception>());
-                    dataCache.put(account, accountIndex);
-                }
-
-                chart.addDateSeries(accountIndex.getDates(),
-                                toDouble(accountIndex.getTotals(), Values.Amount.divider()),
-                                colorWheel.getSegment(getClient().getAccounts().indexOf(account) + 10).getColor(),
-                                account.getName());
-            }
-            else if (item.getType() == Category.class)
-            {
-                Category category = (Category) item.getInstance();
-                CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
-                if (categoryIndex == null)
-                {
-                    categoryIndex = CategoryIndex.forPeriod(getClient(), category, period, new ArrayList<Exception>());
-                    dataCache.put(category, categoryIndex);
-                }
-
-                chart.addDateSeries(categoryIndex.getDates(),
-                                toDouble(categoryIndex.getTotals(), Values.Amount.divider()),
-                                colorWheel.getSegment(getClient().getRootCategory().flatten().indexOf(category))
-                                                .getColor(), category.getName());
-
-            }
-            else if (item.getType() == Security.class)
-            {
-                Security security = (Security) item.getInstance();
-                SecurityInvestmentIndex securityIndex = (SecurityInvestmentIndex) dataCache.get(security);
-                if (securityIndex == null)
-                {
-                    securityIndex = SecurityInvestmentIndex.forPeriod(getClient(), security, period,
-                                    new ArrayList<Exception>());
-                    dataCache.put(security, securityIndex);
-                }
-
-                chart.addDateSeries(securityIndex.getDates(),
-                                toDouble(securityIndex.getTotals(), Values.Amount.divider()), securityColorWheel
-                                                .getSegment(getClient().getSecurities().indexOf(security)).getColor(),
-                                security.getName());
-            }
+    private void addClient(DataSeries item, Client instance, List<Exception> warnings)
+    {
+        ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
+        if (clientIndex == null)
+        {
+            clientIndex = ClientIndex.forPeriod(getClient(), getReportingPeriod(), warnings);
+            dataCache.put(ClientIndex.class, clientIndex);
         }
 
-        chart.getAxisSet().adjustRange();
-        return chart;
+        if (item.getInstance() != null)
+        {
+            ILineSeries series = chart.addDateSeries(clientIndex.getDates(), //
+                            toDouble(clientIndex.getTotals(), Values.Amount.divider()), //
+                            Messages.LabelTotalSum);
+            item.configure(series);
+        }
+        else
+        {
+            IBarSeries barSeries = chart.addDateBarSeries(clientIndex.getDates(), //
+                            toDouble(clientIndex.getTransferals(), Values.Amount.divider()), //
+                            Messages.LabelTransferals);
+            item.configure(barSeries);
+        }
+    }
+
+    private void addAssetClass(DataSeries item, AssetClass instance, List<Exception> warnings)
+    {
+        ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
+        if (clientIndex == null)
+        {
+            clientIndex = ClientIndex.forPeriod(getClient(), getReportingPeriod(), new ArrayList<Exception>());
+            dataCache.put(ClientIndex.class, clientIndex);
+        }
+
+        AssetClass assetClass = (AssetClass) item.getInstance();
+
+        ILineSeries series = chart.addDateSeries(clientIndex.getDates(), //
+                        toDouble(clientIndex.byAssetClass(assetClass), Values.Amount.divider()), //
+                        assetClass.toString());
+        item.configure(series);
+    }
+
+    private void addSecurity(DataSeries item, Security instance, List<Exception> warnings)
+    {
+        Security security = (Security) item.getInstance();
+        SecurityInvestmentIndex securityIndex = (SecurityInvestmentIndex) dataCache.get(security);
+        if (securityIndex == null)
+        {
+            securityIndex = SecurityInvestmentIndex.forPeriod(getClient(), security, getReportingPeriod(),
+                            new ArrayList<Exception>());
+            dataCache.put(security, securityIndex);
+        }
+
+        ILineSeries series = chart.addDateSeries(securityIndex.getDates(), //
+                        toDouble(securityIndex.getTotals(), Values.Amount.divider()), //
+                        security.getName());
+        item.configure(series);
+    }
+
+    private void addPortfolio(DataSeries item, Portfolio instance, List<Exception> warnings)
+    {
+        Portfolio portfolio = (Portfolio) item.getInstance();
+        PortfolioIndex portfolioIndex = (PortfolioIndex) dataCache.get(portfolio);
+        if (portfolioIndex == null)
+        {
+            portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, getReportingPeriod(),
+                            new ArrayList<Exception>());
+            dataCache.put(portfolio, portfolioIndex);
+        }
+
+        ILineSeries series = chart.addDateSeries(portfolioIndex.getDates(), //
+                        toDouble(portfolioIndex.getTotals(), Values.Amount.divider()), //
+                        portfolio.getName());
+        item.configure(series);
+    }
+
+    private void addAccount(DataSeries item, Account instance, List<Exception> warnings)
+    {
+        Account account = (Account) item.getInstance();
+        AccountIndex accountIndex = (AccountIndex) dataCache.get(account);
+        if (accountIndex == null)
+        {
+            accountIndex = AccountIndex.forPeriod(getClient(), account, getReportingPeriod(),
+                            new ArrayList<Exception>());
+            dataCache.put(account, accountIndex);
+        }
+
+        ILineSeries series = chart.addDateSeries(accountIndex.getDates(), //
+                        toDouble(accountIndex.getTotals(), Values.Amount.divider()), //
+                        account.getName());
+        item.configure(series);
+    }
+
+    private void addCategory(DataSeries item, Category instance, List<Exception> warnings)
+    {
+        Category category = (Category) item.getInstance();
+        CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
+        if (categoryIndex == null)
+        {
+            categoryIndex = CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(),
+                            new ArrayList<Exception>());
+            dataCache.put(category, categoryIndex);
+        }
+
+        ILineSeries series = chart.addDateSeries(categoryIndex.getDates(), //
+                        toDouble(categoryIndex.getTotals(), Values.Amount.divider()), //
+                        category.getName());
+        item.configure(series);
     }
 
     private double[] toDouble(long[] input, double divider)
