@@ -28,29 +28,28 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
-import name.abuchen.portfolio.ui.views.ChartSeriesPicker.Item;
+import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.IBarSeries;
+import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
-import org.swtchart.LineStyle;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
     private TimelineChart chart;
-    private ChartSeriesPicker picker;
-    private ColorWheel colorWheel;
-    private ColorWheel securityColorWheel;
+    private ChartConfigurator picker;
 
     private Aggregation.Period aggregationPeriod;
 
@@ -90,9 +89,17 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     protected Composite createBody(Composite parent)
     {
-        picker = new ChartSeriesPicker(PerformanceChartView.class.getSimpleName(), parent, getClientEditor(),
-                        ChartSeriesPicker.Mode.PERFORMANCE);
-        picker.setListener(new ChartSeriesPicker.Listener()
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+        chart = new TimelineChart(composite);
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
+        chart.getTitle().setVisible(false);
+        chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getToolTip().setReferenceSeries(Messages.PerformanceChartLabelAccumulatedIRR);
+
+        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.PERFORMANCE);
+        picker.setListener(new ChartConfigurator.Listener()
         {
             @Override
             public void onUpdate()
@@ -101,22 +108,15 @@ public class PerformanceChartView extends AbstractHistoricView
             }
         });
 
-        colorWheel = new ColorWheel(parent, 30);
-        securityColorWheel = new ColorWheel(parent, 10);
-
-        chart = new TimelineChart(parent);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getTitle().setVisible(false);
-        chart.getLegend().setVisible(true);
-        chart.getLegend().setPosition(SWT.BOTTOM);
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
-        chart.getToolTip().setReferenceSeries(Messages.PerformanceChartLabelAccumulatedIRR);
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
 
         // force layout, otherwise range calculation of chart does not work
-        parent.layout();
+        composite.layout();
         updateChart();
 
-        return chart;
+        return composite;
     }
 
     @Override
@@ -143,20 +143,20 @@ public class PerformanceChartView extends AbstractHistoricView
 
             List<Exception> warnings = new ArrayList<Exception>();
 
-            for (Item item : picker.getSelectedItems())
+            for (DataSeries item : picker.getSelectedDataSeries())
             {
                 if (item.getType() == Client.class)
-                    addClient((Client) item.getInstance(), warnings);
+                    addClient(item, (Client) item.getInstance(), warnings);
                 else if (item.getType() == ConsumerPriceIndex.class)
-                    addConsumerPriceIndex(warnings);
+                    addConsumerPriceIndex(item, warnings);
                 else if (item.getType() == Security.class)
-                    addSecurity((Security) item.getInstance(), warnings);
+                    addSecurity(item, (Security) item.getInstance(), warnings);
                 else if (item.getType() == Portfolio.class)
-                    addPortfolio((Portfolio) item.getInstance(), warnings);
+                    addPortfolio(item, (Portfolio) item.getInstance(), warnings);
                 else if (item.getType() == Account.class)
-                    addAccount((Account) item.getInstance(), warnings);
+                    addAccount(item, (Account) item.getInstance(), warnings);
                 else if (item.getType() == Category.class)
-                    addCategory((Category) item.getInstance(), warnings);
+                    addCategory(item, (Category) item.getInstance(), warnings);
             }
 
             PortfolioPlugin.log(warnings);
@@ -182,7 +182,7 @@ public class PerformanceChartView extends AbstractHistoricView
         return index;
     }
 
-    private void addClient(Client client, List<Exception> warnings)
+    private void addClient(DataSeries item, Client client, List<Exception> warnings)
     {
         ClientIndex clientIndex = getClientIndex(warnings);
         PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(clientIndex,
@@ -190,21 +190,21 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (client != null)
         {
-            chart.addDateSeries(aggregatedIndex.getDates(), //
+            ILineSeries series = chart.addDateSeries(aggregatedIndex.getDates(), //
                             aggregatedIndex.getAccumulatedPercentage(), //
-                            Colors.IRR, Messages.PerformanceChartLabelAccumulatedIRR);
+                            Messages.PerformanceChartLabelAccumulatedIRR);
+            item.configure(series);
         }
         else
         {
             IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
                             aggregatedIndex.getDeltaPercentage(), //
                             aggregationPeriod != null ? aggregationPeriod.toString() : Messages.LabelAggregationDaily);
-            barSeries.setBarPadding(50);
-            barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
+            item.configure(barSeries);
         }
     }
 
-    private void addConsumerPriceIndex(List<Exception> warnings)
+    private void addConsumerPriceIndex(DataSeries item, List<Exception> warnings)
     {
         CPIIndex cpiIndex = (CPIIndex) dataCache.get(CPIIndex.class);
 
@@ -218,14 +218,14 @@ public class PerformanceChartView extends AbstractHistoricView
         if (cpiIndex.getDates().length > 0
                         && (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY))
         {
-            chart.addDateSeries(cpiIndex.getDates(), //
+            ILineSeries series = chart.addDateSeries(cpiIndex.getDates(), //
                             cpiIndex.getAccumulatedPercentage(), //
-                            Colors.CPI, Messages.PerformanceChartLabelCPI) //
-                            .setLineStyle(LineStyle.DASHDOTDOT);
+                            Messages.PerformanceChartLabelCPI);
+            item.configure(series);
         }
     }
 
-    private void addSecurity(Security security, List<Exception> warnings)
+    private void addSecurity(DataSeries item, Security security, List<Exception> warnings)
     {
         PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
 
@@ -239,13 +239,13 @@ public class PerformanceChartView extends AbstractHistoricView
         if (aggregationPeriod != null)
             securityIndex = Aggregation.aggregate(securityIndex, aggregationPeriod);
 
-        int index = getClient().getSecurities().indexOf(security);
-        chart.addDateSeries(securityIndex.getDates(), //
+        ILineSeries series = chart.addDateSeries(securityIndex.getDates(), //
                         securityIndex.getAccumulatedPercentage(), //
-                        securityColorWheel.getSegment(index).getColor(), security.getName());
+                        security.getName());
+        item.configure(series);
     }
 
-    private void addPortfolio(Portfolio portfolio, List<Exception> warnings)
+    private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
     {
         PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(portfolio);
 
@@ -258,14 +258,13 @@ public class PerformanceChartView extends AbstractHistoricView
         if (aggregationPeriod != null)
             portfolioIndex = Aggregation.aggregate(portfolioIndex, aggregationPeriod);
 
-        chart.addDateSeries(
-                        portfolioIndex.getDates(), //
+        ILineSeries series = chart.addDateSeries(portfolioIndex.getDates(), //
                         portfolioIndex.getAccumulatedPercentage(), //
-                        colorWheel.getSegment(getClient().getPortfolios().indexOf(portfolio)).getColor(),
                         portfolio.getName());
+        item.configure(series);
     }
 
-    private void addAccount(Account account, List<Exception> warnings)
+    private void addAccount(DataSeries item, Account account, List<Exception> warnings)
     {
         PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
 
@@ -278,14 +277,13 @@ public class PerformanceChartView extends AbstractHistoricView
         if (aggregationPeriod != null)
             accountIndex = Aggregation.aggregate(accountIndex, aggregationPeriod);
 
-        chart.addDateSeries(
-                        accountIndex.getDates(), //
+        ILineSeries series = chart.addDateSeries(accountIndex.getDates(), //
                         accountIndex.getAccumulatedPercentage(), //
-                        colorWheel.getSegment(getClient().getAccounts().indexOf(account) + 10).getColor(),
                         account.getName());
+        item.configure(series);
     }
 
-    private void addCategory(Category category, List<Exception> warnings)
+    private void addCategory(DataSeries item, Category category, List<Exception> warnings)
     {
         PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
         if (categoryIndex == null)
@@ -297,9 +295,9 @@ public class PerformanceChartView extends AbstractHistoricView
         if (aggregationPeriod != null)
             categoryIndex = Aggregation.aggregate(categoryIndex, aggregationPeriod);
 
-        chart.addDateSeries(categoryIndex.getDates(), categoryIndex.getAccumulatedPercentage(),
-                        colorWheel.getSegment(getClient().getRootCategory().flatten().indexOf(category)).getColor(),
+        ILineSeries series = chart.addDateSeries(categoryIndex.getDates(), categoryIndex.getAccumulatedPercentage(),
                         category.getName());
+        item.configure(series);
     }
 
     private final class AggregationPeriodDropDown extends AbstractDropDown

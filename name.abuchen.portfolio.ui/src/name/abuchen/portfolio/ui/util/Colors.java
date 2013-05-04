@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.util;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 public enum Colors
 {
@@ -14,7 +16,7 @@ public enum Colors
 
     CPI(120, 120, 120), //
     IRR(0, 0, 0), //
-    
+
     HEADINGS(149, 165, 180), //
     OTHER_CATEGORY(180, 180, 180);
 
@@ -48,4 +50,24 @@ public enum Colors
     {
         return new RGB(red, green, blue);
     }
+
+    public static String toHex(RGB rgb)
+    {
+        return '#' + Integer.toHexString((rgb.red << 16) | (rgb.green << 8) | rgb.blue);
+    }
+
+    public static RGB toRGB(String hex)
+    {
+        try
+        {
+            Integer intval = Integer.decode(hex);
+            int i = intval.intValue();
+            return new RGB((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF);
+        }
+        catch (NumberFormatException ignore)
+        {
+            return Display.getDefault().getSystemColor(SWT.COLOR_BLACK).getRGB();
+        }
+    }
+
 }
