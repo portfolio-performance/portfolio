@@ -255,9 +255,12 @@ public class Messages extends NLS
     public static String MsgRestartRequired;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;
+    public static String NewFileWizardAddAll;
     public static String NewFileWizardButtonAdd;
     public static String NewFileWizardPortfolioDescription;
     public static String NewFileWizardPortfolioTitle;
+    public static String NewFileWizardSecurityDescription;
+    public static String NewFileWizardSecurityTitle;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceTabAssetsAtEnd;
