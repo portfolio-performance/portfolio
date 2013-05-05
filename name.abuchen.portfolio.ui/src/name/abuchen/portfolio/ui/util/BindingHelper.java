@@ -80,7 +80,7 @@ public class BindingHelper
         public abstract void applyChanges();
     }
 
-    private final static class StatusTextConverter implements IConverter
+    private static final class StatusTextConverter implements IConverter
     {
         @Override
         public Object getToType()
@@ -228,7 +228,7 @@ public class BindingHelper
                         new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(type)));
     }
 
-    private final Text createTextInput(Composite editArea, final String label)
+    private Text createTextInput(Composite editArea, final String label)
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);

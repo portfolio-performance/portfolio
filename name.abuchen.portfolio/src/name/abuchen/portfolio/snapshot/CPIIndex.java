@@ -15,7 +15,7 @@ public class CPIIndex
     public static CPIIndex forClient(ClientIndex clientIndex, List<Exception> warnings)
     {
         CPIIndex index = new CPIIndex();
-        index.calculate(clientIndex, warnings);
+        index.calculate(clientIndex);
         return index;
     }
 
@@ -32,7 +32,7 @@ public class CPIIndex
         return accumulated;
     }
 
-    private void calculate(ClientIndex clientIndex, List<Exception> warnings)
+    private void calculate(ClientIndex clientIndex)
     {
         Interval interval = new Interval(clientIndex.getFirstDataPoint(), clientIndex.getReportInterval().toInterval()
                         .getEnd());

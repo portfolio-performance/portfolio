@@ -44,9 +44,10 @@ import de.engehausen.treemap.swt.TreeMap;
         treeMap.addSelectionChangeListener(new ISelectionChangeListener<TreeMapItem>()
         {
             @Override
-            public void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle, String label)
+            public void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle,
+                            String label)
             {
-                TreeMapLegend.this.selectionChanged(model, rectangle, label);
+                TreeMapLegend.this.selectionChanged(model);
             }
         });
     }
@@ -87,7 +88,7 @@ import de.engehausen.treemap.swt.TreeMap;
         getParent().layout();
     }
 
-    private void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model, IRectangle<TreeMapItem> rectangle, String label)
+    private void selectionChanged(ITreeModel<IRectangle<TreeMapItem>> model)
     {
         // find out if root changed (drill-down)
         TreeMapItem newRoot = model.getRoot().getNode();

@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.Security;
 
 public interface QuoteFeed
 {
-    static final String MANUAL = "MANUAL"; //$NON-NLS-1$
+    String MANUAL = "MANUAL"; //$NON-NLS-1$
 
     String getId();
 

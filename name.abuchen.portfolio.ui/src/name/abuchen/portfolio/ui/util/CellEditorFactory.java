@@ -73,9 +73,8 @@ public final class CellEditorFactory
             }
         };
 
-        int feature = ColumnViewerEditor.TABBING_HORIZONTAL
-                    | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.TABBING_VERTICAL
-                    | ColumnViewerEditor.KEYBOARD_ACTIVATION;
+        int feature = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                        | ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION;
         if (viewer instanceof TableViewer)
             TableViewerEditor.create((TableViewer) viewer, null, support, feature);
         else if (viewer instanceof TreeViewer)
@@ -117,8 +116,7 @@ public final class CellEditorFactory
         {
             public Object getValue(Object element) throws Exception
             {
-                Integer v = (Integer) descriptor.getReadMethod().invoke(element);
-                return v;
+                return descriptor.getReadMethod().invoke(element);
             }
 
             public boolean modify(Object element, Object value) throws Exception
@@ -216,7 +214,7 @@ public final class CellEditorFactory
         }
     }
 
-    private final static class NumberVerifyListener implements VerifyListener
+    private static final class NumberVerifyListener implements VerifyListener
     {
         private String allowedChars = ",.0123456789"; //$NON-NLS-1$
 

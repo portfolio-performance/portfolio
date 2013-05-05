@@ -202,7 +202,7 @@ public class TimelineChart extends Chart
             Point textExtent = e.gc.textExtent(marker.label);
             boolean flip = x + 5 + textExtent.x > e.width;
             int textX = flip ? x - 5 - textExtent.x : x + 5;
-            labelStackY = labelExtentX > textX ? labelStackY += textExtent.y : 0;
+            labelStackY = labelExtentX > textX ? labelStackY + textExtent.y : 0;
             labelExtentX = x + 5 + textExtent.x;
 
             e.gc.setLineStyle(SWT.LINE_SOLID);

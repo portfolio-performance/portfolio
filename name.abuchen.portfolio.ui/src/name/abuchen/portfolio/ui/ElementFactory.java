@@ -13,8 +13,7 @@ public class ElementFactory implements IElementFactory
     public IAdaptable createElement(IMemento memento)
     {
         String fileOSString = memento.getString("file"); //$NON-NLS-1$
-        ClientEditorInput input = new ClientEditorInput(new Path(fileOSString));
-        return input;
+        return new ClientEditorInput(new Path(fileOSString));
     }
 
 }

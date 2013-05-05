@@ -31,7 +31,7 @@ import org.apache.commons.csv.CSVStrategy;
 /* not thread safe */
 public class CSVExporter
 {
-    private static final CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
+    private static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
                     CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
@@ -44,7 +44,7 @@ public class CSVExporter
         try
         {
             CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(strategy);
+            printer.setStrategy(STRATEGY);
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
@@ -89,7 +89,7 @@ public class CSVExporter
         try
         {
             CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(strategy);
+            printer.setStrategy(STRATEGY);
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
@@ -139,7 +139,7 @@ public class CSVExporter
         try
         {
             CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(strategy);
+            printer.setStrategy(STRATEGY);
 
             printer.println(new String[] { Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_Description, //
@@ -168,7 +168,7 @@ public class CSVExporter
         try
         {
             CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(strategy);
+            printer.setStrategy(STRATEGY);
 
             printer.println(new String[] { Messages.CSVColumn_Date, Messages.CSVColumn_Quote });
 
@@ -217,7 +217,7 @@ public class CSVExporter
         try
         {
             CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(strategy);
+            printer.setStrategy(STRATEGY);
 
             // write header
             printer.print(Messages.CSVColumn_Date);

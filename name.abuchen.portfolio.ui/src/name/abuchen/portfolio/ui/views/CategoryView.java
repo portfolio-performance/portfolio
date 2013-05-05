@@ -29,8 +29,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -146,9 +144,7 @@ public class CategoryView extends AbstractFinanceView
         assets.getTree().setHeaderVisible(true);
         assets.getTree().setLinesVisible(true);
 
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTree());
-
-        assets.setLabelProvider(new CategoryLabelProvider(resources));
+        assets.setLabelProvider(new CategoryLabelProvider());
         assets.setContentProvider(new CategoryContentProvider());
 
         new CellEditorFactory(assets, CategoryModel.class) //
@@ -366,9 +362,6 @@ public class CategoryView extends AbstractFinanceView
 
     private class CategoryLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider
     {
-        public CategoryLabelProvider(LocalResourceManager resources)
-        {}
-
         public Image getColumnImage(Object element, int columnIndex)
         {
             if (columnIndex != 0)

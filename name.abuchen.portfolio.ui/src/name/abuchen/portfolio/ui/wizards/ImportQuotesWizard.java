@@ -25,7 +25,7 @@ public class ImportQuotesWizard extends Wizard
     {
         importPage = new ImportSourcePage(security);
         addPage(importPage);
-        reviewPage = new ReviewImportedQuotesPage(importPage, security);
+        reviewPage = new ReviewImportedQuotesPage(importPage);
         addPage(reviewPage);
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());

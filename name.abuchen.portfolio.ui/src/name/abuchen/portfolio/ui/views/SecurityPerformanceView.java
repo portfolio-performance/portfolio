@@ -136,7 +136,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
     private void fillContextMenu(IMenuManager manager)
     {
         Object selection = ((IStructuredSelection) tree.getSelection()).getFirstElement();
-        if (selection == null || !(selection instanceof Record))
+        if (!(selection instanceof Record))
             return;
 
         Security security = ((Record) selection).getSecurity();

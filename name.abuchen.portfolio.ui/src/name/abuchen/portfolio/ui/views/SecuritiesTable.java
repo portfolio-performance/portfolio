@@ -176,7 +176,7 @@ public class SecuritiesTable
             public String getText(Object e)
             {
                 SecurityPrice price = ((Security) e).getSecurityPrice(Dates.today());
-                if (price == null || !(price instanceof LatestSecurityPrice))
+                if (!(price instanceof LatestSecurityPrice))
                     return null;
 
                 LatestSecurityPrice latest = (LatestSecurityPrice) price;
@@ -189,7 +189,7 @@ public class SecuritiesTable
             public Color getForeground(Object element)
             {
                 SecurityPrice price = ((Security) element).getSecurityPrice(Dates.today());
-                if (price == null || !(price instanceof LatestSecurityPrice))
+                if (!(price instanceof LatestSecurityPrice))
                     return null;
 
                 LatestSecurityPrice latest = (LatestSecurityPrice) price;
@@ -205,9 +205,9 @@ public class SecuritiesTable
                 SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
                 SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
 
-                if (p1 == null || !(p1 instanceof LatestSecurityPrice))
+                if (!(p1 instanceof LatestSecurityPrice))
                     return p2 == null ? 0 : -1;
-                if (p2 == null || !(p2 instanceof LatestSecurityPrice))
+                if (!(p2 instanceof LatestSecurityPrice))
                     return 1;
 
                 LatestSecurityPrice l1 = (LatestSecurityPrice) p1;

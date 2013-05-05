@@ -5,7 +5,6 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.ImportFinanzenNetQuotes;
 import name.abuchen.portfolio.online.ImportOnvistaQuotes;
 import name.abuchen.portfolio.ui.Messages;
@@ -21,7 +20,7 @@ public class ReviewImportedQuotesPage extends AbstractWizardPage
 
     private List<LatestSecurityPrice> quotes;
 
-    protected ReviewImportedQuotesPage(ImportSourcePage page, Security security)
+    protected ReviewImportedQuotesPage(ImportSourcePage page)
     {
         super("review"); //$NON-NLS-1$
         setTitle(Messages.ImportWizardReviewTitle);

@@ -36,12 +36,12 @@ public class EditSecurityWizard extends Wizard
         dataPage = new SecurityMasterDataPage(client, editable);
         addPage(dataPage);
 
-        quotesPage = new QuoteProviderPage(client, editable);
+        quotesPage = new QuoteProviderPage(editable);
         addPage(quotesPage);
 
         searchPage = new SearchSecurityWizardPage(client, editable);
         addPage(searchPage);
-        
+
         addPage(new IndustryClassificationPage(client, editable));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());

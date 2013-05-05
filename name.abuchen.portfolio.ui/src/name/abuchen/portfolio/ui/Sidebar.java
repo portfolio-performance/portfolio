@@ -235,7 +235,7 @@ public final class Sidebar extends Composite
         {
             public void widgetDisposed(DisposeEvent e)
             {
-                Sidebar.this.widgetDisposed(e);
+                Sidebar.this.widgetDisposed();
             }
         });
 
@@ -270,7 +270,7 @@ public final class Sidebar extends Composite
         });
     }
 
-    private void widgetDisposed(DisposeEvent e)
+    private void widgetDisposed()
     {
         backgroundColor.dispose();
         selectedColor.dispose();
@@ -399,7 +399,7 @@ public final class Sidebar extends Composite
             {
                 public void widgetDisposed(DisposeEvent e)
                 {
-                    Item.this.widgetDisposed(e);
+                    Item.this.widgetDisposed();
                 }
             });
 
@@ -469,7 +469,7 @@ public final class Sidebar extends Composite
             setMenu(contextMenu);
         }
 
-        private void widgetDisposed(DisposeEvent e)
+        private void widgetDisposed()
         {
             if (image != null)
                 image.dispose();

@@ -5,7 +5,7 @@ package name.abuchen.portfolio.math;
  */
 /* package */class NewtonGoalSeek
 {
-    public static interface Function
+    public interface Function
     {
         double compute(double x);
     }

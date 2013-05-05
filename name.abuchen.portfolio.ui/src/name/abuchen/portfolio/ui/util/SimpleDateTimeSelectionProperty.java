@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.DateTime;
 
 /* package */class SimpleDateTimeSelectionProperty extends WidgetValueProperty
 {
-    private static final ThreadLocal<Calendar> calendar = new ThreadLocal<Calendar>()
+    private static final ThreadLocal<Calendar> CALENDAR = new ThreadLocal<Calendar>()
     {
         @Override
         protected Calendar initialValue()
@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.DateTime;
     protected Object doGetValue(Object source)
     {
         DateTime dateTime = (DateTime) source;
-        Calendar cal = calendar.get();
+        Calendar cal = CALENDAR.get();
 
         cal.clear();
         cal.set(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay());
@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.DateTime;
     protected void doSetValue(Object source, Object value)
     {
         DateTime dateTime = (DateTime) source;
-        Calendar cal = calendar.get();
+        Calendar cal = CALENDAR.get();
 
         cal.setTime((Date) value);
         dateTime.setYear(cal.get(Calendar.YEAR));

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
@@ -67,7 +66,7 @@ public class QuoteProviderPage extends AbstractWizardPage
      */
     private LoadHistoricalQuotes currentJob;
 
-    protected QuoteProviderPage(Client client, Security security)
+    protected QuoteProviderPage(Security security)
     {
         super("feedprovider"); //$NON-NLS-1$
         setTitle(Messages.EditWizardQuoteFeedTitle);

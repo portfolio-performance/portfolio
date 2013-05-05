@@ -9,7 +9,7 @@ import name.abuchen.portfolio.model.Client;
 
 public class Checker
 {
-    private static List<Check> CHECKS;
+    private static final List<Check> CHECKS;
 
     static
     {

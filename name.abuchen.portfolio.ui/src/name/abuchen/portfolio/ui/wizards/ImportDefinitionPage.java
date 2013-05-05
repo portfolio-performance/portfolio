@@ -741,7 +741,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     private static class KeyMappingContentProvider implements IStructuredContentProvider
     {
         /* Map.Entry#setValue is not backed by EnumMap :-( */
-        public final static class Entry<M extends Enum<M>> implements Comparable<Entry<M>>
+        public static final class Entry<M extends Enum<M>> implements Comparable<Entry<M>>
         {
             private EnumMap<M, String> map;
             private M key;

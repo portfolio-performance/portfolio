@@ -86,6 +86,9 @@ public class UpdateQuotesJob extends Job
 
         for (Map.Entry<String, List<Security>> entry : byFeeds.entrySet())
         {
+            if (monitor.isCanceled())
+                return;
+
             try
             {
                 QuoteFeed feed = Factory.getQuoteFeedProvider(entry.getKey());
@@ -93,7 +96,7 @@ public class UpdateQuotesJob extends Job
                 {
                     ArrayList<Exception> exceptions = new ArrayList<Exception>();
                     feed.updateLatestQuotes(entry.getValue(), exceptions);
-                    
+
                     for (Exception e : exceptions)
                         errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
                 }

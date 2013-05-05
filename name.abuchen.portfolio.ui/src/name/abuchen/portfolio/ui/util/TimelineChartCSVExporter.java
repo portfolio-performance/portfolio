@@ -103,7 +103,7 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
 
     private interface SeriesAdapter
     {
-        public String format(Date date, int line);
+        String format(Date date, int line);
     }
 
     private class DefaultAdapter implements SeriesAdapter

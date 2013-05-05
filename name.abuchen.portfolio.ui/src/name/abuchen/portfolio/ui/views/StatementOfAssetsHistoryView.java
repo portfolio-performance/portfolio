@@ -139,17 +139,17 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             for (DataSeries item : picker.getSelectedDataSeries())
             {
                 if (item.getType() == Client.class)
-                    addClient(item, (Client) item.getInstance(), warnings);
+                    addClient(item, warnings);
                 else if (item.getType() == AssetClass.class)
-                    addAssetClass(item, (AssetClass) item.getInstance(), warnings);
+                    addAssetClass(item, warnings);
                 else if (item.getType() == Security.class)
-                    addSecurity(item, (Security) item.getInstance(), warnings);
+                    addSecurity(item, warnings);
                 else if (item.getType() == Portfolio.class)
-                    addPortfolio(item, (Portfolio) item.getInstance(), warnings);
+                    addPortfolio(item, warnings);
                 else if (item.getType() == Account.class)
-                    addAccount(item, (Account) item.getInstance(), warnings);
+                    addAccount(item, warnings);
                 else if (item.getType() == Category.class)
-                    addCategory(item, (Category) item.getInstance(), warnings);
+                    addCategory(item, warnings);
             }
 
             PortfolioPlugin.log(warnings);
@@ -163,7 +163,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart.redraw();
     }
 
-    private void addClient(DataSeries item, Client instance, List<Exception> warnings)
+    private void addClient(DataSeries item, List<Exception> warnings)
     {
         ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
         if (clientIndex == null)
@@ -188,12 +188,12 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         }
     }
 
-    private void addAssetClass(DataSeries item, AssetClass instance, List<Exception> warnings)
+    private void addAssetClass(DataSeries item, List<Exception> warnings)
     {
         ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
         if (clientIndex == null)
         {
-            clientIndex = ClientIndex.forPeriod(getClient(), getReportingPeriod(), new ArrayList<Exception>());
+            clientIndex = ClientIndex.forPeriod(getClient(), getReportingPeriod(), warnings);
             dataCache.put(ClientIndex.class, clientIndex);
         }
 
@@ -205,14 +205,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         item.configure(series);
     }
 
-    private void addSecurity(DataSeries item, Security instance, List<Exception> warnings)
+    private void addSecurity(DataSeries item, List<Exception> warnings)
     {
         Security security = (Security) item.getInstance();
         SecurityInvestmentIndex securityIndex = (SecurityInvestmentIndex) dataCache.get(security);
         if (securityIndex == null)
         {
-            securityIndex = SecurityInvestmentIndex.forPeriod(getClient(), security, getReportingPeriod(),
-                            new ArrayList<Exception>());
+            securityIndex = SecurityInvestmentIndex.forPeriod(getClient(), security, getReportingPeriod(), warnings);
             dataCache.put(security, securityIndex);
         }
 
@@ -222,14 +221,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         item.configure(series);
     }
 
-    private void addPortfolio(DataSeries item, Portfolio instance, List<Exception> warnings)
+    private void addPortfolio(DataSeries item, List<Exception> warnings)
     {
         Portfolio portfolio = (Portfolio) item.getInstance();
         PortfolioIndex portfolioIndex = (PortfolioIndex) dataCache.get(portfolio);
         if (portfolioIndex == null)
         {
-            portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, getReportingPeriod(),
-                            new ArrayList<Exception>());
+            portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, getReportingPeriod(), warnings);
             dataCache.put(portfolio, portfolioIndex);
         }
 
@@ -239,14 +237,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         item.configure(series);
     }
 
-    private void addAccount(DataSeries item, Account instance, List<Exception> warnings)
+    private void addAccount(DataSeries item, List<Exception> warnings)
     {
         Account account = (Account) item.getInstance();
         AccountIndex accountIndex = (AccountIndex) dataCache.get(account);
         if (accountIndex == null)
         {
-            accountIndex = AccountIndex.forPeriod(getClient(), account, getReportingPeriod(),
-                            new ArrayList<Exception>());
+            accountIndex = AccountIndex.forPeriod(getClient(), account, getReportingPeriod(), warnings);
             dataCache.put(account, accountIndex);
         }
 
@@ -256,14 +253,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         item.configure(series);
     }
 
-    private void addCategory(DataSeries item, Category instance, List<Exception> warnings)
+    private void addCategory(DataSeries item, List<Exception> warnings)
     {
         Category category = (Category) item.getInstance();
         CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
         if (categoryIndex == null)
         {
-            categoryIndex = CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(),
-                            new ArrayList<Exception>());
+            categoryIndex = CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(), warnings);
             dataCache.put(category, categoryIndex);
         }
 

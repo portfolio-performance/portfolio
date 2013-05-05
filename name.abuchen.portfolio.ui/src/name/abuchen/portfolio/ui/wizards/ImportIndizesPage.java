@@ -217,9 +217,9 @@ public class ImportIndizesPage extends AbstractWizardPage
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                ProposedSecurities proposals = (ProposedSecurities) ((IStructuredSelection) comboViewer.getSelection())
+                ProposedSecurities proposal = (ProposedSecurities) ((IStructuredSelection) comboViewer.getSelection())
                                 .getFirstElement();
-                for (Security security : proposals.securities)
+                for (Security security : proposal.securities)
                 {
                     if (!client.getSecurities().contains(security))
                         client.addSecurity(security);

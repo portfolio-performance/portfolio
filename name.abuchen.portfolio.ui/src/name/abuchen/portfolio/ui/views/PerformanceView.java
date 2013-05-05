@@ -153,7 +153,7 @@ public class PerformanceView extends AbstractHistoricView
     private void fillContextMenu(IMenuManager manager)
     {
         Object selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
-        if (selection == null || !(selection instanceof ClientPerformanceSnapshot.Position))
+        if (!(selection instanceof ClientPerformanceSnapshot.Position))
             return;
 
         Security security = ((ClientPerformanceSnapshot.Position) selection).getSecurity();
