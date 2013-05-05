@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
+import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -143,7 +145,7 @@ public class SecuritiesTable
             @Override
             public String getText(Object e)
             {
-                LatestSecurityPrice latest = ((Security) e).getLatest();
+                SecurityPrice latest = ((Security) e).getSecurityPrice(Dates.today());
                 return latest != null ? Values.Quote.format(latest.getValue()) : null;
             }
         });
@@ -152,8 +154,8 @@ public class SecuritiesTable
             @Override
             public int compare(Object o1, Object o2)
             {
-                LatestSecurityPrice p1 = ((Security) o1).getLatest();
-                LatestSecurityPrice p2 = ((Security) o2).getLatest();
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
 
                 if (p1 == null)
                     return p2 == null ? 0 : -1;
@@ -173,20 +175,24 @@ public class SecuritiesTable
             @Override
             public String getText(Object e)
             {
-                LatestSecurityPrice latest = ((Security) e).getLatest();
-                return latest != null ? String.format("%,.2f %%", //$NON-NLS-1$
-                                ((double) (latest.getValue() - latest.getPreviousClose()) //
-                                / (double) latest.getPreviousClose()) * 100) : null;
+                SecurityPrice price = ((Security) e).getSecurityPrice(Dates.today());
+                if (price == null || !(price instanceof LatestSecurityPrice))
+                    return null;
+
+                LatestSecurityPrice latest = (LatestSecurityPrice) price;
+                return String.format("%,.2f %%", //$NON-NLS-1$
+                                ((double) (latest.getValue() - latest.getPreviousClose()) / (double) latest
+                                                .getPreviousClose()) * 100);
             }
 
             @Override
             public Color getForeground(Object element)
             {
-                Security p = (Security) element;
-                LatestSecurityPrice latest = p.getLatest();
-                if (latest == null)
+                SecurityPrice price = ((Security) element).getSecurityPrice(Dates.today());
+                if (price == null || !(price instanceof LatestSecurityPrice))
                     return null;
 
+                LatestSecurityPrice latest = (LatestSecurityPrice) price;
                 return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
                                 SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
             }
@@ -196,16 +202,19 @@ public class SecuritiesTable
             @Override
             public int compare(Object o1, Object o2)
             {
-                LatestSecurityPrice p1 = ((Security) o1).getLatest();
-                LatestSecurityPrice p2 = ((Security) o2).getLatest();
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
 
-                if (p1 == null)
+                if (p1 == null || !(p1 instanceof LatestSecurityPrice))
                     return p2 == null ? 0 : -1;
-                if (p2 == null)
+                if (p2 == null || !(p2 instanceof LatestSecurityPrice))
                     return 1;
 
-                double v1 = (((double) (p1.getValue() - p1.getPreviousClose())) / p1.getPreviousClose() * 100);
-                double v2 = (((double) (p2.getValue() - p2.getPreviousClose())) / p2.getPreviousClose() * 100);
+                LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
+                LatestSecurityPrice l2 = (LatestSecurityPrice) p2;
+
+                double v1 = (((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100);
+                double v2 = (((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100);
                 return Double.compare(v1, v2);
             }
         }));
@@ -237,6 +246,34 @@ public class SecuritiesTable
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
         column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnLatestDate, SWT.LEFT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                SecurityPrice latest = ((Security) e).getSecurityPrice(Dates.today());
+                return latest != null ? Values.Date.format(latest.getTime()) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+
+                if (p1 == null)
+                    return p2 == null ? 0 : -1;
+                if (p2 == null)
+                    return 1;
+
+                return p1.getTime().compareTo(p2.getTime());
+            }
+        }));
         support.addColumn(column);
 
         support.createColumns();

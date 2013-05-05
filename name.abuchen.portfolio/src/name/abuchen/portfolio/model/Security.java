@@ -220,9 +220,6 @@ public final class Security
             }
         }
 
-        if (prices.isEmpty())
-            return null;
-
         SecurityPrice p = new SecurityPrice(time, 0);
         int index = Collections.binarySearch(prices, p);
 
