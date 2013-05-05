@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import name.abuchen.portfolio.model.Client;
@@ -40,6 +41,8 @@ public class NewPlanDialog extends Dialog
     Label nameLabel, amountLabel, portfolioLabel;
     Text nameText, amountText;
     Combo portfolioDropDown, securityCombo;
+    DateTime dateBox;
+    Spinner spinner;
     Model model;
     
     public NewPlanDialog(Shell shell, Client client)
@@ -55,7 +58,9 @@ public class NewPlanDialog extends Dialog
         String name = nameText.getText();
         String amountString = amountText.getText();
         String portfolioString = portfolioDropDown.getText();
-        if (name.equals("") || amountString.equals("") || portfolioString.equals("")) {
+        String securityString = securityCombo.getText();
+        if (name.equals("") || amountString.equals("") || portfolioString.equals("")
+                        || securityString.equals("")) {
             MessageDialog.openError(super.getShell(), "Insufficient Input", "Please fill out all Fields");
             return;
         }
@@ -66,6 +71,13 @@ public class NewPlanDialog extends Dialog
             return;
         }
         model.portfolio = (Portfolio) portfolioDropDown.getData(portfolioString);
+        model.security = (Security) securityCombo.getData(securityString);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, dateBox.getYear());
+        cal.set(Calendar.MONTH, dateBox.getMonth());
+        cal.set(Calendar.DAY_OF_MONTH, dateBox.getDay());
+        model.start = cal.getTime();
+        model.period = spinner.getSelection();
         model.name = name;
         super.okPressed();
     }
@@ -103,10 +115,10 @@ public class NewPlanDialog extends Dialog
         }
         Label dateLabel = new Label(editArea, SWT.NONE);
         dateLabel.setText("Plan Start");
-        DateTime dateBox = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+        dateBox = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
         Label periodLabel = new Label(editArea, SWT.NONE);
         periodLabel.setText("Plan period");
-        Spinner spinner = new Spinner (editArea, SWT.BORDER);
+        spinner = new Spinner (editArea, SWT.BORDER);
         spinner.setMinimum(1);
         spinner.setMaximum(30);
         spinner.setSelection(5);

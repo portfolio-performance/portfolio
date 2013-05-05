@@ -13,9 +13,13 @@ public class InvestmentPlan
     private Date start;
     private int period;
     
+    public InvestmentPlan() {
+        
+    }
+    
     public InvestmentPlan(String name)
     {
-        super();
+        this();
         this.setName(name);
     }
     public Security getSecurity()
@@ -33,6 +37,38 @@ public class InvestmentPlan
     public void setName(String name)
     {
         this.name = name;
+    }
+    public float getAmount()
+    {
+        return amount;
+    }
+    public void setAmount(float amount)
+    {
+        this.amount = amount;
+    }
+    public Portfolio getPortfolio()
+    {
+        return portfolio;
+    }
+    public void setPortfolio(Portfolio portfolio)
+    {
+        this.portfolio = portfolio;
+    }
+    public Date getStart()
+    {
+        return start;
+    }
+    public void setStart(Date start)
+    {
+        this.start = start;
+    }
+    public int getPeriod()
+    {
+        return period;
+    }
+    public void setPeriod(int period)
+    {
+        this.period = period;
     }
 
 }

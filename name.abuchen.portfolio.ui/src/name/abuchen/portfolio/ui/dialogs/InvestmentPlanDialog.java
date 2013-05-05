@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.text.SimpleDateFormat;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.ui.dialogs.NewPlanDialog.Model;
@@ -17,13 +19,24 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-public class InvestmentPlanDialog extends Dialog
+public class InvestmentPlanDialog extends Dialog implements SelectionListener
 {
-
+    
+    private static final int OFFSET = 10;
+    
     private Client client;
+    Group group;
+    InvestmentPlan plan;
+    Text nameText, amountText;
+    Label portfolioLabel, securityLabel, startLabel;
+    Spinner spinner;
 
     public InvestmentPlanDialog(Shell owner, Client client)
     {
@@ -36,6 +49,29 @@ public class InvestmentPlanDialog extends Dialog
         if (id == IDialogConstants.CANCEL_ID)
             return null;
         return super.createButton(parent, id, label, defaultButton);
+    }
+    
+    
+    @Override
+    public void widgetSelected(SelectionEvent e)
+    {
+        Combo combo = (Combo) e.getSource();
+        plan = (InvestmentPlan) combo.getData(combo.getText());
+        group.setText(plan.getName());
+        nameText.setText(plan.getName());
+        amountText.setText(new Float(plan.getAmount()).toString());
+        portfolioLabel.setText("Portfolio: " + plan.getPortfolio().getName());
+        portfolioLabel.pack();
+        securityLabel.setText("Security: " + plan.getSecurity().getName());
+        securityLabel.pack();
+        startLabel.setText("Start: " + new SimpleDateFormat("dd.MM.yyyy").format(plan.getStart()));
+        startLabel.pack();
+        spinner.setSelection(plan.getPeriod());
+    }
+
+    @Override
+    public void widgetDefaultSelected(SelectionEvent e)
+    {
     }
 
     @Override
@@ -54,6 +90,7 @@ public class InvestmentPlanDialog extends Dialog
             comboDropDown.add(plan.getName());
             comboDropDown.setData(plan.getName(), plan);
         }
+        comboDropDown.addSelectionListener(this);
         FormData buttonData = new FormData();
         buttonData.left = new FormAttachment(comboDropDown);
         buttonData.top = new FormAttachment(0,0);
@@ -68,7 +105,15 @@ public class InvestmentPlanDialog extends Dialog
                 NewPlanDialog newDialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), client);
                 if (newDialog.open() == Dialog.OK) {
                     Model model = newDialog.model;
-                    
+                    InvestmentPlan plan = new InvestmentPlan(model.name);
+                    plan.setAmount(model.amount);
+                    plan.setPortfolio(model.portfolio);
+                    plan.setSecurity(model.security);
+                    plan.setStart(model.start);
+                    plan.setPeriod(model.period);
+                    client.addPlan(plan);
+                    comboDropDown.add(plan.getName());
+                    comboDropDown.setData(plan.getName(), plan);
                 }
             }
 
@@ -77,7 +122,72 @@ public class InvestmentPlanDialog extends Dialog
             {
             }
         });
-        
+        group = new Group(editArea, SWT.SHADOW_ETCHED_IN);
+        group.setText("Investment Plan");
+        group.setLayout(new FormLayout());
+        FormData groupData = new FormData();
+        groupData.left = new FormAttachment(0,0);
+        groupData.top = new FormAttachment(button, OFFSET);
+        groupData.right = new FormAttachment(100,0);
+        group.setLayoutData(groupData);
+        Label periodLabel = new Label(group, SWT.NONE);
+        periodLabel.setText("Plan period");
+        portfolioLabel = new Label(group, SWT.NONE);
+        portfolioLabel.setText("Portfolio: ");
+        FormData portLabelData = new FormData();
+        portLabelData.left = new FormAttachment(OFFSET/2,0);
+        portLabelData.top = new FormAttachment(OFFSET/2,0);
+        portfolioLabel.setLayoutData(portLabelData);
+        securityLabel = new Label(group, SWT.NONE);
+        securityLabel.setText("Security: ");
+        FormData secLabelData = new FormData();
+        secLabelData.left = new FormAttachment(OFFSET/2,0);
+        secLabelData.top = new FormAttachment(portfolioLabel,OFFSET);
+        securityLabel.setLayoutData(secLabelData);
+        startLabel = new Label(group, SWT.NONE);
+        startLabel.setText("Start: ");
+        FormData startLblData = new FormData();
+        startLblData.left = new FormAttachment(OFFSET/2,0);
+        startLblData.top = new FormAttachment(securityLabel, OFFSET);
+        startLabel.setLayoutData(startLblData);
+        Label nameLbl = new Label(group, SWT.NULL);
+        nameLbl.setText("Name");
+        FormData nameLblData = new FormData();
+        nameLblData.left = new FormAttachment(OFFSET/2,0);
+        nameLblData.top = new FormAttachment(startLabel,OFFSET);
+        nameLbl.setLayoutData(nameLblData);
+        nameText = new Text(group, SWT.BORDER | SWT.SINGLE);
+        FormData nameTextData = new FormData();
+        nameTextData.left = new FormAttachment(periodLabel,OFFSET);
+        nameTextData.top = new FormAttachment(nameLbl,0, SWT.CENTER);
+        nameTextData.right = new FormAttachment(100,OFFSET/2);
+        nameText.setLayoutData(nameTextData);
+        Label amountLbl = new Label(group, SWT.NULL);
+        amountLbl.setText("Amount");
+        FormData amountLblData = new FormData();
+        amountLblData.left = new FormAttachment(OFFSET/2,0);
+        amountLblData.top = new FormAttachment(nameText,OFFSET);
+        amountLbl.setLayoutData(amountLblData);
+        amountText = new Text(group, SWT.BORDER | SWT.SINGLE);
+        FormData amountTextData = new FormData();
+        amountTextData.left = new FormAttachment(periodLabel,OFFSET);
+        amountTextData.top = new FormAttachment(amountLbl,0, SWT.CENTER);
+        amountTextData.right = new FormAttachment(100,OFFSET/2);
+        amountText.setLayoutData(amountTextData);
+        spinner = new Spinner (group, SWT.BORDER);
+        spinner.setMinimum(1);
+        spinner.setMaximum(30);
+        spinner.setSelection(5);
+        spinner.setIncrement(1);
+        spinner.setPageIncrement(10);
+        FormData periodLabelData = new FormData();
+        periodLabelData.left = new FormAttachment(OFFSET/2,0);
+        periodLabelData.top = new FormAttachment(amountText,OFFSET);
+        periodLabel.setLayoutData(periodLabelData);
+        FormData spinnerData = new FormData();
+        spinnerData.left = new FormAttachment(periodLabel,OFFSET);
+        spinnerData.top = new FormAttachment(periodLabel, 0, SWT.CENTER);
+        spinner.setLayoutData(spinnerData);
         return composite;
     }
 
