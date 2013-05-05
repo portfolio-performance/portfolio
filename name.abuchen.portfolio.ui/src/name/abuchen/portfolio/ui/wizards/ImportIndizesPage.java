@@ -1,10 +1,8 @@
 package name.abuchen.portfolio.ui.wizards;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.model.Client;
@@ -19,9 +17,12 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -36,8 +37,25 @@ import org.eclipse.swt.widgets.Table;
 
 public class ImportIndizesPage extends AbstractWizardPage
 {
+    private static final class ProposedSecurities
+    {
+        private String label;
+        private List<Security> securities = new ArrayList<Security>();
+
+        public ProposedSecurities(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
     private Client client;
-    private Map<String, List<Security>> secs = new HashMap<String, List<Security>>();
+    private List<ProposedSecurities> proposals = new ArrayList<ProposedSecurities>();
 
     private Combo comboDropDown;
 
@@ -49,21 +67,52 @@ public class ImportIndizesPage extends AbstractWizardPage
         setDescription(Messages.NewFileWizardSecurityDescription);
 
         ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.ui.wizards.index"); //$NON-NLS-1$
-        String indices = bundle.getString("indices"); //$NON-NLS-1$
+        String indices = bundle.getString("proposals"); //$NON-NLS-1$
         String[] indAr = indices.split(","); //$NON-NLS-1$
         for (String index : indAr)
         {
-            List<Security> indexSec = new ArrayList<Security>();
-            String indexWerte = bundle.getString(index);
-            String[] values = indexWerte.split(","); //$NON-NLS-1$
+            String label = bundle.getString(index + ".name"); //$NON-NLS-1$
+            ProposedSecurities proposal = new ProposedSecurities(label);
+            proposals.add(proposal);
+
+            String[] values = bundle.getString(index).split(","); //$NON-NLS-1$
             for (String ticker : values)
             {
                 String key = index + '.' + ticker;
-                String name = bundle.getString(key + ".name"); //$NON-NLS-1$
-                String isin = bundle.getString(key + ".isin"); //$NON-NLS-1$
-                indexSec.add(new Security(name, isin, ticker, AssetClass.EQUITY, "YAHOO")); //$NON-NLS-1$
+
+                Security security = new Security();
+                security.setTickerSymbol(ticker);
+                security.setName(bundle.getString(key + ".name")); //$NON-NLS-1$
+                security.setIsin(safeGetString(bundle, key + ".isin")); //$NON-NLS-1$
+                security.setFeed("YAHOO"); //$NON-NLS-1$
+                security.setRetired(safeGetBoolean(bundle, key + ".isRetired")); //$NON-NLS-1$
+                security.setType(AssetClass.EQUITY);
+                proposal.securities.add(security);
             }
-            secs.put(index, indexSec);
+        }
+    }
+
+    private String safeGetString(ResourceBundle bundle, String key)
+    {
+        try
+        {
+            return bundle.getString(key);
+        }
+        catch (MissingResourceException ignore)
+        {
+            return null;
+        }
+    }
+
+    private boolean safeGetBoolean(ResourceBundle bundle, String key)
+    {
+        try
+        {
+            return Boolean.parseBoolean(bundle.getString(key));
+        }
+        catch (MissingResourceException ignore)
+        {
+            return false;
         }
     }
 
@@ -82,11 +131,9 @@ public class ImportIndizesPage extends AbstractWizardPage
 
         comboDropDown = new Combo(container, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(comboDropDown);
-        for (Entry<String, List<Security>> entry : secs.entrySet())
-        {
-            comboDropDown.add(entry.getKey());
-            comboDropDown.setData(entry.getKey(), entry.getValue());
-        }
+        final ComboViewer comboViewer = new ComboViewer(comboDropDown);
+        comboViewer.setContentProvider(ArrayContentProvider.getInstance());
+        comboViewer.setInput(proposals);
 
         Composite tableContainer = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(tableContainer);
@@ -95,14 +142,15 @@ public class ImportIndizesPage extends AbstractWizardPage
 
         final TableViewer tViewer = new TableViewer(tableContainer);
 
-        comboDropDown.addSelectionListener(new SelectionAdapter()
+        comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
         {
             @Override
-            public void widgetSelected(SelectionEvent e)
+            public void selectionChanged(SelectionChangedEvent event)
             {
-                Combo c = (Combo) e.widget;
-                String text = c.getText();
-                tViewer.setInput(c.getData(text));
+                ProposedSecurities element = (ProposedSecurities) ((IStructuredSelection) event.getSelectionProvider()
+                                .getSelection()).getFirstElement();
+                if (element != null)
+                    tViewer.setInput(element.securities);
             }
         });
 
@@ -169,10 +217,9 @@ public class ImportIndizesPage extends AbstractWizardPage
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                String text = comboDropDown.getText();
-                @SuppressWarnings("unchecked")
-                List<Security> secList = (List<Security>) comboDropDown.getData(text);
-                for (Security security : secList)
+                ProposedSecurities proposals = (ProposedSecurities) ((IStructuredSelection) comboViewer.getSelection())
+                                .getFirstElement();
+                for (Security security : proposals.securities)
                 {
                     if (!client.getSecurities().contains(security))
                         client.addSecurity(security);
@@ -187,5 +234,4 @@ public class ImportIndizesPage extends AbstractWizardPage
         container.pack();
         setPageComplete(true);
     }
-
 }
