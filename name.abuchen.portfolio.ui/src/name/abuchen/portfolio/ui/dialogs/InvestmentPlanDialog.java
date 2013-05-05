@@ -67,10 +67,8 @@ public class InvestmentPlanDialog extends Dialog
             {
                 NewPlanDialog newDialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), client);
                 if (newDialog.open() == Dialog.OK) {
-                    Model model = newDialog.getModel();
-                    System.out.println(model.name);
-                    System.out.println(model.portfolio);
-                    System.out.println(model.amount);
+                    Model model = newDialog.model;
+                    
                 }
             }
 
