@@ -253,6 +253,9 @@ public class Messages extends NLS
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
     public static String MsgRestartRequired;
+    public static String NewFileWizardButtonAdd;
+    public static String NewFileWizardPortfolioDescription;
+    public static String NewFileWizardPortfolioTitle;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceTabAssetsAtEnd;
