@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -19,6 +20,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -129,6 +131,12 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
             {
                 return ((Pair) element).portfolio;
             }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+            }
         });
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
         layout.setColumnData(aCol.getColumn(), new ColumnWeightData(50));
@@ -139,6 +147,12 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
             public String getText(Object element)
             {
                 return ((Pair) element).account;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
         container.pack();

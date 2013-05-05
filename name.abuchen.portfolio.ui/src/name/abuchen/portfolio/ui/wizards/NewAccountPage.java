@@ -1,21 +1,22 @@
 package name.abuchen.portfolio.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -25,14 +26,20 @@ import org.eclipse.swt.widgets.Text;
 public class NewAccountPage extends AbstractWizardPage
 {
     private Client client;
-    private Text accountName;
-    private Account currentAccount;
+    private TableViewer tViewer;
 
     public NewAccountPage(Client client)
     {
-        super("New ...");
+        super(NewAccountPage.class.getSimpleName());
         this.client = client;
-        setTitle("Create Accounts wihtout a reference to a Portfolio");
+        setTitle(Messages.NewFileWizardAccountTitle);
+        setDescription(Messages.NewFileWizardAccountDescription);
+    }
+
+    @Override
+    public void beforePage()
+    {
+        tViewer.refresh();
     }
 
     @Override
@@ -40,23 +47,26 @@ public class NewAccountPage extends AbstractWizardPage
     {
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
-        container.setLayout(new GridLayout());
-        Composite inputRow = new Composite(container, SWT.NULL);
-        RowLayout inputRowLayout = new RowLayout();
-        inputRowLayout.type = SWT.HORIZONTAL;
-        inputRowLayout.marginHeight = 10;
-        inputRowLayout.spacing = 5;
-        inputRowLayout.center = true;
-        inputRow.setLayout(inputRowLayout);
-        Label lblAcc = new Label(inputRow, SWT.NULL);
-        lblAcc.setText("Account");
-        accountName = new Text(inputRow, SWT.BORDER | SWT.SINGLE);
-        accountName.setText("");
-        final List<Account> data = new ArrayList<Account>();
-        Button button = new Button(inputRow, SWT.PUSH);
-        button.setText("Add");
-        final TableViewer tViewer = new TableViewer(container);
-        inputRow.pack();
+        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
+
+        Label lblAcc = new Label(container, SWT.NULL);
+        lblAcc.setText(Messages.ColumnAccount);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).applyTo(lblAcc);
+
+        final Text accountName = new Text(container, SWT.BORDER | SWT.SINGLE);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(accountName);
+
+        Button button = new Button(container, SWT.PUSH);
+        button.setText(Messages.NewFileWizardButtonAdd);
+        GridDataFactory.fillDefaults().applyTo(button);
+
+        Composite tableContainer = new Composite(container, SWT.NONE);
+        GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableContainer);
+        TableColumnLayout layout = new TableColumnLayout();
+        tableContainer.setLayout(layout);
+
+        tViewer = new TableViewer(tableContainer);
+
         button.addSelectionListener(new SelectionAdapter()
         {
             @Override
@@ -65,31 +75,38 @@ public class NewAccountPage extends AbstractWizardPage
                 String acnName = accountName.getText();
                 if (acnName.length() > 0)
                 {
-                    currentAccount = new Account();
+                    Account currentAccount = new Account();
                     currentAccount.setName(acnName);
                     client.addAccount(currentAccount);
-                    data.add(currentAccount);
                     tViewer.refresh();
+
+                    accountName.setText(""); //$NON-NLS-1$
+                    accountName.setFocus();
                 }
             }
         });
+
         Table table = tViewer.getTable();
         table.setHeaderVisible(true);
         table.setEnabled(false);
-        GridData gridData = new GridData();
-        gridData.heightHint = 300;
-        table.setLayoutData(gridData);
+
         tViewer.setContentProvider(ArrayContentProvider.getInstance());
-        tViewer.setInput(data);
+        tViewer.setInput(client.getAccounts());
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
-        aCol.getColumn().setText("Account");
-        aCol.getColumn().setWidth(200);
+        layout.setColumnData(aCol.getColumn(), new ColumnWeightData(50));
+        aCol.getColumn().setText(Messages.ColumnAccount);
         aCol.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
                 return ((Account) element).getName();
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
         container.pack();

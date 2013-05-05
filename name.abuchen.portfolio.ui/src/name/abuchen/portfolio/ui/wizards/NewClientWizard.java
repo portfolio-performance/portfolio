@@ -7,7 +7,7 @@ import org.eclipse.jface.wizard.Wizard;
 public class NewClientWizard extends Wizard
 {
     private Client client;
-   
+
     public NewClientWizard()
     {
         client = new Client();
@@ -30,6 +30,8 @@ public class NewClientWizard extends Wizard
         addPage(new NewPortfolioAccountPage(client));
         addPage(new NewAccountPage(client));
         addPage(new ImportIndizesPage(client));
+
+        AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }
 
 }
