@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.ui.dialogs.NewPlanDialog.Model;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -50,8 +51,8 @@ public class InvestmentPlanDialog extends Dialog
         final Combo comboDropDown = new Combo(editArea, SWT.DROP_DOWN );
         comboDropDown.setLayoutData(comboData);
         for (InvestmentPlan plan: client.getPlans()) {
-            comboDropDown.add(plan.getSecurity().getName());
-            comboDropDown.setData(plan.getSecurity().getName(), plan);
+            comboDropDown.add(plan.getName());
+            comboDropDown.setData(plan.getName(), plan);
         }
         FormData buttonData = new FormData();
         buttonData.left = new FormAttachment(comboDropDown);
@@ -66,7 +67,10 @@ public class InvestmentPlanDialog extends Dialog
             {
                 NewPlanDialog newDialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), client);
                 if (newDialog.open() == Dialog.OK) {
-                    System.out.println("weiter gehts");
+                    Model model = newDialog.getModel();
+                    System.out.println(model.name);
+                    System.out.println(model.portfolio);
+                    System.out.println(model.amount);
                 }
             }
 
