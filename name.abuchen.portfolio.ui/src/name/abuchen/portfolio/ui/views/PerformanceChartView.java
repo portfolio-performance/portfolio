@@ -3,11 +3,15 @@ package name.abuchen.portfolio.ui.views;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Category;
@@ -360,7 +364,26 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
             });
 
-            manager.add(new Action(Messages.MenuExportPerformanceCalculation)
+            addMenu(manager, ClientIndex.class, Messages.PerformanceChartLabelAccumulatedIRR);
+
+            Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
+                            Security.class, Portfolio.class, Account.class, Category.class }));
+
+            for (DataSeries series : picker.getSelectedDataSeries())
+            {
+                if (exportTypes.contains(series.getType()))
+                    addMenu(manager, series.getInstance());
+            }
+        }
+
+        private void addMenu(IMenuManager manager, Object instance)
+        {
+            addMenu(manager, instance, instance.toString());
+        }
+
+        private void addMenu(IMenuManager manager, final Object instance, final String label)
+        {
+            manager.add(new Action(MessageFormat.format(Messages.MenuExportPerformanceCalculation, label))
             {
                 @Override
                 public void run()
@@ -370,7 +393,7 @@ public class PerformanceChartView extends AbstractHistoricView
                         @Override
                         protected void writeToFile(File file) throws IOException
                         {
-                            PerformanceIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
+                            PerformanceIndex index = (PerformanceIndex) dataCache.get(instance);
                             if (aggregationPeriod != null)
                                 index = Aggregation.aggregate(index, aggregationPeriod);
                             index.exportTo(file);
@@ -382,7 +405,7 @@ public class PerformanceChartView extends AbstractHistoricView
                             return ExportDropDown.this.getToolBar();
                         }
                     };
-                    exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+                    exporter.export(getTitle() + "_" + label + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             });
         }

@@ -150,4 +150,10 @@ public class Category
     {
         this.elements.remove(account);
     }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }
