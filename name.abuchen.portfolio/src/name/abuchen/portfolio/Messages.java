@@ -46,6 +46,8 @@ public class Messages extends NLS
     public static String FixAssignExistingAccountDone;
     public static String FixConvertToDelivery;
     public static String FixConvertToDeliveryDone;
+    public static String FixConvertToType;
+    public static String FixConvertToTypeDone;
     public static String FixCreateCrossEntryAccount;
     public static String FixCreateCrossEntryDone;
     public static String FixCreateCrossEntryPortfolio;
@@ -57,6 +59,8 @@ public class Messages extends NLS
     public static String FixDeleteTransactionDone;
     public static String FixReferenceAccountNameProposal;
     public static String IssueBuySellWithoutSecurity;
+    public static String IssueDividendWithoutSecurity;
+    public static String IssueInterestWithSecurity;
     public static String IssueMissingAccountTransfer;
     public static String IssueMissingBuySellInAccount;
     public static String IssueMissingBuySellInPortfolio;
