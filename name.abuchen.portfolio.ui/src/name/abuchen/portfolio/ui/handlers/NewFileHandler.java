@@ -2,10 +2,13 @@ package name.abuchen.portfolio.ui.handlers;
 
 import name.abuchen.portfolio.ui.ClientEditorInput;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.NewClientWizard;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -18,16 +21,20 @@ public class NewFileHandler extends AbstractHandler
 
     public Object execute(ExecutionEvent event) throws ExecutionException
     {
-        try
+    try
         {
             IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
             IWorkbenchPage page = window.getActivePage();
-            page.openEditor(new ClientEditorInput(), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
-
-            IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
-            if (introManager.getIntro() != null)
-                introManager.closeIntro(introManager.getIntro());
-
+            NewClientWizard wizard = new NewClientWizard();
+            WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell(),
+                            wizard);
+            if (dialog.open() == Window.OK)
+            {
+                page.openEditor(new ClientEditorInput(wizard.getClient()), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
+                IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
+                if (introManager.getIntro() != null)
+                    introManager.closeIntro(introManager.getIntro());
+            }
             return null;
         }
         catch (PartInitException e)

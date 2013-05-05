@@ -191,7 +191,7 @@ public class ClientFactory
         }
         return xstream;
     }
-
+    
     private static class AssetClassConverter implements Converter
     {
 
@@ -220,4 +220,5 @@ public class ClientFactory
             return AssetClass.valueOf(value);
         }
     }
+    
 }

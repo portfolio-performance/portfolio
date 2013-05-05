@@ -16,7 +16,7 @@ public interface SecuritySearchProvider
         private long lastTrade;
         private String type;
         private String exchange;
-
+    
         public String getSymbol()
         {
             return symbol;
