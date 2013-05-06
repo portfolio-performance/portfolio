@@ -64,6 +64,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -100,9 +101,10 @@ public class SecurityListView extends AbstractListView
         return watchlist == null ? Messages.LabelSecurities : Messages.LabelSecurities + " " + watchlist.getName(); //$NON-NLS-1$
     }
 
-    protected void setWeights(SashForm sash)
+    @Override
+    protected int[] getDefaultWeights(Control[] children)
     {
-        sash.setWeights(new int[] { 50, 50 });
+        return new int[] { 50, 50 };
     }
 
     @Override

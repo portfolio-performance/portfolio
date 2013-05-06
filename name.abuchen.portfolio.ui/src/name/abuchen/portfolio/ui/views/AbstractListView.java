@@ -4,21 +4,15 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Sash;
 
 /* package */abstract class AbstractListView extends AbstractFinanceView
 {
-    protected void setWeights(SashForm sash)
-    {
-        Control[] children = sash.getChildren();
-
-        int[] weights = new int[children.length];
-        for (int ii = 0; ii < weights.length; ii++)
-            weights[ii] = (int) Math.pow(2, ii * 2 + 1);
-
-        sash.setWeights(weights);
-    }
+    private final String identifier = getClass().getSimpleName() + "-sash-weights"; //$NON-NLS-1$
 
     @Override
     protected final Control createBody(Composite parent)
@@ -28,7 +22,8 @@ import org.eclipse.swt.widgets.Control;
         createTopTable(sash);
         createBottomTable(sash);
 
-        setWeights(sash);
+        attachDisposeListener(sash);
+        doSetWeights(sash);
 
         return sash;
     }
@@ -36,5 +31,64 @@ import org.eclipse.swt.widgets.Control;
     protected abstract void createBottomTable(Composite parent);
 
     protected abstract void createTopTable(Composite parent);
+
+    protected int[] getDefaultWeights(Control[] children)
+    {
+        int[] weights = new int[children.length];
+        for (int ii = 0; ii < weights.length; ii++)
+            weights[ii] = (int) Math.pow(2, ii * 2 + 1);
+        return weights;
+    }
+
+    private void doSetWeights(final SashForm sash)
+    {
+        Control[] children = sash.getChildren();
+        int[] weights = null;
+
+        String config = getClientEditor().getPreferenceStore().getString(identifier);
+        if (config != null)
+        {
+            try
+            {
+                String[] parts = config.split(","); //$NON-NLS-1$
+                if (children.length == parts.length)
+                {
+                    weights = new int[children.length];
+                    for (int ii = 0; ii < weights.length; ii++)
+                        weights[ii] = Integer.parseInt(parts[ii]);
+                }
+            }
+            catch (NumberFormatException ignore)
+            {
+                // ignore -> assign weight from scratch
+                weights = null;
+            }
+        }
+
+        // otherwise: setup default weights
+        if (weights == null)
+            weights = getDefaultWeights(children);
+
+        sash.setWeights(weights);
+    }
+
+    private void attachDisposeListener(final SashForm sash)
+    {
+        sash.addDisposeListener(new DisposeListener()
+        {
+            @Override
+            public void widgetDisposed(DisposeEvent e)
+            {
+                StringBuilder buf = new StringBuilder();
+                for (Control child : sash.getChildren())
+                {
+                    if (child instanceof Sash)
+                        continue;
+                    buf.append(child.getBounds().height).append(',');
+                }
+                getClientEditor().getPreferenceStore().putValue(identifier, buf.toString());
+            }
+        });
+    }
 
 }
