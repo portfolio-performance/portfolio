@@ -47,6 +47,7 @@ public class PortfolioListView extends AbstractListView
 {
     private TableViewer portfolios;
     private TableViewer transactions;
+    private ShowHideColumnHelper transactionsSupport;
     private StatementOfAssetsViewer statementOfAssets;
 
     @Override
@@ -152,8 +153,8 @@ public class PortfolioListView extends AbstractListView
 
         portfolios.setContentProvider(new SimpleListContentProvider());
         portfolios.setInput(getClient().getPortfolios());
-        portfolios.refresh();
-        ViewerHelper.pack(portfolios);
+        if (!support.isUserConfigured())
+            ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -253,7 +254,8 @@ public class PortfolioListView extends AbstractListView
             portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
 
         statementOfAssets.pack();
-        ViewerHelper.pack(transactions);
+        if (!transactionsSupport.isUserConfigured())
+            ViewerHelper.pack(transactions);
     }
 
     private Control createTransactionsTable(CTabFolder folder)
@@ -264,9 +266,8 @@ public class PortfolioListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom2", //$NON-NLS-1$
+        transactionsSupport = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@bottom3", //$NON-NLS-1$
                         transactions, layout);
-        support.setDoSaveState(false);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -285,7 +286,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -304,7 +305,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "type")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -324,7 +325,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "security")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
@@ -343,7 +344,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "shares")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -363,7 +364,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -382,7 +383,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -401,7 +402,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "fees")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -420,7 +421,7 @@ public class PortfolioListView extends AbstractListView
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -439,9 +440,9 @@ public class PortfolioListView extends AbstractListView
             }
         });
         column.setMoveable(false);
-        support.addColumn(column);
+        transactionsSupport.addColumn(column);
 
-        support.createColumns();
+        transactionsSupport.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);

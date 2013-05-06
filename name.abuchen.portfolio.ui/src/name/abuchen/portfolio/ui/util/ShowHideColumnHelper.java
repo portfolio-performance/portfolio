@@ -216,7 +216,6 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private String identifier;
     private boolean isUserConfigured = false;
-    private boolean doSaveState = true;
 
     private List<Column> columns = new ArrayList<Column>();
 
@@ -242,16 +241,10 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private void widgetDisposed()
     {
-        if (doSaveState)
-            persistColumnConfig();
+        persistColumnConfig();
 
         if (contextMenu != null)
             contextMenu.dispose();
-    }
-
-    public void setDoSaveState(boolean doSaveState)
-    {
-        this.doSaveState = doSaveState;
     }
 
     public void showHideShowColumnsMenu(Shell shell)
@@ -379,8 +372,7 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public void createColumns()
     {
-        if (doSaveState)
-            createFromColumnConfig();
+        createFromColumnConfig();
 
         if (viewer.getTable().getColumnCount() > 0)
         {

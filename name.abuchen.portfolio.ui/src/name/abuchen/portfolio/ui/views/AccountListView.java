@@ -217,9 +217,8 @@ public class AccountListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom3", //$NON-NLS-1$
                         transactions, layout);
-        support.setDoSaveState(false);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -364,7 +363,9 @@ public class AccountListView extends AbstractListView
 
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
-        ViewerHelper.pack(transactions);
+
+        if (!support.isUserConfigured())
+            ViewerHelper.pack(transactions);
     }
 
     private Color colorFor(AccountTransaction t)
