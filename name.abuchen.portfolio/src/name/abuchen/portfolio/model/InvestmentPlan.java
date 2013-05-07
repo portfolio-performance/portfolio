@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class InvestmentPlan
     private int period;
     
     public InvestmentPlan() {
-        
+        transactions = new ArrayList<PortfolioTransaction>();
     }
     
     public InvestmentPlan(String name)
@@ -69,6 +70,16 @@ public class InvestmentPlan
     public void setPeriod(int period)
     {
         this.period = period;
+    }
+
+    public List<PortfolioTransaction> getTransactions()
+    {
+        return transactions;
+    }
+
+    public void addTransaction(PortfolioTransaction temp)
+    {
+        transactions.add(temp);
     }
 
 }

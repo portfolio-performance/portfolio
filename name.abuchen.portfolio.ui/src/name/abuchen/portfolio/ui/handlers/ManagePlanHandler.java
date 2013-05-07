@@ -31,7 +31,7 @@ public class ManagePlanHandler extends AbstractHandler
         
         InvestmentPlanDialog dialog = new InvestmentPlanDialog(shell, client);
         dialog.open();
-        
+        dialog.getInvestmentPlanController().updateTransactions();
         return null;
     }
 }
