@@ -7,7 +7,7 @@ import java.util.List;
 public class InvestmentPlan
 {
     private Security security;
-    private float amount;
+    private long amount;
     private List<PortfolioTransaction> transactions;
     private Portfolio portfolio;
     private String name;
@@ -39,11 +39,11 @@ public class InvestmentPlan
     {
         this.name = name;
     }
-    public float getAmount()
+    public long getAmount()
     {
         return amount;
     }
-    public void setAmount(float amount)
+    public void setAmount(long amount)
     {
         this.amount = amount;
     }

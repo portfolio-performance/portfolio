@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -15,7 +14,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -185,7 +183,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
         groupData.left = new FormAttachment(0, 0);
         groupData.top = new FormAttachment(newButton, OFFSET);
         groupData.right = new FormAttachment(100, 0);
-        groupData.width = 400;
+        groupData.width = 500;
         group.setLayoutData(groupData);
         Label periodLabel = new Label(group, SWT.NONE);
         periodLabel.setText("Plan period");
@@ -284,7 +282,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
             @Override
             public String getText(Object element)
             {
-                return new Long(((PortfolioTransaction) element).getFees()).toString();
+                return Values.Amount.format(((PortfolioTransaction) element).getFees());
             }
         });
         TableViewerColumn priceCol = new TableViewerColumn(tViewer, SWT.NONE);
@@ -296,9 +294,20 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
             public String getText(Object element)
             {
                 PortfolioTransaction transaction = (PortfolioTransaction) element;
-                return new Long(Math.max(0, (transaction.getAmount() - transaction.getFees()) * Values.Share.factor()
-                                / transaction.getShares())).toString();
+                return Values.Amount.format(transaction.getActualPurchasePrice());
             }
+        });
+        TableViewerColumn amountCol = new TableViewerColumn(tViewer, SWT.NONE);
+        amountCol.getColumn().setText("Amount");
+        amountCol.getColumn().setWidth(80);
+        amountCol.setLabelProvider(new ColumnLabelProvider() 
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((PortfolioTransaction) element).getLumpSumPrice());
+            }
+            
         });
         createTransactionsButton = new Button(group, SWT.PUSH);
         createTransactionsButton.setText("Create Transactions");

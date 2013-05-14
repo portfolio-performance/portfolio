@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Values;
 
 public class InvestmentPlanController
 {
@@ -21,8 +22,12 @@ public class InvestmentPlanController
     public void generateTransactions()
     {
         // Generate a dummy for testing
+        long amount = plan.getAmount();
+        long price = plan.getSecurity().getLatest().getValue();
+        float shareF = (float) amount / price;
+        long shares = new Float(shareF * Values.Share.divider()).longValue();
         PortfolioTransaction temp = new PortfolioTransaction(new Date(), plan.getSecurity(),
-                        PortfolioTransaction.Type.BUY, 1, 1000, 10);
+                        PortfolioTransaction.Type.BUY, shares, amount, 0);
         plan.addTransaction(temp);
     }
 

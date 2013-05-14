@@ -29,7 +29,7 @@ public class NewPlanDialog extends Dialog
     public class Model{
         String name;
         Portfolio portfolio;
-        float amount;
+        long amount;
         Security security;
         Date start;
         int period;
@@ -65,7 +65,7 @@ public class NewPlanDialog extends Dialog
             return;
         }
         try {
-            model.amount = Float.parseFloat(amountString);
+            model.amount = Long.parseLong(amountString);
         } catch (NumberFormatException ex) {
             MessageDialog.openError(super.getShell(), "Error parsing amount", "The entered text cannot be parsed to a number");
             return;
