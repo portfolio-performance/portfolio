@@ -15,6 +15,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -49,7 +50,8 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
     Label portfolioLabel, securityLabel, startLabel;
     Spinner spinner;
     TableViewer tViewer;
-    Button createTransactionsButton;
+    Button createTransactionsButton, delButton;
+    Combo comboDropDown;
 
     public InvestmentPlanDialog(Shell owner, Client client)
     {
@@ -82,6 +84,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
         spinner.setSelection(plan.getPeriod());
         tViewer.setInput(plan.getTransactions());
         tViewer.refresh();
+        delButton.setEnabled(true);
     }
 
     @Override
@@ -98,7 +101,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
         FormData comboData = new FormData();
         comboData.left = new FormAttachment(0, 0);
         comboData.top = new FormAttachment(0, 0);
-        final Combo comboDropDown = new Combo(editArea, SWT.DROP_DOWN);
+        comboDropDown = new Combo(editArea, SWT.DROP_DOWN);
         comboDropDown.setLayoutData(comboData);
         for (InvestmentPlan plan : client.getPlans())
         {
@@ -106,13 +109,50 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
             comboDropDown.setData(plan.getName(), plan);
         }
         comboDropDown.addSelectionListener(this);
+        delButton = new Button(editArea, SWT.PUSH);
+        delButton.setText("Delete Plan");
+        delButton.setEnabled(false);
+        FormData delButtonData = new FormData();
+        delButtonData.left = new FormAttachment(comboDropDown);
+        delButtonData.top = new FormAttachment(0,0);
+        delButton.setLayoutData(delButtonData);
+        delButton.addSelectionListener(new SelectionListener() 
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                client.removePlan(plan);
+                comboDropDown.remove(plan.getName());
+                comboDropDown.setData(plan.getName(), null);
+                plan = null;
+                controller = null;
+                group.setText("");
+                nameText.setText("");
+                amountText.setText("");
+                portfolioLabel.setText("Portfolio: ");
+                portfolioLabel.pack();
+                securityLabel.setText("Security: ");
+                securityLabel.pack();
+                startLabel.setText("Start: ");
+                startLabel.pack();
+                spinner.setSelection(0);
+                tViewer.setInput(new ArrayList());
+                tViewer.refresh();
+                delButton.setEnabled(false);
+             }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e)
+            {}
+            
+        });
         FormData buttonData = new FormData();
-        buttonData.left = new FormAttachment(comboDropDown);
+        buttonData.left = new FormAttachment(delButton, OFFSET);
         buttonData.top = new FormAttachment(0, 0);
-        Button button = new Button(editArea, SWT.PUSH);
-        button.setLayoutData(buttonData);
-        button.setText("New Plan");
-        button.addSelectionListener(new SelectionListener()
+        Button newButton = new Button(editArea, SWT.PUSH);
+        newButton.setLayoutData(buttonData);
+        newButton.setText("New Plan");
+        newButton.addSelectionListener(new SelectionListener()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
@@ -143,7 +183,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
         group.setLayout(new FormLayout());
         FormData groupData = new FormData();
         groupData.left = new FormAttachment(0, 0);
-        groupData.top = new FormAttachment(button, OFFSET);
+        groupData.top = new FormAttachment(newButton, OFFSET);
         groupData.right = new FormAttachment(100, 0);
         groupData.width = 400;
         group.setLayoutData(groupData);

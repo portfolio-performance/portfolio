@@ -43,6 +43,11 @@ public class Client
     {
         plans.add(plan);
     }
+    
+    public void removePlan(InvestmentPlan plan)
+    {
+        plans.remove(plan);
+    }
 
     public List<Security> getSecurities()
     {
@@ -154,4 +159,6 @@ public class Client
                 t.getCrossEntry().delete();
         }
     }
+
+    
 }
