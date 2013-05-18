@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -84,6 +86,15 @@ public class ClientEditor extends EditorPart
         {
             throw new PartInitException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
+
+        client.addPropertyChangeListener(new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                markDirty();
+            }
+        });
 
         loadPreferences();
 

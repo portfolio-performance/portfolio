@@ -1,27 +1,58 @@
 package name.abuchen.portfolio.model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 11;
+    /* package */static final int CURRENT_VERSION = 12;
+
+    private transient PropertyChangeSupport propertyChangeSupport;
 
     private int version = CURRENT_VERSION;
 
     private List<Security> securities = new ArrayList<Security>();
-    private List<Watchlist> watchlists = new ArrayList<Watchlist>();
-    private List<ConsumerPriceIndex> consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
+    private List<Watchlist> watchlists;
+    private List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
     private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
 
+    private Map<String, String> properties; // old versions!
+
     private String industryTaxonomyId;
+
+    public Client()
+    {
+        doPostLoadInitialization();
+    }
+
+    /* package */void doPostLoadInitialization()
+    {
+        // when loading the Client from XML, attributes that are not (yet)
+        // persisted in that version are not initialized
+
+        if (watchlists == null)
+            watchlists = new ArrayList<Watchlist>();
+
+        if (consumerPriceIndeces == null)
+            consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
+
+        if (properties == null)
+            properties = new HashMap<String, String>();
+
+        if (propertyChangeSupport == null)
+            propertyChangeSupport = new PropertyChangeSupport(this);
+    }
 
     public int getVersion()
     {
@@ -42,8 +73,9 @@ public class Client
     {
         securities.add(security);
     }
-    
-    public void addSecurities(Collection<Security> sec) {
+
+    public void addSecurities(Collection<Security> sec)
+    {
         securities.addAll(sec);
     }
 
@@ -57,15 +89,11 @@ public class Client
 
     public List<Watchlist> getWatchlists()
     {
-        if (watchlists == null)
-            watchlists = new ArrayList<Watchlist>();
         return watchlists;
     }
 
     public List<ConsumerPriceIndex> getConsumerPriceIndeces()
     {
-        if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
         return consumerPriceIndeces;
     }
 
@@ -77,8 +105,6 @@ public class Client
 
     public void addConsumerPriceIndex(ConsumerPriceIndex record)
     {
-        if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
         consumerPriceIndeces.add(record);
     }
 
@@ -134,6 +160,17 @@ public class Client
         return IndustryClassification.lookup(industryTaxonomyId);
     }
 
+    public void setProperty(String key, String value)
+    {
+        String oldValue = properties.put(key, value);
+        propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
+    }
+
+    public String getProperty(String key)
+    {
+        return properties.get(key);
+    }
+
     private void deleteCrossEntries(List<? extends Transaction> transactions)
     {
         // crossEntry.delete modifies list
@@ -142,5 +179,20 @@ public class Client
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().delete();
         }
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

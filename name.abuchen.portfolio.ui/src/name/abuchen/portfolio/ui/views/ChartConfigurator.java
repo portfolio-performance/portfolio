@@ -372,7 +372,11 @@ import org.swtchart.LineStyle;
 
     private void load()
     {
-        String config = clientEditor.getPreferenceStore().getString(identifier);
+        String config = client.getProperty(identifier);
+
+        if (config == null || config.trim().length() == 0)
+            config = clientEditor.getPreferenceStore().getString(identifier);
+
         if (config != null && config.trim().length() > 0)
         {
             Map<String, DataSeries> uuid2series = new HashMap<String, DataSeries>();
@@ -416,7 +420,7 @@ import org.swtchart.LineStyle;
             buf.append(s.getLineStyle().name()).append(';');
             buf.append(s.isShowArea());
         }
-        clientEditor.getPreferenceStore().setValue(identifier, buf.toString());
+        client.setProperty(identifier, buf.toString());
     }
 
     private void configMenuAboutToShow(IMenuManager manager)

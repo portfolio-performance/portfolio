@@ -32,6 +32,8 @@ public class ClientFactory
         Client client = (Client) xstream().fromXML(
                         new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))); //$NON-NLS-1$
 
+        client.doPostLoadInitialization();
+
         if (client.getVersion() == 1)
         {
             addFeedAndExchange(client);
@@ -98,6 +100,12 @@ public class ClientFactory
             for (Category c : client.getRootCategory().flatten())
                 c.generateUUID();
             client.setVersion(11);
+        }
+
+        if (client.getVersion() == 11)
+        {
+            // do nothing --> added 'properties' to client
+            client.setVersion(12);
         }
 
         if (client.getVersion() != Client.CURRENT_VERSION)
@@ -191,7 +199,7 @@ public class ClientFactory
         }
         return xstream;
     }
-    
+
     private static class AssetClassConverter implements Converter
     {
 
@@ -220,5 +228,5 @@ public class ClientFactory
             return AssetClass.valueOf(value);
         }
     }
-    
+
 }
