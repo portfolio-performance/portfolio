@@ -176,6 +176,7 @@ public class Messages extends NLS
     public static String LabelDefaultReferenceAccountName;
     public static String LabelError;
     public static String LabelExchange;
+    public static String LabelExport;
     public static String LabelFullClassification;
     public static String LabelInfo;
     public static String LabelNewCategory;

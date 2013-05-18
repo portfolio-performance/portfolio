@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -9,24 +11,25 @@ import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableFontProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -38,7 +41,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
@@ -54,6 +57,13 @@ public class PerformanceView extends AbstractHistoricView
     protected String getTitle()
     {
         return Messages.LabelPerformanceCalculation;
+    }
+
+    @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        super.addButtons(toolBar);
+        new ExportDropDown(toolBar);
     }
 
     @Override
@@ -127,18 +137,88 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
+        final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
+
         TreeViewerColumn column = new TreeViewerColumn(calculation, SWT.NONE);
         column.getColumn().setText(Messages.ColumnLable);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Category)
+                {
+                    ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
+                    return cat.getLabel();
+                }
+                else if (element instanceof ClientPerformanceSnapshot.Position)
+                {
+                    ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
+                    return pos.getLabel();
+                }
+                return null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Category)
+                {
+                    return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                }
+                else if (element instanceof ClientPerformanceSnapshot.Position)
+                {
+                    ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
+                    return position.getSecurity() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY) : null;
+                }
+
+                return null;
+            }
+
+            @Override
+            public Font getFont(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Category)
+                    return boldFont;
+                return null;
+            }
+        });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(350));
 
         column = new TreeViewerColumn(calculation, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnValue);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Category)
+                {
+                    ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
+                    return Values.Amount.format(cat.getValuation());
+                }
+                else if (element instanceof ClientPerformanceSnapshot.Position)
+                {
+                    ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
+                    return Values.Amount.format(pos.getValuation());
+                }
+                return null;
+            }
+
+            @Override
+            public Font getFont(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Category)
+                    return boldFont;
+                return null;
+            }
+        });
+
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80));
 
         calculation.getTree().setHeaderVisible(true);
         calculation.getTree().setLinesVisible(true);
 
-        calculation.setLabelProvider(new PerformanceLabelProvider());
         calculation.setContentProvider(new PerformanceContentProvider());
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -355,68 +435,64 @@ public class PerformanceView extends AbstractHistoricView
 
     }
 
-    private static class PerformanceLabelProvider extends LabelProvider implements ITableLabelProvider,
-                    ITableFontProvider
+    private final class ExportDropDown extends AbstractDropDown
     {
-        private FontRegistry registry = new FontRegistry();
-
-        public Image getColumnImage(Object element, int columnIndex)
+        private ExportDropDown(ToolBar toolBar)
         {
-            if (columnIndex != 0)
-                return null;
-
-            if (element instanceof ClientPerformanceSnapshot.Category)
-            {
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-            }
-            else if (element instanceof ClientPerformanceSnapshot.Position)
-            {
-                ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
-                return position.getSecurity() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY) : null;
-            }
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex)
-        {
-            if (element instanceof ClientPerformanceSnapshot.Category)
-            {
-                ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
-
-                switch (columnIndex)
-                {
-                    case 0:
-                        return cat.getLabel();
-                    case 1:
-                        return Values.Amount.format(cat.getValuation());
-                }
-            }
-            else if (element instanceof ClientPerformanceSnapshot.Position)
-            {
-                ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-
-                switch (columnIndex)
-                {
-                    case 0:
-                        return pos.getLabel();
-                    case 1:
-                        return Values.Amount.format(pos.getValuation());
-                }
-            }
-            return null;
+            super(toolBar, Messages.MenuExportData, PortfolioPlugin.image(PortfolioPlugin.IMG_EXPORT), SWT.NONE);
         }
 
         @Override
-        public Font getFont(Object element, int columnIndex)
+        public void menuAboutToShow(IMenuManager manager)
         {
-            if (element instanceof ClientPerformanceSnapshot.Category)
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabCalculation))
             {
-                return registry.getBold(Display.getCurrent().getSystemFont().getFontData()[0].getName());
-            }
-            else
+                @Override
+                public void run()
+                {
+                    new TreeViewerCSVExporter(calculation).export(Messages.PerformanceTabCalculation + ".csv"); //$NON-NLS-1$
+                }
+            });
+
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtStart))
             {
-                return null;
-            }
+                @Override
+                public void run()
+                {
+                    new TableViewerCSVExporter(snapshotStart.getTableViewer())
+                                    .export(Messages.PerformanceTabAssetsAtStart + ".csv"); //$NON-NLS-1$
+                }
+            });
+
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtEnd))
+            {
+                @Override
+                public void run()
+                {
+                    new TableViewerCSVExporter(snapshotEnd.getTableViewer()).export(Messages.PerformanceTabAssetsAtEnd
+                                    + ".csv"); //$NON-NLS-1$
+                }
+            });
+
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarnings))
+            {
+                @Override
+                public void run()
+                {
+                    new TableViewerCSVExporter(earnings).export(Messages.PerformanceTabEarnings + ".csv"); //$NON-NLS-1$
+                }
+            });
+
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarningsByAccount))
+            {
+                @Override
+                public void run()
+                {
+                    new TableViewerCSVExporter(earningsByAccount).export(Messages.PerformanceTabEarningsByAccount
+                                    + ".csv"); //$NON-NLS-1$
+                }
+            });
+
         }
     }
 
