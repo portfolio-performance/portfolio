@@ -5,6 +5,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -47,6 +48,7 @@ public class PerformanceView extends AbstractHistoricView
     private StatementOfAssetsViewer snapshotStart;
     private StatementOfAssetsViewer snapshotEnd;
     private TableViewer earnings;
+    private TableViewer earningsByAccount;
 
     @Override
     protected String getTitle()
@@ -79,6 +81,7 @@ public class PerformanceView extends AbstractHistoricView
         snapshotEnd.pack();
 
         earnings.setInput(snapshot.getEarnings());
+        earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
     }
 
     @Override
@@ -97,6 +100,7 @@ public class PerformanceView extends AbstractHistoricView
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
         snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
         createEarningsItem(folder, Messages.PerformanceTabEarnings);
+        createEarningsByAccountsItem(folder, Messages.PerformanceTabEarningsByAccount);
 
         folder.setSelection(0);
 
@@ -231,6 +235,61 @@ public class PerformanceView extends AbstractHistoricView
         earnings.getTable().setLinesVisible(true);
 
         earnings.setContentProvider(new SimpleListContentProvider());
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(title);
+        item.setControl(container);
+    }
+
+    private void createEarningsByAccountsItem(CTabFolder folder, String title)
+    {
+        Composite container = new Composite(folder, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
+
+        earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts", //$NON-NLS-1$
+                        earningsByAccount, layout);
+
+        Column column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return item.getAccount().getName();
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Amount.format(item.getSum());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "sum")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        support.createColumns();
+
+        earningsByAccount.getTable().setHeaderVisible(true);
+        earningsByAccount.getTable().setLinesVisible(true);
+
+        earningsByAccount.setContentProvider(new SimpleListContentProvider());
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);

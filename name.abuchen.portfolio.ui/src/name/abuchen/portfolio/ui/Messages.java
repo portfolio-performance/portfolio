@@ -272,6 +272,7 @@ public class Messages extends NLS
     public static String PerformanceTabAssetsAtStart;
     public static String PerformanceTabCalculation;
     public static String PerformanceTabEarnings;
+    public static String PerformanceTabEarningsByAccount;
     public static String PortfolioMenuAdd;
     public static String PortfolioMenuDelete;
     public static String PrefCheckOnStartup;
