@@ -300,10 +300,6 @@ import org.swtchart.LineStyle;
                 availableSeries.add(new DataSeries(Client.class, client, Messages.LabelTotalSum,
                                 colorFor(Colors.TOTALS)));
 
-                for (AssetClass assetClass : AssetClass.values())
-                    availableSeries.add(new DataSeries(AssetClass.class, assetClass, assetClass.toString(), //
-                                    colorFor(Colors.valueOf(assetClass.name()).swt())));
-
                 DataSeries series = new DataSeries(Client.class, null, Messages.LabelTransferals, //
                                 Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
                 series.setLineChart(false);
@@ -342,6 +338,10 @@ import org.swtchart.LineStyle;
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getSegment(index++)
                             .getColor()));
+
+        for (AssetClass assetClass : AssetClass.values())
+            availableSeries.add(new DataSeries(AssetClass.class, assetClass, assetClass.toString(), //
+                            colorFor(Colors.valueOf(assetClass.name()).swt())));
 
         LinkedList<Category> stack = new LinkedList<Category>();
         stack.add(client.getRootCategory());

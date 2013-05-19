@@ -224,7 +224,6 @@ public class Messages extends NLS
     public static String MenuConfigureChart;
     public static String MenuExportChartData;
     public static String MenuExportData;
-    public static String MenuExportPerformanceCalculation;
     public static String MenuOpenSecurityOnSite;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
