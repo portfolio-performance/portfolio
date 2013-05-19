@@ -31,8 +31,6 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -236,15 +234,6 @@ import org.swtchart.LineStyle;
 
         for (DataSeries series : selectedSeries)
             new PaintItem(this, series);
-
-        this.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                ChartConfigurator.this.widgetDisposed();
-            }
-        });
     }
 
     public void setListener(ChartConfigurator.Listener listener)
@@ -274,11 +263,6 @@ import org.swtchart.LineStyle;
     public List<DataSeries> getSelectedDataSeries()
     {
         return selectedSeries;
-    }
-
-    private void widgetDisposed()
-    {
-        persist();
     }
 
     private Color colorFor(RGB rgb)
@@ -552,6 +536,7 @@ import org.swtchart.LineStyle;
 
         getParent().layout();
         listener.onUpdate();
+        persist();
     }
 
     private void doResetSeries()
@@ -572,6 +557,7 @@ import org.swtchart.LineStyle;
         layout();
         getParent().layout();
         listener.onUpdate();
+        persist();
     }
 
     private void doDeleteSeries(DataSeries series)
@@ -585,6 +571,8 @@ import org.swtchart.LineStyle;
                 layout();
                 getParent().layout();
                 listener.onUpdate();
+                persist();
+                break;
             }
         }
     }
