@@ -36,7 +36,7 @@ public class Client
         doPostLoadInitialization();
     }
 
-    /* package */void doPostLoadInitialization()
+    /* package */final void doPostLoadInitialization()
     {
         // when loading the Client from XML, attributes that are not (yet)
         // persisted in that version are not initialized

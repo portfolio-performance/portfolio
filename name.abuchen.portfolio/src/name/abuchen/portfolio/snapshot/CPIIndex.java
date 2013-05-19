@@ -5,34 +5,20 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.Interval;
 
-public class CPIIndex
+/* package */class CPIIndex extends PerformanceIndex
 {
-    public static CPIIndex forClient(ClientIndex clientIndex, List<Exception> warnings)
+    /* package */CPIIndex(Client client, ReportingPeriod reportInterval)
     {
-        CPIIndex index = new CPIIndex();
-        index.calculate(clientIndex);
-        return index;
+        super(client, reportInterval);
     }
 
-    private Date[] dates;
-    private double[] accumulated;
-
-    public Date[] getDates()
-    {
-        return dates;
-    }
-
-    public double[] getAccumulatedPercentage()
-    {
-        return accumulated;
-    }
-
-    private void calculate(ClientIndex clientIndex)
+    /* package */void calculate(ClientIndex clientIndex)
     {
         Interval interval = new Interval(clientIndex.getFirstDataPoint(), clientIndex.getReportInterval().toInterval()
                         .getEnd());

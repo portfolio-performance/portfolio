@@ -18,16 +18,9 @@ import org.joda.time.Interval;
 
 public class ClientIndex extends PerformanceIndex
 {
-    public static ClientIndex forPeriod(Client client, ReportingPeriod reportInterval, List<Exception> warnings)
-    {
-        ClientIndex index = new ClientIndex(client, reportInterval);
-        index.calculate(warnings);
-        return index;
-    }
-
     private long[][] assetClasses;
 
-    private ClientIndex(Client client, ReportingPeriod reportInterval)
+    /* package */ClientIndex(Client client, ReportingPeriod reportInterval)
     {
         super(client, reportInterval);
     }
@@ -48,7 +41,7 @@ public class ClientIndex extends PerformanceIndex
         return assetClasses[assetClass.ordinal()];
     }
 
-    private void calculate(List<Exception> warnings)
+    /* package */void calculate(List<Exception> warnings)
     {
         Interval interval = getReportInterval().toInterval();
         int size = Days.daysBetween(interval.getStart(), interval.getEnd()).getDays() + 1;

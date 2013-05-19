@@ -10,25 +10,13 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
-public class CategoryIndex extends PerformanceIndex
+/* package */final class CategoryIndex
 {
-    public static CategoryIndex forPeriod(Client client, Category category, ReportingPeriod reportInterval,
+    private CategoryIndex()
+    {}
+
+    /* package */static PerformanceIndex calculate(Client client, Category category, ReportingPeriod reportInterval,
                     List<Exception> warnings)
-    {
-        CategoryIndex index = new CategoryIndex(client, category, reportInterval);
-        index.calculate(warnings);
-        return index;
-    }
-
-    private Category category;
-
-    private CategoryIndex(Client client, Category category, ReportingPeriod reportInterval)
-    {
-        super(client, reportInterval);
-        this.category = category;
-    }
-
-    private void calculate(List<Exception> warnings)
     {
         Client pseudoClient = new Client();
 
@@ -36,7 +24,7 @@ public class CategoryIndex extends PerformanceIndex
         {
             if (object instanceof Security)
             {
-                addSecurity(pseudoClient, (Security) object);
+                addSecurity(pseudoClient, client, (Security) object);
             }
             else if (object instanceof Account)
             {
@@ -44,16 +32,10 @@ public class CategoryIndex extends PerformanceIndex
             }
         }
 
-        ClientIndex clientIndex = ClientIndex.forPeriod(pseudoClient, getReportInterval(), warnings);
-
-        dates = clientIndex.getDates();
-        totals = clientIndex.getTotals();
-        accumulated = clientIndex.getAccumulatedPercentage();
-        delta = clientIndex.getDeltaPercentage();
-        transferals = clientIndex.getTransferals();
+        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
     }
 
-    private void addSecurity(Client pseudoClient, Security security)
+    private static void addSecurity(Client pseudoClient, Client client, Security security)
     {
         Account pseudoAccount = new Account();
         pseudoAccount.setName(""); //$NON-NLS-1$
@@ -65,7 +47,7 @@ public class CategoryIndex extends PerformanceIndex
 
         pseudoClient.addSecurity(security);
 
-        for (Portfolio p : getClient().getPortfolios())
+        for (Portfolio p : client.getPortfolios())
         {
             for (PortfolioTransaction t : p.getTransactions())
             {
@@ -98,7 +80,7 @@ public class CategoryIndex extends PerformanceIndex
             }
         }
 
-        for (Account a : getClient().getAccounts())
+        for (Account a : client.getAccounts())
         {
             for (AccountTransaction t : a.getTransactions())
             {
@@ -132,7 +114,7 @@ public class CategoryIndex extends PerformanceIndex
         }
     }
 
-    private void addAccount(Client pseudoClient, Account account)
+    private static void addAccount(Client pseudoClient, Account account)
     {
         Account pseudoAccount = new Account();
         pseudoAccount.setName(""); //$NON-NLS-1$

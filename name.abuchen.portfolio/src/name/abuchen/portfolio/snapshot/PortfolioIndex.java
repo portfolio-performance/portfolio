@@ -5,30 +5,19 @@ import java.util.List;
 import java.util.Set;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
-public class PortfolioIndex extends PerformanceIndex
+/* package */final class PortfolioIndex
 {
-    public static PortfolioIndex forPeriod(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
+    private PortfolioIndex()
+    {}
+
+    /* package */static PerformanceIndex calculate(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
                     List<Exception> warnings)
-    {
-        PortfolioIndex index = new PortfolioIndex(client, portfolio, reportInterval);
-        index.calculate(warnings);
-        return index;
-    }
-
-    private Portfolio portfolio;
-
-    private PortfolioIndex(Client client, Portfolio portfolio, ReportingPeriod reportInterval)
-    {
-        super(client, reportInterval);
-        this.portfolio = portfolio;
-    }
-
-    private void calculate(List<Exception> warnings)
     {
         Client pseudoClient = new Client();
 
@@ -74,13 +63,7 @@ public class PortfolioIndex extends PerformanceIndex
         for (Security security : securities)
             pseudoClient.addSecurity(security);
 
-        ClientIndex clientIndex = ClientIndex.forPeriod(pseudoClient, getReportInterval(), warnings);
-
-        dates = clientIndex.getDates();
-        totals = clientIndex.getTotals();
-        accumulated = clientIndex.getAccumulatedPercentage();
-        delta = clientIndex.getDeltaPercentage();
-        transferals = clientIndex.getTransferals();
+        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
     }
 
 }

@@ -50,8 +50,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = ClientIndex.forPeriod(client, reportInterval, warnings);
-        SecurityIndex securityIndex = SecurityIndex.forClient(clientIndex, security, warnings);
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
 
@@ -96,8 +96,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = ClientIndex.forPeriod(client, reportInterval, warnings);
-        SecurityIndex securityIndex = SecurityIndex.forClient(clientIndex, security, warnings);
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
 
@@ -154,8 +154,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = ClientIndex.forPeriod(client, reportInterval, warnings);
-        SecurityIndex securityIndex = SecurityIndex.forClient(clientIndex, security, warnings);
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
 
@@ -201,8 +201,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = ClientIndex.forPeriod(client, reportInterval, warnings);
-        SecurityIndex securityIndex = SecurityIndex.forClient(clientIndex, security, warnings);
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
 

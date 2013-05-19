@@ -20,16 +20,10 @@ import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
-import name.abuchen.portfolio.snapshot.AccountIndex;
 import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.snapshot.AssetClassIndex;
-import name.abuchen.portfolio.snapshot.CPIIndex;
-import name.abuchen.portfolio.snapshot.CategoryIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.PortfolioIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.SecurityIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
@@ -184,7 +178,7 @@ public class PerformanceChartView extends AbstractHistoricView
         if (index == null)
         {
             ReportingPeriod interval = getReportingPeriod();
-            index = ClientIndex.forPeriod(getClient(), interval, warnings);
+            index = PerformanceIndex.forClient(getClient(), interval, warnings);
             dataCache.put(ClientIndex.class, index);
         }
         return index;
@@ -214,13 +208,13 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addConsumerPriceIndex(DataSeries item, List<Exception> warnings)
     {
-        CPIIndex cpiIndex = (CPIIndex) dataCache.get(CPIIndex.class);
+        PerformanceIndex cpiIndex = (PerformanceIndex) dataCache.get(ConsumerPriceIndex.class);
 
         if (cpiIndex == null)
         {
             ClientIndex clientIndex = getClientIndex(warnings);
-            cpiIndex = CPIIndex.forClient(clientIndex, warnings);
-            dataCache.put(CPIIndex.class, cpiIndex);
+            cpiIndex = PerformanceIndex.forConsumerPriceIndex(clientIndex, warnings);
+            dataCache.put(ConsumerPriceIndex.class, cpiIndex);
         }
 
         if (cpiIndex.getDates().length > 0
@@ -240,7 +234,7 @@ public class PerformanceChartView extends AbstractHistoricView
         if (securityIndex == null)
         {
             ClientIndex clientIndex = getClientIndex(warnings);
-            securityIndex = SecurityIndex.forClient(clientIndex, security, warnings);
+            securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
             dataCache.put(security, securityIndex);
         }
 
@@ -259,7 +253,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (portfolioIndex == null)
         {
-            portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, getReportingPeriod(), warnings);
+            portfolioIndex = PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
             dataCache.put(portfolio, portfolioIndex);
         }
 
@@ -278,7 +272,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (accountIndex == null)
         {
-            accountIndex = AccountIndex.forPeriod(getClient(), account, getReportingPeriod(), warnings);
+            accountIndex = PerformanceIndex.forAccount(getClient(), account, getReportingPeriod(), warnings);
             dataCache.put(account, accountIndex);
         }
 
@@ -296,7 +290,7 @@ public class PerformanceChartView extends AbstractHistoricView
         PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(assetClass);
         if (categoryIndex == null)
         {
-            categoryIndex = AssetClassIndex.forPeriod(getClient(), assetClass, getReportingPeriod(), warnings);
+            categoryIndex = PerformanceIndex.forAssetClass(getClient(), assetClass, getReportingPeriod(), warnings);
             dataCache.put(assetClass, categoryIndex);
         }
 
@@ -313,7 +307,7 @@ public class PerformanceChartView extends AbstractHistoricView
         PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
         if (categoryIndex == null)
         {
-            categoryIndex = CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(), warnings);
+            categoryIndex = PerformanceIndex.forCategory(getClient(), category, getReportingPeriod(), warnings);
             dataCache.put(category, categoryIndex);
         }
 

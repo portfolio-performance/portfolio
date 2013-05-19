@@ -10,21 +10,14 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import org.joda.time.DateMidnight;
 import org.joda.time.Days;
 
-public class SecurityIndex extends PerformanceIndex
+/* package */class SecurityIndex extends PerformanceIndex
 {
-    public static SecurityIndex forClient(ClientIndex clientIndex, Security security, List<Exception> warnings)
-    {
-        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getReportInterval());
-        index.calculate(clientIndex, security);
-        return index;
-    }
-
-    public SecurityIndex(Client client, ReportingPeriod reportInterval)
+    /* package */SecurityIndex(Client client, ReportingPeriod reportInterval)
     {
         super(client, reportInterval);
     }
 
-    private void calculate(ClientIndex clientIndex, Security security)
+    /* package */void calculate(ClientIndex clientIndex, Security security)
     {
         List<SecurityPrice> prices = security.getPrices();
         if (prices.isEmpty())

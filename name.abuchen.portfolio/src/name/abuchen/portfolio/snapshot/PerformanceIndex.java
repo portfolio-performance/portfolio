@@ -7,13 +7,19 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.List;
+
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Category;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Security.AssetClass;
+import name.abuchen.portfolio.model.Values;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
-
-import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Values;
 
 public class PerformanceIndex
 {
@@ -30,6 +36,69 @@ public class PerformanceIndex
     {
         this.client = client;
         this.reportInterval = reportInterval;
+    }
+
+    public static ClientIndex forClient(Client client, ReportingPeriod reportInterval, List<Exception> warnings)
+    {
+        ClientIndex index = new ClientIndex(client, reportInterval);
+        index.calculate(warnings);
+        return index;
+    }
+
+    public static PerformanceIndex forAccount(Client client, Account account, ReportingPeriod reportInterval,
+                    List<Exception> warnings)
+    {
+        Category category = new Category();
+        category.addAccount(account);
+        return forCategory(client, category, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forPortfolio(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
+                    List<Exception> warnings)
+    {
+        return PortfolioIndex.calculate(client, portfolio, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forCategory(Client client, Category category, ReportingPeriod reportInterval,
+                    List<Exception> warnings)
+    {
+        return CategoryIndex.calculate(client, category, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forAssetClass(Client client, AssetClass assetClass, ReportingPeriod reportInterval,
+                    List<Exception> warnings)
+    {
+        Category category = new Category();
+
+        for (Security security : client.getSecurities())
+        {
+            if (security.getType() == assetClass)
+                category.addSecurity(security);
+        }
+
+        return forCategory(client, category, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forInvestment(Client client, Security security, ReportingPeriod reportInterval,
+                    List<Exception> warnings)
+    {
+        Category category = new Category();
+        category.addSecurity(security);
+        return forCategory(client, category, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forSecurity(ClientIndex clientIndex, Security security, List<Exception> warnings)
+    {
+        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getReportInterval());
+        index.calculate(clientIndex, security);
+        return index;
+    }
+
+    public static PerformanceIndex forConsumerPriceIndex(ClientIndex clientIndex, List<Exception> warnings)
+    {
+        CPIIndex index = new CPIIndex(clientIndex.getClient(), clientIndex.getReportInterval());
+        index.calculate(clientIndex);
+        return index;
     }
 
     public Client getClient()

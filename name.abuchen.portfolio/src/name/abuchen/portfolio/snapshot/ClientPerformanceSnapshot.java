@@ -155,7 +155,7 @@ public class ClientPerformanceSnapshot
         categories.put(CategoryType.PERFORMANCE_IZF, new Category(Messages.ColumnPerformanceIZF,
                         (int) (yield.getIrr() * Values.Amount.factor())));
 
-        ClientIndex index = ClientIndex.forPeriod(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
+        ClientIndex index = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
                         snapshotEnd.getTime()), new ArrayList<Exception>());
         categories.put(CategoryType.PERFORMANCE,
                         new Category(Messages.ColumnPerformance, (int) (index.getAccumulatedPercentage()[index

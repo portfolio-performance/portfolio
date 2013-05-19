@@ -12,11 +12,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.AccountIndex;
-import name.abuchen.portfolio.snapshot.CategoryIndex;
 import name.abuchen.portfolio.snapshot.ClientIndex;
-import name.abuchen.portfolio.snapshot.PortfolioIndex;
-import name.abuchen.portfolio.snapshot.SecurityInvestmentIndex;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.TimelineChart;
@@ -168,7 +165,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
         if (clientIndex == null)
         {
-            clientIndex = ClientIndex.forPeriod(getClient(), getReportingPeriod(), warnings);
+            clientIndex = PerformanceIndex.forClient(getClient(), getReportingPeriod(), warnings);
             dataCache.put(ClientIndex.class, clientIndex);
         }
 
@@ -193,7 +190,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
         if (clientIndex == null)
         {
-            clientIndex = ClientIndex.forPeriod(getClient(), getReportingPeriod(), warnings);
+            clientIndex = PerformanceIndex.forClient(getClient(), getReportingPeriod(), warnings);
             dataCache.put(ClientIndex.class, clientIndex);
         }
 
@@ -208,10 +205,10 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private void addSecurity(DataSeries item, List<Exception> warnings)
     {
         Security security = (Security) item.getInstance();
-        SecurityInvestmentIndex securityIndex = (SecurityInvestmentIndex) dataCache.get(security);
+        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
         if (securityIndex == null)
         {
-            securityIndex = SecurityInvestmentIndex.forPeriod(getClient(), security, getReportingPeriod(), warnings);
+            securityIndex = PerformanceIndex.forInvestment(getClient(), security, getReportingPeriod(), warnings);
             dataCache.put(security, securityIndex);
         }
 
@@ -224,10 +221,10 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private void addPortfolio(DataSeries item, List<Exception> warnings)
     {
         Portfolio portfolio = (Portfolio) item.getInstance();
-        PortfolioIndex portfolioIndex = (PortfolioIndex) dataCache.get(portfolio);
+        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(portfolio);
         if (portfolioIndex == null)
         {
-            portfolioIndex = PortfolioIndex.forPeriod(getClient(), portfolio, getReportingPeriod(), warnings);
+            portfolioIndex = PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
             dataCache.put(portfolio, portfolioIndex);
         }
 
@@ -240,10 +237,10 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private void addAccount(DataSeries item, List<Exception> warnings)
     {
         Account account = (Account) item.getInstance();
-        AccountIndex accountIndex = (AccountIndex) dataCache.get(account);
+        PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
         if (accountIndex == null)
         {
-            accountIndex = AccountIndex.forPeriod(getClient(), account, getReportingPeriod(), warnings);
+            accountIndex = PerformanceIndex.forAccount(getClient(), account, getReportingPeriod(), warnings);
             dataCache.put(account, accountIndex);
         }
 
@@ -256,10 +253,10 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private void addCategory(DataSeries item, List<Exception> warnings)
     {
         Category category = (Category) item.getInstance();
-        CategoryIndex categoryIndex = (CategoryIndex) dataCache.get(category);
+        PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
         if (categoryIndex == null)
         {
-            categoryIndex = CategoryIndex.forPeriod(getClient(), category, getReportingPeriod(), warnings);
+            categoryIndex = PerformanceIndex.forCategory(getClient(), category, getReportingPeriod(), warnings);
             dataCache.put(category, categoryIndex);
         }
 
