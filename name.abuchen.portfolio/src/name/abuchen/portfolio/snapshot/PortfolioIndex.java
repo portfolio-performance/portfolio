@@ -29,6 +29,14 @@ import name.abuchen.portfolio.model.Security;
         pseudoPortfolio.setReferenceAccount(pseudoAccount);
         pseudoClient.addPortfolio(pseudoPortfolio);
 
+        adaptPortfolioTransactions(portfolio, pseudoClient, pseudoPortfolio);
+        collectDividends(portfolio, pseudoClient, pseudoAccount);
+
+        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
+    }
+
+    private static void adaptPortfolioTransactions(Portfolio portfolio, Client pseudoClient, Portfolio pseudoPortfolio)
+    {
         Set<Security> securities = new HashSet<Security>();
 
         for (PortfolioTransaction t : portfolio.getTransactions())
@@ -62,8 +70,41 @@ import name.abuchen.portfolio.model.Security;
 
         for (Security security : securities)
             pseudoClient.addSecurity(security);
-
-        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
     }
 
+    private static void collectDividends(Portfolio portfolio, Client pseudoClient, Account pseudoAccount)
+    {
+        if (portfolio.getReferenceAccount() != null)
+        {
+            for (AccountTransaction t : portfolio.getReferenceAccount().getTransactions())
+            {
+                if (t.getSecurity() != null && pseudoClient.getSecurities().contains(t.getSecurity()))
+                {
+                    switch (t.getType())
+                    {
+                        case DIVIDENDS:
+                            pseudoAccount.addTransaction(t);
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                                            AccountTransaction.Type.REMOVAL, t.getAmount()));
+                            break;
+                        case BUY:
+                        case TRANSFER_IN:
+                        case SELL:
+                        case TRANSFER_OUT:
+                        case DEPOSIT:
+                        case REMOVAL:
+                        case INTEREST:
+                        case TAXES:
+                        case FEES:
+                            // do nothing
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+
+                    }
+
+                }
+            }
+        }
+    }
 }
