@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 
 import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 /* package */class CPIIndex extends PerformanceIndex
@@ -20,8 +21,9 @@ import org.joda.time.Interval;
 
     /* package */void calculate(PerformanceIndex clientIndex)
     {
-        Interval interval = new Interval(clientIndex.getFirstDataPoint(), clientIndex.getReportInterval().toInterval()
-                        .getEnd());
+        DateTime firstDataPoint = clientIndex.getFirstDataPoint();
+        Interval interval = firstDataPoint != null ? new Interval(firstDataPoint, clientIndex.getReportInterval()
+                        .toInterval().getEnd()) : clientIndex.getReportInterval().toInterval();
 
         List<ConsumerPriceIndex> cpiSeries = clientIndex.getClient().getConsumerPriceIndeces();
         Collections.sort(cpiSeries);
