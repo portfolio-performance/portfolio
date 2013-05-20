@@ -462,6 +462,7 @@ import org.swtchart.LineStyle;
                     paintItem.series.setColor(resources.createColor(newColor));
                     paintItem.layout();
                     listener.onUpdate();
+                    persist();
                 }
             }
         });
@@ -481,6 +482,7 @@ import org.swtchart.LineStyle;
                     {
                         paintItem.series.setLineStyle(style);
                         listener.onUpdate();
+                        persist();
                     }
                 };
                 action.setChecked(style == paintItem.series.getLineStyle());
@@ -495,6 +497,7 @@ import org.swtchart.LineStyle;
                 {
                     paintItem.series.setShowArea(!paintItem.series.isShowArea());
                     listener.onUpdate();
+                    persist();
                 }
             };
             actionShowArea.setChecked(paintItem.series.isShowArea());
