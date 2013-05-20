@@ -346,8 +346,11 @@ import org.swtchart.LineStyle;
     {
         for (DataSeries series : availableSeries)
         {
-            if (series.getType() == Client.class || series.getType() == AssetClass.class
-                            || series.getType() == ConsumerPriceIndex.class)
+            if (series.getType() == Client.class || series.getType() == ConsumerPriceIndex.class)
+            {
+                selectedSeries.add(series);
+            }
+            else if (mode == Mode.STATEMENT_OF_ASSETS && series.getType() == AssetClass.class)
             {
                 selectedSeries.add(series);
             }
@@ -598,9 +601,11 @@ import org.swtchart.LineStyle;
 
         public PaintItem(Composite parent, DataSeries series)
         {
-            super(parent, SWT.NO_BACKGROUND);
+            super(parent, SWT.NONE);
 
             this.series = series;
+
+            setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
             addListener(SWT.Paint, this);
             addListener(SWT.Resize, this);
