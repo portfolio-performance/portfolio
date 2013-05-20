@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
@@ -62,7 +63,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-public class SecuritiesTable
+public final class SecuritiesTable
 {
     private AbstractFinanceView view;
 
@@ -248,33 +249,8 @@ public class SecuritiesTable
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnLatestDate, SWT.LEFT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                SecurityPrice latest = ((Security) e).getSecurityPrice(Dates.today());
-                return latest != null ? Values.Date.format(latest.getTime()) : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
-
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
-
-                return p1.getTime().compareTo(p2.getTime());
-            }
-        }));
-        support.addColumn(column);
+        addColumnLatestPrice();
+        addColumnLatestHistoricalPrice();
 
         support.createColumns();
 
@@ -287,7 +263,8 @@ public class SecuritiesTable
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(securities));
 
-        ViewerHelper.pack(securities);
+        if (!support.isUserConfigured())
+            ViewerHelper.pack(securities);
         securities.refresh();
 
         securities.getTable().addSelectionListener(new SelectionAdapter()
@@ -371,6 +348,95 @@ public class SecuritiesTable
             }
         });
         column.setVisible(false);
+        support.addColumn(column);
+    }
+
+    private void addColumnLatestPrice()
+    {
+        Column column;
+        column = new Column(Messages.ColumnLatestDate, SWT.LEFT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
+                return latest != null ? Values.Date.format(latest.getTime()) : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
+
+                if (latest.getTime().before(new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS))))
+                    return Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                else
+                    return null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+
+                if (p1 == null)
+                    return p2 == null ? 0 : -1;
+                if (p2 == null)
+                    return 1;
+
+                return p1.getTime().compareTo(p2.getTime());
+            }
+        }));
+        support.addColumn(column);
+    }
+
+    private void addColumnLatestHistoricalPrice()
+    {
+        Column column = new Column(Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                List<SecurityPrice> prices = ((Security) element).getPrices();
+                SecurityPrice latest = prices.get(prices.size() - 1);
+                return latest != null ? Values.Date.format(latest.getTime()) : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                List<SecurityPrice> prices = ((Security) element).getPrices();
+                SecurityPrice latest = prices.get(prices.size() - 1);
+
+                if (latest.getTime().before(new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS))))
+                    return Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                else
+                    return null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                List<SecurityPrice> prices1 = ((Security) o1).getPrices();
+                SecurityPrice p1 = prices1.get(prices1.size() - 1);
+                List<SecurityPrice> prices2 = ((Security) o2).getPrices();
+                SecurityPrice p2 = prices2.get(prices2.size() - 1);
+
+                if (p1 == null)
+                    return p2 == null ? 0 : -1;
+                if (p2 == null)
+                    return 1;
+
+                return p1.getTime().compareTo(p2.getTime());
+            }
+        }));
         support.addColumn(column);
     }
 
