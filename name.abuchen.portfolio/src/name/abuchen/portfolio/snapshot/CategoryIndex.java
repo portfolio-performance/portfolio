@@ -117,20 +117,20 @@ import name.abuchen.portfolio.model.Security;
     private static void addAccount(Client pseudoClient, Account account)
     {
         Account pseudoAccount = new Account();
-        pseudoAccount.setName(""); //$NON-NLS-1$
+        pseudoAccount.setName(account.getName());
         pseudoClient.addAccount(pseudoAccount);
 
         for (AccountTransaction t : account.getTransactions())
         {
             switch (t.getType())
             {
-                case BUY:
+                case SELL:
                 case TRANSFER_IN:
                 case DIVIDENDS:
                     pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
                                     AccountTransaction.Type.DEPOSIT, t.getAmount()));
                     break;
-                case SELL:
+                case BUY:
                 case TRANSFER_OUT:
                     pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
                                     AccountTransaction.Type.REMOVAL, t.getAmount()));

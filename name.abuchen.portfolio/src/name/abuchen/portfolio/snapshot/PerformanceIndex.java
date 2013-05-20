@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Values;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
+import org.joda.time.DateTime;
 
 public class PerformanceIndex
 {
@@ -70,6 +71,12 @@ public class PerformanceIndex
     {
         Category category = new Category();
 
+        if (assetClass == AssetClass.CASH)
+        {
+            for (Account account : client.getAccounts())
+                category.addAccount(account);
+        }
+
         for (Security security : client.getSecurities())
         {
             if (security.getType() == assetClass)
@@ -87,14 +94,14 @@ public class PerformanceIndex
         return forCategory(client, category, reportInterval, warnings);
     }
 
-    public static PerformanceIndex forSecurity(ClientIndex clientIndex, Security security, List<Exception> warnings)
+    public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security, List<Exception> warnings)
     {
         SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getReportInterval());
         index.calculate(clientIndex, security);
         return index;
     }
 
-    public static PerformanceIndex forConsumerPriceIndex(ClientIndex clientIndex, List<Exception> warnings)
+    public static PerformanceIndex forConsumerPriceIndex(PerformanceIndex clientIndex, List<Exception> warnings)
     {
         CPIIndex index = new CPIIndex(clientIndex.getClient(), clientIndex.getReportInterval());
         index.calculate(clientIndex);
@@ -134,6 +141,17 @@ public class PerformanceIndex
     public long[] getTransferals()
     {
         return transferals;
+    }
+
+    public DateTime getFirstDataPoint()
+    {
+        for (int ii = 0; ii < totals.length; ii++)
+        {
+            if (totals[ii] != 0)
+                return new DateTime(dates[ii]);
+        }
+
+        return null;
     }
 
     public void exportTo(File file) throws IOException

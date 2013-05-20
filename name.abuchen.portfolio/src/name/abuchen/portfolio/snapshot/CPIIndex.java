@@ -18,7 +18,7 @@ import org.joda.time.Interval;
         super(client, reportInterval);
     }
 
-    /* package */void calculate(ClientIndex clientIndex)
+    /* package */void calculate(PerformanceIndex clientIndex)
     {
         Interval interval = new Interval(clientIndex.getFirstDataPoint(), clientIndex.getReportInterval().toInterval()
                         .getEnd());

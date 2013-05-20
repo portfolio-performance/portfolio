@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -162,11 +161,11 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
     private void addClient(DataSeries item, List<Exception> warnings)
     {
-        ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
+        PerformanceIndex clientIndex = (PerformanceIndex) dataCache.get(Client.class);
         if (clientIndex == null)
         {
             clientIndex = PerformanceIndex.forClient(getClient(), getReportingPeriod(), warnings);
-            dataCache.put(ClientIndex.class, clientIndex);
+            dataCache.put(Client.class, clientIndex);
         }
 
         if (item.getInstance() != null)
@@ -187,17 +186,17 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
     private void addAssetClass(DataSeries item, List<Exception> warnings)
     {
-        ClientIndex clientIndex = (ClientIndex) dataCache.get(ClientIndex.class);
-        if (clientIndex == null)
+        AssetClass assetClass = (AssetClass) item.getInstance();
+        PerformanceIndex assetClassIndex = (PerformanceIndex) dataCache.get(assetClass);
+
+        if (assetClassIndex == null)
         {
-            clientIndex = PerformanceIndex.forClient(getClient(), getReportingPeriod(), warnings);
-            dataCache.put(ClientIndex.class, clientIndex);
+            assetClassIndex = PerformanceIndex.forAssetClass(getClient(), assetClass, getReportingPeriod(), warnings);
+            dataCache.put(assetClass, assetClassIndex);
         }
 
-        AssetClass assetClass = (AssetClass) item.getInstance();
-
-        ILineSeries series = chart.addDateSeries(clientIndex.getDates(), //
-                        toDouble(clientIndex.byAssetClass(assetClass), Values.Amount.divider()), //
+        ILineSeries series = chart.addDateSeries(assetClassIndex.getDates(), //
+                        toDouble(assetClassIndex.getTotals(), Values.Amount.divider()), //
                         assetClass.toString());
         item.configure(series);
     }

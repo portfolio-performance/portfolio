@@ -10,35 +10,16 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security.AssetClass;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 
-public class ClientIndex extends PerformanceIndex
+/* package */class ClientIndex extends PerformanceIndex
 {
-    private long[][] assetClasses;
-
     /* package */ClientIndex(Client client, ReportingPeriod reportInterval)
     {
         super(client, reportInterval);
-    }
-
-    public DateTime getFirstDataPoint()
-    {
-        for (int ii = 0; ii < totals.length; ii++)
-        {
-            if (totals[ii] != 0)
-                return new DateTime(dates[ii]);
-        }
-
-        return null;
-    }
-
-    public long[] byAssetClass(AssetClass assetClass)
-    {
-        return assetClasses[assetClass.ordinal()];
     }
 
     /* package */void calculate(List<Exception> warnings)
@@ -48,7 +29,6 @@ public class ClientIndex extends PerformanceIndex
 
         dates = new Date[size];
         totals = new long[size];
-        assetClasses = new long[AssetClass.values().length][size];
         delta = new double[size];
         accumulated = new double[size];
 
@@ -60,7 +40,6 @@ public class ClientIndex extends PerformanceIndex
         accumulated[0] = 0;
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), dates[0]);
         long valuation = totals[0] = snapshot.getAssets();
-        fillAssetClasses(snapshot, 0);
 
         // calculate series
         int index = 1;
@@ -72,8 +51,6 @@ public class ClientIndex extends PerformanceIndex
             snapshot = ClientSnapshot.create(getClient(), dates[index]);
             long thisValuation = totals[index] = snapshot.getAssets();
             long thisDelta = thisValuation - transferals[index] - valuation;
-
-            fillAssetClasses(snapshot, index);
 
             if (valuation == 0)
             {
@@ -98,16 +75,6 @@ public class ClientIndex extends PerformanceIndex
             date = date.plusDays(1);
             valuation = thisValuation;
             index++;
-        }
-    }
-
-    private void fillAssetClasses(ClientSnapshot snapshot, int index)
-    {
-        GroupByAssetClass byAssetClass = snapshot.groupByAssetClass();
-        for (int ii = 0; ii < assetClasses.length; ii++)
-        {
-            AssetCategory c = byAssetClass.byClass(AssetClass.values()[ii]);
-            assetClasses[ii][index] = c != null ? c.getValuation() : 0;
         }
     }
 

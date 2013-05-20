@@ -17,7 +17,7 @@ import org.joda.time.Days;
         super(client, reportInterval);
     }
 
-    /* package */void calculate(ClientIndex clientIndex, Security security)
+    /* package */void calculate(PerformanceIndex clientIndex, Security security)
     {
         List<SecurityPrice> prices = security.getPrices();
         if (prices.isEmpty())
@@ -79,7 +79,7 @@ import org.joda.time.Days;
         }
     }
 
-    private void initEmpty(ClientIndex clientIndex)
+    private void initEmpty(PerformanceIndex clientIndex)
     {
         DateMidnight startDate = clientIndex.getFirstDataPoint().toDateMidnight();
 

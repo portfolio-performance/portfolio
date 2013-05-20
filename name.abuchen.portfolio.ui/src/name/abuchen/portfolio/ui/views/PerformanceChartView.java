@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.snapshot.ClientIndex;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
@@ -172,21 +171,21 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.redraw();
     }
 
-    private ClientIndex getClientIndex(List<Exception> warnings)
+    private PerformanceIndex getClientIndex(List<Exception> warnings)
     {
-        ClientIndex index = (ClientIndex) dataCache.get(ClientIndex.class);
+        PerformanceIndex index = (PerformanceIndex) dataCache.get(Client.class);
         if (index == null)
         {
             ReportingPeriod interval = getReportingPeriod();
             index = PerformanceIndex.forClient(getClient(), interval, warnings);
-            dataCache.put(ClientIndex.class, index);
+            dataCache.put(Client.class, index);
         }
         return index;
     }
 
     private void addClient(DataSeries item, Client client, List<Exception> warnings)
     {
-        ClientIndex clientIndex = getClientIndex(warnings);
+        PerformanceIndex clientIndex = getClientIndex(warnings);
         PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(clientIndex,
                         aggregationPeriod) : clientIndex;
 
@@ -212,7 +211,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (cpiIndex == null)
         {
-            ClientIndex clientIndex = getClientIndex(warnings);
+            PerformanceIndex clientIndex = getClientIndex(warnings);
             cpiIndex = PerformanceIndex.forConsumerPriceIndex(clientIndex, warnings);
             dataCache.put(ConsumerPriceIndex.class, cpiIndex);
         }
@@ -233,7 +232,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (securityIndex == null)
         {
-            ClientIndex clientIndex = getClientIndex(warnings);
+            PerformanceIndex clientIndex = getClientIndex(warnings);
             securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
             dataCache.put(security, securityIndex);
         }
@@ -379,7 +378,7 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
             });
 
-            addMenu(manager, ClientIndex.class, Messages.PerformanceChartLabelAccumulatedIRR);
+            addMenu(manager, Client.class, Messages.PerformanceChartLabelAccumulatedIRR);
 
             Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
                             Security.class, Portfolio.class, Account.class, Category.class, AssetClass.class }));
