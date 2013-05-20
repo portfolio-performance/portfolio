@@ -365,12 +365,24 @@ public final class SecuritiesTable
             }
 
             @Override
+            public Color getForeground(Object element)
+            {
+                return getColor(element, SWT.COLOR_INFO_FOREGROUND);
+            }
+
+            @Override
             public Color getBackground(Object element)
+            {
+                return getColor(element, SWT.COLOR_INFO_BACKGROUND);
+            }
+
+            private Color getColor(Object element, int colorId)
             {
                 SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
 
-                if (latest.getTime().before(new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS))))
-                    return Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                Date sevenDaysAgo = new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS));
+                if (latest != null && latest.getTime().before(sevenDaysAgo))
+                    return Display.getDefault().getSystemColor(colorId);
                 else
                     return null;
             }
@@ -403,18 +415,34 @@ public final class SecuritiesTable
             public String getText(Object element)
             {
                 List<SecurityPrice> prices = ((Security) element).getPrices();
+                if (prices.isEmpty())
+                    return null;
+
                 SecurityPrice latest = prices.get(prices.size() - 1);
                 return latest != null ? Values.Date.format(latest.getTime()) : null;
             }
 
             @Override
+            public Color getForeground(Object element)
+            {
+                return getColor(element, SWT.COLOR_INFO_FOREGROUND);
+            }
+
+            @Override
             public Color getBackground(Object element)
             {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
-                SecurityPrice latest = prices.get(prices.size() - 1);
+                return getColor(element, SWT.COLOR_INFO_BACKGROUND);
+            }
 
+            private Color getColor(Object element, int colorId)
+            {
+                List<SecurityPrice> prices = ((Security) element).getPrices();
+                if (prices.isEmpty())
+                    return null;
+
+                SecurityPrice latest = prices.get(prices.size() - 1);
                 if (latest.getTime().before(new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS))))
-                    return Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                    return Display.getDefault().getSystemColor(colorId);
                 else
                     return null;
             }
@@ -425,9 +453,9 @@ public final class SecuritiesTable
             public int compare(Object o1, Object o2)
             {
                 List<SecurityPrice> prices1 = ((Security) o1).getPrices();
-                SecurityPrice p1 = prices1.get(prices1.size() - 1);
+                SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
                 List<SecurityPrice> prices2 = ((Security) o2).getPrices();
-                SecurityPrice p2 = prices2.get(prices2.size() - 1);
+                SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
 
                 if (p1 == null)
                     return p2 == null ? 0 : -1;
