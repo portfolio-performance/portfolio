@@ -157,19 +157,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
             {
                 NewPlanDialog newDialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                                 .getShell(), client);
-                if (newDialog.open() == Dialog.OK)
-                {
-                    Model model = newDialog.model;
-                    InvestmentPlan plan = new InvestmentPlan(model.name);
-                    plan.setAmount(model.amount);
-                    plan.setPortfolio(model.portfolio);
-                    plan.setSecurity(model.security);
-                    plan.setStart(model.start);
-                    plan.setPeriod(model.period);
-                    client.addPlan(plan);
-                    comboDropDown.add(plan.getName());
-                    comboDropDown.setData(plan.getName(), plan);
-                }
+                newDialog.open();
             }
 
             @Override

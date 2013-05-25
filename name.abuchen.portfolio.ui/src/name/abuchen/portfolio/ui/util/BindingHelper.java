@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 public class BindingHelper
@@ -149,12 +150,26 @@ public class BindingHelper
                         null, //
                         new UpdateValueStrategy().setConverter(new StatusTextConverter()));
     }
-
+    
     public final void createLabel(Composite editArea, String text)
     {
         Label lblTransactionType = new Label(editArea, SWT.NONE);
         lblTransactionType.setText(text);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(lblTransactionType);
+    }
+    
+    public final void bindSpinner(Composite editArea, String label, String property,
+                    int min, int max, int selection, int increment)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        Spinner spinner = new Spinner(editArea, SWT.NONE);
+        spinner.setMinimum(min);
+        spinner.setMaximum(max);
+        spinner.setSelection(selection);
+        spinner.setIncrement(increment);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(spinner);
+        context.bindValue(SWTObservables.observeSelection(spinner), BeansObservables.observeValue(model, property));
     }
 
     public final void bindComboViewer(Composite editArea, String label, String property,
