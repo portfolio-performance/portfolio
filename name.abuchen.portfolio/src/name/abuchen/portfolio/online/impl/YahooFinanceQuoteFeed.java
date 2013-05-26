@@ -99,15 +99,14 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
 
-        InputStream is = null;
+        BufferedReader reader = null;
         String line = null;
 
         try
         {
-            is = openStream(url);
-            BufferedReader dis = new BufferedReader(new InputStreamReader(is));
+            reader = new BufferedReader(new InputStreamReader(openStream(url)));
 
-            while ((line = dis.readLine()) != null)
+            while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
                 if (values.length != 7)
@@ -158,8 +157,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         finally
         {
-            if (is != null)
-                is.close();
+            if (reader != null)
+                reader.close();
         }
 
     }
@@ -244,15 +243,14 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         List<T> answer = new ArrayList<T>();
 
-        InputStream is = null;
+        BufferedReader reader = null;
         String line = null;
 
         try
         {
-            is = openStream(wknUrl);
-            BufferedReader dis = new BufferedReader(new InputStreamReader(is));
+            reader = new BufferedReader(new InputStreamReader(openStream(wknUrl)));
 
-            line = dis.readLine();
+            line = reader.readLine();
 
             // poor man's check
             if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
@@ -260,7 +258,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             DecimalFormat priceFormat = FMT_PRICE.get();
 
-            while ((line = dis.readLine()) != null)
+            while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
                 if (values.length != 7)
@@ -312,8 +310,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         finally
         {
-            if (is != null)
-                is.close();
+            if (reader != null)
+                reader.close();
         }
 
         return answer;
