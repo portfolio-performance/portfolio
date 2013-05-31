@@ -13,7 +13,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 12;
+    /* package */static final int CURRENT_VERSION = 13;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -30,6 +30,8 @@ public class Client
     private Map<String, String> properties; // old versions!
 
     private String industryTaxonomyId;
+
+    private List<Taxonomy> taxonomies;
 
     public Client()
     {
@@ -52,6 +54,9 @@ public class Client
 
         if (propertyChangeSupport == null)
             propertyChangeSupport = new PropertyChangeSupport(this);
+
+        if (taxonomies == null)
+            taxonomies = new ArrayList<Taxonomy>();
     }
 
     public int getVersion()
@@ -158,6 +163,21 @@ public class Client
     public IndustryClassification getIndustryTaxonomy()
     {
         return IndustryClassification.lookup(industryTaxonomyId);
+    }
+
+    public List<Taxonomy> getTaxonomies()
+    {
+        return Collections.unmodifiableList(taxonomies);
+    }
+
+    public void addTaxonomy(Taxonomy taxonomy)
+    {
+        taxonomies.add(taxonomy);
+    }
+
+    public void removeTaxonomy(Taxonomy taxonomy)
+    {
+        taxonomies.remove(taxonomy);
     }
 
     public void setProperty(String key, String value)

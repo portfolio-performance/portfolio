@@ -9,8 +9,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.UUID;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -108,6 +110,15 @@ public class ClientFactory
             client.setVersion(12);
         }
 
+        if (client.getVersion() == 12)
+        {
+            // introduce arbitrary taxonomies
+            addAssetClassesAsTaxonomy(client);
+            addIndustryClassificationAsTaxonomy(client);
+            addAssetAllocationAsTaxonomy(client);
+            client.setVersion(13);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
@@ -148,6 +159,121 @@ public class ClientFactory
                 else if (t.getType() == Type.TRANSFER_OUT)
                     t.setType(Type.DELIVERY_OUTBOUND);
             }
+        }
+    }
+
+    private static void addAssetClassesAsTaxonomy(Client client)
+    {
+        Taxonomy taxonomy = new Taxonomy("asset-class", Messages.LabelAssetClasses); //$NON-NLS-1$
+        Classification root = new Classification(UUID.randomUUID().toString(), Messages.LabelAssetClasses);
+        taxonomy.setRootNode(root);
+
+        for (AssetClass assetClass : AssetClass.values())
+        {
+            Classification classification = new Classification(root, assetClass.name(), assetClass.toString());
+            root.addChild(classification);
+
+            for (Security security : client.getSecurities())
+            {
+                if (security.getType() == assetClass)
+                    classification.addAssignment(new Assignment(security));
+            }
+
+            if (assetClass == AssetClass.CASH)
+            {
+                for (Account account : client.getAccounts())
+                    classification.addAssignment(new Assignment(account));
+            }
+        }
+
+        client.addTaxonomy(taxonomy);
+    }
+
+    private static void addIndustryClassificationAsTaxonomy(Client client)
+    {
+        IndustryClassification industry = client.getIndustryTaxonomy();
+        IndustryClassification.Category category = industry.getRootCategory();
+
+        Taxonomy taxonomy = new Taxonomy(industry.getIdentifier(), Messages.LabelIndustryClassification);
+        taxonomy.setDimensions(industry.getLabels());
+
+        Classification root = new Classification(category.getId(), category.getLabel());
+        root.setDescription(category.getDescription());
+        taxonomy.setRootNode(root);
+
+        buildTree(root, category);
+
+        Classification others = new Classification(root, IndustryClassification.Category.OTHER_ID, Messages.LabelWithoutClassification);
+        root.addChild(others);
+
+        assignSecurities(client, taxonomy, others);
+        assignAccounts(client, others);
+
+        client.addTaxonomy(taxonomy);
+    }
+
+    private static void buildTree(Classification node, IndustryClassification.Category category)
+    {
+        for (IndustryClassification.Category child : category.getChildren())
+        {
+            Classification classification = new Classification(node, child.getId(), child.getLabel());
+            classification.setDescription(child.getDescription());
+            node.addChild(classification);
+
+            if (!child.getChildren().isEmpty())
+                buildTree(classification, child);
+        }
+    }
+
+    private static void assignSecurities(Client client, Taxonomy taxonomy, Classification others)
+    {
+        for (Security security : client.getSecurities())
+        {
+            Classification classification = taxonomy.getClassificationById(security.getIndustryClassification());
+
+            if (classification != null)
+                classification.addAssignment(new Assignment(security));
+            else
+                others.addAssignment(new Assignment(security));
+        }
+    }
+
+    private static void assignAccounts(Client client, Classification others)
+    {
+        for (Account account : client.getAccounts())
+            others.addAssignment(new Assignment(account));
+    }
+
+    private static void addAssetAllocationAsTaxonomy(Client client)
+    {
+        Category category = client.getRootCategory();
+
+        Taxonomy taxonomy = new Taxonomy("asset-allocation", Messages.LabelAssetAllocation); //$NON-NLS-1$
+        Classification root = new Classification(category.getUUID(), Messages.LabelAssetAllocation);
+        taxonomy.setRootNode(root);
+
+        buildTree(root, category);
+
+        client.addTaxonomy(taxonomy);
+    }
+
+    private static void buildTree(Classification node, Category category)
+    {
+        for (Category child : category.getChildren())
+        {
+            Classification classification = new Classification(node, child.getUUID(), child.getName());
+            classification.setWeight(child.getPercentage() * Values.Weight.factor());
+            node.addChild(classification);
+
+            buildTree(classification, child);
+        }
+
+        for (Object element : category.getElements())
+        {
+            if (element instanceof Account)
+                node.addAssignment(new Assignment((Account) element));
+            else
+                node.addAssignment(new Assignment((Security) element));
         }
     }
 
@@ -194,6 +320,10 @@ public class ClientFactory
                     xstream.alias("buysell", BuySellEntry.class);
                     xstream.alias("account-transfer", AccountTransferEntry.class);
                     xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
+
+                    xstream.alias("taxonomy", Taxonomy.class);
+                    xstream.alias("classification", Classification.class);
+                    xstream.alias("assignment", Assignment.class);
                 }
             }
         }
