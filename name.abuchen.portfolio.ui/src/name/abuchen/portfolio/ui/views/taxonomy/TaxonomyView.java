@@ -18,10 +18,8 @@ import org.eclipse.swt.widgets.ToolBar;
 public class TaxonomyView extends AbstractFinanceView
 {
     private Taxonomy taxonomy;
-    private TaxonomyNode model;
 
     private Composite container;
-    private LocalResourceManager resources;
 
     @Override
     public void init(ClientEditor clientEditor, Object parameter)
@@ -41,6 +39,7 @@ public class TaxonomyView extends AbstractFinanceView
     {
         addView(toolBar, "Definition", PortfolioPlugin.IMG_VIEW_TABLE, 0);
         addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 1);
+        addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 2);
     }
 
     private void addView(final ToolBar toolBar, String label, String image, final int index)
@@ -63,19 +62,23 @@ public class TaxonomyView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        model = TaxonomyNode.create(getClient(), taxonomy);
+        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        resources = new LocalResourceManager(JFaceResources.getResources(), parent);
+        TaxonomyNode model = TaxonomyNode.create(getClient(), taxonomy);
+        TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(resources);
 
         container = new Composite(parent, SWT.NONE);
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        DefinitionViewer definition = new DefinitionViewer(taxonomy);
-        layout.topControl = definition.createContainer(container, resources);
+        DefinitionViewer definition = new DefinitionViewer(model);
+        layout.topControl = definition.createContainer(container, renderer);
 
         PieChartViewer pie = new PieChartViewer(model);
-        pie.createContainer(container);
+        pie.createContainer(container, renderer);
+
+        TreeMapViewer tree = new TreeMapViewer(getClient(), model);
+        tree.createContainer(container, renderer);
 
         return container;
     }

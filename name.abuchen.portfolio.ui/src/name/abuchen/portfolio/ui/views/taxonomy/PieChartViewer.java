@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.PieChart;
 
 import org.eclipse.swt.SWT;
@@ -19,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
         this.model = model;
     }
 
-    public Control createContainer(Composite container)
+    public Control createContainer(Composite container, TaxonomyNodeRenderer renderer)
     {
         PieChart pieChart = new PieChart(container, SWT.NONE);
 
@@ -29,7 +28,7 @@ import org.eclipse.swt.widgets.Control;
         {
             slices.add(new PieChart.Slice(child.getActual(), //
                             child.getName(), //
-                            Colors.toRGB(child.getColor())));
+                            renderer.getColorFor(child)));
         }
 
         pieChart.setSlices(slices);

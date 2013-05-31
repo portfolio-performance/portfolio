@@ -17,18 +17,24 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.util.Dates;
 
-/* package */class TaxonomyNode
+public final class TaxonomyNode
 {
-    private TaxonomyNode parent;
-    private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
-
+    private final TaxonomyNode parent;
     private final Object subject;
+
+    private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
     private long actual;
 
-    private TaxonomyNode(TaxonomyNode parent, Object subject)
+    private TaxonomyNode(TaxonomyNode parent, Classification classification)
     {
         this.parent = parent;
-        this.subject = subject;
+        this.subject = classification;
+    }
+
+    private TaxonomyNode(TaxonomyNode parent, Assignment assignment)
+    {
+        this.parent = parent;
+        this.subject = assignment;
     }
 
     public static TaxonomyNode create(Client client, Taxonomy taxonomy)
@@ -69,6 +75,11 @@ import name.abuchen.portfolio.util.Dates;
         return parent;
     }
 
+    public boolean isRoot()
+    {
+        return parent == null;
+    }
+
     public List<TaxonomyNode> getChildren()
     {
         return children;
@@ -90,9 +101,27 @@ import name.abuchen.portfolio.util.Dates;
         return null;
     }
 
+    public Classification getClassification()
+    {
+        return subject instanceof Classification ? (Classification) subject : null;
+    }
+
+    public Assignment getAssignment()
+    {
+        return subject instanceof Assignment ? (Assignment) subject : null;
+    }
+
     public long getActual()
     {
         return actual;
+    }
+
+    public int getWeight()
+    {
+        if (subject instanceof Classification)
+            return ((Classification) subject).getWeight();
+        else
+            return ((Assignment) subject).getWeight();
     }
 
     public String getName()
@@ -101,6 +130,17 @@ import name.abuchen.portfolio.util.Dates;
             return ((Classification) subject).getName();
         else
             return ((Assignment) subject).getInvestmentVehicle().toString();
+    }
+
+    public String getId()
+    {
+        if (subject instanceof Classification)
+            return ((Classification) subject).getId();
+        else
+        {
+            Object vehicle = ((Assignment) subject).getInvestmentVehicle();
+            return vehicle instanceof Security ? ((Security) vehicle).getUUID() : ((Account) vehicle).getUUID();
+        }
     }
 
     public String getColor()
@@ -159,7 +199,8 @@ import name.abuchen.portfolio.util.Dates;
             }
             else
             {
-                throw new RuntimeException("unknown element: " + assignment.getClass().getName()); //$NON-NLS-1$
+                throw new UnsupportedOperationException(
+                                "unknown element: " + assignment.getInvestmentVehicle().getClass().getName()); //$NON-NLS-1$
             }
         }
 

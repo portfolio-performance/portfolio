@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
-class SecurityDetailsViewer
+public class SecurityDetailsViewer
 {
     private static final String EMPTY_LABEL = ""; //$NON-NLS-1$
 

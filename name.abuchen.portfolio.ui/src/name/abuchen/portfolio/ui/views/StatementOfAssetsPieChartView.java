@@ -18,6 +18,8 @@ import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -31,6 +33,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
     private ViewDropdownMenu dropdown;
 
     private TreeMapItem root;
+    private LocalResourceManager resources;
 
     @Override
     protected String getTitle()
@@ -60,6 +63,8 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
+        resources = new LocalResourceManager(JFaceResources.getResources(), parent);
+
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new StackLayout());
 
@@ -83,7 +88,8 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         for (AssetCategory category : categories)
         {
             AssetClass assetClass = category.getAssetClass();
-            slices.add(new PieChart.Slice(category.getValuation(), assetClass.toString(), Colors.valueOf(assetClass.name())));
+            slices.add(new PieChart.Slice(category.getValuation(), assetClass.toString(), //
+                            resources.createColor(Colors.valueOf(assetClass.name()).swt())));
         }
         pieChart.setSlices(slices);
         pieChart.redraw();

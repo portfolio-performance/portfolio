@@ -1,20 +1,10 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -33,12 +23,12 @@ import org.eclipse.ui.PlatformUI;
 {
     private static class ItemContentProvider implements ITreeContentProvider
     {
-        private Classification root;
+        private TaxonomyNode root;
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
         {
-            root = (Classification) newInput;
+            root = (TaxonomyNode) newInput;
         }
 
         @Override
@@ -50,28 +40,19 @@ import org.eclipse.ui.PlatformUI;
         @Override
         public boolean hasChildren(Object element)
         {
-            if (element instanceof Assignment)
-                return false;
-
-            Classification classification = (Classification) element;
-            return !classification.getChildren().isEmpty() || !classification.getAssignments().isEmpty();
+            return !((TaxonomyNode) element).getChildren().isEmpty();
         }
 
         @Override
         public Object[] getChildren(Object parentElement)
         {
-            Classification classification = (Classification) parentElement;
-
-            List<Object> children = new ArrayList<Object>();
-            children.addAll(classification.getChildren());
-            children.addAll(classification.getAssignments());
-            return children.toArray();
+            return ((TaxonomyNode) parentElement).getChildren().toArray();
         }
 
         @Override
         public Object getParent(Object element)
         {
-            return null;
+            return ((TaxonomyNode) element).getParent();
         }
 
         @Override
@@ -79,14 +60,14 @@ import org.eclipse.ui.PlatformUI;
         {}
     }
 
-    private Taxonomy taxonomy;
+    private TaxonomyNode model;
 
-    public DefinitionViewer(Taxonomy taxonomy)
+    public DefinitionViewer(TaxonomyNode model)
     {
-        this.taxonomy = taxonomy;
+        this.model = model;
     }
 
-    public Control createContainer(Composite parent, final LocalResourceManager resources)
+    public Control createContainer(Composite parent, final TaxonomyNodeRenderer renderer)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
@@ -103,30 +84,23 @@ import org.eclipse.ui.PlatformUI;
             @Override
             public String getText(Object element)
             {
-                if (element instanceof Classification)
-                    return ((Classification) element).getName();
-                else if (element instanceof Assignment)
-                    return ((Assignment) element).getInvestmentVehicle().toString();
-                else
-                    return null;
+                return ((TaxonomyNode) element).getName();
             }
 
             @Override
             public Image getImage(Object element)
             {
-                if (element instanceof Classification)
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if (node.getClassification() != null)
                     return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-                else if (element instanceof Assignment
-                                && ((Assignment) element).getInvestmentVehicle() instanceof Security)
+                else if (node.getBackingSecurity() != null)
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
-                else if (element instanceof Assignment
-                                && ((Assignment) element).getInvestmentVehicle() instanceof Account)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
                 else
-                    return null;
+                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
-        ColumnViewerSorter.create(Classification.class, "name").attachTo(viewer, column); //$NON-NLS-1$ // FIXME sorting
+        ColumnViewerSorter.create(TaxonomyNode.class, "name").attachTo(viewer, column); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText("Id");
@@ -137,13 +111,10 @@ import org.eclipse.ui.PlatformUI;
             @Override
             public String getText(Object element)
             {
-                if (element instanceof Classification)
-                    return ((Classification) element).getId();
-                else
-                    return null;
+                return ((TaxonomyNode) element).getId();
             }
         });
-        ColumnViewerSorter.create(Classification.class, "id").attachTo(viewer, column); //$NON-NLS-1$ // FIXME sorting
+        ColumnViewerSorter.create(TaxonomyNode.class, "id").attachTo(viewer, column); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText("Weight");
@@ -154,14 +125,11 @@ import org.eclipse.ui.PlatformUI;
             @Override
             public String getText(Object element)
             {
-                if (element instanceof Classification)
-                    return Values.Weight.format(((Classification) element).getWeight());
-                else if (element instanceof Assignment)
-                    return Values.Weight.format(((Assignment) element).getWeight());
-                return null;
+                TaxonomyNode node = (TaxonomyNode) element;
+                return Values.Weight.format(node.getWeight());
             }
         });
-        ColumnViewerSorter.create(Classification.class, "weight").attachTo(viewer, column, true); //$NON-NLS-1$ // FIXME sorting
+        ColumnViewerSorter.create(TaxonomyNode.class, "weight").attachTo(viewer, column, true); //$NON-NLS-1$
 
         column = new TreeViewerColumn(viewer, SWT.LEFT);
         column.getColumn().setText("Color");
@@ -172,24 +140,21 @@ import org.eclipse.ui.PlatformUI;
             @Override
             public String getText(Object element)
             {
-                return "";
+                return null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
-                if (element instanceof Classification)
-                    return resources.createColor(Colors.toRGB(((Classification) element).getColor()));
-                else
-                    return null;
+                return renderer.getColorFor((TaxonomyNode) element);
             }
         });
-        ColumnViewerSorter.create(Classification.class, "color").attachTo(viewer, column, true); //$NON-NLS-1$ // FIXME sorting
+        ColumnViewerSorter.create(TaxonomyNode.class, "color").attachTo(viewer, column, true); //$NON-NLS-1$
 
         viewer.getTree().setHeaderVisible(true);
         viewer.getTree().setLinesVisible(true);
         viewer.setContentProvider(new ItemContentProvider());
-        viewer.setInput(taxonomy.getRoot());
+        viewer.setInput(model);
 
         return container;
     }

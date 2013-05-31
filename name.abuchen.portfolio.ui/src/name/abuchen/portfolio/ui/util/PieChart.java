@@ -2,13 +2,11 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.List;
 
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -20,14 +18,9 @@ public class PieChart extends Composite implements Listener
     {
         private long value;
         private String label;
-        private RGB color;
+        private Color color;
 
-        public Slice(long value, String label, Colors color)
-        {
-            this(value, label, color.swt());
-        }
-
-        public Slice(long value, String label, RGB color)
+        public Slice(long value, String label, Color color)
         {
             this.value = value;
             this.label = label;
@@ -44,7 +37,7 @@ public class PieChart extends Composite implements Listener
             return label;
         }
 
-        public RGB getColor()
+        public Color getColor()
         {
             return color;
         }
@@ -52,7 +45,6 @@ public class PieChart extends Composite implements Listener
 
     private static final int PADDING = 40;
 
-    private final LocalResourceManager resources;
     private Image image;
     private boolean updateImage;
 
@@ -62,8 +54,6 @@ public class PieChart extends Composite implements Listener
     {
         super(parent, style);
         setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-        
-        resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
         addListener(SWT.Paint, this);
         addListener(SWT.Resize, this);
@@ -122,7 +112,7 @@ public class PieChart extends Composite implements Listener
             image = new Image(Display.getCurrent(), size.x, size.y);
             GC gc = new GC(image);
             gc.setAntialias(SWT.ON);
-            
+
             int total = 0;
             for (Slice slice : slices)
                 total += slice.getValue();
@@ -144,7 +134,7 @@ public class PieChart extends Composite implements Listener
                 if (slice == slices.get(slices.size() - 1))
                     arcAngle = 360 - startAngle;
 
-                gc.setBackground(resources.createColor(slice.getColor()));
+                gc.setBackground(slice.getColor());
                 gc.fillArc(centerX - radius, centerY - radius, diameter, diameter, startAngle, arcAngle);
 
                 startAngle += arcAngle;
