@@ -51,6 +51,11 @@ public enum Colors
         return new RGB(red, green, blue);
     }
 
+    public String asHex()
+    {
+        return toHex(swt());
+    }
+
     public static String toHex(RGB rgb)
     {
         return '#' + Integer.toHexString((rgb.red << 16) | (rgb.green << 8) | rgb.blue);

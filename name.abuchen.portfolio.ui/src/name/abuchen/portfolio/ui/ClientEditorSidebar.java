@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui;
 
+import java.util.UUID;
+
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
@@ -67,6 +70,7 @@ import org.eclipse.swt.widgets.Control;
         createGeneralDataSection(sidebar);
         createMasterDataSection(sidebar);
         createPerformanceSection(sidebar);
+        createTaxonomyDataSection(sidebar);
         createMiscSection(sidebar);
 
         return sidebar;
@@ -212,6 +216,81 @@ import org.eclipse.swt.widgets.Control;
                         "Performance")); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
+    }
+
+    private void createTaxonomyDataSection(final Sidebar sidebar)
+    {
+        final Entry section = new Entry(sidebar, "Taxonomies");
+        section.setAction(new Action("Taxonomies", PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        {
+            @Override
+            public void run()
+            {
+                String name = askTaxonomyName("New Taxonomy");
+                if (name == null)
+                    return;
+
+                Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
+                editor.getClient().addTaxonomy(taxonomy);
+                editor.markDirty();
+
+                createTaxonomyEntry(section, taxonomy);
+
+                sidebar.layout();
+            }
+        });
+
+        for (Taxonomy taxonomy : editor.getClient().getTaxonomies())
+            createTaxonomyEntry(section, taxonomy);
+    }
+
+    private void createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
+    {
+        final Entry entry = new Entry(section, taxonomy.getName());
+        entry.setAction(new ActivateViewAction(taxonomy.getName(), "taxonomy.Taxonomy", taxonomy, null)); //$NON-NLS-1$
+        entry.setContextMenu(new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                manager.add(new Action("Rename Taxonomy")
+                {
+                    @Override
+                    public void run()
+                    {
+                        String newName = askTaxonomyName(taxonomy.getName());
+                        if (newName != null)
+                        {
+                            taxonomy.setName(newName);
+                            editor.markDirty();
+                            entry.setLabel(newName);
+                        }
+                    }
+                });
+
+                manager.add(new Action("Delete Taxonomy")
+                {
+                    @Override
+                    public void run()
+                    {
+                        editor.getClient().removeTaxonomy(taxonomy);
+                        editor.markDirty();
+                        entry.dispose();
+                        statementOfAssets.select();
+                    }
+                });
+            }
+        });
+    }
+
+    private String askTaxonomyName(String initialValue)
+    {
+        InputDialog dlg = new InputDialog(editor.getSite().getShell(), "Edit Taxonomy Name",
+                        "Give the taxonomy a name", initialValue, null);
+        if (dlg.open() != InputDialog.OK)
+            return null;
+
+        return dlg.getValue();
     }
 
     private void createMiscSection(Sidebar sidebar)

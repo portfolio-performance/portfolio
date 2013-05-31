@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -19,9 +20,14 @@ public class PieChart extends Composite implements Listener
     {
         private long value;
         private String label;
-        private Colors color;
+        private RGB color;
 
         public Slice(long value, String label, Colors color)
+        {
+            this(value, label, color.swt());
+        }
+
+        public Slice(long value, String label, RGB color)
         {
             this.value = value;
             this.label = label;
@@ -38,7 +44,7 @@ public class PieChart extends Composite implements Listener
             return label;
         }
 
-        public Colors getColor()
+        public RGB getColor()
         {
             return color;
         }
@@ -138,7 +144,7 @@ public class PieChart extends Composite implements Listener
                 if (slice == slices.get(slices.size() - 1))
                     arcAngle = 360 - startAngle;
 
-                gc.setBackground(resources.createColor(slice.getColor().swt()));
+                gc.setBackground(resources.createColor(slice.getColor()));
                 gc.fillArc(centerX - radius, centerY - radius, diameter, diameter, startAngle, arcAngle);
 
                 startAngle += arcAngle;

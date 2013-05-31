@@ -267,12 +267,12 @@ import org.swtchart.LineStyle;
 
     private Color colorFor(RGB rgb)
     {
-        return (Color) resources.createColor(ColorDescriptor.createFrom(rgb));
+        return resources.createColor(ColorDescriptor.createFrom(rgb));
     }
 
     private Color colorFor(Colors color)
     {
-        return (Color) resources.createColor(ColorDescriptor.createFrom(color.swt()));
+        return resources.createColor(ColorDescriptor.createFrom(color.swt()));
     }
 
     private void buildAvailableDataSeries()
