@@ -21,8 +21,12 @@ public class Messages extends NLS
     public static String ChangeTaxonomyTitle;
     public static String ChartSeriesPickerAddItem;
     public static String ChartSeriesPickerColor;
+    public static String ChartSeriesPickerDelete;
+    public static String ChartSeriesPickerDialogMsg;
+    public static String ChartSeriesPickerDialogTitle;
     public static String ChartSeriesPickerLineStyle;
     public static String ChartSeriesPickerRemove;
+    public static String ChartSeriesPickerSave;
     public static String ChartSeriesPickerShowArea;
     public static String ChartSeriesPickerTitle;
     public static String ClientEditorLabelChart;

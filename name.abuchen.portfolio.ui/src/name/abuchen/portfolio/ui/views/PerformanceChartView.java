@@ -71,6 +71,18 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addConfigButton(ToolBar toolBar)
     {
+        Action save = new Action()
+        {
+            @Override
+            public void run()
+            {
+                picker.showSaveMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(save).fill(toolBar, -1);
+
         Action config = new Action()
         {
             @Override
@@ -81,7 +93,6 @@ public class PerformanceChartView extends AbstractHistoricView
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
         config.setToolTipText(Messages.MenuConfigureChart);
-
         new ActionContributionItem(config).fill(toolBar, -1);
     }
 
