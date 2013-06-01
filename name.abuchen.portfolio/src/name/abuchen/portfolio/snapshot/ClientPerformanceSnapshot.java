@@ -152,8 +152,8 @@ public class ClientPerformanceSnapshot
                         String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), snapshotEnd.getAssets()));
 
         ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        categories.put(CategoryType.PERFORMANCE_IZF, new Category(Messages.ColumnPerformanceIZF,
-                        (int) (yield.getIrr() * Values.Amount.factor())));
+        categories.put(CategoryType.PERFORMANCE_IZF,
+                        new Category(Messages.ColumnPerformanceIZF, Math.round(yield.getIrr() * Values.Amount.factor())));
 
         ClientIndex index = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
                         snapshotEnd.getTime()), new ArrayList<Exception>());
