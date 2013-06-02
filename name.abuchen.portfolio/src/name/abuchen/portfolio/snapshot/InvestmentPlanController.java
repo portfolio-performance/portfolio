@@ -1,17 +1,20 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.util.Dates;
 
 public class InvestmentPlanController
 {
-
+    private static final int TOLERANCE = 3;
+        
     private InvestmentPlan plan;
 
     public InvestmentPlanController(InvestmentPlan plan)
@@ -21,31 +24,48 @@ public class InvestmentPlanController
 
     public void generateTransactions()
     {
-        // Generate a dummy for testing
-        long amount = plan.getAmount();
-        long price = plan.getSecurity().getLatest().getValue();
-        float shareF = (float) amount / price;
-        long shares = new Float(shareF * Values.Share.divider()).longValue();
-        PortfolioTransaction temp = new PortfolioTransaction(new Date(), plan.getSecurity(),
-                        PortfolioTransaction.Type.BUY, shares, amount, 0);
-        plan.addTransaction(temp);
-    }
-
-    public void updateTransactions()
-    {
-        Portfolio portfolio = plan.getPortfolio();
-        Account account = portfolio.getReferenceAccount();
-        for (PortfolioTransaction trans : plan.getTransactions())
-        {
-            if (!portfolio.getTransactions().contains(trans))
+        List<PortfolioTransaction> present = plan.getPortfolio().getTransactions();
+        Collections.sort(present, new Comparator<PortfolioTransaction>() {
+            @Override
+            public int compare(PortfolioTransaction p1, PortfolioTransaction p2)
             {
-                portfolio.addTransaction(trans);
-                // Create the cross transaction
-                AccountTransaction crossTransaction = new AccountTransaction(trans.getDate(), trans.getSecurity(),
-                                AccountTransaction.Type.BUY, trans.getAmount());
-                account.addTransaction(crossTransaction);
+                return p1.getDate().compareTo(p2.getDate());
             }
+            
+        });
+        Date current = plan.getStart();
+        Date today = Dates.today();
+        while (current.before(today)) {
+            boolean alreadyPresent = false;
+            for(PortfolioTransaction p:present) {
+                if (p.getSecurity().equals(plan.getSecurity())) {
+                    if (Dates.isSameMonth(current, p.getDate())) {
+                        if (Dates.daysBetween(current, p.getDate()) <= TOLERANCE) {
+                            System.out.println("Already one there! " + p.getDate());
+                            alreadyPresent = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!alreadyPresent) {
+                System.out.println("we have a bingo " + current);
+                long amount = plan.getAmount();
+                long price = plan.getSecurity().getSecurityPrice(current).getValue();
+                long shares = (long) (((double) amount / price) * Values.Share.factor());
+                BuySellEntry entry = new BuySellEntry(plan.getPortfolio(), plan.getPortfolio().getReferenceAccount());
+                entry.setType(PortfolioTransaction.Type.BUY);
+                entry.setDate(current);
+                entry.setShares(shares);
+                entry.setAmount(amount);
+                entry.setSecurity(plan.getSecurity());
+                entry.insert();
+                plan.addTransaction(entry.getPortfolioTransaction());
+            }
+            current = Dates.progress(current, plan.getPeriod());
         }
     }
+
+    
 
 }

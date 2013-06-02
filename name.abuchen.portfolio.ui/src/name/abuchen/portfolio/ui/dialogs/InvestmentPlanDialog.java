@@ -1,60 +1,228 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Date;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.InvestmentPlanController;
-import name.abuchen.portfolio.ui.dialogs.NewPlanDialog.Model;
+import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-public class InvestmentPlanDialog extends Dialog implements SelectionListener
+public class InvestmentPlanDialog extends AbstractDialog implements PropertyChangeListener
 {
 
-    private static final int OFFSET = 10;
+    public static class Model extends BindingHelper.Model
+    {
 
+        InvestmentPlan plan;
+        int period;
+        Portfolio portfolio;
+        Security security;
+        Date start;
+        String name;
+        long amount;
+
+        public Model(Client client, InvestmentPlan plan)
+        {
+            super(client);
+            this.plan = plan;
+        }
+
+        @Override
+        public void applyChanges()
+        {
+            if (plan != null) {
+                plan.setAmount(amount);
+                plan.setPeriod(period);
+                plan.setStart(start);
+                plan.setName(name);
+            }
+        }
+
+        public void updateFromPlan()
+        {
+            setPeriod(plan.getPeriod());
+            setPortfolio(plan.getPortfolio());
+            setSecurity(plan.getSecurity());
+            setStart(plan.getStart());
+            setName(plan.getName());
+            setAmount(plan.getAmount());
+        }
+
+        public void resetPlan()
+        {
+            setPeriod(1);
+            setPortfolio(null);
+            setSecurity(null);
+            setStart(new Date());
+            setName("");
+            setAmount(0);
+        }
+
+        public InvestmentPlan getPlan()
+        {
+            return plan;
+        }
+
+        public void setPlan(InvestmentPlan plan)
+        {
+            firePropertyChange("plan", this.plan, this.plan = plan);
+        }
+
+        public int getPeriod()
+        {
+            return period;
+        }
+
+        public void setPeriod(int period)
+        {
+            firePropertyChange("period", this.period, this.period = period);
+        }
+
+        public Portfolio getPortfolio()
+        {
+            return portfolio;
+        }
+
+        public void setPortfolio(Portfolio portfolio)
+        {
+            firePropertyChange("portfolio", this.portfolio, this.portfolio = portfolio);
+        }
+
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        public void setSecurity(Security security)
+        {
+            firePropertyChange("security", this.security, this.security = security);
+        }
+
+        public Date getStart()
+        {
+            return start;
+        }
+
+        public void setStart(Date start)
+        {
+            firePropertyChange("start", this.start, this.start = start);
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public void setName(String name)
+        {
+            firePropertyChange("name", this.name, this.name = name);
+        }
+
+        public long getAmount()
+        {
+            return amount;
+        }
+
+        public void setAmount(long amount)
+        {
+            firePropertyChange("amount", this.amount, this.amount = amount);
+        }
+        
+    }
+    
+    public static class ModelCellModifier implements ICellModifier {
+
+        @Override
+        public boolean canModify(Object element, String property)
+        {
+            return true;
+        }
+
+        @Override
+        public Object getValue(Object element, String property)
+        {
+            System.out.println(element + "|" + property);
+            return null;
+        }
+
+        @Override
+        public void modify(Object element, String property, Object value)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }
+
+  
     private Client client;
-    Group group;
-    InvestmentPlan plan;
     InvestmentPlanController controller;
-    Text nameText, amountText;
-    Label portfolioLabel, securityLabel, startLabel;
-    Spinner spinner;
     TableViewer tViewer;
     Button createTransactionsButton, delButton;
-    Combo comboDropDown;
+    ComboViewer combo;
 
     public InvestmentPlanDialog(Shell owner, Client client)
     {
-        super(owner);
+        super(owner, "Manage Investment Plans", new Model(client, null));
         this.client = client;
+        getModel().addPropertyChangeListener("plan", this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent ev)
+    {
+        if (ev.getPropertyName().equals("plan"))
+        {
+            if (ev.getNewValue() != null)
+            {
+                InvestmentPlan plan = ((Model)getModel()).getPlan();
+                delButton.setEnabled(true);
+                createTransactionsButton.setEnabled(true);
+                ((Model) getModel()).updateFromPlan();
+                tViewer.setInput(plan.getTransactions());
+                controller = new InvestmentPlanController(plan);
+            }
+            else
+            {
+                delButton.setEnabled(false);
+                createTransactionsButton.setEnabled(false);
+                ((Model) getModel()).resetPlan();
+            }
+        }
     }
 
     protected Button createButton(Composite parent, int id, String label, boolean defaultButton)
@@ -64,92 +232,54 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
         return super.createButton(parent, id, label, defaultButton);
     }
 
-    @Override
-    public void widgetSelected(SelectionEvent e)
+    public void updatePlans()
     {
-        Combo combo = (Combo) e.getSource();
-        plan = (InvestmentPlan) combo.getData(combo.getText());
-        controller = new InvestmentPlanController(plan);
-        group.setText(plan.getName());
-        nameText.setText(plan.getName());
-        amountText.setText(new Float(plan.getAmount()).toString());
-        portfolioLabel.setText("Portfolio: " + plan.getPortfolio().getName());
-        portfolioLabel.pack();
-        securityLabel.setText("Security: " + plan.getSecurity().getName());
-        securityLabel.pack();
-        startLabel.setText("Start: " + new SimpleDateFormat("dd.MM.yyyy").format(plan.getStart()));
-        startLabel.pack();
-        spinner.setSelection(plan.getPeriod());
-        tViewer.setInput(plan.getTransactions());
-        tViewer.refresh();
-        delButton.setEnabled(true);
+        combo.setInput(client.getPlans().toArray());
     }
 
     @Override
-    public void widgetDefaultSelected(SelectionEvent e)
-    {}
-
-    @Override
-    protected Control createDialogArea(Composite parent)
+    protected void createFormElements(Composite editArea)
     {
-        Composite composite = (Composite) super.createDialogArea(parent);
-        Composite editArea = new Composite(composite, SWT.NONE);
-        editArea.setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
-        editArea.setLayout(new FormLayout());
-        FormData comboData = new FormData();
-        comboData.left = new FormAttachment(0, 0);
-        comboData.top = new FormAttachment(0, 0);
-        comboDropDown = new Combo(editArea, SWT.DROP_DOWN);
-        comboDropDown.setLayoutData(comboData);
-        for (InvestmentPlan plan : client.getPlans())
+        combo = bindings().bindComboViewer(editArea, "Plan", "plan", new LabelProvider()
         {
-            comboDropDown.add(plan.getName());
-            comboDropDown.setData(plan.getName(), plan);
-        }
-        comboDropDown.addSelectionListener(this);
+            @Override
+            public String getText(Object element)
+            {
+                return ((InvestmentPlan) element).getName();
+            }
+        }, client.getPlans().toArray());
+        bindings().bindSpinner(editArea, "Period", "period", 1, 30, 17, 1);
+        Label lbl = new Label(editArea, SWT.NULL);
+        lbl.setText("Portfolio:");
+        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(lbl);
+        bindings().bindLabel(editArea, "portfolio");
+        lbl = new Label(editArea, SWT.NULL);
+        lbl.setText("Security:");
+        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(lbl);
+        bindings().bindLabel(editArea, "security");
+        bindings().bindDatePicker(editArea, "Start", "start");
+        bindings().bindStringInput(editArea, "Name", "name");
+        bindings().bindAmountInput(editArea, "Amount", "amount");
         delButton = new Button(editArea, SWT.PUSH);
         delButton.setText("Delete Plan");
         delButton.setEnabled(false);
-        FormData delButtonData = new FormData();
-        delButtonData.left = new FormAttachment(comboDropDown);
-        delButtonData.top = new FormAttachment(0,0);
-        delButton.setLayoutData(delButtonData);
-        delButton.addSelectionListener(new SelectionListener() 
+        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(delButton);
+        delButton.addSelectionListener(new SelectionListener()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                client.removePlan(plan);
-                comboDropDown.remove(plan.getName());
-                comboDropDown.setData(plan.getName(), null);
-                plan = null;
-                controller = null;
-                group.setText("");
-                nameText.setText("");
-                amountText.setText("");
-                portfolioLabel.setText("Portfolio: ");
-                portfolioLabel.pack();
-                securityLabel.setText("Security: ");
-                securityLabel.pack();
-                startLabel.setText("Start: ");
-                startLabel.pack();
-                spinner.setSelection(0);
-                tViewer.setInput(new ArrayList());
-                tViewer.refresh();
-                delButton.setEnabled(false);
-             }
-
+                client.removePlan(((Model) getModel()).getPlan());
+                ((Model) getModel()).setPlan(null);
+                updatePlans();
+            }
             @Override
             public void widgetDefaultSelected(SelectionEvent e)
             {}
-            
         });
-        FormData buttonData = new FormData();
-        buttonData.left = new FormAttachment(delButton, OFFSET);
-        buttonData.top = new FormAttachment(0, 0);
         Button newButton = new Button(editArea, SWT.PUSH);
-        newButton.setLayoutData(buttonData);
         newButton.setText("New Plan");
+        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(newButton);
         newButton.addSelectionListener(new SelectionListener()
         {
             @Override
@@ -158,86 +288,15 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
                 NewPlanDialog newDialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                                 .getShell(), client);
                 newDialog.open();
+                updatePlans();
             }
-
             @Override
             public void widgetDefaultSelected(SelectionEvent e)
             {}
         });
-        group = new Group(editArea, SWT.SHADOW_ETCHED_IN);
-        group.setText("Investment Plan");
-        group.setLayout(new FormLayout());
-        FormData groupData = new FormData();
-        groupData.left = new FormAttachment(0, 0);
-        groupData.top = new FormAttachment(newButton, OFFSET);
-        groupData.right = new FormAttachment(100, 0);
-        groupData.width = 500;
-        group.setLayoutData(groupData);
-        Label periodLabel = new Label(group, SWT.NONE);
-        periodLabel.setText("Plan period");
-        portfolioLabel = new Label(group, SWT.NONE);
-        portfolioLabel.setText("Portfolio: ");
-        FormData portLabelData = new FormData();
-        portLabelData.left = new FormAttachment(OFFSET / 2, 0);
-        portLabelData.top = new FormAttachment(OFFSET / 2, 0);
-        portfolioLabel.setLayoutData(portLabelData);
-        securityLabel = new Label(group, SWT.NONE);
-        securityLabel.setText("Security: ");
-        FormData secLabelData = new FormData();
-        secLabelData.left = new FormAttachment(OFFSET / 2, 0);
-        secLabelData.top = new FormAttachment(portfolioLabel, OFFSET);
-        securityLabel.setLayoutData(secLabelData);
-        startLabel = new Label(group, SWT.NONE);
-        startLabel.setText("Start: ");
-        FormData startLblData = new FormData();
-        startLblData.left = new FormAttachment(OFFSET / 2, 0);
-        startLblData.top = new FormAttachment(securityLabel, OFFSET);
-        startLabel.setLayoutData(startLblData);
-        Label nameLbl = new Label(group, SWT.NULL);
-        nameLbl.setText("Name");
-        FormData nameLblData = new FormData();
-        nameLblData.left = new FormAttachment(OFFSET / 2, 0);
-        nameLblData.top = new FormAttachment(startLabel, OFFSET);
-        nameLbl.setLayoutData(nameLblData);
-        nameText = new Text(group, SWT.BORDER | SWT.SINGLE);
-        FormData nameTextData = new FormData();
-        nameTextData.left = new FormAttachment(periodLabel, OFFSET);
-        nameTextData.top = new FormAttachment(nameLbl, 0, SWT.CENTER);
-        nameTextData.right = new FormAttachment(90, OFFSET);
-        nameText.setLayoutData(nameTextData);
-        Label amountLbl = new Label(group, SWT.NULL);
-        amountLbl.setText("Amount");
-        FormData amountLblData = new FormData();
-        amountLblData.left = new FormAttachment(OFFSET / 2, 0);
-        amountLblData.top = new FormAttachment(nameText, OFFSET);
-        amountLbl.setLayoutData(amountLblData);
-        amountText = new Text(group, SWT.BORDER | SWT.SINGLE);
-        FormData amountTextData = new FormData();
-        amountTextData.left = new FormAttachment(periodLabel, OFFSET);
-        amountTextData.top = new FormAttachment(amountLbl, 0, SWT.CENTER);
-        amountTextData.right = new FormAttachment(90, OFFSET);
-        amountText.setLayoutData(amountTextData);
-        spinner = new Spinner(group, SWT.BORDER);
-        spinner.setMinimum(1);
-        spinner.setMaximum(30);
-        spinner.setSelection(5);
-        spinner.setIncrement(1);
-        spinner.setPageIncrement(10);
-        FormData periodLabelData = new FormData();
-        periodLabelData.left = new FormAttachment(OFFSET / 2, 0);
-        periodLabelData.top = new FormAttachment(amountText, OFFSET);
-        periodLabel.setLayoutData(periodLabelData);
-        FormData spinnerData = new FormData();
-        spinnerData.left = new FormAttachment(periodLabel, OFFSET);
-        spinnerData.top = new FormAttachment(periodLabel, 0, SWT.CENTER);
-        spinner.setLayoutData(spinnerData);
-        tViewer = new TableViewer(group);
+        tViewer = new TableViewer(editArea);
         Table table = tViewer.getTable();
-        FormData viewerFormData = new FormData();
-        viewerFormData.left = new FormAttachment(OFFSET / 2, 0);
-        viewerFormData.top = new FormAttachment(spinner, OFFSET);
-        viewerFormData.height = 200;
-        table.setLayoutData(viewerFormData);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).span(2, 4).grab(true, false).applyTo(table);
         tViewer.setContentProvider(ArrayContentProvider.getInstance());
         table.setHeaderVisible(true);
         TableViewerColumn dateCol = new TableViewerColumn(tViewer, SWT.NONE);
@@ -259,7 +318,7 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
             @Override
             public String getText(Object element)
             {
-                return new Long(((PortfolioTransaction) element).getShares()).toString();
+                return Values.Share.format(((PortfolioTransaction) element).getShares());
             }
         });
         TableViewerColumn feeCol = new TableViewerColumn(tViewer, SWT.NONE);
@@ -288,28 +347,26 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
         TableViewerColumn amountCol = new TableViewerColumn(tViewer, SWT.NONE);
         amountCol.getColumn().setText("Amount");
         amountCol.getColumn().setWidth(80);
-        amountCol.setLabelProvider(new ColumnLabelProvider() 
+        amountCol.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
                 return Values.Amount.format(((PortfolioTransaction) element).getLumpSumPrice());
             }
-            
+
         });
-        createTransactionsButton = new Button(group, SWT.PUSH);
+        createTransactionsButton = new Button(editArea, SWT.PUSH);
         createTransactionsButton.setText("Create Transactions");
-        FormData cTBData = new FormData();
-        cTBData.left = new FormAttachment(OFFSET / 2, 0);
-        cTBData.top = new FormAttachment(table, OFFSET);
-        createTransactionsButton.setLayoutData(cTBData);
+        createTransactionsButton.setEnabled(false);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(createTransactionsButton);
         createTransactionsButton.addSelectionListener(new SelectionListener()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
                 controller.generateTransactions();
-                tViewer.setInput(plan.getTransactions());
+                tViewer.setInput(((Model) getModel()).getPlan().getTransactions());
                 tViewer.refresh();
             }
 
@@ -317,7 +374,24 @@ public class InvestmentPlanDialog extends Dialog implements SelectionListener
             public void widgetDefaultSelected(SelectionEvent e)
             {}
         });
-        return composite;
+        new CellEditorFactory(tViewer, PortfolioTransaction.class) //
+        .notify(new CellEditorFactory.ModificationListener()
+        {
+            public void onModified(Object element, String property)
+            {
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                if (t.getCrossEntry() != null)
+                    t.getCrossEntry().updateFrom(t);
+                tViewer.refresh(element);
+
+            }
+        }) 
+        .editable("date") // //$NON-NLS-1$
+        .shares("shares") // //$NON-NLS-1$
+        .amount("fees") // //$NON-NLS-1$
+        .readonly("price")
+        .amount("amount") // //$NON-NLS-1$
+        .apply();
     }
 
     public InvestmentPlanController getInvestmentPlanController()

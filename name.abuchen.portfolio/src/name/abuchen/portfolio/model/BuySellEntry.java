@@ -17,8 +17,8 @@ public class BuySellEntry implements CrossEntry
     public BuySellEntry(Portfolio portfolio, Account account)
     {
         this.portfolio = portfolio;
-        this.portfolioTransaction = new PortfolioTransaction();
-        this.portfolioTransaction.setCrossEntry(this);
+        this.setPortfolioTransaction(new PortfolioTransaction());
+        this.getPortfolioTransaction().setCrossEntry(this);
 
         this.account = account;
         this.accountTransaction = new AccountTransaction();
@@ -27,48 +27,48 @@ public class BuySellEntry implements CrossEntry
 
     public void setDate(Date date)
     {
-        this.portfolioTransaction.setDate(date);
+        this.getPortfolioTransaction().setDate(date);
         this.accountTransaction.setDate(date);
     }
 
     public void setType(Type type)
     {
-        this.portfolioTransaction.setType(type);
+        this.getPortfolioTransaction().setType(type);
         this.accountTransaction.setType(AccountTransaction.Type.valueOf(type.name()));
     }
 
     public void setSecurity(Security security)
     {
-        this.portfolioTransaction.setSecurity(security);
+        this.getPortfolioTransaction().setSecurity(security);
         this.accountTransaction.setSecurity(security);
     }
 
     public void setShares(long shares)
     {
-        this.portfolioTransaction.setShares(shares);
+        this.getPortfolioTransaction().setShares(shares);
     }
 
     public void setAmount(long amount)
     {
-        this.portfolioTransaction.setAmount(amount);
+        this.getPortfolioTransaction().setAmount(amount);
         this.accountTransaction.setAmount(amount);
     }
 
     public void setFees(long fees)
     {
-        this.portfolioTransaction.setFees(fees);
+        this.getPortfolioTransaction().setFees(fees);
     }
 
     public void insert()
     {
-        portfolio.addTransaction(portfolioTransaction);
+        portfolio.addTransaction(getPortfolioTransaction());
         account.addTransaction(accountTransaction);
     }
 
     @Override
     public void delete()
     {
-        portfolio.getTransactions().remove(portfolioTransaction);
+        portfolio.getTransactions().remove(getPortfolioTransaction());
         account.getTransactions().remove(accountTransaction);
     }
 
@@ -77,17 +77,17 @@ public class BuySellEntry implements CrossEntry
     {
         if (t == accountTransaction)
         {
-            portfolioTransaction.setDate(accountTransaction.getDate());
-            portfolioTransaction.setSecurity(accountTransaction.getSecurity());
-            portfolioTransaction.setAmount(accountTransaction.getAmount());
-            portfolioTransaction.setType(PortfolioTransaction.Type.valueOf(accountTransaction.getType().name()));
+            getPortfolioTransaction().setDate(accountTransaction.getDate());
+            getPortfolioTransaction().setSecurity(accountTransaction.getSecurity());
+            getPortfolioTransaction().setAmount(accountTransaction.getAmount());
+            getPortfolioTransaction().setType(PortfolioTransaction.Type.valueOf(accountTransaction.getType().name()));
         }
-        else if (t == portfolioTransaction)
+        else if (t == getPortfolioTransaction())
         {
-            accountTransaction.setDate(portfolioTransaction.getDate());
-            accountTransaction.setSecurity(portfolioTransaction.getSecurity());
-            accountTransaction.setAmount(portfolioTransaction.getAmount());
-            accountTransaction.setType(AccountTransaction.Type.valueOf(portfolioTransaction.getType().name()));
+            accountTransaction.setDate(getPortfolioTransaction().getDate());
+            accountTransaction.setSecurity(getPortfolioTransaction().getSecurity());
+            accountTransaction.setAmount(getPortfolioTransaction().getAmount());
+            accountTransaction.setType(AccountTransaction.Type.valueOf(getPortfolioTransaction().getType().name()));
         }
         else
         {
@@ -98,10 +98,10 @@ public class BuySellEntry implements CrossEntry
     @Override
     public Transaction getCrossTransaction(Transaction t)
     {
-        if (t.equals(portfolioTransaction))
+        if (t.equals(getPortfolioTransaction()))
             return accountTransaction;
         else if (t.equals(accountTransaction))
-            return portfolioTransaction;
+            return getPortfolioTransaction();
         else
             throw new UnsupportedOperationException();
     }
@@ -109,11 +109,21 @@ public class BuySellEntry implements CrossEntry
     @Override
     public Object getCrossEntity(Transaction t)
     {
-        if (t.equals(portfolioTransaction))
+        if (t.equals(getPortfolioTransaction()))
             return account;
         else if (t.equals(accountTransaction))
             return portfolio;
         else
             throw new UnsupportedOperationException();
+    }
+
+    public PortfolioTransaction getPortfolioTransaction()
+    {
+        return portfolioTransaction;
+    }
+
+    public void setPortfolioTransaction(PortfolioTransaction portfolioTransaction)
+    {
+        this.portfolioTransaction = portfolioTransaction;
     }
 }

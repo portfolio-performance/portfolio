@@ -158,6 +158,12 @@ public class BindingHelper
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(lblTransactionType);
     }
     
+    public final void bindLabel(Composite editArea, String property) {
+        Label label = new Label(editArea, SWT.NONE);
+        context.bindValue(SWTObservables.observeText(label), BeansObservables.observeValue(model, property));
+        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(label);
+    }
+    
     public final void bindSpinner(Composite editArea, String label, String property,
                     int min, int max, int selection, int increment)
     {
@@ -172,7 +178,7 @@ public class BindingHelper
         context.bindValue(SWTObservables.observeSelection(spinner), BeansObservables.observeValue(model, property));
     }
 
-    public final void bindComboViewer(Composite editArea, String label, String property,
+    public final ComboViewer bindComboViewer(Composite editArea, String label, String property,
                     IBaseLabelProvider labelProvider, Object input)
     {
         Label l = new Label(editArea, SWT.NONE);
@@ -185,6 +191,7 @@ public class BindingHelper
 
         context.bindValue(ViewersObservables.observeSingleSelection(combo), //
                         BeansObservables.observeValue(model, property));
+        return combo;
     }
 
     public final void bindDatePicker(Composite editArea, String label, String property)
