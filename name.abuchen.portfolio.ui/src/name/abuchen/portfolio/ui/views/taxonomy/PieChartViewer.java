@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Control;
 
 /* package */class PieChartViewer
 {
-    private TaxonomyNode model;
+    private TaxonomyModel model;
 
-    public PieChartViewer(TaxonomyNode model)
+    public PieChartViewer(TaxonomyModel model)
     {
         this.model = model;
     }
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Control;
 
         List<PieChart.Slice> slices = new ArrayList<PieChart.Slice>();
 
-        for (TaxonomyNode child : model.getChildren())
+        for (TaxonomyNode child : model.getRootNode().getChildren())
         {
             slices.add(new PieChart.Slice(child.getActual(), //
                             child.getName(), //

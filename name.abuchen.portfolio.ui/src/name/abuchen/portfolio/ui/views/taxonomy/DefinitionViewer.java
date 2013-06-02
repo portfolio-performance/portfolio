@@ -1,12 +1,24 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -16,6 +28,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
@@ -23,18 +36,18 @@ import org.eclipse.ui.PlatformUI;
 {
     private static class ItemContentProvider implements ITreeContentProvider
     {
-        private TaxonomyNode root;
+        private TaxonomyModel model;
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
         {
-            root = (TaxonomyNode) newInput;
+            model = (TaxonomyModel) newInput;
         }
 
         @Override
         public Object[] getElements(Object inputElement)
         {
-            return root.getChildren().toArray();
+            return new Object[] { model.getRootNode() };
         }
 
         @Override
@@ -60,9 +73,10 @@ import org.eclipse.ui.PlatformUI;
         {}
     }
 
-    private TaxonomyNode model;
+    private TaxonomyModel model;
+    private TreeViewer nodeViewer;
 
-    public DefinitionViewer(TaxonomyNode model)
+    public DefinitionViewer(TaxonomyModel model)
     {
         this.model = model;
     }
@@ -73,9 +87,9 @@ import org.eclipse.ui.PlatformUI;
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
 
-        TreeViewer viewer = new TreeViewer(container, SWT.FULL_SELECTION);
+        nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION);
 
-        TreeViewerColumn column = new TreeViewerColumn(viewer, SWT.NONE);
+        TreeViewerColumn column = new TreeViewerColumn(nodeViewer, SWT.NONE);
         column.getColumn().setText("Dimensionen");
         column.getColumn().setWidth(400);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(400));
@@ -100,26 +114,12 @@ import org.eclipse.ui.PlatformUI;
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
-        ColumnViewerSorter.create(TaxonomyNode.class, "name").attachTo(viewer, column); //$NON-NLS-1$
+        ColumnViewerSorter.create(TaxonomyNode.class, "name").attachTo(nodeViewer, column); //$NON-NLS-1$
 
-        column = new TreeViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText("Id");
-        column.getColumn().setWidth(100);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((TaxonomyNode) element).getId();
-            }
-        });
-        ColumnViewerSorter.create(TaxonomyNode.class, "id").attachTo(viewer, column); //$NON-NLS-1$
-
-        column = new TreeViewerColumn(viewer, SWT.RIGHT);
+        column = new TreeViewerColumn(nodeViewer, SWT.RIGHT);
         column.getColumn().setText("Weight");
-        column.getColumn().setWidth(60);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
+        column.getColumn().setWidth(70);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(70));
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -128,10 +128,31 @@ import org.eclipse.ui.PlatformUI;
                 TaxonomyNode node = (TaxonomyNode) element;
                 return Values.Weight.format(node.getWeight());
             }
-        });
-        ColumnViewerSorter.create(TaxonomyNode.class, "weight").attachTo(viewer, column, true); //$NON-NLS-1$
 
-        column = new TreeViewerColumn(viewer, SWT.LEFT);
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.hasWeightError() ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.hasWeightError() ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.hasWeightError() ? PortfolioPlugin.image(PortfolioPlugin.IMG_QUICKFIX) : null;
+            }
+        });
+        ColumnViewerSorter.create(TaxonomyNode.class, "weight").attachTo(nodeViewer, column, true); //$NON-NLS-1$
+
+        column = new TreeViewerColumn(nodeViewer, SWT.LEFT);
         column.getColumn().setText("Color");
         column.getColumn().setWidth(60);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
@@ -149,13 +170,128 @@ import org.eclipse.ui.PlatformUI;
                 return renderer.getColorFor((TaxonomyNode) element);
             }
         });
-        ColumnViewerSorter.create(TaxonomyNode.class, "color").attachTo(viewer, column, true); //$NON-NLS-1$
+        ColumnViewerSorter.create(TaxonomyNode.class, "color").attachTo(nodeViewer, column, true); //$NON-NLS-1$
 
-        viewer.getTree().setHeaderVisible(true);
-        viewer.getTree().setLinesVisible(true);
-        viewer.setContentProvider(new ItemContentProvider());
-        viewer.setInput(model);
+        new CellEditorFactory(nodeViewer, TaxonomyNode.class) //
+                        .notify(new CellEditorFactory.ModificationListener()
+                        {
+                            public void onModified(Object element, String property)
+                            {
+                                onTaxnomyNodeEdited();
+                            }
+                        }) //
+                        .editable("name") // //$NON-NLS-1$
+                        .decimal("weight", Values.Weight) // //$NON-NLS-1$
+                        .readonly("color") //$NON-NLS-1$
+                        .apply();
+
+        nodeViewer.getTree().setHeaderVisible(true);
+        nodeViewer.getTree().setLinesVisible(true);
+        nodeViewer.setContentProvider(new ItemContentProvider());
+        nodeViewer.setInput(model);
+
+        expandNodes();
+
+        ViewerHelper.pack(nodeViewer);
+
+        ViewerHelper.attachContextMenu(nodeViewer, new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillContextMenu(manager);
+            }
+        });
 
         return container;
+    }
+
+    private void expandNodes()
+    {
+        List<TaxonomyNode> expanded = new ArrayList<TaxonomyNode>();
+        LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
+        stack.push(model.getRootNode());
+        while (!stack.isEmpty())
+        {
+            TaxonomyNode node = stack.pop();
+            if (node.isClassification() && !node.getClassification().getChildren().isEmpty())
+            {
+                expanded.add(node);
+                stack.addAll(node.getChildren());
+            }
+        }
+        nodeViewer.setExpandedElements(expanded.toArray());
+    }
+
+    protected void onTaxnomyNodeEdited()
+    {
+        model.recalculate();
+        nodeViewer.refresh(true);
+    }
+
+    protected void fillContextMenu(IMenuManager manager)
+    {
+        final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) nodeViewer.getSelection()).getFirstElement();
+        if (node == null)
+            return;
+
+        if (node.isClassification())
+        {
+            final Classification classification = node.getClassification();
+
+            if (node.hasWeightError())
+            {
+                manager.add(new Action("Fix weights")
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (node.isRoot())
+                        {
+                            classification.setWeight(Classification.ONE_HUNDRED_PERCENT);
+                        }
+                        else
+                        {
+                            classification.setWeight(0);
+                            int weight = Math.max(0, Classification.ONE_HUNDRED_PERCENT
+                                            - classification.getParent().getChildrenWeight());
+                            classification.setWeight(weight);
+                        }
+                        onTaxnomyNodeEdited();
+                    }
+                });
+            }
+
+            manager.add(new Action("Add new classification")
+            {
+                @Override
+                public void run()
+                {
+                    Classification newClassification = new Classification(classification, UUID.randomUUID().toString(),
+                                    "NEW CLASSIFICATION");
+                    newClassification.setWeight(Classification.ONE_HUNDRED_PERCENT - classification.getChildrenWeight());
+                    classification.addChild(newClassification);
+
+                    TaxonomyNode newNode = node.addChild(newClassification);
+
+                    nodeViewer.setExpandedState(node, true);
+                    onTaxnomyNodeEdited();
+                    nodeViewer.editElement(newNode, 0);
+                }
+            });
+
+            if (!node.isRoot())
+            {
+                manager.add(new Action("Delete")
+                {
+                    @Override
+                    public void run()
+                    {
+                        node.getParent().removeChild(node);
+                        onTaxnomyNodeEdited();
+                    }
+                });
+            }
+        }
     }
 }

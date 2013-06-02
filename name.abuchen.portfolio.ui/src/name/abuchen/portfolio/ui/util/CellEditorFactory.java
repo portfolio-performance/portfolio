@@ -154,7 +154,7 @@ public final class CellEditorFactory
         return decimal(name, Values.Index);
     }
 
-    private CellEditorFactory decimal(String name, Values<?> type)
+    public CellEditorFactory decimal(String name, Values<?> type)
     {
         final PropertyDescriptor descriptor = descriptorFor(name);
         if (Long.class.isAssignableFrom(descriptor.getPropertyType()))

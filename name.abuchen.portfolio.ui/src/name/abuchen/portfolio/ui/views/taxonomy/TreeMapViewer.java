@@ -31,9 +31,9 @@ import de.engehausen.treemap.swt.TreeMap;
 /* package */class TreeMapViewer
 {
     private Client client;
-    private TaxonomyNode model;
+    private TaxonomyModel model;
 
-    public TreeMapViewer(Client client, TaxonomyNode model)
+    public TreeMapViewer(Client client, TaxonomyModel model)
     {
         this.client = client;
         this.model = model;
@@ -84,8 +84,8 @@ import de.engehausen.treemap.swt.TreeMap;
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(colors));
-        treeMap.setTreeModel(new Model(model));
-        legend.setRootItem(model);
+        treeMap.setTreeModel(new Model(model.getRootNode()));
+        legend.setRootItem(model.getRootNode());
     }
 
     private static class Model implements IWeightedTreeModel<TaxonomyNode>

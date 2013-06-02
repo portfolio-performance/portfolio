@@ -32,11 +32,18 @@ public class Classification
             return weight;
         }
 
+        public void setWeight(int weight)
+        {
+            this.weight = weight;
+        }
+
         public Object getInvestmentVehicle()
         {
             return investmentVehicle;
         }
     }
+
+    public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
 
     private String id;
     private String name;
@@ -64,6 +71,8 @@ public class Classification
         this.color = '#' + Integer.toHexString(((r.nextInt(128) + 127) << 16) //
                         | ((r.nextInt(128) + 127) << 8) //
                         | (r.nextInt(128) + 127));
+
+        this.weight = 100 * Values.Weight.factor();
     }
 
     public String getId()
@@ -74,6 +83,11 @@ public class Classification
     public String getName()
     {
         return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     public String getDescription()
@@ -124,6 +138,14 @@ public class Classification
     public int getWeight()
     {
         return weight;
+    }
+
+    public int getChildrenWeight()
+    {
+        int sum = 0;
+        for (Classification child : children)
+            sum += child.getWeight();
+        return sum;
     }
 
     public void setWeight(int weight)

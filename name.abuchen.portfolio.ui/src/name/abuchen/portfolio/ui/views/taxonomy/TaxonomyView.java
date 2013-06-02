@@ -64,7 +64,7 @@ public class TaxonomyView extends AbstractFinanceView
     {
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        TaxonomyNode model = TaxonomyNode.create(getClient(), taxonomy);
+        TaxonomyModel model = new TaxonomyModel(getClient(), taxonomy);
         TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(resources);
 
         container = new Composite(parent, SWT.NONE);

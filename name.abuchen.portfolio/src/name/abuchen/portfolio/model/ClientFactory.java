@@ -171,6 +171,7 @@ public class ClientFactory
         for (AssetClass assetClass : AssetClass.values())
         {
             Classification classification = new Classification(root, assetClass.name(), assetClass.toString());
+            classification.setWeight(Classification.ONE_HUNDRED_PERCENT / AssetClass.values().length);
             root.addChild(classification);
 
             for (Security security : client.getSecurities())
@@ -202,30 +203,32 @@ public class ClientFactory
         taxonomy.setRootNode(root);
 
         buildTree(root, category);
-
-        Classification others = new Classification(root, IndustryClassification.Category.OTHER_ID, Messages.LabelWithoutClassification);
-        root.addChild(others);
-
-        assignSecurities(client, taxonomy, others);
-        assignAccounts(client, others);
+        assignSecurities(client, taxonomy);
 
         client.addTaxonomy(taxonomy);
     }
 
     private static void buildTree(Classification node, IndustryClassification.Category category)
     {
+        int weight = Classification.ONE_HUNDRED_PERCENT / category.getChildren().size();
+
         for (IndustryClassification.Category child : category.getChildren())
         {
             Classification classification = new Classification(node, child.getId(), child.getLabel());
             classification.setDescription(child.getDescription());
+            classification.setWeight(weight);
             node.addChild(classification);
 
             if (!child.getChildren().isEmpty())
                 buildTree(classification, child);
         }
+
+        // fix weight of last child to make it 100%
+        weight = Classification.ONE_HUNDRED_PERCENT - (weight * (category.getChildren().size() - 1));
+        node.getChildren().get(node.getChildren().size() - 1).setWeight(weight);
     }
 
-    private static void assignSecurities(Client client, Taxonomy taxonomy, Classification others)
+    private static void assignSecurities(Client client, Taxonomy taxonomy)
     {
         for (Security security : client.getSecurities())
         {
@@ -233,15 +236,7 @@ public class ClientFactory
 
             if (classification != null)
                 classification.addAssignment(new Assignment(security));
-            else
-                others.addAssignment(new Assignment(security));
         }
-    }
-
-    private static void assignAccounts(Client client, Classification others)
-    {
-        for (Account account : client.getAccounts())
-            others.addAssignment(new Assignment(account));
     }
 
     private static void addAssetAllocationAsTaxonomy(Client client)

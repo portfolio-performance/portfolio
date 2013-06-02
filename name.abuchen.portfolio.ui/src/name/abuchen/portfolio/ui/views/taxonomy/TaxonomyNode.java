@@ -7,15 +7,8 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.snapshot.AccountSnapshot;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.util.Dates;
 
 public final class TaxonomyNode
 {
@@ -25,49 +18,16 @@ public final class TaxonomyNode
     private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
     private long actual;
 
-    private TaxonomyNode(TaxonomyNode parent, Classification classification)
+    /* package */TaxonomyNode(TaxonomyNode parent, Classification classification)
     {
         this.parent = parent;
         this.subject = classification;
     }
 
-    private TaxonomyNode(TaxonomyNode parent, Assignment assignment)
+    /* package */TaxonomyNode(TaxonomyNode parent, Assignment assignment)
     {
         this.parent = parent;
         this.subject = assignment;
-    }
-
-    public static TaxonomyNode create(Client client, Taxonomy taxonomy)
-    {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, Dates.today());
-
-        Classification root = taxonomy.getRoot();
-        TaxonomyNode modelRoot = new TaxonomyNode(null, root);
-
-        LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
-        stack.add(modelRoot);
-
-        while (!stack.isEmpty())
-        {
-            TaxonomyNode m = stack.pop();
-
-            Classification classification = (Classification) m.getSubject();
-
-            for (Classification c : classification.getChildren())
-            {
-                TaxonomyNode cm = new TaxonomyNode(m, c);
-                stack.push(cm);
-                m.children.add(cm);
-            }
-
-            for (Assignment assignment : classification.getAssignments())
-                m.children.add(new TaxonomyNode(m, assignment));
-        }
-
-        // calculate actuals
-        visitActuals(snapshot, modelRoot);
-
-        return modelRoot;
     }
 
     public TaxonomyNode getParent()
@@ -85,7 +45,7 @@ public final class TaxonomyNode
         return children;
     }
 
-    private Object getSubject()
+    /* package */Object getSubject()
     {
         return subject;
     }
@@ -99,6 +59,11 @@ public final class TaxonomyNode
                 return (Security) investmentVehicle;
         }
         return null;
+    }
+
+    public boolean isClassification()
+    {
+        return subject instanceof Classification;
     }
 
     public Classification getClassification()
@@ -116,6 +81,11 @@ public final class TaxonomyNode
         return actual;
     }
 
+    public void setActual(long actual)
+    {
+        this.actual = actual;
+    }
+
     public int getWeight()
     {
         if (subject instanceof Classification)
@@ -124,12 +94,47 @@ public final class TaxonomyNode
             return ((Assignment) subject).getWeight();
     }
 
+    public void setWeight(int weight)
+    {
+        if (subject instanceof Classification)
+            ((Classification) subject).setWeight(weight);
+        else
+            ((Assignment) subject).setWeight(weight);
+    }
+
+    public boolean hasWeightError()
+    {
+        if (subject instanceof Assignment)
+            return false;
+
+        if (isRoot())
+            return Classification.ONE_HUNDRED_PERCENT != getClassification().getWeight();
+
+        return Classification.ONE_HUNDRED_PERCENT != getClassification().getParent().getChildrenWeight();
+    }
+
     public String getName()
     {
         if (subject instanceof Classification)
             return ((Classification) subject).getName();
         else
             return ((Assignment) subject).getInvestmentVehicle().toString();
+    }
+
+    public void setName(String name)
+    {
+        if (subject instanceof Classification)
+        {
+            ((Classification) subject).setName(name);
+        }
+        else
+        {
+            Object investmentVehicle = ((Assignment) subject).getInvestmentVehicle();
+            if (investmentVehicle instanceof Security)
+                ((Security) investmentVehicle).setName(name);
+            else
+                ((Account) investmentVehicle).setName(name);
+        }
     }
 
     public String getId()
@@ -169,41 +174,25 @@ public final class TaxonomyNode
         return path;
     }
 
-    private static void visitActuals(ClientSnapshot snapshot, TaxonomyNode model)
+    public TaxonomyNode addChild(Classification newClassification)
     {
-        long actual = 0;
+        TaxonomyNode newChild = new TaxonomyNode(this, newClassification);
+        children.add(newChild);
+        return newChild;
+    }
 
-        for (TaxonomyNode child : model.children)
-        {
-            visitActuals(snapshot, child);
-            actual += child.actual;
-        }
+    public void removeChild(TaxonomyNode node)
+    {
+        Classification classification = getClassification();
+        if (classification == null)
+            throw new UnsupportedOperationException();
 
-        if (model.getSubject() instanceof Assignment)
-        {
-            Assignment assignment = (Assignment) model.getSubject();
-            if (assignment.getInvestmentVehicle() instanceof Security)
-            {
-                PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
-                SecurityPosition p = portfolio.getPositionsBySecurity().get(assignment.getInvestmentVehicle());
-                if (p != null)
-                    actual += p.calculateValue();
-            }
-            else if (assignment.getInvestmentVehicle() instanceof Account)
-            {
-                for (AccountSnapshot s : snapshot.getAccounts())
-                {
-                    if (s.getAccount() == assignment.getInvestmentVehicle())
-                        actual += s.getFunds();
-                }
-            }
-            else
-            {
-                throw new UnsupportedOperationException(
-                                "unknown element: " + assignment.getInvestmentVehicle().getClass().getName()); //$NON-NLS-1$
-            }
-        }
+        Object subject = node.getSubject();
+        if (subject instanceof Classification)
+            classification.getChildren().remove(subject);
+        else
+            classification.getAssignments().remove(subject);
 
-        model.actual = actual;
+        children.remove(node);
     }
 }
