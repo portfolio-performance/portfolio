@@ -21,6 +21,19 @@ public class InvestmentPlanController
     {
         this.plan = plan;
     }
+    
+    private Date getLastActionDate() {
+        Date result = null;
+        for (PortfolioTransaction t: plan.getTransactions()) {
+            if (result == null || result.before(t.getDate())) {
+                result = t.getDate();
+            }
+        }
+        if (result == null) {
+            return plan.getStart();
+        }
+        return result;
+    }
 
     public void generateTransactions()
     {
@@ -33,7 +46,9 @@ public class InvestmentPlanController
             }
             
         });
-        Date current = plan.getStart();
+        // Start from the date of the latest transaction of the plan to not 
+        // re-create deleted transactions
+        Date current = getLastActionDate();
         Date today = Dates.today();
         while (current.before(today)) {
             boolean alreadyPresent = false;
@@ -54,7 +69,7 @@ public class InvestmentPlanController
                 long price = plan.getSecurity().getSecurityPrice(current).getValue();
                 long shares = (long) (((double) amount / price) * Values.Share.factor());
                 BuySellEntry entry = new BuySellEntry(plan.getPortfolio(), plan.getPortfolio().getReferenceAccount());
-                entry.setType(PortfolioTransaction.Type.BUY);
+                entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                 entry.setDate(current);
                 entry.setShares(shares);
                 entry.setAmount(amount);
@@ -62,7 +77,7 @@ public class InvestmentPlanController
                 entry.insert();
                 plan.addTransaction(entry.getPortfolioTransaction());
             }
-            current = Dates.progress(current, plan.getPeriod());
+            current = Dates.progress(current, plan.getDayOfMonth());
         }
     }
 

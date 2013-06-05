@@ -8,11 +8,12 @@ public class InvestmentPlan
 {
     private Security security;
     private long amount;
+    private long transactionCost;
     private List<PortfolioTransaction> transactions;
     private Portfolio portfolio;
     private String name;
     private Date start;
-    private int period;
+    private int dayOfMonth;
     
     public InvestmentPlan() {
         transactions = new ArrayList<PortfolioTransaction>();
@@ -63,13 +64,13 @@ public class InvestmentPlan
     {
         this.start = start;
     }
-    public int getPeriod()
+    public int getDayOfMonth()
     {
-        return period;
+        return dayOfMonth;
     }
-    public void setPeriod(int period)
+    public void setDayOfMonth(int period)
     {
-        this.period = period;
+        this.dayOfMonth = period;
     }
 
     public List<PortfolioTransaction> getTransactions()
@@ -81,5 +82,17 @@ public class InvestmentPlan
     {
         transactions.add(temp);
     }
+    
+    public long getTransactionCost()
+    {
+        return transactionCost;
+    }
+
+    public void setTransactionCost(long transactionCost)
+    {
+        this.transactionCost = transactionCost;
+    }
+
+
 
 }

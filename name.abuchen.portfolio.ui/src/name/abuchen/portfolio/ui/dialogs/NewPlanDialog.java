@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Composite;
@@ -22,9 +23,10 @@ public class NewPlanDialog extends AbstractDialog
         String name;
         private Portfolio portfolio;
         long amount;
+        long transactionCost;
         Security security;
-        Date start;
-        int period;
+        Date start = Dates.today();
+        int period = 1;
 
         public Model(Client client)
         {
@@ -40,10 +42,11 @@ public class NewPlanDialog extends AbstractDialog
                 throw new UnsupportedOperationException("Portfolio is Missing");
             InvestmentPlan plan = new InvestmentPlan(name);
             plan.setAmount(amount);
+            plan.setTransactionCost(transactionCost);
             plan.setPortfolio(portfolio);
             plan.setSecurity(security);
             plan.setStart(start);
-            plan.setPeriod(period);
+            plan.setDayOfMonth(period);
             getClient().addPlan(plan);
         }
 
@@ -106,6 +109,16 @@ public class NewPlanDialog extends AbstractDialog
         {
             firePropertyChange("period", this.period, this.period = period);
         }
+        
+        public long getTransactionCost()
+        {
+            return transactionCost;
+        }
+
+        public void setTransactionCost(long cost)
+        {
+            firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost);
+        }
 
     }
 
@@ -121,6 +134,7 @@ public class NewPlanDialog extends AbstractDialog
     {
         bindings().bindMandatoryStringInput(editArea, "Name", "name");
         bindings().bindMandatoryAmountInput(editArea, "Amount", "amount");
+        bindings().bindMandatoryAmountInput(editArea, "Transaction Cost", "transactionCost");
         bindings().bindComboViewer(editArea, "Portfolio", "portfolio", new LabelProvider()
         {
             @Override

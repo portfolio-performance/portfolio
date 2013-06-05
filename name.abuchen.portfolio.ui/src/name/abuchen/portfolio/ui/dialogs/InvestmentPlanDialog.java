@@ -54,6 +54,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         Date start;
         String name;
         long amount;
+        long transactionCost;
 
         public Model(Client client, InvestmentPlan plan)
         {
@@ -66,20 +67,23 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         {
             if (plan != null) {
                 plan.setAmount(amount);
-                plan.setPeriod(period);
+                plan.setDayOfMonth(period);
                 plan.setStart(start);
                 plan.setName(name);
+                plan.setTransactionCost(transactionCost);
+                plan.setSecurity(security);
             }
         }
 
         public void updateFromPlan()
         {
-            setPeriod(plan.getPeriod());
+            setPeriod(plan.getDayOfMonth());
             setPortfolio(plan.getPortfolio());
             setSecurity(plan.getSecurity());
             setStart(plan.getStart());
             setName(plan.getName());
             setAmount(plan.getAmount());
+            setTransactionCost(plan.getTransactionCost());
         }
 
         public void resetPlan()
@@ -90,6 +94,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
             setStart(new Date());
             setName("");
             setAmount(0);
+            setTransactionCost(0);
         }
 
         public InvestmentPlan getPlan()
@@ -162,28 +167,14 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
             firePropertyChange("amount", this.amount, this.amount = amount);
         }
         
-    }
-    
-    public static class ModelCellModifier implements ICellModifier {
-
-        @Override
-        public boolean canModify(Object element, String property)
+        public long getTransactionCost()
         {
-            return true;
+            return transactionCost;
         }
 
-        @Override
-        public Object getValue(Object element, String property)
+        public void setTransactionCost(long cost)
         {
-            System.out.println(element + "|" + property);
-            return null;
-        }
-
-        @Override
-        public void modify(Object element, String property, Object value)
-        {
-            // TODO Auto-generated method stub
-            
+            firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost);
         }
         
     }
@@ -253,13 +244,18 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         lbl.setText("Portfolio:");
         GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(lbl);
         bindings().bindLabel(editArea, "portfolio");
-        lbl = new Label(editArea, SWT.NULL);
-        lbl.setText("Security:");
-        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(lbl);
-        bindings().bindLabel(editArea, "security");
+        bindings().bindComboViewer(editArea, "Security", "security", new LabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Security) element).getName();
+            }
+        }, client.getSecurities().toArray());
         bindings().bindDatePicker(editArea, "Start", "start");
         bindings().bindStringInput(editArea, "Name", "name");
         bindings().bindAmountInput(editArea, "Amount", "amount");
+        bindings().bindAmountInput(editArea, "Transaction Cost", "transactionCost");
         delButton = new Button(editArea, SWT.PUSH);
         delButton.setText("Delete Plan");
         delButton.setEnabled(false);
@@ -308,6 +304,17 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
             public String getText(Object element)
             {
                 return new SimpleDateFormat("dd.MM.yyyy").format(((PortfolioTransaction) element).getDate());
+            }
+        });
+        TableViewerColumn securityCol = new TableViewerColumn(tViewer, SWT.NONE);
+        securityCol.getColumn().setText("Security");
+        securityCol.getColumn().setWidth(70);
+        securityCol.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((PortfolioTransaction) element).getSecurity().getTickerSymbol();
             }
         });
         TableViewerColumn sharesCol = new TableViewerColumn(tViewer, SWT.NONE);
@@ -386,7 +393,8 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
 
             }
         }) 
-        .editable("date") // //$NON-NLS-1$
+        .editable("date")
+        .readonly("security")// //$NON-NLS-1$
         .shares("shares") // //$NON-NLS-1$
         .amount("fees") // //$NON-NLS-1$
         .readonly("price")
