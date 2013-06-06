@@ -14,6 +14,7 @@ public class InvestmentPlan
     private String name;
     private Date start;
     private int dayOfMonth;
+    private boolean generateAccountTransactions;
     
     public InvestmentPlan() {
         transactions = new ArrayList<PortfolioTransaction>();
@@ -93,6 +94,15 @@ public class InvestmentPlan
         this.transactionCost = transactionCost;
     }
 
+    public boolean isGenerateAccountTransactions()
+    {
+        return generateAccountTransactions;
+    }
 
+    public void setGenerateAccountTransactions(boolean generateAccountTransaction)
+    {
+        this.generateAccountTransactions = generateAccountTransaction;
+    }
 
+    
 }

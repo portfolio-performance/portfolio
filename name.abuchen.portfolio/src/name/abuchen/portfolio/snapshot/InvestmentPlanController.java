@@ -56,7 +56,6 @@ public class InvestmentPlanController
                 if (p.getSecurity().equals(plan.getSecurity())) {
                     if (Dates.isSameMonth(current, p.getDate())) {
                         if (Dates.daysBetween(current, p.getDate()) <= TOLERANCE) {
-                            System.out.println("Already one there! " + p.getDate());
                             alreadyPresent = true;
                             break;
                         }
@@ -64,18 +63,28 @@ public class InvestmentPlanController
                 }
             }
             if (!alreadyPresent) {
-                System.out.println("we have a bingo " + current);
-                long amount = plan.getAmount();
+                long amount = plan.getAmount() - plan.getTransactionCost();
                 long price = plan.getSecurity().getSecurityPrice(current).getValue();
                 long shares = (long) (((double) amount / price) * Values.Share.factor());
-                BuySellEntry entry = new BuySellEntry(plan.getPortfolio(), plan.getPortfolio().getReferenceAccount());
-                entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                entry.setDate(current);
-                entry.setShares(shares);
-                entry.setAmount(amount);
-                entry.setSecurity(plan.getSecurity());
-                entry.insert();
-                plan.addTransaction(entry.getPortfolioTransaction());
+                if (plan.isGenerateAccountTransactions()) {
+                    BuySellEntry entry = new BuySellEntry(plan.getPortfolio(), plan.getPortfolio().getReferenceAccount());
+                    entry.setType(PortfolioTransaction.Type.BUY);
+                    entry.setDate(current);
+                    entry.setShares(shares);
+                    entry.setAmount(amount);
+                    entry.setSecurity(plan.getSecurity());
+                    entry.insert();
+                    plan.addTransaction(entry.getPortfolioTransaction());
+                } else {
+                    PortfolioTransaction transaction = new PortfolioTransaction(current,
+                                    plan.getSecurity(), 
+                                    PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    shares,
+                                    amount,
+                                    plan.getTransactionCost());
+                    plan.addTransaction(transaction);
+                    plan.getPortfolio().addTransaction(transaction);
+                }
             }
             current = Dates.progress(current, plan.getDayOfMonth());
         }

@@ -34,9 +34,7 @@ public class BuySellEntry implements CrossEntry
     public void setType(Type type)
     {
         this.getPortfolioTransaction().setType(type);
-        if (!type.equals(PortfolioTransaction.Type.DELIVERY_INBOUND)) {
-            this.accountTransaction.setType(AccountTransaction.Type.valueOf(type.name()));
-        }
+        this.accountTransaction.setType(AccountTransaction.Type.valueOf(type.name()));
     }
 
     public void setSecurity(Security security)

@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
@@ -18,25 +17,28 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.PlatformUI;
@@ -55,6 +57,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         String name;
         long amount;
         long transactionCost;
+        boolean generateAccountTransactions = false;
 
         public Model(Client client, InvestmentPlan plan)
         {
@@ -72,6 +75,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
                 plan.setName(name);
                 plan.setTransactionCost(transactionCost);
                 plan.setSecurity(security);
+                plan.setGenerateAccountTransactions(generateAccountTransactions);
             }
         }
 
@@ -84,6 +88,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
             setName(plan.getName());
             setAmount(plan.getAmount());
             setTransactionCost(plan.getTransactionCost());
+            setGenerateAccountTransactions(plan.isGenerateAccountTransactions());
         }
 
         public void resetPlan()
@@ -95,6 +100,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
             setName("");
             setAmount(0);
             setTransactionCost(0);
+            setGenerateAccountTransactions(false);
         }
 
         public InvestmentPlan getPlan()
@@ -176,6 +182,17 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         {
             firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost);
         }
+
+        public boolean isGenerateAccountTransactions()
+        {
+            return generateAccountTransactions;
+        }
+
+        public void setGenerateAccountTransactions(boolean generateAccountTransactions)
+        {
+            firePropertyChange("generateAccountTransactions", this.generateAccountTransactions, 
+                            this.generateAccountTransactions = generateAccountTransactions);
+        }
         
     }
 
@@ -255,6 +272,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         bindings().bindDatePicker(editArea, "Start", "start");
         bindings().bindStringInput(editArea, "Name", "name");
         bindings().bindAmountInput(editArea, "Amount", "amount");
+        bindings().bindBooleanInput(editArea, "Account Transactions?", "generateAccountTransactions");
         bindings().bindAmountInput(editArea, "Transaction Cost", "transactionCost");
         delButton = new Button(editArea, SWT.PUSH);
         delButton.setText("Delete Plan");
@@ -400,6 +418,44 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
         .readonly("price")
         .amount("amount") // //$NON-NLS-1$
         .apply();
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener( new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                final Portfolio portfolio = ((Model) getModel()).portfolio;
+                if (portfolio == null) {
+                    System.out.println("should not happen: InvestmentPlanDialog");
+                    return;
+                }
+                final PortfolioTransaction transaction = 
+                                (PortfolioTransaction) 
+                                ((IStructuredSelection) tViewer.getSelection()).getFirstElement();
+                if (transaction != null)
+                {
+                    manager.add(new Separator());
+                    manager.add(new Action("Delete")
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (transaction.getCrossEntry() != null) {
+                                transaction.getCrossEntry().delete();
+                            } else {
+                                portfolio.getTransactions().remove(transaction);
+                            }
+                            ((Model) getModel()).getPlan().getTransactions().remove(transaction);
+                            tViewer.setInput(((Model) getModel()).getPlan().getTransactions());
+                            tViewer.refresh();
+                        }
+                    });
+                }
+            }
+        });
+
+        Menu contextMenu = menuMgr.createContextMenu(table);
+        table.setMenu(contextMenu);
     }
 
     public InvestmentPlanController getInvestmentPlanController()

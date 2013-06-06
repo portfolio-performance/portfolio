@@ -27,6 +27,7 @@ public class NewPlanDialog extends AbstractDialog
         Security security;
         Date start = Dates.today();
         int period = 1;
+        boolean generateAccountTransactions = false;
 
         public Model(Client client)
         {
@@ -47,6 +48,7 @@ public class NewPlanDialog extends AbstractDialog
             plan.setSecurity(security);
             plan.setStart(start);
             plan.setDayOfMonth(period);
+            plan.setGenerateAccountTransactions(generateAccountTransactions);
             getClient().addPlan(plan);
         }
 
@@ -120,6 +122,17 @@ public class NewPlanDialog extends AbstractDialog
             firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost);
         }
 
+        public boolean isGenerateAccountTransactions()
+        {
+            return generateAccountTransactions;
+        }
+
+        public void setGenerateAccountTransactions(boolean generateAccountTransaction)
+        {
+            firePropertyChange("generateAccountTransaction", this.generateAccountTransactions, 
+                            this.generateAccountTransactions = generateAccountTransaction);
+        }
+
     }
 
     private Client client;
@@ -135,6 +148,7 @@ public class NewPlanDialog extends AbstractDialog
         bindings().bindMandatoryStringInput(editArea, "Name", "name");
         bindings().bindMandatoryAmountInput(editArea, "Amount", "amount");
         bindings().bindMandatoryAmountInput(editArea, "Transaction Cost", "transactionCost");
+        bindings().bindBooleanInput(editArea, "Account Transactions?", "generateAccountTransactions");
         bindings().bindComboViewer(editArea, "Portfolio", "portfolio", new LabelProvider()
         {
             @Override
