@@ -12,10 +12,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.InvestmentPlanController;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -29,7 +28,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -202,6 +200,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
     TableViewer tViewer;
     Button createTransactionsButton, delButton;
     ComboViewer combo;
+    ClientEditor editor;
 
     public InvestmentPlanDialog(Shell owner, Client client)
     {
@@ -231,6 +230,10 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
                 ((Model) getModel()).resetPlan();
             }
         }
+    }
+    
+    public void setEditor(ClientEditor editor) {
+        this.editor = editor;
     }
 
     protected Button createButton(Composite parent, int id, String label, boolean defaultButton)
@@ -286,6 +289,7 @@ public class InvestmentPlanDialog extends AbstractDialog implements PropertyChan
                 client.removePlan(((Model) getModel()).getPlan());
                 ((Model) getModel()).setPlan(null);
                 updatePlans();
+//                editor.markDirty();
             }
             @Override
             public void widgetDefaultSelected(SelectionEvent e)

@@ -63,7 +63,7 @@ public class InvestmentPlanController
                 }
             }
             if (!alreadyPresent) {
-                long amount = plan.getAmount() - plan.getTransactionCost();
+                long amount = plan.getAmount();
                 long price = plan.getSecurity().getSecurityPrice(current).getValue();
                 long shares = (long) (((double) amount / price) * Values.Share.factor());
                 if (plan.isGenerateAccountTransactions()) {

@@ -147,7 +147,7 @@ public class NewPlanDialog extends AbstractDialog
     {
         bindings().bindMandatoryStringInput(editArea, "Name", "name");
         bindings().bindMandatoryAmountInput(editArea, "Amount", "amount");
-        bindings().bindMandatoryAmountInput(editArea, "Transaction Cost", "transactionCost");
+        bindings().bindAmountInput(editArea, "Transaction Cost", "transactionCost");
         bindings().bindBooleanInput(editArea, "Account Transactions?", "generateAccountTransactions");
         bindings().bindComboViewer(editArea, "Portfolio", "portfolio", new LabelProvider()
         {
