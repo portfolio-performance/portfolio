@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
@@ -108,9 +110,31 @@ public class TaxonomyModel
         return rootNode;
     }
 
+    public Client getClient()
+    {
+        return snapshot.getClient();
+    }
+
     public void recalculate()
     {
         rootNode.setActual(snapshot.getAssets());
         visitActuals(snapshot, rootNode);
+    }
+
+    public List<TaxonomyNode> getTreeElements()
+    {
+        List<TaxonomyNode> answer = new ArrayList<TaxonomyNode>();
+
+        LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
+        stack.add(rootNode);
+
+        while (!stack.isEmpty())
+        {
+            TaxonomyNode node = stack.pop();
+            answer.add(node);
+            stack.addAll(node.getChildren());
+        }
+
+        return answer;
     }
 }

@@ -192,7 +192,29 @@ public final class TaxonomyNode
 
     public TaxonomyNode addChild(Classification newClassification)
     {
+        Classification classification = getClassification();
+        if (classification == null)
+            return null;
+
+        newClassification.setWeight(classification.getChildrenWeight());
+        newClassification.setParent(classification);
+        classification.addChild(newClassification);
+
         TaxonomyNode newChild = new TaxonomyNode(this, newClassification);
+        newChild.setRank(getTopRank() + 1);
+        children.add(newChild);
+        return newChild;
+    }
+
+    public TaxonomyNode addChild(Assignment newAssignment)
+    {
+        Classification classification = getClassification();
+        if (classification == null)
+            return null;
+
+        classification.addAssignment(newAssignment);
+
+        TaxonomyNode newChild = new TaxonomyNode(this, newAssignment);
         newChild.setRank(getTopRank() + 1);
         children.add(newChild);
         return newChild;

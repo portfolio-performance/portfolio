@@ -1,10 +1,15 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Security;
@@ -17,6 +22,8 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -293,6 +300,16 @@ import org.eclipse.ui.PlatformUI;
                         {
                             public void onModified(Object element, String property)
                             {
+                                // check weights
+                                // (must be between > 0 and <= 100)
+
+                                TaxonomyNode node = (TaxonomyNode) element;
+
+                                if (node.getWeight() > Classification.ONE_HUNDRED_PERCENT)
+                                    node.setWeight(Classification.ONE_HUNDRED_PERCENT);
+                                else if (node.getWeight() <= 0)
+                                    node.setWeight(1);
+
                                 onTaxnomyNodeEdited();
                             }
                         }) //
@@ -359,8 +376,6 @@ import org.eclipse.ui.PlatformUI;
 
         if (node.isClassification())
         {
-            final Classification classification = node.getClassification();
-
             if (node.hasWeightError())
             {
                 manager.add(new Action("Fix weights")
@@ -368,18 +383,7 @@ import org.eclipse.ui.PlatformUI;
                     @Override
                     public void run()
                     {
-                        if (node.isRoot())
-                        {
-                            classification.setWeight(Classification.ONE_HUNDRED_PERCENT);
-                        }
-                        else
-                        {
-                            classification.setWeight(0);
-                            int weight = Math.max(0, Classification.ONE_HUNDRED_PERCENT
-                                            - classification.getParent().getChildrenWeight());
-                            classification.setWeight(weight);
-                        }
-                        onTaxnomyNodeEdited();
+                        doFixClassificationWeights(node);
                     }
                 });
             }
@@ -389,31 +393,142 @@ import org.eclipse.ui.PlatformUI;
                 @Override
                 public void run()
                 {
-                    Classification newClassification = new Classification(classification, UUID.randomUUID().toString(),
-                                    "NEW CLASSIFICATION");
-                    newClassification.setWeight(Classification.ONE_HUNDRED_PERCENT - classification.getChildrenWeight());
-                    classification.addChild(newClassification);
-
-                    TaxonomyNode newNode = node.addChild(newClassification);
-
-                    nodeViewer.setExpandedState(node, true);
-                    onTaxnomyNodeEdited();
-                    nodeViewer.editElement(newNode, 0);
+                    doAddClassification(node);
                 }
             });
 
+            List<Assignment> unassigned = getMissingAssignments();
+            if (!unassigned.isEmpty())
+            {
+                MenuManager subMenu = new MenuManager("Assign");
+                for (final Assignment assignment : unassigned)
+                {
+                    String label = assignment.getInvestmentVehicle().toString();
+
+                    if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
+                        label += " (" + Values.Weight.format(assignment.getWeight()) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
+
+                    subMenu.add(new Action(label)
+                    {
+                        @Override
+                        public void run()
+                        {
+                            doAddAssignment(node, assignment);
+                        }
+                    });
+                }
+                manager.add(subMenu);
+            }
+
             if (!node.isRoot())
             {
+                manager.add(new Separator());
                 manager.add(new Action("Delete")
                 {
                     @Override
                     public void run()
                     {
-                        node.getParent().removeChild(node);
-                        onTaxnomyNodeEdited();
+                        doDeleteClassification(node);
                     }
                 });
             }
         }
+        else
+        {
+            // node is assignment
+            manager.add(new Action("Remove")
+            {
+                @Override
+                public void run()
+                {
+                    doDeleteAssignment(node);
+                }
+            });
+        }
+    }
+
+    private void doFixClassificationWeights(TaxonomyNode node)
+    {
+        Classification classification = node.getClassification();
+
+        if (node.isRoot())
+        {
+            classification.setWeight(Classification.ONE_HUNDRED_PERCENT);
+        }
+        else
+        {
+            classification.setWeight(0);
+            int weight = Math.max(0, Classification.ONE_HUNDRED_PERCENT
+                            - classification.getParent().getChildrenWeight());
+            classification.setWeight(weight);
+        }
+        onTaxnomyNodeEdited();
+    }
+
+    private void doAddClassification(TaxonomyNode parent)
+    {
+        Classification newClassification = new Classification(null, UUID.randomUUID().toString(), "NEW CLASSIFICATION");
+
+        TaxonomyNode newNode = parent.addChild(newClassification);
+
+        nodeViewer.setExpandedState(parent, true);
+        onTaxnomyNodeEdited();
+        nodeViewer.editElement(newNode, 0);
+    }
+
+    private void doDeleteClassification(TaxonomyNode node)
+    {
+        node.getParent().removeChild(node);
+        onTaxnomyNodeEdited();
+    }
+
+    protected void doAddAssignment(TaxonomyNode parent, Assignment assignment)
+    {
+        parent.addChild(assignment);
+        nodeViewer.setExpandedState(parent, true);
+        onTaxnomyNodeEdited();
+    }
+
+    protected void doDeleteAssignment(TaxonomyNode node)
+    {
+        node.getParent().removeChild(node);
+        onTaxnomyNodeEdited();
+    }
+
+    private List<Assignment> getMissingAssignments()
+    {
+        Map<Object, Assignment> vehicles = new HashMap<Object, Assignment>();
+
+        for (Security security : model.getClient().getSecurities())
+            vehicles.put(security, new Assignment(security));
+        for (Account account : model.getClient().getAccounts())
+            vehicles.put(account, new Assignment(account));
+
+        for (TaxonomyNode node : model.getTreeElements())
+        {
+            Assignment assignment = node.getAssignment();
+            if (assignment == null)
+                continue;
+
+            Assignment left = vehicles.remove(assignment.getInvestmentVehicle());
+
+            int weight = left.getWeight() - assignment.getWeight();
+            if (weight > 0)
+            {
+                left.setWeight(weight);
+                vehicles.put(assignment.getInvestmentVehicle(), left);
+            }
+        }
+
+        List<Assignment> unassigned = new ArrayList<Assignment>(vehicles.values());
+        Collections.sort(unassigned, new Comparator<Assignment>()
+        {
+            @Override
+            public int compare(Assignment o1, Assignment o2)
+            {
+                return o1.getInvestmentVehicle().toString().compareTo(o2.getInvestmentVehicle().toString());
+            }
+        });
+        return unassigned;
     }
 }
