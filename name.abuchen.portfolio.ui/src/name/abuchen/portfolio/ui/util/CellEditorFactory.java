@@ -39,9 +39,14 @@ import org.eclipse.ui.PlatformUI;
 
 public final class CellEditorFactory
 {
-    public interface ModificationListener
+    public abstract static class ModificationListener
     {
-        void onModified(Object element, String property);
+        public boolean canModify(Object element, String property)
+        {
+            return true;
+        }
+
+        public abstract void onModified(Object element, String property);
     }
 
     private final Class<?> subjectType;
@@ -331,7 +336,10 @@ public final class CellEditorFactory
 
         public boolean canModify(Object element, String property)
         {
-            return subjectType.isInstance(element) && modifier[indexOf(property)] != null;
+            boolean canModify = subjectType.isInstance(element) && modifier[indexOf(property)] != null;
+            if (canModify)
+                canModify = listener.canModify(element, property);
+            return canModify;
         }
 
         public Object getValue(Object element, String property)
