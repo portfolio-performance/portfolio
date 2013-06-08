@@ -91,6 +91,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static final String IMG_CHECK = "check"; //$NON-NLS-1$
     public static final String IMG_QUICKFIX = "quickfix"; //$NON-NLS-1$
 
+    public static final String IMG_UNASSIGNED_CATEGORY = "unassigned"; //$NON-NLS-1$
+
     private static PortfolioPlugin instance;
 
     public PortfolioPlugin()
@@ -120,7 +122,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
 
         for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST, IMG_PLUS,
                         IMG_CONFIG, IMG_EXPORT, IMG_VIEW_TABLE, IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_CHECK,
-                        IMG_QUICKFIX })
+                        IMG_QUICKFIX, IMG_UNASSIGNED_CATEGORY })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);
