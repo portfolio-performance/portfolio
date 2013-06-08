@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -20,10 +22,18 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -73,6 +83,115 @@ import org.eclipse.ui.PlatformUI;
         {}
     }
 
+    private static class NodeDragListener extends DragSourceAdapter
+    {
+        private TreeViewer treeViewer;
+
+        public NodeDragListener(TreeViewer treeViewer)
+        {
+            this.treeViewer = treeViewer;
+        }
+
+        @Override
+        public void dragSetData(DragSourceEvent event)
+        {
+            TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
+            TaxonomyNodeTransfer.getTransfer().setTaxonomyNode(selection);
+            Assignment assignment = selection.getAssignment();
+            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
+                SecurityTransfer.getTransfer().setSecurity((Security) assignment.getInvestmentVehicle());
+            else
+                SecurityTransfer.getTransfer().setSecurity(null);
+
+            event.data = selection;
+        }
+
+        @Override
+        public void dragStart(DragSourceEvent event)
+        {
+            TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
+            event.doit = !selection.isRoot();
+        }
+    }
+
+    private static class NodeDropListener extends ViewerDropAdapter
+    {
+        private TreeViewer treeViewer;
+
+        public NodeDropListener(TreeViewer treeViewer)
+        {
+            super(treeViewer);
+            this.treeViewer = treeViewer;
+        }
+
+        @Override
+        public void drop(DropTargetEvent event)
+        {
+            if (!TaxonomyNodeTransfer.getTransfer().isSupportedType(event.currentDataType))
+                return;
+
+            if (event.data instanceof TaxonomyNode)
+            {
+                int operation = this.determineLocation(event);
+                TaxonomyNode droppedNode = TaxonomyNodeTransfer.getTransfer().getTaxonomyNode();
+                TaxonomyNode parentDropedNode = (TaxonomyNode) droppedNode.getParent();
+                if (droppedNode == getCurrentTarget())
+                    return;
+
+                TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
+
+                switch (operation)
+                {
+                    case ViewerDropAdapter.LOCATION_AFTER:
+                        droppedNode.insertAfter(target);
+                        break;
+                    case ViewerDropAdapter.LOCATION_BEFORE:
+                        droppedNode.insertBefore(target);
+                        break;
+                    case ViewerDropAdapter.LOCATION_ON:
+                        if (droppedNode != target.getParent())
+                            droppedNode.moveTo(target, -1);
+                        break;
+                    case ViewerDropAdapter.LOCATION_NONE:
+                        break;
+                    default:
+                        break;
+                }
+                super.drop(event);
+                treeViewer.refresh(target.getParent(), true);
+                treeViewer.refresh(parentDropedNode, true);
+            }
+        }
+
+        @Override
+        public boolean performDrop(Object data)
+        {
+            return true;
+        }
+
+        @Override
+        public boolean validateDrop(Object target, int operation, TransferData transferType)
+        {
+            if (!(target instanceof TaxonomyNode))
+                return false;
+
+            TaxonomyNode targetNode = (TaxonomyNode) target;
+
+            int location = determineLocation(this.getCurrentEvent());
+
+            if (targetNode.getClassification() != null)
+            {
+                // target is classification
+                return true;
+            }
+            else
+            {
+                // target is assignment
+                return location == LOCATION_AFTER || location == LOCATION_BEFORE;
+            }
+        }
+    }
+
     private TaxonomyModel model;
     private TreeViewer nodeViewer;
 
@@ -114,7 +233,6 @@ import org.eclipse.ui.PlatformUI;
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
-        ColumnViewerSorter.create(TaxonomyNode.class, "name").attachTo(nodeViewer, column); //$NON-NLS-1$
 
         column = new TreeViewerColumn(nodeViewer, SWT.RIGHT);
         column.getColumn().setText("Weight");
@@ -150,7 +268,6 @@ import org.eclipse.ui.PlatformUI;
                 return node.hasWeightError() ? PortfolioPlugin.image(PortfolioPlugin.IMG_QUICKFIX) : null;
             }
         });
-        ColumnViewerSorter.create(TaxonomyNode.class, "weight").attachTo(nodeViewer, column, true); //$NON-NLS-1$
 
         column = new TreeViewerColumn(nodeViewer, SWT.LEFT);
         column.getColumn().setText("Color");
@@ -170,7 +287,6 @@ import org.eclipse.ui.PlatformUI;
                 return renderer.getColorFor((TaxonomyNode) element);
             }
         });
-        ColumnViewerSorter.create(TaxonomyNode.class, "color").attachTo(nodeViewer, column, true); //$NON-NLS-1$
 
         new CellEditorFactory(nodeViewer, TaxonomyNode.class) //
                         .notify(new CellEditorFactory.ModificationListener()
@@ -188,6 +304,12 @@ import org.eclipse.ui.PlatformUI;
         nodeViewer.getTree().setHeaderVisible(true);
         nodeViewer.getTree().setLinesVisible(true);
         nodeViewer.setContentProvider(new ItemContentProvider());
+
+        nodeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer(),
+                        SecurityTransfer.getTransfer() }, new NodeDragListener(nodeViewer));
+        nodeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer() },
+                        new NodeDropListener(nodeViewer));
+
         nodeViewer.setInput(model);
 
         expandNodes();

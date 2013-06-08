@@ -12,7 +12,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 
 public final class TaxonomyNode
 {
-    private final TaxonomyNode parent;
+    private TaxonomyNode parent;
     private final Object subject;
 
     private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
@@ -102,6 +102,22 @@ public final class TaxonomyNode
             ((Assignment) subject).setWeight(weight);
     }
 
+    public int getRank()
+    {
+        if (subject instanceof Classification)
+            return ((Classification) subject).getRank();
+        else
+            return ((Assignment) subject).getRank();
+    }
+
+    public void setRank(int rank)
+    {
+        if (subject instanceof Classification)
+            ((Classification) subject).setRank(rank);
+        else
+            ((Assignment) subject).setRank(rank);
+    }
+
     public boolean hasWeightError()
     {
         if (subject instanceof Assignment)
@@ -177,6 +193,7 @@ public final class TaxonomyNode
     public TaxonomyNode addChild(Classification newClassification)
     {
         TaxonomyNode newChild = new TaxonomyNode(this, newClassification);
+        newChild.setRank(getTopRank() + 1);
         children.add(newChild);
         return newChild;
     }
@@ -194,5 +211,84 @@ public final class TaxonomyNode
             classification.getAssignments().remove(subject);
 
         children.remove(node);
+    }
+
+    /* package */void moveTo(TaxonomyNode parent, int index)
+    {
+        Classification classification = parent.getClassification();
+        if (classification == null)
+            throw new UnsupportedOperationException();
+
+        this.getParent().removeChild(this);
+        this.parent = parent;
+
+        Object subject = getSubject();
+        if (subject instanceof Classification)
+        {
+            ((Classification) subject).setParent(classification);
+            classification.getChildren().add((Classification) subject);
+        }
+        else
+        {
+            classification.getAssignments().add((Assignment) subject);
+        }
+        List<TaxonomyNode> siblings = parent.getChildren();
+
+        if (index != -1)
+            siblings.add(index, this);
+        else
+            siblings.add(this);
+
+        for (int ii = 0; ii < siblings.size(); ii++)
+            siblings.get(ii).setRank(ii);
+    }
+
+    /* package */void insertAfter(TaxonomyNode target)
+    {
+        if (target.isRoot())
+            return;
+
+        if (target.getParent() == getParent())
+        {
+            List<TaxonomyNode> siblings = getParent().getChildren();
+            siblings.remove(this);
+            int index = siblings.indexOf(target);
+            siblings.add(index + 1, this);
+            for (int ii = 0; ii < siblings.size(); ii++)
+                siblings.get(ii).setRank(ii);
+        }
+        else
+        {
+            int index = target.getParent().getChildren().indexOf(target);
+            moveTo(target.getParent(), index + 1);
+        }
+    }
+
+    /* package */void insertBefore(TaxonomyNode target)
+    {
+        if (target.isRoot())
+            return;
+
+        if (target.getParent() == getParent())
+        {
+            List<TaxonomyNode> siblings = getParent().getChildren();
+            siblings.remove(this);
+            int index = siblings.indexOf(target);
+            siblings.add(index, this);
+            for (int ii = 0; ii < siblings.size(); ii++)
+                siblings.get(ii).setRank(ii);
+        }
+        else
+        {
+            int index = target.getParent().getChildren().indexOf(target);
+            moveTo(target.getParent(), index);
+        }
+    }
+
+    /* package */int getTopRank()
+    {
+        if (children.isEmpty())
+            return -1;
+        return children.get(children.size() - 1).getRank();
     }
 }

@@ -172,18 +172,28 @@ public class ClientFactory
         {
             Classification classification = new Classification(root, assetClass.name(), assetClass.toString());
             classification.setWeight(Classification.ONE_HUNDRED_PERCENT / AssetClass.values().length);
+            classification.setRank(assetClass.ordinal());
             root.addChild(classification);
 
+            int rank = 1;
             for (Security security : client.getSecurities())
             {
                 if (security.getType() == assetClass)
-                    classification.addAssignment(new Assignment(security));
+                {
+                    Assignment assignment = new Assignment(security);
+                    assignment.setRank(rank++);
+                    classification.addAssignment(assignment);
+                }
             }
 
             if (assetClass == AssetClass.CASH)
             {
                 for (Account account : client.getAccounts())
-                    classification.addAssignment(new Assignment(account));
+                {
+                    Assignment assignment = new Assignment(account);
+                    assignment.setRank(rank++);
+                    classification.addAssignment(assignment);
+                }
             }
         }
 
@@ -211,12 +221,14 @@ public class ClientFactory
     private static void buildTree(Classification node, IndustryClassification.Category category)
     {
         int weight = Classification.ONE_HUNDRED_PERCENT / category.getChildren().size();
+        int rank = 0;
 
         for (IndustryClassification.Category child : category.getChildren())
         {
             Classification classification = new Classification(node, child.getId(), child.getLabel());
             classification.setDescription(child.getDescription());
             classification.setWeight(weight);
+            classification.setRank(rank++);
             node.addChild(classification);
 
             if (!child.getChildren().isEmpty())
@@ -230,12 +242,17 @@ public class ClientFactory
 
     private static void assignSecurities(Client client, Taxonomy taxonomy)
     {
+        int rank = 0;
         for (Security security : client.getSecurities())
         {
             Classification classification = taxonomy.getClassificationById(security.getIndustryClassification());
 
             if (classification != null)
-                classification.addAssignment(new Assignment(security));
+            {
+                Assignment assignment = new Assignment(security);
+                assignment.setRank(rank++);
+                classification.addAssignment(assignment);
+            }
         }
     }
 
@@ -254,10 +271,13 @@ public class ClientFactory
 
     private static void buildTree(Classification node, Category category)
     {
+        int rank = 0;
+
         for (Category child : category.getChildren())
         {
             Classification classification = new Classification(node, child.getUUID(), child.getName());
             classification.setWeight(child.getPercentage() * Values.Weight.factor());
+            classification.setRank(rank++);
             node.addChild(classification);
 
             buildTree(classification, child);
@@ -265,10 +285,11 @@ public class ClientFactory
 
         for (Object element : category.getElements())
         {
-            if (element instanceof Account)
-                node.addAssignment(new Assignment((Account) element));
-            else
-                node.addAssignment(new Assignment((Security) element));
+            Assignment assignment = element instanceof Account ? new Assignment((Account) element) : new Assignment(
+                            (Security) element);
+            assignment.setRank(rank++);
+
+            node.addAssignment(assignment);
         }
     }
 

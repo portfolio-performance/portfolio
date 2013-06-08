@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import name.abuchen.portfolio.model.Account;
@@ -45,6 +47,15 @@ public class TaxonomyModel
 
             for (Assignment assignment : classification.getAssignments())
                 m.getChildren().add(new TaxonomyNode(m, assignment));
+
+            Collections.sort(m.getChildren(), new Comparator<TaxonomyNode>()
+            {
+                @Override
+                public int compare(TaxonomyNode o1, TaxonomyNode o2)
+                {
+                    return o1.getRank() > o2.getRank() ? 1 : o1.getRank() == o2.getRank() ? 0 : -1;
+                }
+            });
         }
 
         // calculate actuals

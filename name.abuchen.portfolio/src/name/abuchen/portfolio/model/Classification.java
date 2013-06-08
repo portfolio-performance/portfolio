@@ -10,6 +10,7 @@ public class Classification
     {
         private Object investmentVehicle;
         private int weight;
+        private int rank;
 
         public Assignment(Security security)
         {
@@ -41,6 +42,16 @@ public class Classification
         {
             return investmentVehicle;
         }
+
+        public int getRank()
+        {
+            return rank;
+        }
+
+        public void setRank(int rank)
+        {
+            this.rank = rank;
+        }
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
@@ -55,6 +66,7 @@ public class Classification
     private List<Assignment> assignments = new ArrayList<Assignment>();
 
     private int weight;
+    private int rank;
 
     public Classification(String id, String name)
     {
@@ -115,6 +127,11 @@ public class Classification
         return parent;
     }
 
+    public void setParent(Classification parent)
+    {
+        this.parent = parent;
+    }
+
     public List<Classification> getChildren()
     {
         return children;
@@ -151,5 +168,15 @@ public class Classification
     public void setWeight(int weight)
     {
         this.weight = weight;
+    }
+
+    public int getRank()
+    {
+        return rank;
+    }
+
+    public void setRank(int rank)
+    {
+        this.rank = rank;
     }
 }
