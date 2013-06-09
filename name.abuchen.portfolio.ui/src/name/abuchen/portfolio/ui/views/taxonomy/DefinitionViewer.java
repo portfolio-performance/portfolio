@@ -1,15 +1,10 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Security;
@@ -38,7 +33,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Color;
@@ -117,62 +111,54 @@ import org.eclipse.ui.PlatformUI;
         public void dragStart(DragSourceEvent event)
         {
             TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
-            event.doit = !selection.isRoot();
+            event.doit = !selection.isRoot() && !selection.isUnassignedCategory();
         }
     }
 
     private static class NodeDropListener extends ViewerDropAdapter
     {
-        private TreeViewer treeViewer;
-
         public NodeDropListener(TreeViewer treeViewer)
         {
             super(treeViewer);
-            this.treeViewer = treeViewer;
-        }
-
-        @Override
-        public void drop(DropTargetEvent event)
-        {
-            if (!TaxonomyNodeTransfer.getTransfer().isSupportedType(event.currentDataType))
-                return;
-
-            if (event.data instanceof TaxonomyNode)
-            {
-                int operation = this.determineLocation(event);
-                TaxonomyNode droppedNode = TaxonomyNodeTransfer.getTransfer().getTaxonomyNode();
-                TaxonomyNode parentDropedNode = (TaxonomyNode) droppedNode.getParent();
-                if (droppedNode == getCurrentTarget())
-                    return;
-
-                TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
-
-                switch (operation)
-                {
-                    case ViewerDropAdapter.LOCATION_AFTER:
-                        droppedNode.insertAfter(target);
-                        break;
-                    case ViewerDropAdapter.LOCATION_BEFORE:
-                        droppedNode.insertBefore(target);
-                        break;
-                    case ViewerDropAdapter.LOCATION_ON:
-                        if (droppedNode != target.getParent())
-                            droppedNode.moveTo(target, -1);
-                        break;
-                    case ViewerDropAdapter.LOCATION_NONE:
-                        break;
-                    default:
-                        break;
-                }
-                super.drop(event);
-                treeViewer.refresh(target.getParent(), true);
-                treeViewer.refresh(parentDropedNode, true);
-            }
         }
 
         @Override
         public boolean performDrop(Object data)
         {
+            TaxonomyNode droppedNode = TaxonomyNodeTransfer.getTransfer().getTaxonomyNode();
+            if (droppedNode == getCurrentTarget())
+                return false;
+
+            TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
+
+            if (target.isUnassignedCategory() && droppedNode.isClassification())
+                return false;
+
+            // save parent in order to refresh later
+            TaxonomyNode droppedParent = droppedNode.getParent();
+
+            switch (getCurrentLocation())
+            {
+                case ViewerDropAdapter.LOCATION_AFTER:
+                    droppedNode.insertAfter(target);
+                    break;
+                case ViewerDropAdapter.LOCATION_BEFORE:
+                    droppedNode.insertBefore(target);
+                    break;
+                case ViewerDropAdapter.LOCATION_ON:
+                    if (droppedNode != target.getParent())
+                        droppedNode.moveTo(target);
+                    break;
+                case ViewerDropAdapter.LOCATION_NONE:
+                    break;
+                default:
+                    break;
+            }
+
+            TreeViewer treeViewer = (TreeViewer) getViewer();
+            treeViewer.refresh(target.getParent(), true);
+            treeViewer.refresh(droppedParent, true);
+
             return true;
         }
 
@@ -186,16 +172,12 @@ import org.eclipse.ui.PlatformUI;
 
             int location = determineLocation(this.getCurrentEvent());
 
-            if (targetNode.getClassification() != null)
-            {
-                // target is classification
+            if (targetNode.isClassification())
                 return true;
-            }
-            else
-            {
-                // target is assignment
+            else if (targetNode.isAssignment())
                 return location == LOCATION_AFTER || location == LOCATION_BEFORE;
-            }
+            else
+                return false;
         }
     }
 
@@ -232,7 +214,9 @@ import org.eclipse.ui.PlatformUI;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
-                if (node.getClassification() != null)
+                if (node.isUnassignedCategory())
+                    return PortfolioPlugin.image(PortfolioPlugin.IMG_UNASSIGNED_CATEGORY);
+                else if (node.getClassification() != null)
                     return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
                 else if (node.getBackingSecurity() != null)
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
@@ -251,7 +235,10 @@ import org.eclipse.ui.PlatformUI;
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return Values.Weight.format(node.getWeight());
+                if (node.isUnassignedCategory())
+                    return "n/a";
+                else
+                    return Values.Weight.format(node.getWeight());
             }
 
             @Override
@@ -298,17 +285,31 @@ import org.eclipse.ui.PlatformUI;
         new CellEditorFactory(nodeViewer, TaxonomyNode.class) //
                         .notify(new CellEditorFactory.ModificationListener()
                         {
+                            @Override
+                            public boolean canModify(Object element, String property)
+                            {
+                                TaxonomyNode node = (TaxonomyNode) element;
+
+                                if (node.isUnassignedCategory())
+                                    return false;
+
+                                if ("name".equals(property) && node.isAssignment()) //$NON-NLS-1$
+                                    return false;
+
+                                return true;
+                            }
+
                             public void onModified(Object element, String property)
                             {
                                 // check weights
-                                // (must be between > 0 and <= 100)
+                                // (must be between >= 0 and <= 100)
 
                                 TaxonomyNode node = (TaxonomyNode) element;
 
                                 if (node.getWeight() > Classification.ONE_HUNDRED_PERCENT)
                                     node.setWeight(Classification.ONE_HUNDRED_PERCENT);
-                                else if (node.getWeight() <= 0)
-                                    node.setWeight(1);
+                                else if (node.getWeight() < 0)
+                                    node.setWeight(0);
 
                                 onTaxnomyNodeEdited();
                             }
@@ -374,7 +375,11 @@ import org.eclipse.ui.PlatformUI;
         if (node == null)
             return;
 
-        if (node.isClassification())
+        if (node.isUnassignedCategory())
+        {
+            // no actions on unassigned category
+        }
+        else if (node.isClassification())
         {
             if (node.hasWeightError())
             {
@@ -397,13 +402,13 @@ import org.eclipse.ui.PlatformUI;
                 }
             });
 
-            List<Assignment> unassigned = getMissingAssignments();
-            if (!unassigned.isEmpty())
+            TaxonomyNode unassigned = model.getUnassignedNode();
+            if (!unassigned.getChildren().isEmpty())
             {
                 MenuManager subMenu = new MenuManager("Assign");
-                for (final Assignment assignment : unassigned)
+                for (final TaxonomyNode assignment : unassigned.getChildren())
                 {
-                    String label = assignment.getInvestmentVehicle().toString();
+                    String label = assignment.getName();
 
                     if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
                         label += " (" + Values.Weight.format(assignment.getWeight()) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -413,7 +418,9 @@ import org.eclipse.ui.PlatformUI;
                         @Override
                         public void run()
                         {
-                            doAddAssignment(node, assignment);
+                            assignment.moveTo(node);
+                            nodeViewer.setExpandedState(node, true);
+                            onTaxnomyNodeEdited();
                         }
                     });
                 }
@@ -435,15 +442,20 @@ import org.eclipse.ui.PlatformUI;
         }
         else
         {
-            // node is assignment
-            manager.add(new Action("Remove")
+            // node is assignment, but not in unassigned category
+            if (!node.getParent().isUnassignedCategory())
             {
-                @Override
-                public void run()
+                manager.add(new Action("Remove")
                 {
-                    doDeleteAssignment(node);
-                }
-            });
+                    @Override
+                    public void run()
+                    {
+                        node.moveTo(model.getUnassignedNode());
+                        nodeViewer.setExpandedState(node, true);
+                        onTaxnomyNodeEdited();
+                    }
+                });
+            }
         }
     }
 
@@ -478,57 +490,22 @@ import org.eclipse.ui.PlatformUI;
 
     private void doDeleteClassification(TaxonomyNode node)
     {
+        if (node.isRoot() || node.isUnassignedCategory())
+            return;
+
         node.getParent().removeChild(node);
-        onTaxnomyNodeEdited();
-    }
 
-    protected void doAddAssignment(TaxonomyNode parent, Assignment assignment)
-    {
-        parent.addChild(assignment);
-        nodeViewer.setExpandedState(parent, true);
-        onTaxnomyNodeEdited();
-    }
-
-    protected void doDeleteAssignment(TaxonomyNode node)
-    {
-        node.getParent().removeChild(node);
-        onTaxnomyNodeEdited();
-    }
-
-    private List<Assignment> getMissingAssignments()
-    {
-        Map<Object, Assignment> vehicles = new HashMap<Object, Assignment>();
-
-        for (Security security : model.getClient().getSecurities())
-            vehicles.put(security, new Assignment(security));
-        for (Account account : model.getClient().getAccounts())
-            vehicles.put(account, new Assignment(account));
-
-        for (TaxonomyNode node : model.getTreeElements())
-        {
-            Assignment assignment = node.getAssignment();
-            if (assignment == null)
-                continue;
-
-            Assignment left = vehicles.remove(assignment.getInvestmentVehicle());
-
-            int weight = left.getWeight() - assignment.getWeight();
-            if (weight > 0)
-            {
-                left.setWeight(weight);
-                vehicles.put(assignment.getInvestmentVehicle(), left);
-            }
-        }
-
-        List<Assignment> unassigned = new ArrayList<Assignment>(vehicles.values());
-        Collections.sort(unassigned, new Comparator<Assignment>()
+        new TaxonomyModel.NodeVisitor()
         {
             @Override
-            public int compare(Assignment o1, Assignment o2)
+            public void visit(TaxonomyNode node)
             {
-                return o1.getInvestmentVehicle().toString().compareTo(o2.getInvestmentVehicle().toString());
+                if (node.isAssignment())
+                    node.moveTo(model.getUnassignedNode());
             }
-        });
-        return unassigned;
+
+        }.startWith(node);
+
+        onTaxnomyNodeEdited();
     }
 }

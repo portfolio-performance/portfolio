@@ -10,24 +10,211 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.util.Colors;
 
-public final class TaxonomyNode
+public abstract class TaxonomyNode
 {
+    /* protected */static class ClassificationNode extends TaxonomyNode
+    {
+        private Classification classification;
+
+        public ClassificationNode(TaxonomyNode parent, Classification classification)
+        {
+            super(parent);
+            this.classification = classification;
+        }
+
+        @Override
+        public Classification getClassification()
+        {
+            return classification;
+        }
+
+        @Override
+        public Assignment getAssignment()
+        {
+            return null;
+        }
+
+        @Override
+        public int getWeight()
+        {
+            return classification.getWeight();
+        }
+
+        @Override
+        public void setWeight(int weight)
+        {
+            classification.setWeight(weight);
+        }
+
+        @Override
+        public int getRank()
+        {
+            return classification.getRank();
+        }
+
+        @Override
+        public void setRank(int rank)
+        {
+            classification.setRank(rank);
+        }
+
+        @Override
+        public String getName()
+        {
+            return classification.getName();
+        }
+
+        @Override
+        public void setName(String name)
+        {
+            classification.setName(name);
+        }
+
+        @Override
+        public String getId()
+        {
+            return classification.getId();
+        }
+
+        @Override
+        public String getColor()
+        {
+            return classification.getColor();
+        }
+
+        @Override
+        public boolean hasWeightError()
+        {
+            if (isRoot())
+                return Classification.ONE_HUNDRED_PERCENT != getClassification().getWeight();
+
+            return Classification.ONE_HUNDRED_PERCENT != getClassification().getParent().getChildrenWeight();
+        }
+    }
+
+    /* protected */static class AssignmentNode extends TaxonomyNode
+    {
+        private Assignment assignment;
+
+        public AssignmentNode(TaxonomyNode parent, Assignment assignment)
+        {
+            super(parent);
+            this.assignment = assignment;
+        }
+
+        @Override
+        public Security getBackingSecurity()
+        {
+            if (assignment.getInvestmentVehicle() instanceof Security)
+                return (Security) assignment.getInvestmentVehicle();
+            else
+                return null;
+        }
+
+        @Override
+        public Classification getClassification()
+        {
+            return null;
+        }
+
+        @Override
+        public Assignment getAssignment()
+        {
+            return assignment;
+        }
+
+        @Override
+        public int getWeight()
+        {
+            return assignment.getWeight();
+        }
+
+        @Override
+        public void setWeight(int weight)
+        {
+            assignment.setWeight(weight);
+        }
+
+        @Override
+        public int getRank()
+        {
+            return assignment.getRank();
+        }
+
+        @Override
+        public void setRank(int rank)
+        {
+            assignment.setRank(rank);
+        }
+
+        @Override
+        public String getName()
+        {
+            return assignment.getInvestmentVehicle().toString();
+        }
+
+        @Override
+        public void setName(String name)
+        {
+            Object investmentVehicle = assignment.getInvestmentVehicle();
+            if (investmentVehicle instanceof Security)
+                ((Security) investmentVehicle).setName(name);
+            else
+                ((Account) investmentVehicle).setName(name);
+        }
+
+        @Override
+        public String getId()
+        {
+            Object vehicle = assignment.getInvestmentVehicle();
+            return vehicle instanceof Security ? ((Security) vehicle).getUUID() : ((Account) vehicle).getUUID();
+        }
+
+        @Override
+        public String getColor()
+        {
+            if (assignment.getInvestmentVehicle() instanceof Security)
+                return Colors.EQUITY.asHex();
+            else
+                return Colors.CASH.asHex();
+        }
+    }
+
+    /* protected */static class UnassignedContainerNode extends ClassificationNode
+    {
+        public UnassignedContainerNode(TaxonomyNode parent, Classification classification)
+        {
+            super(parent, classification);
+        }
+
+        @Override
+        public boolean isUnassignedCategory()
+        {
+            return true;
+        }
+
+        @Override
+        public String getColor()
+        {
+            return Colors.OTHER_CATEGORY.asHex();
+        }
+
+        @Override
+        public boolean hasWeightError()
+        {
+            return false;
+        }
+    }
+
     private TaxonomyNode parent;
-    private final Object subject;
+    // private final Object subject;
 
     private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
     private long actual;
 
-    /* package */TaxonomyNode(TaxonomyNode parent, Classification classification)
+    /* package */TaxonomyNode(TaxonomyNode parent)
     {
         this.parent = parent;
-        this.subject = classification;
-    }
-
-    /* package */TaxonomyNode(TaxonomyNode parent, Assignment assignment)
-    {
-        this.parent = parent;
-        this.subject = assignment;
     }
 
     public TaxonomyNode getParent()
@@ -45,35 +232,28 @@ public final class TaxonomyNode
         return children;
     }
 
-    /* package */Object getSubject()
-    {
-        return subject;
-    }
-
     public Security getBackingSecurity()
     {
-        if (subject instanceof Assignment)
-        {
-            Object investmentVehicle = ((Assignment) subject).getInvestmentVehicle();
-            if (investmentVehicle instanceof Security)
-                return (Security) investmentVehicle;
-        }
         return null;
     }
 
     public boolean isClassification()
     {
-        return subject instanceof Classification;
+        return getClassification() != null;
     }
 
-    public Classification getClassification()
+    public abstract Classification getClassification();
+
+    public boolean isAssignment()
     {
-        return subject instanceof Classification ? (Classification) subject : null;
+        return getAssignment() != null;
     }
 
-    public Assignment getAssignment()
+    public abstract Assignment getAssignment();
+
+    public boolean isUnassignedCategory()
     {
-        return subject instanceof Assignment ? (Assignment) subject : null;
+        return false;
     }
 
     public long getActual()
@@ -86,95 +266,26 @@ public final class TaxonomyNode
         this.actual = actual;
     }
 
-    public int getWeight()
-    {
-        if (subject instanceof Classification)
-            return ((Classification) subject).getWeight();
-        else
-            return ((Assignment) subject).getWeight();
-    }
+    public abstract int getWeight();
 
-    public void setWeight(int weight)
-    {
-        if (subject instanceof Classification)
-            ((Classification) subject).setWeight(weight);
-        else
-            ((Assignment) subject).setWeight(weight);
-    }
+    public abstract void setWeight(int weight);
 
-    public int getRank()
-    {
-        if (subject instanceof Classification)
-            return ((Classification) subject).getRank();
-        else
-            return ((Assignment) subject).getRank();
-    }
+    public abstract int getRank();
 
-    public void setRank(int rank)
-    {
-        if (subject instanceof Classification)
-            ((Classification) subject).setRank(rank);
-        else
-            ((Assignment) subject).setRank(rank);
-    }
+    public abstract void setRank(int rank);
 
     public boolean hasWeightError()
     {
-        if (subject instanceof Assignment)
-            return false;
-
-        if (isRoot())
-            return Classification.ONE_HUNDRED_PERCENT != getClassification().getWeight();
-
-        return Classification.ONE_HUNDRED_PERCENT != getClassification().getParent().getChildrenWeight();
+        return false;
     }
 
-    public String getName()
-    {
-        if (subject instanceof Classification)
-            return ((Classification) subject).getName();
-        else
-            return ((Assignment) subject).getInvestmentVehicle().toString();
-    }
+    public abstract String getName();
 
-    public void setName(String name)
-    {
-        if (subject instanceof Classification)
-        {
-            ((Classification) subject).setName(name);
-        }
-        else
-        {
-            Object investmentVehicle = ((Assignment) subject).getInvestmentVehicle();
-            if (investmentVehicle instanceof Security)
-                ((Security) investmentVehicle).setName(name);
-            else
-                ((Account) investmentVehicle).setName(name);
-        }
-    }
+    public abstract void setName(String name);
 
-    public String getId()
-    {
-        if (subject instanceof Classification)
-            return ((Classification) subject).getId();
-        else
-        {
-            Object vehicle = ((Assignment) subject).getInvestmentVehicle();
-            return vehicle instanceof Security ? ((Security) vehicle).getUUID() : ((Account) vehicle).getUUID();
-        }
-    }
+    public abstract String getId();
 
-    public String getColor()
-    {
-        if (subject instanceof Classification)
-            return ((Classification) subject).getColor();
-
-        Assignment assignment = (Assignment) subject;
-        if (assignment.getInvestmentVehicle() instanceof Security)
-            return Colors.EQUITY.asHex();
-        else
-            return Colors.CASH.asHex();
-    }
+    public abstract String getColor();
 
     public List<TaxonomyNode> getPath()
     {
@@ -190,23 +301,27 @@ public final class TaxonomyNode
         return path;
     }
 
-    public TaxonomyNode addChild(Classification newClassification)
+    /* package */TaxonomyNode addChild(Classification newClassification)
     {
         Classification classification = getClassification();
         if (classification == null)
             return null;
 
-        newClassification.setWeight(classification.getChildrenWeight());
+        newClassification.setWeight(Classification.ONE_HUNDRED_PERCENT - classification.getChildrenWeight());
         newClassification.setParent(classification);
         classification.addChild(newClassification);
 
-        TaxonomyNode newChild = new TaxonomyNode(this, newClassification);
-        newChild.setRank(getTopRank() + 1);
-        children.add(newChild);
+        TaxonomyNode newChild = new ClassificationNode(this, newClassification);
+
+        int insertAt = isRoot() ? children.size() - 1 : children.size();
+        children.add(insertAt, newChild);
+        for (int ii = 0; ii < children.size(); ii++)
+            children.get(ii).setRank(ii);
+
         return newChild;
     }
 
-    public TaxonomyNode addChild(Assignment newAssignment)
+    /* package */TaxonomyNode addChild(Assignment newAssignment)
     {
         Classification classification = getClassification();
         if (classification == null)
@@ -214,52 +329,56 @@ public final class TaxonomyNode
 
         classification.addAssignment(newAssignment);
 
-        TaxonomyNode newChild = new TaxonomyNode(this, newAssignment);
+        TaxonomyNode newChild = new AssignmentNode(this, newAssignment);
         newChild.setRank(getTopRank() + 1);
         children.add(newChild);
         return newChild;
     }
 
-    public void removeChild(TaxonomyNode node)
+    /* package */void removeChild(TaxonomyNode node)
     {
         Classification classification = getClassification();
         if (classification == null)
             throw new UnsupportedOperationException();
 
-        Object subject = node.getSubject();
-        if (subject instanceof Classification)
-            classification.getChildren().remove(subject);
+        if (node.isClassification())
+            classification.getChildren().remove(node.getClassification());
         else
-            classification.getAssignments().remove(subject);
+            classification.getAssignments().remove(node.getAssignment());
 
         children.remove(node);
     }
 
-    /* package */void moveTo(TaxonomyNode parent, int index)
+    /* package */void moveTo(TaxonomyNode target)
     {
-        Classification classification = parent.getClassification();
+        moveTo(-1, target);
+    }
+
+    /* package */void moveTo(int index, TaxonomyNode target)
+    {
+        Classification classification = target.getClassification();
         if (classification == null)
             throw new UnsupportedOperationException();
 
         this.getParent().removeChild(this);
-        this.parent = parent;
+        this.parent = target;
 
-        Object subject = getSubject();
-        if (subject instanceof Classification)
+        if (isClassification())
         {
-            ((Classification) subject).setParent(classification);
-            classification.getChildren().add((Classification) subject);
+            getClassification().setParent(classification);
+            classification.getChildren().add(getClassification());
         }
         else
         {
-            classification.getAssignments().add((Assignment) subject);
+            classification.getAssignments().add(getAssignment());
         }
-        List<TaxonomyNode> siblings = parent.getChildren();
+        List<TaxonomyNode> siblings = target.getChildren();
 
-        if (index != -1)
-            siblings.add(index, this);
-        else
-            siblings.add(this);
+        if (index == -1)
+            index = siblings.size();
+
+        int insertAt = target.isRoot() ? Math.min(index, siblings.size() - 1) : index;
+        siblings.add(insertAt, this);
 
         for (int ii = 0; ii < siblings.size(); ii++)
             siblings.get(ii).setRank(ii);
@@ -267,26 +386,15 @@ public final class TaxonomyNode
 
     /* package */void insertAfter(TaxonomyNode target)
     {
-        if (target.isRoot())
-            return;
-
-        if (target.getParent() == getParent())
-        {
-            List<TaxonomyNode> siblings = getParent().getChildren();
-            siblings.remove(this);
-            int index = siblings.indexOf(target);
-            siblings.add(index + 1, this);
-            for (int ii = 0; ii < siblings.size(); ii++)
-                siblings.get(ii).setRank(ii);
-        }
-        else
-        {
-            int index = target.getParent().getChildren().indexOf(target);
-            moveTo(target.getParent(), index + 1);
-        }
+        moveRelativeTo(target, 1);
     }
 
     /* package */void insertBefore(TaxonomyNode target)
+    {
+        moveRelativeTo(target, 0);
+    }
+
+    private void moveRelativeTo(TaxonomyNode target, int offset)
     {
         if (target.isRoot())
             return;
@@ -295,15 +403,19 @@ public final class TaxonomyNode
         {
             List<TaxonomyNode> siblings = getParent().getChildren();
             siblings.remove(this);
-            int index = siblings.indexOf(target);
-            siblings.add(index, this);
+
+            int targetAt = siblings.indexOf(target) + offset;
+            int insertAt = target.getParent().isRoot() ? Math.min(targetAt, siblings.size() - 1) : targetAt;
+
+            siblings.add(insertAt, this);
+
             for (int ii = 0; ii < siblings.size(); ii++)
                 siblings.get(ii).setRank(ii);
         }
         else
         {
             int index = target.getParent().getChildren().indexOf(target);
-            moveTo(target.getParent(), index);
+            moveTo(index + offset, target.getParent());
         }
     }
 
