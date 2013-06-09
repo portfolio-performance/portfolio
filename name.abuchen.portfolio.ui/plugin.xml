@@ -149,11 +149,6 @@
                   commandId="name.abuchen.portfolio.ui.commands.updateCPICommand"
                   id="name.abuchen.portfolio.ui.menus.updateCPICommand">
             </command>
-            <command
-                  commandId="name.abuchen.portfolio.ui.commands.planCommand"
-                  id="name.abuchen.portfolio.ui.menus.managePlanCommand"
-                  label="%command.managePlan.name">
-            </command>
          </menu>
          <menu id="help"
                label="%menu.help.label">
@@ -328,10 +323,6 @@
                <equals value="name.abuchen.portfolio.ui.editor"/>
             </with>
          </activeWhen>
-      </handler>
-      <handler
-            class="name.abuchen.portfolio.ui.handlers.ManagePlanHandler"
-            commandId="name.abuchen.portfolio.ui.commands.planCommand">
       </handler>
    </extension>
 
