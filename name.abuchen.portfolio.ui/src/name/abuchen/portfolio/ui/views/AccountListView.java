@@ -8,12 +8,14 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -217,7 +219,7 @@ public class AccountListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom3", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom4", //$NON-NLS-1$
                         transactions, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -303,6 +305,27 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                if (t.getCrossEntry() instanceof BuySellEntry)
+                    return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
+                return null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -350,6 +373,7 @@ public class AccountListView extends AbstractListView
                         .readonly("type") //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
                         .combobox("security", securities, true) //$NON-NLS-1$
+                        .readonly("shares") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
