@@ -108,6 +108,12 @@ public class ClientFactory
             client.setVersion(12);
         }
 
+        if (client.getVersion() == 12)
+        {
+            // do nothing --> added investment plans
+            client.setVersion(13);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
