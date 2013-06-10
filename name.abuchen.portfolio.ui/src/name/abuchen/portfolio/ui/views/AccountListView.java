@@ -8,6 +8,9 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
@@ -302,6 +305,30 @@ public class AccountListView extends AbstractListView
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
+        
+        column = new Column(Messages.ColumnShares, SWT.None, 50);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                CrossEntry c = t.getCrossEntry();
+                if (c instanceof BuySellEntry) {
+                    BuySellEntry b = (BuySellEntry) c;
+                    return Values.Share.format(((PortfolioTransaction) b.getCrossTransaction(t)).getShares());
+                }
+                return null;
+            }
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
 
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -350,6 +377,7 @@ public class AccountListView extends AbstractListView
                         .readonly("type") //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
                         .combobox("security", securities, true) //$NON-NLS-1$
+                        .readonly("shares")
                         .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
