@@ -20,14 +20,14 @@ public class NewPlanDialog extends AbstractDialog
     public static class Model extends BindingHelper.Model
     {
 
-        String name;
+        private String name;
         private Portfolio portfolio;
-        long amount;
-        long transactionCost;
-        Security security;
-        Date start = Dates.today();
-        int period = 1;
-        boolean generateAccountTransactions = false;
+        private long amount;
+        private long transactionCost;
+        private Security security;
+        private Date start = Dates.today();
+        private int period = 1;
+        private boolean generateAccountTransactions = false;
 
         public Model(Client client)
         {
