@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -63,10 +65,12 @@ public class InvestmentPlanListView extends AbstractListView
         };
         action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
         action.setToolTipText("New Plan...");
-
         new ActionContributionItem(action).fill(toolBar, -1);
     }
 
+    /**
+     * Top Table: Investment Plans
+     */
     @Override
     protected void createTopTable(Composite parent)
     {
@@ -227,9 +231,28 @@ public class InvestmentPlanListView extends AbstractListView
                     public void run()
                     {
                         plan.generateTransactions();
-                        markDirty();
-                        plans.refresh();
-                        transactions.setInput(plan.getTransactions());
+                        if (plan.hasChanged())
+                        {
+                            markDirty();
+                            plans.refresh();
+                            transactions.setInput(plan.getTransactions());
+                            System.out.println("The following transactions have been created:");
+                            for (Transaction t : plan.getNewTransactions())
+                            {
+                                if (t instanceof AccountTransaction)
+                                {
+                                    System.out.println("Account: " + t);
+                                }
+                                else
+                                {
+                                    System.out.println("Portfolio: " + t);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            System.out.println("No changes in this run.");
+                        }
                     }
                 });
             }
