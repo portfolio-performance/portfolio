@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -40,9 +41,26 @@ import org.eclipse.ui.PlatformUI;
 
 public class InvestmentPlanListView extends AbstractListView
 {
+    private class TransactionLabelProvider extends ColumnLabelProvider
+    {
+        @Override
+        public Color getForeground(Object element)
+        {
+            return newTransactions.contains(element) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND)
+                            : null;
+        }
+
+        @Override
+        public Color getBackground(Object element)
+        {
+            return newTransactions.contains(element) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND)
+                            : null;
+        }
+    }
 
     private TableViewer plans;
     private TableViewer transactions;
+    private List<Transaction> newTransactions = Collections.emptyList();
 
     @Override
     protected void addButtons(ToolBar toolBar)
@@ -226,7 +244,7 @@ public class InvestmentPlanListView extends AbstractListView
                     @Override
                     public void run()
                     {
-                        plan.generateTransactions();
+                        newTransactions = plan.generateTransactions();
                         markDirty();
                         plans.refresh();
                         transactions.setInput(plan.getTransactions());
@@ -246,7 +264,7 @@ public class InvestmentPlanListView extends AbstractListView
         ShowHideColumnHelper support = new ShowHideColumnHelper(InvestmentPlan.class.getSimpleName() + "@bottom", //$NON-NLS-1$
                         transactions, layout);
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override
             public String getText(Object e)
@@ -254,18 +272,12 @@ public class InvestmentPlanListView extends AbstractListView
                 PortfolioTransaction t = (PortfolioTransaction) e;
                 return Values.Date.format(t.getDate());
             }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-            }
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
         column = new Column(Messages.ColumnTransactionType, SWT.None, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override
             public String getText(Object e)
@@ -273,17 +285,11 @@ public class InvestmentPlanListView extends AbstractListView
                 PortfolioTransaction t = (PortfolioTransaction) e;
                 return t.getType().toString();
             }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-            }
         });
         column.setMoveable(false);
         support.addColumn(column);
         column = new Column(Messages.ColumnAmount, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override
             public String getText(Object e)
@@ -291,17 +297,11 @@ public class InvestmentPlanListView extends AbstractListView
                 PortfolioTransaction t = (PortfolioTransaction) e;
                 return Values.Amount.format(t.getAmount());
             }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-            }
         });
         column.setMoveable(false);
         support.addColumn(column);
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override
             public String getText(Object e)
@@ -309,29 +309,17 @@ public class InvestmentPlanListView extends AbstractListView
                 PortfolioTransaction t = (PortfolioTransaction) e;
                 return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
             }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-            }
         });
         column.setMoveable(false);
         support.addColumn(column);
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
                 PortfolioTransaction t = (PortfolioTransaction) e;
                 return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
             }
         });
         column.setMoveable(false);
