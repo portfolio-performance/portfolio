@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -45,6 +44,7 @@ public class InvestmentPlanListView extends AbstractListView
 
     private TableViewer plans;
     private TableViewer transactions;
+    private List<Transaction> newTransactions;
 
     @Override
     protected void addButtons(ToolBar toolBar)
@@ -230,28 +230,13 @@ public class InvestmentPlanListView extends AbstractListView
                     @Override
                     public void run()
                     {
-                        plan.generateTransactions();
-                        if (plan.hasChanged())
+                        newTransactions = plan.generateTransactions();
+                        if (!newTransactions.isEmpty())
                         {
                             markDirty();
                             plans.refresh();
                             transactions.setInput(plan.getTransactions());
-                            System.out.println("The following transactions have been created:");
-                            for (Transaction t : plan.getNewTransactions())
-                            {
-                                if (t instanceof AccountTransaction)
-                                {
-                                    System.out.println("Account: " + t);
-                                }
-                                else
-                                {
-                                    System.out.println("Portfolio: " + t);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            System.out.println("No changes in this run.");
+
                         }
                     }
                 });
@@ -281,7 +266,17 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public Color getForeground(Object element)
             {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                return null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
@@ -300,7 +295,17 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public Color getForeground(Object element)
             {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                return null;
             }
         });
         column.setMoveable(false);
@@ -318,12 +323,47 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public Color getForeground(Object element)
             {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                return null;
             }
         });
         column.setMoveable(false);
         support.addColumn(column);
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
+        // column.setLabelProvider(new StyledCellLabelProvider()
+        // {
+        // @Override
+        // public void update(ViewerCell cell)
+        // {
+        // PortfolioTransaction trans = ((PortfolioTransaction)
+        // cell.getElement());
+        // String name = trans.getSecurity().getName();
+        // StyledString text = new StyledString();
+        // text.append(name);
+        // cell.setText(text.toString());
+        // StyleRange[] range = {};
+        // if (newTransactions.contains(trans))
+        // {
+        // StyleRange myStyledRange = new StyleRange(0, name.length(),
+        // Display.getCurrent().getSystemColor(
+        // SWT.COLOR_DARK_GREEN),
+        // Display.getCurrent().getSystemColor(SWT.COLOR_CYAN));
+        // range = new StyleRange[1];
+        // range[0] = myStyledRange;
+        //
+        // }
+        // cell.setStyleRanges(range);
+        // super.update(cell);
+        // }
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -336,7 +376,17 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public Color getForeground(Object element)
             {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                return null;
             }
         });
         column.setMoveable(false);
@@ -354,7 +404,17 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public Color getForeground(Object element)
             {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                if (newTransactions.contains(element))
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+                return null;
             }
         });
         column.setMoveable(false);

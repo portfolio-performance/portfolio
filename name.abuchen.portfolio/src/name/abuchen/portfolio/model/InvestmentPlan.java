@@ -22,8 +22,6 @@ public class InvestmentPlan
     private Date start;
     private int dayOfMonth;
     private boolean generateAccountTransactions;
-    private boolean hasChanged;
-    private List<Transaction> newTransactions;
 
     public InvestmentPlan()
     {
@@ -34,16 +32,6 @@ public class InvestmentPlan
     {
         this();
         this.setName(name);
-    }
-
-    public boolean hasChanged()
-    {
-        return hasChanged;
-    }
-
-    public List<Transaction> getNewTransactions()
-    {
-        return newTransactions;
     }
 
     public Security getSecurity()
@@ -150,10 +138,9 @@ public class InvestmentPlan
         return result;
     }
 
-    public void generateTransactions()
+    public List<Transaction> generateTransactions()
     {
-        hasChanged = false;
-        newTransactions = new ArrayList<Transaction>();
+        List<Transaction> newTransactions = new ArrayList<Transaction>();
         List<PortfolioTransaction> present = getPortfolio().getTransactions();
         Collections.sort(present, new Comparator<PortfolioTransaction>()
         {
@@ -191,7 +178,6 @@ public class InvestmentPlan
             }
             if (!alreadyPresent)
             {
-                hasChanged = true;
                 long amount = getAmount();
                 long price = getSecurity().getSecurityPrice(current).getValue();
                 long shares = (long) (((double) amount / price) * Values.Share.factor());
@@ -219,6 +205,7 @@ public class InvestmentPlan
             }
             current = Dates.progress(current, getDayOfMonth());
         }
+        return newTransactions;
     }
 
 }
