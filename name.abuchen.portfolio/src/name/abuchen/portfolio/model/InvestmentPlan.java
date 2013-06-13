@@ -138,8 +138,9 @@ public class InvestmentPlan
         return result;
     }
 
-    public void generateTransactions()
+    public List<Transaction> generateTransactions()
     {
+        List<Transaction> newTransactions = new ArrayList<Transaction>();
         List<PortfolioTransaction> present = getPortfolio().getTransactions();
         Collections.sort(present, new Comparator<PortfolioTransaction>()
         {
@@ -154,7 +155,6 @@ public class InvestmentPlan
         // re-create deleted transactions
         Date current = getLastActionDate();
         Date today = Dates.today();
-        System.out.println("Starting Date: " + Values.Date.format(current));
         while (current.before(today))
         {
             boolean alreadyPresent = false;
@@ -166,7 +166,6 @@ public class InvestmentPlan
                     {
                         if (Dates.daysBetween(current, p.getDate()) <= TOLERANCE)
                         {
-                            System.out.println("Already Present: " + Values.Date.format(current));
                             alreadyPresent = true;
                             if (!transactions.contains(p))
                             {
@@ -192,7 +191,8 @@ public class InvestmentPlan
                     entry.setSecurity(getSecurity());
                     entry.insert();
                     addTransaction(entry.getPortfolioTransaction());
-                    System.out.println("New Entry: " + Values.Date.format(current));
+                    newTransactions.add(entry.getAccountTransaction());
+                    newTransactions.add(entry.getPortfolioTransaction());
                 }
                 else
                 {
@@ -200,11 +200,12 @@ public class InvestmentPlan
                                     PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, getTransactionCost());
                     addTransaction(transaction);
                     getPortfolio().addTransaction(transaction);
-                    System.out.println("New Transaction: " + Values.Date.format(current));
+                    newTransactions.add(transaction);
                 }
             }
             current = Dates.progress(current, getDayOfMonth());
         }
+        return newTransactions;
     }
 
 }
