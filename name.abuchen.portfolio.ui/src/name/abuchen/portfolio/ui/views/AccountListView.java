@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
@@ -326,6 +327,31 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                if (t.getCrossEntry() instanceof BuySellEntry)
+                {
+                    PortfolioTransaction portfolioTransaction = ((BuySellEntry) t.getCrossEntry())
+                                    .getPortfolioTransaction();
+                    return Values.Amount.format(portfolioTransaction.getActualPurchasePrice());
+                }
+                return null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -374,6 +400,7 @@ public class AccountListView extends AbstractListView
                         .amount("amount") //$NON-NLS-1$
                         .combobox("security", securities, true) //$NON-NLS-1$
                         .readonly("shares") //$NON-NLS-1$
+                        .readonly("actualPurchasePrice") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
                         .apply();
 
