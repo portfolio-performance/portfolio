@@ -775,6 +775,25 @@ public class SecurityListView extends AbstractListView
         });
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnAccount, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction t = (PortfolioTransaction) element;
+                    for (Portfolio port : getClient().getPortfolios())
+                    {
+                        if (port.getTransactions().contains(t)) { return port.getReferenceAccount().getName(); }
+                    }
+                }
+                return null;
+            }
+        });
+        support.addColumn(column);
+
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
