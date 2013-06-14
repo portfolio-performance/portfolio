@@ -112,6 +112,14 @@ public class SecurityPerformanceView extends AbstractHistoricView
         column.setText(Messages.ColumnQuote);
         column.setWidth(80);
 
+        column = new TreeColumn(tree.getTree(), SWT.NONE);
+        column.setText(Messages.ColumnPortfolio);
+        column.setWidth(120);
+
+        column = new TreeColumn(tree.getTree(), SWT.NONE);
+        column.setText(Messages.ColumnOffsetAccount);
+        column.setWidth(120);
+
         tree.getTree().setHeaderVisible(true);
         tree.getTree().setLinesVisible(true);
 
@@ -251,6 +259,22 @@ public class SecurityPerformanceView extends AbstractHistoricView
                                             .getValue());
                         else
                             return null;
+                    case 8:
+                        if (t instanceof PortfolioTransaction)
+                        {
+                            PortfolioTransaction transaction = (PortfolioTransaction) element;
+                            return transaction.getCrossEntry() != null ? transaction.getCrossEntry().getEntity(t)
+                                            .toString() : null;
+                        }
+                        return null;
+                    case 9:
+                        if (t instanceof PortfolioTransaction)
+                        {
+                            PortfolioTransaction transaction = (PortfolioTransaction) element;
+                            return transaction.getCrossEntry() != null ? transaction.getCrossEntry().getCrossEntity(t)
+                                            .toString() : null;
+                        }
+                        return null;
                 }
 
             }
