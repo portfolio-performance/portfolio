@@ -70,6 +70,17 @@ public class AccountTransferEntry implements CrossEntry
     }
 
     @Override
+    public Object getEntity(Transaction t)
+    {
+        if (t.equals(transactionFrom))
+            return accountFrom;
+        else if (t.equals(transactionTo))
+            return accountTo;
+        else
+            throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Transaction getCrossTransaction(Transaction t)
     {
         if (t.equals(transactionFrom))
