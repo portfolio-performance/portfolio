@@ -160,6 +160,12 @@ public class BindingHelper
     public final void bindComboViewer(Composite editArea, String label, String property,
                     IBaseLabelProvider labelProvider, Object input)
     {
+        bindComboViewer(editArea, label, property, labelProvider, null, input);
+    }
+
+    public final void bindComboViewer(Composite editArea, String label, String property,
+                    IBaseLabelProvider labelProvider, IValidator validator, Object input)
+    {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
         ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
@@ -168,8 +174,12 @@ public class BindingHelper
         combo.setInput(input);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(combo.getControl());
 
+        UpdateValueStrategy strategy = new UpdateValueStrategy();
+        if (validator != null)
+            strategy.setAfterConvertValidator(validator);
+
         context.bindValue(ViewersObservables.observeSingleSelection(combo), //
-                        BeansObservables.observeValue(model, property));
+                        BeansObservables.observeValue(model, property), strategy, null);
     }
 
     public final void bindDatePicker(Composite editArea, String label, String property)

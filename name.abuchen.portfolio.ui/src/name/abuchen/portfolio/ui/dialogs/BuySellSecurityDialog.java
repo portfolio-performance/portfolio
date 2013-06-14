@@ -23,6 +23,9 @@ import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -70,7 +73,9 @@ public class BuySellSecurityDialog extends AbstractDialog
             }
             else
             {
-                if (portfolio == null && !client.getPortfolios().isEmpty())
+                // set portfolio only if exactly one exists
+                // (otherwise force user to choose)
+                if (portfolio == null && client.getPortfolios().size() == 1)
                     setPortfolio(client.getPortfolios().get(0));
                 if (security == null && !client.getSecurities().isEmpty())
                     setSecurity(client.getSecurities().get(0));
@@ -237,6 +242,14 @@ public class BuySellSecurityDialog extends AbstractDialog
                             public String getText(Object element)
                             {
                                 return ((Portfolio) element).getName();
+                            }
+                        }, new IValidator()
+                        {
+                            @Override
+                            public IStatus validate(Object value)
+                            {
+                                return value != null ? ValidationStatus.ok() : ValidationStatus
+                                                .error(Messages.MsgMissingPortfolio);
                             }
                         }, getModel().getClient().getPortfolios().toArray());
 

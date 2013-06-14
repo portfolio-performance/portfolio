@@ -13,6 +13,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -35,8 +38,10 @@ public class DividendsDialog extends AbstractDialog
             if (security == null && !client.getSecurities().isEmpty())
                 setSecurity(client.getSecurities().get(0));
 
-            if (!client.getPortfolios().isEmpty())
-                setAccount(client.getPortfolios().get(0).getReferenceAccount());
+            // set account if only one exists
+            // (otherwise force user to choose)
+            if (client.getAccounts().size() == 1)
+                setAccount(client.getAccounts().get(0));
         }
 
         public Security getSecurity()
@@ -134,6 +139,14 @@ public class DividendsDialog extends AbstractDialog
                             public String getText(Object element)
                             {
                                 return ((Account) element).getName();
+                            }
+                        }, new IValidator()
+                        {
+                            @Override
+                            public IStatus validate(Object value)
+                            {
+                                return value != null ? ValidationStatus.ok() : ValidationStatus
+                                                .error(Messages.MsgMissingAccount);
                             }
                         }, getModel().getClient().getAccounts().toArray());
 
