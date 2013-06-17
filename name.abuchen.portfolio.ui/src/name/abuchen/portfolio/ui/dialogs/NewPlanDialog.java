@@ -26,7 +26,6 @@ public class NewPlanDialog extends AbstractDialog
         private long transactionCost;
         private Security security;
         private Date start = Dates.today();
-        private int period = 1;
         private boolean generateAccountTransactions = false;
 
         public Model(Client client)
@@ -47,8 +46,7 @@ public class NewPlanDialog extends AbstractDialog
             plan.setPortfolio(portfolio);
             plan.setSecurity(security);
             plan.setStart(start);
-            plan.setDayOfMonth(period);
-            plan.setGenerateAccountTransactions(generateAccountTransactions);
+            plan.setIsBuySellEntry(generateAccountTransactions);
             getClient().addPlan(plan);
         }
 
@@ -100,16 +98,6 @@ public class NewPlanDialog extends AbstractDialog
         public void setStart(Date start)
         {
             firePropertyChange("start", this.start, this.start = start);
-        }
-
-        public int getPeriod()
-        {
-            return period;
-        }
-
-        public void setPeriod(int period)
-        {
-            firePropertyChange("period", this.period, this.period = period);
         }
 
         public long getTransactionCost()
@@ -167,7 +155,6 @@ public class NewPlanDialog extends AbstractDialog
             }
         }, client.getSecurities().toArray());
         bindings().bindDatePicker(editArea, "Plan Start", "start");
-        bindings().bindSpinner(editArea, "Period", "period", 1, 30, 5, 1);
     }
 
     protected void configureShell(Shell shell)

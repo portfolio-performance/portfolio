@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +18,7 @@ public class InvestmentPlan
     private Portfolio portfolio;
     private String name;
     private Date start;
-    private int dayOfMonth;
-    private boolean generateAccountTransactions;
+    private boolean isBuySellEntry;
 
     public InvestmentPlan()
     {
@@ -84,16 +81,6 @@ public class InvestmentPlan
         this.start = start;
     }
 
-    public int getDayOfMonth()
-    {
-        return dayOfMonth;
-    }
-
-    public void setDayOfMonth(int period)
-    {
-        this.dayOfMonth = period;
-    }
-
     public List<PortfolioTransaction> getTransactions()
     {
         return transactions;
@@ -114,14 +101,14 @@ public class InvestmentPlan
         this.transactionCost = transactionCost;
     }
 
-    public boolean isGenerateAccountTransactions()
+    public boolean isBuySellEntry()
     {
-        return generateAccountTransactions;
+        return isBuySellEntry;
     }
 
-    public void setGenerateAccountTransactions(boolean generateAccountTransaction)
+    public void setIsBuySellEntry(boolean isBuySellEntry)
     {
-        this.generateAccountTransactions = generateAccountTransaction;
+        this.isBuySellEntry = isBuySellEntry;
     }
 
     private Date getLastActionDate()
@@ -141,17 +128,7 @@ public class InvestmentPlan
     public List<Transaction> generateTransactions()
     {
         List<Transaction> newTransactions = new ArrayList<Transaction>();
-
-        List<PortfolioTransaction> present = getPortfolio().getTransactions();
-        Collections.sort(present, new Comparator<PortfolioTransaction>()
-        {
-            @Override
-            public int compare(PortfolioTransaction p1, PortfolioTransaction p2)
-            {
-                return p1.getDate().compareTo(p2.getDate());
-            }
-
-        });
+        Transaction.sortByDate(transactions);
         // Start from the date of the latest transaction of the plan to not
         // re-create deleted transactions
         Date current = getLastActionDate();
@@ -160,31 +137,23 @@ public class InvestmentPlan
         while (current.before(today))
         {
             boolean alreadyPresent = false;
-            for (PortfolioTransaction p : present)
+            for (PortfolioTransaction p : transactions)
             {
-                if (p.getSecurity().equals(getSecurity()))
+                if (Dates.isSameMonth(current, p.getDate()))
                 {
-                    if (Dates.isSameMonth(current, p.getDate()))
+                    if (Dates.daysBetween(current, p.getDate()) <= TOLERANCE)
                     {
-                        if (Dates.daysBetween(current, p.getDate()) <= TOLERANCE)
-                        {
-                            alreadyPresent = true;
-                            if (!transactions.contains(p))
-                            {
-                                transactions.add(p);
-                            }
-                            break;
-                        }
+                        alreadyPresent = true;
+                        break;
                     }
                 }
             }
-
             if (!alreadyPresent)
             {
                 long amount = getAmount();
                 long price = getSecurity().getSecurityPrice(current).getValue();
                 long shares = (long) (((double) amount / price) * Values.Share.factor());
-                if (isGenerateAccountTransactions())
+                if (isBuySellEntry())
                 {
                     BuySellEntry entry = new BuySellEntry(getPortfolio(), getPortfolio().getReferenceAccount());
                     entry.setType(PortfolioTransaction.Type.BUY);
@@ -194,7 +163,6 @@ public class InvestmentPlan
                     entry.setSecurity(getSecurity());
                     entry.insert();
                     addTransaction(entry.getPortfolioTransaction());
-
                     newTransactions.add(entry.getAccountTransaction());
                     newTransactions.add(entry.getPortfolioTransaction());
                 }
@@ -207,7 +175,7 @@ public class InvestmentPlan
                     newTransactions.add(transaction);
                 }
             }
-            current = Dates.progress(current, getDayOfMonth());
+            current = Dates.progress(current);
         }
 
         return newTransactions;
