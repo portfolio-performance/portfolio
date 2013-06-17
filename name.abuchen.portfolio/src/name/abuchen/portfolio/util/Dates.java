@@ -18,12 +18,11 @@ public class Dates
         return cal.getTime();
     }
 
-    public static Date progress(Date today, int period)
+    public static Date progress(Date today)
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(today);
         cal.add(Calendar.MONTH, 1);
-        cal.set(Calendar.DAY_OF_MONTH, period);
         return cal.getTime();
     }
 
