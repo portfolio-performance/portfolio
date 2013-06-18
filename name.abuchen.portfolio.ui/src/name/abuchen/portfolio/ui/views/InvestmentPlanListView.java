@@ -174,24 +174,13 @@ public class InvestmentPlanListView extends AbstractListView
         });
         column.setMoveable(false);
         support.addColumn(column);
-        column = new Column("Day", SWT.None, 50);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return String.format("%1d", ((InvestmentPlan) e).getDayOfMonth());
-            }
-        });
-        column.setMoveable(false);
-        support.addColumn(column);
         column = new Column("Account Transcations?", SWT.None, 50);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return "" + ((InvestmentPlan) e).isGenerateAccountTransactions();
+                return "" + ((InvestmentPlan) e).isBuySellEntry();
             }
         });
         column.setMoveable(false);
@@ -230,7 +219,7 @@ public class InvestmentPlanListView extends AbstractListView
         }).editable("name") //$NON-NLS-1$
                         .combobox("security", securities, true) //$NON-NLS-1$
                         .readonly("portfolio").amount("amount").amount("transactionCost").editable("start")
-                        .editable("dayOfMonth").combobox("generateAccountTransactions", booleans, false).apply();
+                        .combobox("isBuySellEntry", booleans, false).apply();
         hookContextMenu(plans.getTable(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
