@@ -9,8 +9,10 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -452,9 +454,21 @@ public class AccountListView extends AbstractListView
                         return;
 
                     if (transaction.getCrossEntry() != null)
+                    {
                         transaction.getCrossEntry().delete();
+
+                        // possibly remove from investment plan
+                        Transaction t = transaction.getCrossEntry().getCrossTransaction(transaction);
+                        if (t instanceof PortfolioTransaction)
+                        {
+                            for (InvestmentPlan plan : getClient().getPlans())
+                                plan.removeTransaction((PortfolioTransaction) t);
+                        }
+                    }
                     else
+                    {
                         account.getTransactions().remove(transaction);
+                    }
                     markDirty();
 
                     accounts.refresh();

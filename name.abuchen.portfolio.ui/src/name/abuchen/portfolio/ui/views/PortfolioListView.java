@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -512,6 +513,11 @@ public class PortfolioListView extends AbstractListView
                         transaction.getCrossEntry().delete();
                     else
                         portfolio.getTransactions().remove(transaction);
+
+                    // possibly remove from investment plan
+                    for (InvestmentPlan plan : getClient().getPlans())
+                        plan.removeTransaction(transaction);
+
                     markDirty();
 
                     portfolios.refresh(transactions.getData(Portfolio.class.toString()));

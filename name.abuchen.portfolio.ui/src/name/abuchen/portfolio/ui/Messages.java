@@ -184,6 +184,7 @@ public class Messages extends NLS
     public static String LabelExport;
     public static String LabelFullClassification;
     public static String LabelInfo;
+    public static String LabelInvestmentPlans;
     public static String LabelNewCategory;
     public static String LabelNoClassification;
     public static String LabelNoName;

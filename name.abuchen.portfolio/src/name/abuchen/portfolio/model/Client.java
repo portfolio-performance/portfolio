@@ -13,7 +13,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 12;
+    /* package */static final int CURRENT_VERSION = 13;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -25,6 +25,7 @@ public class Client
 
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
+    private List<InvestmentPlan> plans;
     private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
 
     private Map<String, String> properties; // old versions!
@@ -52,6 +53,9 @@ public class Client
 
         if (propertyChangeSupport == null)
             propertyChangeSupport = new PropertyChangeSupport(this);
+
+        if (plans == null)
+            plans = new ArrayList<InvestmentPlan>();
     }
 
     public int getVersion()
@@ -62,6 +66,21 @@ public class Client
     public void setVersion(int version)
     {
         this.version = version;
+    }
+
+    public List<InvestmentPlan> getPlans()
+    {
+        return plans;
+    }
+
+    public void addPlan(InvestmentPlan plan)
+    {
+        plans.add(plan);
+    }
+
+    public void removePlan(InvestmentPlan plan)
+    {
+        plans.remove(plan);
     }
 
     public List<Security> getSecurities()

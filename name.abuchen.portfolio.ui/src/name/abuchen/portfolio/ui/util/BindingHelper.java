@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 public class BindingHelper
@@ -157,13 +158,34 @@ public class BindingHelper
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(lblTransactionType);
     }
 
-    public final void bindComboViewer(Composite editArea, String label, String property,
-                    IBaseLabelProvider labelProvider, Object input)
+    public final void bindLabel(Composite editArea, String property)
     {
-        bindComboViewer(editArea, label, property, labelProvider, null, input);
+        Label label = new Label(editArea, SWT.NONE);
+        context.bindValue(SWTObservables.observeText(label), BeansObservables.observeValue(model, property));
+        GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(label);
     }
 
-    public final void bindComboViewer(Composite editArea, String label, String property,
+    public final void bindSpinner(Composite editArea, String label, String property, int min, int max, int selection,
+                    int increment)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        Spinner spinner = new Spinner(editArea, SWT.NONE);
+        spinner.setMinimum(min);
+        spinner.setMaximum(max);
+        spinner.setSelection(selection);
+        spinner.setIncrement(increment);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(spinner);
+        context.bindValue(SWTObservables.observeSelection(spinner), BeansObservables.observeValue(model, property));
+    }
+
+    public final ComboViewer bindComboViewer(Composite editArea, String label, String property,
+                    IBaseLabelProvider labelProvider, Object input)
+    {
+        return bindComboViewer(editArea, label, property, labelProvider, null, input);
+    }
+
+    public final ComboViewer bindComboViewer(Composite editArea, String label, String property,
                     IBaseLabelProvider labelProvider, IValidator validator, Object input)
     {
         Label l = new Label(editArea, SWT.NONE);
@@ -180,6 +202,7 @@ public class BindingHelper
 
         context.bindValue(ViewersObservables.observeSingleSelection(combo), //
                         BeansObservables.observeValue(model, property), strategy, null);
+        return combo;
     }
 
     public final void bindDatePicker(Composite editArea, String label, String property)
