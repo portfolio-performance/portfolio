@@ -10,6 +10,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
 
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -35,7 +38,7 @@ public class NewPlanDialog extends AbstractDialog
                 portfolio = client.getPortfolios().get(0);
 
             if (!client.getSecurities().isEmpty())
-                setSecurity(client.getSecurities().get(0));
+                security = client.getSecurities().get(0);
         }
 
         @Override
@@ -44,7 +47,7 @@ public class NewPlanDialog extends AbstractDialog
             if (security == null)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
             if (portfolio == null)
-                throw new UnsupportedOperationException("Portfolio is Missing");
+                throw new UnsupportedOperationException(Messages.MsgMissingPortfolio);
 
             InvestmentPlan plan = new InvestmentPlan(name);
             plan.setSecurity(security);
@@ -161,6 +164,14 @@ public class NewPlanDialog extends AbstractDialog
                                 return ((Portfolio) element).getName();
                             }
 
+                        }, new IValidator()
+                        {
+                            @Override
+                            public IStatus validate(Object value)
+                            {
+                                return value != null ? ValidationStatus.ok() : ValidationStatus
+                                                .error(Messages.MsgMissingPortfolio);
+                            }
                         }, getModel().getClient().getPortfolios().toArray());
 
         bindings().bindDatePicker(editArea, "Plan Start", "start");

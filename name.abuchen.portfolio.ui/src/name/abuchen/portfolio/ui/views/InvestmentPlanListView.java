@@ -7,7 +7,6 @@ import java.util.List;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -16,7 +15,6 @@ import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -33,40 +31,27 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.PlatformUI;
 
 public class InvestmentPlanListView extends AbstractListView
 {
-    private class TransactionLabelProvider extends ColumnLabelProvider
-    {
-        @Override
-        public Color getForeground(Object element)
-        {
-            return newTransactions.contains(element) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND)
-                            : null;
-        }
-
-        @Override
-        public Color getBackground(Object element)
-        {
-            return newTransactions.contains(element) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND)
-                            : null;
-        }
-    }
 
     private TableViewer plans;
-    private TableViewer transactions;
-    private List<Transaction> newTransactions = Collections.emptyList();
+    private PortfolioTransactionsViewer transactions;
 
     @Override
     protected String getTitle()
     {
         return Messages.LabelInvestmentPlans;
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        plans.setSelection(plans.getSelection());
     }
 
     @Override
@@ -215,7 +200,8 @@ public class InvestmentPlanListView extends AbstractListView
             public void selectionChanged(SelectionChangedEvent event)
             {
                 InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                transactions.setData(InvestmentPlan.class.toString(), plan);
+
+                transactions.setPortfolio(plan != null ? plan.getPortfolio() : null);
                 transactions.setInput(plan != null ? plan.getTransactions() : new ArrayList<PortfolioTransaction>(0));
                 transactions.refresh();
             }
@@ -234,7 +220,6 @@ public class InvestmentPlanListView extends AbstractListView
                             {
                                 markDirty();
                                 plans.refresh();
-                                transactions.refresh(element);
                             }
                         }) //
                         .editable("name") //$NON-NLS-1$
@@ -266,10 +251,12 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public void run()
             {
-                newTransactions = plan.generateTransactions();
+                List<PortfolioTransaction> latest = plan.generateTransactions();
                 markDirty();
+
                 plans.refresh();
-                transactions.setInput(plan.getTransactions());
+                transactions.markTransactions(latest);
+                transactions.setInput(plan.getPortfolio(), plan.getTransactions());
             }
         });
 
@@ -282,7 +269,7 @@ public class InvestmentPlanListView extends AbstractListView
                 markDirty();
 
                 plans.setInput(getClient().getPlans());
-                transactions.setInput(null);
+                transactions.setInput(null, null);
             }
         });
     }
@@ -290,155 +277,11 @@ public class InvestmentPlanListView extends AbstractListView
     @Override
     protected void createBottomTable(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
-        container.setLayout(layout);
-
-        transactions = new TableViewer(container, SWT.FULL_SELECTION);
-        ShowHideColumnHelper support = new ShowHideColumnHelper(InvestmentPlan.class.getSimpleName() + "@bottom", //$NON-NLS-1$
-                        transactions, layout);
-
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new TransactionLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) e;
-                return Values.Date.format(t.getDate());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
-        column.setMoveable(false);
-        support.addColumn(column);
-
-        column = new Column(Messages.ColumnTransactionType, SWT.None, 100);
-        column.setLabelProvider(new TransactionLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) e;
-                return t.getType().toString();
-            }
-        });
-        column.setMoveable(false);
-        support.addColumn(column);
-
-        column = new Column(Messages.ColumnAmount, SWT.LEFT, 80);
-        column.setLabelProvider(new TransactionLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) e;
-                return Values.Amount.format(t.getAmount());
-            }
-        });
-        column.setMoveable(false);
-        support.addColumn(column);
-
-        column = new Column(Messages.ColumnSecurity, SWT.None, 250);
-        column.setLabelProvider(new TransactionLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) e;
-                return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
-            }
-        });
-        column.setMoveable(false);
-        support.addColumn(column);
-
-        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
-        column.setLabelProvider(new TransactionLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) e;
-                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
-            }
-        });
-        column.setMoveable(false);
-        support.addColumn(column);
-
-        support.createColumns();
-        transactions.getTable().setHeaderVisible(true);
-        transactions.getTable().setLinesVisible(true);
-        transactions.setContentProvider(new SimpleListContentProvider());
-        List<Security> securities = getClient().getSecurities();
-        Collections.sort(securities, new Security.ByName());
-        new CellEditorFactory(transactions, PortfolioTransaction.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                PortfolioTransaction t = (PortfolioTransaction) element;
-                                if (t.getCrossEntry() != null)
-                                    t.getCrossEntry().updateFrom(t);
-
-                                markDirty();
-                                plans.refresh();
-                                transactions.refresh(element);
-                            }
-                        }) //
-                        .editable("date") //$NON-NLS-1$
-                        .readonly("type") //$NON-NLS-1$
-                        .amount("amount") //$NON-NLS-1$
-                        .combobox("security", securities, true) //$NON-NLS-1$
-                        .readonly("crossentry") //$NON-NLS-1$
-                        .apply();
-
-        hookContextMenu(transactions.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillTransactionsContextMenu(manager);
-            }
-        });
+        transactions = new PortfolioTransactionsViewer(parent, this);
 
         if (!getClient().getPlans().isEmpty())
             plans.setSelection(new StructuredSelection(plans.getElementAt(0)), true);
 
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(transactions);
-    }
-
-    private void fillTransactionsContextMenu(IMenuManager manager)
-    {
-        InvestmentPlan plan = (InvestmentPlan) transactions.getData(InvestmentPlan.class.toString());
-        if (plan == null)
-            return;
-
-        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
-        if (hasTransactionSelected)
-        {
-            manager.add(new Action("Delete")
-            {
-                @Override
-                public void run()
-                {
-                    PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) transactions
-                                    .getSelection()).getFirstElement();
-                    InvestmentPlan plan = (InvestmentPlan) transactions.getData(InvestmentPlan.class.toString());
-
-                    if (transaction == null || plan == null)
-                        return;
-
-                    if (transaction.getCrossEntry() != null)
-                        transaction.getCrossEntry().delete();
-                    else
-                        plan.getPortfolio().getTransactions().remove(transaction);
-
-                    plan.getTransactions().remove(transaction);
-                    markDirty();
-
-                    plans.refresh();
-                    transactions.setInput(plan.getTransactions());
-                }
-            });
-        }
+        transactions.pack();
     }
 }

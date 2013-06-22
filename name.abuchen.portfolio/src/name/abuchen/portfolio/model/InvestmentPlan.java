@@ -14,21 +14,15 @@ public class InvestmentPlan
     private Security security;
     private long amount;
     private long transactionCost;
-    private List<PortfolioTransaction> transactions;
+    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
     private Portfolio portfolio;
     private String name;
     private Date start;
     private boolean isBuySellEntry;
 
-    public InvestmentPlan()
-    {
-        transactions = new ArrayList<PortfolioTransaction>();
-    }
-
     public InvestmentPlan(String name)
     {
-        this();
-        this.setName(name);
+        this.name = name;
     }
 
     public Security getSecurity()
@@ -125,9 +119,9 @@ public class InvestmentPlan
         return result;
     }
 
-    public List<Transaction> generateTransactions()
+    public List<PortfolioTransaction> generateTransactions()
     {
-        List<Transaction> newTransactions = new ArrayList<Transaction>();
+        List<PortfolioTransaction> newTransactions = new ArrayList<PortfolioTransaction>();
         Transaction.sortByDate(transactions);
         // Start from the date of the latest transaction of the plan to not
         // re-create deleted transactions
@@ -165,7 +159,6 @@ public class InvestmentPlan
                     entry.insert();
 
                     transactions.add(entry.getPortfolioTransaction());
-                    newTransactions.add(entry.getAccountTransaction());
                     newTransactions.add(entry.getPortfolioTransaction());
                 }
                 else
