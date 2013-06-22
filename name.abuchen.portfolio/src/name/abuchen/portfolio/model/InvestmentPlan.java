@@ -86,9 +86,9 @@ public class InvestmentPlan
         return transactions;
     }
 
-    public void addTransaction(PortfolioTransaction temp)
+    public void removeTransaction(PortfolioTransaction transaction)
     {
-        transactions.add(temp);
+        transactions.remove(transaction);
     }
 
     public long getTransactionCost()
@@ -148,6 +148,7 @@ public class InvestmentPlan
                     }
                 }
             }
+
             if (!alreadyPresent)
             {
                 long amount = getAmount();
@@ -162,15 +163,17 @@ public class InvestmentPlan
                     entry.setAmount(amount);
                     entry.setSecurity(getSecurity());
                     entry.insert();
-                    addTransaction(entry.getPortfolioTransaction());
+
+                    transactions.add(entry.getPortfolioTransaction());
                     newTransactions.add(entry.getAccountTransaction());
                     newTransactions.add(entry.getPortfolioTransaction());
                 }
                 else
                 {
-                    PortfolioTransaction transaction = new PortfolioTransaction(current, getSecurity(),
+                    PortfolioTransaction transaction = new PortfolioTransaction(current, security,
                                     PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, getTransactionCost());
-                    addTransaction(transaction);
+
+                    transactions.add(transaction);
                     getPortfolio().addTransaction(transaction);
                     newTransactions.add(transaction);
                 }
@@ -180,5 +183,4 @@ public class InvestmentPlan
 
         return newTransactions;
     }
-
 }

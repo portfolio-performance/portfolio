@@ -372,7 +372,7 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public void createColumns()
     {
-        // createFromColumnConfig();
+        createFromColumnConfig();
 
         if (viewer.getTable().getColumnCount() > 0)
         {

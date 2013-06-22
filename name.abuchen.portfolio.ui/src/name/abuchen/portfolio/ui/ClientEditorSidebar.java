@@ -193,7 +193,7 @@ import org.eclipse.swt.widgets.Control;
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
         new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
-        new Entry(section, new ActivateViewAction("Investment Plans", "InvestmentPlanList",
+        new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_WATCHLIST)));
     }
 
@@ -220,8 +220,9 @@ import org.eclipse.swt.widgets.Control;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
-        new Entry(section, new ActivateViewAction(editor.getClient().getIndustryTaxonomy().getRootCategory()
-                        .getLabel(), "IndustryClassificationDefinition")); //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(
+                        editor.getClient().getIndustryTaxonomy().getRootCategory().getLabel(),
+                        "IndustryClassificationDefinition")); //$NON-NLS-1$
     }
 
 }

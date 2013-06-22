@@ -19,18 +19,23 @@ public class NewPlanDialog extends AbstractDialog
 
     public static class Model extends BindingHelper.Model
     {
-
         private String name;
+        private Security security;
         private Portfolio portfolio;
+        private Date start = Dates.today();
         private long amount;
         private long transactionCost;
-        private Security security;
-        private Date start = Dates.today();
         private boolean generateAccountTransactions = false;
 
         public Model(Client client)
         {
             super(client);
+
+            if (client.getPortfolios().size() == 1)
+                portfolio = client.getPortfolios().get(0);
+
+            if (!client.getSecurities().isEmpty())
+                setSecurity(client.getSecurities().get(0));
         }
 
         @Override
@@ -40,24 +45,15 @@ public class NewPlanDialog extends AbstractDialog
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
             if (portfolio == null)
                 throw new UnsupportedOperationException("Portfolio is Missing");
+
             InvestmentPlan plan = new InvestmentPlan(name);
+            plan.setSecurity(security);
+            plan.setPortfolio(portfolio);
+            plan.setStart(start);
             plan.setAmount(amount);
             plan.setTransactionCost(transactionCost);
-            plan.setPortfolio(portfolio);
-            plan.setSecurity(security);
-            plan.setStart(start);
             plan.setIsBuySellEntry(generateAccountTransactions);
             getClient().addPlan(plan);
-        }
-
-        public void setPortfolio(Portfolio port)
-        {
-            firePropertyChange("portfolio", portfolio, portfolio = port);
-        }
-
-        public Portfolio getPortfolio()
-        {
-            return portfolio;
         }
 
         public String getName()
@@ -67,17 +63,17 @@ public class NewPlanDialog extends AbstractDialog
 
         public void setName(String name)
         {
-            firePropertyChange("name", this.name, this.name = name);
+            firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
         }
 
-        public long getAmount()
+        public Portfolio getPortfolio()
         {
-            return amount;
+            return portfolio;
         }
 
-        public void setAmount(long amount)
+        public void setPortfolio(Portfolio portfolio)
         {
-            firePropertyChange("amount", this.amount, this.amount = amount);
+            firePropertyChange("portfolio", this.portfolio, this.portfolio = portfolio); //$NON-NLS-1$
         }
 
         public Security getSecurity()
@@ -87,7 +83,7 @@ public class NewPlanDialog extends AbstractDialog
 
         public void setSecurity(Security security)
         {
-            firePropertyChange("security", this.security, this.security = security);
+            firePropertyChange("security", this.security, this.security = security); //$NON-NLS-1$
         }
 
         public Date getStart()
@@ -97,7 +93,17 @@ public class NewPlanDialog extends AbstractDialog
 
         public void setStart(Date start)
         {
-            firePropertyChange("start", this.start, this.start = start);
+            firePropertyChange("start", this.start, this.start = start); //$NON-NLS-1$
+        }
+
+        public long getAmount()
+        {
+            return amount;
+        }
+
+        public void setAmount(long amount)
+        {
+            firePropertyChange("amount", this.amount, this.amount = amount); //$NON-NLS-1$
         }
 
         public long getTransactionCost()
@@ -107,7 +113,7 @@ public class NewPlanDialog extends AbstractDialog
 
         public void setTransactionCost(long cost)
         {
-            firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost);
+            firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost); //$NON-NLS-1$
         }
 
         public boolean isGenerateAccountTransactions()
@@ -117,44 +123,15 @@ public class NewPlanDialog extends AbstractDialog
 
         public void setGenerateAccountTransactions(boolean generateAccountTransaction)
         {
-            firePropertyChange("generateAccountTransaction", this.generateAccountTransactions,
+            firePropertyChange("generateAccountTransaction", this.generateAccountTransactions, //$NON-NLS-1$
                             this.generateAccountTransactions = generateAccountTransaction);
         }
 
     }
 
-    private Client client;
-
     public NewPlanDialog(Shell shell, Client client)
     {
         super(shell, "New Plan", new Model(client));
-        this.client = client;
-    }
-
-    protected void createFormElements(Composite editArea)
-    {
-        bindings().bindMandatoryStringInput(editArea, "Name", "name");
-        bindings().bindMandatoryAmountInput(editArea, "Amount", "amount");
-        bindings().bindAmountInput(editArea, "Transaction Cost", "transactionCost");
-        bindings().bindBooleanInput(editArea, "Account Transactions?", "generateAccountTransactions");
-        bindings().bindComboViewer(editArea, "Portfolio", "portfolio", new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Portfolio) element).getName();
-            }
-
-        }, client.getPortfolios().toArray());
-        bindings().bindComboViewer(editArea, "Security", "security", new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Security) element).getName();
-            }
-        }, client.getSecurities().toArray());
-        bindings().bindDatePicker(editArea, "Plan Start", "start");
     }
 
     protected void configureShell(Shell shell)
@@ -163,4 +140,32 @@ public class NewPlanDialog extends AbstractDialog
         shell.setText("Create new Plan");
     }
 
+    protected void createFormElements(Composite editArea)
+    {
+        bindings().bindMandatoryStringInput(editArea, Messages.ColumnName, "name"); //$NON-NLS-1$
+
+        bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                return ((Security) element).getName();
+                            }
+                        }, getModel().getClient().getSecurities().toArray());
+
+        bindings().bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                return ((Portfolio) element).getName();
+                            }
+
+                        }, getModel().getClient().getPortfolios().toArray());
+
+        bindings().bindDatePicker(editArea, "Plan Start", "start");
+        bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
+        bindings().bindAmountInput(editArea, Messages.ColumnFees, "transactionCost"); //$NON-NLS-1$
+        bindings().bindBooleanInput(editArea, "Account Transactions?", "generateAccountTransactions");
+    }
 }
