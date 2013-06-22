@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -62,9 +64,9 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public void run()
             {
-                NewPlanDialog newDialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                NewPlanDialog dialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                                 .getShell(), getClient());
-                if (newDialog.open() == Dialog.OK)
+                if (dialog.open() == Dialog.OK)
                 {
                     markDirty();
                     plans.setInput(getClient().getPlans());
@@ -88,6 +90,45 @@ public class InvestmentPlanListView extends AbstractListView
         ShowHideColumnHelper support = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", //$NON-NLS-1$
                         plans, layout);
 
+        addColumns(support);
+
+        support.createColumns();
+        plans.getTable().setHeaderVisible(true);
+        plans.getTable().setLinesVisible(true);
+        plans.setContentProvider(ArrayContentProvider.getInstance());
+        plans.setInput(getClient().getPlans());
+
+        if (!support.isUserConfigured())
+            ViewerHelper.pack(plans);
+
+        plans.addSelectionChangedListener(new ISelectionChangedListener()
+        {
+            public void selectionChanged(SelectionChangedEvent event)
+            {
+                InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
+
+                if (plan != null)
+                    transactions.setInput(plan.getPortfolio(), plan.getTransactions());
+                else
+                    transactions.setInput(null, null);
+
+                transactions.refresh();
+            }
+        });
+
+        addEditingSupport();
+
+        hookContextMenu(plans.getTable(), new IMenuListener()
+        {
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                fillPlansContextMenu(manager);
+            }
+        });
+    }
+
+    private void addColumns(ShowHideColumnHelper support)
+    {
         Column column = new Column(Messages.ColumnName, SWT.None, 100);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -115,6 +156,12 @@ public class InvestmentPlanListView extends AbstractListView
             {
                 return ((InvestmentPlan) e).getSecurity().getName();
             }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+            }
         });
         secCol.setMoveable(false);
         support.addColumn(secCol);
@@ -138,6 +185,26 @@ public class InvestmentPlanListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnAccount, SWT.None, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return plan.getAccount() != null ? plan.getAccount().getName() : "(Einlieferung)";
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return plan.getAccount() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT) : null;
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         column = new Column("Start", SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -145,6 +212,19 @@ public class InvestmentPlanListView extends AbstractListView
             public String getText(Object e)
             {
                 return Values.Date.format(((InvestmentPlan) e).getStart());
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column("Interval", SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return MessageFormat.format("{0,choice,1#monatlich|1<Alle {0} Monate}",
+                                ((InvestmentPlan) e).getInterval());
             }
         });
         column.setMoveable(false);
@@ -168,76 +248,51 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public String getText(Object e)
             {
-                return Values.Amount.format(((InvestmentPlan) e).getTransactionCost());
+                return Values.Amount.format(((InvestmentPlan) e).getFees());
             }
         });
         column.setMoveable(false);
         support.addColumn(column);
+    }
 
-        column = new Column("Account Transcations?", SWT.None, 50);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return String.valueOf(((InvestmentPlan) e).isBuySellEntry());
-            }
-        });
-        column.setMoveable(false);
-        support.addColumn(column);
-
-        support.createColumns();
-        plans.getTable().setHeaderVisible(true);
-        plans.getTable().setLinesVisible(true);
-        plans.setContentProvider(ArrayContentProvider.getInstance());
-        plans.setInput(getClient().getPlans());
-
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(plans);
-
-        plans.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
-
-                transactions.setPortfolio(plan != null ? plan.getPortfolio() : null);
-                transactions.setInput(plan != null ? plan.getTransactions() : new ArrayList<PortfolioTransaction>(0));
-                transactions.refresh();
-            }
-        });
-
+    private void addEditingSupport()
+    {
         List<Security> securities = getClient().getSecurities();
         Collections.sort(securities, new Security.ByName());
-        List<Boolean> booleans = new ArrayList<Boolean>();
-        booleans.add(true);
-        booleans.add(false);
+
+        List<Account> accounts = new ArrayList<Account>();
+        accounts.add(NewPlanDialog.DELIVERY);
+        accounts.addAll(getClient().getAccounts());
+
+        List<Integer> available = new ArrayList<Integer>();
+        for (int ii = 1; ii <= 12; ii++)
+            available.add(ii);
 
         new CellEditorFactory(plans, InvestmentPlan.class) //
                         .notify(new CellEditorFactory.ModificationListener()
                         {
                             public void onModified(Object element, String property)
                             {
+                                if ("account".equals(property)) //$NON-NLS-1$
+                                {
+                                    InvestmentPlan plan = (InvestmentPlan) element;
+                                    if (plan.getAccount().equals(NewPlanDialog.DELIVERY))
+                                        plan.setAccount(null);
+                                }
+
                                 markDirty();
                                 plans.refresh();
                             }
                         }) //
                         .editable("name") //$NON-NLS-1$
-                        .combobox("security", securities, true) //$NON-NLS-1$
-                        .readonly("portfolio") //$NON-NLS-1$
+                        .combobox("security", securities) //$NON-NLS-1$
+                        .combobox("portfolio", getClient().getPortfolios()) //$NON-NLS-1$
+                        .combobox("account", accounts) //$NON-NLS-1$
                         .editable("start") //$NON-NLS-1$
+                        .combobox("interval", available) //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
-                        .amount("transactionCost") //$NON-NLS-1$
-                        .combobox("isBuySellEntry", booleans, false) //$NON-NLS-1$
+                        .amount("fees") //$NON-NLS-1$
                         .apply();
-
-        hookContextMenu(plans.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillPlansContextMenu(manager);
-            }
-        });
     }
 
     private void fillPlansContextMenu(IMenuManager manager)

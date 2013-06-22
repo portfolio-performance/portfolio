@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
@@ -19,16 +23,18 @@ import org.eclipse.swt.widgets.Shell;
 
 public class NewPlanDialog extends AbstractDialog
 {
+    public static final Account DELIVERY = new Account("(Einlieferung)");
 
     public static class Model extends BindingHelper.Model
     {
         private String name;
         private Security security;
         private Portfolio portfolio;
+        private Account account;
         private Date start = Dates.today();
+        private int interval = 1;
         private long amount;
-        private long transactionCost;
-        private boolean generateAccountTransactions = false;
+        private long fees;
 
         public Model(Client client)
         {
@@ -39,6 +45,8 @@ public class NewPlanDialog extends AbstractDialog
 
             if (!client.getSecurities().isEmpty())
                 security = client.getSecurities().get(0);
+
+            account = DELIVERY;
         }
 
         @Override
@@ -52,10 +60,11 @@ public class NewPlanDialog extends AbstractDialog
             InvestmentPlan plan = new InvestmentPlan(name);
             plan.setSecurity(security);
             plan.setPortfolio(portfolio);
+            plan.setAccount(account.equals(DELIVERY) ? null : account);
             plan.setStart(start);
+            plan.setInterval(interval);
             plan.setAmount(amount);
-            plan.setTransactionCost(transactionCost);
-            plan.setIsBuySellEntry(generateAccountTransactions);
+            plan.setFees(fees);
             getClient().addPlan(plan);
         }
 
@@ -69,6 +78,16 @@ public class NewPlanDialog extends AbstractDialog
             firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
         }
 
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        public void setSecurity(Security security)
+        {
+            firePropertyChange("security", this.security, this.security = security); //$NON-NLS-1$
+        }
+
         public Portfolio getPortfolio()
         {
             return portfolio;
@@ -79,14 +98,14 @@ public class NewPlanDialog extends AbstractDialog
             firePropertyChange("portfolio", this.portfolio, this.portfolio = portfolio); //$NON-NLS-1$
         }
 
-        public Security getSecurity()
+        public Account getAccount()
         {
-            return security;
+            return account;
         }
 
-        public void setSecurity(Security security)
+        public void setAccount(Account account)
         {
-            firePropertyChange("security", this.security, this.security = security); //$NON-NLS-1$
+            firePropertyChange("account", this.account, this.account = account); //$NON-NLS-1$
         }
 
         public Date getStart()
@@ -99,6 +118,16 @@ public class NewPlanDialog extends AbstractDialog
             firePropertyChange("start", this.start, this.start = start); //$NON-NLS-1$
         }
 
+        public int getInterval()
+        {
+            return interval;
+        }
+
+        public void setInterval(int interval)
+        {
+            this.interval = interval;
+        }
+
         public long getAmount()
         {
             return amount;
@@ -109,25 +138,14 @@ public class NewPlanDialog extends AbstractDialog
             firePropertyChange("amount", this.amount, this.amount = amount); //$NON-NLS-1$
         }
 
-        public long getTransactionCost()
+        public long getFees()
         {
-            return transactionCost;
+            return fees;
         }
 
-        public void setTransactionCost(long cost)
+        public void setFees(long fees)
         {
-            firePropertyChange("transactionCost", this.transactionCost, this.transactionCost = cost); //$NON-NLS-1$
-        }
-
-        public boolean isGenerateAccountTransactions()
-        {
-            return generateAccountTransactions;
-        }
-
-        public void setGenerateAccountTransactions(boolean generateAccountTransaction)
-        {
-            firePropertyChange("generateAccountTransaction", this.generateAccountTransactions, //$NON-NLS-1$
-                            this.generateAccountTransactions = generateAccountTransaction);
+            firePropertyChange("fees", this.fees, this.fees = fees); //$NON-NLS-1$
         }
 
     }
@@ -174,9 +192,34 @@ public class NewPlanDialog extends AbstractDialog
                             }
                         }, getModel().getClient().getPortfolios().toArray());
 
+        List<Account> accounts = new ArrayList<Account>();
+        accounts.add(DELIVERY);
+        accounts.addAll(getModel().getClient().getAccounts());
+        bindings().bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                return ((Account) element).getName();
+                            }
+                        }, accounts.toArray());
+
         bindings().bindDatePicker(editArea, "Plan Start", "start");
+
+        List<Integer> available = new ArrayList<Integer>();
+        for (int ii = 1; ii <= 12; ii++)
+            available.add(ii);
+        bindings().bindComboViewer(editArea, "Interval", "interval", new LabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                int interval = (Integer) element;
+                return MessageFormat.format("{0,choice,1#monatlich|1<Alle {0} Monate}", interval);
+            }
+        }, available);
+
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
-        bindings().bindAmountInput(editArea, Messages.ColumnFees, "transactionCost"); //$NON-NLS-1$
-        bindings().bindBooleanInput(editArea, "Account Transactions?", "generateAccountTransactions");
+        bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
     }
 }

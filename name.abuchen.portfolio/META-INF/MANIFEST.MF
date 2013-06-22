@@ -20,6 +20,7 @@ Import-Package: com.thoughtworks.xstream,
  org.htmlparser.lexer,
  org.htmlparser.util,
  org.joda.time;version="2.1.0",
- org.joda.time.base;version="2.1.0"
+ org.joda.time.base;version="2.1.0",
+ org.joda.time.field;version="2.1.0"
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor

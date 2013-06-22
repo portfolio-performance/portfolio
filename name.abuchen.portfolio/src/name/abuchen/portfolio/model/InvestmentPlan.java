@@ -4,23 +4,34 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import name.abuchen.portfolio.util.Dates;
+import org.joda.time.DateTime;
 
 public class InvestmentPlan
 {
-
-    private static final int TOLERANCE = 3;
-
-    private Security security;
-    private long amount;
-    private long transactionCost;
-    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
-    private Portfolio portfolio;
     private String name;
+    private Security security;
+    private Portfolio portfolio;
+    private Account account;
+
     private Date start;
-    private boolean isBuySellEntry;
+    private int interval = 1;
+
+    private long amount;
+    private long fees;
+
+    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
 
     public InvestmentPlan(String name)
+    {
+        this.name = name;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
     {
         this.name = name;
     }
@@ -35,26 +46,6 @@ public class InvestmentPlan
         this.security = security;
     }
 
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public long getAmount()
-    {
-        return amount;
-    }
-
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
-    }
-
     public Portfolio getPortfolio()
     {
         return portfolio;
@@ -63,6 +54,16 @@ public class InvestmentPlan
     public void setPortfolio(Portfolio portfolio)
     {
         this.portfolio = portfolio;
+    }
+
+    public Account getAccount()
+    {
+        return account;
+    }
+
+    public void setAccount(Account account)
+    {
+        this.account = account;
     }
 
     public Date getStart()
@@ -75,6 +76,36 @@ public class InvestmentPlan
         this.start = start;
     }
 
+    public int getInterval()
+    {
+        return interval;
+    }
+
+    public void setInterval(int interval)
+    {
+        this.interval = interval;
+    }
+
+    public long getAmount()
+    {
+        return amount;
+    }
+
+    public void setAmount(long amount)
+    {
+        this.amount = amount;
+    }
+
+    public long getFees()
+    {
+        return fees;
+    }
+
+    public void setFees(long fees)
+    {
+        this.fees = fees;
+    }
+
     public List<PortfolioTransaction> getTransactions()
     {
         return transactions;
@@ -85,95 +116,71 @@ public class InvestmentPlan
         transactions.remove(transaction);
     }
 
-    public long getTransactionCost()
+    private DateTime getLastDate()
     {
-        return transactionCost;
-    }
-
-    public void setTransactionCost(long transactionCost)
-    {
-        this.transactionCost = transactionCost;
-    }
-
-    public boolean isBuySellEntry()
-    {
-        return isBuySellEntry;
-    }
-
-    public void setIsBuySellEntry(boolean isBuySellEntry)
-    {
-        this.isBuySellEntry = isBuySellEntry;
-    }
-
-    private Date getLastActionDate()
-    {
-        Date result = null;
-        for (PortfolioTransaction t : getTransactions())
+        DateTime last = null;
+        for (PortfolioTransaction t : transactions)
         {
-            if (result == null || result.before(t.getDate()))
-            {
-                result = t.getDate();
-            }
+            DateTime date = new DateTime(t.getDate());
+            if (last == null || last.isBefore(date))
+                last = date;
         }
-        if (result == null) { return getStart(); }
-        return result;
+
+        return last;
+    }
+
+    private DateTime next(DateTime date)
+    {
+        DateTime next = date.plusMonths(interval);
+        next = next.withDayOfMonth(Math.min(next.dayOfMonth().getMaximumValue(), new DateTime(start).getDayOfMonth()));
+        return next;
     }
 
     public List<PortfolioTransaction> generateTransactions()
     {
-        List<PortfolioTransaction> newTransactions = new ArrayList<PortfolioTransaction>();
-        Transaction.sortByDate(transactions);
-        // Start from the date of the latest transaction of the plan to not
-        // re-create deleted transactions
-        Date current = getLastActionDate();
-        Date today = Dates.today();
+        DateTime transactionDate = null;
 
-        while (current.before(today))
+        if (transactions.isEmpty())
+            transactionDate = new DateTime(start);
+        else
+            transactionDate = next(getLastDate());
+
+        List<PortfolioTransaction> newlyCreated = new ArrayList<PortfolioTransaction>();
+
+        DateTime now = DateTime.now();
+
+        while (transactionDate.isBefore(now))
         {
-            boolean alreadyPresent = false;
-            for (PortfolioTransaction p : transactions)
+            long price = getSecurity().getSecurityPrice(transactionDate.toDate()).getValue();
+            long shares = Math.round(((double) (amount - fees) / (double) price) * Values.Share.factor());
+
+            PortfolioTransaction transaction = null;
+            if (account != null)
             {
-                if (Dates.isSameMonth(current, p.getDate()))
-                {
-                    if (Dates.daysBetween(current, p.getDate()) <= TOLERANCE)
-                    {
-                        alreadyPresent = true;
-                        break;
-                    }
-                }
-            }
+                BuySellEntry entry = new BuySellEntry(portfolio, account);
+                entry.setType(PortfolioTransaction.Type.BUY);
+                entry.setDate(transactionDate.toDate());
+                entry.setShares(shares);
+                entry.setFees(fees);
+                entry.setAmount(amount);
+                entry.setSecurity(getSecurity());
+                entry.insert();
 
-            if (!alreadyPresent)
+                transaction = entry.getPortfolioTransaction();
+            }
+            else
             {
-                long amount = getAmount();
-                long price = getSecurity().getSecurityPrice(current).getValue();
-                long shares = (long) (((double) amount / price) * Values.Share.factor());
-                if (isBuySellEntry())
-                {
-                    BuySellEntry entry = new BuySellEntry(getPortfolio(), getPortfolio().getReferenceAccount());
-                    entry.setType(PortfolioTransaction.Type.BUY);
-                    entry.setDate(current);
-                    entry.setShares(shares);
-                    entry.setAmount(amount);
-                    entry.setSecurity(getSecurity());
-                    entry.insert();
+                transaction = new PortfolioTransaction(transactionDate.toDate(), security,
+                                PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees);
+                portfolio.addTransaction(transaction);
 
-                    transactions.add(entry.getPortfolioTransaction());
-                    newTransactions.add(entry.getPortfolioTransaction());
-                }
-                else
-                {
-                    PortfolioTransaction transaction = new PortfolioTransaction(current, security,
-                                    PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, getTransactionCost());
-
-                    transactions.add(transaction);
-                    getPortfolio().addTransaction(transaction);
-                    newTransactions.add(transaction);
-                }
             }
-            current = Dates.progress(current);
+            transactions.add(transaction);
+            newlyCreated.add(transaction);
+
+            transactionDate = next(transactionDate);
         }
 
-        return newTransactions;
+        return newlyCreated;
     }
 }
