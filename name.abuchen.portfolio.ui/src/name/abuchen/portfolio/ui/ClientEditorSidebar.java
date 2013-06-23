@@ -194,7 +194,7 @@ import org.eclipse.swt.widgets.Control;
         new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
         new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_WATCHLIST)));
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_INVESTMENTPLAN)));
     }
 
     private void createPerformanceSection(Sidebar sidebar)

@@ -141,7 +141,7 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_WATCHLIST);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_INVESTMENTPLAN);
             }
         });
         column.setSorter(ColumnViewerSorter.create(InvestmentPlan.class, "name"), SWT.DOWN); //$NON-NLS-1$
