@@ -103,6 +103,7 @@ public class Client
         securities.remove(security);
         for (Watchlist w : watchlists)
             w.getSecurities().remove(security);
+        deleteInvestmentPlans(security);
         // FIXME possibly remove transactions and category assignments as well
     }
 
@@ -135,6 +136,7 @@ public class Client
     public void removeAccount(Account account)
     {
         deleteCrossEntries(account.getTransactions());
+        deleteInvestmentPlans(account);
         accounts.remove(account);
     }
 
@@ -151,6 +153,7 @@ public class Client
     public void removePortfolio(Portfolio portfolio)
     {
         deleteCrossEntries(portfolio.getTransactions());
+        deleteInvestmentPlans(portfolio);
         portfolios.remove(portfolio);
     }
 
@@ -203,6 +206,33 @@ public class Client
         {
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().delete();
+        }
+    }
+
+    private void deleteInvestmentPlans(Portfolio portfolio)
+    {
+        for (InvestmentPlan plan : plans)
+        {
+            if (plan.getPortfolio().equals(portfolio))
+                removePlan(plan);
+        }
+    }
+
+    private void deleteInvestmentPlans(Account account)
+    {
+        for (InvestmentPlan plan : plans)
+        {
+            if (plan.getAccount().equals(account))
+                removePlan(plan);
+        }
+    }
+
+    private void deleteInvestmentPlans(Security security)
+    {
+        for (InvestmentPlan plan : plans)
+        {
+            if (plan.getSecurity().equals(security))
+                removePlan(plan);
         }
     }
 
