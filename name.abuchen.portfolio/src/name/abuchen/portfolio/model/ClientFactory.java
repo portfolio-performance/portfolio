@@ -110,7 +110,10 @@ public class ClientFactory
 
         if (client.getVersion() == 12)
         {
-            // do nothing --> added investment plans
+            // added investment plans
+            // added security on chart as benchmark *and* performance
+            fixStoredChartConfigurations(client);
+
             client.setVersion(13);
         }
 
@@ -155,6 +158,42 @@ public class ClientFactory
                     t.setType(Type.DELIVERY_OUTBOUND);
             }
         }
+    }
+
+    private static void fixStoredChartConfigurations(Client client)
+    {
+        // Until now, the performance chart was showing *only* the benc hmark
+        // series, not the actual performance series. Change keys as benchmark
+        // values are prefixed with '[b]'
+
+        String property = "PerformanceChartView-PICKER"; //$NON-NLS-1$
+
+        // ConsumerPriceIndex
+
+        String value = client.getProperty(property);
+        if (value != null)
+            replaceAll(client, property, value);
+
+        int index = 0;
+        while (true)
+        {
+            String key = property + '$' + index;
+            value = client.getProperty(key);
+            if (value != null)
+                replaceAll(client, key, value);
+            else
+                break;
+
+            index++;
+        }
+    }
+
+    @SuppressWarnings("nls")
+    private static void replaceAll(Client client, String property, String value)
+    {
+        String newValue = value.replaceAll("Security", "[b]Security") //
+                        .replaceAll("ConsumerPriceIndex", "[b]ConsumerPriceIndex");
+        client.setProperty(property, newValue);
     }
 
     @SuppressWarnings("nls")

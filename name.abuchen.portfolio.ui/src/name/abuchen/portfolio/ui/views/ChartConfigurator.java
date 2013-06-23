@@ -58,12 +58,13 @@ import org.swtchart.LineStyle;
 
 /* package */class ChartConfigurator extends Composite
 {
-    public static final class DataSeries
+    /* package */static final class DataSeries
     {
         private Class<?> type;
         private Object instance;
         private String label;
         private boolean isLineChart = true;
+        private boolean isBenchmark = false;
 
         private Color color;
         private RGB rgb;
@@ -92,7 +93,7 @@ import org.swtchart.LineStyle;
 
         public String getLabel()
         {
-            return label;
+            return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
         }
 
         public void setColor(Color color)
@@ -119,6 +120,16 @@ import org.swtchart.LineStyle;
         public void setLineChart(boolean isLineChart)
         {
             this.isLineChart = isLineChart;
+        }
+
+        public boolean isBenchmark()
+        {
+            return isBenchmark;
+        }
+
+        public void setBenchmark(boolean isBenchmark)
+        {
+            this.isBenchmark = isBenchmark;
         }
 
         public boolean isShowArea()
@@ -157,20 +168,22 @@ import org.swtchart.LineStyle;
 
         public String getUUID()
         {
+            String prefix = isBenchmark() ? "[b]" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+
             if (type == Security.class)
-                return Security.class.getSimpleName() + ((Security) instance).getUUID();
+                return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
             else if (type == AssetClass.class)
-                return AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
+                return prefix + AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
             else if (type == Client.class)
-                return Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
+                return prefix + Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
             else if (type == Account.class)
-                return Account.class.getSimpleName() + ((Account) instance).getUUID();
+                return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
             else if (type == Portfolio.class)
-                return Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
+                return prefix + Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
             else if (type == Category.class)
-                return Category.class.getSimpleName() + ((Category) instance).getUUID();
+                return prefix + Category.class.getSimpleName() + ((Category) instance).getUUID();
             else if (type == ConsumerPriceIndex.class)
-                return ConsumerPriceIndex.class.getSimpleName();
+                return prefix + ConsumerPriceIndex.class.getSimpleName();
 
             throw new UnsupportedOperationException(type.getName());
         }
@@ -341,6 +354,9 @@ import org.swtchart.LineStyle;
 
     private void buildAvailableDataSeries()
     {
+        ColorWheel wheel = new ColorWheel(this, 30);
+        int index = 0;
+
         switch (mode)
         {
             case STATEMENT_OF_ASSETS:
@@ -356,24 +372,35 @@ import org.swtchart.LineStyle;
             }
             case PERFORMANCE:
             {
+                // accumulated performance
                 availableSeries.add(new DataSeries(Client.class, client, Messages.PerformanceChartLabelAccumulatedIRR,
                                 colorFor(Colors.TOTALS)));
 
+                // daily change
                 DataSeries series = new DataSeries(Client.class, null, Messages.LabelAggregationDaily, Display
                                 .getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
                 series.setLineChart(false);
                 availableSeries.add(series);
 
+                // consumer price index
                 series = new DataSeries(ConsumerPriceIndex.class, null, Messages.LabelConsumerPriceIndex,
                                 colorFor(Colors.CPI));
+                series.setBenchmark(true);
                 series.setLineStyle(LineStyle.DASHDOTDOT);
                 availableSeries.add(series);
+
+                // securities as benchmark
+                for (Security security : client.getSecurities())
+                {
+                    series = new DataSeries(Security.class, security, security.getName(), //
+                                    wheel.getSegment(index++).getColor());
+                    series.setBenchmark(true);
+                    availableSeries.add(series);
+                }
+
                 break;
             }
         }
-
-        ColorWheel wheel = new ColorWheel(this, 30);
-        int index = 0;
 
         for (Security security : client.getSecurities())
             availableSeries.add(new DataSeries(Security.class, security, security.getName(), wheel.getSegment(index++)
@@ -691,7 +718,7 @@ import org.swtchart.LineStyle;
         for (DataSeries s : selectedSeries)
             list.remove(s);
 
-        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new SecurityLabelProvider());
+        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new DataSeriesLabelProvider());
         dialog.setElements(list.toArray());
         dialog.setTitle(Messages.ChartSeriesPickerTitle);
         dialog.setMessage(Messages.ChartSeriesPickerTitle);
@@ -710,7 +737,9 @@ import org.swtchart.LineStyle;
             new PaintItem(this, (DataSeries) object);
         }
 
+        layout();
         getParent().layout();
+
         listener.onUpdate();
         persist();
     }
@@ -781,7 +810,7 @@ import org.swtchart.LineStyle;
         persistStoredConfigurations();
     }
 
-    private static final class SecurityLabelProvider extends LabelProvider
+    private static final class DataSeriesLabelProvider extends LabelProvider
     {
         @Override
         public Image getImage(Object element)

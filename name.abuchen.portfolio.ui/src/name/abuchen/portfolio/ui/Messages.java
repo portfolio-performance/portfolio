@@ -19,6 +19,7 @@ public class Messages extends NLS
     public static String ChangeTaxonomyAction;
     public static String ChangeTaxonomyRequestConfirmation;
     public static String ChangeTaxonomyTitle;
+    public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesPickerAddItem;
     public static String ChartSeriesPickerColor;
     public static String ChartSeriesPickerDelete;
