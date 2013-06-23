@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class NewPlanDialog extends AbstractDialog
 {
-    public static final Account DELIVERY = new Account("(Einlieferung)");
+    public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
 
     public static class Model extends BindingHelper.Model
     {
@@ -152,13 +152,13 @@ public class NewPlanDialog extends AbstractDialog
 
     public NewPlanDialog(Shell shell, Client client)
     {
-        super(shell, "New Plan", new Model(client));
+        super(shell, Messages.InvestmentPlanTitleNewPlan, new Model(client));
     }
 
     protected void configureShell(Shell shell)
     {
         super.configureShell(shell);
-        shell.setText("Create new Plan");
+        shell.setText(Messages.InvestmentPlanTitleNewPlan);
     }
 
     protected void createFormElements(Composite editArea)
@@ -204,20 +204,20 @@ public class NewPlanDialog extends AbstractDialog
                             }
                         }, accounts.toArray());
 
-        bindings().bindDatePicker(editArea, "Plan Start", "start");
+        bindings().bindDatePicker(editArea, Messages.ColumnStartDate, "start"); //$NON-NLS-1$
 
         List<Integer> available = new ArrayList<Integer>();
         for (int ii = 1; ii <= 12; ii++)
             available.add(ii);
-        bindings().bindComboViewer(editArea, "Interval", "interval", new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                int interval = (Integer) element;
-                return MessageFormat.format("{0,choice,1#monatlich|1<Alle {0} Monate}", interval);
-            }
-        }, available);
+        bindings().bindComboViewer(editArea, Messages.ColumnInterval, "interval", new LabelProvider() //$NON-NLS-1$
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                int interval = (Integer) element;
+                                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, interval);
+                            }
+                        }, available);
 
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
         bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$

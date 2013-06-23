@@ -74,7 +74,7 @@ public class InvestmentPlanListView extends AbstractListView
             }
         };
         action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        action.setToolTipText("New Plan...");
+        action.setToolTipText(Messages.InvestmentPlanMenuCreate);
 
         new ActionContributionItem(action).fill(toolBar, -1);
     }
@@ -181,7 +181,7 @@ public class InvestmentPlanListView extends AbstractListView
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(InvestmentPlan.class, "portfolio"), SWT.DOWN); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(InvestmentPlan.class, "portfolio")); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
 
@@ -192,7 +192,7 @@ public class InvestmentPlanListView extends AbstractListView
             public String getText(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getAccount() != null ? plan.getAccount().getName() : "(Einlieferung)";
+                return plan.getAccount() != null ? plan.getAccount().getName() : Messages.InvestmentPlanOptionDelivery;
             }
 
             @Override
@@ -205,7 +205,7 @@ public class InvestmentPlanListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column("Start", SWT.None, 80);
+        column = new Column(Messages.ColumnStartDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -217,14 +217,13 @@ public class InvestmentPlanListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column("Interval", SWT.None, 80);
+        column = new Column(Messages.ColumnInterval, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return MessageFormat.format("{0,choice,1#monatlich|1<Alle {0} Monate}",
-                                ((InvestmentPlan) e).getInterval());
+                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, ((InvestmentPlan) e).getInterval());
             }
         });
         column.setMoveable(false);
@@ -301,7 +300,7 @@ public class InvestmentPlanListView extends AbstractListView
         if (plan == null)
             return;
 
-        manager.add(new Action("Generate Transactions")
+        manager.add(new Action(Messages.InvestmentPlanMenuGenerateTransactions)
         {
             @Override
             public void run()
@@ -315,7 +314,7 @@ public class InvestmentPlanListView extends AbstractListView
             }
         });
 
-        manager.add(new Action("Delete Investment Plan")
+        manager.add(new Action(Messages.InvestmentPlanMenuDelete)
         {
             @Override
             public void run()

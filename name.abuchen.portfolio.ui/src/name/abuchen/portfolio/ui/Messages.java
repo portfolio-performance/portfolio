@@ -53,6 +53,7 @@ public class Messages extends NLS
     public static String ColumnFees;
     public static String ColumnFix;
     public static String ColumnIndex;
+    public static String ColumnInterval;
     public static String ColumnIRR;
     public static String ColumnIRRPerformance;
     public static String ColumnIRRPerformanceOption;
@@ -88,6 +89,7 @@ public class Messages extends NLS
     public static String ColumnShares;
     public static String ColumnSharesOwned;
     public static String ColumnSource;
+    public static String ColumnStartDate;
     public static String ColumnSymbol;
     public static String ColumnTargetPercent;
     public static String ColumnTargetValue;
@@ -162,6 +164,12 @@ public class Messages extends NLS
     public static String IntroReadNews;
     public static String IntroReadNewsText;
     public static String IntroTitle;
+    public static String InvestmentPlanIntervalLabel;
+    public static String InvestmentPlanMenuCreate;
+    public static String InvestmentPlanMenuDelete;
+    public static String InvestmentPlanMenuGenerateTransactions;
+    public static String InvestmentPlanOptionDelivery;
+    public static String InvestmentPlanTitleNewPlan;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdating;
