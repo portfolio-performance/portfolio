@@ -25,6 +25,7 @@ public class ImportFinanzenNetQuotes
     private LatestSecurityPrice item;
 
     private boolean insideDiv = false;
+    private boolean insideContentDiv = false;
     private boolean insideTable = false;
     private boolean insideRow = false;
     private boolean insideColumn = false;
@@ -34,14 +35,27 @@ public class ImportFinanzenNetQuotes
     {
         if (!tag.isEndTag())
         {
-            if ("content_box table_quotes".equals(tag.getAttribute("CLASS"))) //$NON-NLS-1$ //$NON-NLS-2$
+            if ("content_box table_quotes".equals(tag.getAttribute("CLASS"))) {//$NON-NLS-1$ //$NON-NLS-2$
                 insideDiv = true;
+                return;
+            }
+            if (insideDiv && "content".equals(tag.getAttribute("CLASS")))
+            {
+                insideContentDiv = true;
+                return;
+            }
         }
+        else if (insideContentDiv)
+        {
+            insideContentDiv = insideDiv = insideTable = insideRow = insideColumn = false;
+            columnIndex = -1;
+        }
+
     }
 
     private void table(Tag tag) throws IOException
     {
-        if (insideDiv && !tag.isEndTag())
+        if (insideContentDiv && !tag.isEndTag())
             insideTable = true;
     }
 
@@ -158,7 +172,7 @@ public class ImportFinanzenNetQuotes
         this.items = new ArrayList<LatestSecurityPrice>();
         this.item = null;
 
-        insideDiv = insideTable = insideRow = insideColumn = false;
+        insideContentDiv = insideDiv = insideTable = insideRow = insideColumn = false;
         columnIndex = -1;
 
         try
