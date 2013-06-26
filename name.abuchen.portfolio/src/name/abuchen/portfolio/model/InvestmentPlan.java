@@ -21,6 +21,11 @@ public class InvestmentPlan
 
     private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
 
+    public InvestmentPlan()
+    {
+        // needed for xstream de-serialization
+    }
+
     public InvestmentPlan(String name)
     {
         this.name = name;
