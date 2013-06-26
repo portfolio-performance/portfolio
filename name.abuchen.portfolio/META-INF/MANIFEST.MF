@@ -21,6 +21,9 @@ Import-Package: com.thoughtworks.xstream,
  org.htmlparser.util,
  org.joda.time;version="2.1.0",
  org.joda.time.base;version="2.1.0",
- org.joda.time.field;version="2.1.0"
+ org.joda.time.field;version="2.1.0",
+ org.jsoup;version="1.7.2",
+ org.jsoup.nodes;version="1.7.2",
+ org.jsoup.select;version="1.7.2"
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
