@@ -21,6 +21,11 @@ public class InvestmentPlan
 
     private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
 
+    public InvestmentPlan()
+    {
+
+    }
+
     public InvestmentPlan(String name)
     {
         this.name = name;
