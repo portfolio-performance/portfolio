@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.Factory;
@@ -43,18 +42,16 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
 {
     public static final String PAGE_NAME = "searchpage"; //$NON-NLS-1$
 
-    private Client client;
-    private Security security;
+    private EditSecurityModel model;
     private ResultItem item;
 
-    public SearchSecurityWizardPage(Client client, Security security)
+    public SearchSecurityWizardPage(EditSecurityModel model)
     {
         super(PAGE_NAME);
         setTitle(Messages.SecurityMenuAddNewSecurity);
         setDescription(Messages.SecurityMenuAddNewSecurityDescription);
 
-        this.client = client;
-        this.security = security;
+        this.model = model;
     }
 
     @Override
@@ -66,12 +63,13 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
     {
         if (item != null)
         {
-            String name = security.getName();
-            item.applyTo(security);
-
             // keep name (overwriting is confusing to the user)
-            if (name != null && name.trim().length() > 0)
-                security.setName(name);
+            String name = model.getName();
+            if (name == null || name.trim().length() == 0)
+                model.setName(item.getName());
+
+            model.setTickerSymbol(item.getSymbol());
+            model.setIsin(item.getIsin());
         }
     }
 
@@ -80,7 +78,6 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
     {
         return getWizard().getPage(SecurityMasterDataPage.PAGE_NAME);
     }
-
 
     @Override
     public void createControl(Composite parent)
@@ -127,7 +124,7 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
         resultTable.getTable().setLinesVisible(true);
 
         final Set<String> existingSymbols = new HashSet<String>();
-        for (Security s : client.getSecurities())
+        for (Security s : model.getClient().getSecurities())
             existingSymbols.add(s.getTickerSymbol());
 
         resultTable.setLabelProvider(new ResultItemLabelProvider(existingSymbols));

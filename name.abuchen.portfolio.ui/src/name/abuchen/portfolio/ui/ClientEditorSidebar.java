@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui;
 
 import java.util.UUID;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Watchlist;
@@ -231,6 +232,7 @@ import org.eclipse.swt.widgets.Control;
                     return;
 
                 Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
+                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
                 editor.getClient().addTaxonomy(taxonomy);
                 editor.markDirty();
 
@@ -297,8 +299,9 @@ import org.eclipse.swt.widgets.Control;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
-        new Entry(section, new ActivateViewAction(editor.getClient().getIndustryTaxonomy().getRootCategory()
-                        .getLabel(), "IndustryClassificationDefinition")); //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(
+                        editor.getClient().getIndustryTaxonomy().getRootCategory().getLabel(),
+                        "IndustryClassificationDefinition")); //$NON-NLS-1$
     }
 
 }

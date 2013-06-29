@@ -3,8 +3,19 @@ package name.abuchen.portfolio.model;
 import java.util.LinkedList;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Classification.Assignment;
+
 public class Taxonomy
 {
+    public static class Visitor
+    {
+        public void visit(Classification classification)
+        {}
+
+        public void visit(Classification classification, Assignment assignment)
+        {}
+    }
+
     private String id;
     private String name;
 
@@ -69,5 +80,10 @@ public class Taxonomy
         }
 
         return null;
+    }
+
+    public void foreach(Visitor visitor)
+    {
+        root.accept(visitor);
     }
 }

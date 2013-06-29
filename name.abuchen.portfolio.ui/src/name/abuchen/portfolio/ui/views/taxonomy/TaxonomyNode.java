@@ -207,7 +207,6 @@ public abstract class TaxonomyNode
     }
 
     private TaxonomyNode parent;
-    // private final Object subject;
 
     private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
     private long actual;

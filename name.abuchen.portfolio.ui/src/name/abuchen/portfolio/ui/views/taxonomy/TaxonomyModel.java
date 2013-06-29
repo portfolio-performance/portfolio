@@ -25,7 +25,7 @@ import name.abuchen.portfolio.util.Dates;
 
 public final class TaxonomyModel
 {
-    public static abstract class NodeVisitor
+    public abstract static class NodeVisitor
     {
         public abstract void visit(TaxonomyNode node);
 

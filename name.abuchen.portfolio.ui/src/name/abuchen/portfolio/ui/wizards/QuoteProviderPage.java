@@ -48,7 +48,7 @@ public class QuoteProviderPage extends AbstractWizardPage
     private ComboViewer comboExchange;
     private QuotesTableViewer tableSampleData;
 
-    private Security security;
+    private EditSecurityModel model;
 
     /*
      * used to identify a changed ISIN and ticker symbol when switching pages
@@ -66,22 +66,22 @@ public class QuoteProviderPage extends AbstractWizardPage
      */
     private LoadHistoricalQuotes currentJob;
 
-    protected QuoteProviderPage(Security security)
+    protected QuoteProviderPage(EditSecurityModel model)
     {
         super("feedprovider"); //$NON-NLS-1$
         setTitle(Messages.EditWizardQuoteFeedTitle);
         setDescription(Messages.EditWizardQuoteFeedDescription);
 
-        this.security = security;
+        this.model = model;
     }
 
     @Override
     public void beforePage()
     {
-        if (!areEqual(isin, security.getIsin()) || !areEqual(tickerSymbol, security.getTickerSymbol()))
+        if (!areEqual(isin, model.getIsin()) || !areEqual(tickerSymbol, model.getTickerSymbol()))
         {
-            this.isin = security.getIsin();
-            this.tickerSymbol = security.getTickerSymbol();
+            this.isin = model.getIsin();
+            this.tickerSymbol = model.getTickerSymbol();
 
             // clear caches
             cacheExchanges = new HashMap<QuoteFeed, List<Exchange>>();
@@ -106,12 +106,12 @@ public class QuoteProviderPage extends AbstractWizardPage
     public void afterPage()
     {
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
-        security.setFeed(feed.getId());
+        model.setFeed(feed.getId());
 
         Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
         if (exchange != null && !feed.getId().equals(QuoteFeed.MANUAL))
         {
-            security.setTickerSymbol(exchange.getId());
+            model.setTickerSymbol(exchange.getId());
             tickerSymbol = exchange.getId();
         }
     }
@@ -140,14 +140,14 @@ public class QuoteProviderPage extends AbstractWizardPage
 
     private void setupInitialData()
     {
-        if (security.getFeed() != null)
+        if (model.getFeed() != null)
         {
-            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+            QuoteFeed feed = Factory.getQuoteFeedProvider(model.getFeed());
             comboProvider.setSelection(new StructuredSelection(feed));
 
-            if (security.getTickerSymbol() != null && !QuoteFeed.MANUAL.equals(feed.getId()))
+            if (model.getTickerSymbol() != null && !QuoteFeed.MANUAL.equals(feed.getId()))
             {
-                Exchange exchange = new Exchange(security.getTickerSymbol(), security.getTickerSymbol());
+                Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
                 ArrayList<Exchange> input = new ArrayList<Exchange>();
                 input.add(exchange);
                 comboExchange.setInput(input);
@@ -308,7 +308,9 @@ public class QuoteProviderPage extends AbstractWizardPage
             {
                 try
                 {
-                    cacheExchanges.put(feed, feed.getExchanges(security));
+                    Security s = new Security();
+                    s.setTickerSymbol(model.getTickerSymbol());
+                    cacheExchanges.put(feed, feed.getExchanges(s));
                 }
                 catch (IOException e)
                 {
@@ -335,7 +337,7 @@ public class QuoteProviderPage extends AbstractWizardPage
                     {
                         for (Exchange e : exchanges)
                         {
-                            if (e.getId().equals(security.getTickerSymbol()))
+                            if (e.getId().equals(model.getTickerSymbol()))
                             {
                                 selectedExchange = e;
                                 comboExchange.setSelection(new StructuredSelection(e));
@@ -377,7 +379,7 @@ public class QuoteProviderPage extends AbstractWizardPage
             try
             {
                 Security s = new Security();
-                s.setIsin(security.getIsin());
+                s.setIsin(model.getIsin());
                 s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 

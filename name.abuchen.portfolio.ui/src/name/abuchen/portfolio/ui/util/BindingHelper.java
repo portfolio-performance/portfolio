@@ -42,6 +42,9 @@ public class BindingHelper
 
         private Client client;
 
+        public Model()
+        {}
+
         public Model(Client client)
         {
             this.client = client;
