@@ -13,7 +13,7 @@ import name.abuchen.portfolio.Messages;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 13;
+    /* package */static final int CURRENT_VERSION = 14;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -25,6 +25,7 @@ public class Client
 
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
+    private List<InvestmentPlan> plans;
     private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
 
     private Map<String, String> properties; // old versions!
@@ -55,6 +56,9 @@ public class Client
         if (propertyChangeSupport == null)
             propertyChangeSupport = new PropertyChangeSupport(this);
 
+        if (plans == null)
+            plans = new ArrayList<InvestmentPlan>();
+
         if (taxonomies == null)
             taxonomies = new ArrayList<Taxonomy>();
     }
@@ -67,6 +71,21 @@ public class Client
     public void setVersion(int version)
     {
         this.version = version;
+    }
+
+    public List<InvestmentPlan> getPlans()
+    {
+        return plans;
+    }
+
+    public void addPlan(InvestmentPlan plan)
+    {
+        plans.add(plan);
+    }
+
+    public void removePlan(InvestmentPlan plan)
+    {
+        plans.remove(plan);
     }
 
     public List<Security> getSecurities()
@@ -89,6 +108,7 @@ public class Client
         securities.remove(security);
         for (Watchlist w : watchlists)
             w.getSecurities().remove(security);
+        deleteInvestmentPlans(security);
         // FIXME possibly remove transactions and category assignments as well
     }
 
@@ -121,6 +141,7 @@ public class Client
     public void removeAccount(Account account)
     {
         deleteCrossEntries(account.getTransactions());
+        deleteInvestmentPlans(account);
         accounts.remove(account);
     }
 
@@ -137,6 +158,7 @@ public class Client
     public void removePortfolio(Portfolio portfolio)
     {
         deleteCrossEntries(portfolio.getTransactions());
+        deleteInvestmentPlans(portfolio);
         portfolios.remove(portfolio);
     }
 
@@ -186,6 +208,12 @@ public class Client
         propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
     }
 
+    public void removeProperity(String key)
+    {
+        String oldValue = properties.remove(key);
+        propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$
+    }
+
     public String getProperty(String key)
     {
         return properties.get(key);
@@ -198,6 +226,33 @@ public class Client
         {
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().delete();
+        }
+    }
+
+    private void deleteInvestmentPlans(Portfolio portfolio)
+    {
+        for (InvestmentPlan plan : plans)
+        {
+            if (plan.getPortfolio().equals(portfolio))
+                removePlan(plan);
+        }
+    }
+
+    private void deleteInvestmentPlans(Account account)
+    {
+        for (InvestmentPlan plan : plans)
+        {
+            if (plan.getAccount().equals(account))
+                removePlan(plan);
+        }
+    }
+
+    private void deleteInvestmentPlans(Security security)
+    {
+        for (InvestmentPlan plan : plans)
+        {
+            if (plan.getSecurity().equals(security))
+                removePlan(plan);
         }
     }
 

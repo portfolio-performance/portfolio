@@ -709,7 +709,7 @@ public class SecurityListView extends AbstractListView
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
-                        + "@transactions", //$NON-NLS-1$
+                        + "@transactions2", //$NON-NLS-1$
                         transactions, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -771,6 +771,38 @@ public class SecurityListView extends AbstractListView
             {
                 return (element instanceof PortfolioTransaction) ? Values.Amount
                                 .format(((PortfolioTransaction) element).getActualPurchasePrice()) : null;
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnPortfolio, SWT.NONE, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction t = (PortfolioTransaction) element;
+                    return t.getCrossEntry() != null ? t.getCrossEntry().getEntity(t).toString() : null;
+                }
+                return null;
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnOffsetAccount, SWT.NONE, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction t = (PortfolioTransaction) element;
+                    return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+                }
+                return null;
             }
         });
         support.addColumn(column);

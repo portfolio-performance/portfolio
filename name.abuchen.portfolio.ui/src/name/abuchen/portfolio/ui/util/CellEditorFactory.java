@@ -263,7 +263,7 @@ public final class CellEditorFactory
                 for (int ii = 0; ii < comboBoxItems.size(); ii++)
                 {
                     Object item = comboBoxItems.get(ii);
-                    if (item == property)
+                    if (item.equals(property))
                         return ii;
                 }
 

@@ -71,6 +71,18 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addConfigButton(ToolBar toolBar)
     {
+        Action save = new Action()
+        {
+            @Override
+            public void run()
+            {
+                picker.showSaveMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(save).fill(toolBar, -1);
+
         Action config = new Action()
         {
             @Override
@@ -81,7 +93,6 @@ public class PerformanceChartView extends AbstractHistoricView
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
         config.setToolTipText(Messages.MenuConfigureChart);
-
         new ActionContributionItem(config).fill(toolBar, -1);
     }
 
@@ -228,6 +239,14 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addSecurity(DataSeries item, Security security, List<Exception> warnings)
     {
+        if (item.isBenchmark())
+            addSecurityBenchmark(item, security, warnings);
+        else
+            addSecurityPerformance(item, security, warnings);
+    }
+
+    private void addSecurityBenchmark(DataSeries item, Security security, List<Exception> warnings)
+    {
         PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
 
         if (securityIndex == null)
@@ -242,7 +261,26 @@ public class PerformanceChartView extends AbstractHistoricView
 
         ILineSeries series = chart.addDateSeries(securityIndex.getDates(), //
                         securityIndex.getAccumulatedPercentage(), //
-                        security.getName());
+                        item.getLabel());
+        item.configure(series);
+    }
+
+    private void addSecurityPerformance(DataSeries item, Security security, List<Exception> warnings)
+    {
+        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security.getUUID());
+
+        if (securityIndex == null)
+        {
+            securityIndex = PerformanceIndex.forInvestment(getClient(), security, getReportingPeriod(), warnings);
+            dataCache.put(security.getUUID(), securityIndex);
+        }
+
+        if (aggregationPeriod != null)
+            securityIndex = Aggregation.aggregate(securityIndex, aggregationPeriod);
+
+        ILineSeries series = chart.addDateSeries(securityIndex.getDates(), //
+                        securityIndex.getAccumulatedPercentage(), //
+                        item.getLabel());
         item.configure(series);
     }
 

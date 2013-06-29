@@ -99,7 +99,7 @@ import org.eclipse.swt.widgets.Control;
                 editor.getClient().getWatchlists().add(watchlist);
                 editor.markDirty();
 
-                createWathlistEntry(section, watchlist);
+                createWatchlistEntry(section, watchlist);
                 sidebar.layout();
             }
         });
@@ -108,10 +108,10 @@ import org.eclipse.swt.widgets.Control;
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
 
         for (Watchlist watchlist : editor.getClient().getWatchlists())
-            createWathlistEntry(section, watchlist);
+            createWatchlistEntry(section, watchlist);
     }
 
-    private void createWathlistEntry(Entry section, final Watchlist watchlist)
+    private void createWatchlistEntry(Entry section, final Watchlist watchlist)
     {
         final Entry entry = new Entry(section, watchlist.getName());
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
@@ -198,6 +198,8 @@ import org.eclipse.swt.widgets.Control;
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
         new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
+        new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_INVESTMENTPLAN)));
     }
 
     private void createPerformanceSection(Sidebar sidebar)

@@ -112,11 +112,21 @@ public class ClientFactory
 
         if (client.getVersion() == 12)
         {
+            // added investment plans
+            // added security on chart as benchmark *and* performance
+            fixStoredChartConfigurations(client);
+
+            client.setVersion(13);
+        }
+
+        if (client.getVersion() == 13)
+        {
             // introduce arbitrary taxonomies
             addAssetClassesAsTaxonomy(client);
             addIndustryClassificationAsTaxonomy(client);
             addAssetAllocationAsTaxonomy(client);
-            client.setVersion(13);
+
+            client.setVersion(14);
         }
 
         if (client.getVersion() != Client.CURRENT_VERSION)
@@ -160,6 +170,42 @@ public class ClientFactory
                     t.setType(Type.DELIVERY_OUTBOUND);
             }
         }
+    }
+
+    private static void fixStoredChartConfigurations(Client client)
+    {
+        // Until now, the performance chart was showing *only* the benc hmark
+        // series, not the actual performance series. Change keys as benchmark
+        // values are prefixed with '[b]'
+
+        String property = "PerformanceChartView-PICKER"; //$NON-NLS-1$
+
+        // ConsumerPriceIndex
+
+        String value = client.getProperty(property);
+        if (value != null)
+            replaceAll(client, property, value);
+
+        int index = 0;
+        while (true)
+        {
+            String key = property + '$' + index;
+            value = client.getProperty(key);
+            if (value != null)
+                replaceAll(client, key, value);
+            else
+                break;
+
+            index++;
+        }
+    }
+
+    @SuppressWarnings("nls")
+    private static void replaceAll(Client client, String property, String value)
+    {
+        String newValue = value.replaceAll("Security", "[b]Security") //
+                        .replaceAll("ConsumerPriceIndex", "[b]ConsumerPriceIndex");
+        client.setProperty(property, newValue);
     }
 
     private static void addAssetClassesAsTaxonomy(Client client)
@@ -315,6 +361,7 @@ public class ClientFactory
                     xstream.alias("latest", LatestSecurityPrice.class);
                     xstream.alias("category", Category.class);
                     xstream.alias("watchlist", Watchlist.class);
+                    xstream.alias("investment-plan", InvestmentPlan.class);
 
                     xstream.alias("price", SecurityPrice.class);
                     xstream.useAttributeFor(SecurityPrice.class, "time");

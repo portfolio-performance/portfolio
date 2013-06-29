@@ -16,6 +16,12 @@ public class Account
         this.uuid = UUID.randomUUID().toString();
     }
 
+    public Account(String name)
+    {
+        this();
+        this.name = name;
+    }
+
     public String getUUID()
     {
         return uuid;

@@ -19,10 +19,16 @@ public class Messages extends NLS
     public static String ChangeTaxonomyAction;
     public static String ChangeTaxonomyRequestConfirmation;
     public static String ChangeTaxonomyTitle;
+    public static String ChartSeriesBenchmarkSuffix;
+    public static String ChartSeriesPickerAddBenchmark;
     public static String ChartSeriesPickerAddItem;
     public static String ChartSeriesPickerColor;
+    public static String ChartSeriesPickerDelete;
+    public static String ChartSeriesPickerDialogMsg;
+    public static String ChartSeriesPickerDialogTitle;
     public static String ChartSeriesPickerLineStyle;
     public static String ChartSeriesPickerRemove;
+    public static String ChartSeriesPickerSave;
     public static String ChartSeriesPickerShowArea;
     public static String ChartSeriesPickerTitle;
     public static String ClientEditorLabelChart;
@@ -49,6 +55,7 @@ public class Messages extends NLS
     public static String ColumnFees;
     public static String ColumnFix;
     public static String ColumnIndex;
+    public static String ColumnInterval;
     public static String ColumnIRR;
     public static String ColumnIRRPerformance;
     public static String ColumnIRRPerformanceOption;
@@ -84,6 +91,7 @@ public class Messages extends NLS
     public static String ColumnShares;
     public static String ColumnSharesOwned;
     public static String ColumnSource;
+    public static String ColumnStartDate;
     public static String ColumnSymbol;
     public static String ColumnTargetPercent;
     public static String ColumnTargetValue;
@@ -158,6 +166,12 @@ public class Messages extends NLS
     public static String IntroReadNews;
     public static String IntroReadNewsText;
     public static String IntroTitle;
+    public static String InvestmentPlanIntervalLabel;
+    public static String InvestmentPlanMenuCreate;
+    public static String InvestmentPlanMenuDelete;
+    public static String InvestmentPlanMenuGenerateTransactions;
+    public static String InvestmentPlanOptionDelivery;
+    public static String InvestmentPlanTitleNewPlan;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdating;
@@ -180,6 +194,7 @@ public class Messages extends NLS
     public static String LabelExport;
     public static String LabelFullClassification;
     public static String LabelInfo;
+    public static String LabelInvestmentPlans;
     public static String LabelNewCategory;
     public static String LabelNoClassification;
     public static String LabelNoName;
@@ -248,6 +263,7 @@ public class Messages extends NLS
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningEditor;
     public static String MsgMissingAccount;
+    public static String MsgMissingPortfolio;
     public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
     public static String MsgNoIssuesFound;

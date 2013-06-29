@@ -55,7 +55,7 @@ public class CSVExporter
             for (AccountTransaction t : account.getTransactions())
             {
                 printer.print(dateFormat.format(t.getDate()));
-                printer.print(t.getType().name());
+                printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
                 if (t.getSecurity() != null)
                 {
@@ -102,7 +102,7 @@ public class CSVExporter
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
                 printer.print(dateFormat.format(t.getDate()));
-                printer.print(t.getType().name());
+                printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
                 printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
                 printer.print(Values.Share.format(t.getShares()));
@@ -224,7 +224,7 @@ public class CSVExporter
             for (Security security : export)
                 printer.print(security.getExternalIdentifier());
             printer.println();
-            
+
             // stop if no securities exist
             if (earliestDate == null)
                 return;

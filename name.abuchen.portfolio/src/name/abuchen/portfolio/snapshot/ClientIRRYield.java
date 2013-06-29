@@ -15,7 +15,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.util.Dates;
 
 public class ClientIRRYield
 {
@@ -45,16 +44,7 @@ public class ClientIRRYield
 
         double irr = IRR.calculate(dates, values);
 
-        if (Double.isNaN(irr))
-            irr = 0;
-
-        irr = 1 + irr;
-
-        int daysBetween = Dates.daysBetween(start, end);
-        double root = Math.pow(irr, (double) 1 / (double) 365);
-        double irrA = Math.pow(root, daysBetween);
-
-        return new ClientIRRYield(snapshotStart, snapshotEnd, transactions, (irrA - 1) * 100);
+        return new ClientIRRYield(snapshotStart, snapshotEnd, transactions, irr * 100);
     }
 
     private ClientSnapshot snapshotStart;

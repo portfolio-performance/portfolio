@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +26,15 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -55,12 +59,13 @@ import org.swtchart.LineStyle;
 
 /* package */class ChartConfigurator extends Composite
 {
-    public static final class DataSeries
+    /* package */static final class DataSeries
     {
         private Class<?> type;
         private Object instance;
         private String label;
         private boolean isLineChart = true;
+        private boolean isBenchmark = false;
 
         private Color color;
         private RGB rgb;
@@ -89,7 +94,7 @@ import org.swtchart.LineStyle;
 
         public String getLabel()
         {
-            return label;
+            return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
         }
 
         public void setColor(Color color)
@@ -116,6 +121,16 @@ import org.swtchart.LineStyle;
         public void setLineChart(boolean isLineChart)
         {
             this.isLineChart = isLineChart;
+        }
+
+        public boolean isBenchmark()
+        {
+            return isBenchmark;
+        }
+
+        public void setBenchmark(boolean isBenchmark)
+        {
+            this.isBenchmark = isBenchmark;
         }
 
         public boolean isShowArea()
@@ -154,20 +169,22 @@ import org.swtchart.LineStyle;
 
         public String getUUID()
         {
+            String prefix = isBenchmark() ? "[b]" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+
             if (type == Security.class)
-                return Security.class.getSimpleName() + ((Security) instance).getUUID();
+                return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
             else if (type == AssetClass.class)
-                return AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
+                return prefix + AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
             else if (type == Client.class)
-                return Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
+                return prefix + Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
             else if (type == Account.class)
-                return Account.class.getSimpleName() + ((Account) instance).getUUID();
+                return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
             else if (type == Portfolio.class)
-                return Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
+                return prefix + Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
             else if (type == Category.class)
-                return Category.class.getSimpleName() + ((Category) instance).getUUID();
+                return prefix + Category.class.getSimpleName() + ((Category) instance).getUUID();
             else if (type == ConsumerPriceIndex.class)
-                return ConsumerPriceIndex.class.getSimpleName();
+                return prefix + ConsumerPriceIndex.class.getSimpleName();
 
             throw new UnsupportedOperationException(type.getName());
         }
@@ -196,6 +213,33 @@ import org.swtchart.LineStyle;
         STATEMENT_OF_ASSETS, PERFORMANCE
     }
 
+    private static final class Configuration
+    {
+        private String name;
+        private String config;
+
+        public Configuration(String name, String config)
+        {
+            this.name = name;
+            this.config = config;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getConfig()
+        {
+            return config;
+        }
+
+        public void setConfig(String config)
+        {
+            this.config = config;
+        }
+    }
+
     private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
 
     private final String identifier;
@@ -208,8 +252,12 @@ import org.swtchart.LineStyle;
     private final List<DataSeries> availableSeries = new ArrayList<DataSeries>();
     private final List<DataSeries> selectedSeries = new ArrayList<DataSeries>();
 
+    private String currentConfiguration;
+    private List<Configuration> storedConfigurations = new ArrayList<Configuration>();
+
     private LocalResourceManager resources;
-    private Menu contextMenu;
+    private Menu configContextMenu;
+    private Menu saveContextMenu;
 
     public ChartConfigurator(Composite parent, AbstractFinanceView view, Mode mode)
     {
@@ -234,6 +282,15 @@ import org.swtchart.LineStyle;
 
         for (DataSeries series : selectedSeries)
             new PaintItem(this, series);
+
+        parent.addDisposeListener(new DisposeListener()
+        {
+            @Override
+            public void widgetDisposed(DisposeEvent e)
+            {
+                ChartConfigurator.this.widgetDisposed();
+            }
+        });
     }
 
     public void setListener(ChartConfigurator.Listener listener)
@@ -243,11 +300,9 @@ import org.swtchart.LineStyle;
 
     public void showMenu(Shell shell)
     {
-        if (contextMenu == null)
+        if (configContextMenu == null)
         {
-            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-            menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
+            configContextMenu = createMenu(shell, new IMenuListener()
             {
                 @Override
                 public void menuAboutToShow(IMenuManager manager)
@@ -255,9 +310,32 @@ import org.swtchart.LineStyle;
                     configMenuAboutToShow(manager);
                 }
             });
-            contextMenu = menuMgr.createContextMenu(shell);
         }
-        contextMenu.setVisible(true);
+        configContextMenu.setVisible(true);
+    }
+
+    public void showSaveMenu(Shell shell)
+    {
+        if (saveContextMenu == null)
+        {
+            saveContextMenu = createMenu(shell, new IMenuListener()
+            {
+                @Override
+                public void menuAboutToShow(IMenuManager manager)
+                {
+                    saveMenuAboutToShow(manager);
+                }
+            });
+        }
+        saveContextMenu.setVisible(true);
+    }
+
+    private Menu createMenu(Shell shell, IMenuListener listener)
+    {
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(listener);
+        return menuMgr.createContextMenu(shell);
     }
 
     public List<DataSeries> getSelectedDataSeries()
@@ -277,6 +355,9 @@ import org.swtchart.LineStyle;
 
     private void buildAvailableDataSeries()
     {
+        ColorWheel wheel = new ColorWheel(this, 30);
+        int index = 0;
+
         switch (mode)
         {
             case STATEMENT_OF_ASSETS:
@@ -292,24 +373,35 @@ import org.swtchart.LineStyle;
             }
             case PERFORMANCE:
             {
+                // accumulated performance
                 availableSeries.add(new DataSeries(Client.class, client, Messages.PerformanceChartLabelAccumulatedIRR,
                                 colorFor(Colors.TOTALS)));
 
+                // daily change
                 DataSeries series = new DataSeries(Client.class, null, Messages.LabelAggregationDaily, Display
                                 .getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
                 series.setLineChart(false);
                 availableSeries.add(series);
 
+                // consumer price index
                 series = new DataSeries(ConsumerPriceIndex.class, null, Messages.LabelConsumerPriceIndex,
                                 colorFor(Colors.CPI));
+                series.setBenchmark(true);
                 series.setLineStyle(LineStyle.DASHDOTDOT);
                 availableSeries.add(series);
+
+                // securities as benchmark
+                for (Security security : client.getSecurities())
+                {
+                    series = new DataSeries(Security.class, security, security.getName(), //
+                                    wheel.getSegment(index++).getColor());
+                    series.setBenchmark(true);
+                    availableSeries.add(series);
+                }
+
                 break;
             }
         }
-
-        ColorWheel wheel = new ColorWheel(this, 30);
-        int index = 0;
 
         for (Security security : client.getSecurities())
             availableSeries.add(new DataSeries(Security.class, security, security.getName(), wheel.getSegment(index++)
@@ -365,34 +457,44 @@ import org.swtchart.LineStyle;
             config = clientEditor.getPreferenceStore().getString(identifier);
 
         if (config != null && config.trim().length() > 0)
+            load(config);
+
+        if (selectedSeries.isEmpty())
         {
-            Map<String, DataSeries> uuid2series = new HashMap<String, DataSeries>();
-            for (DataSeries series : availableSeries)
-                uuid2series.put(series.getUUID(), series);
+            addDefaultDataSeries();
+            persist();
+        }
 
-            String[] items = config.split(","); //$NON-NLS-1$
-            for (String item : items)
+        loadStoredConfigurations();
+    }
+
+    private void load(String config)
+    {
+        Map<String, DataSeries> uuid2series = new HashMap<String, DataSeries>();
+        for (DataSeries series : availableSeries)
+            uuid2series.put(series.getUUID(), series);
+
+        String[] items = config.split(","); //$NON-NLS-1$
+        for (String item : items)
+        {
+            String[] store = item.split(";"); //$NON-NLS-1$
+
+            String uuid = store[0];
+            DataSeries s = uuid2series.get(uuid);
+            if (s != null)
             {
-                String[] store = item.split(";"); //$NON-NLS-1$
+                selectedSeries.add(s);
 
-                String uuid = store[0];
-                DataSeries s = uuid2series.get(uuid);
-                if (s != null)
+                if (store.length == 4)
                 {
-                    selectedSeries.add(s);
-
-                    if (store.length == 4)
-                    {
-                        s.setColor(colorFor(Colors.toRGB(store[1])));
-                        s.setLineStyle(LineStyle.valueOf(store[2]));
-                        s.setShowArea(Boolean.parseBoolean(store[3]));
-                    }
+                    s.setColor(colorFor(Colors.toRGB(store[1])));
+                    s.setLineStyle(LineStyle.valueOf(store[2]));
+                    s.setShowArea(Boolean.parseBoolean(store[3]));
                 }
             }
         }
 
-        if (selectedSeries.isEmpty())
-            addDefaultDataSeries();
+        currentConfiguration = config;
     }
 
     private void persist()
@@ -407,7 +509,42 @@ import org.swtchart.LineStyle;
             buf.append(s.getLineStyle().name()).append(';');
             buf.append(s.isShowArea());
         }
-        client.setProperty(identifier, buf.toString());
+        currentConfiguration = buf.toString();
+        client.setProperty(identifier, currentConfiguration);
+    }
+
+    private void loadStoredConfigurations()
+    {
+        int index = 0;
+
+        String config = client.getProperty(identifier + '$' + index);
+        while (config != null)
+        {
+            String[] split = config.split(":="); //$NON-NLS-1$
+            storedConfigurations.add(new Configuration(split[0], split[1]));
+
+            index++;
+            config = client.getProperty(identifier + '$' + index);
+        }
+    }
+
+    private void persistStoredConfigurations()
+    {
+        for (int index = 0; index < storedConfigurations.size(); index++)
+        {
+            Configuration config = storedConfigurations.get(index);
+            client.setProperty(identifier + '$' + index, config.getName() + ":=" + config.getConfig()); //$NON-NLS-1$
+        }
+
+        client.removeProperity(identifier + '$' + storedConfigurations.size());
+    }
+
+    private void widgetDisposed()
+    {
+        if (configContextMenu != null && !configContextMenu.isDisposed())
+            configContextMenu.dispose();
+        if (saveContextMenu != null && !saveContextMenu.isDisposed())
+            saveContextMenu.dispose();
     }
 
     private void configMenuAboutToShow(IMenuManager manager)
@@ -433,18 +570,91 @@ import org.swtchart.LineStyle;
             @Override
             public void run()
             {
-                doAddSeries();
+                doAddSeries(false);
             }
         });
+
+        if (mode == Mode.PERFORMANCE)
+        {
+            manager.add(new Action(Messages.ChartSeriesPickerAddBenchmark)
+            {
+                @Override
+                public void run()
+                {
+                    doAddSeries(true);
+                }
+            });
+        }
 
         manager.add(new Action(Messages.MenuResetChartSeries)
         {
             @Override
             public void run()
             {
-                doResetSeries();
+                doResetSeries(null);
             }
         });
+    }
+
+    private void saveMenuAboutToShow(IMenuManager manager)
+    {
+        for (final Configuration config : storedConfigurations)
+        {
+            if (config.getConfig().equals(currentConfiguration))
+            {
+                Action action = new Action(config.getName())
+                {
+                    @Override
+                    public void run()
+                    {
+                        doResetSeries(null);
+                    }
+                };
+                action.setChecked(true);
+                manager.add(action);
+            }
+            else
+            {
+                Action action = new Action(config.getName())
+                {
+                    @Override
+                    public void run()
+                    {
+                        doResetSeries(config.getConfig());
+                    }
+                };
+                manager.add(action);
+            }
+        }
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.ChartSeriesPickerSave)
+        {
+            @Override
+            public void run()
+            {
+                doSaveConfiguration();
+            }
+        });
+
+        if (!storedConfigurations.isEmpty())
+        {
+            MenuManager configMenu = new MenuManager(Messages.ChartSeriesPickerDelete);
+            for (final Configuration config : storedConfigurations)
+            {
+                configMenu.add(new Action(config.getName())
+                {
+                    @Override
+                    public void run()
+                    {
+                        storedConfigurations.remove(config);
+                        persistStoredConfigurations();
+                    }
+                });
+            }
+            manager.add(configMenu);
+        }
     }
 
     private void seriesMenuAboutToShow(IMenuManager manager, final PaintItem paintItem)
@@ -515,13 +725,21 @@ import org.swtchart.LineStyle;
         });
     }
 
-    private void doAddSeries()
+    private void doAddSeries(boolean showOnlyBenchmark)
     {
         List<DataSeries> list = new ArrayList<DataSeries>(availableSeries);
+
+        // remove items if (not) showing benchmarks only
+        Iterator<DataSeries> iter = list.iterator();
+        while (iter.hasNext())
+            if (iter.next().isBenchmark() != showOnlyBenchmark)
+                iter.remove();
+
+        // remove already selected items
         for (DataSeries s : selectedSeries)
             list.remove(s);
 
-        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new SecurityLabelProvider());
+        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new DataSeriesLabelProvider());
         dialog.setElements(list.toArray());
         dialog.setTitle(Messages.ChartSeriesPickerTitle);
         dialog.setMessage(Messages.ChartSeriesPickerTitle);
@@ -540,12 +758,14 @@ import org.swtchart.LineStyle;
             new PaintItem(this, (DataSeries) object);
         }
 
+        layout();
         getParent().layout();
+
         listener.onUpdate();
         persist();
     }
 
-    private void doResetSeries()
+    private void doResetSeries(String config)
     {
         availableSeries.clear();
         buildAvailableDataSeries();
@@ -555,7 +775,10 @@ import org.swtchart.LineStyle;
         for (Control child : getChildren())
             child.dispose();
 
-        addDefaultDataSeries();
+        if (config == null)
+            addDefaultDataSeries();
+        else
+            load(config);
 
         for (DataSeries series : selectedSeries)
             new PaintItem(this, series);
@@ -583,7 +806,32 @@ import org.swtchart.LineStyle;
         }
     }
 
-    private static final class SecurityLabelProvider extends LabelProvider
+    private void doSaveConfiguration()
+    {
+        InputDialog dlg = new InputDialog(clientEditor.getSite().getShell(), Messages.ChartSeriesPickerDialogTitle,
+                        Messages.ChartSeriesPickerDialogMsg, null, null);
+        if (dlg.open() != InputDialog.OK)
+            return;
+
+        String name = dlg.getValue();
+
+        boolean replace = false;
+        for (Configuration config : storedConfigurations)
+        {
+            if (name.equals(config.getName()))
+            {
+                config.setConfig(currentConfiguration);
+                replace = true;
+                break;
+            }
+        }
+
+        if (!replace)
+            storedConfigurations.add(new Configuration(name, currentConfiguration));
+        persistStoredConfigurations();
+    }
+
+    private static final class DataSeriesLabelProvider extends LabelProvider
     {
         @Override
         public Image getImage(Object element)
@@ -598,7 +846,7 @@ import org.swtchart.LineStyle;
         }
     }
 
-    private static class PaintItem extends Canvas implements org.eclipse.swt.widgets.Listener
+    private static final class PaintItem extends Canvas implements org.eclipse.swt.widgets.Listener
     {
         private final DataSeries series;
 
