@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.online.ImportFinanzenNetQuotes;
+import name.abuchen.portfolio.online.ImportFinanzenNetQuotesSoup;
 import name.abuchen.portfolio.online.ImportOnvistaQuotes;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -39,7 +39,7 @@ public class ReviewImportedQuotesPage extends AbstractWizardPage
         {
             quotes = new ImportOnvistaQuotes().extract(source);
             if (quotes.isEmpty())
-                quotes = new ImportFinanzenNetQuotes().extract(source);
+                quotes = new ImportFinanzenNetQuotesSoup().extract(source);
 
             setErrorMessage(null);
             setPageComplete(!quotes.isEmpty());

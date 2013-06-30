@@ -7,8 +7,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 
@@ -19,6 +21,11 @@ import org.jsoup.select.Elements;
 
 public class ImportFinanzenNetQuotesSoup
 {
+
+    public List<LatestSecurityPrice> extract(String html) throws IOException
+    {
+        return extract(Jsoup.parse(html));
+    }
 
     public List<LatestSecurityPrice> extract(Document doc) throws IOException
     {
@@ -33,22 +40,70 @@ public class ImportFinanzenNetQuotesSoup
                 break;
             }
         }
+        Map<String, Integer> indices = new HashMap<String, Integer>();
+        String[] keys = new String[] { "Schluss", "Eröffnung", "Tageshoch", "Tagestief", "Volumen", "Datum" };
         boolean header = true;
         for (Element tr : contentDiv.select("div.content").select("table").select("tr"))
         {
+            // Use the first line to sniff the header of the table
             if (header)
             {
+                Elements trs = tr.select("th");
+                for (Element th : trs)
+                {
+                    Element compare = th;
+                    // Time is inside another tag
+                    if (th.children().size() == 1)
+                    {
+                        compare = th.child(0);
+                    }
+                    for (String key : keys)
+                    {
+                        if (compare.ownText().startsWith(key))
+                        {
+                            indices.put(key, trs.indexOf(th));
+                            break;
+                        }
+                    }
+                }
                 header = false;
                 continue;
             }
-            LatestSecurityPrice current = new LatestSecurityPrice();
-            current.setHigh(parsePrice(tr.select("td").get(3).ownText()));
-            current.setLow(parsePrice(tr.select("td").get(4).ownText()));
-            current.setTime(parseDate(tr.select("td").get(0).ownText()));
-            current.setValue(parsePrice(tr.select("td").get(2).ownText()));
-            current.setPreviousClose(parsePrice(tr.select("td").get(1).ownText()));
-            current.setVolume(parseVolume(tr.select("td").get(5).ownText()));
-            result.add(current);
+            Elements tds = tr.select("td");
+            // The last line has only one column, skip that
+            if (tds.size() == 1)
+            {
+                continue;
+            }
+            LatestSecurityPrice current = null;
+            // Time and Value are mandatory
+            if (indices.containsKey(keys[0]) && indices.containsKey(keys[5]))
+            {
+                current = new LatestSecurityPrice();
+                current.setTime(parseDate(tds.get(indices.get(keys[5])).ownText()));
+                current.setValue(parsePrice(tds.get(indices.get(keys[0])).ownText()));
+                result.add(current);
+            }
+            else
+            {
+                continue;
+            }
+            if (indices.containsKey(keys[2]))
+            {
+                current.setHigh(parsePrice(tds.get(indices.get(keys[2])).ownText()));
+            }
+            if (indices.containsKey(keys[3]))
+            {
+                current.setLow(parsePrice(tds.get(indices.get(keys[3])).ownText()));
+            }
+            if (indices.containsKey(keys[1]))
+            {
+                current.setPreviousClose(parsePrice(tds.get(indices.get(keys[1])).ownText()));
+            }
+            if (indices.containsKey(keys[4]))
+            {
+                current.setVolume(parseVolume(tds.get(indices.get(keys[4])).ownText()));
+            }
         }
         return result;
     }
@@ -95,12 +150,6 @@ public class ImportFinanzenNetQuotesSoup
         {
             throw new IOException(e);
         }
-    }
-
-    public static void main(String[] args) throws IOException
-    {
-        System.out.println(new ImportFinanzenNetQuotesSoup().extract(Jsoup.connect(
-                        "http://www.finanzen.net/kurse/kurse_historisch.asp?pkAktieNr=938&strBoerse=FSE").get()));
     }
 
 }
