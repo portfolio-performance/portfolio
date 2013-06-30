@@ -340,9 +340,11 @@ public final class PortfolioTransactionsViewer
         final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
                         .getSelection()).getFirstElement();
 
-        if (fullContextMenu)
+        if (fullContextMenu && transaction != null)
             new SecurityContextMenu(owner).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
-        else
+        else if (fullContextMenu)
+            new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
+        else if (transaction != null)
             manager.add(new WebLocationMenu(transaction.getSecurity()));
 
         if (transaction != null)
