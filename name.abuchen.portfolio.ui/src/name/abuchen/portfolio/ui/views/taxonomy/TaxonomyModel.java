@@ -25,28 +25,22 @@ import name.abuchen.portfolio.util.Dates;
 
 public final class TaxonomyModel
 {
-    public abstract static class NodeVisitor
+    public interface NodeVisitor
     {
-        public abstract void visit(TaxonomyNode node);
+        void visit(TaxonomyNode node);
+    }
 
-        public final void startWith(TaxonomyNode root)
-        {
-            LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
-            stack.add(root);
-
-            while (!stack.isEmpty())
-            {
-                TaxonomyNode node = stack.pop();
-                visit(node);
-                stack.addAll(node.getChildren());
-            }
-        }
+    public interface TaxonomyModelChangeListener
+    {
+        void nodeChange(TaxonomyNode node);
     }
 
     private ClientSnapshot snapshot;
 
     private TaxonomyNode rootNode;
     private TaxonomyNode unassignedNode;
+
+    private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
 
     /* package */TaxonomyModel(Client client, Taxonomy taxonomy)
     {
@@ -93,6 +87,9 @@ public final class TaxonomyModel
 
         // calculate actuals
         visitActuals(snapshot, rootNode);
+
+        // calculate targets
+        recalculateTargets();
     }
 
     private void addUnassigned(Client client)
@@ -104,18 +101,15 @@ public final class TaxonomyModel
         for (Account account : client.getAccounts())
             vehicles.put(account, new Assignment(account));
 
-        new NodeVisitor()
+        visitAll(new NodeVisitor()
         {
             @Override
             public void visit(TaxonomyNode node)
             {
-                if (node.isUnassignedCategory())
+                if (!(node instanceof AssignmentNode))
                     return;
 
                 Assignment assignment = node.getAssignment();
-                if (assignment == null)
-                    return;
-
                 Assignment left = vehicles.remove(assignment.getInvestmentVehicle());
 
                 int weight = left.getWeight() - assignment.getWeight();
@@ -125,8 +119,7 @@ public final class TaxonomyModel
                     vehicles.put(assignment.getInvestmentVehicle(), left);
                 }
             }
-
-        }.startWith(rootNode);
+        });
 
         List<Assignment> unassigned = new ArrayList<Assignment>(vehicles.values());
         Collections.sort(unassigned, new Comparator<Assignment>()
@@ -160,7 +153,8 @@ public final class TaxonomyModel
                 PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
                 SecurityPosition p = portfolio.getPositionsBySecurity().get(assignment.getInvestmentVehicle());
                 if (p != null)
-                    actual += p.calculateValue();
+                    actual += Math.round(p.calculateValue() * assignment.getWeight()
+                                    / (double) Classification.ONE_HUNDRED_PERCENT);
             }
             else if (assignment.getInvestmentVehicle() instanceof Account)
             {
@@ -168,7 +162,8 @@ public final class TaxonomyModel
                 {
                     if (s.getAccount().equals(assignment.getInvestmentVehicle()))
                     {
-                        actual += s.getFunds();
+                        actual += Math.round(s.getFunds() * assignment.getWeight()
+                                        / (double) Classification.ONE_HUNDRED_PERCENT);
                         break;
                     }
                 }
@@ -181,6 +176,25 @@ public final class TaxonomyModel
         }
 
         node.setActual(actual);
+    }
+
+    private void recalculateTargets()
+    {
+        rootNode.setTarget(rootNode.getActual());
+
+        visitAll(new NodeVisitor()
+        {
+            @Override
+            public void visit(TaxonomyNode node)
+            {
+                if (node.isClassification() && !node.isRoot())
+                {
+                    long target = Math.round(node.getParent().getTarget() * node.getWeight()
+                                    / (double) Classification.ONE_HUNDRED_PERCENT);
+                    node.setTarget(target);
+                }
+            }
+        });
     }
 
     public TaxonomyNode getRootNode()
@@ -202,5 +216,27 @@ public final class TaxonomyModel
     {
         rootNode.setActual(snapshot.getAssets());
         visitActuals(snapshot, rootNode);
+        recalculateTargets();
+    }
+
+    public void visitAll(NodeVisitor visitor)
+    {
+        rootNode.accept(visitor);
+    }
+
+    public void addListener(TaxonomyModelChangeListener listener)
+    {
+        listeners.add(listener);
+    }
+
+    public void removeListener(TaxonomyModelChangeListener listener)
+    {
+        listeners.remove(listener);
+    }
+
+    public void fireTaxonomyModelChange(TaxonomyNode node)
+    {
+        for (TaxonomyModelChangeListener listener : listeners)
+            listener.nodeChange(node);
     }
 }

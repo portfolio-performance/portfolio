@@ -38,8 +38,9 @@ public class TaxonomyView extends AbstractFinanceView
     protected void addButtons(final ToolBar toolBar)
     {
         addView(toolBar, "Definition", PortfolioPlugin.IMG_VIEW_TABLE, 0);
-        addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 1);
-        addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 2);
+        addView(toolBar, "Allocation", PortfolioPlugin.IMG_QUICKFIX, 1);
+        addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 2);
+        addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
     }
 
     private void addView(final ToolBar toolBar, String label, String image, final int index)
@@ -71,14 +72,17 @@ public class TaxonomyView extends AbstractFinanceView
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        DefinitionViewer definition = new DefinitionViewer(model);
-        layout.topControl = definition.createContainer(container, renderer);
+        DefinitionViewer definition = new DefinitionViewer(model, renderer);
+        layout.topControl = definition.createContainer(container);
 
-        PieChartViewer pie = new PieChartViewer(model);
-        pie.createContainer(container, renderer);
+        AssetAllocationViewer allocation = new AssetAllocationViewer(model, renderer);
+        allocation.createContainer(container);
 
-        TreeMapViewer tree = new TreeMapViewer(getClient(), model);
-        tree.createContainer(container, renderer);
+        PieChartViewer pie = new PieChartViewer(model, renderer);
+        pie.createContainer(container);
+
+        TreeMapViewer tree = new TreeMapViewer(model, renderer);
+        tree.createContainer(container);
 
         return container;
     }

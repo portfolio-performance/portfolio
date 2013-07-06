@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
 public abstract class TaxonomyNode
 {
@@ -185,6 +186,7 @@ public abstract class TaxonomyNode
         public UnassignedContainerNode(TaxonomyNode parent, Classification classification)
         {
             super(parent, classification);
+            setWeight(0);
         }
 
         @Override
@@ -210,6 +212,7 @@ public abstract class TaxonomyNode
 
     private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
     private long actual;
+    private long target;
 
     /* package */TaxonomyNode(TaxonomyNode parent)
     {
@@ -263,6 +266,16 @@ public abstract class TaxonomyNode
     public void setActual(long actual)
     {
         this.actual = actual;
+    }
+
+    public long getTarget()
+    {
+        return target;
+    }
+
+    public void setTarget(long target)
+    {
+        this.target = target;
     }
 
     public abstract int getWeight();
@@ -423,5 +436,13 @@ public abstract class TaxonomyNode
         if (children.isEmpty())
             return -1;
         return children.get(children.size() - 1).getRank();
+    }
+
+    public void accept(NodeVisitor visitor)
+    {
+        visitor.visit(this);
+
+        for (TaxonomyNode child : new ArrayList<TaxonomyNode>(children))
+            child.accept(visitor);
     }
 }

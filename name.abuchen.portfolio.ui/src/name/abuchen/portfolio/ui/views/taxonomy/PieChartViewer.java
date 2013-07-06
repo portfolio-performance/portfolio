@@ -4,24 +4,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.ui.util.PieChart;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-/* package */class PieChartViewer
+/* package */class PieChartViewer implements TaxonomyModelChangeListener
 {
     private TaxonomyModel model;
+    private TaxonomyNodeRenderer renderer;
+    private PieChart pieChart;
 
-    public PieChartViewer(TaxonomyModel model)
+    public PieChartViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         this.model = model;
+        this.renderer = renderer;
+        this.model.addListener(this);
     }
 
-    public Control createContainer(Composite container, TaxonomyNodeRenderer renderer)
+    public Control createContainer(Composite container)
     {
-        PieChart pieChart = new PieChart(container, SWT.NONE);
+        pieChart = new PieChart(container, SWT.NONE);
 
+        updatePieSlices();
+
+        return pieChart;
+    }
+
+    private void updatePieSlices()
+    {
         List<PieChart.Slice> slices = new ArrayList<PieChart.Slice>();
 
         for (TaxonomyNode child : model.getRootNode().getChildren())
@@ -33,7 +45,11 @@ import org.eclipse.swt.widgets.Control;
 
         pieChart.setSlices(slices);
         pieChart.redraw();
+    }
 
-        return pieChart;
+    @Override
+    public void nodeChange(TaxonomyNode node)
+    {
+        updatePieSlices();
     }
 }

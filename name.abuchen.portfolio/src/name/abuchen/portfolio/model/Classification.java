@@ -87,7 +87,7 @@ public class Classification
                         | ((r.nextInt(128) + 127) << 8) //
                         | (r.nextInt(128) + 127));
 
-        this.weight = 100 * Values.Weight.factor();
+        this.weight = ONE_HUNDRED_PERCENT;
     }
 
     public String getId()
