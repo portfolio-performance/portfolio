@@ -39,24 +39,26 @@ import org.eclipse.ui.PlatformUI;
 
 public final class CellEditorFactory
 {
-    public abstract static class ModificationListener
+    public static class ModificationListener
     {
         public boolean canModify(Object element, String property)
         {
             return true;
         }
 
-        public abstract void onModified(Object element, String property);
+        public void onModified(Object element, String property, Object oldValue)
+        {
+            onModified(element, property);
+        }
+
+        public void onModified(Object element, String property)
+        {}
     }
 
     private final Class<?> subjectType;
     private final ColumnViewer viewer;
 
-    private ModificationListener listener = new ModificationListener()
-    {
-        public void onModified(Object element, String property)
-        {}
-    };
+    private ModificationListener listener = new ModificationListener();
 
     private final List<String> properties = new ArrayList<String>();
     private final List<CellEditor> cellEditors = new ArrayList<CellEditor>();
@@ -124,7 +126,7 @@ public final class CellEditorFactory
                 return descriptor.getReadMethod().invoke(element);
             }
 
-            public boolean modify(Object element, Object value) throws Exception
+            public Object modify(Object element, Object value) throws Exception
             {
                 Integer newValue = (Integer) value;
                 Integer oldValue = (Integer) descriptor.getReadMethod().invoke(element);
@@ -132,11 +134,11 @@ public final class CellEditorFactory
                 if (!newValue.equals(oldValue))
                 {
                     descriptor.getWriteMethod().invoke(element, newValue);
-                    return true;
+                    return oldValue;
                 }
                 else
                 {
-                    return false;
+                    return null;
                 }
             }
         });
@@ -197,7 +199,7 @@ public final class CellEditorFactory
             return fromCurrency.convert(descriptor.getReadMethod().invoke(element));
         }
 
-        public boolean modify(Object element, Object value) throws Exception
+        public Object modify(Object element, Object value) throws Exception
         {
             Number newValue = (Number) toCurrency.convert(String.valueOf(value));
 
@@ -210,11 +212,11 @@ public final class CellEditorFactory
             if (!newValue.equals(oldValue))
             {
                 descriptor.getWriteMethod().invoke(element, newValue);
-                return true;
+                return oldValue;
             }
             else
             {
-                return false;
+                return null;
             }
         }
     }
@@ -270,7 +272,7 @@ public final class CellEditorFactory
                 return 0;
             }
 
-            public boolean modify(Object element, Object value) throws Exception
+            public Object modify(Object element, Object value) throws Exception
             {
                 Object newValue = comboBoxItems.get((Integer) value);
                 Object oldValue = descriptor.getReadMethod().invoke(element);
@@ -278,11 +280,11 @@ public final class CellEditorFactory
                 if (newValue != oldValue)
                 {
                     descriptor.getWriteMethod().invoke(element, newValue);
-                    return true;
+                    return oldValue;
                 }
                 else
                 {
-                    return false;
+                    return null;
                 }
             }
 
@@ -315,7 +317,12 @@ public final class CellEditorFactory
     {
         Object getValue(Object element) throws Exception;
 
-        boolean modify(Object element, Object value) throws Exception;
+        /**
+         * modifies the attribute
+         * 
+         * @return old value, null if value is unchanged
+         */
+        Object modify(Object element, Object newValue) throws Exception;
     }
 
     private static class CellModifiersImpl implements ICellModifier
@@ -357,13 +364,14 @@ public final class CellEditorFactory
             }
         }
 
-        public void modify(Object element, String property, Object value)
+        public void modify(Object element, String property, Object newValue)
         {
             try
             {
                 Object elem = ((Item) element).getData();
-                if (modifier[indexOf(property)].modify(elem, value))
-                    listener.onModified(elem, property);
+                Object oldValue = modifier[indexOf(property)].modify(elem, newValue);
+                if (oldValue != null)
+                    listener.onModified(elem, property, oldValue);
             }
             catch (Exception e)
             {
@@ -399,7 +407,7 @@ public final class CellEditorFactory
                     return String.format("%d", v.intValue()); //$NON-NLS-1$
                 }
 
-                public boolean modify(Object element, Object value) throws Exception
+                public Object modify(Object element, Object value) throws Exception
                 {
                     Number n = new DecimalFormat("#").parse(String.valueOf(value)); //$NON-NLS-1$
                     Integer newValue = n.intValue();
@@ -408,11 +416,11 @@ public final class CellEditorFactory
                     if (!newValue.equals(oldValue))
                     {
                         descriptor.getWriteMethod().invoke(element, newValue);
-                        return true;
+                        return oldValue;
                     }
                     else
                     {
-                        return false;
+                        return null;
                     }
                 }
             };
@@ -427,7 +435,7 @@ public final class CellEditorFactory
                     return String.format("%d", v.longValue()); //$NON-NLS-1$
                 }
 
-                public boolean modify(Object element, Object value) throws Exception
+                public Object modify(Object element, Object value) throws Exception
                 {
                     Number n = new DecimalFormat("#").parse(String.valueOf(value)); //$NON-NLS-1$
                     Long newValue = n.longValue();
@@ -436,11 +444,11 @@ public final class CellEditorFactory
                     if (!newValue.equals(oldValue))
                     {
                         descriptor.getWriteMethod().invoke(element, newValue);
-                        return true;
+                        return oldValue;
                     }
                     else
                     {
-                        return false;
+                        return null;
                     }
                 }
             };
@@ -455,7 +463,7 @@ public final class CellEditorFactory
                     return String.format("%tF", v); //$NON-NLS-1$
                 }
 
-                public boolean modify(Object element, Object value) throws Exception
+                public Object modify(Object element, Object value) throws Exception
                 {
                     Date newValue = new SimpleDateFormat("yyyy-MM-dd").parse(String.valueOf(value)); //$NON-NLS-1$
                     Calendar cal = Calendar.getInstance();
@@ -471,11 +479,11 @@ public final class CellEditorFactory
                     if (!newValue.equals(oldValue))
                     {
                         descriptor.getWriteMethod().invoke(element, newValue);
-                        return true;
+                        return oldValue;
                     }
                     else
                     {
-                        return false;
+                        return null;
                     }
                 }
             };
@@ -490,7 +498,7 @@ public final class CellEditorFactory
                     return v.ordinal();
                 }
 
-                public boolean modify(Object element, Object value) throws Exception
+                public Object modify(Object element, Object value) throws Exception
                 {
                     Enum<?> newValue = (Enum<?>) type.getEnumConstants()[(Integer) value];
                     Enum<?> oldValue = (Enum<?>) descriptor.getReadMethod().invoke(element);
@@ -498,38 +506,41 @@ public final class CellEditorFactory
                     if (!newValue.equals(oldValue))
                     {
                         descriptor.getWriteMethod().invoke(element, newValue);
-                        return true;
+                        return oldValue;
                     }
                     else
                     {
-                        return false;
+                        return null;
                     }
                 }
             };
         }
-        else if (type == String.class) { return new Modifier()
-        {
-            public Object getValue(Object element) throws Exception
+        else if (type == String.class) //
+        { //
+            return new Modifier()
             {
-                String v = (String) descriptor.getReadMethod().invoke(element);
-                return v != null ? v : ""; //$NON-NLS-1$
-            }
-
-            public boolean modify(Object element, Object value) throws Exception
-            {
-                String oldValue = (String) descriptor.getReadMethod().invoke(element);
-
-                if (!value.equals(oldValue))
+                public Object getValue(Object element) throws Exception
                 {
-                    descriptor.getWriteMethod().invoke(element, value);
-                    return true;
+                    String v = (String) descriptor.getReadMethod().invoke(element);
+                    return v != null ? v : ""; //$NON-NLS-1$
                 }
-                else
+
+                public Object modify(Object element, Object value) throws Exception
                 {
-                    return false;
+                    String oldValue = (String) descriptor.getReadMethod().invoke(element);
+
+                    if (!value.equals(oldValue))
+                    {
+                        descriptor.getWriteMethod().invoke(element, value);
+                        return oldValue;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
-            }
-        }; }
+            };
+        }
 
         throw new RuntimeException(String.format(
                         "No formatter available for property %s of type %s", descriptor.getName(), type //$NON-NLS-1$
