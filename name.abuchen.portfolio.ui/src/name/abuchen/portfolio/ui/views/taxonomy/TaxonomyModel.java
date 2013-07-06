@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
@@ -39,6 +40,7 @@ public final class TaxonomyModel
 
     private TaxonomyNode rootNode;
     private TaxonomyNode unassignedNode;
+    private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<InvestmentVehicle, Assignment>();
 
     private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
 
@@ -94,12 +96,19 @@ public final class TaxonomyModel
 
     private void addUnassigned(Client client)
     {
-        final Map<Object, Assignment> vehicles = new HashMap<Object, Assignment>();
-
         for (Security security : client.getSecurities())
-            vehicles.put(security, new Assignment(security));
+        {
+            Assignment assignment = new Assignment(security);
+            assignment.setWeight(0);
+            investmentVehicle2weight.put(security, assignment);
+        }
+
         for (Account account : client.getAccounts())
-            vehicles.put(account, new Assignment(account));
+        {
+            Assignment assignment = new Assignment(account);
+            assignment.setWeight(0);
+            investmentVehicle2weight.put(account, assignment);
+        }
 
         visitAll(new NodeVisitor()
         {
@@ -110,18 +119,24 @@ public final class TaxonomyModel
                     return;
 
                 Assignment assignment = node.getAssignment();
-                Assignment left = vehicles.remove(assignment.getInvestmentVehicle());
-
-                int weight = left.getWeight() - assignment.getWeight();
-                if (weight > 0)
-                {
-                    left.setWeight(weight);
-                    vehicles.put(assignment.getInvestmentVehicle(), left);
-                }
+                Assignment count = investmentVehicle2weight.get(assignment.getInvestmentVehicle());
+                count.setWeight(count.getWeight() + assignment.getWeight());
             }
         });
 
-        List<Assignment> unassigned = new ArrayList<Assignment>(vehicles.values());
+        List<Assignment> unassigned = new ArrayList<Assignment>();
+        for (Assignment assignment : investmentVehicle2weight.values())
+        {
+            if (assignment.getWeight() >= Classification.ONE_HUNDRED_PERCENT)
+                continue;
+
+            Assignment a = new Assignment(assignment.getInvestmentVehicle());
+            a.setWeight(Classification.ONE_HUNDRED_PERCENT - assignment.getWeight());
+            unassigned.add(a);
+
+            assignment.setWeight(Classification.ONE_HUNDRED_PERCENT);
+        }
+
         Collections.sort(unassigned, new Comparator<Assignment>()
         {
             @Override
@@ -238,5 +253,35 @@ public final class TaxonomyModel
     {
         for (TaxonomyModelChangeListener listener : listeners)
             listener.nodeChange(node);
+    }
+
+    public int getWeightByInvestmentVehicle(InvestmentVehicle vehicle)
+    {
+        return investmentVehicle2weight.get(vehicle).getWeight();
+    }
+
+    public void setWeightByInvestmentVehicle(InvestmentVehicle vehicle, int weight)
+    {
+        investmentVehicle2weight.get(vehicle).setWeight(weight);
+    }
+
+    public boolean hasWeightError(TaxonomyNode node)
+    {
+        if (node.isUnassignedCategory())
+        {
+            return false;
+        }
+        else if (node.isClassification())
+        {
+            if (node.isRoot())
+                return node.getWeight() != Classification.ONE_HUNDRED_PERCENT;
+            else
+                return node.getClassification().getParent().getChildrenWeight() != Classification.ONE_HUNDRED_PERCENT;
+        }
+        else
+        {
+            // node is assignment
+            return getWeightByInvestmentVehicle(node.getAssignment().getInvestmentVehicle()) != Classification.ONE_HUNDRED_PERCENT;
+        }
     }
 }

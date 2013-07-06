@@ -49,21 +49,23 @@ public class AssetAllocationViewer extends AbstractNodeTreeViewer
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.hasWeightError() ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
+                return getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND)
+                                : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.hasWeightError() ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+                return getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND)
+                                : null;
             }
 
             @Override
             public Image getImage(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.hasWeightError() ? PortfolioPlugin.image(PortfolioPlugin.IMG_QUICKFIX) : null;
+                return getModel().hasWeightError(node) ? PortfolioPlugin.image(PortfolioPlugin.IMG_QUICKFIX) : null;
             }
         });
 
@@ -213,12 +215,10 @@ public class AssetAllocationViewer extends AbstractNodeTreeViewer
 
         final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) getNodeViewer().getSelection())
                         .getFirstElement();
-        if (node == null)
-            return;
 
-        if (node.hasWeightError())
+        if (node != null && node.isClassification() && getModel().hasWeightError(node))
         {
-            manager.appendToGroup("customActions", new Action("Fix weights")
+            manager.appendToGroup(MENU_GROUP_CUSTOM_ACTIONS, new Action("Fix weights")
             {
                 @Override
                 public void run()

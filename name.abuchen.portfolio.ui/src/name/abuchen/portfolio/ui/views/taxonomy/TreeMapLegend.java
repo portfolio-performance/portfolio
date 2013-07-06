@@ -28,14 +28,17 @@ import de.engehausen.treemap.swt.TreeMap;
 
 /* package */class TreeMapLegend extends Composite
 {
+    private TaxonomyModel model;
     private TaxonomyNodeRenderer renderer;
 
     private TaxonomyNode rootItem;
 
-    public TreeMapLegend(Composite parent, TreeMap<TaxonomyNode> treeMap, TaxonomyNodeRenderer renderer)
+    public TreeMapLegend(Composite parent, TreeMap<TaxonomyNode> treeMap, TaxonomyModel model,
+                    TaxonomyNodeRenderer renderer)
     {
         super(parent, SWT.NONE);
 
+        this.model = model;
         this.renderer = renderer;
 
         setBackground(parent.getBackground());
@@ -174,7 +177,7 @@ import de.engehausen.treemap.swt.TreeMap;
         private String getInfo()
         {
             return String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format(0d)); // FIXME percentage
+                            Values.Percent.format((double) item.getActual() / (double) model.getRootNode().getActual()));
         }
 
     }

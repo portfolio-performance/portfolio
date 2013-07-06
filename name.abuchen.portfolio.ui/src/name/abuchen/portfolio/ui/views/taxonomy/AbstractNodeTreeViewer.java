@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -207,21 +208,31 @@ import org.eclipse.ui.PlatformUI;
             return true;
         }
 
-        public void onModified(Object element, String property)
+        @Override
+        public void onModified(Object element, String property, Object oldValue)
         {
-            // check weights
-            // (must be between >= 0 and <= 100)
+            if ("weight".equals(property)) //$NON-NLS-1$
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
 
-            TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getWeight() > Classification.ONE_HUNDRED_PERCENT)
+                    node.setWeight(Classification.ONE_HUNDRED_PERCENT);
+                else if (node.getWeight() < 0)
+                    node.setWeight(0);
 
-            if (node.getWeight() > Classification.ONE_HUNDRED_PERCENT)
-                node.setWeight(Classification.ONE_HUNDRED_PERCENT);
-            else if (node.getWeight() < 0)
-                node.setWeight(0);
+                if (node.isAssignment())
+                {
+                    int oldWeight = (Integer) oldValue;
+                    viewer.doChangeAssignmentWeight(node, oldWeight);
+                }
+            }
 
-            viewer.onTaxnomyNodeEdited(node);
+            viewer.onTaxnomyNodeEdited((TaxonomyNode) element);
         }
     }
+
+    protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
+    protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
 
     private TaxonomyModel model;
     private TaxonomyNodeRenderer renderer;
@@ -347,7 +358,6 @@ import org.eclipse.ui.PlatformUI;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        System.out.println("nodeChanged" + this.getClass().getName());
         nodeViewer.refresh(true);
     }
 
@@ -360,9 +370,10 @@ import org.eclipse.ui.PlatformUI;
         if (node.isUnassignedCategory())
             return;
 
-        manager.add(new Separator("customActions"));
+        // allow inherited views to contribute to the context menu
+        manager.add(new Separator(MENU_GROUP_CUSTOM_ACTIONS));
 
-        manager.add(new Separator("defaultActions"));
+        manager.add(new Separator(MENU_GROUP_DEFAULT_ACTIONS));
 
         if (node.isClassification())
         {
@@ -423,8 +434,9 @@ import org.eclipse.ui.PlatformUI;
                     @Override
                     public void run()
                     {
-                        node.moveTo(model.getUnassignedNode());
-                        nodeViewer.setExpandedState(node, true);
+                        int oldWeight = node.getWeight();
+                        node.setWeight(0);
+                        doChangeAssignmentWeight(node, oldWeight);
                         onTaxnomyNodeEdited(model.getRootNode());
                     }
                 });
@@ -461,5 +473,62 @@ import org.eclipse.ui.PlatformUI;
         });
 
         onTaxnomyNodeEdited(model.getRootNode());
+    }
+
+    private void doChangeAssignmentWeight(TaxonomyNode node, int oldWeight)
+    {
+        int change = oldWeight - node.getWeight();
+
+        if (change == 0) // was 'fixed' after editing, e.g. was >= 100%
+            return;
+
+        // if new weight = 0, then remove assignment
+
+        if (node.getWeight() == 0)
+            node.getParent().removeChild(node);
+
+        // change total weight as recorded in the model
+
+        InvestmentVehicle investmentVehicle = node.getAssignment().getInvestmentVehicle();
+        final int totalWeight = model.getWeightByInvestmentVehicle(investmentVehicle) - change;
+        model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight);
+
+        // check if change is fixing weight errors -> no new unassigned vehicles
+
+        change = Math.min(change, Classification.ONE_HUNDRED_PERCENT - totalWeight);
+        if (change == 0)
+            return;
+
+        // change existing unassigned node *or* create new unassigned node
+
+        TaxonomyNode unassigned = model.getUnassignedNode().getChildByInvestmentVehicle(investmentVehicle);
+
+        if (unassigned != null)
+        {
+            // change existing node in unassigned category
+
+            int newWeight = unassigned.getWeight() + change;
+            if (newWeight <= 0)
+            {
+                model.getUnassignedNode().removeChild(unassigned);
+                model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight - unassigned.getWeight());
+            }
+            else
+            {
+                unassigned.setWeight(newWeight);
+                model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight + change);
+            }
+        }
+        else if (change > 0)
+        {
+            // create a new node, but only if change is positive
+
+            Assignment assignment = new Assignment(investmentVehicle);
+            assignment.setWeight(change);
+            model.getUnassignedNode().addChild(assignment);
+            model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight + change);
+        }
+
+        // do not fire model change -> called within modification listener
     }
 }

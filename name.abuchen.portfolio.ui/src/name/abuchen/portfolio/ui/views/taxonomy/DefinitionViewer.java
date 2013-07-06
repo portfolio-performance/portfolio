@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -9,6 +10,8 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
@@ -35,6 +38,31 @@ import org.eclipse.swt.graphics.Color;
                 TaxonomyNode node = (TaxonomyNode) element;
                 return node.isAssignment() ? Values.Weight.format(node.getWeight()) : null;
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(
+                                SWT.COLOR_INFO_FOREGROUND) : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(
+                                SWT.COLOR_INFO_BACKGROUND) : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? PortfolioPlugin
+                                .image(PortfolioPlugin.IMG_QUICKFIX) : null;
+            }
+
         });
 
         column = new TreeViewerColumn(getNodeViewer(), SWT.LEFT);

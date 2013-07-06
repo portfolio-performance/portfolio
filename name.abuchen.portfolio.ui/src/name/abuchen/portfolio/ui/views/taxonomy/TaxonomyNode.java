@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
@@ -82,15 +82,6 @@ public abstract class TaxonomyNode
         {
             return classification.getColor();
         }
-
-        @Override
-        public boolean hasWeightError()
-        {
-            if (isRoot())
-                return Classification.ONE_HUNDRED_PERCENT != getClassification().getWeight();
-
-            return Classification.ONE_HUNDRED_PERCENT != getClassification().getParent().getChildrenWeight();
-        }
     }
 
     /* protected */static class AssignmentNode extends TaxonomyNode
@@ -151,24 +142,19 @@ public abstract class TaxonomyNode
         @Override
         public String getName()
         {
-            return assignment.getInvestmentVehicle().toString();
+            return assignment.getInvestmentVehicle().getName();
         }
 
         @Override
         public void setName(String name)
         {
-            Object investmentVehicle = assignment.getInvestmentVehicle();
-            if (investmentVehicle instanceof Security)
-                ((Security) investmentVehicle).setName(name);
-            else
-                ((Account) investmentVehicle).setName(name);
+            assignment.getInvestmentVehicle().setName(name);
         }
 
         @Override
         public String getId()
         {
-            Object vehicle = assignment.getInvestmentVehicle();
-            return vehicle instanceof Security ? ((Security) vehicle).getUUID() : ((Account) vehicle).getUUID();
+            return assignment.getInvestmentVehicle().getUUID();
         }
 
         @Override
@@ -200,12 +186,6 @@ public abstract class TaxonomyNode
         {
             return Colors.OTHER_CATEGORY.asHex();
         }
-
-        @Override
-        public boolean hasWeightError()
-        {
-            return false;
-        }
     }
 
     private TaxonomyNode parent;
@@ -232,6 +212,17 @@ public abstract class TaxonomyNode
     public List<TaxonomyNode> getChildren()
     {
         return children;
+    }
+
+    public TaxonomyNode getChildByInvestmentVehicle(InvestmentVehicle investmentVehicle)
+    {
+        for (TaxonomyNode child : children)
+        {
+            if (child.isAssignment() && investmentVehicle.equals(child.getAssignment().getInvestmentVehicle()))
+                return child;
+        }
+
+        return null;
     }
 
     public Security getBackingSecurity()
@@ -278,6 +269,12 @@ public abstract class TaxonomyNode
         this.target = target;
     }
 
+    public abstract String getId();
+
+    public abstract String getName();
+
+    public abstract void setName(String name);
+
     public abstract int getWeight();
 
     public abstract void setWeight(int weight);
@@ -285,17 +282,6 @@ public abstract class TaxonomyNode
     public abstract int getRank();
 
     public abstract void setRank(int rank);
-
-    public boolean hasWeightError()
-    {
-        return false;
-    }
-
-    public abstract String getName();
-
-    public abstract void setName(String name);
-
-    public abstract String getId();
 
     public abstract String getColor();
 
@@ -366,11 +352,28 @@ public abstract class TaxonomyNode
         moveTo(-1, target);
     }
 
-    /* package */void moveTo(int index, TaxonomyNode target)
+    private void moveTo(int index, TaxonomyNode target)
     {
         Classification classification = target.getClassification();
         if (classification == null)
             throw new UnsupportedOperationException();
+
+        // if node is assignment *and* target contains assignment for same
+        // investment vehicle *then* merge nodes
+
+        if (isAssignment())
+        {
+            InvestmentVehicle investmentVehicle = getAssignment().getInvestmentVehicle();
+            TaxonomyNode sibling = target.getChildByInvestmentVehicle(investmentVehicle);
+
+            if (sibling != null)
+            {
+                sibling.absorb(this);
+                return;
+            }
+        }
+
+        // change parent, update children collections and rank
 
         this.getParent().removeChild(this);
         this.parent = target;
@@ -429,6 +432,17 @@ public abstract class TaxonomyNode
             int index = target.getParent().getChildren().indexOf(target);
             moveTo(index + offset, target.getParent());
         }
+    }
+
+    private void absorb(TaxonomyNode node)
+    {
+        if (!node.getAssignment().getInvestmentVehicle().equals(getAssignment().getInvestmentVehicle()))
+            throw new UnsupportedOperationException();
+
+        node.getParent().removeChild(node);
+
+        int weight = Math.min(getWeight() + node.getWeight(), Classification.ONE_HUNDRED_PERCENT);
+        setWeight(weight);
     }
 
     /* package */int getTopRank()

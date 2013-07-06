@@ -70,7 +70,7 @@ import de.engehausen.treemap.swt.TreeMap;
             }
         });
 
-        legend = new TreeMapLegend(container, treeMap, renderer);
+        legend = new TreeMapLegend(container, treeMap, model, renderer);
 
         final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, model.getClient(),
                         SecurityDetailsViewer.Facet.values());
@@ -95,7 +95,7 @@ import de.engehausen.treemap.swt.TreeMap;
         int width = details.getControl().getBounds().width;
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
 
-        treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(renderer));
+        treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(model, renderer));
         treeMap.setTreeModel(new Model(model.getRootNode()));
         legend.setRootItem(model.getRootNode());
     }
@@ -142,10 +142,12 @@ import de.engehausen.treemap.swt.TreeMap;
 
     private static class ClassificationRectangleRenderer implements IRectangleRenderer<TaxonomyNode, PaintEvent, Color>
     {
+        private TaxonomyModel model;
         private TaxonomyNodeRenderer colorProvider;
 
-        public ClassificationRectangleRenderer(TaxonomyNodeRenderer colorProvider)
+        public ClassificationRectangleRenderer(TaxonomyModel model, TaxonomyNodeRenderer colorProvider)
         {
+            this.model = model;
             this.colorProvider = colorProvider;
         }
 
@@ -168,7 +170,8 @@ import de.engehausen.treemap.swt.TreeMap;
 
             String label = item.getName();
             String info = String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format(0d)); // FIXME percentage
+                            Values.Percent.format((double) item.getActual()
+                                            / (double) this.model.getRootNode().getActual()));
 
             event.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 

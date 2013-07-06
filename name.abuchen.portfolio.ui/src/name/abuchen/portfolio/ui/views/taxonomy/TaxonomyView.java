@@ -4,6 +4,7 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -17,21 +18,23 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class TaxonomyView extends AbstractFinanceView
 {
+    private TaxonomyModel model;
     private Taxonomy taxonomy;
 
     private Composite container;
+
+    @Override
+    protected String getTitle()
+    {
+        return taxonomy.getName();
+    }
 
     @Override
     public void init(ClientEditor clientEditor, Object parameter)
     {
         super.init(clientEditor, parameter);
         this.taxonomy = (Taxonomy) parameter;
-    }
-
-    @Override
-    protected String getTitle()
-    {
-        return taxonomy.getName();
+        this.model = new TaxonomyModel(getClient(), taxonomy);
     }
 
     @Override
@@ -41,6 +44,12 @@ public class TaxonomyView extends AbstractFinanceView
         addView(toolBar, "Allocation", PortfolioPlugin.IMG_QUICKFIX, 1);
         addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 2);
         addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        model.fireTaxonomyModelChange(model.getRootNode());
     }
 
     private void addView(final ToolBar toolBar, String label, String image, final int index)
@@ -65,7 +74,6 @@ public class TaxonomyView extends AbstractFinanceView
     {
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        TaxonomyModel model = new TaxonomyModel(getClient(), taxonomy);
         TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(resources);
 
         container = new Composite(parent, SWT.NONE);
@@ -83,6 +91,15 @@ public class TaxonomyView extends AbstractFinanceView
 
         TreeMapViewer tree = new TreeMapViewer(model, renderer);
         tree.createContainer(container);
+
+        model.addListener(new TaxonomyModelChangeListener()
+        {
+            @Override
+            public void nodeChange(TaxonomyNode node)
+            {
+                markDirty();
+            }
+        });
 
         return container;
     }
