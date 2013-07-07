@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-public final class Security
+public final class Security implements InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
     {
@@ -68,6 +68,7 @@ public final class Security
         this.feed = feed;
     }
 
+    @Override
     public String getUUID()
     {
         return uuid;
@@ -79,11 +80,13 @@ public final class Security
         uuid = UUID.randomUUID().toString();
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;

@@ -11,21 +11,16 @@ public class Classification
 {
     public static class Assignment
     {
-        private Object investmentVehicle;
+        private InvestmentVehicle investmentVehicle;
         private int weight;
         private int rank;
 
-        public Assignment(Security security)
-        {
-            this(security, ONE_HUNDRED_PERCENT);
-        }
-
-        public Assignment(Account account)
+        public Assignment(InvestmentVehicle account)
         {
             this(account, ONE_HUNDRED_PERCENT);
         }
 
-        private Assignment(Object investmentVehicle, int weight)
+        private Assignment(InvestmentVehicle investmentVehicle, int weight)
         {
             this.weight = weight;
             this.investmentVehicle = investmentVehicle;
@@ -41,7 +36,7 @@ public class Classification
             this.weight = weight;
         }
 
-        public Object getInvestmentVehicle()
+        public InvestmentVehicle getInvestmentVehicle()
         {
             return investmentVehicle;
         }
