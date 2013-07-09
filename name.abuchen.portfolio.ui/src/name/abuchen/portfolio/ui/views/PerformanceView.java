@@ -121,7 +121,7 @@ public class PerformanceView extends AbstractHistoricView
 
     private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
     {
-        StatementOfAssetsViewer viewer = new StatementOfAssetsViewer(folder, getClient());
+        StatementOfAssetsViewer viewer = new StatementOfAssetsViewer(folder, this, getClient());
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(viewer.getControl());

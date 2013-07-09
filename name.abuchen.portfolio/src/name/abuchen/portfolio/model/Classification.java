@@ -20,7 +20,7 @@ public class Classification
             this(account, ONE_HUNDRED_PERCENT);
         }
 
-        private Assignment(InvestmentVehicle investmentVehicle, int weight)
+        public Assignment(InvestmentVehicle investmentVehicle, int weight)
         {
             this.weight = weight;
             this.investmentVehicle = investmentVehicle;

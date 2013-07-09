@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Taxonomy;
 
 public class ClientSnapshot
 {
@@ -89,8 +90,8 @@ public class ClientSnapshot
         return assets;
     }
 
-    public GroupByAssetClass groupByAssetClass()
+    public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)
     {
-        return new GroupByAssetClass(this);
+        return new GroupByTaxonomy(taxonomy, this);
     }
 }

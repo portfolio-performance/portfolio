@@ -3,19 +3,18 @@ package name.abuchen.portfolio.snapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
+import name.abuchen.portfolio.model.Classification;
 
 public class AssetCategory
 {
-    private final Security.AssetClass assetClass;
+    private final Classification classification;
     private final List<AssetPosition> positions = new ArrayList<AssetPosition>();
     private final long totalAssets;
     private long valuation = 0;
 
-    /* package */AssetCategory(AssetClass assetClass, long totalAssets)
+    /* package */AssetCategory(Classification classification, long totalAssets)
     {
-        this.assetClass = assetClass;
+        this.classification = classification;
         this.totalAssets = totalAssets;
     }
 
@@ -34,9 +33,9 @@ public class AssetCategory
         return (double) this.valuation / (double) this.totalAssets;
     }
 
-    public AssetClass getAssetClass()
+    public Classification getClassification()
     {
-        return this.assetClass;
+        return this.classification;
     }
 
     public List<AssetPosition> getPositions()

@@ -11,11 +11,12 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.GroupByAssetClass;
+import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
@@ -26,13 +27,18 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -45,12 +51,16 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 public class StatementOfAssetsViewer
 {
@@ -58,17 +68,53 @@ public class StatementOfAssetsViewer
     private TableViewer assets;
 
     private Font boldFont;
+    private Menu contextMenu;
 
+    private AbstractFinanceView owner;
     private ShowHideColumnHelper support;
 
     private final Client client;
     private ClientSnapshot clientSnapshot;
     private PortfolioSnapshot portfolioSnapshot;
+    private Taxonomy taxonomy;
 
-    public StatementOfAssetsViewer(Composite parent, Client client)
+    public StatementOfAssetsViewer(Composite parent, AbstractFinanceView owner, Client client)
     {
-        createColumns(parent);
+        this.owner = owner;
         this.client = client;
+
+        loadTaxonomy(client);
+
+        createColumns(parent);
+
+        this.assets.getTable().addDisposeListener(new DisposeListener()
+        {
+            @Override
+            public void widgetDisposed(DisposeEvent e)
+            {
+                StatementOfAssetsViewer.this.widgetDisposed();
+            }
+        });
+    }
+
+    private void loadTaxonomy(Client client)
+    {
+        String taxonomyId = owner.getClientEditor().getPreferenceStore().getString(this.getClass().getSimpleName());
+
+        if (taxonomyId != null)
+        {
+            for (Taxonomy t : client.getTaxonomies())
+            {
+                if (taxonomyId.equals(t.getId()))
+                {
+                    this.taxonomy = t;
+                    break;
+                }
+            }
+        }
+
+        if (this.taxonomy == null && !client.getTaxonomies().isEmpty())
+            this.taxonomy = client.getTaxonomies().get(0);
     }
 
     private void createColumns(Composite parent)
@@ -103,7 +149,7 @@ public class StatementOfAssetsViewer
                 if (element.isTotalValuation())
                     return Messages.LabelTotalSum;
                 else if (element.isCategory())
-                    return element.getCategory().getAssetClass().toString();
+                    return element.getCategory().getClassification().toString();
                 else
                     return element.getPosition().getDescription();
             }
@@ -406,11 +452,6 @@ public class StatementOfAssetsViewer
             ViewerHelper.pack(assets);
     }
 
-    public ShowHideColumnHelper getColumnHelper()
-    {
-        return support;
-    }
-
     public TableViewer getTableViewer()
     {
         return assets;
@@ -421,26 +462,75 @@ public class StatementOfAssetsViewer
         return container;
     }
 
+    public void showConfigMenu(Shell shell)
+    {
+        if (contextMenu == null)
+        {
+            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+            menuMgr.setRemoveAllWhenShown(true);
+            menuMgr.addMenuListener(new IMenuListener()
+            {
+                @Override
+                public void menuAboutToShow(IMenuManager manager)
+                {
+                    StatementOfAssetsViewer.this.menuAboutToShow(manager);
+                }
+            });
+
+            contextMenu = menuMgr.createContextMenu(shell);
+        }
+
+        contextMenu.setVisible(true);
+    }
+
+    private void menuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new LabelOnly("Taxonomies"));
+        for (final Taxonomy t : client.getTaxonomies())
+        {
+            Action action = new Action(t.getName())
+            {
+                @Override
+                public void run()
+                {
+                    taxonomy = t;
+
+                    if (clientSnapshot != null)
+                        internalSetInput(clientSnapshot.groupByTaxonomy(taxonomy));
+                    else
+                        internalSetInput(portfolioSnapshot.groupByTaxonomy(taxonomy));
+                }
+            };
+            action.setChecked(t.equals(taxonomy));
+            manager.add(action);
+        }
+
+        manager.add(new Separator());
+
+        manager.add(new LabelOnly("Columns"));
+        support.menuAboutToShow(manager);
+    }
+
     public void setInput(ClientSnapshot snapshot)
     {
         this.clientSnapshot = snapshot;
         this.portfolioSnapshot = null;
-        internalSetInput(snapshot);
+        internalSetInput(snapshot.groupByTaxonomy(taxonomy));
     }
 
     public void setInput(PortfolioSnapshot snapshot)
     {
         this.clientSnapshot = null;
         this.portfolioSnapshot = snapshot;
-        internalSetInput(snapshot);
+        internalSetInput(snapshot.groupByTaxonomy(taxonomy));
     }
 
-    private void internalSetInput(Object snapshot)
+    private void internalSetInput(GroupByTaxonomy grouping)
     {
         assets.getTable().setRedraw(false);
         try
         {
-            assets.setInput(snapshot);
+            assets.setInput(grouping);
             assets.refresh();
         }
         finally
@@ -490,6 +580,15 @@ public class StatementOfAssetsViewer
                 }
             }
         }
+    }
+
+    private void widgetDisposed()
+    {
+        if (taxonomy != null)
+            owner.getClientEditor().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
+
+        if (contextMenu != null)
+            contextMenu.dispose();
     }
 
     private static class Element implements Adaptable
@@ -542,7 +641,7 @@ public class StatementOfAssetsViewer
 
         public boolean isAccount()
         {
-            return position != null && position.getAccount() != null;
+            return position != null && position.getInvestmentVehicle() instanceof Account;
         }
 
         public AssetCategory getCategory()
@@ -567,7 +666,7 @@ public class StatementOfAssetsViewer
 
         public Account getAccount()
         {
-            return position != null ? position.getAccount() : null;
+            return isAccount() ? (Account) position.getInvestmentVehicle() : null;
         }
 
         public long getTotalValuation()
@@ -592,19 +691,15 @@ public class StatementOfAssetsViewer
         private Element[] elements;
 
         @Override
-        public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+        public void inputChanged(Viewer v, Object oldInput, Object newInput)
         {
             if (newInput == null)
             {
                 this.elements = new Element[0];
             }
-            else if (newInput instanceof ClientSnapshot)
+            else if (newInput instanceof GroupByTaxonomy)
             {
-                this.elements = flatten(((ClientSnapshot) newInput).groupByAssetClass());
-            }
-            else if (newInput instanceof PortfolioSnapshot)
-            {
-                this.elements = flatten(((PortfolioSnapshot) newInput).groupByAssetClass());
+                this.elements = flatten((GroupByTaxonomy) newInput);
             }
             else
             {
@@ -612,7 +707,7 @@ public class StatementOfAssetsViewer
             }
         }
 
-        private Element[] flatten(GroupByAssetClass categories)
+        private Element[] flatten(GroupByTaxonomy categories)
         {
             List<Element> answer = new ArrayList<Element>();
             for (AssetCategory cat : categories.asList())

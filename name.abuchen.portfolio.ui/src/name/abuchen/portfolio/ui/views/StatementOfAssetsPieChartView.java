@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Security.AssetClass;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
@@ -69,7 +69,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         container.setLayout(new StackLayout());
 
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
-        List<AssetCategory> categories = snapshot.groupByAssetClass().asList();
+        List<AssetCategory> categories = snapshot.groupByTaxonomy(null).asList();
 
         createPieChart(container, categories);
         createTreeMap(container, snapshot, categories);
@@ -87,9 +87,9 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
 
         for (AssetCategory category : categories)
         {
-            AssetClass assetClass = category.getAssetClass();
-            slices.add(new PieChart.Slice(category.getValuation(), assetClass.toString(), //
-                            resources.createColor(Colors.valueOf(assetClass.name()).swt())));
+            Classification classification = category.getClassification();
+            slices.add(new PieChart.Slice(category.getValuation(), classification.getName(), //
+                            resources.createColor(Colors.toRGB(classification.getColor()))));
         }
         pieChart.setSlices(slices);
         pieChart.redraw();
@@ -116,11 +116,7 @@ public class StatementOfAssetsPieChartView extends AbstractFinanceView
         root.calculatePercentages(snapshot.getAssets());
         root.sortBySize();
 
-        List<Colors> colors = new ArrayList<Colors>();
-        for (TreeMapItem child : root.getChildren())
-            colors.add(Colors.valueOf(child.getAssetCategory().getAssetClass().name()));
-
-        ColorWheel colorWheel = new ColorWheel(parent, colors);
+        ColorWheel colorWheel = new ColorWheel(parent, root.getChildren().size());
 
         TreeMapViewer viewer = new TreeMapViewer(parent, SWT.NONE, getClient());
         viewer.setInput(root, colorWheel);

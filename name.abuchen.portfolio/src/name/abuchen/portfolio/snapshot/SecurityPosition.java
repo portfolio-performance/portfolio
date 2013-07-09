@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
@@ -229,6 +230,27 @@ public class SecurityPosition
         answer.shares = p1.shares + p2.shares;
         answer.transactions.addAll(p1.transactions);
         answer.transactions.addAll(p2.transactions);
+        return answer;
+    }
+
+    public static SecurityPosition split(SecurityPosition position, int weight)
+    {
+        SecurityPosition answer = new SecurityPosition(position.getSecurity());
+        answer.price = position.price;
+        answer.shares = Math.round(position.shares * weight / (double) Classification.ONE_HUNDRED_PERCENT);
+
+        for (PortfolioTransaction t : position.transactions)
+        {
+            PortfolioTransaction t2 = new PortfolioTransaction();
+            t2.setDate(t.getDate());
+            t2.setSecurity(t.getSecurity());
+            t2.setType(t.getType());
+
+            t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
+            t2.setFees(Math.round(t.getFees() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
+            t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
+        }
+
         return answer;
     }
 

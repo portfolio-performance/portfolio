@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 
 public class PortfolioSnapshot
 {
@@ -148,8 +149,8 @@ public class PortfolioSnapshot
         return value;
     }
 
-    public GroupByAssetClass groupByAssetClass()
+    public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)
     {
-        return new GroupByAssetClass(this);
+        return new GroupByTaxonomy(taxonomy, this);
     }
 }
