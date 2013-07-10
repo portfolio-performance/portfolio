@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -71,6 +72,7 @@ public final class PortfolioTransactionsViewer
     private TableViewer tableViewer;
     private ShowHideColumnHelper support;
 
+    private boolean fullContextMenu = true;
     private Menu contextMenu;
 
     public PortfolioTransactionsViewer(Composite parent, AbstractFinanceView owner)
@@ -94,6 +96,11 @@ public final class PortfolioTransactionsViewer
         addEditingSupport(owner);
 
         hookContextMenu(parent);
+    }
+
+    public void setFullContextMenu(boolean fullContextMenu)
+    {
+        this.fullContextMenu = fullContextMenu;
     }
 
     public Control getControl()
@@ -333,7 +340,12 @@ public final class PortfolioTransactionsViewer
         final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
                         .getSelection()).getFirstElement();
 
-        new SecurityContextMenu(owner).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
+        if (fullContextMenu && transaction != null)
+            new SecurityContextMenu(owner).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
+        else if (fullContextMenu)
+            new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
+        else if (transaction != null)
+            manager.add(new WebLocationMenu(transaction.getSecurity()));
 
         if (transaction != null)
         {

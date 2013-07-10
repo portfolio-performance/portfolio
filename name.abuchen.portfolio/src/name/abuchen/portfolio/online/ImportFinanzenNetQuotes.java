@@ -6,23 +6,21 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 
-import org.htmlparser.Node;
-import org.htmlparser.Tag;
-import org.htmlparser.Text;
-import org.htmlparser.lexer.Lexer;
-import org.htmlparser.util.ParserException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class ImportFinanzenNetQuotes
 {
-    private List<LatestSecurityPrice> items;
-    private LatestSecurityPrice item;
 
     private boolean insideDiv = false;
     private boolean insideContentDiv = false;
@@ -32,8 +30,15 @@ public class ImportFinanzenNetQuotes
     private int columnIndex = -1;
 
     private void div(Tag tag) throws IOException
+
+    @SuppressWarnings("nls")
+    public List<LatestSecurityPrice> extract(String htmlSource) throws IOException
     {
-        if (!tag.isEndTag())
+        Document doc = Jsoup.parse(htmlSource);
+
+        Elements tableDiv = doc.select("div");
+        Element contentDiv = null;
+        for (Element el : tableDiv)
         {
             if ("content_box table_quotes".equals(tag.getAttribute("CLASS"))) {//$NON-NLS-1$ //$NON-NLS-2$
                 insideDiv = true;
@@ -58,66 +63,77 @@ public class ImportFinanzenNetQuotes
         if (insideContentDiv && !tag.isEndTag())
             insideTable = true;
     }
-
-    private void tr(Tag tag) throws IOException
-    {
-        if (!insideTable)
-            return;
-
-        if (!tag.isEndTag())
-        {
-            insideRow = true;
-            item = new LatestSecurityPrice();
+            if (el.className().startsWith("content_box table_quotes"))
+            {
+                contentDiv = el;
+                break;
+            }
         }
-        else
+        if (contentDiv == null)
+            throw new IOException();
+
+        Map<String, Integer> indices = new HashMap<String, Integer>();
+        String[] keys = new String[] { "Schluss", "Eröffnung", "Tageshoch", "Tagestief", "Volumen", "Datum" };
+
+        List<LatestSecurityPrice> result = new ArrayList<LatestSecurityPrice>();
+
+        boolean header = true;
+        for (Element tr : contentDiv.select("div.content").select("table").select("tr"))
         {
-            insideRow = false;
-            columnIndex = -1;
+            // use the first line to sniff the header of the table
+            if (header)
+            {
+                Elements trs = tr.select("th");
+                for (Element th : trs)
+                {
+                    Element compare = th;
+                    // time is inside another tag
+                    if (th.children().size() == 1)
+                        compare = th.child(0);
 
-            if (item != null && item.getTime() != null)
-                items.add(item);
-            item = null;
+                    for (String key : keys)
+                    {
+                        if (compare.ownText().startsWith(key))
+                        {
+                            indices.put(key, trs.indexOf(th));
+                            break;
+                        }
+                    }
+                }
+                header = false;
+                continue;
+            }
+
+            Elements tds = tr.select("td");
+            // the last line has only one column, skip that
+            if (tds.size() == 1)
+                continue;
+
+            // time and value are mandatory
+            if (!indices.containsKey(keys[0]) || !indices.containsKey(keys[5]))
+                continue;
+
+            LatestSecurityPrice current = new LatestSecurityPrice();
+
+            current.setTime(parseDate(tds.get(indices.get(keys[5])).ownText()));
+            current.setValue(parsePrice(tds.get(indices.get(keys[0])).ownText()));
+
+            if (indices.containsKey(keys[2]))
+                current.setHigh(parsePrice(tds.get(indices.get(keys[2])).ownText()));
+
+            if (indices.containsKey(keys[3]))
+                current.setLow(parsePrice(tds.get(indices.get(keys[3])).ownText()));
+
+            if (indices.containsKey(keys[1]))
+                current.setPreviousClose(parsePrice(tds.get(indices.get(keys[1])).ownText()));
+
+            if (indices.containsKey(keys[4]))
+                current.setVolume(parseVolume(tds.get(indices.get(keys[4])).ownText()));
+
+            result.add(current);
         }
-    }
 
-    private void td(Tag tag) throws IOException
-    {
-        if (!insideRow)
-            return;
-
-        insideColumn = !tag.isEndTag();
-        if (insideColumn)
-            columnIndex++;
-    }
-
-    private void text(Text text) throws IOException
-    {
-        if (!insideColumn)
-            return;
-
-        String t = text.getText().trim();
-        if (t.length() == 0)
-            t = null;
-
-        switch (columnIndex)
-        {
-            case 0:
-                item.setTime(parseDate(t));
-                break;
-            case 2:
-                item.setValue(parsePrice(t));
-                break;
-            case 3:
-                item.setHigh(parsePrice(t));
-                break;
-            case 4:
-                item.setLow(parsePrice(t));
-                break;
-            case 5:
-                item.setVolume(parseVolumne(t));
-                break;
-            default:
-        }
+        return result;
     }
 
     private long parsePrice(String text) throws IOException
@@ -147,7 +163,7 @@ public class ImportFinanzenNetQuotes
         }
     }
 
-    private int parseVolumne(String text) throws IOException
+    private int parseVolume(String text) throws IOException
     {
         if (text == null || text.trim().length() == 0)
             return 0;

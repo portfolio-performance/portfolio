@@ -134,7 +134,10 @@ public class SecurityContextMenu
             });
         }
 
-        manager.add(new Separator());
-        manager.add(new WebLocationMenu(security));
+        if (security != null)
+        {
+            manager.add(new Separator());
+            manager.add(new WebLocationMenu(security));
+        }
     }
 }

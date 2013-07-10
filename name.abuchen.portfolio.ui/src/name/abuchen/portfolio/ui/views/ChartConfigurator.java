@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -569,9 +570,21 @@ import org.swtchart.LineStyle;
             @Override
             public void run()
             {
-                doAddSeries();
+                doAddSeries(false);
             }
         });
+
+        if (mode == Mode.PERFORMANCE)
+        {
+            manager.add(new Action(Messages.ChartSeriesPickerAddBenchmark)
+            {
+                @Override
+                public void run()
+                {
+                    doAddSeries(true);
+                }
+            });
+        }
 
         manager.add(new Action(Messages.MenuResetChartSeries)
         {
@@ -712,9 +725,17 @@ import org.swtchart.LineStyle;
         });
     }
 
-    private void doAddSeries()
+    private void doAddSeries(boolean showOnlyBenchmark)
     {
         List<DataSeries> list = new ArrayList<DataSeries>(availableSeries);
+
+        // remove items if (not) showing benchmarks only
+        Iterator<DataSeries> iter = list.iterator();
+        while (iter.hasNext())
+            if (iter.next().isBenchmark() != showOnlyBenchmark)
+                iter.remove();
+
+        // remove already selected items
         for (DataSeries s : selectedSeries)
             list.remove(s);
 

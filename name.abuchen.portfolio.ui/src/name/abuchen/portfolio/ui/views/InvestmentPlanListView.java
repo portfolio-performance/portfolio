@@ -332,6 +332,7 @@ public class InvestmentPlanListView extends AbstractListView
     protected void createBottomTable(Composite parent)
     {
         transactions = new PortfolioTransactionsViewer(parent, this);
+        transactions.setFullContextMenu(false);
 
         if (!getClient().getPlans().isEmpty())
             plans.setSelection(new StructuredSelection(plans.getElementAt(0)), true);
