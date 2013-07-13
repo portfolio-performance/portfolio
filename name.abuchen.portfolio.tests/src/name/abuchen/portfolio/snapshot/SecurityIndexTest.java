@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.snapshot;
 
-import static name.abuchen.portfolio.snapshot.ModelUtilities.addT;
-import static name.abuchen.portfolio.snapshot.ModelUtilities.generatePrices;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -9,10 +7,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.AccountBuilder;
+import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
@@ -36,14 +33,13 @@ public class SecurityIndexTest
 
         Client client = new Client();
 
-        Account account = new Account();
-        client.addAccount(account);
-        addT(account, startDate.toCalendar(Locale.getDefault()), Type.DEPOSIT, startPrice);
+        new AccountBuilder() //
+                        .deposit_(startDate, startPrice) //
+                        .addTo(client);
 
-        Security security = new Security();
-        client.addSecurity(security);
-
-        generatePrices(security, startPrice, startDate, endDate);
+        Security security = new SecurityBuilder() //
+                        .generatePrices(startPrice, startDate, endDate) //
+                        .addTo(client);
 
         // calculate performance indices
 
@@ -80,16 +76,14 @@ public class SecurityIndexTest
 
         Client client = new Client();
 
-        Account account = new Account();
-        client.addAccount(account);
-        addT(account, startDate.toCalendar(Locale.getDefault()), Type.DEPOSIT, 100 * Values.Amount.factor());
-        addT(account, startDate.plusDays(10).toCalendar(Locale.getDefault()), Type.INTEREST,
-                        10 * Values.Amount.factor());
+        new AccountBuilder() //
+                        .deposit_(startDate, 100 * Values.Amount.factor()) //
+                        .interest(startDate.plusDays(10), 10 * Values.Amount.factor()) //
+                        .addTo(client);
 
-        Security security = new Security();
-        client.addSecurity(security);
-
-        generatePrices(security, 50 * Values.Amount.factor(), middleDate, endDate);
+        Security security = new SecurityBuilder() //
+                        .generatePrices(50 * Values.Amount.factor(), middleDate, endDate) //
+                        .addTo(client);
 
         // calculate performance indices
 
@@ -137,17 +131,16 @@ public class SecurityIndexTest
 
         Client client = new Client();
 
-        Account account = new Account();
-        client.addAccount(account);
-        addT(account, startDate.toCalendar(Locale.getDefault()), Type.DEPOSIT, 100 * Values.Amount.factor());
-        addT(account, startDate.plusDays(10).toCalendar(Locale.getDefault()), Type.INTEREST,
-                        10 * Values.Amount.factor());
-
-        Security security = new Security();
-        client.addSecurity(security);
+        new AccountBuilder() //
+                        .deposit_(startDate, 100 * Values.Amount.factor()) //
+                        .interest(startDate.plusDays(10), 10 * Values.Amount.factor()) //
+                        .addTo(client);
 
         int startPrice = 50 * Values.Amount.factor();
-        generatePrices(security, startPrice, startDate, middleDate);
+
+        Security security = new SecurityBuilder() //
+                        .generatePrices(startPrice, startDate, middleDate) //
+                        .addTo(client);
 
         // calculate performance indices
 
@@ -189,9 +182,9 @@ public class SecurityIndexTest
 
         Client client = new Client();
 
-        Account account = new Account();
-        client.addAccount(account);
-        addT(account, startDate.toCalendar(Locale.getDefault()), Type.DEPOSIT, 100 * Values.Amount.factor());
+        new AccountBuilder() //
+                        .deposit_(startDate, 100 * Values.Amount.factor()) //
+                        .addTo(client);
 
         Security security = new Security();
         client.addSecurity(security);

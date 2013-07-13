@@ -1,5 +1,6 @@
 package name.abuchen.portfolio;
 
+import java.util.Random;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Classification;
@@ -11,7 +12,9 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.online.QuoteFeed;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 
 public class SecurityBuilder
 {
@@ -41,6 +44,28 @@ public class SecurityBuilder
     {
         Classification classification = taxonomy.getClassificationById(id);
         classification.addAssignment(new Assignment(security, weight));
+        return this;
+    }
+
+    public SecurityBuilder generatePrices(long startPrice, DateMidnight start, DateMidnight end)
+    {
+        security.addPrice(new SecurityPrice(start.toDate(), startPrice));
+
+        Random random = new Random();
+
+        DateMidnight date = start;
+        long price = startPrice;
+        while (date.compareTo(end) < 0)
+        {
+            date = date.plusDays(1);
+
+            if (date.getDayOfWeek() > DateTimeConstants.SATURDAY)
+                continue;
+
+            price = (long) ((double) price * ((random.nextDouble() * 0.2 - 0.1d) + 1));
+            security.addPrice(new SecurityPrice(date.toDate(), price));
+        }
+
         return this;
     }
 

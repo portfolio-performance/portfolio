@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 
 public class PortfolioBuilder
@@ -25,8 +26,13 @@ public class PortfolioBuilder
 
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
     {
-        portfolio.addTransaction(new PortfolioTransaction(new DateTime(date).toDate(), security, Type.DELIVERY_INBOUND,
-                        shares, amount, 0));
+        return inbound_delivery(security, new DateMidnight(date), shares, amount);
+    }
+
+    public PortfolioBuilder inbound_delivery(Security security, DateMidnight date, long shares, long amount)
+    {
+        portfolio.addTransaction(new PortfolioTransaction(date.toDate(), security, Type.DELIVERY_INBOUND, shares,
+                        amount, 0));
         return this;
     }
 

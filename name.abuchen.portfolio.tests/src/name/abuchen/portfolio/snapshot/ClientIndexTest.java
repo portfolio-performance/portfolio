@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.snapshot;
 
-import static name.abuchen.portfolio.snapshot.ModelUtilities.addT;
-import static name.abuchen.portfolio.snapshot.ModelUtilities.generatePrices;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -12,15 +10,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
+import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.PortfolioBuilder;
+import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
@@ -29,6 +25,7 @@ import org.hamcrest.number.IsCloseTo;
 import org.joda.time.DateMidnight;
 import org.junit.Test;
 
+@SuppressWarnings("nls")
 public class ClientIndexTest
 {
     private static final double PRECISION = 0.000001d;
@@ -36,22 +33,22 @@ public class ClientIndexTest
     private Client createClient()
     {
         Client client = new Client();
-        Account account = new Account();
-        client.addAccount(account);
 
-        ModelUtilities.addT(account, 2011, Calendar.DECEMBER, 31, Type.DEPOSIT, 10000 * Values.Amount.factor());
-        addT(account, 2012, Calendar.JANUARY, 1, Type.INTEREST, 230 * Values.Amount.factor());
-        addT(account, 2012, Calendar.JANUARY, 2, Type.DEPOSIT, 200 * Values.Amount.factor());
-        addT(account, 2012, Calendar.JANUARY, 2, Type.INTEREST, 200 * Values.Amount.factor());
-        addT(account, 2012, Calendar.JANUARY, 3, Type.REMOVAL, 400 * Values.Amount.factor());
-        addT(account, 2012, Calendar.JANUARY, 3, Type.FEES, 23441);
-        addT(account, 2012, Calendar.JANUARY, 4, Type.INTEREST, 29399);
-        addT(account, 2012, Calendar.JANUARY, 5, Type.INTEREST, 29399);
-        addT(account, 2012, Calendar.JANUARY, 6, Type.DEPOSIT, 5400 * Values.Amount.factor());
-        addT(account, 2012, Calendar.JANUARY, 6, Type.INTEREST, 19599);
-        addT(account, 2012, Calendar.JANUARY, 7, Type.REMOVAL, 369704);
-        addT(account, 2012, Calendar.JANUARY, 7, Type.FEES, 88252);
-        addT(account, 2012, Calendar.JANUARY, 8, Type.FEES, 100385);
+        new AccountBuilder() //
+                        .deposit_("2011-12-31", 10000 * Values.Amount.factor()) //
+                        .interest("2012-01-01", 230 * Values.Amount.factor()) //
+                        .deposit_("2012-01-02", 200 * Values.Amount.factor()) //
+                        .interest("2012-01-02", 200 * Values.Amount.factor()) //
+                        .withdraw("2012-01-03", 400 * Values.Amount.factor()) //
+                        .fees____("2012-01-03", 23441) //
+                        .interest("2012-01-04", 29399) //
+                        .interest("2012-01-05", 29399) //
+                        .deposit_("2012-01-06", 5400 * Values.Amount.factor()) //
+                        .interest("2012-01-06", 19599) //
+                        .withdraw("2012-01-07", 369704) //
+                        .fees____("2012-01-07", 88252) //
+                        .fees____("2012-01-08", 100385) //
+                        .addTo(client);
 
         return client;
     }
@@ -99,10 +96,10 @@ public class ClientIndexTest
     private Client createClient(double[] delta, long[] transferals)
     {
         Client client = new Client();
-        Account account = new Account();
-        client.addAccount(account);
 
-        Calendar cal = new GregorianCalendar(2012, Calendar.JANUARY, 1);
+        AccountBuilder account = new AccountBuilder();
+
+        DateMidnight time = new DateMidnight("2012-01-01");
 
         long valuation = 0;
         double quote = 1;
@@ -112,20 +109,23 @@ public class ClientIndexTest
             long d = v - valuation;
 
             if (transferals[ii] > 0)
-                addT(account, cal, Type.DEPOSIT, transferals[ii]);
+                account.deposit_(time, transferals[ii]);
             else if (transferals[ii] < 0)
-                addT(account, cal, Type.REMOVAL, Math.abs(transferals[ii]));
+                account.withdraw(time, Math.abs(transferals[ii]));
 
             if (v > 0)
-                addT(account, cal, Type.INTEREST, d);
+                account.interest(time, d);
             else if (v < 0)
-                addT(account, cal, Type.FEES, Math.abs(d));
+                account.fees____(time, Math.abs(d));
 
             valuation = v + transferals[ii];
 
             quote = 1 + delta[ii];
-            cal.add(Calendar.DATE, 1);
+
+            time = time.plusDays(1);
         }
+
+        account.addTo(client);
         return client;
     }
 
@@ -172,9 +172,9 @@ public class ClientIndexTest
     public void testThatInterstWithoutInvestmentDoesNotCorruptResultAndIsReported()
     {
         Client client = new Client();
-        Account account = new Account();
-        client.addAccount(account);
-        addT(account, new GregorianCalendar(2012, Calendar.JANUARY, 2), Type.INTEREST, 100);
+        new AccountBuilder() //
+                        .interest("2012-01-02", 100) //
+                        .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(Dates.date(2012, Calendar.JANUARY, 1), //
                         Dates.date(2012, Calendar.JANUARY, 9));
@@ -208,29 +208,28 @@ public class ClientIndexTest
     @Test
     public void testThatPerformanceOfAnInvestmentIntoAnIndexIsIdenticalToIndex()
     {
-        Client client = new Client();
-        Portfolio portfolio = new Portfolio();
-        client.addPortfolio(portfolio);
-
-        Security security = new Security();
-        client.addSecurity(security);
-
         DateMidnight startDate = new DateMidnight(2012, 1, 1);
         DateMidnight endDate = new DateMidnight(2012, 4, 29); // a weekend
         long startPrice = 100 * Values.Amount.factor();
 
-        generatePrices(security, startPrice, startDate, endDate);
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .generatePrices(startPrice, startDate, endDate) //
+                        .addTo(client);
+
+        PortfolioBuilder portfolio = new PortfolioBuilder();
 
         // add some buy transactions
         DateMidnight date = startDate;
         while (date.isBefore(endDate))
         {
             long p = security.getSecurityPrice(date.toDate()).getValue();
-            portfolio.addTransaction(new PortfolioTransaction(date.toDate(), security,
-                            PortfolioTransaction.Type.DELIVERY_INBOUND, 1 * Values.Share.factor(), p, 0));
-
+            portfolio.inbound_delivery(security, date, 1 * Values.Share.factor(), p);
             date = date.plusDays(20);
         }
+
+        portfolio.addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
 
@@ -272,12 +271,12 @@ public class ClientIndexTest
     public void testThatDepositsOnTheLastDayArePerformanceNeutral()
     {
         Client client = new Client();
-        Account account = new Account();
-        client.addAccount(account);
 
-        addT(account, 2012, Calendar.JANUARY, 1, Type.DEPOSIT, 10000);
-        addT(account, 2012, Calendar.JANUARY, 2, Type.INTEREST, 1000);
-        addT(account, 2012, Calendar.JANUARY, 10, Type.DEPOSIT, 10000);
+        new AccountBuilder() //
+                        .deposit_("2012-01-01", 10000) //
+                        .interest("2012-01-02", 1000) //
+                        .deposit_("2012-01-10", 10000) //
+                        .addTo(client);
 
         ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(Dates.date(2012, Calendar.JANUARY, 1), //
                         Dates.date(2012, Calendar.JANUARY, 10));
@@ -292,11 +291,11 @@ public class ClientIndexTest
     public void testChangesOnFirstDayOfInvestment()
     {
         Client client = new Client();
-        Account account = new Account();
-        client.addAccount(account);
 
-        addT(account, 2012, Calendar.JANUARY, 2, Type.DEPOSIT, 10000);
-        addT(account, 2012, Calendar.JANUARY, 2, Type.INTEREST, 1000);
+        new AccountBuilder() //
+                        .deposit_("2012-01-01", 10000) //
+                        .interest("2012-01-02", 1000) //
+                        .addTo(client);
 
         ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(Dates.date(2012, Calendar.JANUARY, 1), //
                         Dates.date(2012, Calendar.JANUARY, 10));
