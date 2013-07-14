@@ -33,6 +33,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         private String isin;
         private String tickerSymbol;
         private String wkn;
+        private String finanzenFeedURL;
         private AssetClass type;
         private boolean isRetired;
 
@@ -40,14 +41,13 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         {
             super(client);
 
-            this.security = security;
+            setSecurity(security);
+        }
 
-            name = security.getName();
-            isin = security.getIsin();
-            tickerSymbol = security.getTickerSymbol();
-            wkn = security.getWkn();
-            type = security.getType();
-            isRetired = security.isRetired();
+        public void setSecurity(Security sec)
+        {
+            this.security = sec;
+            readFromSecurity();
         }
 
         public String getName()
@@ -110,6 +110,16 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$
         }
 
+        public String getFinanzenFeedURL()
+        {
+            return finanzenFeedURL;
+        }
+
+        public void setFinanzenFeedURL(String finanzenFeedURL)
+        {
+            firePropertyChange("finanzenFeedURL", this.finanzenFeedURL, this.finanzenFeedURL = finanzenFeedURL); //$NON-NLS-1$
+        }
+
         @Override
         public void applyChanges()
         {
@@ -119,6 +129,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             security.setWkn(wkn);
             security.setType(type);
             security.setRetired(isRetired);
+            security.setFinanzenFeedURL(finanzenFeedURL);
         }
 
         public void readFromSecurity()
@@ -129,6 +140,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             setWkn(security.getWkn());
             setType(security.getType());
             setRetired(security.isRetired());
+            setFinanzenFeedURL(security.getFinanzenFeedURL());
         }
 
     }
@@ -142,10 +154,10 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     protected SecurityMasterDataPage(Client client, Security security)
     {
         super(PAGE_NAME);
-        
+
         this.taxonomy = client.getIndustryTaxonomy();
         this.model = new Model(client, security);
-        
+
         setTitle(Messages.EditWizardMasterDataTitle);
         setDescription(Messages.EditWizardMasterDataDescription);
 
@@ -188,6 +200,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn"); //$NON-NLS-1$
+        bindings.bindStringInput(container, "Finanzen.net URL", "finanzenFeedURL");
         bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
         bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
                         {

@@ -21,6 +21,10 @@ import org.jsoup.select.Elements;
 
 public class ImportFinanzenNetQuotesSoup
 {
+    public List<LatestSecurityPrice> extractFromURL(String url) throws Exception
+    {
+        return extract(Jsoup.connect(url).get());
+    }
 
     public List<LatestSecurityPrice> extract(String html) throws IOException
     {

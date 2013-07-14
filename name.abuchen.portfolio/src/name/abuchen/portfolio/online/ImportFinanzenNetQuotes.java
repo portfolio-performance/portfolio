@@ -22,15 +22,6 @@ import org.jsoup.select.Elements;
 public class ImportFinanzenNetQuotes
 {
 
-    private boolean insideDiv = false;
-    private boolean insideContentDiv = false;
-    private boolean insideTable = false;
-    private boolean insideRow = false;
-    private boolean insideColumn = false;
-    private int columnIndex = -1;
-
-    private void div(Tag tag) throws IOException
-
     @SuppressWarnings("nls")
     public List<LatestSecurityPrice> extract(String htmlSource) throws IOException
     {
@@ -40,29 +31,6 @@ public class ImportFinanzenNetQuotes
         Element contentDiv = null;
         for (Element el : tableDiv)
         {
-            if ("content_box table_quotes".equals(tag.getAttribute("CLASS"))) {//$NON-NLS-1$ //$NON-NLS-2$
-                insideDiv = true;
-                return;
-            }
-            if (insideDiv && "content".equals(tag.getAttribute("CLASS")))
-            {
-                insideContentDiv = true;
-                return;
-            }
-        }
-        else if (insideContentDiv)
-        {
-            insideContentDiv = insideDiv = insideTable = insideRow = insideColumn = false;
-            columnIndex = -1;
-        }
-
-    }
-
-    private void table(Tag tag) throws IOException
-    {
-        if (insideContentDiv && !tag.isEndTag())
-            insideTable = true;
-    }
             if (el.className().startsWith("content_box table_quotes"))
             {
                 contentDiv = el;
@@ -179,51 +147,4 @@ public class ImportFinanzenNetQuotes
             throw new IOException(e);
         }
     }
-
-    public List<LatestSecurityPrice> extract(String htmlSource) throws IOException
-    {
-        if (htmlSource.indexOf("finanzen.net") < 0) //$NON-NLS-1$
-            return Collections.emptyList();
-
-        this.items = new ArrayList<LatestSecurityPrice>();
-        this.item = null;
-
-        insideContentDiv = insideDiv = insideTable = insideRow = insideColumn = false;
-        columnIndex = -1;
-
-        try
-        {
-            Lexer lexer = new Lexer(htmlSource);
-
-            Node node = lexer.nextNode();
-            while (node != null)
-            {
-                if (node instanceof Tag)
-                {
-                    Tag tag = (Tag) node;
-                    String tagName = tag.getTagName();
-
-                    if ("DIV".equals(tagName)) //$NON-NLS-1$
-                        div(tag);
-                    else if ("TABLE".equals(tagName)) //$NON-NLS-1$
-                        table(tag);
-                    else if ("TR".equals(tagName)) //$NON-NLS-1$
-                        tr(tag);
-                    else if ("TD".equals(tagName)) //$NON-NLS-1$
-                        td(tag);
-                }
-                else if (node instanceof Text)
-                {
-                    text((Text) node);
-                }
-                node = lexer.nextNode();
-            }
-            return this.items;
-        }
-        catch (ParserException e)
-        {
-            throw new IOException(e);
-        }
-    }
-
 }
