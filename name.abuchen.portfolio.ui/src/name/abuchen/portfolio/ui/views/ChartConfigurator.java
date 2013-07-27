@@ -14,7 +14,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
@@ -173,8 +172,6 @@ import org.swtchart.LineStyle;
 
             if (type == Security.class)
                 return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
-            else if (type == AssetClass.class)
-                return prefix + AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
             else if (type == Client.class)
                 return prefix + Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
             else if (type == Account.class)
@@ -415,10 +412,6 @@ import org.swtchart.LineStyle;
             availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getSegment(index++)
                             .getColor()));
 
-        for (AssetClass assetClass : AssetClass.values())
-            availableSeries.add(new DataSeries(AssetClass.class, assetClass, assetClass.toString(), //
-                            colorFor(Colors.valueOf(assetClass.name()).swt())));
-
         LinkedList<Category> stack = new LinkedList<Category>();
         stack.add(client.getRootCategory());
 
@@ -439,10 +432,6 @@ import org.swtchart.LineStyle;
         for (DataSeries series : availableSeries)
         {
             if (series.getType() == Client.class || series.getType() == ConsumerPriceIndex.class)
-            {
-                selectedSeries.add(series);
-            }
-            else if (mode == Mode.STATEMENT_OF_ASSETS && series.getType() == AssetClass.class)
             {
                 selectedSeries.add(series);
             }

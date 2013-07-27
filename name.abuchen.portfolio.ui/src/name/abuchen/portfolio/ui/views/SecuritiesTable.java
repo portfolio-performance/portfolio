@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.IndustryClassification.Category;
@@ -13,6 +14,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -128,13 +130,34 @@ public final class SecuritiesTable
         column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
         support.addColumn(column);
 
+        // FIXME support any taxonomy, not only asset classes
         column = new Column(Messages.ColumnSecurityType, SWT.LEFT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return ((Security) e).getType().toString();
+                Taxonomy taxonomy = getClient().getTaxonomy("assetclasses"); //$NON-NLS-1$
+                if (taxonomy == null)
+                    return null;
+
+                List<Classification> classifications = taxonomy.getClassifications((Security) e);
+
+                if (classifications.isEmpty())
+                    return null;
+
+                if (classifications.size() == 1)
+                    return classifications.get(0).getFullName(50);
+
+                StringBuilder buf = new StringBuilder();
+                for (Classification c : classifications)
+                {
+                    if (buf.length() > 0)
+                        buf.append(", "); //$NON-NLS-1$
+
+                    buf.append(c.getFullName(50));
+                }
+                return buf.toString();
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "type")); //$NON-NLS-1$

@@ -218,6 +218,7 @@ public class ClientFactory
     {
         TaxonomyTemplate template = TaxonomyTemplate.byId("assetclasses"); //$NON-NLS-1$
         Taxonomy taxonomy = template.build();
+        taxonomy.setId("assetclasses"); //$NON-NLS-1$
 
         int rank = 1;
 

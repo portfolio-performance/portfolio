@@ -15,7 +15,6 @@ import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -64,26 +63,6 @@ public class PerformanceIndex
                     List<Exception> warnings)
     {
         return CategoryIndex.calculate(client, category, reportInterval, warnings);
-    }
-
-    public static PerformanceIndex forAssetClass(Client client, AssetClass assetClass, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
-    {
-        Category category = new Category();
-
-        if (assetClass == AssetClass.CASH)
-        {
-            for (Account account : client.getAccounts())
-                category.addAccount(account);
-        }
-
-        for (Security security : client.getSecurities())
-        {
-            if (assetClass.name().equals(security.getType()))
-                category.addSecurity(security);
-        }
-
-        return forCategory(client, category, reportInterval, warnings);
     }
 
     public static PerformanceIndex forInvestment(Client client, Security security, ReportingPeriod reportInterval,

@@ -143,15 +143,13 @@ public class CSVExporter
 
             printer.println(new String[] { Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_Description, //
-                            Messages.CSVColumn_TickerSymbol, //
-                            Messages.CSVColumn_Type });
+                            Messages.CSVColumn_TickerSymbol });
 
             for (Security s : securities)
             {
                 printer.print(s.getIsin());
                 printer.print(s.getName());
                 printer.print(s.getTickerSymbol());
-                printer.print(s.getType().toString());
                 printer.println();
             }
         }

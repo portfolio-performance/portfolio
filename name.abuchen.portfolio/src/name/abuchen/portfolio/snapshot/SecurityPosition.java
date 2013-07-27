@@ -30,13 +30,6 @@ public class SecurityPosition
         this.security = security;
     }
 
-    public SecurityPosition(Security security, SecurityPrice price, long shares)
-    {
-        this(security);
-        this.price = price;
-        this.shares = shares;
-    }
-
     public Security getSecurity()
     {
         return security;

@@ -10,7 +10,6 @@ import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -147,8 +146,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             {
                 if (item.getType() == Client.class)
                     addClient(item, warnings);
-                else if (item.getType() == AssetClass.class)
-                    addAssetClass(item, warnings);
                 else if (item.getType() == Security.class)
                     addSecurity(item, warnings);
                 else if (item.getType() == Portfolio.class)
@@ -193,23 +190,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                             Messages.LabelTransferals);
             item.configure(barSeries);
         }
-    }
-
-    private void addAssetClass(DataSeries item, List<Exception> warnings)
-    {
-        AssetClass assetClass = (AssetClass) item.getInstance();
-        PerformanceIndex assetClassIndex = (PerformanceIndex) dataCache.get(assetClass);
-
-        if (assetClassIndex == null)
-        {
-            assetClassIndex = PerformanceIndex.forAssetClass(getClient(), assetClass, getReportingPeriod(), warnings);
-            dataCache.put(assetClass, assetClassIndex);
-        }
-
-        ILineSeries series = chart.addDateSeries(assetClassIndex.getDates(), //
-                        toDouble(assetClassIndex.getTotals(), Values.Amount.divider()), //
-                        assetClass.toString());
-        item.configure(series);
     }
 
     private void addSecurity(DataSeries item, List<Exception> warnings)

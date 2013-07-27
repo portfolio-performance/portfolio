@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 public final class TaxonomyTemplate
 {
@@ -53,7 +54,7 @@ public final class TaxonomyTemplate
     {
         ResourceBundle bundle = ResourceBundle.getBundle("/META-INF/taxonomy/" + id); //$NON-NLS-1$
 
-        Taxonomy taxonomy = new Taxonomy(id, name);
+        Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
 
         Classification root = new Classification(id, name);
         taxonomy.setRootNode(root);

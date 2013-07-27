@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Listener;
 
 public class PieChart extends Composite implements Listener
 {
-    public static class Slice
+    public static class Slice implements Comparable<Slice>
     {
         private long value;
         private String label;
@@ -40,6 +40,17 @@ public class PieChart extends Composite implements Listener
         public Color getColor()
         {
             return color;
+        }
+
+        public void setColor(Color color)
+        {
+            this.color = color;
+        }
+
+        @Override
+        public int compareTo(Slice o)
+        {
+            return value > o.value ? -1 : value == o.value ? 0 : 1;
         }
     }
 

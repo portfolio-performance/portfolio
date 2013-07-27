@@ -262,9 +262,6 @@ public class SecurityListView extends AbstractListView
                 if (security.getTickerSymbol() != null && filterPattern.matcher(security.getTickerSymbol()).matches())
                     return true;
 
-                if (security.getType() != null && filterPattern.matcher(security.getType().toString()).matches())
-                    return true;
-
                 return false;
             }
         });

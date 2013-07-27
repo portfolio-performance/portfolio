@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.UUID;
 
 public final class Security implements InvestmentVehicle
@@ -21,19 +20,6 @@ public final class Security implements InvestmentVehicle
             if (s1 == null)
                 return s2 == null ? 0 : -1;
             return s1.name.compareTo(s2.name);
-        }
-    }
-
-    @Deprecated
-    public enum AssetClass
-    {
-        CASH, DEBT, EQUITY, REAL_ESTATE, COMMODITY;
-
-        private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
-
-        public String toString()
-        {
-            return RESOURCES.getString("asset." + name()); //$NON-NLS-1$
         }
     }
 

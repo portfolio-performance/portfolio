@@ -19,7 +19,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -165,8 +164,6 @@ public class PerformanceChartView extends AbstractHistoricView
                     addPortfolio(item, (Portfolio) item.getInstance(), warnings);
                 else if (item.getType() == Account.class)
                     addAccount(item, (Account) item.getInstance(), warnings);
-                else if (item.getType() == AssetClass.class)
-                    addAssetClass(item, (AssetClass) item.getInstance(), warnings);
                 else if (item.getType() == Category.class)
                     addCategory(item, (Category) item.getInstance(), warnings);
             }
@@ -322,23 +319,6 @@ public class PerformanceChartView extends AbstractHistoricView
         item.configure(series);
     }
 
-    private void addAssetClass(DataSeries item, AssetClass assetClass, List<Exception> warnings)
-    {
-        PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(assetClass);
-        if (categoryIndex == null)
-        {
-            categoryIndex = PerformanceIndex.forAssetClass(getClient(), assetClass, getReportingPeriod(), warnings);
-            dataCache.put(assetClass, categoryIndex);
-        }
-
-        if (aggregationPeriod != null)
-            categoryIndex = Aggregation.aggregate(categoryIndex, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(categoryIndex.getDates(), categoryIndex.getAccumulatedPercentage(),
-                        item.getLabel());
-        item.configure(series);
-    }
-
     private void addCategory(DataSeries item, Category category, List<Exception> warnings)
     {
         PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
@@ -419,7 +399,7 @@ public class PerformanceChartView extends AbstractHistoricView
             addMenu(manager, Client.class, Messages.PerformanceChartLabelAccumulatedIRR);
 
             Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
-                            Security.class, Portfolio.class, Account.class, Category.class, AssetClass.class }));
+                            Security.class, Portfolio.class, Account.class, Category.class }));
 
             for (DataSeries series : picker.getSelectedDataSeries())
             {

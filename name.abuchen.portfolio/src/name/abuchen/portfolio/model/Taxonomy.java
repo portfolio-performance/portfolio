@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +32,11 @@ public class Taxonomy
     public String getId()
     {
         return id;
+    }
+
+    /* package */void setId(String id)
+    {
+        this.id = id;
     }
 
     public String getName()
@@ -82,8 +88,26 @@ public class Taxonomy
         return null;
     }
 
+    public List<Classification> getClassifications(final InvestmentVehicle vehicle)
+    {
+        final List<Classification> answer = new ArrayList<Classification>();
+
+        foreach(new Visitor()
+        {
+            @Override
+            public void visit(Classification classification, Assignment assignment)
+            {
+                if (vehicle.equals(assignment.getInvestmentVehicle()))
+                    answer.add(classification);
+            }
+        });
+
+        return answer;
+    }
+
     public void foreach(Visitor visitor)
     {
         root.accept(visitor);
     }
+
 }
