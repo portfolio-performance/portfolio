@@ -33,7 +33,6 @@ public class YahooFinanceQuoteFeedTest
         security.setName("Daimler AG");
         security.setIsin("DE0007100000");
         security.setTickerSymbol("DAI.DE");
-        security.setType(Security.AssetClass.EQUITY);
 
         Calendar fiveYearsAgo = Calendar.getInstance();
         fiveYearsAgo.setTime(Dates.today()); // no milliseconds
@@ -60,16 +59,11 @@ public class YahooFinanceQuoteFeedTest
         };
 
         ArrayList<Security> securities = new ArrayList<Security>();
-        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Adidas", "DE000A1EWWW0", "ADS.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "BAYN.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "BMW.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID));
-        securities.add(new Security("Daimler AG", "DE0007100000", "CBK.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Adidas", "DE000A1EWWW0", "ADS.DE", YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "BAYN.DE", YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "BMW.DE", YahooFinanceQuoteFeed.ID));
+        securities.add(new Security("Daimler AG", "DE0007100000", "CBK.DE", YahooFinanceQuoteFeed.ID));
 
         List<Exception> errors = new ArrayList<Exception>();
         feed.updateLatestQuotes(securities, errors);
@@ -105,10 +99,8 @@ public class YahooFinanceQuoteFeedTest
             }
         };
 
-        Security daimler = new Security("Daimler AG", "DE0007100000", "DAI.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID);
-        Security adidas = new Security("Adidas", "DE000A1EWWW0", "ADS.DE", Security.AssetClass.EQUITY,
-                        YahooFinanceQuoteFeed.ID);
+        Security daimler = new Security("Daimler AG", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID);
+        Security adidas = new Security("Adidas", "DE000A1EWWW0", "ADS.DE", YahooFinanceQuoteFeed.ID);
 
         ArrayList<Security> securities = new ArrayList<Security>();
         securities.add(daimler);
@@ -142,7 +134,6 @@ public class YahooFinanceQuoteFeedTest
         security.setName("Daimler AG");
         security.setIsin("DE0007100000");
         security.setTickerSymbol("DAI.DE");
-        security.setType(Security.AssetClass.EQUITY);
 
         feed.updateHistoricalQuotes(security);
 

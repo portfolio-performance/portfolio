@@ -15,7 +15,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -131,7 +130,7 @@ public abstract class CSVImportDefinition
 
         String key = isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn;
         Security security = new Security(MessageFormat.format(Messages.CSVImportedSecurityLabel, key), isin,
-                        tickerSymbol, AssetClass.EQUITY, QuoteFeed.MANUAL);
+                        tickerSymbol, QuoteFeed.MANUAL);
         security.setWkn(wkn);
         client.addSecurity(security);
 
@@ -343,7 +342,6 @@ public abstract class CSVImportDefinition
             fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
-            fields.add(new EnumField<AssetClass>(Messages.CSVColumn_Type, AssetClass.class).setOptional(true));
         }
 
         @Override
@@ -378,15 +376,11 @@ public abstract class CSVImportDefinition
                 description = MessageFormat.format(Messages.CSVImportedSecurityLabel, isin != null ? isin
                                 : tickerSymbol != null ? tickerSymbol : wkn);
 
-            AssetClass assetClass = convertEnum(Messages.CSVColumn_Type, AssetClass.class, rawValues, field2column);
-            if (assetClass == null)
-                assetClass = AssetClass.EQUITY;
-
             String feed = QuoteFeed.MANUAL;
             if (tickerSymbol != null)
                 feed = YahooFinanceQuoteFeed.ID;
 
-            security = new Security(description, isin, tickerSymbol, assetClass, feed);
+            security = new Security(description, isin, tickerSymbol, feed);
             security.setWkn(wkn);
             client.addSecurity(security);
         }

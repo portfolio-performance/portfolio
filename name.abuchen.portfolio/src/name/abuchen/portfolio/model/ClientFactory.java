@@ -9,21 +9,14 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
-import java.util.UUID;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class ClientFactory
 {
@@ -38,6 +31,7 @@ public class ClientFactory
 
         if (client.getVersion() == 1)
         {
+            fixAssetClassTypes(client);
             addFeedAndExchange(client);
             client.setVersion(2);
         }
@@ -145,6 +139,18 @@ public class ClientFactory
         writer.close();
     }
 
+    @SuppressWarnings("deprecation")
+    private static void fixAssetClassTypes(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            if ("STOCK".equals(security.getType())) //$NON-NLS-1$
+                security.setType("EQUITY"); //$NON-NLS-1$
+            else if ("BOND".equals(security.getType())) //$NON-NLS-1$
+                security.setType("DEBT"); //$NON-NLS-1$
+        }
+    }
+
     private static void addFeedAndExchange(Client client)
     {
         for (Security s : client.getSecurities())
@@ -210,36 +216,29 @@ public class ClientFactory
 
     private static void addAssetClassesAsTaxonomy(Client client)
     {
-        Taxonomy taxonomy = new Taxonomy("asset-class", Messages.LabelAssetClasses); //$NON-NLS-1$
-        Classification root = new Classification(UUID.randomUUID().toString(), Messages.LabelAssetClasses);
-        taxonomy.setRootNode(root);
+        TaxonomyTemplate template = TaxonomyTemplate.byId("assetclasses"); //$NON-NLS-1$
+        Taxonomy taxonomy = template.build();
 
-        for (AssetClass assetClass : AssetClass.values())
+        int rank = 1;
+
+        Classification cash = taxonomy.getClassificationById("CASH"); //$NON-NLS-1$
+        for (Account account : client.getAccounts())
         {
-            Classification classification = new Classification(root, assetClass.name(), assetClass.toString());
-            classification.setWeight(Classification.ONE_HUNDRED_PERCENT / AssetClass.values().length);
-            classification.setRank(assetClass.ordinal());
-            root.addChild(classification);
+            Assignment assignment = new Assignment(account);
+            assignment.setRank(rank++);
+            cash.addAssignment(assignment);
+        }
 
-            int rank = 1;
-            for (Security security : client.getSecurities())
-            {
-                if (security.getType() == assetClass)
-                {
-                    Assignment assignment = new Assignment(security);
-                    assignment.setRank(rank++);
-                    classification.addAssignment(assignment);
-                }
-            }
+        for (Security security : client.getSecurities())
+        {
+            @SuppressWarnings("deprecation")
+            Classification classification = taxonomy.getClassificationById(security.getType());
 
-            if (assetClass == AssetClass.CASH)
+            if (classification != null)
             {
-                for (Account account : client.getAccounts())
-                {
-                    Assignment assignment = new Assignment(account);
-                    assignment.setRank(rank++);
-                    classification.addAssignment(assignment);
-                }
+                Assignment assignment = new Assignment(security);
+                assignment.setRank(rank++);
+                classification.addAssignment(assignment);
             }
         }
 
@@ -378,7 +377,6 @@ public class ClientFactory
                     xstream.aliasField("i", ConsumerPriceIndex.class, "index");
 
                     xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }));
-                    xstream.registerConverter(new AssetClassConverter());
 
                     xstream.alias("buysell", BuySellEntry.class);
                     xstream.alias("account-transfer", AccountTransferEntry.class);
@@ -387,39 +385,14 @@ public class ClientFactory
                     xstream.alias("taxonomy", Taxonomy.class);
                     xstream.alias("classification", Classification.class);
                     xstream.alias("assignment", Assignment.class);
+
+                    // omitting 'type' will prevent writing the field
+                    // (making it transient prevents reading it as well ->
+                    // compatibility!)
+                    xstream.omitField(Security.class, "type");
                 }
             }
         }
         return xstream;
     }
-
-    private static class AssetClassConverter implements Converter
-    {
-
-        @SuppressWarnings("rawtypes")
-        @Override
-        public boolean canConvert(Class type)
-        {
-            return Security.AssetClass.class.isAssignableFrom(type);
-        }
-
-        @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
-        {
-            writer.setValue(((AssetClass) source).name());
-        }
-
-        @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-        {
-            // see #5 - renamed STOCK->EQUITY and BOND->DEBT
-            String value = reader.getValue();
-            if ("STOCK".equals(value)) //$NON-NLS-1$
-                value = "EQUITY"; //$NON-NLS-1$
-            else if ("BOND".equals(value)) //$NON-NLS-1$
-                value = "DEBT"; //$NON-NLS-1$
-            return AssetClass.valueOf(value);
-        }
-    }
-
 }

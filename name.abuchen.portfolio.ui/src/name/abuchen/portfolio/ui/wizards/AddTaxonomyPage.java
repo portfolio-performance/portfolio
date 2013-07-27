@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.wizards;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.TaxonomyTemplate;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;

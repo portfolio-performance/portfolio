@@ -79,7 +79,7 @@ public class PerformanceIndex
 
         for (Security security : client.getSecurities())
         {
-            if (security.getType() == assetClass)
+            if (assetClass.name().equals(security.getType()))
                 category.addSecurity(security);
         }
 

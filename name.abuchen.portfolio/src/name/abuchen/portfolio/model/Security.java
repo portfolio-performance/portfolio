@@ -24,6 +24,7 @@ public final class Security implements InvestmentVehicle
         }
     }
 
+    @Deprecated
     public enum AssetClass
     {
         CASH, DEBT, EQUITY, REAL_ESTATE, COMMODITY;
@@ -44,7 +45,6 @@ public final class Security implements InvestmentVehicle
     private String tickerSymbol;
     private String wkn;
 
-    private AssetClass type;
     private String industryClassification;
 
     private String feed;
@@ -53,18 +53,20 @@ public final class Security implements InvestmentVehicle
 
     private boolean isRetired = false;
 
+    @Deprecated
+    private String type;
+
     public Security()
     {
         this.uuid = UUID.randomUUID().toString();
     }
 
-    public Security(String name, String isin, String tickerSymbol, AssetClass type, String feed)
+    public Security(String name, String isin, String tickerSymbol, String feed)
     {
         this();
         this.name = name;
         this.isin = isin;
         this.tickerSymbol = tickerSymbol;
-        this.type = type;
         this.feed = feed;
     }
 
@@ -147,12 +149,14 @@ public final class Security implements InvestmentVehicle
         this.industryClassification = industryClassification;
     }
 
-    public AssetClass getType()
+    @Deprecated
+    public String getType()
     {
         return type;
     }
 
-    public void setType(AssetClass type)
+    @Deprecated
+    /* package */void setType(String type)
     {
         this.type = type;
     }
@@ -335,5 +339,4 @@ public final class Security implements InvestmentVehicle
     {
         return getName();
     }
-
 }

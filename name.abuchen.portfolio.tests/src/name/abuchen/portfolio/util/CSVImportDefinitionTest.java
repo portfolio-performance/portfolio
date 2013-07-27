@@ -165,7 +165,6 @@ public class CSVImportDefinitionTest
         assertThat(s.getIsin(), is("DE0008404005"));
         assertThat(s.getTickerSymbol(), is("ALV.DE"));
         assertThat(s.getWkn(), is("840400"));
-        assertThat(s.getType(), is(Security.AssetClass.EQUITY));
     }
 
     @Test

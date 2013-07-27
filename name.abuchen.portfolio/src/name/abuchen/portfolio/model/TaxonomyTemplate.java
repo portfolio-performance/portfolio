@@ -1,13 +1,10 @@
-package name.abuchen.portfolio.util;
+package name.abuchen.portfolio.model;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Taxonomy;
 
 public final class TaxonomyTemplate
 {
@@ -30,6 +27,16 @@ public final class TaxonomyTemplate
     public static List<TaxonomyTemplate> list()
     {
         return Collections.unmodifiableList(TEMPLATES);
+    }
+
+    public static TaxonomyTemplate byId(String id)
+    {
+        for (TaxonomyTemplate template : TEMPLATES)
+        {
+            if (template.getId().equals(id))
+                return template;
+        }
+        return null;
     }
 
     public String getId()

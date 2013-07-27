@@ -75,7 +75,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
             else
             {
                 label = p.getSecurity().getName();
-                color = resources.createColor(Colors.valueOf(p.getSecurity().getType().name()).swt());
+                color = resources.createColor(Colors.valueOf(p.getSecurity().getType()).swt());
             }
 
             slices.add(new PieChart.Slice(p.calculateValue(), label, color));

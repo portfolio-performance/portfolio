@@ -7,7 +7,6 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -25,7 +24,7 @@ public class SecurityBuilder
         this.security = new Security(UUID.randomUUID().toString(), //
                         "DE0001", //$NON-NLS-1$
                         "DAX.DE", //$NON-NLS-1$
-                        AssetClass.EQUITY, QuoteFeed.MANUAL);
+                        QuoteFeed.MANUAL);
     }
 
     public SecurityBuilder addPrice(String date, long price)
