@@ -202,6 +202,16 @@ public class Client
         taxonomies.remove(taxonomy);
     }
 
+    public Taxonomy getTaxonomy(String id)
+    {
+        for (Taxonomy t : taxonomies)
+        {
+            if (id.equals(t.getId()))
+                return t;
+        }
+        return null;
+    }
+
     public void setProperty(String key, String value)
     {
         String oldValue = properties.put(key, value);

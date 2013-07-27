@@ -30,6 +30,7 @@ public class NewClientWizard extends Wizard
         addPage(new NewPortfolioAccountPage(client));
         addPage(new NewAccountPage(client));
         addPage(new ImportIndizesPage(client));
+        addPage(new AddTaxonomyPage(client));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }
