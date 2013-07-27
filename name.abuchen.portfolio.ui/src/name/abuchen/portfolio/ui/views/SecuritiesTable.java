@@ -8,8 +8,6 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.IndustryClassification;
-import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -160,7 +158,6 @@ public final class SecuritiesTable
                 return buf.toString();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "type")); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLatest, SWT.RIGHT, 60);
@@ -317,13 +314,19 @@ public final class SecuritiesTable
 
     private void addIndustryClassificationColumns(ShowHideColumnHelper support)
     {
+        // FIXME support any taxonomy, not only industry classifications
+
+        final Taxonomy taxonomy = getClient().getTaxonomy("industries"); //$NON-NLS-1$
+        if (taxonomy == null)
+            return;
+
         List<Integer> options = new ArrayList<Integer>();
 
         StringBuilder commonLabels = new StringBuilder();
         commonLabels.append("{0,choice,"); //$NON-NLS-1$
 
         int index = 1;
-        for (String label : getClient().getIndustryTaxonomy().getLabels())
+        for (String label : taxonomy.getDimensions())
         {
             options.add(index);
             if (index > 1)
@@ -346,28 +349,35 @@ public final class SecuritiesTable
         column.setOptions(menuLabels, columnLabels, options.toArray(new Integer[0]));
         column.setLabelProvider(new OptionLabelProvider()
         {
-            private IndustryClassification taxonomy = getClient().getIndustryTaxonomy();
-
             @Override
             public String getText(Object e, Integer option)
             {
                 Security security = (Security) e;
-                IndustryClassification.Category category = taxonomy.getCategoryById(security
-                                .getIndustryClassification());
-                if (category == null)
+                List<Classification> classifications = taxonomy.getClassifications(security);
+
+                if (classifications.isEmpty())
                     return null;
 
-                switch (option)
+                StringBuilder answer = new StringBuilder();
+
+                for (Classification c : classifications)
                 {
-                    case 100:
-                        return category.getPathLabel();
-                    default:
-                        List<Category> path = category.getPath();
-                        if (option < path.size())
-                            return path.get(option).getLabel();
+                    if (answer.length() > 0)
+                        answer.append(", "); //$NON-NLS-1$
+
+                    switch (option)
+                    {
+                        case 100:
+                            answer.append(c.getFullName(200));
+                            break;
+                        default:
+                            List<Classification> path = c.getPathToRoot();
+                            if (option < path.size())
+                                answer.append(path.get(option).getName());
+                    }
                 }
 
-                return null;
+                return answer.toString();
             }
         });
         column.setVisible(false);

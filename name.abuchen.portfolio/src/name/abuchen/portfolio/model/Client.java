@@ -26,13 +26,13 @@ public class Client
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
     private List<InvestmentPlan> plans;
+    private List<Taxonomy> taxonomies;
     private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
 
     private Map<String, String> properties; // old versions!
 
+    @Deprecated
     private String industryTaxonomyId;
-
-    private List<Taxonomy> taxonomies;
 
     public Client()
     {
@@ -177,14 +177,10 @@ public class Client
         return this.rootCategory;
     }
 
-    public void setIndustryTaxonomy(IndustryClassification taxonomy)
+    @Deprecated
+    /* package */String getIndustryTaxonomy()
     {
-        this.industryTaxonomyId = taxonomy != null ? taxonomy.getIdentifier() : null;
-    }
-
-    public IndustryClassification getIndustryTaxonomy()
-    {
-        return IndustryClassification.lookup(industryTaxonomyId);
+        return industryTaxonomyId;
     }
 
     public List<Taxonomy> getTaxonomies()

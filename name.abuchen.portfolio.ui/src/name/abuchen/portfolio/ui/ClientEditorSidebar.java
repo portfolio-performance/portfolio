@@ -211,7 +211,6 @@ import org.eclipse.swt.widgets.Control;
         new Entry(statementOfAssets,
                         new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
         new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.ShortLabelIndustries, "IndustryClassification")); //$NON-NLS-1$
         new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
 
         Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
@@ -300,9 +299,6 @@ import org.eclipse.swt.widgets.Control;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
-        new Entry(section, new ActivateViewAction(
-                        editor.getClient().getIndustryTaxonomy().getRootCategory().getLabel(),
-                        "IndustryClassificationDefinition")); //$NON-NLS-1$
     }
 
 }

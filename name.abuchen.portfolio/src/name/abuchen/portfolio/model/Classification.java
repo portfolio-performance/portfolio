@@ -268,6 +268,20 @@ public class Classification
         return answer;
     }
 
+    public List<Classification> getPathToRoot()
+    {
+        LinkedList<Classification> path = new LinkedList<Classification>();
+
+        Classification item = this;
+        while (item != null)
+        {
+            path.addFirst(item);
+            item = item.getParent();
+        }
+
+        return path;
+    }
+
     public void accept(Visitor visitor)
     {
         visitor.visit(this);

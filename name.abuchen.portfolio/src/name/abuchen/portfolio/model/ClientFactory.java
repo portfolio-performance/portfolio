@@ -180,7 +180,7 @@ public class ClientFactory
 
     private static void fixStoredChartConfigurations(Client client)
     {
-        // Until now, the performance chart was showing *only* the benc hmark
+        // Until now, the performance chart was showing *only* the benchmark
         // series, not the actual performance series. Change keys as benchmark
         // values are prefixed with '[b]'
 
@@ -248,42 +248,21 @@ public class ClientFactory
 
     private static void addIndustryClassificationAsTaxonomy(Client client)
     {
-        IndustryClassification industry = client.getIndustryTaxonomy();
-        IndustryClassification.Category category = industry.getRootCategory();
+        @SuppressWarnings("deprecation")
+        String oldIndustryId = client.getIndustryTaxonomy();
 
-        Taxonomy taxonomy = new Taxonomy(industry.getIdentifier(), Messages.LabelIndustryClassification);
-        taxonomy.setDimensions(industry.getLabels());
+        Taxonomy taxonomy = null;
 
-        Classification root = new Classification(category.getId(), category.getLabel());
-        root.setDescription(category.getDescription());
-        taxonomy.setRootNode(root);
+        if ("simple2level".equals(oldIndustryId)) //$NON-NLS-1$
+            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_SIMPLE2LEVEL).build();
+        else
+            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_GICS).build();
 
-        buildTree(root, category);
+        taxonomy.setId("industries"); //$NON-NLS-1$
+
         assignSecurities(client, taxonomy);
 
         client.addTaxonomy(taxonomy);
-    }
-
-    private static void buildTree(Classification node, IndustryClassification.Category category)
-    {
-        int weight = Classification.ONE_HUNDRED_PERCENT / category.getChildren().size();
-        int rank = 0;
-
-        for (IndustryClassification.Category child : category.getChildren())
-        {
-            Classification classification = new Classification(node, child.getId(), child.getLabel());
-            classification.setDescription(child.getDescription());
-            classification.setWeight(weight);
-            classification.setRank(rank++);
-            node.addChild(classification);
-
-            if (!child.getChildren().isEmpty())
-                buildTree(classification, child);
-        }
-
-        // fix weight of last child to make it 100%
-        weight = Classification.ONE_HUNDRED_PERCENT - (weight * (category.getChildren().size() - 1));
-        node.getChildren().get(node.getChildren().size() - 1).setWeight(weight);
     }
 
     private static void assignSecurities(Client client, Taxonomy taxonomy)
@@ -291,6 +270,7 @@ public class ClientFactory
         int rank = 0;
         for (Security security : client.getSecurities())
         {
+            @SuppressWarnings("deprecation")
             Classification classification = taxonomy.getClassificationById(security.getIndustryClassification());
 
             if (classification != null)
@@ -391,6 +371,8 @@ public class ClientFactory
                     // (making it transient prevents reading it as well ->
                     // compatibility!)
                     xstream.omitField(Security.class, "type");
+                    xstream.omitField(Security.class, "industryClassification");
+                    xstream.omitField(Client.class, "industryTaxonomyId");
                 }
             }
         }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
@@ -38,8 +37,7 @@ public class SecurityDetailsViewer
     public enum Facet
     {
         MASTER_DATA(MasterDataFacet.class), //
-        LATEST_QUOTE(LatestQuoteFacet.class), //
-        INDUSTRY_CLASSIFICATION(IndustryClassificationFacet.class);
+        LATEST_QUOTE(LatestQuoteFacet.class);
 
         private Class<? extends SecurityFacet> clazz;
 
@@ -280,89 +278,13 @@ public class SecurityDetailsViewer
 
     }
 
-    private static class IndustryClassificationFacet extends SecurityFacet
-    {
-        private IndustryClassification taxonomy;
-
-        private List<Label> labels = new ArrayList<Label>();
-
-        public IndustryClassificationFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
-
-        @Override
-        Control createViewControl(Composite parent, Client client)
-        {
-            taxonomy = client.getIndustryTaxonomy();
-
-            Composite composite = new Composite(parent, SWT.NONE);
-            FormLayout layout = new FormLayout();
-            layout.marginLeft = 5;
-            layout.marginRight = 5;
-            composite.setLayout(layout);
-
-            Label heading = createHeading(composite, taxonomy.getRootCategory().getLabel());
-            FormData data = new FormData();
-            data.top = new FormAttachment(0, 5);
-            heading.setLayoutData(data);
-
-            for (int ii = 0; ii < taxonomy.getLabels().size(); ii++)
-            {
-                Label label = new Label(composite, SWT.NONE);
-                labels.add(label);
-
-                if (ii == 0)
-                {
-                    data = new FormData();
-                    data.top = new FormAttachment(heading, 5);
-                    data.left = new FormAttachment(0);
-                    data.right = new FormAttachment(100);
-                    label.setLayoutData(data);
-                }
-                else
-                {
-                    below(labels.get(ii - 1), label);
-                }
-            }
-
-            return composite;
-        }
-
-        @Override
-        void setInput(Security security)
-        {
-            if (security == null)
-            {
-                for (Label l : labels)
-                    l.setText(EMPTY_LABEL);
-            }
-            else
-            {
-                IndustryClassification.Category category = taxonomy.getCategoryById(security
-                                .getIndustryClassification());
-
-                List<IndustryClassification.Category> path = category != null ? category.getPath()
-                                : new ArrayList<IndustryClassification.Category>();
-
-                for (int ii = 0; ii < labels.size(); ii++)
-                    labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getLabel()) : EMPTY_LABEL);
-            }
-        }
-
-        private String escape(String label)
-        {
-            return label.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-    }
-
     private Composite container;
 
     private List<SecurityFacet> children = new ArrayList<SecurityFacet>();
 
     public SecurityDetailsViewer(Composite parent, int style, Client client)
     {
-        this(parent, style, client, Facet.LATEST_QUOTE, Facet.INDUSTRY_CLASSIFICATION);
+        this(parent, style, client, Facet.LATEST_QUOTE);
     }
 
     public SecurityDetailsViewer(Composite parent, int style, Client client, Facet... facets)

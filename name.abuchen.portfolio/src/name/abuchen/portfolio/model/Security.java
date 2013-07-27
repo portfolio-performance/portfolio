@@ -31,8 +31,6 @@ public final class Security implements InvestmentVehicle
     private String tickerSymbol;
     private String wkn;
 
-    private String industryClassification;
-
     private String feed;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
@@ -41,6 +39,9 @@ public final class Security implements InvestmentVehicle
 
     @Deprecated
     private String type;
+
+    @Deprecated
+    private String industryClassification;
 
     public Security()
     {
@@ -125,18 +126,14 @@ public final class Security implements InvestmentVehicle
             return name;
     }
 
-    public String getIndustryClassification()
+    @Deprecated
+    /* package */String getIndustryClassification()
     {
         return industryClassification;
     }
 
-    public void setIndustryClassification(String industryClassification)
-    {
-        this.industryClassification = industryClassification;
-    }
-
     @Deprecated
-    public String getType()
+    /* package */String getType()
     {
         return type;
     }
@@ -308,8 +305,6 @@ public final class Security implements InvestmentVehicle
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
-        answer.type = type;
-        answer.industryClassification = industryClassification;
 
         answer.feed = feed;
         answer.prices = new ArrayList<SecurityPrice>(prices);

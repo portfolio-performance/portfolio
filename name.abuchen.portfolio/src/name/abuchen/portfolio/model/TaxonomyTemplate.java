@@ -9,10 +9,13 @@ import java.util.UUID;
 
 public final class TaxonomyTemplate
 {
+    /* package */static final String INDUSTRY_GICS = "industry-gics"; //$NON-NLS-1$
+    /* package */static final String INDUSTRY_SIMPLE2LEVEL = "industry-simple2level"; //$NON-NLS-1$
+
     private static final List<TaxonomyTemplate> TEMPLATES = Arrays.asList( //
                     new TaxonomyTemplate("assetclasses"), //$NON-NLS-1$
-                    new TaxonomyTemplate("industry-gics"), //$NON-NLS-1$
-                    new TaxonomyTemplate("industry-simple2level")); //$NON-NLS-1$
+                    new TaxonomyTemplate(INDUSTRY_GICS), //
+                    new TaxonomyTemplate(INDUSTRY_SIMPLE2LEVEL));
 
     private String id;
     private String name;
