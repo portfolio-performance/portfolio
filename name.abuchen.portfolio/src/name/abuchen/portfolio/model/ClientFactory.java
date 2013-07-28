@@ -199,7 +199,7 @@ public class ClientFactory
     private static void addAssetClassesAsTaxonomy(Client client)
     {
         TaxonomyTemplate template = TaxonomyTemplate.byId("assetclasses"); //$NON-NLS-1$
-        Taxonomy taxonomy = template.build();
+        Taxonomy taxonomy = template.buildFromTemplate();
         taxonomy.setId("assetclasses"); //$NON-NLS-1$
 
         int rank = 1;
@@ -234,9 +234,9 @@ public class ClientFactory
         Taxonomy taxonomy = null;
 
         if ("simple2level".equals(oldIndustryId)) //$NON-NLS-1$
-            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_SIMPLE2LEVEL).build();
+            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_SIMPLE2LEVEL).buildFromTemplate();
         else
-            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_GICS).build();
+            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_GICS).buildFromTemplate();
 
         taxonomy.setId("industries"); //$NON-NLS-1$
 

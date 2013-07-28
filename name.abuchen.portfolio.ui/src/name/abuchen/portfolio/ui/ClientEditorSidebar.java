@@ -5,13 +5,17 @@ import java.util.UUID;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -19,8 +23,11 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 
 /* package */class ClientEditorSidebar
 {
@@ -55,9 +62,12 @@ import org.eclipse.swt.widgets.Control;
 
     private ClientEditor editor;
 
+    private Menu taxonomyMenu;
+
     private Sidebar sidebar;
     private Entry allSecurities;
     private Entry statementOfAssets;
+    private Entry taxonomies;
 
     public ClientEditorSidebar(ClientEditor editor)
     {
@@ -220,29 +230,18 @@ import org.eclipse.swt.widgets.Control;
 
     private void createTaxonomyDataSection(final Sidebar sidebar)
     {
-        final Entry section = new Entry(sidebar, "Taxonomies");
-        section.setAction(new Action("Taxonomies", PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        taxonomies = new Entry(sidebar, "Taxonomies");
+        taxonomies.setAction(new Action("Taxonomies", PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
         {
             @Override
             public void run()
             {
-                String name = askTaxonomyName("New Taxonomy");
-                if (name == null)
-                    return;
-
-                Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
-                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
-                editor.getClient().addTaxonomy(taxonomy);
-                editor.markDirty();
-
-                createTaxonomyEntry(section, taxonomy);
-
-                sidebar.layout();
+                showCreateTaxonomyMenu();
             }
         });
 
         for (Taxonomy taxonomy : editor.getClient().getTaxonomies())
-            createTaxonomyEntry(section, taxonomy);
+            createTaxonomyEntry(taxonomies, taxonomy);
     }
 
     private void createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
@@ -282,6 +281,76 @@ import org.eclipse.swt.widgets.Control;
                 });
             }
         });
+    }
+
+    private void showCreateTaxonomyMenu()
+    {
+        if (taxonomyMenu == null)
+        {
+            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+            menuMgr.setRemoveAllWhenShown(true);
+            menuMgr.addMenuListener(new IMenuListener()
+            {
+                @Override
+                public void menuAboutToShow(IMenuManager manager)
+                {
+                    taxonomyMenuAboutToShow(manager);
+                }
+            });
+            taxonomyMenu = menuMgr.createContextMenu(sidebar.getShell());
+
+            sidebar.addDisposeListener(new DisposeListener()
+            {
+                @Override
+                public void widgetDisposed(DisposeEvent e)
+                {
+                    taxonomyMenu.dispose();
+                }
+            });
+        }
+        taxonomyMenu.setVisible(true);
+    }
+
+    private void taxonomyMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new Action("Neu...")
+        {
+            @Override
+            public void run()
+            {
+                String name = askTaxonomyName("New Taxonomy");
+                if (name == null)
+                    return;
+
+                Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
+                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
+
+                editor.getClient().addTaxonomy(taxonomy);
+                editor.markDirty();
+                createTaxonomyEntry(taxonomies, taxonomy);
+                sidebar.layout();
+            }
+        });
+
+        manager.add(new Separator());
+        manager.add(new LabelOnly("Templates"));
+
+        for (final TaxonomyTemplate template : TaxonomyTemplate.list())
+        {
+            manager.add(new Action(template.getName())
+            {
+                @Override
+                public void run()
+                {
+                    Taxonomy taxonomy = template.build();
+
+                    editor.getClient().addTaxonomy(taxonomy);
+                    editor.markDirty();
+                    createTaxonomyEntry(taxonomies, taxonomy);
+                    sidebar.layout();
+                }
+            });
+        }
     }
 
     private String askTaxonomyName(String initialValue)

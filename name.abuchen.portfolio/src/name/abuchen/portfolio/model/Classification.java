@@ -90,6 +90,11 @@ public class Classification
         return id;
     }
 
+    /* package */void setId(String id)
+    {
+        this.id = id;
+    }
+
     public String getName()
     {
         return name;

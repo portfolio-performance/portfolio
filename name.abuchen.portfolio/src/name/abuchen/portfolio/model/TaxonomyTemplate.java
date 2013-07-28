@@ -53,11 +53,38 @@ public final class TaxonomyTemplate
         return name;
     }
 
+    /**
+     * Builds a taxonomy based on the template.
+     */
     public Taxonomy build()
+    {
+        Taxonomy taxonomy = buildFromTemplate();
+
+        // classification identifier must be globally unique because they are
+        // used when storing chart configurations, etc.
+        taxonomy.setId(UUID.randomUUID().toString());
+        taxonomy.foreach(new Taxonomy.Visitor()
+        {
+            @Override
+            public void visit(Classification classification)
+            {
+                classification.setId(UUID.randomUUID().toString());
+            }
+        });
+
+        return taxonomy;
+    }
+
+    /**
+     * Builds a taxonomy with exactly the identifier specified in the template.
+     * Needed to convert legacy (hard-coded) taxonomies such as asset classes
+     * and industry classifications to new style taxonomies.
+     */
+    /* package */Taxonomy buildFromTemplate()
     {
         ResourceBundle bundle = ResourceBundle.getBundle("/META-INF/taxonomy/" + id); //$NON-NLS-1$
 
-        Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
+        Taxonomy taxonomy = new Taxonomy(id, name);
 
         Classification root = new Classification(id, name);
         taxonomy.setRootNode(root);
