@@ -3,13 +3,11 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
@@ -49,8 +47,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
@@ -160,8 +156,6 @@ import org.swtchart.LineStyle;
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             else if (type == Portfolio.class)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
-            else if (type == Category.class)
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             else
                 return null;
         }
@@ -178,8 +172,6 @@ import org.swtchart.LineStyle;
                 return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
             else if (type == Portfolio.class)
                 return prefix + Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
-            else if (type == Category.class)
-                return prefix + Category.class.getSimpleName() + ((Category) instance).getUUID();
             else if (type == ConsumerPriceIndex.class)
                 return prefix + ConsumerPriceIndex.class.getSimpleName();
 
@@ -411,20 +403,6 @@ import org.swtchart.LineStyle;
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getSegment(index++)
                             .getColor()));
-
-        LinkedList<Category> stack = new LinkedList<Category>();
-        stack.add(client.getRootCategory());
-
-        while (!stack.isEmpty())
-        {
-            Category category = stack.removeFirst();
-            for (Category child : category.getChildren())
-            {
-                availableSeries.add(new DataSeries(Category.class, child, child.getName(), wheel.getSegment(index++)
-                                .getColor()));
-                stack.add(child);
-            }
-        }
     }
 
     private void addDefaultDataSeries()

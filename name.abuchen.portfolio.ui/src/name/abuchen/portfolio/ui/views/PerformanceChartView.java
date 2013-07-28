@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
@@ -164,8 +163,6 @@ public class PerformanceChartView extends AbstractHistoricView
                     addPortfolio(item, (Portfolio) item.getInstance(), warnings);
                 else if (item.getType() == Account.class)
                     addAccount(item, (Account) item.getInstance(), warnings);
-                else if (item.getType() == Category.class)
-                    addCategory(item, (Category) item.getInstance(), warnings);
             }
 
             PortfolioPlugin.log(warnings);
@@ -319,23 +316,6 @@ public class PerformanceChartView extends AbstractHistoricView
         item.configure(series);
     }
 
-    private void addCategory(DataSeries item, Category category, List<Exception> warnings)
-    {
-        PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
-        if (categoryIndex == null)
-        {
-            categoryIndex = PerformanceIndex.forCategory(getClient(), category, getReportingPeriod(), warnings);
-            dataCache.put(category, categoryIndex);
-        }
-
-        if (aggregationPeriod != null)
-            categoryIndex = Aggregation.aggregate(categoryIndex, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(categoryIndex.getDates(), categoryIndex.getAccumulatedPercentage(),
-                        category.getName());
-        item.configure(series);
-    }
-
     private final class AggregationPeriodDropDown extends AbstractDropDown
     {
         private AggregationPeriodDropDown(ToolBar toolBar)
@@ -399,7 +379,7 @@ public class PerformanceChartView extends AbstractHistoricView
             addMenu(manager, Client.class, Messages.PerformanceChartLabelAccumulatedIRR);
 
             Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
-                            Security.class, Portfolio.class, Account.class, Category.class }));
+                            Security.class, Portfolio.class, Account.class }));
 
             for (DataSeries series : picker.getSelectedDataSeries())
             {

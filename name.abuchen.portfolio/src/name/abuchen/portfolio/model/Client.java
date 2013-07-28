@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.Messages;
-
 public class Client
 {
     /* package */static final int CURRENT_VERSION = 14;
@@ -27,12 +25,14 @@ public class Client
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
     private List<InvestmentPlan> plans;
     private List<Taxonomy> taxonomies;
-    private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
 
     private Map<String, String> properties; // old versions!
 
     @Deprecated
     private String industryTaxonomyId;
+
+    @Deprecated
+    private Category rootCategory;
 
     public Client()
     {
@@ -109,7 +109,7 @@ public class Client
         for (Watchlist w : watchlists)
             w.getSecurities().remove(security);
         deleteInvestmentPlans(security);
-        // FIXME possibly remove transactions and category assignments as well
+        // FIXME possibly remove transactions and taxonomy assignments as well
     }
 
     public List<Watchlist> getWatchlists()
@@ -167,11 +167,7 @@ public class Client
         return portfolios;
     }
 
-    public void setRootCategory(Category root)
-    {
-        this.rootCategory = root;
-    }
-
+    @Deprecated
     public Category getRootCategory()
     {
         return this.rootCategory;

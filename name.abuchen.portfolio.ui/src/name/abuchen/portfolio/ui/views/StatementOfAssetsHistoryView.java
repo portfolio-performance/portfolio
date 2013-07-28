@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Category;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -152,8 +151,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                     addPortfolio(item, warnings);
                 else if (item.getType() == Account.class)
                     addAccount(item, warnings);
-                else if (item.getType() == Category.class)
-                    addCategory(item, warnings);
             }
 
             PortfolioPlugin.log(warnings);
@@ -237,22 +234,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         ILineSeries series = chart.addDateSeries(accountIndex.getDates(), //
                         toDouble(accountIndex.getTotals(), Values.Amount.divider()), //
                         account.getName());
-        item.configure(series);
-    }
-
-    private void addCategory(DataSeries item, List<Exception> warnings)
-    {
-        Category category = (Category) item.getInstance();
-        PerformanceIndex categoryIndex = (PerformanceIndex) dataCache.get(category);
-        if (categoryIndex == null)
-        {
-            categoryIndex = PerformanceIndex.forCategory(getClient(), category, getReportingPeriod(), warnings);
-            dataCache.put(category, categoryIndex);
-        }
-
-        ILineSeries series = chart.addDateSeries(categoryIndex.getDates(), //
-                        toDouble(categoryIndex.getTotals(), Values.Amount.divider()), //
-                        category.getName());
         item.configure(series);
     }
 

@@ -211,7 +211,6 @@ import org.eclipse.swt.widgets.Control;
         new Entry(statementOfAssets,
                         new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
         new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
 
         Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
                         "Performance")); //$NON-NLS-1$

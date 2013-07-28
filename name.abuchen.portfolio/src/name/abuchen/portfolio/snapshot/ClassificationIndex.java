@@ -4,33 +4,39 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Category;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy.Visitor;
 
-/* package */final class CategoryIndex
+/* package */final class ClassificationIndex
 {
-    private CategoryIndex()
+    private ClassificationIndex()
     {}
 
-    /* package */static PerformanceIndex calculate(Client client, Category category, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    /* package */static PerformanceIndex calculate(final Client client, Classification classification,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        Client pseudoClient = new Client();
+        final Client pseudoClient = new Client();
 
-        for (Object object : category.getTreeElements())
+        classification.accept(new Visitor()
         {
-            if (object instanceof Security)
+            @Override
+            public void visit(Classification classification, Assignment assignment)
             {
-                addSecurity(pseudoClient, client, (Security) object);
+                // FIXME works only for 100% assignments!
+                InvestmentVehicle vehicle = assignment.getInvestmentVehicle();
+
+                if (vehicle instanceof Security)
+                    addSecurity(pseudoClient, client, (Security) vehicle);
+                else if (vehicle instanceof Account)
+                    addAccount(pseudoClient, (Account) vehicle);
             }
-            else if (object instanceof Account)
-            {
-                addAccount(pseudoClient, (Account) object);
-            }
-        }
+        });
 
         return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
     }

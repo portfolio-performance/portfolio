@@ -61,7 +61,7 @@ public final class TaxonomyTemplate
 
         Classification root = new Classification(id, name);
         taxonomy.setRootNode(root);
-        taxonomy.setDimensions(Arrays.asList(getString(bundle, "labels").split(","))); //$NON-NLS-1$ //$NON-NLS-2$);
+        taxonomy.setDimensions(Arrays.asList(getString(bundle, "labels").split(","))); //$NON-NLS-1$ //$NON-NLS-2$
 
         readClassification(bundle, root);
 

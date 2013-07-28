@@ -699,15 +699,12 @@ public final class SecuritiesTable
                 @Override
                 public void run()
                 {
+                    // FIXME warn / delete from taxonomies as well
+
                     if (!security.getTransactions(getClient()).isEmpty())
                     {
                         MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
                                         MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
-                    }
-                    else if (getClient().getRootCategory().getTreeElements().contains(security))
-                    {
-                        MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible, MessageFormat.format(
-                                        Messages.MsgDeletionNotPossibleAssignedInAllocation, security.getName()));
                     }
                     else
                     {

@@ -89,12 +89,7 @@ public class ClientFactory
 
         if (client.getVersion() == 10)
         {
-            for (Account a : client.getAccounts())
-                a.generateUUID();
-            for (Portfolio p : client.getPortfolios())
-                p.generateUUID();
-            for (Category c : client.getRootCategory().flatten())
-                c.generateUUID();
+            generateUUIDs(client);
             client.setVersion(11);
         }
 
@@ -176,6 +171,17 @@ public class ClientFactory
                     t.setType(Type.DELIVERY_OUTBOUND);
             }
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void generateUUIDs(Client client)
+    {
+        for (Account a : client.getAccounts())
+            a.generateUUID();
+        for (Portfolio p : client.getPortfolios())
+            p.generateUUID();
+        for (Category c : client.getRootCategory().flatten())
+            c.generateUUID();
     }
 
     private static void fixStoredChartConfigurations(Client client)
@@ -282,11 +288,12 @@ public class ClientFactory
         }
     }
 
+    @SuppressWarnings("deprecation")
     private static void addAssetAllocationAsTaxonomy(Client client)
     {
         Category category = client.getRootCategory();
 
-        Taxonomy taxonomy = new Taxonomy("asset-allocation", Messages.LabelAssetAllocation); //$NON-NLS-1$
+        Taxonomy taxonomy = new Taxonomy("assetallocation", Messages.LabelAssetAllocation); //$NON-NLS-1$
         Classification root = new Classification(category.getUUID(), Messages.LabelAssetAllocation);
         taxonomy.setRootNode(root);
 
@@ -295,6 +302,7 @@ public class ClientFactory
         client.addTaxonomy(taxonomy);
     }
 
+    @SuppressWarnings("deprecation")
     private static void buildTree(Classification node, Category category)
     {
         int rank = 0;
@@ -319,7 +327,7 @@ public class ClientFactory
         }
     }
 
-    @SuppressWarnings("nls")
+    @SuppressWarnings({ "nls", "deprecation" })
     private static XStream xstream()
     {
         if (xstream == null)
@@ -373,6 +381,7 @@ public class ClientFactory
                     xstream.omitField(Security.class, "type");
                     xstream.omitField(Security.class, "industryClassification");
                     xstream.omitField(Client.class, "industryTaxonomyId");
+                    xstream.omitField(Client.class, "rootCategory");
                 }
             }
         }
