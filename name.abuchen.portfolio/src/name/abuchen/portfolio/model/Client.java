@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.Classification.Assignment;
+
 public class Client
 {
     /* package */static final int CURRENT_VERSION = 14;
@@ -75,7 +77,7 @@ public class Client
 
     public List<InvestmentPlan> getPlans()
     {
-        return plans;
+        return Collections.unmodifiableList(plans);
     }
 
     public void addPlan(InvestmentPlan plan)
@@ -90,7 +92,7 @@ public class Client
 
     public List<Security> getSecurities()
     {
-        return securities;
+        return Collections.unmodifiableList(securities);
     }
 
     public void addSecurity(Security security)
@@ -103,13 +105,15 @@ public class Client
         securities.addAll(sec);
     }
 
-    public void removeSecurity(Security security)
+    public void removeSecurity(final Security security)
     {
-        securities.remove(security);
         for (Watchlist w : watchlists)
             w.getSecurities().remove(security);
         deleteInvestmentPlans(security);
-        // FIXME possibly remove transactions and taxonomy assignments as well
+        deleteTaxonomyAssignments(security);
+        deleteAccountTransactions(security);
+        deletePortfolioTransactions(security);
+        securities.remove(security);
     }
 
     public List<Watchlist> getWatchlists()
@@ -119,7 +123,7 @@ public class Client
 
     public List<ConsumerPriceIndex> getConsumerPriceIndeces()
     {
-        return consumerPriceIndeces;
+        return Collections.unmodifiableList(consumerPriceIndeces);
     }
 
     public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
@@ -142,12 +146,13 @@ public class Client
     {
         deleteCrossEntries(account.getTransactions());
         deleteInvestmentPlans(account);
+        deleteTaxonomyAssignments(account);
         accounts.remove(account);
     }
 
     public List<Account> getAccounts()
     {
-        return accounts;
+        return Collections.unmodifiableList(accounts);
     }
 
     public void addPortfolio(Portfolio portfolio)
@@ -164,7 +169,7 @@ public class Client
 
     public List<Portfolio> getPortfolios()
     {
-        return portfolios;
+        return Collections.unmodifiableList(portfolios);
     }
 
     @Deprecated
@@ -255,6 +260,58 @@ public class Client
         {
             if (plan.getSecurity().equals(security))
                 removePlan(plan);
+        }
+    }
+
+    private void deleteTaxonomyAssignments(final InvestmentVehicle vehicle)
+    {
+        for (Taxonomy taxonomy : taxonomies)
+        {
+            taxonomy.foreach(new Taxonomy.Visitor()
+            {
+                @Override
+                public void visit(Classification classification, Assignment assignment)
+                {
+                    if (vehicle.equals(assignment.getInvestmentVehicle()))
+                        classification.removeAssignment(assignment);
+                }
+            });
+        }
+    }
+
+    private void deleteAccountTransactions(Security security)
+    {
+        for (Account account : accounts)
+        {
+            for (AccountTransaction t : new ArrayList<AccountTransaction>(account.getTransactions()))
+            {
+                if (t.getSecurity() == null || !security.equals(t.getSecurity()))
+                    continue;
+
+                if (t.getCrossEntry() != null)
+                    t.getCrossEntry().delete();
+                else
+                    account.getTransactions().remove(t);
+            }
+
+        }
+    }
+
+    private void deletePortfolioTransactions(Security security)
+    {
+        for (Portfolio portfolio : portfolios)
+        {
+            for (PortfolioTransaction t : new ArrayList<PortfolioTransaction>(portfolio.getTransactions()))
+            {
+                if (!security.equals(t.getSecurity()))
+                    continue;
+
+                if (t.getCrossEntry() != null)
+                    t.getCrossEntry().delete();
+                else
+                    portfolio.getTransactions().remove(t);
+            }
+
         }
     }
 

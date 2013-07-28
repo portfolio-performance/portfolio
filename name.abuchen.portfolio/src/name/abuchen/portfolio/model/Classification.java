@@ -150,6 +150,11 @@ public class Classification
         assignments.add(assignment);
     }
 
+    public void removeAssignment(Assignment assignment)
+    {
+        assignments.remove(assignment);
+    }
+
     public int getWeight()
     {
         return weight;

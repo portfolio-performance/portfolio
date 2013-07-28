@@ -178,7 +178,7 @@ public class SecurityListView extends AbstractListView
                 if (dialog.open() == Dialog.OK)
                 {
                     markDirty();
-                    getClient().getSecurities().add(newSecurity);
+                    getClient().addSecurity(newSecurity);
 
                     if (watchlist != null)
                         watchlist.getSecurities().add(newSecurity);

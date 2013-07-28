@@ -380,7 +380,7 @@ public class AccountListView extends AbstractListView
 
         transactions.setContentProvider(new SimpleListContentProvider());
 
-        List<Security> securities = getClient().getSecurities();
+        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
         Collections.sort(securities, new Security.ByName());
 
         new CellEditorFactory(transactions, AccountTransaction.class) //

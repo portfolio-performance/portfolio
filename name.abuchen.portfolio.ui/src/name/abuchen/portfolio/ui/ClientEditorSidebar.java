@@ -166,7 +166,7 @@ import org.eclipse.swt.widgets.Control;
                         if (!editor.getClient().getSecurities().contains(security))
                         {
                             security = security.deepCopy();
-                            editor.getClient().getSecurities().add(security);
+                            editor.getClient().addSecurity(security);
                         }
 
                         if (!watchlist.getSecurities().contains(security))
