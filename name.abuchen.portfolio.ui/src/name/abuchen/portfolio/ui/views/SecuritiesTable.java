@@ -145,7 +145,7 @@ public final class SecuritiesTable
                     return null;
 
                 if (classifications.size() == 1)
-                    return classifications.get(0).getFullName(50);
+                    return classifications.get(0).getPathName(false);
 
                 StringBuilder buf = new StringBuilder();
                 for (Classification c : classifications)
@@ -153,7 +153,7 @@ public final class SecuritiesTable
                     if (buf.length() > 0)
                         buf.append(", "); //$NON-NLS-1$
 
-                    buf.append(c.getFullName(50));
+                    buf.append(c.getPathName(false));
                 }
                 return buf.toString();
             }
@@ -368,7 +368,7 @@ public final class SecuritiesTable
                     switch (option)
                     {
                         case 100:
-                            answer.append(c.getFullName(200));
+                            answer.append(c.getPathName(false));
                             break;
                         default:
                             List<Classification> path = c.getPathToRoot();

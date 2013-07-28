@@ -320,7 +320,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             @Override
             public String getText(Object element)
             {
-                return ((Classification) element).getFullName(80);
+                return ((Classification) element).getPathName(false, 80);
             }
         });
         combo.setInput(designation.getElements());

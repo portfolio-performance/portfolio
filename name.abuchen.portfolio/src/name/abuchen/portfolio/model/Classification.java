@@ -178,12 +178,13 @@ public class Classification
         this.rank = rank;
     }
 
-    public String getFullName(int limit)
+    public String getPathName(boolean includeParent, int limit)
     {
         LinkedList<Classification> path = getPath();
 
         // remove root node
-        path.removeFirst();
+        if (!includeParent)
+            path.removeFirst();
 
         // short circuit
         if (path.size() == 1)
@@ -235,6 +236,25 @@ public class Classification
             return leftBuffer.toString() + " » " + rightBuffer.toString(); //$NON-NLS-1$
         else
             return leftBuffer.toString() + " ... " + rightBuffer.toString(); //$NON-NLS-1$
+    }
+
+    public String getPathName(boolean includeParent)
+    {
+        LinkedList<Classification> path = getPath();
+        if (!includeParent)
+            path.removeFirst();
+
+        StringBuilder buf = new StringBuilder();
+
+        for (Classification c : path)
+        {
+            if (buf.length() > 0)
+                buf.append(" » "); //$NON-NLS-1$
+
+            buf.append(c.getName());
+        }
+
+        return buf.toString();
     }
 
     private LinkedList<Classification> getPath()

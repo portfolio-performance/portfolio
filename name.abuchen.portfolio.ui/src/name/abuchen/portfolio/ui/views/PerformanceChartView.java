@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
@@ -163,6 +164,8 @@ public class PerformanceChartView extends AbstractHistoricView
                     addPortfolio(item, (Portfolio) item.getInstance(), warnings);
                 else if (item.getType() == Account.class)
                     addAccount(item, (Account) item.getInstance(), warnings);
+                else if (item.getType() == Classification.class)
+                    addClassification(item, (Classification) item.getInstance(), warnings);
             }
 
             PortfolioPlugin.log(warnings);
@@ -313,6 +316,25 @@ public class PerformanceChartView extends AbstractHistoricView
         ILineSeries series = chart.addDateSeries(accountIndex.getDates(), //
                         accountIndex.getAccumulatedPercentage(), //
                         account.getName());
+        item.configure(series);
+    }
+
+    private void addClassification(DataSeries item, Classification classification, List<Exception> warnings)
+    {
+        PerformanceIndex index = (PerformanceIndex) dataCache.get(classification);
+
+        if (index == null)
+        {
+            index = PerformanceIndex.forClassification(getClient(), classification, getReportingPeriod(), warnings);
+            dataCache.put(classification, index);
+        }
+
+        if (aggregationPeriod != null)
+            index = Aggregation.aggregate(index, aggregationPeriod);
+
+        ILineSeries series = chart.addDateSeries(index.getDates(), //
+                        index.getAccumulatedPercentage(), //
+                        item.getLabel());
         item.configure(series);
     }
 

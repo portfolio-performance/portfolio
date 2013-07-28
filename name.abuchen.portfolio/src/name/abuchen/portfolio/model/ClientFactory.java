@@ -18,6 +18,7 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
 
+@SuppressWarnings("deprecation")
 public class ClientFactory
 {
     private static XStream xstream;
@@ -103,7 +104,7 @@ public class ClientFactory
         {
             // added investment plans
             // added security on chart as benchmark *and* performance
-            fixStoredChartConfigurations(client);
+            fixStoredBenchmarkChartConfigurations(client);
 
             client.setVersion(13);
         }
@@ -114,6 +115,7 @@ public class ClientFactory
             addAssetClassesAsTaxonomy(client);
             addIndustryClassificationAsTaxonomy(client);
             addAssetAllocationAsTaxonomy(client);
+            fixStoredClassificationChartConfiguration(client);
 
             client.setVersion(14);
         }
@@ -134,7 +136,6 @@ public class ClientFactory
         writer.close();
     }
 
-    @SuppressWarnings("deprecation")
     private static void fixAssetClassTypes(Client client)
     {
         for (Security security : client.getSecurities())
@@ -173,7 +174,6 @@ public class ClientFactory
         }
     }
 
-    @SuppressWarnings("deprecation")
     private static void generateUUIDs(Client client)
     {
         for (Account a : client.getAccounts())
@@ -184,40 +184,16 @@ public class ClientFactory
             c.generateUUID();
     }
 
-    private static void fixStoredChartConfigurations(Client client)
+    @SuppressWarnings("nls")
+    private static void fixStoredBenchmarkChartConfigurations(Client client)
     {
         // Until now, the performance chart was showing *only* the benchmark
         // series, not the actual performance series. Change keys as benchmark
         // values are prefixed with '[b]'
 
-        String property = "PerformanceChartView-PICKER"; //$NON-NLS-1$
-
-        // ConsumerPriceIndex
-
-        String value = client.getProperty(property);
-        if (value != null)
-            replaceAll(client, property, value);
-
-        int index = 0;
-        while (true)
-        {
-            String key = property + '$' + index;
-            value = client.getProperty(key);
-            if (value != null)
-                replaceAll(client, key, value);
-            else
-                break;
-
-            index++;
-        }
-    }
-
-    @SuppressWarnings("nls")
-    private static void replaceAll(Client client, String property, String value)
-    {
-        String newValue = value.replaceAll("Security", "[b]Security") //
-                        .replaceAll("ConsumerPriceIndex", "[b]ConsumerPriceIndex");
-        client.setProperty(property, newValue);
+        replace(client, "PerformanceChartView-PICKER", //
+                        "Security", "[b]Security", //
+                        "ConsumerPriceIndex", "[b]ConsumerPriceIndex");
     }
 
     private static void addAssetClassesAsTaxonomy(Client client)
@@ -238,7 +214,6 @@ public class ClientFactory
 
         for (Security security : client.getSecurities())
         {
-            @SuppressWarnings("deprecation")
             Classification classification = taxonomy.getClassificationById(security.getType());
 
             if (classification != null)
@@ -254,7 +229,6 @@ public class ClientFactory
 
     private static void addIndustryClassificationAsTaxonomy(Client client)
     {
-        @SuppressWarnings("deprecation")
         String oldIndustryId = client.getIndustryTaxonomy();
 
         Taxonomy taxonomy = null;
@@ -276,7 +250,6 @@ public class ClientFactory
         int rank = 0;
         for (Security security : client.getSecurities())
         {
-            @SuppressWarnings("deprecation")
             Classification classification = taxonomy.getClassificationById(security.getIndustryClassification());
 
             if (classification != null)
@@ -288,7 +261,6 @@ public class ClientFactory
         }
     }
 
-    @SuppressWarnings("deprecation")
     private static void addAssetAllocationAsTaxonomy(Client client)
     {
         Category category = client.getRootCategory();
@@ -302,7 +274,6 @@ public class ClientFactory
         client.addTaxonomy(taxonomy);
     }
 
-    @SuppressWarnings("deprecation")
     private static void buildTree(Classification node, Category category)
     {
         int rank = 0;
@@ -327,7 +298,51 @@ public class ClientFactory
         }
     }
 
-    @SuppressWarnings({ "nls", "deprecation" })
+    @SuppressWarnings("nls")
+    private static void fixStoredClassificationChartConfiguration(Client client)
+    {
+        String name = Classification.class.getSimpleName();
+        replace(client, "PerformanceChartView-PICKER", //
+                        "AssetClass", name, //
+                        "Category", name);
+
+        replace(client, "StatementOfAssetsHistoryView-PICKER", //
+                        "AssetClass", name, //
+                        "Category", name);
+    }
+
+    private static void replace(Client client, String property, String... replacements)
+    {
+        if (replacements.length % 2 != 0)
+            throw new UnsupportedOperationException();
+
+        String value = client.getProperty(property);
+        if (value != null)
+            replaceAll(client, property, value, replacements);
+
+        int index = 0;
+        while (true)
+        {
+            String key = property + '$' + index;
+            value = client.getProperty(key);
+            if (value != null)
+                replaceAll(client, key, value, replacements);
+            else
+                break;
+
+            index++;
+        }
+    }
+
+    private static void replaceAll(Client client, String key, String value, String[] replacements)
+    {
+        String newValue = value;
+        for (int ii = 0; ii < replacements.length; ii += 2)
+            newValue = newValue.replaceAll(replacements[ii], replacements[ii + 1]);
+        client.setProperty(key, newValue);
+    }
+
+    @SuppressWarnings("nls")
     private static XStream xstream()
     {
         if (xstream == null)

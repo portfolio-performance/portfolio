@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
@@ -47,6 +49,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
@@ -90,6 +94,24 @@ import org.swtchart.LineStyle;
         public String getLabel()
         {
             return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
+        }
+
+        public String getSearchLabel()
+        {
+            StringBuilder buf = new StringBuilder();
+
+            buf.append(label);
+
+            if (instance instanceof Classification)
+            {
+                Classification parent = ((Classification) instance).getParent();
+                buf.append(" (").append(parent.getPathName(true)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            if (isBenchmark())
+                buf.append(Messages.ChartSeriesBenchmarkSuffix);
+
+            return buf.toString();
         }
 
         public void setColor(Color color)
@@ -156,6 +178,8 @@ import org.swtchart.LineStyle;
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             else if (type == Portfolio.class)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+            else if (type == Classification.class)
+                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             else
                 return null;
         }
@@ -174,6 +198,8 @@ import org.swtchart.LineStyle;
                 return prefix + Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
             else if (type == ConsumerPriceIndex.class)
                 return prefix + ConsumerPriceIndex.class.getSimpleName();
+            else if (type == Classification.class)
+                return prefix + Classification.class.getSimpleName() + ((Classification) instance).getId();
 
             throw new UnsupportedOperationException(type.getName());
         }
@@ -403,6 +429,23 @@ import org.swtchart.LineStyle;
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getSegment(index++)
                             .getColor()));
+
+        for (Taxonomy taxonomy : client.getTaxonomies())
+        {
+            taxonomy.foreach(new Taxonomy.Visitor()
+            {
+                @Override
+                public void visit(Classification classification)
+                {
+                    if (classification.getParent() == null)
+                        return;
+
+                    availableSeries.add(new DataSeries(Classification.class, classification, classification.getName(),
+                                    colorFor(Colors.toRGB(classification.getColor()))));
+                }
+            });
+
+        }
     }
 
     private void addDefaultDataSeries()
@@ -809,7 +852,7 @@ import org.swtchart.LineStyle;
         @Override
         public String getText(Object element)
         {
-            return ((DataSeries) element).getLabel();
+            return ((DataSeries) element).getSearchLabel();
         }
     }
 

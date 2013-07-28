@@ -60,7 +60,7 @@ public class PerformanceIndex
         return PortfolioIndex.calculate(client, portfolio, reportInterval, warnings);
     }
 
-    private static PerformanceIndex forClassification(Client client, Classification classification,
+    public static PerformanceIndex forClassification(Client client, Classification classification,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
         return ClassificationIndex.calculate(client, classification, reportInterval, warnings);
