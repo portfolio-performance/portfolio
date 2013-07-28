@@ -39,10 +39,6 @@
 <unit id="org.eclipse.babel.nls_rt.equinox.p2_de.feature.group" version="3.7.0.v20121120090237"/>
 <repository location="http://download.eclipse.org/technology/babel/update-site/R0.10.1/indigo"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="com.bandlem.eclipse.fullscreen.feature.feature.group" version="1.0.4.201108061054"/>
-<repository location="http://github.bandlem.com"/>
-</location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
 </target>
