@@ -72,8 +72,7 @@ import de.engehausen.treemap.swt.TreeMap;
 
         legend = new TreeMapLegend(container, treeMap, model, renderer);
 
-        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, model.getClient(),
-                        SecurityDetailsViewer.Facet.values());
+        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, model.getClient(), true);
         treeMap.addSelectionChangeListener(new ISelectionChangeListener<TaxonomyNode>()
         {
             @Override

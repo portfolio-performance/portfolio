@@ -173,7 +173,7 @@ public class Client
     }
 
     @Deprecated
-    public Category getRootCategory()
+    /* package */Category getRootCategory()
     {
         return this.rootCategory;
     }

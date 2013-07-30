@@ -105,6 +105,21 @@ public class Taxonomy
         return answer;
     }
 
+    public int getHeigth()
+    {
+        return getHeight(root);
+    }
+
+    private int getHeight(Classification classification)
+    {
+        int answer = 0;
+
+        for (Classification c : classification.getChildren())
+            answer = Math.max(getHeight(c), answer);
+
+        return 1 + answer;
+    }
+
     public void foreach(Visitor visitor)
     {
         root.accept(visitor);
