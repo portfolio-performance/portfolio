@@ -60,6 +60,11 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public static class Column
     {
+        /**
+         * Uniquely identifies a column to store/load a configuration
+         */
+        private String id;
+
         private String label;
         private int style;
         private int defaultWidth;
@@ -75,6 +80,12 @@ public class ShowHideColumnHelper implements IMenuListener
 
         public Column(String label, int style, int defaultWidth)
         {
+            this(null, label, style, defaultWidth);
+        }
+
+        public Column(String id, String label, int style, int defaultWidth)
+        {
+            this.id = id;
             this.label = label;
             this.style = style;
             this.defaultWidth = defaultWidth;
@@ -212,12 +223,13 @@ public class ShowHideColumnHelper implements IMenuListener
     }
 
     private static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
-    private static final Pattern CONFIG_PATTERN = Pattern.compile("^(\\d*)=(?:(\\d*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
+    private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:(\\d*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
     private String identifier;
     private boolean isUserConfigured = false;
 
     private List<Column> columns = new ArrayList<Column>();
+    private Map<String, Column> id2column = new HashMap<String, Column>();
 
     private TableViewer viewer;
     private TableColumnLayout layout;
@@ -272,7 +284,10 @@ public class ShowHideColumnHelper implements IMenuListener
             {
                 List<Object> options = visible.get(column);
                 if (options == null)
-                    visible.put(column, options = new ArrayList<Object>());
+                {
+                    options = new ArrayList<Object>();
+                    visible.put(column, options);
+                }
                 options.add(col.getData(OPTIONS_KEY));
             }
             else
@@ -311,28 +326,7 @@ public class ShowHideColumnHelper implements IMenuListener
             @Override
             public void run()
             {
-                try
-                {
-                    // first add, then remove columns
-                    // (otherwise rendering of first column is broken)
-                    viewer.getTable().setRedraw(false);
-
-                    int count = viewer.getTable().getColumnCount();
-
-                    for (Column column : columns)
-                    {
-                        if (column.isVisible())
-                            column.create(viewer, layout, null);
-                    }
-
-                    for (int ii = 0; ii < count; ii++)
-                        viewer.getTable().getColumn(0).dispose();
-                }
-                finally
-                {
-                    viewer.refresh();
-                    viewer.getTable().setRedraw(true);
-                }
+                doResetColumns();
             }
         });
     }
@@ -367,7 +361,12 @@ public class ShowHideColumnHelper implements IMenuListener
 
     public void addColumn(Column column)
     {
+        // columns used to be identified by index only
+        if (column.id == null)
+            column.id = Integer.toString(columns.size());
+
         columns.add(column);
+        id2column.put(column.id, column);
     }
 
     public void createColumns()
@@ -404,7 +403,9 @@ public class ShowHideColumnHelper implements IMenuListener
                     continue;
 
                 // index
-                Column col = columns.get(Integer.parseInt(matcher.group(1)));
+                Column col = id2column.get(matcher.group(1));
+                if (col == null)
+                    continue;
 
                 // option
                 String o = matcher.group(2);
@@ -436,16 +437,42 @@ public class ShowHideColumnHelper implements IMenuListener
         {
             TableColumn col = viewer.getTable().getColumn(index);
             Column column = (Column) col.getData(Column.class.getName());
-            buf.append(columns.indexOf(column)).append('=');
+            buf.append(column.id).append('=');
 
             Object option = col.getData(OPTIONS_KEY);
             if (option != null)
                 buf.append(option).append('|');
-            if (col == sortedColumn)
+            if (col.equals(sortedColumn))
                 buf.append(viewer.getTable().getSortDirection()).append('$');
 
             buf.append(col.getWidth()).append(';');
         }
         PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, buf.toString());
+    }
+
+    private void doResetColumns()
+    {
+        try
+        {
+            // first add, then remove columns
+            // (otherwise rendering of first column is broken)
+            viewer.getTable().setRedraw(false);
+
+            int count = viewer.getTable().getColumnCount();
+
+            for (Column column : columns)
+            {
+                if (column.isVisible())
+                    column.create(viewer, layout, null);
+            }
+
+            for (int ii = 0; ii < count; ii++)
+                viewer.getTable().getColumn(0).dispose();
+        }
+        finally
+        {
+            viewer.refresh();
+            viewer.getTable().setRedraw(true);
+        }
     }
 }
