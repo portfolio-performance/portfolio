@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class TaxonomyView extends AbstractFinanceView
 {
+    private String identifier;
+
     private TaxonomyModel model;
     private Taxonomy taxonomy;
 
@@ -35,6 +37,8 @@ public class TaxonomyView extends AbstractFinanceView
         super.init(clientEditor, parameter);
         this.taxonomy = (Taxonomy) parameter;
         this.model = new TaxonomyModel(getClient(), taxonomy);
+
+        this.identifier = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
     }
 
     @Override
@@ -59,9 +63,7 @@ public class TaxonomyView extends AbstractFinanceView
             @Override
             public void run()
             {
-                StackLayout layout = (StackLayout) container.getLayout();
-                layout.topControl = container.getChildren()[index];
-                container.layout();
+                activateView(index);
             }
         };
         showDefinition.setImageDescriptor(PortfolioPlugin.descriptor(image));
@@ -81,7 +83,7 @@ public class TaxonomyView extends AbstractFinanceView
         container.setLayout(layout);
 
         DefinitionViewer definition = new DefinitionViewer(model, renderer);
-        layout.topControl = definition.createContainer(container);
+        definition.createContainer(container);
 
         AssetAllocationViewer allocation = new AssetAllocationViewer(model, renderer);
         allocation.createContainer(container);
@@ -91,6 +93,9 @@ public class TaxonomyView extends AbstractFinanceView
 
         TreeMapViewer tree = new TreeMapViewer(model, renderer);
         tree.createContainer(container);
+
+        int index = getClientEditor().getPreferenceStore().getInt(identifier);
+        activateView(index);
 
         model.addListener(new TaxonomyModelChangeListener()
         {
@@ -102,5 +107,19 @@ public class TaxonomyView extends AbstractFinanceView
         });
 
         return container;
+    }
+
+    private void activateView(final int index)
+    {
+        StackLayout layout = (StackLayout) container.getLayout();
+        Control[] children = container.getChildren();
+
+        if (index >= 0 && index < children.length)
+        {
+            layout.topControl = children[index];
+            container.layout();
+
+            getClientEditor().getPreferenceStore().setValue(identifier, index);
+        }
     }
 }
