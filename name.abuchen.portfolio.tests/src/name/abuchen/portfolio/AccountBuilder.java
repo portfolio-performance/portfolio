@@ -5,7 +5,11 @@ import java.util.UUID;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
 
 import org.joda.time.DateMidnight;
 
@@ -65,6 +69,13 @@ public class AccountBuilder
         return transaction(Type.REMOVAL, date, amount);
     }
 
+    public AccountBuilder dividend(String date, long amount, Security security)
+    {
+        AccountTransaction t = new AccountTransaction(new DateMidnight(date).toDate(), security, Type.DIVIDENDS, amount);
+        account.addTransaction(t);
+        return this;
+    }
+
     private AccountBuilder transaction(Type type, String date, long amount)
     {
         return transaction(type, new DateMidnight(date), amount);
@@ -74,6 +85,13 @@ public class AccountBuilder
     {
         AccountTransaction t = new AccountTransaction(date.toDate(), null, type, amount);
         account.addTransaction(t);
+        return this;
+    }
+
+    public AccountBuilder assign(Taxonomy taxonomy, String id, int weight)
+    {
+        Classification classification = taxonomy.getClassificationById(id);
+        classification.addAssignment(new Assignment(account, weight));
         return this;
     }
 

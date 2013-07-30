@@ -24,6 +24,12 @@ public class PortfolioBuilder
         this.portfolio.setName(UUID.randomUUID().toString());
     }
 
+    public PortfolioBuilder(Account referenceAccount)
+    {
+        this();
+        this.portfolio.setReferenceAccount(referenceAccount);
+    }
+
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
     {
         return inbound_delivery(security, new DateMidnight(date), shares, amount);

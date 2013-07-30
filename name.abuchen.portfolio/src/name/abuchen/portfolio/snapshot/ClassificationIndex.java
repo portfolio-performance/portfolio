@@ -28,20 +28,19 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
             @Override
             public void visit(Classification classification, Assignment assignment)
             {
-                // FIXME works only for 100% assignments!
                 InvestmentVehicle vehicle = assignment.getInvestmentVehicle();
 
                 if (vehicle instanceof Security)
-                    addSecurity(pseudoClient, client, (Security) vehicle);
+                    addSecurity(pseudoClient, client, (Security) vehicle, assignment.getWeight());
                 else if (vehicle instanceof Account)
-                    addAccount(pseudoClient, (Account) vehicle);
+                    addAccount(pseudoClient, (Account) vehicle, assignment.getWeight());
             }
         });
 
         return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
     }
 
-    private static void addSecurity(Client pseudoClient, Client client, Security security)
+    private static void addSecurity(Client pseudoClient, Client client, Security security, int weight)
     {
         Account pseudoAccount = new Account();
         pseudoAccount.setName(""); //$NON-NLS-1$
@@ -59,25 +58,28 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
             {
                 if (t.getSecurity().equals(security))
                 {
+                    long shares = value(t.getShares(), weight);
+                    long amount = value(t.getAmount(), weight);
+                    long fees = value(t.getFees(), weight);
+
                     switch (t.getType())
                     {
                         case BUY:
                         case TRANSFER_IN:
                         {
                             pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
-                                                            .getFees()));
+                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees));
                             break;
                         }
                         case SELL:
                         case TRANSFER_OUT:
                             pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(),
-                                            t.getFees()));
+                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount, fees));
                             break;
                         case DELIVERY_INBOUND:
                         case DELIVERY_OUTBOUND:
-                            pseudoPortfolio.addTransaction(t);
+                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(), t
+                                            .getType(), shares, amount, fees));
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -95,9 +97,11 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     switch (t.getType())
                     {
                         case DIVIDENDS:
-                            pseudoAccount.addTransaction(t);
+                            long amount = value(t.getAmount(), weight);
                             pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                            AccountTransaction.Type.REMOVAL, t.getAmount()));
+                                            AccountTransaction.Type.DIVIDENDS, amount));
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                                            AccountTransaction.Type.REMOVAL, amount));
                             break;
                         case BUY:
                         case TRANSFER_IN:
@@ -120,7 +124,7 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
         }
     }
 
-    private static void addAccount(Client pseudoClient, Account account)
+    private static void addAccount(Client pseudoClient, Account account, int weight)
     {
         Account pseudoAccount = new Account();
         pseudoAccount.setName(account.getName());
@@ -128,30 +132,41 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
 
         for (AccountTransaction t : account.getTransactions())
         {
+            long amount = value(t.getAmount(), weight);
             switch (t.getType())
             {
                 case SELL:
                 case TRANSFER_IN:
                 case DIVIDENDS:
                     pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                    AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                                    AccountTransaction.Type.DEPOSIT, amount));
                     break;
                 case BUY:
                 case TRANSFER_OUT:
                     pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                    AccountTransaction.Type.REMOVAL, t.getAmount()));
+                                    AccountTransaction.Type.REMOVAL, amount));
                     break;
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:
                 case TAXES:
                 case FEES:
-                    pseudoAccount.addTransaction(t);
+                    if (weight != Classification.ONE_HUNDRED_PERCENT)
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null, t.getType(), amount));
+                    else
+                        pseudoAccount.addTransaction(t);
                     break;
                 default:
                     throw new UnsupportedOperationException();
-
             }
         }
+    }
+
+    private static long value(long value, int weight)
+    {
+        if (weight == Classification.ONE_HUNDRED_PERCENT)
+            return value;
+        else
+            return Math.round(value * weight / (double) Classification.ONE_HUNDRED_PERCENT);
     }
 }
