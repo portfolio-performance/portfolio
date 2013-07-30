@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.util.Random;
-
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
@@ -182,33 +180,7 @@ import org.eclipse.swt.widgets.Display;
 
     private void doAutoAssignColors(TaxonomyNode node)
     {
-        int size = node.getClassification().getChildren().size();
-
-        Random random = new Random();
-
-        float hue = random.nextFloat() * 360f;
-        float saturation = (random.nextFloat() * 0.5f) + 0.3f;
-        float brightness = (random.nextFloat() * 0.4f) + 0.5f;
-
-        float[][] hsb = new float[size][];
-        float step = 360f / (float) size;
-        for (int ii = 0; ii < size; ii++)
-            hsb[ii] = new float[] { (hue + (step * ii)) % 360f, saturation, brightness };
-
-        int index = 0;
-
-        for (TaxonomyNode child : node.getChildren())
-        {
-            if (!child.isClassification() || child.isUnassignedCategory())
-                continue;
-
-            RGB rgb = new RGB(hsb[index][0], hsb[index][1], hsb[index][2]);
-            child.getClassification().setColor(Colors.toHex(rgb));
-
-            cascade(child, hsb[index]);
-
-            index++;
-        }
+        node.getClassification().assignRandomColors();
 
         getModel().fireTaxonomyModelChange(null);
         getNodeViewer().getTree().redraw(); // avoids artifacts around cell
@@ -216,30 +188,9 @@ import org.eclipse.swt.widgets.Display;
 
     protected void doCascadeColorsDown(TaxonomyNode node)
     {
-        float[] hsb = Colors.toRGB(node.getClassification().getColor()).getHSB();
-
-        cascade(node, hsb);
+        node.getClassification().cascadeColorDown();
 
         getModel().fireTaxonomyModelChange(null);
         getNodeViewer().getTree().redraw(); // avoids artifacts around cell
     }
-
-    private void cascade(TaxonomyNode node, float[] hsb)
-    {
-        float[] childColor = new float[3];
-        childColor[0] = hsb[0];
-        childColor[1] = Math.max(0f, hsb[1] - 0.1f);
-        childColor[2] = Math.min(1f, hsb[2] + 0.1f);
-
-        for (TaxonomyNode child : node.getChildren())
-        {
-            if (!child.isClassification())
-                continue;
-
-            child.getClassification().setColor(Colors.toHex(childColor));
-
-            cascade(child, childColor);
-        }
-    }
-
 }

@@ -1,14 +1,29 @@
 package name.abuchen.portfolio.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.util.ColorConversion;
 
 public class Classification
 {
+    public static final class ByRank implements Comparator<Classification>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(Classification c1, Classification c2)
+        {
+            return c1.getRank() > c2.getRank() ? -1 : c1.getRank() < c2.getRank() ? 1 : 0;
+        }
+    }
+
     public static class Assignment
     {
         private InvestmentVehicle investmentVehicle;
@@ -71,18 +86,27 @@ public class Classification
         this(null, id, name);
     }
 
-    public Classification(Classification parent, String id, String name)
+    public Classification(Classification parent, String id, String name, String color)
     {
         this.parent = parent;
         this.id = id;
         this.name = name;
+        this.color = color;
 
-        Random r = new Random();
-        this.color = '#' + Integer.toHexString(((r.nextInt(128) + 127) << 16) //
-                        | ((r.nextInt(128) + 127) << 8) //
-                        | (r.nextInt(128) + 127));
+        if (color == null)
+        {
+            Random r = new Random();
+            this.color = '#' + Integer.toHexString(((r.nextInt(128) + 127) << 16) //
+                            | ((r.nextInt(128) + 127) << 8) //
+                            | (r.nextInt(128) + 127));
+        }
 
         this.weight = ONE_HUNDRED_PERCENT;
+    }
+
+    public Classification(Classification parent, String id, String name)
+    {
+        this(parent, id, name, null);
     }
 
     public String getId()
@@ -310,6 +334,62 @@ public class Classification
         }
 
         return path;
+    }
+
+    public void assignRandomColors()
+    {
+        Random random = new Random();
+
+        float hue = random.nextFloat() * 360f;
+        float saturation = (random.nextFloat() * 0.5f) + 0.3f;
+        float brightness = (random.nextFloat() * 0.4f) + 0.5f;
+
+        assignRandomColors(hue, saturation, brightness);
+    }
+
+    /* package */void assignRandomColors(float hue, float saturation, float brightness)
+    {
+        if (children.isEmpty())
+            return;
+
+        Collections.sort(children, new ByRank());
+
+        int size = children.size();
+        float step = 360f / (float) size;
+
+        int index = 0;
+        for (Classification child : children)
+        {
+            float h = (hue + (step * index)) % 360f;
+
+            child.setColor(ColorConversion.toHex(h, saturation, brightness));
+            child.cascadeColorDown(h, saturation, brightness);
+            index++;
+        }
+    }
+
+    public void cascadeColorDown()
+    {
+        if (children.isEmpty())
+            return;
+
+        float[] hsb = ColorConversion.toHSB(color);
+        cascadeColorDown(hsb[0], hsb[1], hsb[2]);
+    }
+
+    private void cascadeColorDown(float hue, float saturation, float brightness)
+    {
+        if (children.isEmpty())
+            return;
+
+        float childSaturation = Math.max(0f, saturation - 0.1f);
+        float childBrightness = Math.min(1f, brightness + 0.1f);
+
+        for (Classification child : children)
+        {
+            child.setColor(ColorConversion.toHex(hue, childSaturation, childBrightness));
+            child.cascadeColorDown(hue, childSaturation, childBrightness);
+        }
     }
 
     public void accept(Visitor visitor)

@@ -92,6 +92,13 @@ public final class TaxonomyTemplate
 
         readClassification(bundle, root);
 
+        String colors = getString(bundle, "colors"); //$NON-NLS-1$
+        if (colors != null)
+        {
+            String[] hsb = colors.split(","); //$NON-NLS-1$
+            root.assignRandomColors(Float.parseFloat(hsb[0]), Float.parseFloat(hsb[1]), Float.parseFloat(hsb[2]));
+        }
+
         return taxonomy;
     }
 
@@ -107,7 +114,9 @@ public final class TaxonomyTemplate
             if (label == null)
                 continue;
 
-            Classification child = new Classification(parent, childId, label);
+            String color = getString(bundle, childId + ".color"); //$NON-NLS-1$
+
+            Classification child = new Classification(parent, childId, label, color);
 
             String description = getString(bundle, childId + ".description"); //$NON-NLS-1$
             if (description != null)

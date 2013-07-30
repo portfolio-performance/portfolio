@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.ui.util.PieChart;
@@ -42,6 +43,8 @@ import org.eclipse.swt.widgets.Control;
                             child.getName(), //
                             renderer.getColorFor(child)));
         }
+
+        Collections.sort(slices);
 
         pieChart.setSlices(slices);
         pieChart.redraw();

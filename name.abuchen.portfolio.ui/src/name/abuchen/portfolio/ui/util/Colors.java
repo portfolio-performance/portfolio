@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
+import name.abuchen.portfolio.util.ColorConversion;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -59,26 +61,13 @@ public enum Colors
 
     public static String toHex(RGB rgb)
     {
-        return '#' + Integer.toHexString((rgb.red << 16) | (rgb.green << 8) | rgb.blue);
-    }
-
-    public static String toHex(float[] hsb)
-    {
-        return toHex(new RGB(hsb[0], hsb[1], hsb[2]));
+        return ColorConversion.toHex(rgb);
     }
 
     public static RGB toRGB(String hex)
     {
-        try
-        {
-            Integer intval = Integer.decode(hex);
-            int i = intval.intValue();
-            return new RGB((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF);
-        }
-        catch (NumberFormatException ignore)
-        {
-            return Display.getDefault().getSystemColor(SWT.COLOR_BLACK).getRGB();
-        }
+        int rgb[] = ColorConversion.toRGB(hex);
+        return new RGB(rgb[0], rgb[1], rgb[2]);
     }
 
     /**
