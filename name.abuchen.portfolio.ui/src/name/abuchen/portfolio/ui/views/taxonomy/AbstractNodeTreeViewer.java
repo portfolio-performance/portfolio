@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -412,6 +414,28 @@ import org.eclipse.ui.PlatformUI;
                 manager.add(subMenu);
             }
 
+            manager.add(new Separator());
+
+            MenuManager sorting = new MenuManager("Sort by...");
+            sorting.add(new Action("Typ, Name")
+            {
+                @Override
+                public void run()
+                {
+                    doSort(node, true);
+                }
+            });
+            sorting.add(new Action("Name")
+            {
+                @Override
+                public void run()
+                {
+                    doSort(node, false);
+                }
+            });
+
+            manager.add(sorting);
+
             if (!node.isRoot())
             {
                 manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
@@ -533,4 +557,32 @@ import org.eclipse.ui.PlatformUI;
         // do not fire model change -> called within modification listener
     }
 
+    private void doSort(TaxonomyNode node, final boolean byType)
+    {
+        Collections.sort(node.getChildren(), new Comparator<TaxonomyNode>()
+        {
+            @Override
+            public int compare(TaxonomyNode node1, TaxonomyNode node2)
+            {
+                // unassigned category always stays at the end of the list
+                if (node1.isUnassignedCategory())
+                    return 1;
+                if (node2.isUnassignedCategory())
+                    return -1;
+
+                if (byType && node1.isClassification() && !node2.isClassification())
+                    return -1;
+                if (byType && !node1.isClassification() && node2.isClassification())
+                    return 1;
+
+                return node1.getName().compareToIgnoreCase(node2.getName());
+            }
+        });
+
+        int rank = 0;
+        for (TaxonomyNode child : node.getChildren())
+            child.setRank(rank++);
+
+        model.fireTaxonomyModelChange(node);
+    }
 }

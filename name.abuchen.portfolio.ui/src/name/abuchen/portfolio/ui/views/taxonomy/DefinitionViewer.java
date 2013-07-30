@@ -10,7 +10,6 @@ import name.abuchen.portfolio.ui.util.Colors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -126,8 +125,6 @@ import org.eclipse.swt.widgets.Display;
 
         if (node != null && node.isClassification())
         {
-            manager.appendToGroup(MENU_GROUP_DEFAULT_ACTIONS, new Separator());
-
             MenuManager color = new MenuManager("Color");
 
             if (!node.isRoot())
