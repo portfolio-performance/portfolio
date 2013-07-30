@@ -233,6 +233,7 @@ import org.eclipse.ui.PlatformUI;
 
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
+    protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
     private TaxonomyModel model;
     private TaxonomyNodeRenderer renderer;
@@ -358,7 +359,7 @@ import org.eclipse.ui.PlatformUI;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        nodeViewer.refresh(true);
+        nodeViewer.refresh();
     }
 
     protected void fillContextMenu(IMenuManager manager)
@@ -413,7 +414,7 @@ import org.eclipse.ui.PlatformUI;
 
             if (!node.isRoot())
             {
-                manager.add(new Separator());
+                manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
                 manager.add(new Action("Delete")
                 {
                     @Override
@@ -531,4 +532,5 @@ import org.eclipse.ui.PlatformUI;
 
         // do not fire model change -> called within modification listener
     }
+
 }
