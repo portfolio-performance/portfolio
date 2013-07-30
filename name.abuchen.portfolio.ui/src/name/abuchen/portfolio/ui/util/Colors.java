@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
@@ -78,6 +79,22 @@ public enum Colors
         {
             return Display.getDefault().getSystemColor(SWT.COLOR_BLACK).getRGB();
         }
+    }
+
+    /**
+     * Returns an appropriate text color (black or white) for the given
+     * background color.
+     */
+    public static Color getTextColor(Color color)
+    {
+        // http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+
+        double luminance = 1 - (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
+
+        if (luminance < 0.2)
+            return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+        else
+            return Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
     }
 
 }

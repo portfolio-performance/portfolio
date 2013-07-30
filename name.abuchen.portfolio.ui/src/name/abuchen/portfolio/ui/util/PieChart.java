@@ -173,7 +173,6 @@ public class PieChart extends Composite implements Listener
 
             // labels
             startAngle = 0;
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
             for (Slice slice : slices)
             {
                 int arcAngle = (int) ((double) slice.getValue() * 360 / total + 0.5d);
@@ -189,7 +188,7 @@ public class PieChart extends Composite implements Listener
 
                     String label = String.format("%,.2f%%", (double) slice.getValue() / total * 100); //$NON-NLS-1$
                     Point extend = gc.stringExtent(label);
-                    gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+                    gc.setForeground(Colors.getTextColor(slice.getColor()));
                     gc.drawString(label, x - extend.x / 2, y - extend.y / 2, true);
 
                     // label

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.util.Iterator;
 
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
@@ -172,7 +173,7 @@ import de.engehausen.treemap.swt.TreeMap;
                             Values.Percent.format((double) item.getActual()
                                             / (double) this.model.getRootNode().getActual()));
 
-            event.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            event.gc.setForeground(Colors.getTextColor(event.gc.getBackground()));
 
             Point labelExtend = event.gc.textExtent(label);
             Point infoExtend = event.gc.textExtent(info);

@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -16,7 +17,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -151,7 +151,7 @@ import de.engehausen.treemap.swt.TreeMap;
             String info = getInfo();
 
             GC gc = e.gc;
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+            gc.setForeground(Colors.getTextColor(gc.getBackground()));
             gc.drawString(text, 2, 2, true);
             Point extent = gc.stringExtent(text);
             gc.drawString(info, 2, extent.y + 1, true);
