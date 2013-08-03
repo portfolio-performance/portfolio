@@ -85,7 +85,7 @@ public class TaxonomyView extends AbstractFinanceView
         DefinitionViewer definition = new DefinitionViewer(model, renderer);
         definition.createContainer(container);
 
-        AssetAllocationViewer allocation = new AssetAllocationViewer(model, renderer);
+        AbstractNodeTreeViewer allocation = new ReBalancingViewer(model, renderer);
         allocation.createContainer(container);
 
         PieChartViewer pie = new PieChartViewer(model, renderer);

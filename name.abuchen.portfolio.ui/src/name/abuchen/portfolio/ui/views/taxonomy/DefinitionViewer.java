@@ -95,6 +95,8 @@ import org.eclipse.swt.widgets.Display;
             }
         });
 
+        addActualColumns(layout);
+
         new CellEditorFactory(getNodeViewer(), TaxonomyNode.class) //
                         .notify(new NodeModificationListener(this)
                         {

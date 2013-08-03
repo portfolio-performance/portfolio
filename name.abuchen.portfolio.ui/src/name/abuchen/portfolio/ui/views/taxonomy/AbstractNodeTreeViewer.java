@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
@@ -331,6 +332,44 @@ import org.eclipse.ui.PlatformUI;
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
                 else
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+            }
+        });
+    }
+
+    protected void addActualColumns(TreeColumnLayout layout)
+    {
+        TreeViewerColumn column;
+        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnActualPercent);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (!node.isClassification())
+                    return null;
+
+                // actual %
+                // --> root is compared to target = total assets
+                long actual = node.getActual();
+                long base = node.getParent() == null ? node.getActual() : node.getParent().getActual();
+
+                return Values.Percent.format(((double) actual / (double) base));
+            }
+        });
+
+        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnActualValue);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return Values.Amount.format(node.getActual());
             }
         });
     }

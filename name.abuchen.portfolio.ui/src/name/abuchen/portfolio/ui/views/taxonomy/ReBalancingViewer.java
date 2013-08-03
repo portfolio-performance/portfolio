@@ -21,9 +21,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-public class AssetAllocationViewer extends AbstractNodeTreeViewer
+public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
-    public AssetAllocationViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public ReBalancingViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
     }
@@ -82,39 +82,7 @@ public class AssetAllocationViewer extends AbstractNodeTreeViewer
             }
         });
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnActualPercent);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                if (!node.isClassification())
-                    return null;
-
-                // actual %
-                // --> root is compared to target = total assets
-                long actual = node.getActual();
-                long base = node.getParent() == null ? node.getActual() : node.getParent().getActual();
-
-                return Values.Percent.format(((double) actual / (double) base));
-            }
-        });
-
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnActualValue);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return Values.Amount.format(node.getActual());
-            }
-        });
+        addActualColumns(layout);
 
         column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnDeltaPercent);
