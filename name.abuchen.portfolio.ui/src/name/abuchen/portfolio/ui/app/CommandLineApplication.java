@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import name.abuchen.portfolio.datatransfer.CSVExporter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.util.CSVExporter;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;

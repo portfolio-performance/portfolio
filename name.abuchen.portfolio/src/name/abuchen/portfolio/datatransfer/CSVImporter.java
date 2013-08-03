@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.util;
+package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,11 +24,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.AccountTransactionDef;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.PortfolioTransactionDef;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityDef;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityPriceDef;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.util.CSVImportDefinition.AccountTransactionDef;
-import name.abuchen.portfolio.util.CSVImportDefinition.PortfolioTransactionDef;
-import name.abuchen.portfolio.util.CSVImportDefinition.SecurityDef;
-import name.abuchen.portfolio.util.CSVImportDefinition.SecurityPriceDef;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;

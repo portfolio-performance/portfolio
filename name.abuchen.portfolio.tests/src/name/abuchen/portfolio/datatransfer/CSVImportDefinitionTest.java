@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.util;
+package name.abuchen.portfolio.datatransfer;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
@@ -11,6 +11,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.AccountTransactionDef;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.PortfolioTransactionDef;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityDef;
+import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityPriceDef;
+import name.abuchen.portfolio.datatransfer.CSVImporter.AmountField;
+import name.abuchen.portfolio.datatransfer.CSVImporter.Column;
+import name.abuchen.portfolio.datatransfer.CSVImporter.DateField;
+import name.abuchen.portfolio.datatransfer.CSVImporter.Field;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -19,14 +28,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.util.CSVImportDefinition.AccountTransactionDef;
-import name.abuchen.portfolio.util.CSVImportDefinition.PortfolioTransactionDef;
-import name.abuchen.portfolio.util.CSVImportDefinition.SecurityDef;
-import name.abuchen.portfolio.util.CSVImportDefinition.SecurityPriceDef;
-import name.abuchen.portfolio.util.CSVImporter.AmountField;
-import name.abuchen.portfolio.util.CSVImporter.Column;
-import name.abuchen.portfolio.util.CSVImporter.DateField;
-import name.abuchen.portfolio.util.CSVImporter.Field;
+import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Assert;
 import org.junit.Test;
