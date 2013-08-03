@@ -388,7 +388,16 @@ import org.eclipse.ui.PlatformUI;
                 stack.addAll(node.getChildren());
             }
         }
-        nodeViewer.setExpandedElements(expanded.toArray());
+
+        nodeViewer.getTree().setRedraw(false);
+        try
+        {
+            nodeViewer.setExpandedElements(expanded.toArray());
+        }
+        finally
+        {
+            nodeViewer.getTree().setRedraw(true);
+        }
     }
 
     protected void onTaxnomyNodeEdited(TaxonomyNode node)

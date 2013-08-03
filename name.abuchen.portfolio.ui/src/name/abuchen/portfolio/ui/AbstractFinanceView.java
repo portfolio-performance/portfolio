@@ -29,10 +29,16 @@ public abstract class AbstractFinanceView
     private ClientEditor clientEditor;
 
     private Composite top;
+    private Label title;
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
     private List<Menu> contextMenus = new ArrayList<Menu>();
 
     protected abstract String getTitle();
+
+    protected final void updateTitle()
+    {
+        this.title.setText(getTitle());
+    }
 
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
@@ -71,7 +77,7 @@ public abstract class AbstractFinanceView
 
         Control body = createBody(top);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(body);
-        
+
         top.addDisposeListener(new DisposeListener()
         {
             @Override
@@ -92,7 +98,7 @@ public abstract class AbstractFinanceView
         Font boldFont = resourceManager.createFont(FontDescriptor.createFrom(
                         JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
-        Label title = new Label(header, SWT.NONE);
+        title = new Label(header, SWT.NONE);
         title.setText(getTitle());
         title.setFont(boldFont);
         title.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));

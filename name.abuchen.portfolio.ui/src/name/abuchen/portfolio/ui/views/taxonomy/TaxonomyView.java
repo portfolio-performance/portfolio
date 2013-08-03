@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
@@ -16,7 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
-public class TaxonomyView extends AbstractFinanceView
+public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
     private String identifier;
 
@@ -39,6 +42,21 @@ public class TaxonomyView extends AbstractFinanceView
         this.model = new TaxonomyModel(getClient(), taxonomy);
 
         this.identifier = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
+
+        this.taxonomy.addPropertyChangeListener(this); //$NON-NLS-1$
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event)
+    {
+        updateTitle();
+    }
+
+    @Override
+    public void dispose()
+    {
+        taxonomy.removePropertyChangeListener(this);
+        super.dispose();
     }
 
     @Override

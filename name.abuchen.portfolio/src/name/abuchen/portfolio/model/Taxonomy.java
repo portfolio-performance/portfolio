@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +18,8 @@ public class Taxonomy
         public void visit(Classification classification, Assignment assignment)
         {}
     }
+
+    private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     private String id;
     private String name;
@@ -46,7 +50,7 @@ public class Taxonomy
 
     public void setName(String name)
     {
-        this.name = name;
+        propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
     }
 
     public List<String> getDimensions()
@@ -125,4 +129,24 @@ public class Taxonomy
         root.accept(visitor);
     }
 
+    private Object readResolve()
+    {
+        propertyChangeSupport = new PropertyChangeSupport(this);
+        return this;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
 }
