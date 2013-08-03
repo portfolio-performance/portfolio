@@ -15,7 +15,8 @@ public final class TaxonomyTemplate
     private static final List<TaxonomyTemplate> TEMPLATES = Arrays.asList( //
                     new TaxonomyTemplate("assetclasses"), //$NON-NLS-1$
                     new TaxonomyTemplate(INDUSTRY_GICS), //
-                    new TaxonomyTemplate(INDUSTRY_SIMPLE2LEVEL));
+                    new TaxonomyTemplate(INDUSTRY_SIMPLE2LEVEL), //
+                    new TaxonomyTemplate("kommer")); //$NON-NLS-1$
 
     private String id;
     private String name;
@@ -118,6 +119,10 @@ public final class TaxonomyTemplate
 
             Classification child = new Classification(parent, childId, label, color);
 
+            int weight = getInt(bundle, childId + ".weight"); //$NON-NLS-1$
+            if (weight >= 0)
+                child.setWeight(weight * Values.Weight.factor());
+
             String description = getString(bundle, childId + ".description"); //$NON-NLS-1$
             if (description != null)
                 child.setDescription(description);
@@ -137,6 +142,18 @@ public final class TaxonomyTemplate
         catch (MissingResourceException e)
         {
             return null;
+        }
+    }
+
+    private int getInt(ResourceBundle bundle, String key)
+    {
+        try
+        {
+            return Integer.parseInt(bundle.getString(key));
+        }
+        catch (MissingResourceException e)
+        {
+            return -1;
         }
     }
 
