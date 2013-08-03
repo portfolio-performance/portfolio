@@ -90,6 +90,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static final String IMG_VIEW_TREEMAP = "view_treemap"; //$NON-NLS-1$
     public static final String IMG_VIEW_PIECHART = "view_piechart"; //$NON-NLS-1$
     public static final String IMG_VIEW_REBALANCING = "view_rebalancing"; //$NON-NLS-1$
+    public static final String IMG_VIEW_STACKEDCHART = "view_stackedchart"; //$NON-NLS-1$
 
     public static final String IMG_CHECK = "check"; //$NON-NLS-1$
     public static final String IMG_QUICKFIX = "quickfix"; //$NON-NLS-1$
@@ -127,8 +128,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
 
         for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST,
                         IMG_INVESTMENTPLAN, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_VIEW_TABLE,
-                        IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING, IMG_CHECK, IMG_QUICKFIX, IMG_ADD,
-                        IMG_REMOVE, IMG_UNASSIGNED_CATEGORY })
+                        IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING, IMG_VIEW_STACKEDCHART, IMG_CHECK,
+                        IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_UNASSIGNED_CATEGORY })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);

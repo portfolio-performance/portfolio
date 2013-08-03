@@ -66,7 +66,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, "Allocation", PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
         addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 2);
         addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
-        addView(toolBar, "Stacked Chart", PortfolioPlugin.IMG_QUICKFIX, 4);
+        addView(toolBar, "Stacked Chart", PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
     }
 
     @Override
