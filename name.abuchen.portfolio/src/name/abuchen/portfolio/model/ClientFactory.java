@@ -240,13 +240,15 @@ public class ClientFactory
 
         taxonomy.setId("industries"); //$NON-NLS-1$
 
-        assignSecurities(client, taxonomy);
-
-        client.addTaxonomy(taxonomy);
+        // add industry taxonomy only if at least one security has been assigned
+        if (assignSecurities(client, taxonomy))
+            client.addTaxonomy(taxonomy);
     }
 
-    private static void assignSecurities(Client client, Taxonomy taxonomy)
+    private static boolean assignSecurities(Client client, Taxonomy taxonomy)
     {
+        boolean hasAssignments = false;
+
         int rank = 0;
         for (Security security : client.getSecurities())
         {
@@ -257,8 +259,12 @@ public class ClientFactory
                 Assignment assignment = new Assignment(security);
                 assignment.setRank(rank++);
                 classification.addAssignment(assignment);
+
+                hasAssignments = true;
             }
         }
+
+        return hasAssignments;
     }
 
     private static void addAssetAllocationAsTaxonomy(Client client)
@@ -270,6 +276,8 @@ public class ClientFactory
         taxonomy.setRootNode(root);
 
         buildTree(root, category);
+
+        root.assignRandomColors();
 
         client.addTaxonomy(taxonomy);
     }
