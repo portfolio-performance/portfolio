@@ -27,6 +27,11 @@ public class Taxonomy
     private List<String> dimensions;
     private Classification root;
 
+    public Taxonomy()
+    {
+        // needed for xstream de-serialization
+    }
+
     public Taxonomy(String id, String name)
     {
         this.id = id;

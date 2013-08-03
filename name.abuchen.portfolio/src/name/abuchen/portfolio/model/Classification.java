@@ -30,6 +30,11 @@ public class Classification
         private int weight;
         private int rank;
 
+        public Assignment()
+        {
+            // needed for xstream de-serialization
+        }
+
         public Assignment(InvestmentVehicle account)
         {
             this(account, ONE_HUNDRED_PERCENT);
@@ -80,6 +85,11 @@ public class Classification
 
     private int weight;
     private int rank;
+
+    public Classification()
+    {
+        // needed for xstream de-serialization
+    }
 
     public Classification(String id, String name)
     {
