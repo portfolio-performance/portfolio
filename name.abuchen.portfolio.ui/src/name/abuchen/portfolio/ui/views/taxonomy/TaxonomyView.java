@@ -43,7 +43,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         this.identifier = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
 
-        this.taxonomy.addPropertyChangeListener(this); //$NON-NLS-1$
+        this.taxonomy.addPropertyChangeListener(this);
     }
 
     @Override
@@ -66,6 +66,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, "Allocation", PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
         addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 2);
         addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
+        addView(toolBar, "Stacked Chart", PortfolioPlugin.IMG_QUICKFIX, 4);
     }
 
     @Override
@@ -100,20 +101,19 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        DefinitionViewer definition = new DefinitionViewer(model, renderer);
-        definition.createContainer(container);
+        Page[] pages = new Page[] { new DefinitionViewer(model, renderer), //
+                        new ReBalancingViewer(model, renderer), //
+                        new PieChartViewer(model, renderer), //
+                        new TreeMapViewer(model, renderer), //
+                        new StackedChartViewer(getClientEditor(), model, renderer) };
 
-        AbstractNodeTreeViewer allocation = new ReBalancingViewer(model, renderer);
-        allocation.createContainer(container);
+        for (Page page : pages)
+        {
+            Control control = page.createControl(container);
+            control.setData(page);
+        }
 
-        PieChartViewer pie = new PieChartViewer(model, renderer);
-        pie.createContainer(container);
-
-        TreeMapViewer tree = new TreeMapViewer(model, renderer);
-        tree.createContainer(container);
-
-        int index = getClientEditor().getPreferenceStore().getInt(identifier);
-        activateView(index);
+        activateView(getClientEditor().getPreferenceStore().getInt(identifier));
 
         model.addListener(new TaxonomyModelChangeListener()
         {
@@ -134,6 +134,11 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         if (index >= 0 && index < children.length)
         {
+            if (layout.topControl != null)
+                ((Page) layout.topControl.getData()).afterPage();
+
+            ((Page) children[index].getData()).beforePage();
+
             layout.topControl = children[index];
             container.layout();
 

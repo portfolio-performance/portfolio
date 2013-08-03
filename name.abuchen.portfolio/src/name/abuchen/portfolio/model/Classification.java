@@ -217,7 +217,7 @@ public class Classification
         LinkedList<Classification> path = getPath();
 
         // remove root node
-        if (!includeParent)
+        if (!includeParent && path.size() > 1)
             path.removeFirst();
 
         // short circuit
@@ -275,7 +275,7 @@ public class Classification
     public String getPathName(boolean includeParent)
     {
         LinkedList<Classification> path = getPath();
-        if (!includeParent)
+        if (!includeParent && path.size() > 1)
             path.removeFirst();
 
         StringBuilder buf = new StringBuilder();

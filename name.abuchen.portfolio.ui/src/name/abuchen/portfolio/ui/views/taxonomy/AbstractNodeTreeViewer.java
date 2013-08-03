@@ -17,7 +17,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -46,7 +45,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-/* package */abstract class AbstractNodeTreeViewer implements TaxonomyModelChangeListener
+/* package */abstract class AbstractNodeTreeViewer extends Page
 {
     private static class ItemContentProvider implements ITreeContentProvider
     {
@@ -238,27 +237,13 @@ import org.eclipse.ui.PlatformUI;
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
-    private TaxonomyModel model;
-    private TaxonomyNodeRenderer renderer;
-
     private TreeViewer nodeViewer;
+
+    private boolean isFirstView = true;
 
     public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        this.model = model;
-        this.renderer = renderer;
-
-        this.model.addListener(this);
-    }
-
-    protected final TaxonomyModel getModel()
-    {
-        return model;
-    }
-
-    protected final TaxonomyNodeRenderer getRenderer()
-    {
-        return renderer;
+        super(model, renderer);
     }
 
     protected final TreeViewer getNodeViewer()
@@ -266,7 +251,7 @@ import org.eclipse.ui.PlatformUI;
         return nodeViewer;
     }
 
-    public final Control createContainer(Composite parent)
+    public final Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
@@ -285,9 +270,7 @@ import org.eclipse.ui.PlatformUI;
         nodeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer() },
                         new NodeDropListener(this));
 
-        nodeViewer.setInput(model);
-
-        expandNodes();
+        nodeViewer.setInput(getModel());
 
         ViewerHelper.pack(nodeViewer);
 
@@ -378,7 +361,7 @@ import org.eclipse.ui.PlatformUI;
     {
         List<TaxonomyNode> expanded = new ArrayList<TaxonomyNode>();
         LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
-        stack.push(model.getRootNode());
+        stack.push(getModel().getRootNode());
         while (!stack.isEmpty())
         {
             TaxonomyNode node = stack.pop();
@@ -402,8 +385,8 @@ import org.eclipse.ui.PlatformUI;
 
     protected void onTaxnomyNodeEdited(TaxonomyNode node)
     {
-        model.recalculate();
-        model.fireTaxonomyModelChange(node);
+        getModel().recalculate();
+        getModel().fireTaxonomyModelChange(node);
     }
 
     @Override
@@ -411,6 +394,20 @@ import org.eclipse.ui.PlatformUI;
     {
         nodeViewer.refresh();
     }
+
+    @Override
+    public void beforePage()
+    {
+        if (isFirstView)
+        {
+            expandNodes();
+            isFirstView = false;
+        }
+    }
+
+    @Override
+    public void afterPage()
+    {}
 
     protected void fillContextMenu(IMenuManager manager)
     {
@@ -437,7 +434,7 @@ import org.eclipse.ui.PlatformUI;
                 }
             });
 
-            TaxonomyNode unassigned = model.getUnassignedNode();
+            TaxonomyNode unassigned = getModel().getUnassignedNode();
             if (!unassigned.getChildren().isEmpty())
             {
                 MenuManager subMenu = new MenuManager("Assign");
@@ -510,7 +507,7 @@ import org.eclipse.ui.PlatformUI;
                         int oldWeight = node.getWeight();
                         node.setWeight(0);
                         doChangeAssignmentWeight(node, oldWeight);
-                        onTaxnomyNodeEdited(model.getRootNode());
+                        onTaxnomyNodeEdited(getModel().getRootNode());
                     }
                 });
             }
@@ -541,11 +538,11 @@ import org.eclipse.ui.PlatformUI;
             public void visit(TaxonomyNode node)
             {
                 if (node.isAssignment())
-                    node.moveTo(model.getUnassignedNode());
+                    node.moveTo(getModel().getUnassignedNode());
             }
         });
 
-        onTaxnomyNodeEdited(model.getRootNode());
+        onTaxnomyNodeEdited(getModel().getRootNode());
     }
 
     private void doChangeAssignmentWeight(TaxonomyNode node, int oldWeight)
@@ -563,8 +560,8 @@ import org.eclipse.ui.PlatformUI;
         // change total weight as recorded in the model
 
         InvestmentVehicle investmentVehicle = node.getAssignment().getInvestmentVehicle();
-        final int totalWeight = model.getWeightByInvestmentVehicle(investmentVehicle) - change;
-        model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight);
+        final int totalWeight = getModel().getWeightByInvestmentVehicle(investmentVehicle) - change;
+        getModel().setWeightByInvestmentVehicle(investmentVehicle, totalWeight);
 
         // check if change is fixing weight errors -> no new unassigned vehicles
 
@@ -574,7 +571,7 @@ import org.eclipse.ui.PlatformUI;
 
         // change existing unassigned node *or* create new unassigned node
 
-        TaxonomyNode unassigned = model.getUnassignedNode().getChildByInvestmentVehicle(investmentVehicle);
+        TaxonomyNode unassigned = getModel().getUnassignedNode().getChildByInvestmentVehicle(investmentVehicle);
 
         if (unassigned != null)
         {
@@ -583,13 +580,13 @@ import org.eclipse.ui.PlatformUI;
             int newWeight = unassigned.getWeight() + change;
             if (newWeight <= 0)
             {
-                model.getUnassignedNode().removeChild(unassigned);
-                model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight - unassigned.getWeight());
+                getModel().getUnassignedNode().removeChild(unassigned);
+                getModel().setWeightByInvestmentVehicle(investmentVehicle, totalWeight - unassigned.getWeight());
             }
             else
             {
                 unassigned.setWeight(newWeight);
-                model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight + change);
+                getModel().setWeightByInvestmentVehicle(investmentVehicle, totalWeight + change);
             }
         }
         else if (change > 0)
@@ -598,8 +595,8 @@ import org.eclipse.ui.PlatformUI;
 
             Assignment assignment = new Assignment(investmentVehicle);
             assignment.setWeight(change);
-            model.getUnassignedNode().addChild(assignment);
-            model.setWeightByInvestmentVehicle(investmentVehicle, totalWeight + change);
+            getModel().getUnassignedNode().addChild(assignment);
+            getModel().setWeightByInvestmentVehicle(investmentVehicle, totalWeight + change);
         }
 
         // do not fire model change -> called within modification listener
@@ -631,6 +628,6 @@ import org.eclipse.ui.PlatformUI;
         for (TaxonomyNode child : node.getChildren())
             child.setRank(rank++);
 
-        model.fireTaxonomyModelChange(node);
+        getModel().fireTaxonomyModelChange(node);
     }
 }

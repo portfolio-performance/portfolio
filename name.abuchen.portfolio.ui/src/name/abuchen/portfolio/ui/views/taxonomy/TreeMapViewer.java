@@ -5,7 +5,6 @@ import java.util.Iterator;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -17,6 +16,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 import de.engehausen.treemap.IColorProvider;
@@ -29,30 +29,33 @@ import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
 
-/* package */class TreeMapViewer implements TaxonomyModelChangeListener
+/* package */class TreeMapViewer extends Page
 {
-    private TaxonomyModel model;
-    private TaxonomyNodeRenderer renderer;
-
     private TreeMap<TaxonomyNode> treeMap;
     private TreeMapLegend legend;
 
     public TreeMapViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        this.model = model;
-        this.renderer = renderer;
-
-        this.model.addListener(this);
+        super(model, renderer);
     }
+
+    @Override
+    public void beforePage()
+    {}
+
+    @Override
+    public void afterPage()
+    {}
 
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        treeMap.setTreeModel(new Model(model.getRootNode()));
-        legend.setRootItem(model.getRootNode());
+        treeMap.setTreeModel(new Model(getModel().getRootNode()));
+        legend.setRootItem(getModel().getRootNode());
     }
 
-    public void createContainer(Composite parent)
+    @Override
+    public Control createControl(Composite parent)
     {
         SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
         sash.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -71,9 +74,9 @@ import de.engehausen.treemap.swt.TreeMap;
             }
         });
 
-        legend = new TreeMapLegend(container, treeMap, model, renderer);
+        legend = new TreeMapLegend(container, treeMap, getModel(), getRenderer());
 
-        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, model.getClient(), true);
+        final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, getModel().getClient(), true);
         treeMap.addSelectionChangeListener(new ISelectionChangeListener<TaxonomyNode>()
         {
             @Override
@@ -95,9 +98,11 @@ import de.engehausen.treemap.swt.TreeMap;
         int width = details.getControl().getBounds().width;
         sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
 
-        treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(model, renderer));
-        treeMap.setTreeModel(new Model(model.getRootNode()));
-        legend.setRootItem(model.getRootNode());
+        treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
+        treeMap.setTreeModel(new Model(getModel().getRootNode()));
+        legend.setRootItem(getModel().getRootNode());
+
+        return sash;
     }
 
     private static class Model implements IWeightedTreeModel<TaxonomyNode>

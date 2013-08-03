@@ -105,7 +105,6 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
         chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
-        chart.getToolTip().setReferenceSeries(Messages.PerformanceChartLabelAccumulatedIRR);
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.PERFORMANCE);
         picker.setListener(new ChartConfigurator.Listener()

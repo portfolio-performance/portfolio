@@ -31,12 +31,12 @@ public class TimelineChartToolTip implements Listener
 
     private Chart chart = null;
     private Shell tip = null;
-    private Date tipDate = null;
+    private Object focus = null;
 
     private String dateFormat = "%tF"; //$NON-NLS-1$
     private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
-    private String referenceSeriesId;
+    private boolean categoryEnabled = false;
 
     public TimelineChartToolTip(Chart chart)
     {
@@ -47,6 +47,11 @@ public class TimelineChartToolTip implements Listener
         plotArea.addListener(SWT.MouseMove, this);
         plotArea.addListener(SWT.MouseUp, this);
         plotArea.addListener(SWT.Dispose, this);
+    }
+
+    public void enableCategory(boolean enabled)
+    {
+        categoryEnabled = enabled;
     }
 
     public void handleEvent(Event event)
@@ -76,11 +81,6 @@ public class TimelineChartToolTip implements Listener
         this.valueFormat = valueFormat;
     }
 
-    public void setReferenceSeries(String id)
-    {
-        this.referenceSeriesId = id;
-    }
-
     private void closeToolTip()
     {
         if (tip != null)
@@ -92,7 +92,7 @@ public class TimelineChartToolTip implements Listener
 
     private void showToolTip(Event event)
     {
-        tipDate = getDateAt(event);
+        focus = getFocusObjectAt(event);
 
         if (tip != null && !tip.isDisposed())
             tip.dispose();
@@ -112,8 +112,8 @@ public class TimelineChartToolTip implements Listener
         if (tip == null || tip.isDisposed())
             return;
 
-        Date newTipDate = getDateAt(event);
-        boolean dateChanged = tipDate != null && !tipDate.equals(newTipDate);
+        Object newTipDate = getFocusObjectAt(event);
+        boolean dateChanged = focus != null && !focus.equals(newTipDate);
 
         if (dateChanged)
         {
@@ -122,7 +122,7 @@ public class TimelineChartToolTip implements Listener
                 c.dispose();
 
             // re-create labels
-            tipDate = newTipDate;
+            focus = newTipDate;
             Point size = createComposite();
 
             size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -137,7 +137,27 @@ public class TimelineChartToolTip implements Listener
         }
     }
 
-    private Date getDateAt(Event event)
+    private Object getFocusObjectAt(Event event)
+    {
+        return categoryEnabled ? getFocusCategoryAt(event) : getFocusDateAt(event);
+    }
+
+    private Integer getFocusCategoryAt(Event event)
+    {
+        IAxis xAxis = chart.getAxisSet().getXAxes()[0];
+        int coordinate = (int) xAxis.getDataCoordinate(event.x);
+
+        String[] categories = xAxis.getCategorySeries();
+
+        if (coordinate < 0)
+            coordinate = 0;
+        else if (coordinate > categories.length - 1)
+            coordinate = categories.length - 1;
+
+        return coordinate;
+    }
+
+    private Date getFocusDateAt(Event event)
     {
         IAxis xAxis = chart.getAxisSet().getXAxes()[0];
 
@@ -150,8 +170,7 @@ public class TimelineChartToolTip implements Listener
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        ISeries timeSeries = referenceSeriesId != null ? chart.getSeriesSet().getSeries(referenceSeriesId) : chart
-                        .getSeriesSet().getSeries()[0];
+        ISeries timeSeries = chart.getSeriesSet().getSeries()[0];
         int line = Arrays.binarySearch(timeSeries.getXDateSeries(), cal.getTime());
 
         if (line >= 0)
@@ -191,14 +210,25 @@ public class TimelineChartToolTip implements Listener
 
         Label right = new Label(container, SWT.NONE);
         right.setForeground(foregroundColor);
-        right.setText(String.format(dateFormat, tipDate));
+        right.setText(categoryEnabled ? chart.getAxisSet().getXAxis(0).getCategorySeries()[(Integer) focus] : String
+                        .format(dateFormat, focus));
 
         for (ISeries series : chart.getSeriesSet().getSeries())
         {
-            int line = Arrays.binarySearch(series.getXDateSeries(), tipDate);
-            if (line < 0)
-                continue;
-            double value = series.getYSeries()[line];
+            double value;
+
+            if (categoryEnabled)
+            {
+                int line = (Integer) focus;
+                value = series.getYSeries()[line];
+            }
+            else
+            {
+                int line = Arrays.binarySearch(series.getXDateSeries(), focus);
+                if (line < 0)
+                    continue;
+                value = series.getYSeries()[line];
+            }
 
             left = new Label(container, SWT.NONE);
             left.setForeground(foregroundColor);

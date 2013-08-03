@@ -1,13 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.io.IOException;
 import java.util.LinkedList;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 
@@ -19,7 +17,7 @@ import org.eclipse.swt.widgets.ToolBar;
 
 /* package */abstract class AbstractHistoricView extends AbstractFinanceView
 {
-    private static final String IDENTIFIER = AbstractHistoricView.class.getSimpleName();
+    public static final String IDENTIFIER = AbstractHistoricView.class.getSimpleName();
 
     private LinkedList<ReportingPeriod> periods = new LinkedList<ReportingPeriod>();
 
@@ -27,47 +25,14 @@ import org.eclipse.swt.widgets.ToolBar;
     public void init(ClientEditor clientEditor, Object parameter)
     {
         super.init(clientEditor, parameter);
-        load();
+        periods = getClientEditor().loadReportingPeriods();
     }
 
     @Override
     public void dispose()
     {
-        StringBuilder buf = new StringBuilder();
-        for (ReportingPeriod p : periods)
-        {
-            p.writeTo(buf);
-            buf.append(';');
-        }
-
-        getClientEditor().getPreferenceStore().setValue(IDENTIFIER, buf.toString());
+        getClientEditor().storeReportingPeriods(periods);
         super.dispose();
-    }
-
-    private void load()
-    {
-        String config = getClientEditor().getPreferenceStore().getString(IDENTIFIER);
-        if (config != null && config.trim().length() > 0)
-        {
-            String[] codes = config.split(";"); //$NON-NLS-1$
-            for (String c : codes)
-            {
-                try
-                {
-                    periods.add(ReportingPeriod.from(c));
-                }
-                catch (IOException ignore)
-                {
-                    PortfolioPlugin.log(ignore);
-                }
-            }
-        }
-
-        if (periods.isEmpty())
-        {
-            for (int ii = 1; ii <= 5; ii++)
-                periods.add(new ReportingPeriod.LastX(ii, 0));
-        }
     }
 
     protected abstract void reportingPeriodUpdated();

@@ -2,12 +2,17 @@ package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Values;
 
 public class ClientSnapshot
 {
@@ -93,5 +98,24 @@ public class ClientSnapshot
     public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)
     {
         return new GroupByTaxonomy(taxonomy, this);
+    }
+
+    public Map<InvestmentVehicle, AssetPosition> getPositionsByVehicle()
+    {
+        Map<InvestmentVehicle, AssetPosition> answer = new HashMap<InvestmentVehicle, AssetPosition>();
+
+        long assets = getAssets();
+
+        for (SecurityPosition p : jointPortfolio.getPositions())
+            answer.put(p.getSecurity(), new AssetPosition(p.getSecurity(), p, assets));
+
+        for (AccountSnapshot a : accounts)
+        {
+            SecurityPosition sp = new SecurityPosition(null);
+            sp.setShares(Values.Share.factor());
+            sp.setPrice(new SecurityPrice(getTime(), a.getFunds()));
+            answer.put(a.getAccount(), new AssetPosition(a.getAccount(), sp, assets));
+        }
+        return answer;
     }
 }

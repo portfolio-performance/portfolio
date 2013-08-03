@@ -30,3 +30,6 @@ Require-Bundle: name.abuchen.portfolio,
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
 Bundle-Vendor: %Bundle-Vendor
+Import-Package: org.joda.time,
+ org.joda.time.base;version="2.1.0",
+ org.joda.time.format;version="2.1.0"

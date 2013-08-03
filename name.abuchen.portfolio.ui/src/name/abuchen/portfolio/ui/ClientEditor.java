@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.util.LinkedList;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -328,6 +330,51 @@ public class ClientEditor extends EditorPart
     // //////////////////////////////////////////////////////////////
     // preference store functions
     // //////////////////////////////////////////////////////////////
+
+    // compatibility: the value used to be stored in the AbstractHistoricView
+    private static final String IDENTIFIER = "AbstractHistoricView"; //$NON-NLS-1$
+
+    public LinkedList<ReportingPeriod> loadReportingPeriods()
+    {
+        LinkedList<ReportingPeriod> answer = new LinkedList<ReportingPeriod>();
+
+        String config = getPreferenceStore().getString(IDENTIFIER);
+        if (config != null && config.trim().length() > 0)
+        {
+            String[] codes = config.split(";"); //$NON-NLS-1$
+            for (String c : codes)
+            {
+                try
+                {
+                    answer.add(ReportingPeriod.from(c));
+                }
+                catch (IOException ignore)
+                {
+                    PortfolioPlugin.log(ignore);
+                }
+            }
+        }
+
+        if (answer.isEmpty())
+        {
+            for (int ii = 1; ii <= 5; ii++)
+                answer.add(new ReportingPeriod.LastX(ii, 0));
+        }
+
+        return answer;
+    }
+
+    public void storeReportingPeriods(LinkedList<ReportingPeriod> periods)
+    {
+        StringBuilder buf = new StringBuilder();
+        for (ReportingPeriod p : periods)
+        {
+            p.writeTo(buf);
+            buf.append(';');
+        }
+
+        getPreferenceStore().setValue(IDENTIFIER, buf.toString());
+    }
 
     private void storePreferences()
     {
