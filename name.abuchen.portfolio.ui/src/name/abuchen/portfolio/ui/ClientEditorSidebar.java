@@ -244,7 +244,7 @@ import org.eclipse.swt.widgets.Menu;
             createTaxonomyEntry(taxonomies, taxonomy);
     }
 
-    private void createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
+    private Entry createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
     {
         final Entry entry = new Entry(section, taxonomy.getName());
         entry.setAction(new ActivateViewAction(taxonomy.getName(), "taxonomy.Taxonomy", taxonomy, null)); //$NON-NLS-1$
@@ -281,6 +281,8 @@ import org.eclipse.swt.widgets.Menu;
                 });
             }
         });
+
+        return entry;
     }
 
     private void showCreateTaxonomyMenu()
@@ -325,10 +327,7 @@ import org.eclipse.swt.widgets.Menu;
                 Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
                 taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
 
-                editor.getClient().addTaxonomy(taxonomy);
-                editor.markDirty();
-                createTaxonomyEntry(taxonomies, taxonomy);
-                sidebar.layout();
+                addAndOpenTaxonomy(taxonomy);
             }
         });
 
@@ -342,15 +341,20 @@ import org.eclipse.swt.widgets.Menu;
                 @Override
                 public void run()
                 {
-                    Taxonomy taxonomy = template.build();
-
-                    editor.getClient().addTaxonomy(taxonomy);
-                    editor.markDirty();
-                    createTaxonomyEntry(taxonomies, taxonomy);
-                    sidebar.layout();
+                    addAndOpenTaxonomy(template.build());
                 }
             });
         }
+    }
+
+    private void addAndOpenTaxonomy(Taxonomy taxonomy)
+    {
+        editor.getClient().addTaxonomy(taxonomy);
+        editor.markDirty();
+        Entry entry = createTaxonomyEntry(taxonomies, taxonomy);
+
+        sidebar.select(entry);
+        sidebar.layout();
     }
 
     private String askTaxonomyName(String initialValue)
@@ -368,5 +372,4 @@ import org.eclipse.swt.widgets.Menu;
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
     }
-
 }
