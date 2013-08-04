@@ -67,18 +67,14 @@ public class Messages extends NLS
     public static String IssueMissingPortfolioTransfer;
     public static String IssueMissingReferenceAccount;
     public static String LabelAssetAllocation;
-    public static String LabelAssetClasses;
     public static String LabelDeposits;
-    public static String LabelIndustryClassification;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
-    public static String LabelPortfolio;
     public static String LabelRemovals;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodMonths;
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
-    public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorsConvertingValue;

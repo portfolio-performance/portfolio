@@ -9,16 +9,8 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
-    public static String AssetAllocationMenuAddNewCategory;
-    public static String AssetAllocationMenuAssignAccount;
-    public static String AssetAllocationMenuAssignSecurity;
-    public static String AssetAllocationMenuDeleteCategory;
-    public static String AssetAllocationMenuRemove;
     public static String CellEditor_Error;
     public static String CellEditor_NotANumber;
-    public static String ChangeTaxonomyAction;
-    public static String ChangeTaxonomyRequestConfirmation;
-    public static String ChangeTaxonomyTitle;
     public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesPickerAddBenchmark;
     public static String ChartSeriesPickerAddItem;
@@ -44,7 +36,6 @@ public class Messages extends NLS
     public static String ColumnActualValue;
     public static String ColumnAmount;
     public static String ColumnBalance;
-    public static String ColumnCategory;
     public static String ColumnDate;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
@@ -93,7 +84,6 @@ public class Messages extends NLS
     public static String ColumnSource;
     public static String ColumnStartDate;
     public static String ColumnSymbol;
-    public static String ColumnTargetPercent;
     public static String ColumnTargetValue;
     public static String ColumnTicker;
     public static String ColumnTotal;
@@ -124,12 +114,8 @@ public class Messages extends NLS
     public static String CSVImportSeparatorTab;
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
-    public static String CurrencyConverter_MsgNotANumber;
     public static String DialogConsistencyChecksTitle;
     public static String DialogConssitencyChecksMessage;
-    public static String DialogTitleCounterTransactionNotFound;
-    public static String DialogTitleMultipleCounterTransactions;
-    public static String EditWizardIndustryClassificationDescription;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataTitle;
@@ -184,9 +170,6 @@ public class Messages extends NLS
     public static String LabelAccounts;
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
-    public static String LabelAssetAllocation;
-    public static String LabelAssetClasses;
-    public static String LabelChoose;
     public static String LabelConsumerPriceIndex;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelError;
@@ -195,8 +178,6 @@ public class Messages extends NLS
     public static String LabelFullClassification;
     public static String LabelInfo;
     public static String LabelInvestmentPlans;
-    public static String LabelNewCategory;
-    public static String LabelNoClassification;
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelOther;
@@ -223,10 +204,8 @@ public class Messages extends NLS
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelStatementOfAssets;
-    public static String LabelStatementOfAssetsClasses;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
-    public static String LabelStatementOfAssetsIndustries;
     public static String LabelTotalSum;
     public static String LabelTransferals;
     public static String LabelUnknownVersion;
@@ -234,7 +213,6 @@ public class Messages extends NLS
     public static String LabelUnsavedFile;
     public static String LabelUpdatesAvailable;
     public static String LabelViewPieChart;
-    public static String LabelViewTable;
     public static String LabelViewTreeMap;
     public static String LabelWithoutClassification;
     public static String MenuConfigureChart;
@@ -244,7 +222,6 @@ public class Messages extends NLS
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
     public static String MenuShowHideColumns;
-    public static String MenuTransactionAdd;
     public static String MenuTransactionDelete;
     public static String MessageDialogProviderAnswerKeep;
     public static String MessageDialogProviderAnswerReplace;
@@ -253,10 +230,8 @@ public class Messages extends NLS
     public static String MsgAccountFromMissing;
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
-    public static String MsgCounterTransactionNotFoundDeleteAnyway;
     public static String MsgConfirmInstall;
     public static String MsgDeletionNotPossible;
-    public static String MsgDeletionNotPossibleAssignedInAllocation;
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
     public static String MsgDialogNotAValidISIN;
@@ -268,9 +243,7 @@ public class Messages extends NLS
     public static String MsgMissingSecurity;
     public static String MsgNoIssuesFound;
     public static String MsgNoProfileFound;
-    public static String MsgNoSecuritiesMaintained;
     public static String MsgNoUpdatesAvailable;
-    public static String MsgPickOneOfMultipleCounterTransactions;
     public static String MsgPortfolioFromMissing;
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
@@ -321,8 +294,6 @@ public class Messages extends NLS
     public static String SecurityTabChartAll;
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTransactions;
-    public static String ShortLabelIndustries;
-    public static String ShortLabelIndustry;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuShowErrorLog;
     public static String SystemMenuWelcome;
