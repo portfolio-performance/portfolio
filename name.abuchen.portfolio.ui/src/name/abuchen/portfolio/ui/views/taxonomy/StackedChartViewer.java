@@ -15,6 +15,7 @@ import name.abuchen.portfolio.snapshot.Aggregation.Period;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.ClientEditor;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.StackedTimelineChart;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
@@ -162,7 +163,7 @@ public class StackedChartViewer extends Page
 
     private void asyncUpdateChart()
     {
-        new Job("Update stacked chart")
+        new Job(Messages.JobLabelUpdateStackedLineChart)
         {
             @Override
             protected IStatus run(IProgressMonitor monitor)

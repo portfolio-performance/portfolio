@@ -230,8 +230,8 @@ import org.eclipse.swt.widgets.Menu;
 
     private void createTaxonomyDataSection(final Sidebar sidebar)
     {
-        taxonomies = new Entry(sidebar, "Taxonomies");
-        taxonomies.setAction(new Action("Taxonomies", PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        taxonomies = new Entry(sidebar, Messages.LabelTaxonomies);
+        taxonomies.setAction(new Action(Messages.LabelTaxonomies, PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
         {
             @Override
             public void run()
@@ -253,7 +253,7 @@ import org.eclipse.swt.widgets.Menu;
             @Override
             public void menuAboutToShow(IMenuManager manager)
             {
-                manager.add(new Action("Rename Taxonomy")
+                manager.add(new Action(Messages.MenuTaxonomyRename)
                 {
                     @Override
                     public void run()
@@ -268,7 +268,7 @@ import org.eclipse.swt.widgets.Menu;
                     }
                 });
 
-                manager.add(new Action("Delete Taxonomy")
+                manager.add(new Action(Messages.MenuTaxonomyDelete)
                 {
                     @Override
                     public void run()
@@ -315,12 +315,12 @@ import org.eclipse.swt.widgets.Menu;
 
     private void taxonomyMenuAboutToShow(IMenuManager manager)
     {
-        manager.add(new Action("Neu...")
+        manager.add(new Action(Messages.MenuTaxonomyCreate)
         {
             @Override
             public void run()
             {
-                String name = askTaxonomyName("New Taxonomy");
+                String name = askTaxonomyName(Messages.LabelNewTaxonomy);
                 if (name == null)
                     return;
 
@@ -332,7 +332,7 @@ import org.eclipse.swt.widgets.Menu;
         });
 
         manager.add(new Separator());
-        manager.add(new LabelOnly("Templates"));
+        manager.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
 
         for (final TaxonomyTemplate template : TaxonomyTemplate.list())
         {
@@ -359,8 +359,8 @@ import org.eclipse.swt.widgets.Menu;
 
     private String askTaxonomyName(String initialValue)
     {
-        InputDialog dlg = new InputDialog(editor.getSite().getShell(), "Edit Taxonomy Name",
-                        "Give the taxonomy a name", initialValue, null);
+        InputDialog dlg = new InputDialog(editor.getSite().getShell(), Messages.DialogTaxonomyNameTitle,
+                        Messages.DialogTaxonomyNamePrompt, initialValue, null);
         if (dlg.open() != InputDialog.OK)
             return null;
 

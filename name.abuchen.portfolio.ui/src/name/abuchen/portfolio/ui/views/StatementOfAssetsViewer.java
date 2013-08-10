@@ -485,7 +485,7 @@ public class StatementOfAssetsViewer
 
     private void menuAboutToShow(IMenuManager manager)
     {
-        manager.add(new LabelOnly("Taxonomies"));
+        manager.add(new LabelOnly(Messages.LabelTaxonomies));
         for (final Taxonomy t : client.getTaxonomies())
         {
             Action action = new Action(t.getName())
@@ -507,7 +507,7 @@ public class StatementOfAssetsViewer
 
         manager.add(new Separator());
 
-        manager.add(new LabelOnly("Columns"));
+        manager.add(new LabelOnly(Messages.LabelColumns));
         support.menuAboutToShow(manager);
     }
 

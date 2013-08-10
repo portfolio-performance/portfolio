@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.ui.wizards;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -21,12 +25,14 @@ public class AddTaxonomyPage extends AbstractWizardPage
 {
     private Client client;
 
+    private Set<String> taxonomiesAdded = new HashSet<String>();
+
     public AddTaxonomyPage(Client client)
     {
         super(AddTaxonomyPage.class.getSimpleName());
         this.client = client;
-        setTitle("Add Taxonomies");
-        setDescription("Add taxonomies to analyze the portfolio along varios dimensions...");
+        setTitle(Messages.NewFileWizardTaxonomyTitle);
+        setDescription(Messages.NewFileWizardTaxonomyDescription);
     }
 
     @Override
@@ -42,7 +48,7 @@ public class AddTaxonomyPage extends AbstractWizardPage
 
         TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(90));
-        column.getColumn().setText("Taxonomy");
+        column.getColumn().setText(Messages.ColumnTaxonomy);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -67,7 +73,7 @@ public class AddTaxonomyPage extends AbstractWizardPage
             {
                 TaxonomyTemplate t = (TaxonomyTemplate) element;
 
-                if (client.getTaxonomy(t.getId()) != null)
+                if (taxonomiesAdded.contains(t.getId()))
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_CHECK);
                 else
                     return null;
@@ -82,8 +88,9 @@ public class AddTaxonomyPage extends AbstractWizardPage
                 TaxonomyTemplate template = (TaxonomyTemplate) ((IStructuredSelection) event.getSelection())
                                 .getFirstElement();
 
-                if (template != null && client.getTaxonomy(template.getId()) == null)
+                if (template != null && !taxonomiesAdded.contains(template.getId()))
                 {
+                    taxonomiesAdded.add(template.getId());
                     client.addTaxonomy(template.build());
                     viewer.refresh(template);
                 }

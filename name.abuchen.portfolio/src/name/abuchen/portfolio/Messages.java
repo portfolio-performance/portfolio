@@ -75,6 +75,7 @@ public class Messages extends NLS
     public static String LabelReportingPeriodMonths;
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
+    public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorsConvertingValue;

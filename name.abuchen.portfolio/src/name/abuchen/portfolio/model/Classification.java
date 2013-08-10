@@ -74,6 +74,8 @@ public class Classification
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
 
+    public static final String UNASSIGNED_ID = "$unassigned$"; //$NON-NLS-1$
+
     private String id;
     private String name;
     private String description;

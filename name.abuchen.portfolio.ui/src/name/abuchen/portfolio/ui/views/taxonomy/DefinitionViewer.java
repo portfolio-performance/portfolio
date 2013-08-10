@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -34,7 +35,7 @@ import org.eclipse.swt.widgets.Display;
         addDimensionColumn(layout);
 
         TreeViewerColumn column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText("Weight");
+        column.getColumn().setText(Messages.ColumnWeight);
         column.getColumn().setWidth(70);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(70));
         column.setLabelProvider(new ColumnLabelProvider()
@@ -73,7 +74,7 @@ import org.eclipse.swt.widgets.Display;
         });
 
         column = new TreeViewerColumn(getNodeViewer(), SWT.LEFT);
-        column.getColumn().setText("Color");
+        column.getColumn().setText(Messages.ColumnColor);
         column.getColumn().setWidth(60);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
         column.setLabelProvider(new ColumnLabelProvider()
@@ -125,11 +126,11 @@ import org.eclipse.swt.widgets.Display;
 
         if (node != null && node.isClassification())
         {
-            MenuManager color = new MenuManager("Color");
+            MenuManager color = new MenuManager(Messages.ColumnColor);
 
             if (!node.isRoot())
             {
-                color.add(new Action("Edit...")
+                color.add(new Action(Messages.MenuTaxonomyColorEdit)
                 {
                     @Override
                     public void run()
@@ -139,7 +140,7 @@ import org.eclipse.swt.widgets.Display;
                 });
             }
 
-            color.add(new Action("Random palette to children")
+            color.add(new Action(Messages.MenuTaxonomyColorRandomPalette)
             {
                 @Override
                 public void run()
@@ -150,7 +151,7 @@ import org.eclipse.swt.widgets.Display;
 
             if (!node.isRoot())
             {
-                color.add(new Action("Cascade color to children")
+                color.add(new Action(Messages.MenuTaxonomyColorCascadeToChildren)
                 {
                     @Override
                     public void run()

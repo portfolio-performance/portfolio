@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
@@ -62,11 +63,11 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        addView(toolBar, "Definition", PortfolioPlugin.IMG_VIEW_TABLE, 0);
-        addView(toolBar, "Allocation", PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
-        addView(toolBar, "Pie Chart", PortfolioPlugin.IMG_VIEW_PIECHART, 2);
-        addView(toolBar, "Tree Map", PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
-        addView(toolBar, "Stacked Chart", PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
+        addView(toolBar, Messages.LabelViewTaxonomyDefinition, PortfolioPlugin.IMG_VIEW_TABLE, 0);
+        addView(toolBar, Messages.LabelViewReBalancing, PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
+        addView(toolBar, Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART, 2);
+        addView(toolBar, Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
+        addView(toolBar, Messages.LabelViewStackedChart, PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
     }
 
     @Override

@@ -19,6 +19,7 @@ import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainerNode;
@@ -80,8 +81,8 @@ public final class TaxonomyModel
             });
         }
 
-        unassignedNode = new UnassignedContainerNode(rootNode, new Classification(root, "$unassigned$",
-                        "Ohne Klassifizierung"));
+        unassignedNode = new UnassignedContainerNode(rootNode, new Classification(root, Classification.UNASSIGNED_ID,
+                        Messages.LabelWithoutClassification));
         rootNode.getChildren().add(unassignedNode);
 
         // add unassigned

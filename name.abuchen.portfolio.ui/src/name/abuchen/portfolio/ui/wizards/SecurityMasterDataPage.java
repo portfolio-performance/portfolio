@@ -68,7 +68,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             {
                 Classification classification = (Classification) value.getValue();
                 if (!selected.add(classification))
-                    return ValidationStatus.error(MessageFormat.format("{0} is selected twice.",
+                    return ValidationStatus.error(MessageFormat.format(Messages.EditWizardMasterDataMsgDuplicateClassification,
                                     classification.getName()));
             }
             return ValidationStatus.ok();
@@ -100,7 +100,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             if (Classification.ONE_HUNDRED_PERCENT == weights)
                 return ValidationStatus.ok();
             else
-                return ValidationStatus.error(MessageFormat.format("{0} must add up to 100%", taxonomy.getName()));
+                return ValidationStatus.error(MessageFormat.format(Messages.EditWizardMasterDataMsgWeightNot100Percent, taxonomy.getName()));
         }
     }
 
@@ -110,7 +110,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         public IStatus validate(Object value)
         {
             return value != null ? ValidationStatus.ok() : ValidationStatus
-                            .error("Select a classification from the drop-down list");
+                            .error(Messages.EditWizardMasterDataMsgClassificationMissing);
         }
     }
 
@@ -121,7 +121,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         {
             int weight = (Integer) value;
             return weight > 0 ? ValidationStatus.ok() : ValidationStatus
-                            .error("Assignment weight must be greate than 0");
+                            .error(Messages.EditWizardMasterDataMsgWeightEqualsZero);
         }
     }
 

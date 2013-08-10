@@ -205,7 +205,7 @@ public class GroupByTaxonomyTest
 
         AssetCategory unassigned = null;
         for (AssetCategory category : grouping.asList())
-            if (category.getClassification().getId().equals("$unassigned$"))
+            if (category.getClassification().getId().equals(Classification.UNASSIGNED_ID))
                 unassigned = category;
 
         assertThat(unassigned, notNullValue());

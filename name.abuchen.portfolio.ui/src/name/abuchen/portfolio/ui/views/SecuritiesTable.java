@@ -229,10 +229,19 @@ public final class SecuritiesTable
             if (labels != null && ii <= labels.size())
                 label = labels.get(ii - 1);
 
-            menuLabels.append(ii).append('#') //
-                            .append(label != null ? label : MessageFormat.format("Level {0}", ii));
-            columnLabels.append(ii).append('#')
-                            .append(label != null ? label : MessageFormat.format("{0} (Level {1})", name, ii));
+            menuLabels.append(ii).append('#');
+            columnLabels.append(ii).append('#');
+
+            if (label != null)
+            {
+                menuLabels.append(label);
+                columnLabels.append(label);
+            }
+            else
+            {
+                menuLabels.append(MessageFormat.format(Messages.LabelLevelNumber, ii));
+                columnLabels.append(MessageFormat.format(Messages.LabelLevelNameNumber, name, ii));
+            }
         }
 
         options.add(100);

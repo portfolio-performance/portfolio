@@ -362,7 +362,7 @@ public class SecurityDetailsViewer
             }
 
             if (count[0] > 1)
-                heading.setText(taxonomy.getName() + ' ' + MessageFormat.format("(1 of {0})", count[0]));
+                heading.setText(taxonomy.getName() + ' ' + MessageFormat.format(Messages.LabelOneOfX, count[0]));
             else
                 heading.setText(taxonomy.getName());
 

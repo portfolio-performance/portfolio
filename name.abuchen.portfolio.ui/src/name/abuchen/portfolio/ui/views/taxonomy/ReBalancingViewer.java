@@ -34,7 +34,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         addDimensionColumn(layout);
 
         TreeViewerColumn column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText("Weight");
+        column.getColumn().setText(Messages.ColumnWeight);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(70));
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -42,7 +42,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isUnassignedCategory() ? "n/a" : Values.Weight.format(node.getWeight());
+                return node.isUnassignedCategory() ? Messages.LabelNotAvailable
+                                : Values.Weight.format(node.getWeight());
             }
 
             @Override
@@ -147,7 +148,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         });
 
         column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText("Delta Stücke");
+        column.getColumn().setText(Messages.ColumnDeltaShares);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -186,7 +187,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         if (node != null && node.isClassification() && getModel().hasWeightError(node))
         {
-            manager.appendToGroup(MENU_GROUP_CUSTOM_ACTIONS, new Action("Fix weights")
+            manager.appendToGroup(MENU_GROUP_CUSTOM_ACTIONS, new Action(Messages.MenuTaxonomyWeightFix)
             {
                 @Override
                 public void run()

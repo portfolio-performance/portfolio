@@ -291,7 +291,7 @@ import org.eclipse.ui.PlatformUI;
     protected void addDimensionColumn(TreeColumnLayout layout)
     {
         TreeViewerColumn column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
-        column.getColumn().setText("Dimensionen");
+        column.getColumn().setText(Messages.ColumnLevels);
         column.getColumn().setWidth(400);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(400));
         column.setLabelProvider(new ColumnLabelProvider()
@@ -425,7 +425,7 @@ import org.eclipse.ui.PlatformUI;
 
         if (node.isClassification())
         {
-            manager.add(new Action("Add new classification")
+            manager.add(new Action(Messages.MenuTaxonomyClassificationCreate)
             {
                 @Override
                 public void run()
@@ -437,7 +437,7 @@ import org.eclipse.ui.PlatformUI;
             TaxonomyNode unassigned = getModel().getUnassignedNode();
             if (!unassigned.getChildren().isEmpty())
             {
-                MenuManager subMenu = new MenuManager("Assign");
+                MenuManager subMenu = new MenuManager(Messages.MenuTaxonomyMakeAssignment);
                 for (final TaxonomyNode assignment : unassigned.getChildren())
                 {
                     String label = assignment.getName();
@@ -461,8 +461,8 @@ import org.eclipse.ui.PlatformUI;
 
             manager.add(new Separator());
 
-            MenuManager sorting = new MenuManager("Sort by...");
-            sorting.add(new Action("Typ, Name")
+            MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
+            sorting.add(new Action(Messages.MenuTaxonomySortByTypName)
             {
                 @Override
                 public void run()
@@ -470,7 +470,7 @@ import org.eclipse.ui.PlatformUI;
                     doSort(node, true);
                 }
             });
-            sorting.add(new Action("Name")
+            sorting.add(new Action(Messages.MenuTaxonomySortByName)
             {
                 @Override
                 public void run()
@@ -484,7 +484,7 @@ import org.eclipse.ui.PlatformUI;
             if (!node.isRoot())
             {
                 manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
-                manager.add(new Action("Delete")
+                manager.add(new Action(Messages.MenuTaxonomyClassificationDelete)
                 {
                     @Override
                     public void run()
@@ -499,7 +499,7 @@ import org.eclipse.ui.PlatformUI;
             // node is assignment, but not in unassigned category
             if (!node.getParent().isUnassignedCategory())
             {
-                manager.add(new Action("Remove")
+                manager.add(new Action(Messages.MenuTaxonomyAssignmentRemove)
                 {
                     @Override
                     public void run()
@@ -516,7 +516,7 @@ import org.eclipse.ui.PlatformUI;
 
     private void doAddClassification(TaxonomyNode parent)
     {
-        Classification newClassification = new Classification(null, UUID.randomUUID().toString(), "NEW CLASSIFICATION");
+        Classification newClassification = new Classification(null, UUID.randomUUID().toString(), Messages.LabelNewClassification);
 
         TaxonomyNode newNode = parent.addChild(newClassification);
 

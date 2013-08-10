@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -168,7 +169,8 @@ public final class GroupByTaxonomy
 
     private void allocateLeftOvers(final Map<InvestmentVehicle, Item> vehicle2position)
     {
-        Classification classification = new Classification(null, "$unassigned$", "Ohne Klassifizierung");
+        Classification classification = new Classification(null, Classification.UNASSIGNED_ID,
+                        Messages.LabelWithoutClassification);
         AssetCategory unassigned = new AssetCategory(classification, getValuation());
 
         for (Entry<InvestmentVehicle, Item> entry : vehicle2position.entrySet())
