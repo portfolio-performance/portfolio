@@ -1,2 +1,3 @@
 name.abuchen.portfolio.online.impl.ManualQuoteFeed
 name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed
+name.abuchen.portfolio.online.impl.YahooFinanceAdjustedCloseQuoteFeed

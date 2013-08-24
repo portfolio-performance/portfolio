@@ -124,20 +124,42 @@ public class YahooFinanceQuoteFeedTest
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
         {
             @Override
-            protected InputStream openStream(String wknUrl) throws MalformedURLException, IOException
+            protected InputStream openStream(String wknUrl) throws IOException
             {
                 return getClass().getResourceAsStream("response_yahoo_historical.txt");
             }
         };
 
         Security security = new Security();
-        security.setName("Daimler AG");
-        security.setIsin("DE0007100000");
         security.setTickerSymbol("DAI.DE");
 
         feed.updateHistoricalQuotes(security);
 
-        assertThat(security.getPrices().isEmpty(), is(false));
+        assertThat(security.getPrices().size(), is(2257));
+
+        assertThat(security.getPrices().get(0), //
+                        equalTo(new SecurityPrice(Dates.date(2003, Calendar.JANUARY, 1), 2935)));
+
+        assertThat(security.getPrices().get(security.getPrices().size() - 1),
+                        equalTo(new SecurityPrice(Dates.date(2011, Calendar.SEPTEMBER, 22), 3274)));
+    }
+
+    @Test
+    public void testParsingHistoricalAdjustedCloseQuotes() throws IOException
+    {
+        YahooFinanceAdjustedCloseQuoteFeed feed = new YahooFinanceAdjustedCloseQuoteFeed()
+        {
+            @Override
+            protected InputStream openStream(String wknUrl) throws IOException
+            {
+                return getClass().getResourceAsStream("response_yahoo_historical.txt");
+            }
+        };
+
+        Security security = new Security();
+        security.setTickerSymbol("DAI.DE");
+
+        feed.updateHistoricalQuotes(security);
 
         assertThat(security.getPrices().size(), is(2257));
 
