@@ -25,7 +25,12 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -190,6 +195,7 @@ public class UpdateHelper
 
     private static class ExtendedMessageDialog extends MessageDialog
     {
+        private Button checkOnUpdate;
         private String log;
 
         public ExtendedMessageDialog(Shell parentShell, String title, String message, String log)
@@ -202,8 +208,28 @@ public class UpdateHelper
         @Override
         protected Control createCustomArea(Composite parent)
         {
-            Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
+            Composite container = new Composite(parent, SWT.NONE);
+            GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
+
+            Text text = new Text(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
             text.setText(log);
+            GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
+
+            checkOnUpdate = new Button(container, SWT.CHECK);
+            checkOnUpdate.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
+                            .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE));
+            checkOnUpdate.setText(Messages.PrefCheckOnStartup);
+            checkOnUpdate.addSelectionListener(new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                    PortfolioPlugin.getDefault().getPreferenceStore()
+                                    .setValue(PortfolioPlugin.Preferences.AUTO_UPDATE, checkOnUpdate.getSelection());
+                }
+            });
+            GridDataFactory.fillDefaults().grab(true, false);
+
             return text;
         }
     }
