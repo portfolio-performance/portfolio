@@ -339,7 +339,10 @@ import org.eclipse.ui.PlatformUI;
                 long actual = node.getActual();
                 long base = node.getParent() == null ? node.getActual() : node.getParent().getActual();
 
-                return Values.Percent.format(((double) actual / (double) base));
+                if (base == 0d)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format(((double) actual / (double) base));
             }
         });
 
@@ -516,7 +519,8 @@ import org.eclipse.ui.PlatformUI;
 
     private void doAddClassification(TaxonomyNode parent)
     {
-        Classification newClassification = new Classification(null, UUID.randomUUID().toString(), Messages.LabelNewClassification);
+        Classification newClassification = new Classification(null, UUID.randomUUID().toString(),
+                        Messages.LabelNewClassification);
 
         TaxonomyNode newNode = parent.addChild(newClassification);
 
