@@ -24,15 +24,6 @@ import org.eclipse.swt.graphics.Rectangle;
             createColors(rgb, rgb.getHSB());
         }
 
-        public Segment(String color, int shade)
-        {
-            float[] hsb = Colors.toRGB(color).getHSB();
-            hsb[2] = Math.max(0f, hsb[2] - (0.07f * (shade % 6)));
-            RGB rgb = new RGB(hsb[0], hsb[1], hsb[2]);
-
-            createColors(rgb, hsb);
-        }
-
         private void createColors(RGB rgb, float[] hsb)
         {
             primary = resources.createColor(rgb);
@@ -80,12 +71,11 @@ import org.eclipse.swt.graphics.Rectangle;
         if (index < 0) // root not found!
             return new Segment(item.getColor());
 
-        if (path.size() <= index + 2) // no grandchildren
+        if (path.size() <= index + 1)
             return new Segment(item.getColor());
 
         TaxonomyNode reference = path.get(index + 1);
-        TaxonomyNode grandchild = path.get(index + 2);
-        return new Segment(reference.getColor(), reference.getChildren().indexOf(grandchild));
+        return new Segment(reference.getColor());
     }
 
 }

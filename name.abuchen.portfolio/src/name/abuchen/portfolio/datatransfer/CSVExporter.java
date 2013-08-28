@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
@@ -51,6 +52,8 @@ public class CSVExporter
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_ISIN, //
+                            Messages.CSVColumn_WKN, //
+                            Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description });
 
             for (AccountTransaction t : account.getTransactions())
@@ -58,16 +61,9 @@ public class CSVExporter
                 printer.print(dateFormat.format(t.getDate()));
                 printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
-                if (t.getSecurity() != null)
-                {
-                    printer.print(t.getSecurity().getIsin());
-                    printer.print(t.getSecurity().getName());
-                }
-                else
-                {
-                    printer.print(""); //$NON-NLS-1$
-                    printer.print(""); //$NON-NLS-1$
-                }
+
+                printSecurityInfo(printer, t);
+
                 printer.println();
             }
         }
@@ -98,6 +94,8 @@ public class CSVExporter
                             Messages.CSVColumn_Fees, //
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
+                            Messages.CSVColumn_WKN, //
+                            Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description });
 
             for (PortfolioTransaction t : portfolio.getTransactions())
@@ -108,22 +106,33 @@ public class CSVExporter
                 printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
                 printer.print(Values.Share.format(t.getShares()));
 
-                if (t.getSecurity() != null)
-                {
-                    printer.print(t.getSecurity().getIsin());
-                    printer.print(t.getSecurity().getName());
-                }
-                else
-                {
-                    printer.print(""); //$NON-NLS-1$
-                    printer.print(""); //$NON-NLS-1$
-                }
+                printSecurityInfo(printer, t);
+
                 printer.println();
             }
         }
         finally
         {
             writer.close();
+        }
+    }
+
+    private void printSecurityInfo(CSVPrinter printer, Transaction t)
+    {
+        Security security = t.getSecurity();
+        if (security != null)
+        {
+            printer.print(security.getIsin() != null ? security.getIsin() : ""); //$NON-NLS-1$
+            printer.print(security.getWkn() != null ? security.getWkn() : ""); //$NON-NLS-1$
+            printer.print(security.getTickerSymbol() != null ? security.getTickerSymbol() : ""); //$NON-NLS-1$
+            printer.print(security.getName() != null ? security.getName() : ""); //$NON-NLS-1$
+        }
+        else
+        {
+            printer.print(""); //$NON-NLS-1$
+            printer.print(""); //$NON-NLS-1$
+            printer.print(""); //$NON-NLS-1$
+            printer.print(""); //$NON-NLS-1$
         }
     }
 
@@ -143,12 +152,16 @@ public class CSVExporter
             printer.setStrategy(STRATEGY);
 
             printer.println(new String[] { Messages.CSVColumn_ISIN, //
+                            Messages.CSVColumn_WKN, //
+                            Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description, //
                             Messages.CSVColumn_TickerSymbol });
 
             for (Security s : securities)
             {
                 printer.print(s.getIsin());
+                printer.print(s.getWkn());
+                printer.print(s.getTickerSymbol());
                 printer.print(s.getName());
                 printer.print(s.getTickerSymbol());
                 printer.println();

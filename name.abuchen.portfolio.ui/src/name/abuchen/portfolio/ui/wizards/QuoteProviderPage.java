@@ -163,15 +163,7 @@ public class QuoteProviderPage extends AbstractWizardPage
             @Override
             public void selectionChanged(SelectionChangedEvent event)
             {
-                QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) event.getSelection()).getFirstElement();
-
-                List<Exchange> exchanges = cacheExchanges.get(feed);
-
-                comboExchange.setInput(exchanges);
-                comboExchange.setSelection(null);
-
-                setErrorMessage(exchanges == null ? null : Messages.MsgErrorExchangeMissing);
-                setPageComplete(exchanges == null);
+                onFeedProviderChanged(event);
             }
         });
 
@@ -180,22 +172,60 @@ public class QuoteProviderPage extends AbstractWizardPage
             @Override
             public void selectionChanged(SelectionChangedEvent event)
             {
-                Exchange exchange = (Exchange) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                setErrorMessage(null);
-                setPageComplete(true);
-
-                if (exchange == null)
-                {
-                    clearSampleQuotes();
-                }
-                else
-                {
-                    QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection())
-                                    .getFirstElement();
-                    showSampleQuotes(feed, exchange);
-                }
+                onExchangeChanged(event);
             }
         });
+    }
+
+    private void onFeedProviderChanged(SelectionChangedEvent event)
+    {
+        String previousExchangeId = null;
+        Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
+        if (exchange != null)
+            previousExchangeId = exchange.getId();
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        List<Exchange> exchanges = cacheExchanges.get(feed);
+        comboExchange.setInput(exchanges);
+
+        // select exchange if other provider supports same exchange id
+        // (yahoo close vs. yahoo adjusted close)
+        boolean exchangeSelected = false;
+        if (exchanges != null || previousExchangeId != null)
+        {
+            for (Exchange e : exchanges)
+            {
+                if (e.getId().equals(previousExchangeId))
+                {
+                    comboExchange.setSelection(new StructuredSelection(e));
+                    exchangeSelected = true;
+                    break;
+                }
+            }
+        }
+
+        if (!exchangeSelected)
+            comboExchange.setSelection(null);
+
+        setErrorMessage(exchangeSelected ? null : Messages.MsgErrorExchangeMissing);
+        setPageComplete(exchangeSelected);
+    }
+
+    private void onExchangeChanged(SelectionChangedEvent event)
+    {
+        Exchange exchange = (Exchange) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        setErrorMessage(null);
+        setPageComplete(true);
+
+        if (exchange == null)
+        {
+            clearSampleQuotes();
+        }
+        else
+        {
+            QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+            showSampleQuotes(feed, exchange);
+        }
     }
 
     private Group createProviderGroup(Composite container)
@@ -394,7 +424,7 @@ public class QuoteProviderPage extends AbstractWizardPage
                     @Override
                     public void run()
                     {
-                        if (currentJob == LoadHistoricalQuotes.this)
+                        if (LoadHistoricalQuotes.this.equals(currentJob) && !tableSampleData.getControl().isDisposed())
                         {
                             currentJob = null;
                             cacheQuotes.put(exchange, quotes);
@@ -415,7 +445,7 @@ public class QuoteProviderPage extends AbstractWizardPage
                     @Override
                     public void run()
                     {
-                        if (currentJob == LoadHistoricalQuotes.this && !tableSampleData.getControl().isDisposed())
+                        if (LoadHistoricalQuotes.this.equals(currentJob) && !tableSampleData.getControl().isDisposed())
                         {
                             currentJob = null;
                             tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);

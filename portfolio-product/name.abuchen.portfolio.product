@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.8.1.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.ui.product" application="name.abuchen.portfolio.ui.application" version="0.9.1.qualifier" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icons/about.gif"/>
@@ -234,6 +234,7 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="de.engehausen.treemap"/>
       <plugin id="de.engehausen.treemap.swt"/>
       <plugin id="joda-time"/>
+      <plugin id="org.jsoup"/>
 
       <plugin id="com.bandlem.eclipse.fullscreen.ui" os="macosx" ws="cocoa" arch="x86_64"/>
    </plugins>
