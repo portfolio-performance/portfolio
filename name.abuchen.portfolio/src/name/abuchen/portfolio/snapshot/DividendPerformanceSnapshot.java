@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import name.abuchen.portfolio.checks.impl.DividendsAndInterestCheck;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -522,7 +521,7 @@ public class DividendPerformanceSnapshot
                 {
                     values.add(-((DividendInitialTransaction) t).getAmount() / Values.Amount.divider());
                 }
-                if (t instanceof DividendFinalTransaction)
+                else if (t instanceof DividendFinalTransaction)
                 {
                     values.add(((DividendFinalTransaction) t).getAmount() / Values.Amount.divider());
                 }
