@@ -34,24 +34,19 @@
 			<url>http://buchen.github.io/maven-repo</url>
 		</repository>
 		<repository>
-			<id>p2-orbit</id>
+			<id>eclipse-orbit</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository</url>
 		</repository>
 		<repository>
-			<id>p2-indigo</id>
+			<id>eclipse-kepler</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/indigo</url>
+			<url>http://download.eclipse.org/releases/kepler</url>
 		</repository>
 		<repository>
-			<id>p2-babel</id>
+			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.11.0/indigo</url>
-		</repository>
-		<repository>
-			<id>p2-bandlem</id>
-			<layout>p2</layout>
-			<url>http://github.bandlem.com/</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.11.0/kepler</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
