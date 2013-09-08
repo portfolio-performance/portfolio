@@ -17,15 +17,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
-public class PortfolioPlugin extends AbstractUIPlugin
+public class PortfolioPlugin implements BundleActivator
 {
     @SuppressWarnings("nls")
     private final class ManuallyUpdateDaxSampleBecauseOfMissingRootFilesJob extends Job
@@ -103,6 +106,10 @@ public class PortfolioPlugin extends AbstractUIPlugin
 
     private static PortfolioPlugin instance;
 
+    private Bundle bundle;
+    private ImageRegistry imageRegistry;
+    private IPreferenceStore preferenceStore;
+
     public PortfolioPlugin()
     {
         super();
@@ -112,7 +119,14 @@ public class PortfolioPlugin extends AbstractUIPlugin
     @Override
     public void start(BundleContext context) throws Exception
     {
-        super.start(context);
+        bundle = context.getBundle();
+
+        setupProxyAuthenticator();
+
+        imageRegistry = new ImageRegistry();
+        initializeImageRegistry(imageRegistry);
+
+        preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, context.getBundle().getSymbolicName());
 
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
@@ -120,9 +134,11 @@ public class PortfolioPlugin extends AbstractUIPlugin
             job.setSystem(true);
             job.schedule(2000);
         }
-
-        setupProxyAuthenticator();
     }
+
+    @Override
+    public void stop(BundleContext context) throws Exception
+    {}
 
     private void setupProxyAuthenticator()
     {
@@ -150,8 +166,7 @@ public class PortfolioPlugin extends AbstractUIPlugin
         });
     }
 
-    @Override
-    protected void initializeImageRegistry(ImageRegistry registry)
+    private void initializeImageRegistry(ImageRegistry registry)
     {
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
@@ -165,6 +180,26 @@ public class PortfolioPlugin extends AbstractUIPlugin
             ImageDescriptor desc = ImageDescriptor.createFromURL(url);
             registry.put(key, desc);
         }
+    }
+
+    public Bundle getBundle()
+    {
+        return bundle;
+    }
+
+    public ImageRegistry getImageRegistry()
+    {
+        return imageRegistry;
+    }
+
+    public IPreferenceStore getPreferenceStore()
+    {
+        return preferenceStore;
+    }
+
+    public IPath getStateLocation()
+    {
+        return Platform.getStateLocation(bundle);
     }
 
     public static PortfolioPlugin getDefault()
@@ -197,5 +232,4 @@ public class PortfolioPlugin extends AbstractUIPlugin
     {
         return getDefault().getImageRegistry().get(key);
     }
-
 }

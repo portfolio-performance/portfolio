@@ -1,45 +1,43 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import name.abuchen.portfolio.ui.ClientEditorInput;
+import javax.inject.Named;
+
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.wizards.NewClientWizard;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.intro.IIntroManager;
+import org.eclipse.swt.widgets.Shell;
 
-public class NewFileHandler extends AbstractHandler
+public class NewFileHandler
 {
 
-    public Object execute(ExecutionEvent event) throws ExecutionException
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, MApplication app, EPartService partService,
+                    EModelService modelService)
     {
-    try
+        NewClientWizard wizard = new NewClientWizard();
+        WizardDialog dialog = new WizardDialog(shell, wizard);
+        if (dialog.open() == Window.OK)
         {
-            IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-            IWorkbenchPage page = window.getActivePage();
-            NewClientWizard wizard = new NewClientWizard();
-            WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell(),
-                            wizard);
-            if (dialog.open() == Window.OK)
-            {
-                page.openEditor(new ClientEditorInput(wizard.getClient()), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
-                IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
-                if (introManager.getIntro() != null)
-                    introManager.closeIntro(introManager.getIntro());
-            }
-            return null;
-        }
-        catch (PartInitException e)
-        {
-            throw new ExecutionException(Messages.MsgErrorOpeningEditor, e);
+            MPart part = partService.createPart(UIConstants.PORTFOLIO_PART);
+            part.setLabel(Messages.LabelUnsavedFile);
+            part.getTransientData().put(Client.class.getName(), wizard.getClient());
+
+            MPartStack stack = (MPartStack) modelService.find(UIConstants.MAIN_PARTSTACK, app);
+            stack.getChildren().add(part);
+
+            partService.showPart(part, PartState.ACTIVATE);
         }
     }
 }
