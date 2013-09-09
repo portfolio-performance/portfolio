@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.ui.wizards;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.awt.Desktop;
+import java.awt.Desktop.Action;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Security;
@@ -19,9 +22,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
 public class ImportSourcePage extends AbstractWizardPage
 {
@@ -75,14 +75,20 @@ public class ImportSourcePage extends AbstractWizardPage
             {
                 try
                 {
-                    final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-                    browser.openURL(new URL(event.text));
+                    if (Desktop.isDesktopSupported())
+                    {
+                        Desktop desktop = Desktop.getDesktop();
+                        if (desktop != null && desktop.isSupported(Action.BROWSE))
+                        {
+                            desktop.browse(new URI(event.text));
+                        }
+                    }
                 }
-                catch (PartInitException e)
+                catch (IOException e)
                 {
                     PortfolioPlugin.log(e);
                 }
-                catch (MalformedURLException e)
+                catch (URISyntaxException e)
                 {
                     PortfolioPlugin.log(e);
                 }

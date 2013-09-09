@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.net.MalformedURLException;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.WebLocation;
@@ -9,9 +11,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
 public class WebLocationMenu extends MenuManager
 {
@@ -45,14 +44,20 @@ public class WebLocationMenu extends MenuManager
                 {
                     try
                     {
-                        final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-                        browser.openURL(loc.constructURL(security));
+                        if (Desktop.isDesktopSupported())
+                        {
+                            Desktop desktop = Desktop.getDesktop();
+                            if (desktop.isSupported(Desktop.Action.BROWSE))
+                            {
+                                desktop.browse(loc.constructURL(security));
+                            }
+                        }
                     }
-                    catch (PartInitException e)
+                    catch (IOException e)
                     {
                         PortfolioPlugin.log(e);
                     }
-                    catch (MalformedURLException e)
+                    catch (URISyntaxException e)
                     {
                         PortfolioPlugin.log(e);
                     }

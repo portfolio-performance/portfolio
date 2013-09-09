@@ -3,7 +3,7 @@ package name.abuchen.portfolio.online;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -15,11 +15,11 @@ public class WebLocationTest
 {
 
     @Test
-    public void testURLCreation() throws MalformedURLException
+    public void testURLCreation() throws URISyntaxException
     {
         WebLocation page = new WebLocation("", "http://-{tickerSymbol}-{isin}-");
         Security security = new Security("Daimler", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID);
 
-        assertThat(page.constructURL(security).toExternalForm(), equalTo("http://-DAI.DE-DE0007100000-"));
+        assertThat(page.constructURL(security).toString(), equalTo("http://-DAI.DE-DE0007100000-"));
     }
 }
