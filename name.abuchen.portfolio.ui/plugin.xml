@@ -31,15 +31,6 @@
    </extension>
 
    <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="name.abuchen.portfolio.ui.preferences.UpdatePreferencePage"
-            id="name.abuchen.portfolio.ui.updatePreferencePage"
-            name="%pref.updates.name">
-      </page>
-   </extension>
-
-   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="name.abuchen.portfolio.ui.preferences.UpdateInitializer">

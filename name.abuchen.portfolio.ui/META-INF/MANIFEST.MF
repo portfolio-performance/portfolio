@@ -69,11 +69,9 @@ Import-Package: de.engehausen.treemap,
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
- org.eclipse.ui.preferences,
  org.joda.time,
  org.joda.time.base;version="2.1.0",
  org.joda.time.format;version="2.1.0",
  org.osgi.framework;version="1.7.0",
  org.osgi.service.event;version="1.3.0",
  org.swtchart
-Require-Bundle: org.eclipse.ui.workbench;bundle-version="3.105.0"

@@ -42,8 +42,6 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 /* package */abstract class AbstractNodeTreeViewer extends Page
 {
@@ -310,7 +308,7 @@ import org.eclipse.ui.PlatformUI;
                 if (node.isUnassignedCategory())
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_UNASSIGNED_CATEGORY);
                 else if (node.getClassification() != null)
-                    return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                    return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
                 else if (node.getBackingSecurity() != null)
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
                 else

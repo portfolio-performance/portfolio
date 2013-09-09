@@ -30,7 +30,6 @@ import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -49,9 +48,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
@@ -179,7 +175,7 @@ import org.swtchart.LineStyle;
             else if (type == Portfolio.class)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
             else if (type == Classification.class)
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
             else
                 return null;
         }
@@ -749,16 +745,19 @@ import org.swtchart.LineStyle;
         for (DataSeries s : selectedSeries)
             list.remove(s);
 
-        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new DataSeriesLabelProvider());
-        dialog.setElements(list.toArray());
-        dialog.setTitle(Messages.ChartSeriesPickerTitle);
-        dialog.setMessage(Messages.ChartSeriesPickerTitle);
-        dialog.setMultipleSelection(true);
+        // FIXME replace ElementListSelectionDialog
+        // ElementListSelectionDialog dialog = new
+        // ElementListSelectionDialog(getShell(), new
+        // DataSeriesLabelProvider());
+        // dialog.setElements(list.toArray());
+        // dialog.setTitle(Messages.ChartSeriesPickerTitle);
+        // dialog.setMessage(Messages.ChartSeriesPickerTitle);
+        // dialog.setMultipleSelection(true);
+        //
+        // if (dialog.open() != Window.OK)
+        // return;
 
-        if (dialog.open() != Window.OK)
-            return;
-
-        Object[] result = dialog.getResult();
+        Object[] result = null; // dialog.getResult();
         if (result.length == 0)
             return;
 

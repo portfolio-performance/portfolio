@@ -33,9 +33,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 
 public final class CellEditorFactory
 {
@@ -357,9 +357,8 @@ public final class CellEditorFactory
             }
             catch (Exception e)
             {
-                ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                Messages.CellEditor_Error, e.getMessage(), new Status(Status.ERROR,
-                                                PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(), Messages.CellEditor_Error, e.getMessage(),
+                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
                 return null;
             }
         }
@@ -375,9 +374,8 @@ public final class CellEditorFactory
             }
             catch (Exception e)
             {
-                ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                Messages.CellEditor_Error, e.getMessage(), new Status(Status.ERROR,
-                                                PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(), Messages.CellEditor_Error, e.getMessage(),
+                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         }
 

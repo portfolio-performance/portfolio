@@ -35,8 +35,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.ui.PlatformUI;
 
 public class InvestmentPlanListView extends AbstractListView
 {
@@ -64,8 +64,7 @@ public class InvestmentPlanListView extends AbstractListView
             @Override
             public void run()
             {
-                NewPlanDialog dialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                                .getShell(), getClient());
+                NewPlanDialog dialog = new NewPlanDialog(Display.getCurrent().getActiveShell(), getClient());
                 if (dialog.open() == Dialog.OK)
                 {
                     markDirty();

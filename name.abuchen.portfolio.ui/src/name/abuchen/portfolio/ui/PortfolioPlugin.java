@@ -17,12 +17,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -102,6 +101,7 @@ public class PortfolioPlugin implements BundleActivator
     public static final String IMG_ADD = "add"; //$NON-NLS-1$
     public static final String IMG_REMOVE = "remove"; //$NON-NLS-1$
 
+    public static final String IMG_CATEGORY = "category"; //$NON-NLS-1$
     public static final String IMG_UNASSIGNED_CATEGORY = "unassigned"; //$NON-NLS-1$
 
     private static PortfolioPlugin instance;
@@ -126,7 +126,8 @@ public class PortfolioPlugin implements BundleActivator
         imageRegistry = new ImageRegistry();
         initializeImageRegistry(imageRegistry);
 
-        preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, context.getBundle().getSymbolicName());
+        preferenceStore = new PreferenceStore();
+        // FIXME: read preferences from state location
 
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
@@ -173,7 +174,7 @@ public class PortfolioPlugin implements BundleActivator
         for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST,
                         IMG_INVESTMENTPLAN, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_VIEW_TABLE,
                         IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING, IMG_VIEW_STACKEDCHART, IMG_CHECK,
-                        IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_UNASSIGNED_CATEGORY })
+                        IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY, IMG_UNASSIGNED_CATEGORY })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);
