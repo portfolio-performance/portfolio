@@ -76,37 +76,36 @@ public class DividendPerformanceSnapshot
             DivRecord d = entry.getValue();
             if (d.transactions.isEmpty())
                 iter.remove();
-            else if (d.getStockShares()==0)
+            else if (d.getStockShares() == 0)
                 iter.remove();
         }
-        
-        
+
         // prepare pseudo summarize
-        
+
         DivRecord sum1 = null;
-        
+
         for (DivRecord c : transactions.values())
-        { 
-            if (c.security.getName().equalsIgnoreCase("_summe_" ))
+        {
+            if (c.security.getName().equalsIgnoreCase("_summe_"))
             {
                 sum1 = c;
                 break;
             }
         }
-        
-        
-        
-        if (sum1 != null) {
-            
+
+        if (sum1 != null)
+        {
+
             DivRecord sum = sum1;
             // DivRecord sum = new DivRecord(sum1.getSecurity());
             // transactions.values().add(sum); // crasht mit new DivRecord(sum1.getSecurity());
 
             for (DivRecord c : transactions.values())
-            { 
-                if (c!=sum) sum.summarize (c); 
+            {
+                if (c != sum)
+                    sum.summarize(c);
             }
-            
+
         }
 
         return new DividendPerformanceSnapshot(transactions.values());
@@ -127,8 +126,9 @@ public class DividendPerformanceSnapshot
                         {
                             DividendTransaction dt = new DividendTransaction();
                             dt.setDate(t.getDate());
-                            dt.setSecurity(t.getSecurity());;
-                            dt.setAccount (account);
+                            dt.setSecurity(t.getSecurity());
+                            ;
+                            dt.setAccount(account);
                             dt.setAmount(t.getAmount());
                             transactions.get(t.getSecurity()).add(dt);
                         }
@@ -257,27 +257,28 @@ public class DividendPerformanceSnapshot
         private double irr;
         private double irrdiv;
         private long divAmount;
-        private long div12Shares; 
+        private long div12Shares;
         private long div12Cost;
         private long div12Amount;
         private long div24Amount;
         private long div36Amount;
-        private long stockAmount;  // Wert im Bestand 
-        private long stockShares;  // Stücke im Bestand
+        private long stockAmount; // Wert im Bestand
+        private long stockShares; // Stücke im Bestand
         private long poolAmount; // dto im Verrechnungpool
         private long poolShares; // dto im Verrechnungpool
-        private Date dateFrom; 
+        private Date dateFrom;
         private Date dateTo;
         private int divEventCount;
         private double divIncreasingRate;
         private int divIncreasingYears;
-        
+
         public enum Periodicity
         {
             UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, IRREGULAR;
-    
-            private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
-    
+
+            private static final ResourceBundle RESOURCES = ResourceBundle
+                            .getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+
             public String toString()
             {
                 return RESOURCES.getString("dividends." + name()); //$NON-NLS-1$
@@ -285,7 +286,7 @@ public class DividendPerformanceSnapshot
         }
 
         private Periodicity periodicity = Periodicity.UNKNOWN;
-                    
+
         /* package */DivRecord(Security security)
         {
             this.security = security;
@@ -298,12 +299,12 @@ public class DividendPerformanceSnapshot
 
         public String getSecurityName()
         {
-            if (getSecurity()!=null)
+            if (getSecurity() != null)
                 return getSecurity().getName();
             else
                 return null;
         }
-        
+
         public double getIrr()
         {
             return irr;
@@ -360,17 +361,17 @@ public class DividendPerformanceSnapshot
         {
             return div24Amount;
         }
-        
-        public double getDivIncreasingRate()        
+
+        public double getDivIncreasingRate()
         {
             return divIncreasingRate;
         }
-        
+
         public long getLongTermDiv12Amount()
         {
             return div36Amount;
         }
-        
+
         public long getDiv12MeanShares()
         {
             return div12Shares;
@@ -388,10 +389,10 @@ public class DividendPerformanceSnapshot
 
         public long getStockPrice()
         {
-            return DividendTransaction.amountPerShare (stockAmount,  stockShares);
+            return DividendTransaction.amountPerShare(stockAmount, stockShares);
         }
 
-        public long getPoolAmount() 
+        public long getPoolAmount()
         {
             return poolAmount;
         }
@@ -403,7 +404,7 @@ public class DividendPerformanceSnapshot
 
         public long getPoolPrice()
         {
-            return DividendTransaction.amountPerShare (poolAmount,  poolShares);
+            return DividendTransaction.amountPerShare(poolAmount, poolShares);
         }
 
         public Date getDateFrom()
@@ -411,7 +412,7 @@ public class DividendPerformanceSnapshot
             return dateFrom;
         }
 
-        public Date getDateTo() 
+        public Date getDateTo()
         {
             return dateTo;
         }
@@ -420,34 +421,35 @@ public class DividendPerformanceSnapshot
         {
             return divEventCount;
         }
-        
+
         public double getPersonalDiv()
         {
             long amountPerShare = getStockPrice();
             if (amountPerShare > 0)
-                {
-                return (double)div12Amount / (double)div12Cost;
-                }
+            {
+                return (double) div12Amount / (double) div12Cost;
+            }
             else
             {
                 return 0;
             }
-            
+
         }
-        
+
         public Periodicity getPeriodicity()
         {
             return periodicity;
         }
-        
+
         public int getPeriodicitySort()
         {
             return periodicity.ordinal();
         }
-        
-        public Boolean getHasDiv12 ()
+
+        public Boolean getHasDiv12()
         {
-            switch (periodicity) {
+            switch (periodicity)
+            {
                 case UNKNOWN:
                 case NONE:
                     return false;
@@ -455,7 +457,7 @@ public class DividendPerformanceSnapshot
                     return true;
             }
         }
-        
+
         public List<Transaction> getTransactions()
         {
             return transactions;
@@ -467,28 +469,28 @@ public class DividendPerformanceSnapshot
             return type == Security.class ? type.cast(security) : null;
         }
 
-        public void summarize (DivRecord d)
+        public void summarize(DivRecord d)
         {
-          this.periodicity = Periodicity.INDEFINITE;  
-          this.divEventCount += 1; // d.divEventCount;
-          this.divAmount += d.divAmount;
-          this.stockAmount += d.stockAmount;
-          this.div12Cost += d.div12Cost;
-          this.div12Amount += d.div12Amount;
-          this.div24Amount += d.div24Amount;
-          this.div36Amount += d.div36Amount;
-//          private double irr;
-//          private double irrdiv;
-//          private long div12PerShare;
-//          private long div12MeanShares; 
-//          private long stockShares;  // Stücke im Bestand
-//          private long poolAmount; // dto im Verrechnungpool
-//          private long poolShares; // dto im Verrechnungpool
-//          private Date dateFrom; 
-//          private Date dateTo;
-    
+            this.periodicity = Periodicity.INDEFINITE;
+            this.divEventCount += 1; // d.divEventCount;
+            this.divAmount += d.divAmount;
+            this.stockAmount += d.stockAmount;
+            this.div12Cost += d.div12Cost;
+            this.div12Amount += d.div12Amount;
+            this.div24Amount += d.div24Amount;
+            this.div36Amount += d.div36Amount;
+            // private double irr;
+            // private double irrdiv;
+            // private long div12PerShare;
+            // private long div12MeanShares;
+            // private long stockShares; // Stücke im Bestand
+            // private long poolAmount; // dto im Verrechnungpool
+            // private long poolShares; // dto im Verrechnungpool
+            // private Date dateFrom;
+            // private Date dateTo;
+
         }
-        
+
         void add(Transaction t)
         {
             transactions.add(t);
@@ -510,8 +512,8 @@ public class DividendPerformanceSnapshot
         {
             List<Date> dates = new ArrayList<Date>();
             List<Double> values = new ArrayList<Double>();
-            
-           for (Transaction t : transactions)
+
+            for (Transaction t : transactions)
             {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(t.getDate());
@@ -560,53 +562,57 @@ public class DividendPerformanceSnapshot
 
             this.irr = IRR.calculate(dates, values);
         }
-        
-        private void debugstop ()
+
+        private void debugstop()
         {
-            
+
         }
-        
+
         private void calculateIRRDiv()
         {
             List<Date> dates = new ArrayList<Date>();
             List<Double> values = new ArrayList<Double>();
-            
+
             Calendar cal = Calendar.getInstance();
-            Date tDateFinal = cal.getTime(); 
-            stockAmount = 0; 
-            stockShares = 0; 
-            poolAmount = 0; 
-            poolShares = 0; 
+            Date tDateFinal = cal.getTime();
+            stockAmount = 0;
+            stockShares = 0;
+            poolAmount = 0;
+            poolShares = 0;
             divEventCount = 0;
-            
+
             Date dCurr, dLast = null;
             for (Transaction t : transactions)
             {
-                
+
                 cal.setTime(t.getDate());
                 long tAmount = 0;
                 Date tDate = t.getDate();
 
                 if (t instanceof DividendInitialTransaction)
                 {
-                    DividendInitialTransaction dit = (DividendInitialTransaction) t; 
-                    // Eingangsbuchung wie buy.  
-                    // Kaufpreise und -mengen kumulieren, neuer durchschnittlicher Einstandspreis
-                        
-                    stockAmount += dit.getAmount(); 
-                    stockShares += dit.getPosition().getShares();                          
+                    DividendInitialTransaction dit = (DividendInitialTransaction) t;
+                    // Eingangsbuchung wie buy.
+                    // Kaufpreise und -mengen kumulieren, neuer
+                    // durchschnittlicher Einstandspreis
+
+                    stockAmount += dit.getAmount();
+                    stockShares += dit.getPosition().getShares();
                     if (stockShares <= 0)
                     {
-                            // wenn pt.getAmount immer > 0 ist, kann das nicht passieren  
-                            debugstop ();
-                            throw new UnsupportedOperationException();
+                        // wenn pt.getAmount immer > 0 ist, kann das nicht
+                        // passieren
+                        debugstop();
+                        throw new UnsupportedOperationException();
                     }
-                        
-                    tAmount = dit.getAmount(); // Achtung: dt.getAmount ist schon negativ
+
+                    tAmount = dit.getAmount(); // Achtung: dt.getAmount ist
+                                               // schon negativ
                 }
                 else if (t instanceof DividendFinalTransaction)
                 {
-                    // Abschlussbuchungen ignorieren, statt dessen ganz am Ende stockamount buchen  
+                    // Abschlussbuchungen ignorieren, statt dessen ganz am Ende
+                    // stockamount buchen
                     // aber Datum für Abschlussbuchung merken
                     tDateFinal = tDate;
                 }
@@ -615,18 +621,18 @@ public class DividendPerformanceSnapshot
                     // "normale" Dividenden
                     DividendTransaction dt = (DividendTransaction) t;
                     tAmount = dt.getAmount();
-                    
+
                     // prüfen, ob die Dividende zum gleichen Zahlungstag gehört
                     dCurr = dt.getDate();
                     if ((dLast == null) || (Helper.dateDifferenceDays(dLast, dCurr) > 30))
                     {
-                        divEventCount++;   
+                        divEventCount++;
                     }
                     dLast = dCurr;
 
                     dt.setShares(stockShares);
-                    dt.setDivEventId (divEventCount);
-                    
+                    dt.setDivEventId(divEventCount);
+
                 }
                 else if (t instanceof AccountTransaction)
                 {
@@ -642,56 +648,68 @@ public class DividendPerformanceSnapshot
                     {
                         case BUY:
                             // Kaufpreise und -mengen kumulieren
-                            if (poolShares > 0) {
-                                // der Kaufpreis wird anteilig um den im Pool gespeicherten Gewinn/Verlust reduziert
+                            if (poolShares > 0)
+                            {
+                                // der Kaufpreis wird anteilig um den im Pool
+                                // gespeicherten Gewinn/Verlust reduziert
                                 long ps = Math.min(shares, poolShares);
                                 long pa = DividendTransaction.amountTimesShares(getPoolPrice(), ps);
 
                                 poolShares -= ps;
                                 poolAmount -= pa;
-                                if (poolShares == 0) {
-                                    // Restwert komplett ausbuchen, sonst bleiben die Rundungsdifferenzen auf poolAmount stehen 
+                                if (poolShares == 0)
+                                {
+                                    // Restwert komplett ausbuchen, sonst
+                                    // bleiben die Rundungsdifferenzen auf
+                                    // poolAmount stehen
                                     pa += poolAmount;
                                     poolAmount = 0;
                                 }
-                                amount -= pa;                                
+                                amount -= pa;
                             }
-                            
-                            stockShares += shares;  
+
+                            stockShares += shares;
                             stockAmount += amount;
                             tAmount = -amount;
                             break;
                         case DELIVERY_INBOUND:
                         case TRANSFER_IN:
                             tAmount = 0; // -pt.getAmount();
-                            // wie müssen Einlieferungen dividendenmäßig gebucht werden ?
+                            // wie müssen Einlieferungen dividendenmäßig gebucht
+                            // werden ?
                             break;
                         case SELL:
-                            // Kaufpreise um mittleren Einstand reduzieren, Differenz zum Verkaufspreis im Pool bunkern
+                            // Kaufpreise um mittleren Einstand reduzieren,
+                            // Differenz zum Verkaufspreis im Pool bunkern
                             // Kaufmengen kumulieren
                             long cost = DividendTransaction.amountTimesShares(getStockPrice(), shares);
                             long profit = amount - cost;
                             stockShares -= shares;
-                            poolShares  += shares;
+                            poolShares += shares;
                             stockAmount -= cost;
-                            poolAmount  += profit;
-                            if (stockShares == 0) {
-                                // Restwert komplett ausbuchen, sonst bleiben die Rundungsdifferenzen auf stockamount stehen 
-                                poolAmount  += stockAmount;
+                            poolAmount += profit;
+                            if (stockShares == 0)
+                            {
+                                // Restwert komplett ausbuchen, sonst bleiben
+                                // die Rundungsdifferenzen auf stockamount
+                                // stehen
+                                poolAmount += stockAmount;
                                 stockAmount = 0;
                             }
-                            
+
                             if (stockShares < 0)
                             {
-                                // wenn pt.getAmount immer > 0 ist, kann das nicht passieren  
-                                debugstop ();
+                                // wenn pt.getAmount immer > 0 ist, kann das
+                                // nicht passieren
+                                debugstop();
                                 throw new UnsupportedOperationException();
                             }
                             tAmount = cost;
                             break;
                         case DELIVERY_OUTBOUND:
                         case TRANSFER_OUT:
-                            // wie müssen Auslieferungen dividendenmäßig gebucht werden ?
+                            // wie müssen Auslieferungen dividendenmäßig gebucht
+                            // werden ?
                             tAmount = 0; // pt.getAmount ();
                             break;
                         default:
@@ -706,94 +724,111 @@ public class DividendPerformanceSnapshot
                 {
                     // nur relevante Positionen buchen
                     values.add(tAmount / Values.Amount.divider());
-                    dates.add(tDate);                    
+                    dates.add(tDate);
                 }
 
             }
 
-            // statt des Marktwertes Wert muss hier der Einstandswert gebucht werden
+            // statt des Marktwertes Wert muss hier der Einstandswert gebucht
+            // werden
             values.add(stockAmount / Values.Amount.divider());
-            dates.add(tDateFinal); 
-            
+            dates.add(tDateFinal);
+
             this.irrdiv = IRR.calculate(dates, values);
         }
 
         private int getEventsPerYear()
-        {  
-            switch (periodicity) 
+        {
+            switch (periodicity)
             {
-                case ANNUAL: return 1;
-                case SEMIANNUAL: return 2;
-                case QUARTERLY: return 4;
-                default: return 0;
+                case ANNUAL:
+                    return 1;
+                case SEMIANNUAL:
+                    return 2;
+                case QUARTERLY:
+                    return 4;
+                default:
+                    return 0;
             }
         }
 
         private void calculateDIR()
-        {  
-            
+        {
+
             divIncreasingRate = 0;
             divIncreasingYears = 0;
             int eBlock = getEventsPerYear();
-            if (eBlock == 0) return;
-            
+            if (eBlock == 0)
+                return;
+
             int eStart = 0;
             int nYears = 0;
             long divSum = 0;
             long divSum1 = 0;
             long divSum2 = 0;
             long divSumBreak = 0;
-            
+
             for (Transaction t : transactions)
             {
                 if (t instanceof DividendTransaction)
                 {
                     DividendTransaction dt = (DividendTransaction) t;
                     int eCurr = dt.getDivEventId();
-                    
+
                     if (eCurr - eStart > eBlock)
                     {
-                        if (eStart == 0) {
-                            divSum1 = divSum; 
-                        } else if (divSum < divSumBreak)  {
+                        if (eStart == 0)
+                        {
+                            divSum1 = divSum;
+                        }
+                        else if (divSum < divSumBreak)
+                        {
                             // Dividende nicht gestiegen gegenüber dem Vorjahr
                             return;
-                        } else {
+                        }
+                        else
+                        {
                             divSum2 = divSum;
                         }
                         nYears++;
-                        eStart = eCurr-1;
+                        eStart = eCurr - 1;
                         divSumBreak = Math.round(divSum * 0.95);
                         divSum = 0;
                     }
                     divSum += dt.getDividendPerShare();
                 }
             }
-            if (nYears < 2) return; // periode nicht lang genug
-                
+            if (nYears < 2)
+                return; // periode nicht lang genug
+
             divIncreasingRate = (double) (divSum2 - divSum1) / (double) divSum1;
-            divIncreasingRate = divIncreasingRate / nYears; // todo: Zinseszins !!
+            divIncreasingRate = divIncreasingRate / nYears; // Zinseszins berücksichtigen !!
             divIncreasingYears = nYears;
         }
 
-        
         private void calculateDiv12(Date endDate)
-        {   
+        {
             divAmount = 0;
             div12Cost = 0;
             div12Shares = 0;
             div12Amount = 0;
             div24Amount = 0;
             div36Amount = 0;
-            dateFrom = null; 
-            dateTo = null; 
+            dateFrom = null;
+            dateTo = null;
             periodicity = Periodicity.NONE;
             divIncreasingRate = 0;
-                        
-            // Dividenden summieren, dabei neueste Dividendenzahlung finden
+
+            // Dividenden summieren, dabei neueste Dividendenzahlung finden.
+            // Da das Datum der Zahlungen von Jahr zu Jahr, von Bank zu Bank variiert,
+            // wird hier das Jahr um die Hälfte eines Quartals verlängert in der Hoffnung,
+            // das die Schwankungen nicht größer sind: 1 Jahr + 1½ Monate = 410 Tage
+            // Beispiel: Zahlungen jeweils am 15.Feb, 15.Mai, 15.Aug. und 15.Nov.2012, endDate ist 14.Feb.2013 unmittelbar vor der
+            // nächsten geplanten Zahlung. Ist ein Zeitraum von 364 Tagen. Vieleicht war erste Zahlung ja schon am 31.Jan.2012, 
+            // also lieber 6 Wochen Puffer berücksichtigen
             DividendTransaction dt = null;
-            Date refDate = Helper.dateOffsetDays(endDate, -360-45);
-            
+            Date refDate = Helper.dateOffsetDays(endDate, -410);
+
             for (Transaction t : transactions)
             {
                 if (t instanceof DividendTransaction)
@@ -801,24 +836,34 @@ public class DividendPerformanceSnapshot
                     dt = (DividendTransaction) t;
                     divAmount += dt.getAmount();
                     Date dtd = dt.getDate();
-                    if (dtd.before(refDate)) {
-                        // alle Dividendenzahlungen deutlich älter als 1 Jahr ignorieren
-                    } else if ((dateTo == null) || (dtd.after(dateTo))) {
+                    if (dtd.before(refDate))
+                    {
+                        // alle Dividendenzahlungen deutlich älter als 1 Jahr
+                        // ignorieren
+                    }
+                    else if ((dateTo == null) || (dtd.after(dateTo)))
+                    {
                         dateTo = dtd;
                     }
                 }
             }
-            
-            if (dateTo == null) return;
-            if (stockAmount == 0) return;
-            
-            // Abgrenzungsdatum für ein Jahr: alle Zahlungen innerhalb der letzen 360-90/2 = 315 Tage (Quartalsabgrenzung)
-            dateFrom = Helper.dateOffsetDays (dateTo, -360+45);
-            
+
+            if (dateTo == null)
+                return;
+            if (stockAmount == 0)
+                return;
+
+            // Abgrenzungsdatum für ein Jahr: alle Zahlungen innerhalb der 10½ Monate = 365-45 = 320 Tage
+            // beginnend mit der letzten Zahlung, die im vorigen Durchlauf gefunden wurde.
+            // Argumentation z.B. für Quartalszahlungen: eigentlich müssen die ketzten 4 Zahlungen innerhalb von 9 Monaten
+            // stattgefunden haben. Man benötigt jedoch ein Sicherheitspolster, um Schwankungen auszugleichen.
+            // Beispiel: Zahlungen jeweils am 15.Feb, 15.Mai, 15.Aug. und 15.Nov 2012 ist ein Zeitraum von 270 Tagen
+            dateFrom = Helper.dateOffsetDays(dateTo, -320);
+
             // Gesamtzeitraum für mittlere Stückzahl
             long medShare = 0;
             long medDays = 0;
-            Date dCurr = null; 
+            Date dCurr = null;
             Date dLast = Helper.dateOffsetDays(dateTo, -365);
             int bCurr = 0;
             int bLast = 0;
@@ -838,70 +883,88 @@ public class DividendPerformanceSnapshot
                         medShare += days * dt.getShares();
                         medDays += days;
                         dLast = dCurr;
-                    } else {
+                    }
+                    else
+                    {
                         // letzte BlockId vor dem 12-Monatszeitraum merken
                         bLast = dt.getDivEventId();
                     }
                 }
             }
-            if (medDays >  0) 
+            if (medDays > 0)
             {
                 div12Shares = medShare / medDays;
                 div12Cost = DividendTransaction.amountTimesShares(getStockPrice(), div12Shares);
 
-                int nEvents = bCurr-bLast; 
-                if ((nEvents > 0) && (bLast == 0)) {
-                    // ohne Zahlung in der Vorperiode kann die Periodizität nicht sicher bestimmt werden  
+                int nEvents = bCurr - bLast;
+                if ((nEvents > 0) && (bLast == 0))
+                {
+                    // ohne Zahlung in der Vorperiode kann die Periodizität
+                    // nicht sicher bestimmt werden
                     periodicity = Periodicity.INDEFINITE;
-                } else {
-                    switch (nEvents) {
-                        case 0: {
+                }
+                else
+                {
+                    switch (nEvents)
+                    {
+                        case 0:
+                        {
                             periodicity = Periodicity.NONE;
                             break;
                         }
-                        case 1: {
+                        case 1:
+                        {
                             periodicity = Periodicity.ANNUAL;
                             break;
                         }
-                        case 2: {
+                        case 2:
+                        {
                             periodicity = Periodicity.SEMIANNUAL;
                             break;
                         }
-                        case 4: {
+                        case 4:
+                        {
                             periodicity = Periodicity.QUARTERLY;
                             break;
                         }
-                        default: {
+                        default:
+                        {
                             periodicity = Periodicity.IRREGULAR;
                             break;
                         }
-                    }  
+                    }
                 }
             }
-            
+
             // calculations for expected values
-            switch (periodicity) {
-                case ANNUAL: 
-                case SEMIANNUAL: 
-                case QUARTERLY: 
+            switch (periodicity)
+            {
+                case ANNUAL:
+                case SEMIANNUAL:
+                case QUARTERLY:
                 case INDEFINITE:
                 {
                     div24Amount = DividendTransaction.amountTimesShares(getDiv12PerShare(), stockShares);
-                    break; 
+                    break;
                 }
                 case IRREGULAR:
-                    break; // could contain extraordinarily payments - so better ignore this
-                default: 
+                    break; // could contain extraordinarily payments - so better
+                           // ignore this
+                default:
                     // UNKNOWN, NONE,
                     break; // no values;
             }
-            
+
             // calculate dividend increasing rate
             calculateDIR();
 
-            if (divIncreasingYears > 0) {
-                div36Amount = Math.round((double) div24Amount * Math.pow(1+divIncreasingRate, 10)); // todo: dsr10
-            } else {
+            if (divIncreasingYears > 0)
+            {
+                div36Amount = Math.round((double) div24Amount * Math.pow(1 + divIncreasingRate, 10)); 
+                // todo: dsr10
+            }
+            else
+            {
                 div36Amount = div24Amount;
             }
         }
