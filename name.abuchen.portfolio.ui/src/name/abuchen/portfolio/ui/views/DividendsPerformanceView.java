@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.List;
 
-import name.abuchen.portfolio.model.DividendTransaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -13,6 +12,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DivRecord;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendInitialTransaction;
+import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendTransaction;
 import name.abuchen.portfolio.util.Helper;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
