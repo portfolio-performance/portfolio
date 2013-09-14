@@ -758,7 +758,7 @@ public class DividendPerformanceSnapshot
 
                     // prüfen, ob die Dividende zum gleichen Zahlungstag gehört
                     dCurr = dt.getDate();
-                    if ((dLast == null) || (Helper.dateDifferenceDays(dLast, dCurr) > 30))
+                    if ((dLast == null) || (Helper.daysBetween(dLast, dCurr) > 30))
                     {
                         divEventCount++;
                     }
@@ -968,7 +968,7 @@ public class DividendPerformanceSnapshot
             // Vieleicht war erste Zahlung ja schon am 31.Jan.2012,
             // also lieber 6 Wochen Puffer berücksichtigen
             DividendTransaction dt = null;
-            Date refDate = Helper.dateOffsetDays(endDate, -410);
+            Date refDate = Helper.dateAddDays(endDate, -410);
 
             for (Transaction t : transactions)
             {
@@ -1004,13 +1004,13 @@ public class DividendPerformanceSnapshot
             // um Schwankungen auszugleichen.
             // Beispiel: Zahlungen jeweils am 15.Feb, 15.Mai, 15.Aug. und 15.Nov
             // 2012 ist ein Zeitraum von 270 Tagen
-            dateFrom = Helper.dateOffsetDays(dateTo, -320);
+            dateFrom = Helper.dateAddDays(dateTo, -320);
 
             // Gesamtzeitraum für mittlere Stückzahl
             long medShare = 0;
             long medDays = 0;
             Date dCurr = null;
-            Date dLast = Helper.dateOffsetDays(dateTo, -365);
+            Date dLast = Helper.dateAddDays(dateTo, -365);
             int bCurr = 0;
             int bLast = 0;
 
@@ -1025,7 +1025,7 @@ public class DividendPerformanceSnapshot
                     {
                         div12Amount += dt.getAmount();
                         dt.setIsDiv12(true);
-                        long days = Helper.dateDifferenceDays(dLast, dCurr);
+                        long days = Helper.daysBetween(dLast, dCurr);
                         medShare += days * dt.getShares();
                         medDays += days;
                         dLast = dCurr;
