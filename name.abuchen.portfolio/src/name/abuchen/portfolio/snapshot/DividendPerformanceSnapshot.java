@@ -411,7 +411,7 @@ public class DividendPerformanceSnapshot
             UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, IRREGULAR;
 
             private static final ResourceBundle RESOURCES = ResourceBundle
-                            .getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+                            .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
 
             public String toString()
             {
