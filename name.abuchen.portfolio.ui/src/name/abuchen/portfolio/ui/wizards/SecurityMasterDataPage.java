@@ -129,7 +129,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             security.setWkn(wkn);
             security.setType(type);
             security.setRetired(isRetired);
-            security.setFinanzenFeedURL(finanzenFeedURL);
+            security.setQuoteFeedURL(finanzenFeedURL);
         }
 
         public void readFromSecurity()
@@ -140,7 +140,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             setWkn(security.getWkn());
             setType(security.getType());
             setRetired(security.isRetired());
-            setFinanzenFeedURL(security.getFinanzenFeedURL());
+            setFinanzenFeedURL(security.getQuoteFeedURL());
         }
 
     }

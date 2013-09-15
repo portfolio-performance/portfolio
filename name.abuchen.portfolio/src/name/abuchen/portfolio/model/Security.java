@@ -50,7 +50,7 @@ public final class Security
     private String feed;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
-    private String finanzenFeedURL;
+    private String quoteFeedURL;
 
     private boolean isRetired = false;
 
@@ -334,14 +334,14 @@ public final class Security
         return getName();
     }
 
-    public String getFinanzenFeedURL()
+    public String getQuoteFeedURL()
     {
-        return finanzenFeedURL;
+        return quoteFeedURL;
     }
 
-    public void setFinanzenFeedURL(String finanzenFeedURL)
+    public void setQuoteFeedURL(String finanzenFeedURL)
     {
-        this.finanzenFeedURL = finanzenFeedURL;
+        this.quoteFeedURL = finanzenFeedURL;
     }
 
 }

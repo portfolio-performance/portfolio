@@ -31,7 +31,7 @@ public class ArivaHistKursFeed implements QuoteFeed
         String currentURL = null;
         for (Security security : securities)
         {
-            currentURL = security.getFinanzenFeedURL();
+            currentURL = security.getQuoteFeedURL();
             if (currentURL == null)
             {
                 errors.add(new Exception("security without feed URL"));
@@ -56,7 +56,7 @@ public class ArivaHistKursFeed implements QuoteFeed
         ArivaHistQuotesSoup parser = new ArivaHistQuotesSoup();
         try
         {
-            List<LatestSecurityPrice> latestPrices = parser.extractFromURL(security.getFinanzenFeedURL());
+            List<LatestSecurityPrice> latestPrices = parser.extractFromURL(security.getQuoteFeedURL());
             for (LatestSecurityPrice price : latestPrices)
             {
                 security.addPrice(price);
