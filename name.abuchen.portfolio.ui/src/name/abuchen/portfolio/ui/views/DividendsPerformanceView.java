@@ -230,7 +230,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         tvcol = new TreeViewerColumn(tree, SWT.None);
         column = tvcol.getColumn();
         column.setText("Periodiziät");
-        column.setWidth(75);
+        column.setWidth(100);
         ColumnViewerSorter.create(DivRecord.class, "periodicitySort").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // durchschnittliche Stückzahl in den letzten 12 Monaten
@@ -492,6 +492,8 @@ public class DividendsPerformanceView extends AbstractHistoricView
                     case colN_Amount:
                         if (t instanceof PortfolioTransaction)
                             return Values.Amount.format(Math.abs(t.getAmount()));
+                        else if (t instanceof DividendInitialTransaction)
+                            return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
                         else
                             return null;
                     case colQ_DividendIncreasingRate: // debug BlockId
