@@ -4,34 +4,25 @@
 <target name="portfolio-ide" sequenceNumber="9">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.feature.group" version="4.3.0.v20130605-2000"/>
 <unit id="org.eclipse.rcp.source.feature.group" version="4.3.0.v20130605-2000"/>
 <unit id="org.eclipse.platform.feature.group" version="4.3.0.v20130605-2000"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20130521-0416"/>
-<unit id="org.eclipse.platform.sdk" version="4.3.0.I20130605-2000"/>
-<unit id="org.eclipse.pde.source.feature.group" version="3.9.0.v20130605-2000"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.3.0.v20130605-2000"/>
 <unit id="org.eclipse.platform.source.feature.group" version="4.3.0.v20130605-2000"/>
 <unit id="org.eclipse.platform.ide" version="4.3.0.I20130605-2000"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.3.0.v20130605-2000"/>
 <repository location="http://download.eclipse.org/releases/kepler"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.hamcrest.core" version="1.1.0.v20090501071000"/>
+<unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
 <unit id="org.hamcrest.core.source" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.integration.source" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.generator" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.generator.source" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.integration" version="1.1.0.v20090501071000"/>
+<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
 <unit id="org.hamcrest.library" version="1.1.0.v20090501071000"/>
 <unit id="org.hamcrest.library.source" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.text" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.text.source" version="1.1.0.v20090501071000"/>
-<unit id="org.mockito.source" version="1.8.4.v201102171835"/>
-<unit id="org.mockito" version="1.8.4.v201102171835"/>
-<unit id="org.junit" version="4.10.0.v4_10_0_v20120426-0900"/>
-<unit id="org.junit.source" version="4.10.0.v4_10_0_v20120426-0900"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130118183705/repository/"/>
+<unit id="org.mockito" version="1.8.4.v201303031500"/>
+<unit id="org.mockito.source" version="1.8.4.v201303031500"/>
+<unit id="org.junit" version="4.11.0.v201303080030"/>
+<unit id="org.junit.source" version="4.11.0.v201303080030"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.3.0.v20130724043401"/>

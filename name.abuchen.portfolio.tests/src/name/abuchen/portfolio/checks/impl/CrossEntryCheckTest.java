@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.checks.impl;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingBuySellAccountIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingBuySellAccountIssue.class)));
         assertThat(issues.get(0).getEntity(), is((Object) portfolio));
 
         applyFixes(client, issues);
@@ -73,7 +73,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingBuySellAccountIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingBuySellAccountIssue.class)));
         assertThat(issues.get(0).getEntity(), is((Object) portfolio));
 
         applyFixes(client, issues);
@@ -134,7 +134,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingAccountTransferIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingAccountTransferIssue.class)));
         assertThat(issues.get(0).getEntity(), is((Object) account));
 
         applyFixes(client, issues);
@@ -149,7 +149,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingAccountTransferIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingAccountTransferIssue.class)));
         assertThat(issues.get(0).getEntity(), is((Object) account));
 
         applyFixes(client, issues);
@@ -174,7 +174,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingAccountTransferIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingAccountTransferIssue.class)));
 
         assertThat(account.getTransactions(), hasItem(umatched));
         assertThat(second.getTransactions().get(0).getCrossEntry(), notNullValue());
@@ -192,7 +192,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingPortfolioTransferIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingPortfolioTransferIssue.class)));
         assertThat(issues.get(0).getEntity(), is((Object) portfolio));
 
         applyFixes(client, issues);
@@ -207,7 +207,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingPortfolioTransferIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingPortfolioTransferIssue.class)));
         assertThat(issues.get(0).getEntity(), is((Object) portfolio));
 
         applyFixes(client, issues);
@@ -232,7 +232,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(MissingPortfolioTransferIssue.class));
+        assertThat(issues.get(0), is(instanceOf(MissingPortfolioTransferIssue.class)));
 
         assertThat(portfolio.getTransactions(), hasItem(umatched));
         assertThat(second.getTransactions().get(0).getCrossEntry(), notNullValue());
@@ -253,7 +253,7 @@ public class CrossEntryCheckTest
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
         assertThat(issues.size(), is(1));
-        assertThat(issues.get(0).getAvailableFixes().get(0), is(DeleteTransactionFix.class));
+        assertThat(issues.get(0).getAvailableFixes().get(0), is(instanceOf(DeleteTransactionFix.class)));
 
         applyFixes(client, issues);
 

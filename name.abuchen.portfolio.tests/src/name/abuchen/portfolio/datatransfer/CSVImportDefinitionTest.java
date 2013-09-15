@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.datatransfer;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.collection.IsIn.isIn;
 import static org.junit.Assert.assertThat;
 
 import java.text.ParseException;
@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.CSVImportDefinition;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.AccountTransactionDef;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.PortfolioTransactionDef;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityDef;
