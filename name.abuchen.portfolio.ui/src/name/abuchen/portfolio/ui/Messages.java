@@ -5,6 +5,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.ui.messages"; //$NON-NLS-1$
+    public static String AboutText;
     public static String AccountMenuAdd;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
@@ -179,6 +180,7 @@ public class Messages extends NLS
     public static String JobMsgLoadingExchanges;
     public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
+    public static String LabelAbout;
     public static String LabelAccounts;
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
