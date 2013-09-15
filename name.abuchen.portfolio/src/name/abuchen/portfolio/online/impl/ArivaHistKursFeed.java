@@ -7,22 +7,22 @@ import java.util.List;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.ImportFinanzenNetQuotesSoup;
+import name.abuchen.portfolio.online.ArivaHistQuotesSoup;
 import name.abuchen.portfolio.online.QuoteFeed;
 
-public class FinanzenNetFeed implements QuoteFeed
+public class ArivaHistKursFeed implements QuoteFeed
 {
 
     @Override
     public String getId()
     {
-        return QuoteFeed.FINANZENNET;
+        return QuoteFeed.URL;
     }
 
     @Override
     public String getName()
     {
-        return "www.finanzen.net";
+        return "historische Kurse URL";
     }
 
     @Override
@@ -37,11 +37,11 @@ public class FinanzenNetFeed implements QuoteFeed
                 errors.add(new Exception("security without feed URL"));
                 continue;
             }
-            ImportFinanzenNetQuotesSoup parser = new ImportFinanzenNetQuotesSoup();
+            ArivaHistQuotesSoup parser = new ArivaHistQuotesSoup();
             try
             {
                 List<LatestSecurityPrice> latestPrices = parser.extractFromURL(currentURL);
-                System.out.println(latestPrices);
+                security.setLatest(latestPrices.get(0));
             }
             catch (Exception e)
             {
@@ -53,21 +53,30 @@ public class FinanzenNetFeed implements QuoteFeed
     @Override
     public void updateHistoricalQuotes(Security security) throws IOException
     {
-        // TODO Auto-generated method stub
-
+        ArivaHistQuotesSoup parser = new ArivaHistQuotesSoup();
+        try
+        {
+            List<LatestSecurityPrice> latestPrices = parser.extractFromURL(security.getFinanzenFeedURL());
+            for (LatestSecurityPrice price : latestPrices)
+            {
+                security.addPrice(price);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public List<Exchange> getExchanges(Security subject) throws IOException
     {
-        // TODO Auto-generated method stub
         return null;
     }
 

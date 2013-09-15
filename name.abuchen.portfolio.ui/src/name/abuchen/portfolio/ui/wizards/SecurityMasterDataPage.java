@@ -200,7 +200,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn"); //$NON-NLS-1$
-        bindings.bindStringInput(container, "Finanzen.net URL", "finanzenFeedURL");
+        bindings.bindStringInput(container, "Kurs URL", "finanzenFeedURL");
         bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
         bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
                         {

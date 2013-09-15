@@ -336,14 +336,12 @@ public final class Security
 
     public String getFinanzenFeedURL()
     {
-        System.out.println("returning " + finanzenFeedURL);
         return finanzenFeedURL;
     }
 
     public void setFinanzenFeedURL(String finanzenFeedURL)
     {
         this.finanzenFeedURL = finanzenFeedURL;
-        System.out.println("Set: " + this.finanzenFeedURL);
     }
 
 }

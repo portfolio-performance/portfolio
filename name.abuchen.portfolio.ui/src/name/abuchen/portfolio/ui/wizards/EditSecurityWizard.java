@@ -85,6 +85,7 @@ public class EditSecurityWizard extends Wizard
         target.setFeed(source.getFeed());
         target.setIndustryClassification(source.getIndustryClassification());
         target.setRetired(source.isRetired());
+        target.setFinanzenFeedURL(source.getFinanzenFeedURL());
     }
 
 }
