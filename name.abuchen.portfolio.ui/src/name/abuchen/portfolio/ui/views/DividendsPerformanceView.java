@@ -496,7 +496,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                             return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
                         else
                             return null;
-                    case colQ_DividendIncreasingRate: // debug BlockId
+                    case colQ_DividendIncreasingRate: 
                         if (t instanceof DividendTransaction)
                             return null;
                         else
