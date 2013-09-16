@@ -948,17 +948,18 @@ public class DividendPerformanceSnapshot
             divIncreasingYears = nYears;
         }
 
-        private class Year
-        {
-            long div;
-        }
-
         private void calculateDIR2()
         // zweite Variante: Jahreszahlungen kumulieren, dabei Sonderzahlungen
         // über Standardabweichung wegfiltern
         // Steigerungsrate rücklaufend prüfen - nur die kleinste Steigerungsrate
         // ist einigermaßen verlässlich
         {
+            boolean debug = false;
+
+            if (this.security.getName().startsWith("Aflac"))
+            {
+                debug = true;
+            }
 
             int eBlock = getEventsPerYear();
             if (eBlock == 0)
@@ -982,9 +983,10 @@ public class DividendPerformanceSnapshot
             divIncreasingRate = 0;
             divIncreasingYears = 0;
 
-            List<Year> years = new ArrayList<Year>();
+            List<Long> years = new ArrayList<Long>();
             int eStart = 0;
             long divSum = 0;
+            String x = "";
             for (Transaction t : transactions)
             {
                 if (t instanceof DividendTransaction)
@@ -997,9 +999,15 @@ public class DividendPerformanceSnapshot
                         // Anzahl der Blöcke für ein Jahr ist überschritten.
                         // Summe wird in der Liste notiert
 
-                        Year y = new Year();
-                        y.div = divSum;
-                        years.add(y);
+                        if (divSum == 0)
+                        {
+                            // nur stark schwankende Werte
+                            return;
+                        }
+
+                        // positiven Wert zufügen
+                        years.add(divSum);
+                        x = x.concat(String.format("(%d:%.2f);", eCurr-1, (double)divSum/100));
 
                         // nächsten Zeitraum beginnen
                         eStart = eCurr - 1;
@@ -1007,7 +1015,7 @@ public class DividendPerformanceSnapshot
                     }
 
                     long d = dt.getDividendPerShare();
-                    if ((d >= dmid-sdev) && (d <= dmid+sdev))
+                    if ((d >= dmid/2) && (d <= 2*dmid))
                         divSum += d;
                     else
                         divSum += 0;
@@ -1021,10 +1029,10 @@ public class DividendPerformanceSnapshot
 
             // abschließend mitteln
 
-            Year y1 = years.get(0);
-            Year y2 = years.get(nYears - 1);
-            
-            divIncreasingRate = (double) (y2.div - y1.div) / (double) y1.div;
+            long y1 = years.get(0);
+            long y2 = years.get(nYears - 1);
+
+            divIncreasingRate = (double) (y2 - y1) / (double) y1;
             divIncreasingRate = divIncreasingRate / nYears; // Zinseszins
                                                             // berücksichtigen
                                                             // !!
