@@ -1007,7 +1007,7 @@ public class DividendPerformanceSnapshot
 
                         // positiven Wert zufügen
                         years.add(divSum);
-                        x = x.concat(String.format("(%d:%.2f);", eCurr-1, (double)divSum/100));
+                        x = x.concat(String.format("(%d:%.2f);", eCurr - 1, (double) divSum / 100));
 
                         // nächsten Zeitraum beginnen
                         eStart = eCurr - 1;
@@ -1015,7 +1015,7 @@ public class DividendPerformanceSnapshot
                     }
 
                     long d = dt.getDividendPerShare();
-                    if ((d >= dmid/2) && (d <= 2*dmid))
+                    if ((d >= dmid / 2) && (d <= 2 * dmid))
                         divSum += d;
                     else
                         divSum += 0;
@@ -1037,6 +1037,115 @@ public class DividendPerformanceSnapshot
                                                             // berücksichtigen
                                                             // !!
             divIncreasingYears = nYears;
+        }
+
+        // bei guter Qualität reichen 3 jahre
+        private static int cMinYearsForDIR1 = 3;
+        private static double cMinQualityForDIR1 = 0.7;
+
+        // bei schlechterer mindestens 5 Jahre
+        private static int cMinYearsForDIR2 = 5;
+        private static double cMinQualityForDIR2 = 0.5;
+
+        private void calculateDIR3()
+        // dritte Variante: logarithmische Regression
+        // viel einfacher, alles rein und fertig
+        {
+            boolean debug = false;
+
+            if (this.security.getName().startsWith("Starbuck"))
+            {
+                debug = true;
+            }
+
+            int eBlock = getEventsPerYear();
+            if (eBlock == 0)
+                return;
+
+            // Zahlungen statistisch aufbereiten
+            Helper.Statistics stat = new Helper.Statistics();
+            for (Transaction t : transactions)
+            {
+                if (t instanceof DividendTransaction)
+                {
+                    DividendTransaction dt = (DividendTransaction) t;
+                    stat.add(dt.getDividendPerShare());
+                }
+            }
+            long dmid = Math.round(stat.mean());
+
+            // jetzt die Jahresdividenden aufbauen
+
+            divIncreasingRate = 0;
+            divIncreasingYears = 0;
+
+            Helper.LinearRegression lin = new Helper.LinearRegression();
+            Helper.LogarithmicRegression log = new Helper.LogarithmicRegression();
+
+            Date dBase = null;
+            Date dCurr = null;
+            int eCurr = 0;
+            long divSum = 0;
+            double year = 0;
+            String x = "";
+            for (Transaction t : transactions)
+            {
+
+                if (t instanceof DividendTransaction)
+                {
+                    DividendTransaction dt = (DividendTransaction) t;
+                    int eNext = dt.getDivEventId();
+                    Date dNext = dt.getDate();
+
+                    if (dBase == null)
+                        dBase = dNext;
+                    if (dCurr == null)
+                        dCurr = dNext;
+
+                    if (eNext != eCurr)
+                    {
+                        if (divSum != 0)
+                        {
+                            // neuer Block - aufgelaufene Summe wird zugefügt
+                            // positiven Wert zufügen
+                            year = (double) Helper.daysBetween(dBase, dCurr) / 365.25;
+                            lin.add(year, divSum);
+                            log.add(year, divSum);
+
+                            x = x.concat(String.format("(%d;%.2f;%.2f);", eNext - 1, year, (double) divSum / 100));
+                        }
+
+                        // nächsten Zeitraum beginnen
+                        eCurr = eNext;
+                        dCurr = dNext;
+                        divSum = 0;
+                    }
+
+                    long d = dt.getDividendPerShare();
+                    if ((d >= dmid / 2) && (d <= 2 * dmid))
+                        divSum += d;
+                    else
+                        divSum += 0;
+                }
+            }
+
+            if (year < cMinYearsForDIR1)
+                return; // periode nicht lang genug
+
+            // abschließend mitteln
+
+            double rLin = lin.getKorrel();
+            double rLog = log.getKorrel();
+            double rateLin = lin.getSlopeX() / lin.getValueY(year);
+            double rateLog = Math.exp(log.getSlopeX()) - 1;
+            double rate = Math.exp(log.getSlopeX()) - 1;
+            if (rate < 0)
+                ; // die will einer wirlich
+            else if (rLog > cMinQualityForDIR1 || year >= cMinYearsForDIR2 && rLog > cMinQualityForDIR2)
+            {
+                divIncreasingRate = rate;
+                divIncreasingYears = (int) Math.round(year);
+            }
         }
 
         private void calculateDiv12(Date endDate)
@@ -1199,7 +1308,7 @@ public class DividendPerformanceSnapshot
             }
 
             // calculate dividend increasing rate
-            calculateDIR2();
+            calculateDIR3();
 
             if (divIncreasingYears > 0)
             {
