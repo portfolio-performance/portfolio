@@ -154,7 +154,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         column = tvcol.getColumn();
         column.setText(Messages.ColumnName);
         column.setWidth(150);
-        //        ColumnViewerSorter.create(DivRecord.class, "security").attachTo(tree, tvcol, true); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "SecurityName").attachTo(tree, tvcol, true); //$NON-NLS-1$
         // ColumnViewerSorter: es muss eine getXxx-Methode in der
         // DivRecord-Klasse existieren, sonst crasht es !!!
 
@@ -288,7 +288,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         column = tvcol.getColumn();
         column.setText("DSR%");
         column.setWidth(50);
-        // ColumnViewerSorter.create(DivRecord.class, "div12PerShare").attachTo(tree, tvcol);  //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingRate").attachTo(tree, tvcol);  //$NON-NLS-1$
 
         // erwartete Dividende in 10 Jahren
         Helper.Assert(cc == colR_DivExpectedLongTerm);
@@ -439,11 +439,11 @@ public class DividendsPerformanceView extends AbstractHistoricView
                                                             // Rendite
                         return Values.Percent2.format(divRecord.getPersonalDiv());
                     case colP_Dividends12Expected:
-                        return Values.Amount.format(divRecord.getExpectedDiv12Amount());
+                        return Helper.getNonZeroValueFormat (Values.Amount, divRecord.getExpectedDiv12Amount());
                     case colQ_DividendIncreasingRate:
-                        return Values.Percent2.format(divRecord.getDivIncreasingRate());
+                        return Helper.getNonZeroValueFormat (Values.Percent2, divRecord.getDivIncreasingRate(), 0.01);
                     case colR_DivExpectedLongTerm:
-                        return Values.Amount.format(divRecord.getLongTermDiv12Amount());
+                        return Helper.getNonZeroValueFormat (Values.Amount, divRecord.getLongTermDiv12Amount());
                 }
                 Helper.Assert(false);
 
