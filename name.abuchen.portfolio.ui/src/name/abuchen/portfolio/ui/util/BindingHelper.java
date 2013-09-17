@@ -244,6 +244,18 @@ public class BindingHelper
         return txtValue;
     }
 
+    public Control bindSharesInput(Composite editArea, final String label, String property)
+    {
+        Text txtValue = createTextInput(editArea, label);
+        context.bindValue(
+                        SWTObservables.observeText(txtValue, SWT.Modify), //
+                        BeansObservables.observeValue(model, property), //
+                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Share)),
+                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Share)));
+
+        return txtValue;
+    }
+
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
