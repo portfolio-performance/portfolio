@@ -316,7 +316,14 @@ public class AccountListView extends AbstractListView
             {
                 AccountTransaction t = (AccountTransaction) e;
                 if (t.getCrossEntry() instanceof BuySellEntry)
+                {
                     return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
+                }
+                else if (t.getType() == Type.DIVIDENDS)
+                {
+                    if (t.getShares() != 0)
+                        return t.getShares();
+                }
                 return null;
             }
 
@@ -342,6 +349,12 @@ public class AccountListView extends AbstractListView
                                     .getPortfolioTransaction();
                     return Values.Amount.format(portfolioTransaction.getActualPurchasePrice());
                 }
+                else if (t.getType() == Type.DIVIDENDS)
+                {
+                    if (t.getShares() != 0)
+                        return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / t.getShares()));
+                }
+
                 return null;
             }
 
@@ -386,6 +399,16 @@ public class AccountListView extends AbstractListView
         new CellEditorFactory(transactions, AccountTransaction.class) //
                         .notify(new CellEditorFactory.ModificationListener()
                         {
+                            @Override
+                            public boolean canModify(Object element, String property)
+                            {
+                                if ("shares".equals(property)) //$NON-NLS-1$
+                                    return ((AccountTransaction) element).getType() == AccountTransaction.Type.DIVIDENDS;
+
+                                return true;
+                            }
+
+                            @Override
                             public void onModified(Object element, String property)
                             {
                                 AccountTransaction t = (AccountTransaction) element;
@@ -401,7 +424,7 @@ public class AccountListView extends AbstractListView
                         .readonly("type") //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
                         .combobox("security", securities, true) //$NON-NLS-1$
-                        .readonly("shares") //$NON-NLS-1$
+                        .shares("shares") //$NON-NLS-1$
                         .readonly("actualPurchasePrice") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
                         .apply();

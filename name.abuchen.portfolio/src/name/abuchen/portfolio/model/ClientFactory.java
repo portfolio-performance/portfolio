@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -118,6 +119,14 @@ public class ClientFactory
             fixStoredClassificationChartConfiguration(client);
 
             client.setVersion(14);
+        }
+
+        if (client.getVersion() == 14)
+        {
+            // added shares to track dividends per share
+            assignSharesToDividendTransactions(client);
+
+            client.setVersion(15);
         }
 
         if (client.getVersion() != Client.CURRENT_VERSION)
@@ -348,6 +357,40 @@ public class ClientFactory
         for (int ii = 0; ii < replacements.length; ii += 2)
             newValue = newValue.replaceAll(replacements[ii], replacements[ii + 1]);
         client.setProperty(key, newValue);
+    }
+
+    private static void assignSharesToDividendTransactions(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            List<Transaction> transactions = security.getTransactions(client);
+            Transaction.sortByDate(transactions);
+
+            long shares = 0;
+            for (Transaction t : transactions)
+            {
+                if (t instanceof AccountTransaction
+                                && ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
+                {
+                    ((AccountTransaction) t).setShares(shares);
+                }
+                else if (t instanceof PortfolioTransaction)
+                {
+                    switch (((PortfolioTransaction) t).getType())
+                    {
+                        case BUY:
+                        case TRANSFER_IN:
+                            shares += ((PortfolioTransaction) t).getShares();
+                            break;
+                        case SELL:
+                        case TRANSFER_OUT:
+                            shares -= ((PortfolioTransaction) t).getShares();
+                            break;
+                        default:
+                    }
+                }
+            }
+        }
     }
 
     @SuppressWarnings("nls")

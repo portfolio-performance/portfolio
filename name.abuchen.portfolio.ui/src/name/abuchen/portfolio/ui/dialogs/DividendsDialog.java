@@ -26,6 +26,7 @@ public class DividendsDialog extends AbstractDialog
     {
         private Security security;
         private Account account;
+        private long shares;
         private long amount;
         private Date date = Dates.today();
 
@@ -64,6 +65,16 @@ public class DividendsDialog extends AbstractDialog
             firePropertyChange("account", this.account, this.account = account); //$NON-NLS-1$
         }
 
+        public long getShares()
+        {
+            return shares;
+        }
+
+        public void setShares(long shares)
+        {
+            firePropertyChange("shares", this.shares, this.shares = shares); //$NON-NLS-1$
+        }
+
         public long getAmount()
         {
             return amount;
@@ -91,6 +102,7 @@ public class DividendsDialog extends AbstractDialog
 
             AccountTransaction ta = new AccountTransaction();
             ta.setAmount(amount);
+            ta.setShares(shares);
             ta.setDate(date);
             ta.setSecurity(security);
             ta.setType(AccountTransaction.Type.DIVIDENDS);
@@ -149,6 +161,9 @@ public class DividendsDialog extends AbstractDialog
                                                 .error(Messages.MsgMissingAccount);
                             }
                         }, getModel().getClient().getAccounts().toArray());
+
+        // shares
+        bindings().bindSharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$
 
         // amount
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$

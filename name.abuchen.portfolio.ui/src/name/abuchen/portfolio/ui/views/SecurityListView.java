@@ -285,8 +285,7 @@ public class SecurityListView extends AbstractListView
 
         latest.setInput(security);
 
-        transactions.setInput(security != null ? Transaction.sortByDate(security.getTransactions(getClient()))
-                        : new ArrayList<Transaction>(0));
+        transactions.setInput(security != null ? security.getTransactions(getClient()) : new ArrayList<Transaction>(0));
 
         updateChart(security);
     }
@@ -455,7 +454,7 @@ public class SecurityListView extends AbstractListView
                                 securities.refresh(security);
                                 prices.refresh(element);
                                 latest.setInput(security);
-                                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                                transactions.setInput(security.getTransactions(getClient()));
                                 updateChart(security);
                             }
                         }) //
@@ -497,7 +496,7 @@ public class SecurityListView extends AbstractListView
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
-                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    transactions.setInput(security.getTransactions(getClient()));
                     updateChart(security);
 
                     prices.setSelection(new StructuredSelection(price), true);
@@ -532,7 +531,7 @@ public class SecurityListView extends AbstractListView
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
-                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    transactions.setInput(security.getTransactions(getClient()));
                     updateChart(security);
                 }
             });
@@ -555,7 +554,7 @@ public class SecurityListView extends AbstractListView
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
-                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    transactions.setInput(security.getTransactions(getClient()));
                     updateChart(security);
                 }
             });
