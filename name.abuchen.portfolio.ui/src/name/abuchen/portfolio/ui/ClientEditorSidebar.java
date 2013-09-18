@@ -226,8 +226,9 @@ import org.eclipse.swt.widgets.Menu;
                         "Performance")); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
+        new Entry(performance, new ActivateViewAction(Messages.LabelDividends, "DividendsPerformance")); //$NON-NLS-1$
     }
-
+    
     private void createTaxonomyDataSection(final Sidebar sidebar)
     {
         taxonomies = new Entry(sidebar, Messages.LabelTaxonomies);

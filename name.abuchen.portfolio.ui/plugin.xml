@@ -59,10 +59,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="name.abuchen.portfolio.ui.application"
-            name="%product.name">
+            name="Portfolio Performance">
          <property
                name="appName"
-               value="%product.name">
+               value="Portfolio Performance">
          </property>
          <property
                name="aboutImage"
