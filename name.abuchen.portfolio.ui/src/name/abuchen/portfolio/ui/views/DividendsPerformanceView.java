@@ -72,7 +72,6 @@ public class DividendsPerformanceView extends AbstractHistoricView
 
         double dr = col1.getRed() * f1 + col2.getRed() * f2 + col3.getRed() * f3;
         double dg = col1.getGreen() * f1 + col2.getGreen() * f2 + col3.getGreen() * f3;
-        ;
         double db = col1.getBlue() * f1 + col2.getBlue() * f2 + col3.getBlue() * f3;
 
         return new Color(Display.getCurrent(), (int) dr, (int) dg, (int) db);
@@ -95,7 +94,10 @@ public class DividendsPerformanceView extends AbstractHistoricView
     static final int colO_PersonalRateOfDividendReturn = 14;
     static final int colP_Dividends12Expected = 15;
     static final int colQ_DividendIncreasingRate = 16;
-    static final int colR_DivExpectedLongTerm = 17;
+    static final int colR_DividendIncreasingReliabilty = 17;
+    static final int colS_DividendIncreasingYears = 18;
+    static final int colT_DividendExpectedLongTerm5 = 19;
+    static final int colU_DividendExpectedLongTerm10 = 20;
 
     static final int colH_DivEventId = colH_DivEventCount;
     static final int colI_TransactionDate = colI_LastReturn;
@@ -104,6 +106,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
     static final int colL_DividendAmount = colL_Dividends12;
     static final int colM_DividensPerShare = colM_Dividends12PerShare;
     static final int colN_Amount = colN_Cost12Amount;
+    static final int colO_Account = colO_PersonalRateOfDividendReturn;
 
     private TreeViewer tree;
 
@@ -281,23 +284,50 @@ public class DividendsPerformanceView extends AbstractHistoricView
         column.setWidth(75);
         ColumnViewerSorter.create(DivRecord.class, "expectedDiv12Amount").attachTo(tree, tvcol); //$NON-NLS-1$
 
-        // mittlere Dividendensteigerung der letzten (10) Jahre
+        // mittlere Dividendensteigerung der letzten Jahre
         Helper.Assert(cc == colQ_DividendIncreasingRate);
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("DSR%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "divIncreasingRate").attachTo(tree, tvcol);  //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingRate").attachTo(tree, tvcol); //$NON-NLS-1$
 
-        // erwartete Dividende in 10 Jahren
-        Helper.Assert(cc == colR_DivExpectedLongTerm);
+        // Zuverlässigkeit der Dividendensteigerung der letzten Jahre
+        Helper.Assert(cc == colR_DividendIncreasingReliabilty);
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
-        column.setText("Div¹²e10");
-        column.setWidth(75);
-        // ColumnViewerSorter.create(DivRecord.class, "div12PerShare").attachTo(tree, tvcol);  //$NON-NLS-1$
+        column.setText("Zuverl.%");
+        column.setWidth(50);
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingReliability").attachTo(tree, tvcol); //$NON-NLS-1$
+
+        // Anzahl der Jahre mit Dividendensteigerung
+        Helper.Assert(cc == colS_DividendIncreasingYears);
+        cc++;
+        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        column = tvcol.getColumn();
+        column.setText("Jahre");
+        column.setWidth(50);
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingYears").attachTo(tree, tvcol); //$NON-NLS-1$
+
+        // erwartete Dividende in 5 Jahren
+        Helper.Assert(cc == colT_DividendExpectedLongTerm5);
+        cc++;
+        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        column = tvcol.getColumn();
+        column.setText("Div¹² 5J.");
+        column.setWidth(50);
+        ColumnViewerSorter.create(DivRecord.class, "div60Amount").attachTo(tree, tvcol); //$NON-NLS-1$
+
+        // erwartete Dividende in 10 Jahren
+        Helper.Assert(cc == colU_DividendExpectedLongTerm10);
+        cc++;
+        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        column = tvcol.getColumn();
+        column.setText("Div¹² 10J.");
+        column.setWidth(50);
+        ColumnViewerSorter.create(DivRecord.class, "div120Amount").attachTo(tree, tvcol);  //$NON-NLS-1$
 
         tree.getTree().setHeaderVisible(true);
         tree.getTree().setLinesVisible(true);
@@ -439,11 +469,17 @@ public class DividendsPerformanceView extends AbstractHistoricView
                                                             // Rendite
                         return Values.Percent2.format(divRecord.getPersonalDiv());
                     case colP_Dividends12Expected:
-                        return Helper.getNonZeroValueFormat (Values.Amount, divRecord.getExpectedDiv12Amount());
+                        return Helper.getNonZeroValueFormat(Values.Amount, divRecord.getExpectedDiv12Amount());
                     case colQ_DividendIncreasingRate:
-                        return Helper.getNonZeroValueFormat (Values.Percent2, divRecord.getDivIncreasingRate(), 0.01);
-                    case colR_DivExpectedLongTerm:
-                        return Helper.getNonZeroValueFormat (Values.Amount, divRecord.getLongTermDiv12Amount());
+                        return Helper.getNonZeroValueFormat(Values.Percent0, divRecord.getDivIncreasingRate(), 0.01);
+                    case colR_DividendIncreasingReliabilty:
+                        return Helper.getNonZeroValueFormat(Values.Percent0, divRecord.getDivIncreasingReliability(), 0.01);
+                    case colS_DividendIncreasingYears:
+                        return Helper.getNonZeroValueFormat(Values.Integer, divRecord.getDivIncreasingYears());
+                    case colT_DividendExpectedLongTerm5:
+                        return Helper.getNonZeroValueFormat(Values.Amount, divRecord.getDiv60Amount());
+                    case colU_DividendExpectedLongTerm10:
+                        return Helper.getNonZeroValueFormat(Values.Amount, divRecord.getDiv120Amount());
                 }
                 Helper.Assert(false);
 
@@ -496,9 +532,9 @@ public class DividendsPerformanceView extends AbstractHistoricView
                             return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
                         else
                             return null;
-                    case colQ_DividendIncreasingRate: 
+                    case colO_Account:
                         if (t instanceof DividendTransaction)
-                            return null;
+                            return ((DividendTransaction) t).getAccount().getName();
                         else
                             return null;
                 }

@@ -127,9 +127,8 @@ public class DividendPerformanceSnapshot
                             DividendTransaction dt = new DividendTransaction();
                             dt.setDate(t.getDate());
                             dt.setSecurity(t.getSecurity());
-                            ;
                             dt.setAccount(account);
-                            dt.setAmount(t.getAmount());
+                            dt.setAmountAndShares(t.getAmount(), t.getShares());
                             transactions.get(t.getSecurity()).add(dt);
                         }
                         break;
@@ -264,21 +263,16 @@ public class DividendPerformanceSnapshot
             return amount;
         }
 
-        public void setAmount(long amount)
+        public void setAmountAndShares(long amount, long shares)
         {
             this.amount = amount;
-            updateDividendPerShare();
+            this.shares = shares;
+            this.dividendPerShare = amountPerShare(amount, shares);
         }
 
         public long getShares()
         {
             return shares;
-        }
-
-        public void setShares(long shares)
-        {
-            this.shares = shares;
-            updateDividendPerShare();
         }
 
         public long getDividendPerShare()
@@ -304,12 +298,6 @@ public class DividendPerformanceSnapshot
         public void setDivEventId(int divEventId)
         {
             this.divEventId = divEventId;
-        }
-
-        private void updateDividendPerShare()
-        {
-            this.dividendPerShare = amountPerShare(amount, shares);
-
         }
 
         static public long amountPerShare(long amount, long shares)
@@ -396,7 +384,8 @@ public class DividendPerformanceSnapshot
         private long div12Cost;
         private long div12Amount;
         private long div24Amount;
-        private long div36Amount;
+        private long div60Amount;
+        private long div120Amount;
         private long stockAmount; // Wert im Bestand
         private long stockShares; // Stücke im Bestand
         private long poolAmount; // dto im Verrechnungpool
@@ -405,6 +394,7 @@ public class DividendPerformanceSnapshot
         private Date dateTo;
         private int divEventCount;
         private double divIncreasingRate;
+        private double divIncreasingReliability;
         private int divIncreasingYears;
 
         public enum Periodicity
@@ -477,9 +467,14 @@ public class DividendPerformanceSnapshot
             return div24Amount;
         }
 
-        public long getDiv36Amount()
+        public long getDiv60Amount()
         {
-            return div36Amount;
+            return div60Amount;
+        }
+
+        public long getDiv120Amount()
+        {
+            return div120Amount;
         }
 
         public long getDiv12PerShare()
@@ -502,11 +497,16 @@ public class DividendPerformanceSnapshot
             return divIncreasingRate;
         }
 
-        public long getLongTermDiv12Amount()
+        public double getDivIncreasingReliability()
         {
-            return div36Amount;
+            return divIncreasingReliability;
         }
-
+        
+        public int getDivIncreasingYears()
+        {
+            return divIncreasingYears;
+        }
+        
         public long getDiv12MeanShares()
         {
             return div12Shares;
@@ -613,7 +613,8 @@ public class DividendPerformanceSnapshot
             this.div12Cost += d.div12Cost;
             this.div12Amount += d.div12Amount;
             this.div24Amount += d.div24Amount;
-            this.div36Amount += d.div36Amount;
+            this.div60Amount += d.div60Amount;
+            this.div120Amount += d.div120Amount;
             // private double irr;
             // private double irrdiv;
             // private long div12PerShare;
@@ -764,7 +765,7 @@ public class DividendPerformanceSnapshot
                     }
                     dLast = dCurr;
 
-                    dt.setShares(stockShares);
+//                    dt.setShares(stockShares);
                     dt.setDivEventId(divEventCount);
 
                 }
@@ -886,159 +887,6 @@ public class DividendPerformanceSnapshot
             }
         }
 
-        private void calculateDIR1()
-        // erste Variante: chronologisch steigende Zahlungen mit geringfügiger
-        // Rückschlaggrenze
-        {
-
-            divIncreasingRate = 0;
-            divIncreasingYears = 0;
-            int eBlock = getEventsPerYear();
-            if (eBlock == 0)
-                return;
-
-            int eStart = 0;
-            int nYears = 0;
-            long divSum = 0;
-            long divSum1 = 0;
-            long divSum2 = 0;
-            long divSumBreak = 0;
-
-            for (Transaction t : transactions)
-            {
-                if (t instanceof DividendTransaction)
-                {
-                    DividendTransaction dt = (DividendTransaction) t;
-                    int eCurr = dt.getDivEventId();
-
-                    if (eCurr - eStart > eBlock)
-                    {
-                        // Anzahl der Blöcke für ein Jahr ist überschritten.
-                        // Alle bisherigen Zahlungen werden nun mit dem vorigen
-                        // Zeitraum verglichen
-
-                        if (eStart == 0)
-                        {
-                            divSum1 = divSum;
-                        }
-                        else if (divSum < divSumBreak)
-                        {
-                            // Dividende nicht gestiegen gegenüber dem Vorjahr
-                            return;
-                        }
-                        else
-                        {
-                            divSum2 = divSum;
-                        }
-                        nYears++;
-                        eStart = eCurr - 1;
-                        divSumBreak = Math.round(divSum * 0.95);
-                        divSum = 0;
-                    }
-                    divSum += dt.getDividendPerShare();
-                }
-            }
-            if (nYears < 2)
-                return; // periode nicht lang genug
-
-            divIncreasingRate = (double) (divSum2 - divSum1) / (double) divSum1;
-            divIncreasingRate = divIncreasingRate / nYears; // Zinseszins
-                                                            // berücksichtigen
-                                                            // !!
-            divIncreasingYears = nYears;
-        }
-
-        private void calculateDIR2()
-        // zweite Variante: Jahreszahlungen kumulieren, dabei Sonderzahlungen
-        // über Standardabweichung wegfiltern
-        // Steigerungsrate rücklaufend prüfen - nur die kleinste Steigerungsrate
-        // ist einigermaßen verlässlich
-        {
-            boolean debug = false;
-
-            if (this.security.getName().startsWith("Aflac"))
-            {
-                debug = true;
-            }
-
-            int eBlock = getEventsPerYear();
-            if (eBlock == 0)
-                return;
-
-            // Zahlungen statistisch aufbereiten
-            Helper.Statistics stat = new Helper.Statistics();
-            for (Transaction t : transactions)
-            {
-                if (t instanceof DividendTransaction)
-                {
-                    DividendTransaction dt = (DividendTransaction) t;
-                    stat.add(dt.getDividendPerShare());
-                }
-            }
-            long sdev = Math.round(stat.sDev1());
-            long dmid = Math.round(stat.mean());
-
-            // jetzt die Jahresdividenden aufbauen
-
-            divIncreasingRate = 0;
-            divIncreasingYears = 0;
-
-            List<Long> years = new ArrayList<Long>();
-            int eStart = 0;
-            long divSum = 0;
-            String x = "";
-            for (Transaction t : transactions)
-            {
-                if (t instanceof DividendTransaction)
-                {
-                    DividendTransaction dt = (DividendTransaction) t;
-                    int eCurr = dt.getDivEventId();
-
-                    if (eCurr - eStart > eBlock)
-                    {
-                        // Anzahl der Blöcke für ein Jahr ist überschritten.
-                        // Summe wird in der Liste notiert
-
-                        if (divSum == 0)
-                        {
-                            // nur stark schwankende Werte
-                            return;
-                        }
-
-                        // positiven Wert zufügen
-                        years.add(divSum);
-                        x = x.concat(String.format("(%d:%.2f);", eCurr - 1, (double) divSum / 100));
-
-                        // nächsten Zeitraum beginnen
-                        eStart = eCurr - 1;
-                        divSum = 0;
-                    }
-
-                    long d = dt.getDividendPerShare();
-                    if ((d >= dmid / 2) && (d <= 2 * dmid))
-                        divSum += d;
-                    else
-                        divSum += 0;
-                }
-            }
-
-            int nYears = years.size();
-
-            if (nYears < 2)
-                return; // periode nicht lang genug
-
-            // abschließend mitteln
-
-            long y1 = years.get(0);
-            long y2 = years.get(nYears - 1);
-
-            divIncreasingRate = (double) (y2 - y1) / (double) y1;
-            divIncreasingRate = divIncreasingRate / nYears; // Zinseszins
-                                                            // berücksichtigen
-                                                            // !!
-            divIncreasingYears = nYears;
-        }
-
         // bei guter Qualität reichen 3 jahre
         private static int cMinYearsForDIR1 = 3;
         private static double cMinQualityForDIR1 = 0.7;
@@ -1047,7 +895,7 @@ public class DividendPerformanceSnapshot
         private static int cMinYearsForDIR2 = 5;
         private static double cMinQualityForDIR2 = 0.5;
 
-        private void calculateDIR3()
+        private void calculateDIR()
         // dritte Variante: logarithmische Regression
         // viel einfacher, alles rein und fertig
         {
@@ -1057,6 +905,11 @@ public class DividendPerformanceSnapshot
             {
                 debug = true;
             }
+            
+            if (debug)
+            {
+                // Warnung weg
+            }
 
             int eBlock = getEventsPerYear();
             if (eBlock == 0)
@@ -1078,6 +931,7 @@ public class DividendPerformanceSnapshot
 
             divIncreasingRate = 0;
             divIncreasingYears = 0;
+            divIncreasingReliability = 0;
 
             Helper.LinearRegression lin = new Helper.LinearRegression();
             Helper.LogarithmicRegression log = new Helper.LogarithmicRegression();
@@ -1134,17 +988,15 @@ public class DividendPerformanceSnapshot
 
             // abschließend mitteln
 
-            double rLin = lin.getKorrel();
             double rLog = log.getKorrel();
-            double rateLin = lin.getSlopeX() / lin.getValueY(year);
-            double rateLog = Math.exp(log.getSlopeX()) - 1;
             double rate = Math.exp(log.getSlopeX()) - 1;
             if (rate < 0)
-                ; // die will einer wirlich
+                ; // die will keiner wirlich
             else if (rLog > cMinQualityForDIR1 || year >= cMinYearsForDIR2 && rLog > cMinQualityForDIR2)
             {
                 divIncreasingRate = rate;
                 divIncreasingYears = (int) Math.round(year);
+                divIncreasingReliability = rLog;
             }
         }
 
@@ -1155,7 +1007,8 @@ public class DividendPerformanceSnapshot
             div12Shares = 0;
             div12Amount = 0;
             div24Amount = 0;
-            div36Amount = 0;
+            div60Amount = 0;
+            div120Amount = 0;
             dateFrom = null;
             dateTo = null;
             periodicity = Periodicity.NONE;
@@ -1308,16 +1161,17 @@ public class DividendPerformanceSnapshot
             }
 
             // calculate dividend increasing rate
-            calculateDIR3();
+            calculateDIR();
 
             if (divIncreasingYears > 0)
             {
-                div36Amount = Math.round((double) div24Amount * Math.pow(1 + divIncreasingRate, 10));
-                // todo: dsr10
+                div60Amount = Math.round((double) div24Amount * Math.pow(1 + divIncreasingRate, 5));
+                div120Amount = Math.round((double) div24Amount * Math.pow(1 + divIncreasingRate, 10));
             }
             else
             {
-                div36Amount = div24Amount;
+                div60Amount = div24Amount;
+                div120Amount = div24Amount;
             }
         }
     }
