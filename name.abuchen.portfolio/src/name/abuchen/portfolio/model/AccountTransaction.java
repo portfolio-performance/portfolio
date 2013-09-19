@@ -21,6 +21,18 @@ public class AccountTransaction extends Transaction
 
     private long shares;
     private long amount;
+    
+    private Object owner;
+
+    public void setOwner(Object owner)
+    {
+        this.owner = owner;
+    }
+
+    public Object getOwner()
+    {
+        return owner;
+    }
 
     public AccountTransaction()
     {}

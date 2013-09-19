@@ -255,6 +255,7 @@ public final class Security implements InvestmentVehicle
                     case INTEREST:
                     case DIVIDENDS:
                         answer.add(t);
+                        t.setOwner (account);
                         break;
                     case FEES:
                     case TAXES:

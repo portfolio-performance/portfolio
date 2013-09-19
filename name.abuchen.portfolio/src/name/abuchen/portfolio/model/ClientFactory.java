@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.ArrayList;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -359,32 +360,84 @@ public class ClientFactory
         client.setProperty(key, newValue);
     }
 
+    private static class SharesCounter
+    {
+
+        private List<Account> accList;
+        private long[] shares;
+
+        // private int idx
+
+        public SharesCounter(List<Account> accList)
+        {
+            this.accList = accList;
+            int len = accList.size() + 1; // one more for not existing accounts
+            this.shares = new long[len];
+        }
+
+        public void reset()
+        {
+            for (int i = 0; i < shares.length; i++)
+            {
+                shares[i] = 0;
+            }
+        }
+
+        public void add(Account acc, long Shares)
+        {
+            int i = accList.indexOf(acc);
+            shares[i + 1] += Shares;
+        }
+
+        public Long get(Account acc)
+        {
+            int i = accList.indexOf(acc);
+            return shares[i + 1];
+        }
+    }
+
     private static void assignSharesToDividendTransactions(Client client)
     {
+        SharesCounter sc = new SharesCounter(client.getAccounts());
+
         for (Security security : client.getSecurities())
         {
             List<Transaction> transactions = security.getTransactions(client);
             Transaction.sortByDate(transactions);
 
-            long shares = 0;
+            sc.reset();
             for (Transaction t : transactions)
             {
-                if (t instanceof AccountTransaction
-                                && ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
+                if (t instanceof AccountTransaction)
                 {
-                    ((AccountTransaction) t).setShares(shares);
+                    AccountTransaction at = (AccountTransaction) t;
+
+                    // Object obj = at.getCrossEntry(); // null 
+                    Object obj = at.getOwner(); 
+                    Account acc = (obj instanceof Account ? (Account) obj : null);
+                    if (at.getType() == AccountTransaction.Type.DIVIDENDS)
+                    {
+                        at.setShares(sc.get(acc));
+                        // at.setShares(sc.get(at.get)shares);
+                    }
                 }
                 else if (t instanceof PortfolioTransaction)
                 {
-                    switch (((PortfolioTransaction) t).getType())
+                    PortfolioTransaction pt = (PortfolioTransaction) t;
+
+                    Object obj = pt.getCrossEntry().getCrossEntity(pt); 
+                    // getEntity(pt) -> portfolio
+                    
+                    Account acc = (obj instanceof Account ? (Account) obj : null);
+                    switch (pt.getType())
                     {
                         case BUY:
                         case TRANSFER_IN:
-                            shares += ((PortfolioTransaction) t).getShares();
+                            sc.add(acc, +pt.getShares());
                             break;
                         case SELL:
                         case TRANSFER_OUT:
-                            shares -= ((PortfolioTransaction) t).getShares();
+                            sc.add(acc, -pt.getShares());
                             break;
                         default:
                     }
