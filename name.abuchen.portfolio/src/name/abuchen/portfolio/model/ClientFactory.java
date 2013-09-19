@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.ArrayList;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
