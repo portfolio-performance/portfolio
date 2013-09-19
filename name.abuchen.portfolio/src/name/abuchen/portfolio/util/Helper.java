@@ -37,6 +37,11 @@ public class Helper
         return (Math.abs(value) > 0 ? val.format (value) : null);
     }
 
+    public static String getNonZeroValueFormat (Values<Integer> val, Integer value)
+    {
+        return (Math.abs(value) > 0 ? val.format (value) : null);
+    }
+
     public static String getNonZeroValueFormat (Values<Double> val, double value, double eps)
     {
         return (Math.abs(value) >= eps ? val.format (value) : null);
