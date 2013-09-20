@@ -440,7 +440,7 @@ public class DividendPerformanceSnapshot
             return irrdiv;
         }
 
-        public double getTrrDiv()
+        public double getTotalRateOfReturnDiv()
         {
             if (stockAmount > 0)
             {
@@ -501,12 +501,12 @@ public class DividendPerformanceSnapshot
         {
             return divIncreasingReliability;
         }
-        
+
         public int getDivIncreasingYears()
         {
             return divIncreasingYears;
         }
-        
+
         public long getDiv12MeanShares()
         {
             return div12Shares;
@@ -699,11 +699,6 @@ public class DividendPerformanceSnapshot
             this.irr = IRR.calculate(dates, values);
         }
 
-        private void debugstop()
-        {
-
-        }
-
         private void calculateIRRDiv()
         {
             List<Date> dates = new ArrayList<Date>();
@@ -738,7 +733,7 @@ public class DividendPerformanceSnapshot
                     {
                         // wenn pt.getAmount immer > 0 ist, kann das nicht
                         // passieren
-                        debugstop();
+                        Helper.debugStop();
                         throw new UnsupportedOperationException();
                     }
 
@@ -765,7 +760,7 @@ public class DividendPerformanceSnapshot
                     }
                     dLast = dCurr;
 
-//                    dt.setShares(stockShares);
+                    // dt.setShares(stockShares);
                     dt.setDivEventId(divEventCount);
 
                 }
@@ -836,7 +831,7 @@ public class DividendPerformanceSnapshot
                             {
                                 // wenn pt.getAmount immer > 0 ist, kann das
                                 // nicht passieren
-                                debugstop();
+                                Helper.debugStop();
                                 throw new UnsupportedOperationException();
                             }
                             tAmount = cost;
@@ -905,7 +900,7 @@ public class DividendPerformanceSnapshot
             {
                 debug = true;
             }
-            
+
             if (debug)
             {
                 // Warnung weg
@@ -939,7 +934,8 @@ public class DividendPerformanceSnapshot
             Date dBase = null;
             Date dCurr = null;
             int eCurr = 0;
-            long divSum = 0;
+            long divAmount = 0;
+            long divShares = 0;
             double year = 0;
             String x = "";
             for (Transaction t : transactions)
@@ -958,28 +954,36 @@ public class DividendPerformanceSnapshot
 
                     if (eNext != eCurr)
                     {
-                        if (divSum != 0)
+                        if ((divAmount != 0) && (divShares != 0))
                         {
                             // neuer Block - aufgelaufene Summe wird zugefügt
                             // positiven Wert zufügen
                             year = (double) Helper.daysBetween(dBase, dCurr) / 365.25;
-                            lin.add(year, divSum);
-                            log.add(year, divSum);
+                            long d = DividendTransaction.amountPerShare(divAmount, divShares);
+                            lin.add(year, d);
+                            log.add(year, d);
 
-                            x = x.concat(String.format("(%d;%.2f;%.2f);", eNext - 1, year, (double) divSum / 100));
+                            x = x.concat(String.format("(%d;%.2f;%.2f);", eNext - 1, year, (double) d / 100));
                         }
 
                         // nächsten Zeitraum beginnen
                         eCurr = eNext;
                         dCurr = dNext;
-                        divSum = 0;
+                        divAmount = 0;
+                        divShares = 0;
                     }
 
-                    long d = dt.getDividendPerShare();
-                    if ((d >= dmid / 2) && (d <= 2 * dmid))
-                        divSum += d;
+                    if (dt.shares > 0)
+                    {
+                        divAmount += dt.amount;
+                        divShares += dt.shares;
+                    }
                     else
-                        divSum += 0;
+                    {
+                        // Dividendenbuchungen mit Menge<=0 ignorieren -
+                        // sind Sonderzahlungen. Stark streuende sind jetzt egal
+                    }
+
                 }
             }
 
@@ -1066,6 +1070,7 @@ public class DividendPerformanceSnapshot
             dateFrom = Helper.dateAddDays(dateTo, -320);
 
             // Gesamtzeitraum für mittlere Stückzahl
+            long sumShare = 0;
             long medShare = 0;
             long medDays = 0;
             Date dCurr = null;
@@ -1085,7 +1090,7 @@ public class DividendPerformanceSnapshot
                         div12Amount += dt.getAmount();
                         dt.setIsDiv12(true);
                         long days = Helper.daysBetween(dLast, dCurr);
-                        medShare += days * dt.getShares();
+                        medShare += days * sumShare;
                         medDays += days;
                         dLast = dCurr;
                     }
@@ -1093,6 +1098,22 @@ public class DividendPerformanceSnapshot
                     {
                         // letzte BlockId vor dem 12-Monatszeitraum merken
                         bLast = dt.getDivEventId();
+                    }
+                }
+                else if (t instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction pt = (PortfolioTransaction) t;
+                    switch (pt.getType())
+                    {
+                        case BUY:
+                        case TRANSFER_IN:
+                            sumShare += pt.getShares();
+                            break;
+                        case SELL:
+                        case TRANSFER_OUT:
+                            sumShare -= pt.getShares();
+                            break;
+                        default:
                     }
                 }
             }

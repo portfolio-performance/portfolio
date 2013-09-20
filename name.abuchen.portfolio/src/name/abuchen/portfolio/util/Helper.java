@@ -226,4 +226,11 @@ public class Helper
             return Math.exp(super.getValueY(X));
         }
     }
+
+    public static void debugStop()
+    {
+       // Bei Bedarf in der vorigen Zeile einen Haltepunkt setzen
+    }
+
+
 }

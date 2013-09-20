@@ -200,7 +200,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         column = tvcol.getColumn();
         column.setText("Div%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "trrDiv").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "totalRateOfReturnDiv").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // jährliche Dividendenrendite bezogen auf den Einstandspreis (izf-div)
         Helper.Assert(cc == colG_InternalRateOfDivReturn);
@@ -327,7 +327,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         column = tvcol.getColumn();
         column.setText("Div¹² 10J.");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "div120Amount").attachTo(tree, tvcol);  //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "div120Amount").attachTo(tree, tvcol); //$NON-NLS-1$
 
         tree.getTree().setHeaderVisible(true);
         tree.getTree().setLinesVisible(true);
@@ -446,7 +446,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                     case colE_DividendSum: // Gewinn
                         return Values.Amount.format(divRecord.getDivAmount());
                     case colF_TotalRateOfDividendReturn: // Rendite insgesamt
-                        return Values.Percent2.format(divRecord.getTrrDiv());
+                        return Values.Percent2.format(divRecord.getTotalRateOfReturnDiv());
                     case colG_InternalRateOfDivReturn: // IZF Dividenden
                         return Values.Percent2.format(divRecord.getIrrDiv());
                     case colH_DivEventCount: // Anzahl Dividendentermine
@@ -533,7 +533,9 @@ public class DividendsPerformanceView extends AbstractHistoricView
                         else
                             return null;
                     case colO_Account:
-                        if (t instanceof DividendTransaction)
+                        if (t instanceof PortfolioTransaction)
+                            return ((PortfolioTransaction)t).getCrossEntry().getCrossEntity(t).toString();
+                        else if (t instanceof DividendTransaction)
                             return ((DividendTransaction) t).getAccount().getName();
                         else
                             return null;
