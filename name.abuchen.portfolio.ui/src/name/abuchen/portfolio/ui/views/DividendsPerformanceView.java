@@ -492,7 +492,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                 {
                     case colH_DivEventId: // Datum
                         if (t instanceof DividendTransaction)
-                            return Values.Id.format(((DividendTransaction) t).getDivEventId());
+                            return Helper.getNonZeroValueFormat(Values.Id, ((DividendTransaction) t).getDivEventId());
                         else
                             return null;
                     case colI_TransactionDate: // Datum
@@ -512,7 +512,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                         else if (t instanceof DividendInitialTransaction)
                             return Values.Share.format(((DividendInitialTransaction) t).getPosition().getShares());
                         else if (t instanceof DividendTransaction)
-                            return Values.Share.format(((DividendTransaction) t).getShares());
+                            return Helper.getNonZeroValueFormat(Values.Share, ((DividendTransaction) t).getShares());
                         else
                             return null;
                     case colL_DividendAmount:
@@ -522,7 +522,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                             return null;
                     case colM_DividensPerShare:
                         if (t instanceof DividendTransaction)
-                            return Values.Quote.format(((DividendTransaction) t).getDividendPerShare());
+                            return Helper.getNonZeroValueFormat(Values.Quote, ((DividendTransaction) t).getDividendPerShare());
                         else
                             return null;
                     case colN_Amount:

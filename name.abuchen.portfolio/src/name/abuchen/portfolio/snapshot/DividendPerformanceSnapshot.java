@@ -700,6 +700,7 @@ public class DividendPerformanceSnapshot
         }
 
         private void calculateIRRDiv()
+        // setzt gleichzeitig die DivEventId's
         {
             List<Date> dates = new ArrayList<Date>();
             List<Double> values = new ArrayList<Double>();
@@ -743,7 +744,7 @@ public class DividendPerformanceSnapshot
                 {
                     // Abschlussbuchungen ignorieren, statt dessen ganz am Ende
                     // stockamount buchen
-                    // aber Datum für Abschlussbuchung merken
+                    // aber: Datum für Abschlussbuchung merken
                     tDateFinal = tDate;
                 }
                 else if (t instanceof DividendTransaction)
@@ -752,21 +753,28 @@ public class DividendPerformanceSnapshot
                     DividendTransaction dt = (DividendTransaction) t;
                     tAmount = dt.getAmount();
 
-                    // prüfen, ob die Dividende zum gleichen Zahlungstag gehört
-                    dCurr = dt.getDate();
-                    if ((dLast == null) || (Helper.daysBetween(dLast, dCurr) > 30))
+                    // nur bei regulären Dividenden: DivEventId setzen, damit
+                    // mehrere Buchungen zusammengefasst werden können
+                    if (dt.getShares() > 0)
                     {
-                        divEventCount++;
-                    }
-                    dLast = dCurr;
 
-                    // dt.setShares(stockShares);
-                    dt.setDivEventId(divEventCount);
+                        // prüfen, ob die Dividende zum gleichen Zahlungstag
+                        // gehört
+                        dCurr = dt.getDate();
+                        if ((dLast == null) || (Helper.daysBetween(dLast, dCurr) > 30))
+                        {
+                            divEventCount++;
+                        }
+                        dLast = dCurr;
+
+                        // hier wird nun die BlockId gesetzt
+                        dt.setDivEventId(divEventCount);
+                    }
 
                 }
                 else if (t instanceof AccountTransaction)
                 {
-                    // Zinsen ? ignorieren
+                    // Zinsen (?) ignorieren
                 }
                 else if (t instanceof PortfolioTransaction)
                 {
@@ -882,30 +890,12 @@ public class DividendPerformanceSnapshot
             }
         }
 
-        // bei guter Qualität reichen 3 jahre
-        private static int cMinYearsForDIR1 = 3;
-        private static double cMinQualityForDIR1 = 0.7;
-
-        // bei schlechterer mindestens 5 Jahre
-        private static int cMinYearsForDIR2 = 5;
-        private static double cMinQualityForDIR2 = 0.5;
+        // für Voraussagen mindestens 3 Jahre durchgehende Zahlungen
+        private static int cMinYearsForDIR = 3;
 
         private void calculateDIR()
-        // dritte Variante: logarithmische Regression
-        // viel einfacher, alles rein und fertig
+        // Berechnung mit logarithmischer Regression
         {
-            boolean debug = false;
-
-            if (this.security.getName().startsWith("Starbuck"))
-            {
-                debug = true;
-            }
-
-            if (debug)
-            {
-                // Warnung weg
-            }
-
             int eBlock = getEventsPerYear();
             if (eBlock == 0)
                 return;
@@ -920,16 +910,13 @@ public class DividendPerformanceSnapshot
                     stat.add(dt.getDividendPerShare());
                 }
             }
-            long dmid = Math.round(stat.mean());
 
             // jetzt die Jahresdividenden aufbauen
-
             divIncreasingRate = 0;
             divIncreasingYears = 0;
             divIncreasingReliability = 0;
 
-            Helper.LinearRegression lin = new Helper.LinearRegression();
-            Helper.LogarithmicRegression log = new Helper.LogarithmicRegression();
+            Helper.LogarithmicRegression logRegression = new Helper.LogarithmicRegression();
 
             Date dBase = null;
             Date dCurr = null;
@@ -960,8 +947,7 @@ public class DividendPerformanceSnapshot
                             // positiven Wert zufügen
                             year = (double) Helper.daysBetween(dBase, dCurr) / 365.25;
                             long d = DividendTransaction.amountPerShare(divAmount, divShares);
-                            lin.add(year, d);
-                            log.add(year, d);
+                            logRegression.add(year, d);
 
                             x = x.concat(String.format("(%d;%.2f;%.2f);", eNext - 1, year, (double) d / 100));
                         }
@@ -980,6 +966,7 @@ public class DividendPerformanceSnapshot
                     }
                     else
                     {
+                        Helper.debugStop();
                         // Dividendenbuchungen mit Menge<=0 ignorieren -
                         // sind Sonderzahlungen. Stark streuende sind jetzt egal
                     }
@@ -987,16 +974,14 @@ public class DividendPerformanceSnapshot
                 }
             }
 
-            if (year < cMinYearsForDIR1)
-                return; // periode nicht lang genug
+            if (year < cMinYearsForDIR)
+                return; // Periode nicht lang genug
 
             // abschließend mitteln
 
-            double rLog = log.getKorrel();
-            double rate = Math.exp(log.getSlopeX()) - 1;
-            if (rate < 0)
-                ; // die will keiner wirlich
-            else if (rLog > cMinQualityForDIR1 || year >= cMinYearsForDIR2 && rLog > cMinQualityForDIR2)
+            double rLog = logRegression.getKorrel();
+            double rate = Math.exp(logRegression.getSlopeX()) - 1;
+            if (rate > 0 || true)
             {
                 divIncreasingRate = rate;
                 divIncreasingYears = (int) Math.round(year);
@@ -1006,6 +991,14 @@ public class DividendPerformanceSnapshot
 
         private void calculateDiv12(Date endDate)
         {
+
+            boolean debug = false;
+
+            if (this.security.getName().startsWith("Air"))
+            {
+                debug = true;
+            }
+
             divAmount = 0;
             div12Cost = 0;
             div12Shares = 0;
@@ -1062,7 +1055,7 @@ public class DividendPerformanceSnapshot
             // beginnend mit der letzten Zahlung, die im vorigen Durchlauf
             // gefunden wurde.
             // Argumentation z.B. für Quartalszahlungen: eigentlich müssen die
-            // ketzten 4 Zahlungen innerhalb von 9 Monaten
+            // letzten 4 Zahlungen innerhalb von 9 Monaten
             // stattgefunden haben. Man benötigt jedoch ein Sicherheitspolster,
             // um Schwankungen auszugleichen.
             // Beispiel: Zahlungen jeweils am 15.Feb, 15.Mai, 15.Aug. und 15.Nov
@@ -1078,6 +1071,11 @@ public class DividendPerformanceSnapshot
             int bCurr = 0;
             int bLast = 0;
 
+            if (debug)
+            {
+                Helper.debugStop();
+            }
+
             for (Transaction t : transactions)
             {
                 if (t instanceof DividendTransaction)
@@ -1085,7 +1083,11 @@ public class DividendPerformanceSnapshot
                     dt = (DividendTransaction) t;
                     dCurr = dt.getDate();
                     bCurr = dt.getDivEventId();
-                    if (dCurr.after(dateFrom))
+                    if (bCurr == 0)
+                    {
+                        // Sonderdividenden ignorieren
+                    }
+                    else if (dCurr.after(dateFrom))
                     {
                         div12Amount += dt.getAmount();
                         dt.setIsDiv12(true);
@@ -1099,6 +1101,10 @@ public class DividendPerformanceSnapshot
                         // letzte BlockId vor dem 12-Monatszeitraum merken
                         bLast = dt.getDivEventId();
                     }
+                }
+                else if (t instanceof DividendInitialTransaction)
+                {
+                    sumShare += ((DividendInitialTransaction) t).getPosition().getShares();
                 }
                 else if (t instanceof PortfolioTransaction)
                 {
@@ -1186,11 +1192,16 @@ public class DividendPerformanceSnapshot
 
             if (divIncreasingYears > 0)
             {
-                div60Amount = Math.round((double) div24Amount * Math.pow(1 + divIncreasingRate, 5));
-                div120Amount = Math.round((double) div24Amount * Math.pow(1 + divIncreasingRate, 10));
+                // Projektion: Dividende wird jedes Jahr um den verlässlichen
+                // Teil der Steigerungsrate erhöht
+                div60Amount = Math.round((double) div24Amount
+                                * Math.pow(1 + divIncreasingRate * divIncreasingReliability, 5));
+                div120Amount = Math.round((double) div24Amount
+                                * Math.pow(1 + divIncreasingRate * divIncreasingReliability, 10));
             }
             else
             {
+                // keine Angabe: die Höhe der Dividende ändert sich nicht
                 div60Amount = div24Amount;
                 div120Amount = div24Amount;
             }
