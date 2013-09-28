@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -712,10 +715,18 @@ public class SecurityListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((Transaction) element).getDate());
+                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "date"), SWT.UP); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                return ((TransactionPair<?>) o1).getTransaction().getDate()
+                                .compareTo((((TransactionPair<?>) o2).getTransaction().getDate()));
+            }
+        }), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -724,10 +735,11 @@ public class SecurityListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                if (element instanceof PortfolioTransaction)
-                    return ((PortfolioTransaction) element).getType().toString();
-                else if (element instanceof AccountTransaction)
-                    return ((AccountTransaction) element).getType().toString();
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                if (t instanceof PortfolioTransaction)
+                    return ((PortfolioTransaction) t).getType().toString();
+                else if (t instanceof AccountTransaction)
+                    return ((AccountTransaction) t).getType().toString();
                 else
                     return null;
             }
@@ -740,7 +752,17 @@ public class SecurityListView extends AbstractListView
             @Override
             public Long getValue(Object element)
             {
-                return (element instanceof PortfolioTransaction) ? ((PortfolioTransaction) element).getShares() : null;
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                if (t instanceof PortfolioTransaction)
+                {
+                    return ((PortfolioTransaction) t).getShares();
+                }
+                else if (t instanceof AccountTransaction)
+                {
+                    long shares = ((AccountTransaction) t).getShares();
+                    return shares != 0 ? shares : null;
+                }
+                return null;
             }
         });
         support.addColumn(column);
@@ -751,10 +773,20 @@ public class SecurityListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((Transaction) element).getAmount());
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Amount.format(t.getAmount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                long a1 = ((TransactionPair<?>) o1).getTransaction().getAmount();
+                long a2 = ((TransactionPair<?>) o2).getTransaction().getAmount();
+                return a1 > a2 ? 1 : a1 < a2 ? -1 : 0;
+            }
+        }));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -763,8 +795,18 @@ public class SecurityListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                return (element instanceof PortfolioTransaction) ? Values.Amount
-                                .format(((PortfolioTransaction) element).getActualPurchasePrice()) : null;
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                if (t instanceof PortfolioTransaction)
+                {
+                    return Values.Amount.format(((PortfolioTransaction) t).getActualPurchasePrice());
+                }
+                else if (t instanceof AccountTransaction)
+                {
+                    long shares = ((AccountTransaction) t).getShares();
+                    if (shares != 0)
+                        return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / shares));
+                }
+                return null;
             }
         });
         support.addColumn(column);
@@ -775,11 +817,9 @@ public class SecurityListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                if (element instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction t = (PortfolioTransaction) element;
-                    return t.getCrossEntry() != null ? t.getCrossEntry().getEntity(t).toString() : null;
-                }
+                TransactionOwner<?> owner = ((TransactionPair<?>) element).getOwner();
+                if (owner instanceof Portfolio)
+                    return owner.toString();
                 return null;
             }
         });
@@ -791,12 +831,12 @@ public class SecurityListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                if (element instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction t = (PortfolioTransaction) element;
+                TransactionPair<?> pair = (TransactionPair<?>) element;
+                Transaction t = pair.getTransaction();
+                if (t instanceof PortfolioTransaction)
                     return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
-                }
-                return null;
+                else
+                    return pair.getOwner().toString();
             }
         });
         support.addColumn(column);

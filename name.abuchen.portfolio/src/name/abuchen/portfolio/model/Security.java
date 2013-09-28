@@ -239,9 +239,9 @@ public final class Security implements InvestmentVehicle
         this.isRetired = isRetired;
     }
 
-    public List<Transaction> getTransactions(Client client)
+    public List<TransactionPair<?>> getTransactions(Client client)
     {
-        List<Transaction> answer = new ArrayList<Transaction>();
+        List<TransactionPair<?>> answer = new ArrayList<TransactionPair<?>>();
 
         for (Account account : client.getAccounts())
         {
@@ -254,7 +254,7 @@ public final class Security implements InvestmentVehicle
                 {
                     case INTEREST:
                     case DIVIDENDS:
-                        answer.add(t);
+                        answer.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case FEES:
                     case TAXES:
@@ -286,7 +286,7 @@ public final class Security implements InvestmentVehicle
                     case SELL:
                     case DELIVERY_INBOUND:
                     case DELIVERY_OUTBOUND:
-                        answer.add(t);
+                        answer.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
                         break;
                     default:
                         throw new UnsupportedOperationException();
