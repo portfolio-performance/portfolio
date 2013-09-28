@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Portfolio
+public class Portfolio implements TransactionOwner<PortfolioTransaction>
 {
     private String uuid;
     private String name;
@@ -49,11 +49,13 @@ public class Portfolio
         this.referenceAccount = referenceAccount;
     }
 
+    @Override
     public List<PortfolioTransaction> getTransactions()
     {
         return transactions;
     }
 
+    @Override
     public void addTransaction(PortfolioTransaction transaction)
     {
         this.transactions.add(transaction);

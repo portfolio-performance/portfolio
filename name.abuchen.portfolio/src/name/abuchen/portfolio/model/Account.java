@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Account implements InvestmentVehicle
+public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle
 {
     private String uuid;
     private String name;
@@ -46,11 +46,13 @@ public class Account implements InvestmentVehicle
         this.name = name;
     }
 
+    @Override
     public List<AccountTransaction> getTransactions()
     {
         return transactions;
     }
 
+    @Override
     public void addTransaction(AccountTransaction transaction)
     {
         this.transactions.add(transaction);

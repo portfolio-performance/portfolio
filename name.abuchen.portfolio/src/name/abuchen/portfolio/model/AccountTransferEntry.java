@@ -70,7 +70,7 @@ public class AccountTransferEntry implements CrossEntry
     }
 
     @Override
-    public Object getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return accountFrom;
@@ -92,7 +92,7 @@ public class AccountTransferEntry implements CrossEntry
     }
 
     @Override
-    public Object getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return accountTo;
