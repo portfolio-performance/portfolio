@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.math.IRR;
+import name.abuchen.portfolio.math.LogarithmicRegression;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
@@ -21,7 +22,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.util.Helper;
+import name.abuchen.portfolio.util.Dates;
 
 public class DividendPerformanceSnapshot
 {
@@ -734,7 +735,6 @@ public class DividendPerformanceSnapshot
                     {
                         // wenn pt.getAmount immer > 0 ist, kann das nicht
                         // passieren
-                        Helper.debugStop();
                         throw new UnsupportedOperationException();
                     }
 
@@ -761,7 +761,7 @@ public class DividendPerformanceSnapshot
                         // prüfen, ob die Dividende zum gleichen Zahlungstag
                         // gehört
                         dCurr = dt.getDate();
-                        if ((dLast == null) || (Helper.daysBetween(dLast, dCurr) > 30))
+                        if ((dLast == null) || (Dates.daysBetween(dLast, dCurr) > 30))
                         {
                             divEventCount++;
                         }
@@ -839,7 +839,6 @@ public class DividendPerformanceSnapshot
                             {
                                 // wenn pt.getAmount immer > 0 ist, kann das
                                 // nicht passieren
-                                Helper.debugStop();
                                 throw new UnsupportedOperationException();
                             }
                             tAmount = cost;
@@ -900,23 +899,12 @@ public class DividendPerformanceSnapshot
             if (eBlock == 0)
                 return;
 
-            // Zahlungen statistisch aufbereiten
-            Helper.Statistics stat = new Helper.Statistics();
-            for (Transaction t : transactions)
-            {
-                if (t instanceof DividendTransaction)
-                {
-                    DividendTransaction dt = (DividendTransaction) t;
-                    stat.add(dt.getDividendPerShare());
-                }
-            }
-
             // jetzt die Jahresdividenden aufbauen
             divIncreasingRate = 0;
             divIncreasingYears = 0;
             divIncreasingReliability = 0;
 
-            Helper.LogarithmicRegression logRegression = new Helper.LogarithmicRegression();
+            LogarithmicRegression logRegression = new LogarithmicRegression();
 
             Date dBase = null;
             Date dCurr = null;
@@ -945,7 +933,7 @@ public class DividendPerformanceSnapshot
                         {
                             // neuer Block - aufgelaufene Summe wird zugefügt
                             // positiven Wert zufügen
-                            year = (double) Helper.daysBetween(dBase, dCurr) / 365.25;
+                            year = (double) Dates.daysBetween(dBase, dCurr) / 365.25;
                             long d = DividendTransaction.amountPerShare(divAmount, divShares);
                             logRegression.add(year, d);
 
@@ -966,7 +954,6 @@ public class DividendPerformanceSnapshot
                     }
                     else
                     {
-                        Helper.debugStop();
                         // Dividendenbuchungen mit Menge<=0 ignorieren -
                         // sind Sonderzahlungen. Stark streuende sind jetzt egal
                     }
@@ -991,14 +978,6 @@ public class DividendPerformanceSnapshot
 
         private void calculateDiv12(Date endDate)
         {
-
-            boolean debug = false;
-
-            if (this.security.getName().startsWith("Air"))
-            {
-                debug = true;
-            }
-
             divAmount = 0;
             div12Cost = 0;
             div12Shares = 0;
@@ -1024,7 +1003,7 @@ public class DividendPerformanceSnapshot
             // Vieleicht war erste Zahlung ja schon am 31.Jan.2012,
             // also lieber 6 Wochen Puffer berücksichtigen
             DividendTransaction dt = null;
-            Date refDate = Helper.dateAddDays(endDate, -410);
+            Date refDate = Dates.addDays(endDate, -410);
 
             for (Transaction t : transactions)
             {
@@ -1060,21 +1039,16 @@ public class DividendPerformanceSnapshot
             // um Schwankungen auszugleichen.
             // Beispiel: Zahlungen jeweils am 15.Feb, 15.Mai, 15.Aug. und 15.Nov
             // 2012 ist ein Zeitraum von 270 Tagen
-            dateFrom = Helper.dateAddDays(dateTo, -320);
+            dateFrom = Dates.addDays(dateTo, -320);
 
             // Gesamtzeitraum für mittlere Stückzahl
             long sumShare = 0;
             long medShare = 0;
             long medDays = 0;
             Date dCurr = null;
-            Date dLast = Helper.dateAddDays(dateTo, -365);
+            Date dLast = Dates.addDays(dateTo, -365);
             int bCurr = 0;
             int bLast = 0;
-
-            if (debug)
-            {
-                Helper.debugStop();
-            }
 
             for (Transaction t : transactions)
             {
@@ -1091,7 +1065,7 @@ public class DividendPerformanceSnapshot
                     {
                         div12Amount += dt.getAmount();
                         dt.setIsDiv12(true);
-                        long days = Helper.daysBetween(dLast, dCurr);
+                        long days = Dates.daysBetween(dLast, dCurr);
                         medShare += days * sumShare;
                         medDays += days;
                         dLast = dCurr;

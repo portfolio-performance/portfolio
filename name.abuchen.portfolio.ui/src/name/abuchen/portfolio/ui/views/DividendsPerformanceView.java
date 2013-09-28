@@ -8,12 +8,11 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DivRecord;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendInitialTransaction;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendTransaction;
-import name.abuchen.portfolio.util.Helper;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
@@ -151,7 +150,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         int cc = 0;
 
         // Name
-        Helper.Assert(cc == colA_Name);
+        assert cc == colA_Name;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.None);
         column = tvcol.getColumn();
@@ -161,7 +160,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         // ColumnViewerSorter: es muss eine getXxx-Methode in der
         // DivRecord-Klasse existieren, sonst crasht es !!!
 
-        Helper.Assert(cc == colB_InternalRateOfReturn);
+        assert cc == colB_InternalRateOfReturn;
         cc++;
         // IZF über alles
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
@@ -171,21 +170,21 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "irr").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Anzahl aktuell
-        Helper.Assert(cc == colC_Shares);
+        assert cc == colC_Shares;
         cc++;
         column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText("Stück");
         column.setWidth(50);
 
         // Einstandspreis für Dividendenberechnung
-        Helper.Assert(cc == colD_Cost);
+        assert cc == colD_Cost;
         cc++;
         column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText("Einstand");
         column.setWidth(75);
 
         // Gesamtsumme der erhaltenen Dividenden
-        Helper.Assert(cc == colE_DividendSum);
+        assert cc == colE_DividendSum;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -194,7 +193,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "divAmount").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Rendite insgesamt
-        Helper.Assert(cc == colF_TotalRateOfDividendReturn);
+        assert cc == colF_TotalRateOfDividendReturn;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -203,7 +202,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "totalRateOfReturnDiv").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // jährliche Dividendenrendite bezogen auf den Einstandspreis (izf-div)
-        Helper.Assert(cc == colG_InternalRateOfDivReturn);
+        assert cc == colG_InternalRateOfDivReturn;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -212,14 +211,14 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "irrDiv").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Anzahl der Dividendenereignisse | zugehörige Id
-        Helper.Assert(cc == colH_DivEventCount);
+        assert cc == colH_DivEventCount;
         cc++;
         column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText("#Div");
         column.setWidth(25);
 
         // Datum der letzten Dividendenzahlung | Vorgangsdatum
-        Helper.Assert(cc == colI_LastReturn);
+        assert cc == colI_LastReturn;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.None);
         column = tvcol.getColumn();
@@ -228,7 +227,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "dateTo").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Periodizität der Dividendenzahlungen | Vorgangstyp
-        Helper.Assert(cc == colJ_Periodicity);
+        assert cc == colJ_Periodicity;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.None);
         column = tvcol.getColumn();
@@ -237,14 +236,14 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "periodicitySort").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // durchschnittliche Stückzahl in den letzten 12 Monaten
-        Helper.Assert(cc == colK_Shares12);
+        assert cc == colK_Shares12;
         cc++;
         column = new TreeColumn(tree.getTree(), SWT.None);
         column.setText("øStck¹²");
         column.setWidth(50);
 
         // Summe der Zahlungen in den letzten 12 Monaten
-        Helper.Assert(cc == colL_Dividends12);
+        assert cc == colL_Dividends12;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -253,21 +252,21 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "div12Amount").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Dividende pro Stück in den letzten 12 Monaten
-        Helper.Assert(cc == colM_Dividends12PerShare);
+        assert cc == colM_Dividends12PerShare;
         cc++;
         column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText("øDiv¹²");
         column.setWidth(50);
 
         // Einstand pro Stück
-        Helper.Assert(cc == colN_Cost12Amount);
+        assert cc == colN_Cost12Amount;
         cc++;
         column = new TreeColumn(tree.getTree(), SWT.RIGHT);
         column.setText("Einstand¹²");
         column.setWidth(50);
 
         // persönliche Dividende im letzen Jahr
-        Helper.Assert(cc == colO_PersonalRateOfDividendReturn);
+        assert cc == colO_PersonalRateOfDividendReturn;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -276,7 +275,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "personalDiv").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // erwartete Dividende im nächsten Jahr
-        Helper.Assert(cc == colP_Dividends12Expected);
+        assert cc == colP_Dividends12Expected;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -285,7 +284,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "expectedDiv12Amount").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // mittlere Dividendensteigerung der letzten Jahre
-        Helper.Assert(cc == colQ_DividendIncreasingRate);
+        assert cc == colQ_DividendIncreasingRate;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -294,7 +293,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "divIncreasingRate").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Zuverlässigkeit der Dividendensteigerung der letzten Jahre
-        Helper.Assert(cc == colR_DividendIncreasingReliabilty);
+        assert cc == colR_DividendIncreasingReliabilty;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -303,7 +302,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "divIncreasingReliability").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // Anzahl der Jahre mit Dividendensteigerung
-        Helper.Assert(cc == colS_DividendIncreasingYears);
+        assert cc == colS_DividendIncreasingYears;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -312,7 +311,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "divIncreasingYears").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // erwartete Dividende in 5 Jahren
-        Helper.Assert(cc == colT_DividendExpectedLongTerm5);
+        assert cc == colT_DividendExpectedLongTerm5;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -321,7 +320,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
         ColumnViewerSorter.create(DivRecord.class, "div60Amount").attachTo(tree, tvcol); //$NON-NLS-1$
 
         // erwartete Dividende in 10 Jahren
-        Helper.Assert(cc == colU_DividendExpectedLongTerm10);
+        assert cc == colU_DividendExpectedLongTerm10;
         cc++;
         tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
         column = tvcol.getColumn();
@@ -469,20 +468,20 @@ public class DividendsPerformanceView extends AbstractHistoricView
                                                             // Rendite
                         return Values.Percent2.format(divRecord.getPersonalDiv());
                     case colP_Dividends12Expected:
-                        return Helper.getNonZeroValueFormat(Values.Amount, divRecord.getExpectedDiv12Amount());
+                        return Values.Amount.formatNonZero(divRecord.getExpectedDiv12Amount());
                     case colQ_DividendIncreasingRate:
-                        return Helper.getNonZeroValueFormat(Values.Percent0, divRecord.getDivIncreasingRate(), 0.01);
+                        return Values.Percent0.formatNonZero(divRecord.getDivIncreasingRate(), 0.01);
                     case colR_DividendIncreasingReliabilty:
-                        return Helper.getNonZeroValueFormat(Values.Percent0, divRecord.getDivIncreasingReliability(), 0.01);
+                        return Values.Percent0.formatNonZero(divRecord.getDivIncreasingReliability(), 0.01);
                     case colS_DividendIncreasingYears:
-                        return Helper.getNonZeroValueFormat(Values.Integer, divRecord.getDivIncreasingYears());
+                        return Values.Integer.formatNonZero(divRecord.getDivIncreasingYears());
                     case colT_DividendExpectedLongTerm5:
-                        return Helper.getNonZeroValueFormat(Values.Amount, divRecord.getDiv60Amount());
+                        return Values.Amount.formatNonZero(divRecord.getDiv60Amount());
                     case colU_DividendExpectedLongTerm10:
-                        return Helper.getNonZeroValueFormat(Values.Amount, divRecord.getDiv120Amount());
+                        return Values.Amount.formatNonZero(divRecord.getDiv120Amount());
+                    default:
+                        throw new UnsupportedOperationException();
                 }
-                Helper.Assert(false);
-
             }
             else if (element instanceof Transaction)
             {
@@ -492,7 +491,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                 {
                     case colH_DivEventId: // Datum
                         if (t instanceof DividendTransaction)
-                            return Helper.getNonZeroValueFormat(Values.Id, ((DividendTransaction) t).getDivEventId());
+                            return Values.Id.formatNonZero(((DividendTransaction) t).getDivEventId());
                         else
                             return null;
                     case colI_TransactionDate: // Datum
@@ -512,7 +511,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                         else if (t instanceof DividendInitialTransaction)
                             return Values.Share.format(((DividendInitialTransaction) t).getPosition().getShares());
                         else if (t instanceof DividendTransaction)
-                            return Helper.getNonZeroValueFormat(Values.Share, ((DividendTransaction) t).getShares());
+                            return Values.Share.formatNonZero(((DividendTransaction) t).getShares());
                         else
                             return null;
                     case colL_DividendAmount:
@@ -522,7 +521,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                             return null;
                     case colM_DividensPerShare:
                         if (t instanceof DividendTransaction)
-                            return Helper.getNonZeroValueFormat(Values.Quote, ((DividendTransaction) t).getDividendPerShare());
+                            return Values.Quote.formatNonZero(((DividendTransaction) t).getDividendPerShare());
                         else
                             return null;
                     case colN_Amount:
@@ -534,7 +533,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
                             return null;
                     case colO_Account:
                         if (t instanceof PortfolioTransaction)
-                            return ((PortfolioTransaction)t).getCrossEntry().getCrossEntity(t).toString();
+                            return ((PortfolioTransaction) t).getCrossEntry().getCrossEntity(t).toString();
                         else if (t instanceof DividendTransaction)
                             return ((DividendTransaction) t).getAccount().getName();
                         else

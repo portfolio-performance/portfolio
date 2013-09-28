@@ -133,4 +133,27 @@ public abstract class Values<E>
     }
 
     public abstract String format(E amount);
+
+    public String formatNonZero(E amount)
+    {
+        if (amount instanceof Number)
+        {
+            boolean isNotZero = ((Number) amount).longValue() != 0;
+            return isNotZero ? format(amount) : null;
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    public String formatNonZero(E amount, double threshold)
+    {
+        if (amount instanceof Double)
+        {
+            boolean isNotZero = Math.abs(((Double) amount).doubleValue()) >= threshold;
+            return isNotZero ? format(amount) : null;
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
 }
