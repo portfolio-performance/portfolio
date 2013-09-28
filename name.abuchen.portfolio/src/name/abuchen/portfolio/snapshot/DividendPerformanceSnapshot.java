@@ -44,18 +44,6 @@ public class DividendPerformanceSnapshot
         return doCreateSnapshot(transactions, endDate);
     }
 
-    public static DividendPerformanceSnapshot create(Client client, Portfolio portfolio, Date startDate, Date endDate)
-    {
-        Map<Security, DivRecord> transactions = initRecords(client);
-
-        if (portfolio.getReferenceAccount() != null)
-            extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), startDate, endDate, transactions);
-        extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
-        addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
-
-        return doCreateSnapshot(transactions, endDate);
-    }
-
     private static Map<Security, DivRecord> initRecords(Client client)
     {
         Map<Security, DivRecord> transactions = new HashMap<Security, DivRecord>();
@@ -785,6 +773,7 @@ public class DividendPerformanceSnapshot
                     switch (pt.getType())
                     {
                         case BUY:
+                        case DELIVERY_INBOUND:
                             // Kaufpreise und -mengen kumulieren
                             if (poolShares > 0)
                             {
@@ -810,13 +799,8 @@ public class DividendPerformanceSnapshot
                             stockAmount += amount;
                             tAmount = -amount;
                             break;
-                        case DELIVERY_INBOUND:
-                        case TRANSFER_IN:
-                            tAmount = 0; // -pt.getAmount();
-                            // wie müssen Einlieferungen dividendenmäßig gebucht
-                            // werden ?
-                            break;
                         case SELL:
+                        case DELIVERY_OUTBOUND:
                             // Kaufpreise um mittleren Einstand reduzieren,
                             // Differenz zum Verkaufspreis im Pool bunkern
                             // Kaufmengen kumulieren
@@ -843,11 +827,11 @@ public class DividendPerformanceSnapshot
                             }
                             tAmount = cost;
                             break;
-                        case DELIVERY_OUTBOUND:
                         case TRANSFER_OUT:
-                            // wie müssen Auslieferungen dividendenmäßig gebucht
-                            // werden ?
-                            tAmount = 0; // pt.getAmount ();
+                        case TRANSFER_IN:
+                            tAmount = 0;
+                            // wie müssen Ein/Auslieferungen dividendenmäßig
+                            // gebucht werden ?
                             break;
                         default:
                             throw new UnsupportedOperationException();
