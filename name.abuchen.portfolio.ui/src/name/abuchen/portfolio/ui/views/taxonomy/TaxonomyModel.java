@@ -135,6 +135,7 @@ public final class TaxonomyModel
 
             Assignment a = new Assignment(assignment.getInvestmentVehicle());
             a.setWeight(Classification.ONE_HUNDRED_PERCENT - assignment.getWeight());
+            a.setUnassigned(true);
             unassigned.add(a);
 
             assignment.setWeight(Classification.ONE_HUNDRED_PERCENT);
@@ -166,7 +167,11 @@ public final class TaxonomyModel
         if (node.isAssignment())
         {
             Assignment assignment = node.getAssignment();
-            if (assignment.getInvestmentVehicle() instanceof Security)
+            if (assignment.isUnassigned())
+            {
+                actual += 0;
+            }
+            else if (assignment.getInvestmentVehicle() instanceof Security)
             {
                 PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
                 SecurityPosition p = portfolio.getPositionsBySecurity().get(assignment.getInvestmentVehicle());
@@ -192,7 +197,6 @@ public final class TaxonomyModel
                                 "unknown element: " + assignment.getInvestmentVehicle().getClass().getName()); //$NON-NLS-1$
             }
         }
-
         node.setActual(actual);
     }
 
