@@ -29,6 +29,7 @@ public class Classification
         private InvestmentVehicle investmentVehicle;
         private int weight;
         private int rank;
+        private boolean isUnassigned = false;
 
         public Assignment()
         {
@@ -70,6 +71,17 @@ public class Classification
         {
             this.rank = rank;
         }
+
+        public boolean isUnassigned()
+        {
+            return isUnassigned;
+        }
+
+        public void setUnassigned(boolean isUnassigned)
+        {
+            this.isUnassigned = isUnassigned;
+        }
+
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
