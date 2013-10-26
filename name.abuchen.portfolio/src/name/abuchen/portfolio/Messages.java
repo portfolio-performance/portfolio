@@ -33,6 +33,7 @@ public class Messages extends NLS
     public static String CSVDefSecurities;
     public static String CSVDefSecurityMasterData;
     public static String CSVFormatDDMMYYYY;
+    public static String CSVFormatDDMMYYYY1;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
