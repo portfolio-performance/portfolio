@@ -146,7 +146,7 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isTotalValuation())
+                if (element.isGroupByTaxonomy())
                     return Messages.LabelTotalSum;
                 else if (element.isCategory())
                     return element.getCategory().getClassification().toString();
@@ -167,7 +167,7 @@ public class StatementOfAssetsViewer
             @Override
             public Font getFont(Object e)
             {
-                return ((Element) e).isTotalValuation() || ((Element) e).isCategory() ? boldFont : null;
+                return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -217,18 +217,13 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isTotalValuation())
-                    return Values.Amount.format(element.getTotalValuation());
-                else if (element.isCategory())
-                    return Values.Amount.format(element.getCategory().getValuation());
-                else
-                    return Values.Amount.format(element.getPosition().getValuation());
+                return Values.Amount.format(element.getValuation());
             }
 
             @Override
             public Font getFont(Object e)
             {
-                return ((Element) e).isTotalValuation() || ((Element) e).isCategory() ? boldFont : null;
+                return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -240,7 +235,7 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isTotalValuation())
+                if (element.isGroupByTaxonomy())
                     return Values.Percent.format(1d);
                 if (element.isCategory())
                     return Values.Percent.format(element.getCategory().getShare());
@@ -251,7 +246,7 @@ public class StatementOfAssetsViewer
             @Override
             public Font getFont(Object e)
             {
-                return ((Element) e).isTotalValuation() || ((Element) e).isCategory() ? boldFont : null;
+                return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         support.addColumn(column);
@@ -281,12 +276,14 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    long purchaseValue = element.getSecurityPosition().getFIFOPurchaseValue();
-                    return purchaseValue == 0 ? null : Values.Amount.format(purchaseValue);
-                }
-                return null;
+                long purchaseValue = element.getFIFOPurchaseValue();
+                return purchaseValue == 0 ? null : Values.Amount.format(purchaseValue);
+            }
+
+            @Override
+            public Font getFont(Object e)
+            {
+                return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         column.setVisible(false);
@@ -299,28 +296,28 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    long delta = element.getSecurityPosition().getDelta();
-                    return delta == 0 ? null : Values.Amount.format(delta);
-                }
-                return null;
+                long profitLoss = element.getProfitLoss();
+                return profitLoss == 0 ? null : Values.Amount.format(profitLoss);
             }
 
             @Override
             public Color getForeground(Object e)
             {
                 Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    long delta = element.getSecurityPosition().getDelta();
+                long profitLoss = element.getProfitLoss();
 
-                    if (delta < 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                    else if (delta > 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                }
-                return null;
+                if (profitLoss < 0)
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                else if (profitLoss > 0)
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                else
+                    return null;
+            }
+
+            @Override
+            public Font getFont(Object e)
+            {
+                return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
         column.setVisible(false);
@@ -593,7 +590,7 @@ public class StatementOfAssetsViewer
 
     private static class Element implements Adaptable
     {
-        private long totalValuation;
+        private GroupByTaxonomy groupByTaxonomy;
         private AssetCategory category;
         private AssetPosition position;
 
@@ -609,9 +606,9 @@ public class StatementOfAssetsViewer
             this.position = position;
         }
 
-        private Element(long totalValuation)
+        private Element(GroupByTaxonomy groupByTaxonomy)
         {
-            this.totalValuation = totalValuation;
+            this.groupByTaxonomy = groupByTaxonomy;
         }
 
         public void setPerformance(Integer year, Record record)
@@ -622,6 +619,11 @@ public class StatementOfAssetsViewer
         public Record getPerformance(Integer year)
         {
             return performance.get(year);
+        }
+
+        public boolean isGroupByTaxonomy()
+        {
+            return groupByTaxonomy != null;
         }
 
         public boolean isCategory()
@@ -669,14 +671,34 @@ public class StatementOfAssetsViewer
             return isAccount() ? (Account) position.getInvestmentVehicle() : null;
         }
 
-        public long getTotalValuation()
+        public Long getValuation()
         {
-            return totalValuation;
+            if (position != null)
+                return position.getValuation();
+            else if (category != null)
+                return category.getValuation();
+            else
+                return groupByTaxonomy.getValuation();
         }
 
-        public boolean isTotalValuation()
+        public long getFIFOPurchaseValue()
         {
-            return category == null && position == null;
+            if (position != null)
+                return position.getFIFOPurchaseValue();
+            else if (category != null)
+                return category.getFIFOPurchaseValue();
+            else
+                return groupByTaxonomy.getFIFOPurchaseValue();
+        }
+
+        public long getProfitLoss()
+        {
+            if (position != null)
+                return position.getProfitLoss();
+            else if (category != null)
+                return category.getProfitLoss();
+            else
+                return groupByTaxonomy.getProfitLoss();
         }
 
         @Override
@@ -716,7 +738,7 @@ public class StatementOfAssetsViewer
                 for (AssetPosition p : cat.getPositions())
                     answer.add(new Element(p));
             }
-            answer.add(new Element(categories.getValuation()));
+            answer.add(new Element(categories));
             return answer.toArray(new Element[0]);
         }
 

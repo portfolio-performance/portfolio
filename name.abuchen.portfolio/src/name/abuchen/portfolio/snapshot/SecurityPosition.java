@@ -97,10 +97,10 @@ public class SecurityPosition
         return purchaseValue;
     }
 
-    public long getDelta()
+    public long getProfitLoss()
     {
         calculate();
-        return marketValue - purchaseValue;
+        return security != null ? marketValue - purchaseValue : 0;
     }
 
     private void calculate()
