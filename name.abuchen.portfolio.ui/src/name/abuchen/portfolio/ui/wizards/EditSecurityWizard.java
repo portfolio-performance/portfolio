@@ -14,6 +14,7 @@ public class EditSecurityWizard extends Wizard
     private final EditSecurityModel model;
 
     private SecurityMasterDataPage dataPage;
+    private SecurityTaxonomyPage taxonomyPage;
     private QuoteProviderPage quotesPage;
     private SearchSecurityWizardPage searchPage;
 
@@ -31,6 +32,9 @@ public class EditSecurityWizard extends Wizard
     {
         dataPage = new SecurityMasterDataPage(model);
         addPage(dataPage);
+
+        taxonomyPage = new SecurityTaxonomyPage(model);
+        addPage(taxonomyPage);
 
         quotesPage = new QuoteProviderPage(model);
         addPage(quotesPage);
