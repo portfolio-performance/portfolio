@@ -45,6 +45,7 @@ public class BuySellSecurityDialog extends AbstractDialog
         private long shares;
         private long price;
         private long fees;
+        private long taxes;
         private long total;
         private Date date = Dates.today();
 
@@ -98,9 +99,9 @@ public class BuySellSecurityDialog extends AbstractDialog
                 switch (type)
                 {
                     case BUY:
-                        return Math.max(0, (total - fees) * Values.Share.factor() / shares);
+                        return Math.max(0, (total - (fees + taxes)) * Values.Share.factor() / shares);
                     case SELL:
-                        return Math.max(0, (total + fees) * Values.Share.factor() / shares);
+                        return Math.max(0, (total + (fees + taxes)) * Values.Share.factor() / shares);
                     default:
                         throw new RuntimeException("Unsupported transaction type for dialog " + type); //$NON-NLS-1$
                 }
@@ -150,6 +151,17 @@ public class BuySellSecurityDialog extends AbstractDialog
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
         }
 
+        public long getTaxes()
+        {
+            return taxes;
+        }
+
+        public void setTaxes(long taxes)
+        {
+            firePropertyChange("taxes", this.taxes, this.taxes = taxes);//$NON-NLS-1$
+            firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
+        }
+
         public long getTotal()
         {
             return total;
@@ -184,6 +196,7 @@ public class BuySellSecurityDialog extends AbstractDialog
             t.setSecurity(security);
             t.setShares(shares);
             t.setFees(fees);
+            t.setTaxes(taxes);
             t.setAmount(total);
             t.setType(type);
             t.insert();
@@ -272,6 +285,9 @@ public class BuySellSecurityDialog extends AbstractDialog
 
         // fee
         bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+
+        // taxes
+        bindings().bindAmountInput(editArea, "Steuern", "taxes"); //$NON-NLS-1$
 
         // total
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
