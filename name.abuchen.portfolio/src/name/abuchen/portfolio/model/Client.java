@@ -155,6 +155,34 @@ public class Client
         return Collections.unmodifiableList(accounts);
     }
 
+    public List<Account> getActiveAccounts()
+    {
+        return getAccountsByActive(true);
+    }
+
+    private List<Account> getAccountsByActive(boolean prop)
+    {
+        List<Account> temp = new ArrayList<Account>();
+        for (Account a : accounts)
+        {
+            if (a.isActive() == prop)
+            {
+                temp.add(a);
+            }
+        }
+        return Collections.unmodifiableList(temp);
+    }
+
+    public boolean hasInactiveAccounts()
+    {
+        return getActiveAccounts().size() > 0;
+    }
+
+    public List<Account> getInactiveAccounts()
+    {
+        return getAccountsByActive(false);
+    }
+
     public void addPortfolio(Portfolio portfolio)
     {
         portfolios.add(portfolio);
@@ -329,4 +357,5 @@ public class Client
     {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+
 }

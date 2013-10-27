@@ -206,6 +206,11 @@ import org.eclipse.swt.widgets.Menu;
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelClientMasterData);
         new Entry(section, new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
+        if (editor.getClient().hasInactiveAccounts())
+        {
+            new Entry(section, new ActivateViewAction("Inaktive Accounts", "InactiveAccountList",//$NON-NLS-1$
+                            PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
+        }
         new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
         new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$

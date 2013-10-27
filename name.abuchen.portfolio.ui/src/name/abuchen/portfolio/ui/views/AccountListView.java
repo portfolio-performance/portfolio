@@ -150,7 +150,7 @@ public class AccountListView extends AbstractListView
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());
-        accounts.setInput(getClient().getAccounts());
+        accounts.setInput(getClient().getActiveAccounts());
         accounts.refresh();
         ViewerHelper.pack(accounts);
 
@@ -197,6 +197,18 @@ public class AccountListView extends AbstractListView
         accountMenu.menuAboutToShow(manager, account);
         manager.add(new Separator());
 
+        manager.add(new Action("Konto deaktivieren")
+        {
+
+            @Override
+            public void run()
+            {
+                account.setActive(false);
+                markDirty();
+                accounts.setInput(getClient().getActiveAccounts());
+            }
+
+        });
         manager.add(new Action(Messages.AccountMenuDelete)
         {
             @Override
@@ -205,7 +217,7 @@ public class AccountListView extends AbstractListView
                 getClient().removeAccount(account);
                 markDirty();
 
-                accounts.setInput(getClient().getAccounts());
+                accounts.setInput(getClient().getActiveAccounts());
             }
         });
     }

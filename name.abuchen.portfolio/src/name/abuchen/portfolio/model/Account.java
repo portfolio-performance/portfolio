@@ -8,12 +8,14 @@ public class Account implements InvestmentVehicle
 {
     private String uuid;
     private String name;
+    private boolean active;
 
     private List<AccountTransaction> transactions = new ArrayList<AccountTransaction>();
 
     public Account()
     {
         this.uuid = UUID.randomUUID().toString();
+        this.active = true;
     }
 
     public Account(String name)
@@ -26,6 +28,16 @@ public class Account implements InvestmentVehicle
     public String getUUID()
     {
         return uuid;
+    }
+
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
     }
 
     /* package */void generateUUID()
