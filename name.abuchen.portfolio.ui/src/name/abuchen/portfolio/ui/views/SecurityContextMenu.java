@@ -109,7 +109,7 @@ public class SecurityContextMenu
                     SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getClientEditor().getSite()
                                     .getShell(), owner.getClient(), portfolio,
                                     PortfolioTransaction.Type.DELIVERY_INBOUND);
-                    if (dialog.open() == DividendsDialog.OK)
+                    if (dialog.open() == SecurityDeliveryDialog.OK)
                     {
                         owner.markDirty();
                         owner.notifyModelUpdated();
@@ -125,7 +125,7 @@ public class SecurityContextMenu
                     SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getClientEditor().getSite()
                                     .getShell(), owner.getClient(), portfolio,
                                     PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                    if (dialog.open() == DividendsDialog.OK)
+                    if (dialog.open() == SecurityDeliveryDialog.OK)
                     {
                         owner.markDirty();
                         owner.notifyModelUpdated();
