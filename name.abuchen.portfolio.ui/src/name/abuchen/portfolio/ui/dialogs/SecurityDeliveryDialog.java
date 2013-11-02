@@ -217,6 +217,9 @@ public class SecurityDeliveryDialog extends AbstractDialog
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
+        bindings().bindMandatoryAmountInput(editArea, "Gebühren", "fees"); //$NON-NLS-1$
+
+        // total
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$
 
         // date
