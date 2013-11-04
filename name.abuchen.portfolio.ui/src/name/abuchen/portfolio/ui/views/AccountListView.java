@@ -55,6 +55,19 @@ public class AccountListView extends AbstractListView
         return Messages.LabelAccounts;
     }
 
+    private List<Account> getActiveAccounts()
+    {
+        List<Account> result = new ArrayList<Account>();
+        for (Account a : getClient().getAccounts())
+        {
+            if (a.isActive())
+            {
+                result.add(a);
+            }
+        }
+        return result;
+    }
+
     @Override
     protected void addButtons(ToolBar toolBar)
     {
@@ -75,8 +88,20 @@ public class AccountListView extends AbstractListView
         };
         action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
         action.setToolTipText(Messages.AccountMenuAdd);
-
         new ActionContributionItem(action).fill(toolBar, -1);
+
+        Action filter = new Action()
+        {
+
+            @Override
+            public void run()
+            {
+                accounts.setInput(getActiveAccounts());
+            }
+        };
+        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        filter.setToolTipText("Inaktive Accounts verbergen");
+        new ActionContributionItem(filter).fill(toolBar, -1);
     }
 
     @Override
@@ -150,7 +175,7 @@ public class AccountListView extends AbstractListView
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());
-        accounts.setInput(getClient().getActiveAccounts());
+        accounts.setInput(getClient().getAccounts());
         accounts.refresh();
         ViewerHelper.pack(accounts);
 
@@ -205,7 +230,7 @@ public class AccountListView extends AbstractListView
             {
                 account.setActive(false);
                 markDirty();
-                accounts.setInput(getClient().getActiveAccounts());
+                accounts.setInput(getClient().getAccounts());
             }
 
         });
@@ -217,7 +242,7 @@ public class AccountListView extends AbstractListView
                 getClient().removeAccount(account);
                 markDirty();
 
-                accounts.setInput(getClient().getActiveAccounts());
+                accounts.setInput(getClient().getAccounts());
             }
         });
     }
