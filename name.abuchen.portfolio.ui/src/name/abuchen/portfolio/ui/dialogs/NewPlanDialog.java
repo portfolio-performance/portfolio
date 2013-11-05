@@ -194,7 +194,7 @@ public class NewPlanDialog extends AbstractDialog
 
         List<Account> accounts = new ArrayList<Account>();
         accounts.add(DELIVERY);
-        accounts.addAll(getModel().getClient().getAccounts());
+        accounts.addAll(getActiveAccounts());
         bindings().bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
@@ -221,5 +221,18 @@ public class NewPlanDialog extends AbstractDialog
 
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
         bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+    }
+
+    private List<Account> getActiveAccounts()
+    {
+        List<Account> result = new ArrayList<Account>();
+        for (Account a : getModel().getClient().getAccounts())
+        {
+            if (a.isActive())
+            {
+                result.add(a);
+            }
+        }
+        return result;
     }
 }
