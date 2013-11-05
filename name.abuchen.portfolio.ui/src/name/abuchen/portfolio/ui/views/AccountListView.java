@@ -48,11 +48,24 @@ public class AccountListView extends AbstractListView
     private TableViewer accounts;
     private TableViewer transactions;
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
+    private static final String INACTIVE_ACCOUNTS = "inactiveAccounts";
 
     @Override
     protected String getTitle()
     {
         return Messages.LabelAccounts;
+    }
+
+    private void resetInput()
+    {
+        if (getClientEditor().getPreferenceStore().getBoolean(INACTIVE_ACCOUNTS))
+        {
+            accounts.setInput(getActiveAccounts());
+        }
+        else
+        {
+            accounts.setInput(getClient().getAccounts());
+        }
     }
 
     private List<Account> getActiveAccounts()
@@ -82,7 +95,7 @@ public class AccountListView extends AbstractListView
                 getClient().addAccount(account);
                 markDirty();
 
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
                 accounts.editElement(account, 0);
             }
         };
@@ -96,9 +109,18 @@ public class AccountListView extends AbstractListView
             @Override
             public void run()
             {
-                accounts.setInput(getActiveAccounts());
+                if (isChecked())
+                {
+                    getClientEditor().getPreferenceStore().setValue(INACTIVE_ACCOUNTS, true);
+                }
+                else
+                {
+                    getClientEditor().getPreferenceStore().setValue(INACTIVE_ACCOUNTS, false);
+                }
+                resetInput();
             }
         };
+        filter.setChecked(true);
         filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
         filter.setToolTipText("Inaktive Accounts verbergen");
         new ActionContributionItem(filter).fill(toolBar, -1);
@@ -107,7 +129,7 @@ public class AccountListView extends AbstractListView
     @Override
     public void notifyModelUpdated()
     {
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
 
         Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (getClient().getAccounts().contains(account))
@@ -175,7 +197,7 @@ public class AccountListView extends AbstractListView
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
         accounts.refresh();
         ViewerHelper.pack(accounts);
 
@@ -230,7 +252,7 @@ public class AccountListView extends AbstractListView
             {
                 account.setActive(false);
                 markDirty();
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
             }
 
         });
@@ -241,8 +263,7 @@ public class AccountListView extends AbstractListView
             {
                 getClient().removeAccount(account);
                 markDirty();
-
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
             }
         });
     }
