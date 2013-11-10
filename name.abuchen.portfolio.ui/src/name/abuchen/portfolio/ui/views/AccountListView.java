@@ -244,13 +244,22 @@ public class AccountListView extends AbstractListView
         accountMenu.menuAboutToShow(manager, account);
         manager.add(new Separator());
 
-        manager.add(new Action("Konto deaktivieren")
+        String message = null;
+        if (account.isActive())
+        {
+            message = "Konto deaktivieren";
+        }
+        else
+        {
+            message = "Konto aktivieren";
+        }
+        manager.add(new Action(message)
         {
 
             @Override
             public void run()
             {
-                account.setActive(false);
+                account.setActive(!account.isActive());
                 markDirty();
                 resetInput();
             }
