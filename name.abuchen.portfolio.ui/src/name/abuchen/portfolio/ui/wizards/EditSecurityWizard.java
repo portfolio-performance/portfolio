@@ -9,23 +9,20 @@ import org.eclipse.jface.wizard.Wizard;
 
 public class EditSecurityWizard extends Wizard
 {
-    private final Client client;
     private final Security security;
 
-    private final Security editable;
+    private final EditSecurityModel model;
 
     private SecurityMasterDataPage dataPage;
+    private SecurityTaxonomyPage taxonomyPage;
     private QuoteProviderPage quotesPage;
     private SearchSecurityWizardPage searchPage;
 
     public EditSecurityWizard(Client client, Security security)
     {
-        this.client = client;
         this.security = security;
 
-        this.editable = new Security();
-
-        shallowCopy(security, editable);
+        this.model = new EditSecurityModel(client, security);
 
         this.setNeedsProgressMonitor(true);
     }
@@ -33,16 +30,17 @@ public class EditSecurityWizard extends Wizard
     @Override
     public void addPages()
     {
-        dataPage = new SecurityMasterDataPage(client, editable);
+        dataPage = new SecurityMasterDataPage(model);
         addPage(dataPage);
 
-        quotesPage = new QuoteProviderPage(editable);
+        taxonomyPage = new SecurityTaxonomyPage(model);
+        addPage(taxonomyPage);
+
+        quotesPage = new QuoteProviderPage(model);
         addPage(quotesPage);
 
-        searchPage = new SearchSecurityWizardPage(client, editable);
+        searchPage = new SearchSecurityWizardPage(model);
         addPage(searchPage);
-
-        addPage(new IndustryClassificationPage(client, editable));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }
@@ -53,12 +51,12 @@ public class EditSecurityWizard extends Wizard
         ((AbstractWizardPage) this.getContainer().getCurrentPage()).afterPage();
 
         boolean hasQuotes = !security.getPrices().isEmpty();
-        boolean providerChanged = (editable.getFeed() != null ? !editable.getFeed().equals(security.getFeed())
-                        : security.getFeed() != null)
-                        || (editable.getTickerSymbol() != null ? !editable.getTickerSymbol().equals(
+        boolean providerChanged = (model.getFeed() != null ? !model.getFeed().equals(security.getFeed()) : security
+                        .getFeed() != null)
+                        || (model.getTickerSymbol() != null ? !model.getTickerSymbol().equals(
                                         security.getTickerSymbol()) : security.getTickerSymbol() != null);
 
-        shallowCopy(editable, security);
+        model.applyChanges();
 
         if (hasQuotes && providerChanged)
         {

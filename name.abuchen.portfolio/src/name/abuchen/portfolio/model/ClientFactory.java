@@ -9,20 +9,17 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+@SuppressWarnings("deprecation")
 public class ClientFactory
 {
     private static XStream xstream;
@@ -36,6 +33,7 @@ public class ClientFactory
 
         if (client.getVersion() == 1)
         {
+            fixAssetClassTypes(client);
             addFeedAndExchange(client);
             client.setVersion(2);
         }
@@ -93,12 +91,7 @@ public class ClientFactory
 
         if (client.getVersion() == 10)
         {
-            for (Account a : client.getAccounts())
-                a.generateUUID();
-            for (Portfolio p : client.getPortfolios())
-                p.generateUUID();
-            for (Category c : client.getRootCategory().flatten())
-                c.generateUUID();
+            generateUUIDs(client);
             client.setVersion(11);
         }
 
@@ -112,9 +105,28 @@ public class ClientFactory
         {
             // added investment plans
             // added security on chart as benchmark *and* performance
-            fixStoredChartConfigurations(client);
+            fixStoredBenchmarkChartConfigurations(client);
 
             client.setVersion(13);
+        }
+
+        if (client.getVersion() == 13)
+        {
+            // introduce arbitrary taxonomies
+            addAssetClassesAsTaxonomy(client);
+            addIndustryClassificationAsTaxonomy(client);
+            addAssetAllocationAsTaxonomy(client);
+            fixStoredClassificationChartConfiguration(client);
+
+            client.setVersion(14);
+        }
+
+        if (client.getVersion() == 14)
+        {
+            // added shares to track dividends per share
+            assignSharesToDividendTransactions(client);
+
+            client.setVersion(15);
         }
 
         if (client.getVersion() != Client.CURRENT_VERSION)
@@ -131,6 +143,17 @@ public class ClientFactory
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
         writer.write(xml);
         writer.close();
+    }
+
+    private static void fixAssetClassTypes(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            if ("STOCK".equals(security.getType())) //$NON-NLS-1$
+                security.setType("EQUITY"); //$NON-NLS-1$
+            else if ("BOND".equals(security.getType())) //$NON-NLS-1$
+                security.setType("DEBT"); //$NON-NLS-1$
+        }
     }
 
     private static void addFeedAndExchange(Client client)
@@ -160,19 +183,159 @@ public class ClientFactory
         }
     }
 
-    private static void fixStoredChartConfigurations(Client client)
+    private static void generateUUIDs(Client client)
     {
-        // Until now, the performance chart was showing *only* the benc hmark
+        for (Account a : client.getAccounts())
+            a.generateUUID();
+        for (Portfolio p : client.getPortfolios())
+            p.generateUUID();
+        for (Category c : client.getRootCategory().flatten())
+            c.generateUUID();
+    }
+
+    @SuppressWarnings("nls")
+    private static void fixStoredBenchmarkChartConfigurations(Client client)
+    {
+        // Until now, the performance chart was showing *only* the benchmark
         // series, not the actual performance series. Change keys as benchmark
         // values are prefixed with '[b]'
 
-        String property = "PerformanceChartView-PICKER"; //$NON-NLS-1$
+        replace(client, "PerformanceChartView-PICKER", //
+                        "Security", "[b]Security", //
+                        "ConsumerPriceIndex", "[b]ConsumerPriceIndex");
+    }
 
-        // ConsumerPriceIndex
+    private static void addAssetClassesAsTaxonomy(Client client)
+    {
+        TaxonomyTemplate template = TaxonomyTemplate.byId("assetclasses"); //$NON-NLS-1$
+        Taxonomy taxonomy = template.buildFromTemplate();
+        taxonomy.setId("assetclasses"); //$NON-NLS-1$
+
+        int rank = 1;
+
+        Classification cash = taxonomy.getClassificationById("CASH"); //$NON-NLS-1$
+        for (Account account : client.getAccounts())
+        {
+            Assignment assignment = new Assignment(account);
+            assignment.setRank(rank++);
+            cash.addAssignment(assignment);
+        }
+
+        for (Security security : client.getSecurities())
+        {
+            Classification classification = taxonomy.getClassificationById(security.getType());
+
+            if (classification != null)
+            {
+                Assignment assignment = new Assignment(security);
+                assignment.setRank(rank++);
+                classification.addAssignment(assignment);
+            }
+        }
+
+        client.addTaxonomy(taxonomy);
+    }
+
+    private static void addIndustryClassificationAsTaxonomy(Client client)
+    {
+        String oldIndustryId = client.getIndustryTaxonomy();
+
+        Taxonomy taxonomy = null;
+
+        if ("simple2level".equals(oldIndustryId)) //$NON-NLS-1$
+            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_SIMPLE2LEVEL).buildFromTemplate();
+        else
+            taxonomy = TaxonomyTemplate.byId(TaxonomyTemplate.INDUSTRY_GICS).buildFromTemplate();
+
+        taxonomy.setId("industries"); //$NON-NLS-1$
+
+        // add industry taxonomy only if at least one security has been assigned
+        if (assignSecurities(client, taxonomy))
+            client.addTaxonomy(taxonomy);
+    }
+
+    private static boolean assignSecurities(Client client, Taxonomy taxonomy)
+    {
+        boolean hasAssignments = false;
+
+        int rank = 0;
+        for (Security security : client.getSecurities())
+        {
+            Classification classification = taxonomy.getClassificationById(security.getIndustryClassification());
+
+            if (classification != null)
+            {
+                Assignment assignment = new Assignment(security);
+                assignment.setRank(rank++);
+                classification.addAssignment(assignment);
+
+                hasAssignments = true;
+            }
+        }
+
+        return hasAssignments;
+    }
+
+    private static void addAssetAllocationAsTaxonomy(Client client)
+    {
+        Category category = client.getRootCategory();
+
+        Taxonomy taxonomy = new Taxonomy("assetallocation", Messages.LabelAssetAllocation); //$NON-NLS-1$
+        Classification root = new Classification(category.getUUID(), Messages.LabelAssetAllocation);
+        taxonomy.setRootNode(root);
+
+        buildTree(root, category);
+
+        root.assignRandomColors();
+
+        client.addTaxonomy(taxonomy);
+    }
+
+    private static void buildTree(Classification node, Category category)
+    {
+        int rank = 0;
+
+        for (Category child : category.getChildren())
+        {
+            Classification classification = new Classification(node, child.getUUID(), child.getName());
+            classification.setWeight(child.getPercentage() * Values.Weight.factor());
+            classification.setRank(rank++);
+            node.addChild(classification);
+
+            buildTree(classification, child);
+        }
+
+        for (Object element : category.getElements())
+        {
+            Assignment assignment = element instanceof Account ? new Assignment((Account) element) : new Assignment(
+                            (Security) element);
+            assignment.setRank(rank++);
+
+            node.addAssignment(assignment);
+        }
+    }
+
+    @SuppressWarnings("nls")
+    private static void fixStoredClassificationChartConfiguration(Client client)
+    {
+        String name = Classification.class.getSimpleName();
+        replace(client, "PerformanceChartView-PICKER", //
+                        "AssetClass", name, //
+                        "Category", name);
+
+        replace(client, "StatementOfAssetsHistoryView-PICKER", //
+                        "AssetClass", name, //
+                        "Category", name);
+    }
+
+    private static void replace(Client client, String property, String... replacements)
+    {
+        if (replacements.length % 2 != 0)
+            throw new UnsupportedOperationException();
 
         String value = client.getProperty(property);
         if (value != null)
-            replaceAll(client, property, value);
+            replaceAll(client, property, value, replacements);
 
         int index = 0;
         while (true)
@@ -180,7 +343,7 @@ public class ClientFactory
             String key = property + '$' + index;
             value = client.getProperty(key);
             if (value != null)
-                replaceAll(client, key, value);
+                replaceAll(client, key, value, replacements);
             else
                 break;
 
@@ -188,12 +351,46 @@ public class ClientFactory
         }
     }
 
-    @SuppressWarnings("nls")
-    private static void replaceAll(Client client, String property, String value)
+    private static void replaceAll(Client client, String key, String value, String[] replacements)
     {
-        String newValue = value.replaceAll("Security", "[b]Security") //
-                        .replaceAll("ConsumerPriceIndex", "[b]ConsumerPriceIndex");
-        client.setProperty(property, newValue);
+        String newValue = value;
+        for (int ii = 0; ii < replacements.length; ii += 2)
+            newValue = newValue.replaceAll(replacements[ii], replacements[ii + 1]);
+        client.setProperty(key, newValue);
+    }
+
+    private static void assignSharesToDividendTransactions(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            List<Transaction> transactions = security.getTransactions(client);
+            Transaction.sortByDate(transactions);
+
+            long shares = 0;
+            for (Transaction t : transactions)
+            {
+                if (t instanceof AccountTransaction
+                                && ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
+                {
+                    ((AccountTransaction) t).setShares(shares);
+                }
+                else if (t instanceof PortfolioTransaction)
+                {
+                    switch (((PortfolioTransaction) t).getType())
+                    {
+                        case BUY:
+                        case TRANSFER_IN:
+                            shares += ((PortfolioTransaction) t).getShares();
+                            break;
+                        case SELL:
+                        case TRANSFER_OUT:
+                            shares -= ((PortfolioTransaction) t).getShares();
+                            break;
+                        default:
+                    }
+                }
+            }
+        }
     }
 
     @SuppressWarnings("nls")
@@ -235,44 +432,25 @@ public class ClientFactory
                     xstream.aliasField("i", ConsumerPriceIndex.class, "index");
 
                     xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }));
-                    xstream.registerConverter(new AssetClassConverter());
 
                     xstream.alias("buysell", BuySellEntry.class);
                     xstream.alias("account-transfer", AccountTransferEntry.class);
                     xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
+
+                    xstream.alias("taxonomy", Taxonomy.class);
+                    xstream.alias("classification", Classification.class);
+                    xstream.alias("assignment", Assignment.class);
+
+                    // omitting 'type' will prevent writing the field
+                    // (making it transient prevents reading it as well ->
+                    // compatibility!)
+                    xstream.omitField(Security.class, "type");
+                    xstream.omitField(Security.class, "industryClassification");
+                    xstream.omitField(Client.class, "industryTaxonomyId");
+                    xstream.omitField(Client.class, "rootCategory");
                 }
             }
         }
         return xstream;
     }
-
-    private static class AssetClassConverter implements Converter
-    {
-
-        @SuppressWarnings("rawtypes")
-        @Override
-        public boolean canConvert(Class type)
-        {
-            return Security.AssetClass.class.isAssignableFrom(type);
-        }
-
-        @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
-        {
-            writer.setValue(((AssetClass) source).name());
-        }
-
-        @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-        {
-            // see #5 - renamed STOCK->EQUITY and BOND->DEBT
-            String value = reader.getValue();
-            if ("STOCK".equals(value)) //$NON-NLS-1$
-                value = "EQUITY"; //$NON-NLS-1$
-            else if ("BOND".equals(value)) //$NON-NLS-1$
-                value = "DEBT"; //$NON-NLS-1$
-            return AssetClass.valueOf(value);
-        }
-    }
-
 }

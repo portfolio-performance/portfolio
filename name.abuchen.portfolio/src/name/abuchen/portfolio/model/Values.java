@@ -61,6 +61,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer weight)
+        {
+            return String.format("%,.2f", weight / divider()); //$NON-NLS-1$
+        }
+    };
+
     private final String pattern;
     private final double divider;
     private final int factor;

@@ -11,11 +11,11 @@ import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Category;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.Values;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -49,9 +49,9 @@ public class PerformanceIndex
     public static PerformanceIndex forAccount(Client client, Account account, ReportingPeriod reportInterval,
                     List<Exception> warnings)
     {
-        Category category = new Category();
-        category.addAccount(account);
-        return forCategory(client, category, reportInterval, warnings);
+        Classification classification = new Classification(null, null);
+        classification.addAssignment(new Assignment(account));
+        return forClassification(client, classification, reportInterval, warnings);
     }
 
     public static PerformanceIndex forPortfolio(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
@@ -60,38 +60,18 @@ public class PerformanceIndex
         return PortfolioIndex.calculate(client, portfolio, reportInterval, warnings);
     }
 
-    public static PerformanceIndex forCategory(Client client, Category category, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    public static PerformanceIndex forClassification(Client client, Classification classification,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        return CategoryIndex.calculate(client, category, reportInterval, warnings);
-    }
-
-    public static PerformanceIndex forAssetClass(Client client, AssetClass assetClass, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
-    {
-        Category category = new Category();
-
-        if (assetClass == AssetClass.CASH)
-        {
-            for (Account account : client.getAccounts())
-                category.addAccount(account);
-        }
-
-        for (Security security : client.getSecurities())
-        {
-            if (security.getType() == assetClass)
-                category.addSecurity(security);
-        }
-
-        return forCategory(client, category, reportInterval, warnings);
+        return ClassificationIndex.calculate(client, classification, reportInterval, warnings);
     }
 
     public static PerformanceIndex forInvestment(Client client, Security security, ReportingPeriod reportInterval,
                     List<Exception> warnings)
     {
-        Category category = new Category();
-        category.addSecurity(security);
-        return forCategory(client, category, reportInterval, warnings);
+        Classification classification = new Classification(null, null);
+        classification.addAssignment(new Assignment(security));
+        return forClassification(client, classification, reportInterval, warnings);
     }
 
     public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security, List<Exception> warnings)

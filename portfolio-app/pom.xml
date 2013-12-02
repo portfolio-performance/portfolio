@@ -9,13 +9,13 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.8.1-SNAPSHOT</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>0.18.0</tycho-version>
+		<tycho-version>0.18.1</tycho-version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
@@ -30,6 +30,10 @@
 
 	<repositories>
 		<repository>
+			<id>portfolio-non-maven-dependencies</id>
+			<url>http://buchen.github.io/maven-repo</url>
+		</repository>
+		<repository>
 			<id>p2-orbit</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository</url>
@@ -42,7 +46,7 @@
 		<repository>
 			<id>p2-babel</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.10.1/indigo</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.11.0/indigo</url>
 		</repository>
 		<repository>
 			<id>p2-bandlem</id>
@@ -181,6 +185,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>2.1</version>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -219,6 +228,11 @@
 						<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
 						<xmlOutput>true</xmlOutput>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>2.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

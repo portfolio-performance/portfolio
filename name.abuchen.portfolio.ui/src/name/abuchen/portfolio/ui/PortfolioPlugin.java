@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.List;
 
@@ -89,9 +91,15 @@ public class PortfolioPlugin extends AbstractUIPlugin
     public static final String IMG_VIEW_TABLE = "view_table"; //$NON-NLS-1$
     public static final String IMG_VIEW_TREEMAP = "view_treemap"; //$NON-NLS-1$
     public static final String IMG_VIEW_PIECHART = "view_piechart"; //$NON-NLS-1$
+    public static final String IMG_VIEW_REBALANCING = "view_rebalancing"; //$NON-NLS-1$
+    public static final String IMG_VIEW_STACKEDCHART = "view_stackedchart"; //$NON-NLS-1$
 
     public static final String IMG_CHECK = "check"; //$NON-NLS-1$
     public static final String IMG_QUICKFIX = "quickfix"; //$NON-NLS-1$
+    public static final String IMG_ADD = "add"; //$NON-NLS-1$
+    public static final String IMG_REMOVE = "remove"; //$NON-NLS-1$
+
+    public static final String IMG_UNASSIGNED_CATEGORY = "unassigned"; //$NON-NLS-1$
 
     private static PortfolioPlugin instance;
 
@@ -113,6 +121,33 @@ public class PortfolioPlugin extends AbstractUIPlugin
             job.schedule(2000);
         }
 
+        setupProxyAuthenticator();
+    }
+
+    private void setupProxyAuthenticator()
+    {
+        // http://stackoverflow.com/questions/1626549/authenticated-http-proxy-with-java/16340273#16340273
+        // Java ignores http.proxyUser. Here come's the workaround.
+        Authenticator.setDefault(new Authenticator()
+        {
+            @SuppressWarnings("nls")
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication()
+            {
+                if (getRequestorType() == RequestorType.PROXY)
+                {
+                    String protocol = getRequestingProtocol().toLowerCase();
+                    String host = System.getProperty(protocol + ".proxyHost", "");
+                    String port = System.getProperty(protocol + ".proxyPort", "80");
+                    String user = System.getProperty(protocol + ".proxyUser", "");
+                    String password = System.getProperty(protocol + ".proxyPassword", "");
+
+                    if (getRequestingHost().equalsIgnoreCase(host) && Integer.parseInt(port) == getRequestingPort())
+                        return new PasswordAuthentication(user, password.toCharArray());
+                }
+                return null;
+            }
+        });
     }
 
     @Override
@@ -122,7 +157,8 @@ public class PortfolioPlugin extends AbstractUIPlugin
 
         for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST,
                         IMG_INVESTMENTPLAN, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_VIEW_TABLE,
-                        IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_CHECK, IMG_QUICKFIX })
+                        IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING, IMG_VIEW_STACKEDCHART, IMG_CHECK,
+                        IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_UNASSIGNED_CATEGORY })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);

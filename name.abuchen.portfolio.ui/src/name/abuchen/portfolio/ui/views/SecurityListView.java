@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
@@ -174,13 +173,12 @@ public class SecurityListView extends AbstractListView
             {
                 Security newSecurity = new Security();
                 newSecurity.setFeed(QuoteFeed.MANUAL);
-                newSecurity.setType(AssetClass.EQUITY);
                 Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
                                 getClient(), newSecurity));
                 if (dialog.open() == Dialog.OK)
                 {
                     markDirty();
-                    getClient().getSecurities().add(newSecurity);
+                    getClient().addSecurity(newSecurity);
 
                     if (watchlist != null)
                         watchlist.getSecurities().add(newSecurity);
@@ -264,9 +262,6 @@ public class SecurityListView extends AbstractListView
                 if (security.getTickerSymbol() != null && filterPattern.matcher(security.getTickerSymbol()).matches())
                     return true;
 
-                if (security.getType() != null && filterPattern.matcher(security.getType().toString()).matches())
-                    return true;
-
                 return false;
             }
         });
@@ -290,8 +285,7 @@ public class SecurityListView extends AbstractListView
 
         latest.setInput(security);
 
-        transactions.setInput(security != null ? Transaction.sortByDate(security.getTransactions(getClient()))
-                        : new ArrayList<Transaction>(0));
+        transactions.setInput(security != null ? security.getTransactions(getClient()) : new ArrayList<Transaction>(0));
 
         updateChart(security);
     }
@@ -460,7 +454,7 @@ public class SecurityListView extends AbstractListView
                                 securities.refresh(security);
                                 prices.refresh(element);
                                 latest.setInput(security);
-                                transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                                transactions.setInput(security.getTransactions(getClient()));
                                 updateChart(security);
                             }
                         }) //
@@ -502,7 +496,7 @@ public class SecurityListView extends AbstractListView
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
-                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    transactions.setInput(security.getTransactions(getClient()));
                     updateChart(security);
 
                     prices.setSelection(new StructuredSelection(price), true);
@@ -537,7 +531,7 @@ public class SecurityListView extends AbstractListView
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
-                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    transactions.setInput(security.getTransactions(getClient()));
                     updateChart(security);
                 }
             });
@@ -560,7 +554,7 @@ public class SecurityListView extends AbstractListView
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
-                    transactions.setInput(Transaction.sortByDate(security.getTransactions(getClient())));
+                    transactions.setInput(security.getTransactions(getClient()));
                     updateChart(security);
                 }
             });

@@ -1,13 +1,21 @@
 package name.abuchen.portfolio.ui;
 
+import java.util.UUID;
+
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -15,8 +23,11 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 
 /* package */class ClientEditorSidebar
 {
@@ -51,9 +62,12 @@ import org.eclipse.swt.widgets.Control;
 
     private ClientEditor editor;
 
+    private Menu taxonomyMenu;
+
     private Sidebar sidebar;
     private Entry allSecurities;
     private Entry statementOfAssets;
+    private Entry taxonomies;
 
     public ClientEditorSidebar(ClientEditor editor)
     {
@@ -67,6 +81,7 @@ import org.eclipse.swt.widgets.Control;
         createGeneralDataSection(sidebar);
         createMasterDataSection(sidebar);
         createPerformanceSection(sidebar);
+        createTaxonomyDataSection(sidebar);
         createMiscSection(sidebar);
 
         return sidebar;
@@ -161,7 +176,7 @@ import org.eclipse.swt.widgets.Control;
                         if (!editor.getClient().getSecurities().contains(security))
                         {
                             security = security.deepCopy();
-                            editor.getClient().getSecurities().add(security);
+                            editor.getClient().addSecurity(security);
                         }
 
                         if (!watchlist.getSecurities().contains(security))
@@ -206,9 +221,6 @@ import org.eclipse.swt.widgets.Control;
         new Entry(statementOfAssets,
                         new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
         new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetClasses, "StatementOfAssetsPieChart")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.ShortLabelIndustries, "IndustryClassification")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.LabelAssetAllocation, "Category")); //$NON-NLS-1$
 
         Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
                         "Performance")); //$NON-NLS-1$
@@ -216,13 +228,148 @@ import org.eclipse.swt.widgets.Control;
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
     }
 
+    private void createTaxonomyDataSection(final Sidebar sidebar)
+    {
+        taxonomies = new Entry(sidebar, Messages.LabelTaxonomies);
+        taxonomies.setAction(new Action(Messages.LabelTaxonomies, PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        {
+            @Override
+            public void run()
+            {
+                showCreateTaxonomyMenu();
+            }
+        });
+
+        for (Taxonomy taxonomy : editor.getClient().getTaxonomies())
+            createTaxonomyEntry(taxonomies, taxonomy);
+    }
+
+    private Entry createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
+    {
+        final Entry entry = new Entry(section, taxonomy.getName());
+        entry.setAction(new ActivateViewAction(taxonomy.getName(), "taxonomy.Taxonomy", taxonomy, null)); //$NON-NLS-1$
+        entry.setContextMenu(new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                manager.add(new Action(Messages.MenuTaxonomyRename)
+                {
+                    @Override
+                    public void run()
+                    {
+                        String newName = askTaxonomyName(taxonomy.getName());
+                        if (newName != null)
+                        {
+                            taxonomy.setName(newName);
+                            editor.markDirty();
+                            entry.setLabel(newName);
+                        }
+                    }
+                });
+
+                manager.add(new Action(Messages.MenuTaxonomyDelete)
+                {
+                    @Override
+                    public void run()
+                    {
+                        editor.getClient().removeTaxonomy(taxonomy);
+                        editor.markDirty();
+                        entry.dispose();
+                        statementOfAssets.select();
+                    }
+                });
+            }
+        });
+
+        return entry;
+    }
+
+    private void showCreateTaxonomyMenu()
+    {
+        if (taxonomyMenu == null)
+        {
+            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+            menuMgr.setRemoveAllWhenShown(true);
+            menuMgr.addMenuListener(new IMenuListener()
+            {
+                @Override
+                public void menuAboutToShow(IMenuManager manager)
+                {
+                    taxonomyMenuAboutToShow(manager);
+                }
+            });
+            taxonomyMenu = menuMgr.createContextMenu(sidebar.getShell());
+
+            sidebar.addDisposeListener(new DisposeListener()
+            {
+                @Override
+                public void widgetDisposed(DisposeEvent e)
+                {
+                    taxonomyMenu.dispose();
+                }
+            });
+        }
+        taxonomyMenu.setVisible(true);
+    }
+
+    private void taxonomyMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new Action(Messages.MenuTaxonomyCreate)
+        {
+            @Override
+            public void run()
+            {
+                String name = askTaxonomyName(Messages.LabelNewTaxonomy);
+                if (name == null)
+                    return;
+
+                Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
+                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
+
+                addAndOpenTaxonomy(taxonomy);
+            }
+        });
+
+        manager.add(new Separator());
+        manager.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
+
+        for (final TaxonomyTemplate template : TaxonomyTemplate.list())
+        {
+            manager.add(new Action(template.getName())
+            {
+                @Override
+                public void run()
+                {
+                    addAndOpenTaxonomy(template.build());
+                }
+            });
+        }
+    }
+
+    private void addAndOpenTaxonomy(Taxonomy taxonomy)
+    {
+        editor.getClient().addTaxonomy(taxonomy);
+        editor.markDirty();
+        Entry entry = createTaxonomyEntry(taxonomies, taxonomy);
+
+        sidebar.select(entry);
+        sidebar.layout();
+    }
+
+    private String askTaxonomyName(String initialValue)
+    {
+        InputDialog dlg = new InputDialog(editor.getSite().getShell(), Messages.DialogTaxonomyNameTitle,
+                        Messages.DialogTaxonomyNamePrompt, initialValue, null);
+        if (dlg.open() != InputDialog.OK)
+            return null;
+
+        return dlg.getValue();
+    }
+
     private void createMiscSection(Sidebar sidebar)
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
-        new Entry(section, new ActivateViewAction(
-                        editor.getClient().getIndustryTaxonomy().getRootCategory().getLabel(),
-                        "IndustryClassificationDefinition")); //$NON-NLS-1$
     }
-
 }

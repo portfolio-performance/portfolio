@@ -1,24 +1,16 @@
 package name.abuchen.portfolio.ui.wizards;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.IndustryClassification;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
 public class SecurityMasterDataPage extends AbstractWizardPage
@@ -146,12 +138,9 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     }
 
     private BindingHelper bindings;
-    private Model model;
+    private EditSecurityModel model;
 
-    private IndustryClassification taxonomy;
-    private Label classication;
-
-    protected SecurityMasterDataPage(Client client, Security security)
+    protected SecurityMasterDataPage(EditSecurityModel model)
     {
         super(PAGE_NAME);
 
@@ -160,21 +149,10 @@ public class SecurityMasterDataPage extends AbstractWizardPage
 
         setTitle(Messages.EditWizardMasterDataTitle);
         setDescription(Messages.EditWizardMasterDataDescription);
+        this.model = model;
 
-    }
-
-    @Override
-    public void beforePage()
-    {
-        model.readFromSecurity();
-        bindings.getBindingContext().updateModels();
-        updateIndustryClassification();
-    }
-
-    @Override
-    public void afterPage()
-    {
-        model.applyChanges();
+        setTitle(Messages.EditWizardMasterDataTitle);
+        setDescription(Messages.EditWizardMasterDataDescription);
     }
 
     @Override
@@ -202,16 +180,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn"); //$NON-NLS-1$
         bindings.bindStringInput(container, "Kurs URL", "finanzenFeedURL");
         bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
-        bindings.bindComboViewer(container, Messages.ColumnSecurityType, "type", new LabelProvider() //$NON-NLS-1$
-                        {
-                            @Override
-                            public String getText(Object element)
-                            {
-                                return ((AssetClass) element).toString();
-                            }
-                        }, AssetClass.values());
-
-        addIndustryPicker(container);
 
         Link link = new Link(container, SWT.UNDERLINE_LINK);
         link.setText(Messages.EditWizardMasterDataLinkToSearch);
@@ -222,7 +190,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                setPageComplete(false);
                 getContainer().showPage(getWizard().getPage(SearchSecurityWizardPage.PAGE_NAME));
             }
 
@@ -231,64 +198,5 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             {}
         });
 
-    }
-
-    private void addIndustryPicker(Composite container)
-    {
-        Label label = new Label(container, SWT.NONE);
-        label.setText(Messages.ShortLabelIndustry);
-
-        Composite industryPicker = new Composite(container, SWT.NONE);
-
-        classication = new Label(industryPicker, SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
-
-        Button button = new Button(industryPicker, SWT.PUSH);
-        button.setText(Messages.LabelChoose);
-        button.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                getContainer().showPage(getWizard().getPage(IndustryClassificationPage.PAGE_NAME));
-            }
-        });
-
-        // layout: composite
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(label);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(industryPicker);
-
-        // layout: label + button
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(industryPicker);
-        int height = classication.getFont().getFontData()[0].getHeight();
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).hint(100, height * 4)
-                        .applyTo(classication);
-        GridDataFactory.fillDefaults().grab(false, false).align(SWT.FILL, SWT.BEGINNING).applyTo(button);
-    }
-
-    private void updateIndustryClassification()
-    {
-        IndustryClassification.Category category = taxonomy.getCategoryById(model.security.getIndustryClassification());
-        if (category != null)
-        {
-            StringBuilder buf = new StringBuilder();
-
-            while (category != null)
-            {
-                if (buf.length() > 0)
-                    buf.insert(0, " » "); //$NON-NLS-1$
-
-                buf.insert(0, category.getLabel());
-                category = category.getParent();
-
-                if (category.getParent() == null)
-                    break;
-            }
-
-            classication.setText(buf.toString().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        else
-        {
-            classication.setText("---"); //$NON-NLS-1$
-        }
     }
 }

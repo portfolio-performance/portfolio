@@ -2,9 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.8.1.qualifier
+Bundle-Version: 0.9.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: name.abuchen.portfolio.checks,
+ name.abuchen.portfolio.datatransfer,
  name.abuchen.portfolio.model,
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,
@@ -16,6 +17,7 @@ Import-Package: com.thoughtworks.xstream,
  com.thoughtworks.xstream.io;version="1.3.1",
  org.apache.commons.csv;version="1.0.0.BUILD-20080106",
  org.eclipse.osgi.util;version="1.1.0",
+ org.eclipse.swt.graphics,
  org.htmlparser,
  org.htmlparser.lexer,
  org.htmlparser.util,

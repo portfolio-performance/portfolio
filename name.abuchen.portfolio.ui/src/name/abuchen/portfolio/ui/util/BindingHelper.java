@@ -43,6 +43,9 @@ public class BindingHelper
 
         private Client client;
 
+        public Model()
+        {}
+
         public Model(Client client)
         {
             this.client = client;
@@ -238,6 +241,18 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label);
         bindMandatoryDecimalInput(label, property, txtValue, Values.Share);
+        return txtValue;
+    }
+
+    public Control bindSharesInput(Composite editArea, final String label, String property)
+    {
+        Text txtValue = createTextInput(editArea, label);
+        context.bindValue(
+                        SWTObservables.observeText(txtValue, SWT.Modify), //
+                        BeansObservables.observeValue(model, property), //
+                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Share)),
+                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Share)));
+
         return txtValue;
     }
 

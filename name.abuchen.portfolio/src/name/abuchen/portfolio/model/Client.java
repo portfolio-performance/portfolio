@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 13;
+    /* package */static final int CURRENT_VERSION = 15;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -26,11 +26,15 @@ public class Client
     private List<Account> accounts = new ArrayList<Account>();
     private List<Portfolio> portfolios = new ArrayList<Portfolio>();
     private List<InvestmentPlan> plans;
-    private Category rootCategory = new Category(Messages.LabelPortfolio, 100);
+    private List<Taxonomy> taxonomies;
 
     private Map<String, String> properties; // old versions!
 
+    @Deprecated
     private String industryTaxonomyId;
+
+    @Deprecated
+    private Category rootCategory;
 
     public Client()
     {
@@ -56,6 +60,9 @@ public class Client
 
         if (plans == null)
             plans = new ArrayList<InvestmentPlan>();
+
+        if (taxonomies == null)
+            taxonomies = new ArrayList<Taxonomy>();
     }
 
     public int getVersion()
@@ -70,7 +77,7 @@ public class Client
 
     public List<InvestmentPlan> getPlans()
     {
-        return plans;
+        return Collections.unmodifiableList(plans);
     }
 
     public void addPlan(InvestmentPlan plan)
@@ -85,7 +92,7 @@ public class Client
 
     public List<Security> getSecurities()
     {
-        return securities;
+        return Collections.unmodifiableList(securities);
     }
 
     public void addSecurity(Security security)
@@ -98,13 +105,15 @@ public class Client
         securities.addAll(sec);
     }
 
-    public void removeSecurity(Security security)
+    public void removeSecurity(final Security security)
     {
-        securities.remove(security);
         for (Watchlist w : watchlists)
             w.getSecurities().remove(security);
         deleteInvestmentPlans(security);
-        // FIXME possibly remove transactions and category assignments as well
+        deleteTaxonomyAssignments(security);
+        deleteAccountTransactions(security);
+        deletePortfolioTransactions(security);
+        securities.remove(security);
     }
 
     public List<Watchlist> getWatchlists()
@@ -114,7 +123,7 @@ public class Client
 
     public List<ConsumerPriceIndex> getConsumerPriceIndeces()
     {
-        return consumerPriceIndeces;
+        return Collections.unmodifiableList(consumerPriceIndeces);
     }
 
     public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
@@ -137,12 +146,13 @@ public class Client
     {
         deleteCrossEntries(account.getTransactions());
         deleteInvestmentPlans(account);
+        deleteTaxonomyAssignments(account);
         accounts.remove(account);
     }
 
     public List<Account> getAccounts()
     {
-        return accounts;
+        return Collections.unmodifiableList(accounts);
     }
 
     public void addPortfolio(Portfolio portfolio)
@@ -159,27 +169,44 @@ public class Client
 
     public List<Portfolio> getPortfolios()
     {
-        return portfolios;
+        return Collections.unmodifiableList(portfolios);
     }
 
-    public void setRootCategory(Category root)
-    {
-        this.rootCategory = root;
-    }
-
-    public Category getRootCategory()
+    @Deprecated
+    /* package */Category getRootCategory()
     {
         return this.rootCategory;
     }
 
-    public void setIndustryTaxonomy(IndustryClassification taxonomy)
+    @Deprecated
+    /* package */String getIndustryTaxonomy()
     {
-        this.industryTaxonomyId = taxonomy != null ? taxonomy.getIdentifier() : null;
+        return industryTaxonomyId;
     }
 
-    public IndustryClassification getIndustryTaxonomy()
+    public List<Taxonomy> getTaxonomies()
     {
-        return IndustryClassification.lookup(industryTaxonomyId);
+        return Collections.unmodifiableList(taxonomies);
+    }
+
+    public void addTaxonomy(Taxonomy taxonomy)
+    {
+        taxonomies.add(taxonomy);
+    }
+
+    public void removeTaxonomy(Taxonomy taxonomy)
+    {
+        taxonomies.remove(taxonomy);
+    }
+
+    public Taxonomy getTaxonomy(String id)
+    {
+        for (Taxonomy t : taxonomies)
+        {
+            if (id.equals(t.getId()))
+                return t;
+        }
+        return null;
     }
 
     public void setProperty(String key, String value)
@@ -233,6 +260,58 @@ public class Client
         {
             if (plan.getSecurity().equals(security))
                 removePlan(plan);
+        }
+    }
+
+    private void deleteTaxonomyAssignments(final InvestmentVehicle vehicle)
+    {
+        for (Taxonomy taxonomy : taxonomies)
+        {
+            taxonomy.foreach(new Taxonomy.Visitor()
+            {
+                @Override
+                public void visit(Classification classification, Assignment assignment)
+                {
+                    if (vehicle.equals(assignment.getInvestmentVehicle()))
+                        classification.removeAssignment(assignment);
+                }
+            });
+        }
+    }
+
+    private void deleteAccountTransactions(Security security)
+    {
+        for (Account account : accounts)
+        {
+            for (AccountTransaction t : new ArrayList<AccountTransaction>(account.getTransactions()))
+            {
+                if (t.getSecurity() == null || !security.equals(t.getSecurity()))
+                    continue;
+
+                if (t.getCrossEntry() != null)
+                    t.getCrossEntry().delete();
+                else
+                    account.getTransactions().remove(t);
+            }
+
+        }
+    }
+
+    private void deletePortfolioTransactions(Security security)
+    {
+        for (Portfolio portfolio : portfolios)
+        {
+            for (PortfolioTransaction t : new ArrayList<PortfolioTransaction>(portfolio.getTransactions()))
+            {
+                if (!security.equals(t.getSecurity()))
+                    continue;
+
+                if (t.getCrossEntry() != null)
+                    t.getCrossEntry().delete();
+                else
+                    portfolio.getTransactions().remove(t);
+            }
+
         }
     }
 

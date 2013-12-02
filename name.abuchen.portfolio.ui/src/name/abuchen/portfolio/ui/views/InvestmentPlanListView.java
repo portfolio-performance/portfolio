@@ -256,7 +256,7 @@ public class InvestmentPlanListView extends AbstractListView
 
     private void addEditingSupport()
     {
-        List<Security> securities = getClient().getSecurities();
+        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
         Collections.sort(securities, new Security.ByName());
 
         List<Account> accounts = new ArrayList<Account>();

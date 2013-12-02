@@ -54,7 +54,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
             @Override
             public void run()
             {
-                assetViewer.getColumnHelper().showHideShowColumnsMenu(toolBar.getShell());
+                assetViewer.showConfigMenu(toolBar.getShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -65,7 +65,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        assetViewer = new StatementOfAssetsViewer(parent, getClient());
+        assetViewer = new StatementOfAssetsViewer(parent, this, getClient());
         hookContextMenu(assetViewer.getTableViewer().getControl(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)

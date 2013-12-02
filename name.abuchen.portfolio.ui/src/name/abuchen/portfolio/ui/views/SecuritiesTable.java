@@ -6,13 +6,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.IndustryClassification;
-import name.abuchen.portfolio.model.IndustryClassification.Category;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -86,7 +86,7 @@ public final class SecuritiesTable
 
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), securities, layout);
 
-        Column column = new Column(Messages.ColumnName, SWT.LEFT, 400);
+        Column column = new Column("0", Messages.ColumnName, SWT.LEFT, 400); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -104,7 +104,7 @@ public final class SecuritiesTable
         column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnISIN, SWT.LEFT, 100);
+        column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -116,7 +116,7 @@ public final class SecuritiesTable
         column.setSorter(ColumnViewerSorter.create(Security.class, "isin")); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnTicker, SWT.LEFT, 80);
+        column = new Column("2", Messages.ColumnTicker, SWT.LEFT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -128,19 +128,170 @@ public final class SecuritiesTable
         column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnSecurityType, SWT.LEFT, 80);
+        column = new Column("7", Messages.ColumnWKN, SWT.LEFT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return ((Security) e).getType().toString();
+                return ((Security) e).getWkn();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "type")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
+        column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnLatest, SWT.RIGHT, 60);
+        // column "3" used to be hard-coded to asset class (type)
+
+        addColumnLatestPrice();
+        addDeltaColumn();
+        addColumnDateOfLatestPrice();
+        addColumnDateOfLatestHistoricalPrice();
+
+        for (Taxonomy taxonomy : getClient().getTaxonomies())
+            addTaxonomyColumn(support, taxonomy);
+
+        column = new Column("8", Messages.ColumnRetired, SWT.LEFT, 40); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
+
+        support.createColumns();
+
+        securities.getTable().setHeaderVisible(true);
+        securities.getTable().setLinesVisible(true);
+
+        securities.setContentProvider(new SimpleListContentProvider());
+
+        securities.addDragSupport(DND.DROP_MOVE, //
+                        new Transfer[] { SecurityTransfer.getTransfer() }, //
+                        new SecurityDragListener(securities));
+
+        if (!support.isUserConfigured())
+            ViewerHelper.pack(securities);
+        securities.refresh();
+
+        securities.getTable().addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event)
+            {
+                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
+                if (security == null)
+                    return;
+
+                Dialog dialog = new WizardDialog(getShell(), new EditSecurityWizard(getClient(), security));
+                if (dialog.open() != Dialog.OK)
+                    return;
+
+                markDirty();
+                if (!securities.getControl().isDisposed())
+                {
+                    refresh(security);
+                    updateQuotes(security);
+                }
+            }
+        });
+
+        hookContextMenu();
+    }
+
+    private void addTaxonomyColumn(ShowHideColumnHelper support, final Taxonomy taxonomy)
+    {
+        String name = taxonomy.getName();
+        List<String> labels = taxonomy.getDimensions();
+
+        List<Integer> options = new ArrayList<Integer>();
+
+        StringBuilder menuLabels = new StringBuilder("{0,choice,"); //$NON-NLS-1$
+        StringBuilder columnLabels = new StringBuilder("{0,choice,"); //$NON-NLS-1$
+
+        int heigth = taxonomy.getHeigth();
+        for (int ii = 1; ii < heigth; ii++) // 1 --> skip taxonomy root node
+        {
+            options.add(ii);
+
+            if (ii > 1)
+            {
+                menuLabels.append('|');
+                columnLabels.append('|');
+            }
+
+            String label = null;
+            if (labels != null && ii <= labels.size())
+                label = labels.get(ii - 1);
+
+            menuLabels.append(ii).append('#');
+            columnLabels.append(ii).append('#');
+
+            if (label != null)
+            {
+                menuLabels.append(label);
+                columnLabels.append(label);
+            }
+            else
+            {
+                menuLabels.append(MessageFormat.format(Messages.LabelLevelNumber, ii));
+                columnLabels.append(MessageFormat.format(Messages.LabelLevelNameNumber, name, ii));
+            }
+        }
+
+        options.add(100);
+
+        menuLabels.append("|100#" + Messages.LabelFullClassification + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+        columnLabels.append("|100#").append(name).append("}"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        Column column = new Column(taxonomy.getId(), name, SWT.LEFT, 120);
+        column.setOptions(menuLabels.toString(), columnLabels.toString(), options.toArray(new Integer[0]));
+        column.setLabelProvider(new OptionLabelProvider()
+        {
+            @Override
+            public String getText(Object e, Integer option)
+            {
+                Security security = (Security) e;
+                List<Classification> classifications = taxonomy.getClassifications(security);
+
+                if (classifications.isEmpty())
+                    return null;
+
+                StringBuilder answer = new StringBuilder();
+
+                for (Classification c : classifications)
+                {
+                    if (answer.length() > 0)
+                        answer.append(", "); //$NON-NLS-1$
+
+                    switch (option)
+                    {
+                        case 100:
+                            answer.append(c.getPathName(false));
+                            break;
+                        default:
+                            List<Classification> path = c.getPathToRoot();
+                            if (option < path.size())
+                                answer.append(path.get(option).getName());
+                    }
+                }
+
+                return answer.toString();
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+    }
+
+    private void addColumnLatestPrice()
+    {
+        Column column;
+        column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -169,8 +320,12 @@ public final class SecuritiesTable
             }
         }));
         support.addColumn(column);
+    }
 
-        column = new Column(Messages.ColumnDelta, SWT.RIGHT, 60);
+    private void addDeltaColumn()
+    {
+        Column column;
+        column = new Column("5", Messages.ColumnDelta, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -220,141 +375,12 @@ public final class SecuritiesTable
             }
         }));
         support.addColumn(column);
-
-        addIndustryClassificationColumns(support);
-
-        column = new Column(Messages.ColumnWKN, SWT.LEFT, 60);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getWkn();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column(Messages.ColumnRetired, SWT.LEFT, 40);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
-        column.setVisible(false);
-        support.addColumn(column);
-
-        addColumnLatestPrice();
-        addColumnLatestHistoricalPrice();
-
-        support.createColumns();
-
-        securities.getTable().setHeaderVisible(true);
-        securities.getTable().setLinesVisible(true);
-
-        securities.setContentProvider(new SimpleListContentProvider());
-
-        securities.addDragSupport(DND.DROP_MOVE, //
-                        new Transfer[] { SecurityTransfer.getTransfer() }, //
-                        new SecurityDragListener(securities));
-
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(securities);
-        securities.refresh();
-
-        securities.getTable().addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                if (security == null)
-                    return;
-
-                Dialog dialog = new WizardDialog(getShell(), new EditSecurityWizard(getClient(), security));
-                if (dialog.open() != Dialog.OK)
-                    return;
-
-                markDirty();
-                if (!securities.getControl().isDisposed())
-                {
-                    refresh(security);
-                    updateQuotes(security);
-                }
-            }
-        });
-
-        hookContextMenu();
     }
 
-    private void addIndustryClassificationColumns(ShowHideColumnHelper support)
-    {
-        List<Integer> options = new ArrayList<Integer>();
-
-        StringBuilder commonLabels = new StringBuilder();
-        commonLabels.append("{0,choice,"); //$NON-NLS-1$
-
-        int index = 1;
-        for (String label : getClient().getIndustryTaxonomy().getLabels())
-        {
-            options.add(index);
-            if (index > 1)
-                commonLabels.append('|');
-            commonLabels.append(index).append('#').append(label);
-
-            index++;
-        }
-        options.add(100);
-
-        String menuLabels = commonLabels + //
-                        "|100#" + Messages.LabelFullClassification + //$NON-NLS-1$
-                        "}"; //$NON-NLS-1$
-
-        String columnLabels = commonLabels + //
-                        "|100#" + Messages.ShortLabelIndustry + //$NON-NLS-1$
-                        "}"; //$NON-NLS-1$
-
-        Column column = new Column(Messages.ShortLabelIndustry, SWT.LEFT, 120);
-        column.setOptions(menuLabels, columnLabels, options.toArray(new Integer[0]));
-        column.setLabelProvider(new OptionLabelProvider()
-        {
-            private IndustryClassification taxonomy = getClient().getIndustryTaxonomy();
-
-            @Override
-            public String getText(Object e, Integer option)
-            {
-                Security security = (Security) e;
-                IndustryClassification.Category category = taxonomy.getCategoryById(security
-                                .getIndustryClassification());
-                if (category == null)
-                    return null;
-
-                switch (option)
-                {
-                    case 100:
-                        return category.getPathLabel();
-                    default:
-                        List<Category> path = category.getPath();
-                        if (option < path.size())
-                            return path.get(option).getLabel();
-                }
-
-                return null;
-            }
-        });
-        column.setVisible(false);
-        support.addColumn(column);
-    }
-
-    private void addColumnLatestPrice()
+    private void addColumnDateOfLatestPrice()
     {
         Column column;
-        column = new Column(Messages.ColumnLatestDate, SWT.LEFT, 80);
+        column = new Column("9", Messages.ColumnLatestDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -406,9 +432,9 @@ public final class SecuritiesTable
         support.addColumn(column);
     }
 
-    private void addColumnLatestHistoricalPrice()
+    private void addColumnDateOfLatestHistoricalPrice()
     {
-        Column column = new Column(Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80);
+        Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -670,11 +696,6 @@ public final class SecuritiesTable
                     {
                         MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
                                         MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
-                    }
-                    else if (getClient().getRootCategory().getTreeElements().contains(security))
-                    {
-                        MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible, MessageFormat.format(
-                                        Messages.MsgDeletionNotPossibleAssignedInAllocation, security.getName()));
                     }
                     else
                     {

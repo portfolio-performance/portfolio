@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
@@ -86,7 +85,6 @@ public class ImportIndizesPage extends AbstractWizardPage
                 security.setIsin(safeGetString(bundle, key + ".isin")); //$NON-NLS-1$
                 security.setFeed("YAHOO"); //$NON-NLS-1$
                 security.setRetired(safeGetBoolean(bundle, key + ".isRetired")); //$NON-NLS-1$
-                security.setType(AssetClass.EQUITY);
                 proposal.securities.add(security);
             }
         }

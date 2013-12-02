@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
 
 public interface SecuritySearchProvider
 {
@@ -16,7 +15,7 @@ public interface SecuritySearchProvider
         private long lastTrade;
         private String type;
         private String exchange;
-    
+
         public String getSymbol()
         {
             return symbol;
@@ -82,7 +81,6 @@ public interface SecuritySearchProvider
             security.setTickerSymbol(getSymbol());
             security.setName(getName());
             security.setIsin(getIsin());
-            security.setType(AssetClass.EQUITY);
         }
     }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Account
+public class Account implements InvestmentVehicle
 {
     private String uuid;
     private String name;
@@ -22,6 +22,7 @@ public class Account
         this.name = name;
     }
 
+    @Override
     public String getUUID()
     {
         return uuid;
@@ -33,11 +34,13 @@ public class Account
         uuid = UUID.randomUUID().toString();
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;

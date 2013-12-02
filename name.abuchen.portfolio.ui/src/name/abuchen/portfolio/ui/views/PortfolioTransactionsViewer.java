@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -273,7 +274,7 @@ public final class PortfolioTransactionsViewer
 
     private void addEditingSupport(AbstractFinanceView owner)
     {
-        List<Security> securities = owner.getClient().getSecurities();
+        List<Security> securities = new ArrayList<Security>(owner.getClient().getSecurities());
         Collections.sort(securities, new Security.ByName());
 
         new CellEditorFactory(tableViewer, PortfolioTransaction.class) //

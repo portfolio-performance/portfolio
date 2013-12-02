@@ -1,13 +1,17 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.IndustryClassification;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -31,15 +35,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
-class SecurityDetailsViewer
+public class SecurityDetailsViewer
 {
     private static final String EMPTY_LABEL = ""; //$NON-NLS-1$
 
     public enum Facet
     {
         MASTER_DATA(MasterDataFacet.class), //
-        LATEST_QUOTE(LatestQuoteFacet.class), //
-        INDUSTRY_CLASSIFICATION(IndustryClassificationFacet.class);
+        LATEST_QUOTE(LatestQuoteFacet.class);
 
         private Class<? extends SecurityFacet> clazz;
 
@@ -280,34 +283,36 @@ class SecurityDetailsViewer
 
     }
 
-    private static class IndustryClassificationFacet extends SecurityFacet
+    private static class TaxonomyFacet extends SecurityFacet
     {
-        private IndustryClassification taxonomy;
+        private Taxonomy taxonomy;
 
+        private Label heading;
         private List<Label> labels = new ArrayList<Label>();
 
-        public IndustryClassificationFacet(Font boldFont, Color color)
+        public TaxonomyFacet(Taxonomy taxonomy, Font boldFont, Color color)
         {
             super(boldFont, color);
+            this.taxonomy = taxonomy;
         }
 
         @Override
         Control createViewControl(Composite parent, Client client)
         {
-            taxonomy = client.getIndustryTaxonomy();
-
             Composite composite = new Composite(parent, SWT.NONE);
             FormLayout layout = new FormLayout();
             layout.marginLeft = 5;
             layout.marginRight = 5;
             composite.setLayout(layout);
 
-            Label heading = createHeading(composite, taxonomy.getRootCategory().getLabel());
+            heading = createHeading(composite, taxonomy.getName());
             FormData data = new FormData();
             data.top = new FormAttachment(0, 5);
+            data.left = new FormAttachment(0);
+            data.right = new FormAttachment(100);
             heading.setLayoutData(data);
 
-            for (int ii = 0; ii < taxonomy.getLabels().size(); ii++)
+            for (int ii = 0; ii < taxonomy.getHeigth() - 1; ii++)
             {
                 Label label = new Label(composite, SWT.NONE);
                 labels.add(label);
@@ -330,24 +335,41 @@ class SecurityDetailsViewer
         }
 
         @Override
-        void setInput(Security security)
+        void setInput(final Security security)
         {
-            if (security == null)
+            final int[] count = new int[1];
+            final int[] weight = new int[1];
+            final Classification[] classification = new Classification[1];
+
+            if (security != null)
             {
-                for (Label l : labels)
-                    l.setText(EMPTY_LABEL);
+                taxonomy.foreach(new Visitor()
+                {
+                    @Override
+                    public void visit(Classification thisClassification, Assignment assignment)
+                    {
+                        if (security.equals(assignment.getInvestmentVehicle()))
+                        {
+                            count[0]++;
+                            if (assignment.getWeight() > weight[0])
+                            {
+                                weight[0] = assignment.getWeight();
+                                classification[0] = thisClassification;
+                            }
+                        }
+                    }
+                });
             }
+
+            if (count[0] > 1)
+                heading.setText(taxonomy.getName() + ' ' + MessageFormat.format(Messages.LabelOneOfX, count[0]));
             else
-            {
-                IndustryClassification.Category category = taxonomy.getCategoryById(security
-                                .getIndustryClassification());
+                heading.setText(taxonomy.getName());
 
-                List<IndustryClassification.Category> path = category != null ? category.getPath()
-                                : new ArrayList<IndustryClassification.Category>();
-
-                for (int ii = 0; ii < labels.size(); ii++)
-                    labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getLabel()) : EMPTY_LABEL);
-            }
+            List<Classification> path = classification[0] != null ? classification[0].getPathToRoot()
+                            : new ArrayList<Classification>();
+            for (int ii = 0; ii < labels.size(); ii++)
+                labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getName()) : EMPTY_LABEL);
         }
 
         private String escape(String label)
@@ -362,10 +384,10 @@ class SecurityDetailsViewer
 
     public SecurityDetailsViewer(Composite parent, int style, Client client)
     {
-        this(parent, style, client, Facet.LATEST_QUOTE, Facet.INDUSTRY_CLASSIFICATION);
+        this(parent, style, client, false);
     }
 
-    public SecurityDetailsViewer(Composite parent, int style, Client client, Facet... facets)
+    public SecurityDetailsViewer(Composite parent, int style, Client client, boolean showMasterData)
     {
         container = new Composite(parent, style);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -381,14 +403,20 @@ class SecurityDetailsViewer
 
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
-        for (Facet facet : facets)
+        if (showMasterData)
+            children.add(new MasterDataFacet(boldFont, color));
+
+        children.add(new LatestQuoteFacet(boldFont, color));
+
+        for (Taxonomy taxonomy : client.getTaxonomies())
+            children.add(new TaxonomyFacet(taxonomy, boldFont, color));
+
+        for (SecurityFacet child : children)
         {
             try
             {
-                SecurityFacet child = facet.create(boldFont, color);
                 Control control = child.createViewControl(container, client);
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(control);
-                children.add(child);
             }
             catch (Exception e)
             {
@@ -407,5 +435,4 @@ class SecurityDetailsViewer
         for (SecurityFacet child : children)
             child.setInput(security);
     }
-
 }

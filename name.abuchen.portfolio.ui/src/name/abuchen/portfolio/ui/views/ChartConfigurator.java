@@ -3,18 +3,17 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Category;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Security.AssetClass;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
@@ -97,6 +96,24 @@ import org.swtchart.LineStyle;
             return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
         }
 
+        public String getSearchLabel()
+        {
+            StringBuilder buf = new StringBuilder();
+
+            buf.append(label);
+
+            if (instance instanceof Classification)
+            {
+                Classification parent = ((Classification) instance).getParent();
+                buf.append(" (").append(parent.getPathName(true)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            if (isBenchmark())
+                buf.append(Messages.ChartSeriesBenchmarkSuffix);
+
+            return buf.toString();
+        }
+
         public void setColor(Color color)
         {
             this.color = color;
@@ -161,7 +178,7 @@ import org.swtchart.LineStyle;
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             else if (type == Portfolio.class)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
-            else if (type == Category.class)
+            else if (type == Classification.class)
                 return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             else
                 return null;
@@ -173,18 +190,16 @@ import org.swtchart.LineStyle;
 
             if (type == Security.class)
                 return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
-            else if (type == AssetClass.class)
-                return prefix + AssetClass.class.getSimpleName() + ((AssetClass) instance).name();
             else if (type == Client.class)
                 return prefix + Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
             else if (type == Account.class)
                 return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
             else if (type == Portfolio.class)
                 return prefix + Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
-            else if (type == Category.class)
-                return prefix + Category.class.getSimpleName() + ((Category) instance).getUUID();
             else if (type == ConsumerPriceIndex.class)
                 return prefix + ConsumerPriceIndex.class.getSimpleName();
+            else if (type == Classification.class)
+                return prefix + Classification.class.getSimpleName() + ((Classification) instance).getId();
 
             throw new UnsupportedOperationException(type.getName());
         }
@@ -345,12 +360,12 @@ import org.swtchart.LineStyle;
 
     private Color colorFor(RGB rgb)
     {
-        return (Color) resources.createColor(ColorDescriptor.createFrom(rgb));
+        return resources.createColor(ColorDescriptor.createFrom(rgb));
     }
 
     private Color colorFor(Colors color)
     {
-        return (Color) resources.createColor(ColorDescriptor.createFrom(color.swt()));
+        return resources.createColor(ColorDescriptor.createFrom(color.swt()));
     }
 
     private void buildAvailableDataSeries()
@@ -415,22 +430,21 @@ import org.swtchart.LineStyle;
             availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getSegment(index++)
                             .getColor()));
 
-        for (AssetClass assetClass : AssetClass.values())
-            availableSeries.add(new DataSeries(AssetClass.class, assetClass, assetClass.toString(), //
-                            colorFor(Colors.valueOf(assetClass.name()).swt())));
-
-        LinkedList<Category> stack = new LinkedList<Category>();
-        stack.add(client.getRootCategory());
-
-        while (!stack.isEmpty())
+        for (Taxonomy taxonomy : client.getTaxonomies())
         {
-            Category category = stack.removeFirst();
-            for (Category child : category.getChildren())
+            taxonomy.foreach(new Taxonomy.Visitor()
             {
-                availableSeries.add(new DataSeries(Category.class, child, child.getName(), wheel.getSegment(index++)
-                                .getColor()));
-                stack.add(child);
-            }
+                @Override
+                public void visit(Classification classification)
+                {
+                    if (classification.getParent() == null)
+                        return;
+
+                    availableSeries.add(new DataSeries(Classification.class, classification, classification.getName(),
+                                    colorFor(Colors.toRGB(classification.getColor()))));
+                }
+            });
+
         }
     }
 
@@ -439,10 +453,6 @@ import org.swtchart.LineStyle;
         for (DataSeries series : availableSeries)
         {
             if (series.getType() == Client.class || series.getType() == ConsumerPriceIndex.class)
-            {
-                selectedSeries.add(series);
-            }
-            else if (mode == Mode.STATEMENT_OF_ASSETS && series.getType() == AssetClass.class)
             {
                 selectedSeries.add(series);
             }
@@ -842,7 +852,7 @@ import org.swtchart.LineStyle;
         @Override
         public String getText(Object element)
         {
-            return ((DataSeries) element).getLabel();
+            return ((DataSeries) element).getSearchLabel();
         }
     }
 

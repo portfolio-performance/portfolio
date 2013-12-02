@@ -5,11 +5,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.datatransfer.CSVImporter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.CSVImporter;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;

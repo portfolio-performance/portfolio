@@ -15,7 +15,7 @@ public abstract class Transaction implements Comparable<Transaction>
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            return t2.getDate().compareTo(t1.getDate());
+            return t1.getDate().compareTo(t2.getDate());
         }
     }
 

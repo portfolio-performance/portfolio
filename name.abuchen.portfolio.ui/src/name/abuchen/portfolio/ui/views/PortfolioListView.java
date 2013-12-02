@@ -219,7 +219,7 @@ public class PortfolioListView extends AbstractListView
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.LabelStatementOfAssets);
-        statementOfAssets = new StatementOfAssetsViewer(folder, getClient());
+        statementOfAssets = new StatementOfAssetsViewer(folder, this, getClient());
         item.setControl(statementOfAssets.getControl());
 
         hookContextMenu(statementOfAssets.getTableViewer().getControl(), new IMenuListener()

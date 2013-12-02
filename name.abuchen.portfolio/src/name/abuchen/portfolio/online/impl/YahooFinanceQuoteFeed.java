@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -43,7 +42,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // v = volume
     // Source = http://cliffngan.net/a/13
 
-    private static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
+    protected static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
     {
         protected DecimalFormat initialValue()
         {
@@ -51,11 +50,19 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
     };
 
-    private static final ThreadLocal<SimpleDateFormat> FMT_TRADE_DATE = new ThreadLocal<SimpleDateFormat>()
+    protected static final ThreadLocal<SimpleDateFormat> FMT_TRADE_DATE = new ThreadLocal<SimpleDateFormat>()
     {
         protected SimpleDateFormat initialValue()
         {
             return new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
+        }
+    };
+
+    protected static final ThreadLocal<SimpleDateFormat> FMT_QUOTE_DATE = new ThreadLocal<SimpleDateFormat>()
+    {
+        protected SimpleDateFormat initialValue()
+        {
+            return new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
         }
     };
 
@@ -81,7 +88,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateLatestQuotes(List<Security> securities, List<Exception> errors) throws IOException
+    public final void updateLatestQuotes(List<Security> securities, List<Exception> errors) throws IOException
     {
         Map<String, Security> requested = new HashMap<String, Security>();
 
@@ -190,7 +197,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateHistoricalQuotes(Security security) throws IOException
+    public final void updateHistoricalQuotes(Security security) throws IOException
     {
         Calendar start = caculateStart(security);
 
@@ -199,7 +206,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             security.addPrice(p);
     }
 
-    /* package */Calendar caculateStart(Security security)
+    /* package */final Calendar caculateStart(Security security)
     {
         Calendar start = Calendar.getInstance();
         start.setTime(Dates.today());
@@ -217,7 +224,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
+    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
     {
         return internalGetQuotes(LatestSecurityPrice.class, security, start);
     }
@@ -257,6 +264,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
 
             DecimalFormat priceFormat = FMT_PRICE.get();
+            SimpleDateFormat dateFormat = FMT_QUOTE_DATE.get();
 
             while ((line = reader.readLine()) != null)
             {
@@ -266,28 +274,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
                 T price = klass.newInstance();
 
-                SimpleDateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-                Date date = dfmt.parse(values[0]);
-
-                Number q = priceFormat.parse(values[6]);
-                long v = (long) (q.doubleValue() * 100);
-
-                price.setTime(date);
-                price.setValue(v);
-
-                if (price instanceof LatestSecurityPrice)
-                {
-                    LatestSecurityPrice latest = (LatestSecurityPrice) price;
-
-                    q = priceFormat.parse(values[5]);
-                    latest.setVolume(q.intValue());
-
-                    q = priceFormat.parse(values[2]);
-                    latest.setHigh((long) (q.doubleValue() * 100));
-
-                    q = priceFormat.parse(values[3]);
-                    latest.setLow((long) (q.doubleValue() * 100));
-                }
+                fillValues(values, price, priceFormat, dateFormat);
 
                 answer.add(price);
             }
@@ -317,8 +304,34 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return answer;
     }
 
+    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DecimalFormat priceFormat,
+                    SimpleDateFormat dateFormat) throws ParseException
+    {
+        Date date = dateFormat.parse(values[0]);
+
+        Number q = priceFormat.parse(values[4]);
+        long v = (long) (q.doubleValue() * 100);
+
+        price.setTime(date);
+        price.setValue(v);
+
+        if (price instanceof LatestSecurityPrice)
+        {
+            LatestSecurityPrice latest = (LatestSecurityPrice) price;
+
+            q = priceFormat.parse(values[5]);
+            latest.setVolume(q.intValue());
+
+            q = priceFormat.parse(values[2]);
+            latest.setHigh((long) (q.doubleValue() * 100));
+
+            q = priceFormat.parse(values[3]);
+            latest.setLow((long) (q.doubleValue() * 100));
+        }
+    }
+
     @Override
-    public List<Exchange> getExchanges(Security subject) throws IOException
+    public final List<Exchange> getExchanges(Security subject) throws IOException
     {
         String symbol = subject.getTickerSymbol();
         int p = symbol.indexOf('.');
@@ -357,13 +370,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     /* enable testing */
-    protected InputStream openStream(String wknUrl) throws MalformedURLException, IOException
+    protected InputStream openStream(String wknUrl) throws IOException
     {
         return new URL(wknUrl).openStream();
     }
 
     /* enable testing */
-    /* package */void setSearchProvider(SecuritySearchProvider searchProvider)
+    /* package */final void setSearchProvider(SecuritySearchProvider searchProvider)
     {
         this.searchProvider = searchProvider;
     }

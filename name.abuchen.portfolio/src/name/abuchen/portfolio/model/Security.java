@@ -6,10 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.UUID;
 
-public final class Security
+public final class Security implements InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
     {
@@ -24,18 +23,6 @@ public final class Security
         }
     }
 
-    public enum AssetClass
-    {
-        CASH, DEBT, EQUITY, REAL_ESTATE, COMMODITY;
-
-        private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
-
-        public String toString()
-        {
-            return RESOURCES.getString("asset." + name()); //$NON-NLS-1$
-        }
-    }
-
     private String uuid;
 
     private String name;
@@ -44,9 +31,6 @@ public final class Security
     private String tickerSymbol;
     private String wkn;
 
-    private AssetClass type;
-    private String industryClassification;
-
     private String feed;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
@@ -54,21 +38,27 @@ public final class Security
 
     private boolean isRetired = false;
 
+    @Deprecated
+    private String type;
+
+    @Deprecated
+    private String industryClassification;
+
     public Security()
     {
         this.uuid = UUID.randomUUID().toString();
     }
 
-    public Security(String name, String isin, String tickerSymbol, AssetClass type, String feed)
+    public Security(String name, String isin, String tickerSymbol, String feed)
     {
         this();
         this.name = name;
         this.isin = isin;
         this.tickerSymbol = tickerSymbol;
-        this.type = type;
         this.feed = feed;
     }
 
+    @Override
     public String getUUID()
     {
         return uuid;
@@ -80,11 +70,13 @@ public final class Security
         uuid = UUID.randomUUID().toString();
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -135,22 +127,20 @@ public final class Security
             return name;
     }
 
-    public String getIndustryClassification()
+    @Deprecated
+    /* package */String getIndustryClassification()
     {
         return industryClassification;
     }
 
-    public void setIndustryClassification(String industryClassification)
-    {
-        this.industryClassification = industryClassification;
-    }
-
-    public AssetClass getType()
+    @Deprecated
+    /* package */String getType()
     {
         return type;
     }
 
-    public void setType(AssetClass type)
+    @Deprecated
+    /* package */void setType(String type)
     {
         this.type = type;
     }
@@ -316,8 +306,6 @@ public final class Security
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
-        answer.type = type;
-        answer.industryClassification = industryClassification;
 
         answer.feed = feed;
         answer.prices = new ArrayList<SecurityPrice>(prices);

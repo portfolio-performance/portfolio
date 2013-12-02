@@ -2,6 +2,8 @@ package name.abuchen.portfolio.online;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -9,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
@@ -21,12 +28,13 @@ import org.htmlparser.util.ParserException;
 
 public class DestatisCPIFeed implements CPIFeed
 {
-
     @Override
     public List<ConsumerPriceIndex> getConsumerPriceIndeces() throws IOException
     {
         try
         {
+            disableCertificateValidation();
+
             URL url = new URL(
                             "https://www.destatis.de/DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html"); //$NON-NLS-1$
             Lexer lexer = new Lexer(url.openConnection());
@@ -252,4 +260,40 @@ public class DestatisCPIFeed implements CPIFeed
         }
     }
 
+    private static boolean certificateValidationDisabled = false;
+
+    private static void disableCertificateValidation()
+    {
+        if (certificateValidationDisabled)
+            return;
+
+        // http://stackoverflow.com/questions/875467/java-client-certificates-over-https-ssl/876785#876785
+
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
+        {
+            public X509Certificate[] getAcceptedIssuers()
+            {
+                return new X509Certificate[0];
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType)
+            {}
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType)
+            {}
+        } };
+
+        // Install the all-trusting trust manager
+        try
+        {
+            SSLContext sc = SSLContext.getInstance("SSL"); //$NON-NLS-1$
+            sc.init(null, trustAllCerts, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+        catch (Exception ignore)
+        {}
+
+        certificateValidationDisabled = true;
+    }
 }

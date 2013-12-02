@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 
 public class PortfolioSnapshot
 {
@@ -27,31 +28,13 @@ public class PortfolioSnapshot
         {
             if (t.getDate().getTime() <= time.getTime())
             {
-                switch (t.getType())
+                SecurityPosition position = positions.get(t.getSecurity());
+                if (position == null)
                 {
-                    case TRANSFER_IN:
-                    case BUY:
-                    case DELIVERY_INBOUND:
-                    {
-                        SecurityPosition p = positions.get(t.getSecurity());
-                        if (p == null)
-                            positions.put(t.getSecurity(), p = new SecurityPosition(t.getSecurity()));
-                        p.addTransaction(t);
-                        break;
-                    }
-                    case TRANSFER_OUT:
-                    case SELL:
-                    case DELIVERY_OUTBOUND:
-                    {
-                        SecurityPosition p = positions.get(t.getSecurity());
-                        if (p == null)
-                            positions.put(t.getSecurity(), p = new SecurityPosition(t.getSecurity()));
-                        p.addTransaction(t);
-                        break;
-                    }
-                    default:
-                        throw new UnsupportedOperationException("Unsupported operation: " + t.getType()); //$NON-NLS-1$
+                    position = new SecurityPosition(t.getSecurity());
+                    positions.put(t.getSecurity(), position);
                 }
+                position.addTransaction(t);
             }
         }
 
@@ -148,8 +131,8 @@ public class PortfolioSnapshot
         return value;
     }
 
-    public GroupByAssetClass groupByAssetClass()
+    public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)
     {
-        return new GroupByAssetClass(this);
+        return new GroupByTaxonomy(taxonomy, this);
     }
 }
