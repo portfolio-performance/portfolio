@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards;
 
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
@@ -26,7 +28,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         private String tickerSymbol;
         private String wkn;
         private String finanzenFeedURL;
-        private AssetClass type;
         private boolean isRetired;
 
         public Model(Client client, Security security)
@@ -82,16 +83,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             firePropertyChange("wkn", this.tickerSymbol, this.wkn = wkn); //$NON-NLS-1$
         }
 
-        public AssetClass getType()
-        {
-            return type;
-        }
-
-        public void setType(AssetClass type)
-        {
-            firePropertyChange("type", this.type, this.type = type); //$NON-NLS-1$
-        }
-
         public boolean isRetired()
         {
             return isRetired;
@@ -119,7 +110,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             security.setIsin(isin);
             security.setTickerSymbol(tickerSymbol);
             security.setWkn(wkn);
-            security.setType(type);
             security.setRetired(isRetired);
             security.setQuoteFeedURL(finanzenFeedURL);
         }
@@ -130,7 +120,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
             setIsin(security.getIsin());
             setTickerSymbol(security.getTickerSymbol());
             setWkn(security.getWkn());
-            setType(security.getType());
             setRetired(security.isRetired());
             setFinanzenFeedURL(security.getQuoteFeedURL());
         }
@@ -143,9 +132,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     protected SecurityMasterDataPage(EditSecurityModel model)
     {
         super(PAGE_NAME);
-
-        this.taxonomy = client.getIndustryTaxonomy();
-        this.model = new Model(client, security);
 
         setTitle(Messages.EditWizardMasterDataTitle);
         setDescription(Messages.EditWizardMasterDataDescription);

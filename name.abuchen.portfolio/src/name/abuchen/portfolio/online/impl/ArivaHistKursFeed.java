@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class ArivaHistKursFeed implements QuoteFeed
     @Override
     public List<Exchange> getExchanges(Security subject) throws IOException
     {
-        return null;
+        return new ArrayList<Exchange>();
     }
 
 }

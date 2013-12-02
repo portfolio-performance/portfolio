@@ -137,6 +137,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String tickerSymbol;
     private String wkn;
     private String feed;
+    private String finanzenFeedURL;
     private boolean isRetired;
 
     private List<TaxonomyDesignation> designations = new ArrayList<TaxonomyDesignation>();
@@ -153,6 +154,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.wkn = security.getWkn();
         this.feed = security.getFeed();
         this.isRetired = security.isRetired();
+        this.finanzenFeedURL = security.getQuoteFeedURL();
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.designations.add(new TaxonomyDesignation(taxonomy, security));
@@ -218,6 +220,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$
     }
 
+    public String getFinanzenFeedURL()
+    {
+        return finanzenFeedURL;
+    }
+
+    public void setFinanzenFeedURL(String finanzenFeedURL)
+    {
+        firePropertyChange("finanzenFeedURL", this.finanzenFeedURL, this.finanzenFeedURL = finanzenFeedURL);
+    }
+
     public List<TaxonomyDesignation> getDesignations()
     {
         return designations;
@@ -232,6 +244,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setWkn(wkn);
         security.setFeed(feed);
         security.setRetired(isRetired);
+        security.setQuoteFeedURL(finanzenFeedURL);
 
         for (TaxonomyDesignation designation : designations)
             designation.applyChanges();
