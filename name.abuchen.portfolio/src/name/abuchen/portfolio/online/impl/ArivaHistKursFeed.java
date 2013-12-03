@@ -58,28 +58,36 @@ public class ArivaHistKursFeed implements QuoteFeed
         }
     }
 
-    @Override
-    public void updateHistoricalQuotes(Security security) throws IOException
+    private List<LatestSecurityPrice> getQuotes(Security security) throws IOException
     {
+        List<LatestSecurityPrice> latestPrices = new ArrayList<LatestSecurityPrice>();
         ArivaHistQuotesSoup parser = new ArivaHistQuotesSoup();
         try
         {
-            List<LatestSecurityPrice> latestPrices = parser.extractFromURL(security.getQuoteFeedURL());
-            for (LatestSecurityPrice price : latestPrices)
-            {
-                security.addPrice(price);
-            }
+            latestPrices = parser.extractFromURL(security.getQuoteFeedURL());
         }
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+        return latestPrices;
+    }
+
+    @Override
+    public void updateHistoricalQuotes(Security security) throws IOException
+    {
+        for (LatestSecurityPrice price : getQuotes(security))
+        {
+            security.addPrice(price);
         }
     }
 
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
     {
-        return null;
+        // At the moment the best I can do is to ignore the start and return
+        // what is there
+        return getQuotes(security);
     }
 
     @Override
