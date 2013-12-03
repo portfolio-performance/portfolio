@@ -14,6 +14,13 @@ import name.abuchen.portfolio.online.QuoteFeed;
 public class ArivaHistKursFeed implements QuoteFeed
 {
 
+    private Exchange exchange;
+
+    public ArivaHistKursFeed()
+    {
+        exchange = new Exchange("URL Default", "URL Default");
+    }
+
     @Override
     public String getId()
     {
@@ -78,7 +85,9 @@ public class ArivaHistKursFeed implements QuoteFeed
     @Override
     public List<Exchange> getExchanges(Security subject) throws IOException
     {
-        return new ArrayList<Exchange>();
+        List<Exchange> result = new ArrayList<Exchange>();
+        result.add(exchange);
+        return result;
     }
 
 }
