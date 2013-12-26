@@ -97,7 +97,7 @@ public class PortfolioMergeTest
         assertEquals(1100, positionX.getFIFOPurchasePrice());
         // calculate purchase value w/ costs
         assertEquals(22100, positionX.getFIFOPurchaseValue());
-        assertEquals(1900, positionX.getDelta());
+        assertEquals(1900, positionX.getProfitLoss());
     }
 
 }

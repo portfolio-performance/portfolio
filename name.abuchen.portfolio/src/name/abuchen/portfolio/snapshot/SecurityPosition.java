@@ -97,10 +97,10 @@ public class SecurityPosition
         return purchaseValue;
     }
 
-    public long getDelta()
+    public long getProfitLoss()
     {
         calculate();
-        return marketValue - purchaseValue;
+        return security != null ? marketValue - purchaseValue : 0;
     }
 
     private void calculate()
@@ -242,6 +242,8 @@ public class SecurityPosition
             t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setFees(Math.round(t.getFees() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
+
+            answer.transactions.add(t2);
         }
 
         return answer;

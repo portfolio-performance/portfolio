@@ -157,6 +157,9 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
+                if (node.getParent() != null && node.getParent().isUnassignedCategory())
+                    return null;
+
                 Security security = node.getBackingSecurity();
                 if (security == null)
                     return null;

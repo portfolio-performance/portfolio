@@ -140,7 +140,9 @@ public class CSVImporter
     {
         public static final FieldFormat[] FORMATS = new FieldFormat[] {
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")) }; //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")) //$NON-NLS-1$
+        };
 
         /* package */DateField(String name)
         {

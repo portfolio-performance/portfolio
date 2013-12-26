@@ -28,6 +28,16 @@ public class AssetPosition implements Comparable<AssetPosition>
         return (double) getValuation() / (double) this.totalAssets;
     }
 
+    public long getFIFOPurchaseValue()
+    {
+        return position.getFIFOPurchaseValue();
+    }
+
+    public long getProfitLoss()
+    {
+        return position.getProfitLoss();
+    }
+
     public String getDescription()
     {
         return investmentVehicle != null ? investmentVehicle.getName() : position.getSecurity().getName();

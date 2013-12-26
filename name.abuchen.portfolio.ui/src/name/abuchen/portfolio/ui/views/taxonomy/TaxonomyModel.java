@@ -196,7 +196,10 @@ public final class TaxonomyModel
 
     private void recalculateTargets()
     {
-        rootNode.setTarget(rootNode.getActual());
+        // see #124
+        // only assigned assets go into the target value in order to allow an
+        // asset allocation only for assigned securities
+        rootNode.setTarget(rootNode.getActual() - unassignedNode.getActual());
 
         visitAll(new NodeVisitor()
         {
