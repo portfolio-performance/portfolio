@@ -30,7 +30,7 @@ public class DividendsDialog extends AbstractDialog
         private long amount;
         private Date date = Dates.today();
 
-        public Model(Client client, Security security)
+        public Model(Client client, Account account, Security security)
         {
             super(client);
 
@@ -39,9 +39,12 @@ public class DividendsDialog extends AbstractDialog
             if (security == null && !client.getSecurities().isEmpty())
                 setSecurity(client.getSecurities().get(0));
 
-            // set account if only one exists
-            // (otherwise force user to choose)
-            if (client.getAccounts().size() == 1)
+            // set account if given by context
+            // *or* if only one account exists
+            // *otherwise* force user to choose
+            if (account != null)
+                setAccount(account);
+            else if (client.getAccounts().size() == 1)
                 setAccount(client.getAccounts().get(0));
         }
 
@@ -112,9 +115,9 @@ public class DividendsDialog extends AbstractDialog
 
     private boolean allowSelectionOfSecurity = false;
 
-    public DividendsDialog(Shell parentShell, Client client, Security security)
+    public DividendsDialog(Shell parentShell, Client client, Account account, Security security)
     {
-        super(parentShell, Messages.SecurityMenuDividends, new Model(client, security));
+        super(parentShell, Messages.SecurityMenuDividends, new Model(client, account, security));
         this.allowSelectionOfSecurity = security == null;
     }
 

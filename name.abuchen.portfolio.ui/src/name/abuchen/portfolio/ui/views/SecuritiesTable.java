@@ -642,7 +642,7 @@ public final class SecuritiesTable
             @Override
             Dialog createDialog(Security security)
             {
-                return new DividendsDialog(getShell(), getClient(), security);
+                return new DividendsDialog(getShell(), getClient(), null, security);
             }
         });
         manager.add(new Separator());

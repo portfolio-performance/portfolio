@@ -70,7 +70,7 @@ public class SecurityContextMenu
             public void run()
             {
                 DividendsDialog dialog = new DividendsDialog(owner.getClientEditor().getSite().getShell(), owner
-                                .getClient(), security);
+                                .getClient(), null, security);
                 if (dialog.open() == DividendsDialog.OK)
                 {
                     owner.markDirty();
