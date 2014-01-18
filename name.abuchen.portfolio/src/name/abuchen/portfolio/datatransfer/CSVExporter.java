@@ -122,10 +122,10 @@ public class CSVExporter
         Security security = t.getSecurity();
         if (security != null)
         {
-            printer.print(security.getIsin() != null ? security.getIsin() : ""); //$NON-NLS-1$
-            printer.print(security.getWkn() != null ? security.getWkn() : ""); //$NON-NLS-1$
-            printer.print(security.getTickerSymbol() != null ? security.getTickerSymbol() : ""); //$NON-NLS-1$
-            printer.print(security.getName() != null ? security.getName() : ""); //$NON-NLS-1$
+            printer.print(escapeNull(security.getIsin()));
+            printer.print(escapeNull(security.getWkn()));
+            printer.print(escapeNull(security.getTickerSymbol()));
+            printer.print(escapeNull(security.getName()));
         }
         else
         {
@@ -159,11 +159,11 @@ public class CSVExporter
 
             for (Security s : securities)
             {
-                printer.print(s.getIsin());
-                printer.print(s.getWkn());
-                printer.print(s.getTickerSymbol());
-                printer.print(s.getName());
-                printer.print(s.getTickerSymbol());
+                printer.print(escapeNull(s.getIsin()));
+                printer.print(escapeNull(s.getWkn()));
+                printer.print(escapeNull(s.getTickerSymbol()));
+                printer.print(escapeNull(s.getName()));
+                printer.print(escapeNull(s.getTickerSymbol()));
                 printer.println();
             }
         }
@@ -287,7 +287,10 @@ public class CSVExporter
         {
             writer.close();
         }
-
     }
 
+    private String escapeNull(String value)
+    {
+        return value != null ? value : ""; //$NON-NLS-1$
+    }
 }
