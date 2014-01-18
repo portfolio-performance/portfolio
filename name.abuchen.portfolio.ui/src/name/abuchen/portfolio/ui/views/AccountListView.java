@@ -48,11 +48,37 @@ public class AccountListView extends AbstractListView
     private TableViewer accounts;
     private TableViewer transactions;
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
+    private static final String INACTIVE_ACCOUNTS = "inactiveAccounts";
 
     @Override
     protected String getTitle()
     {
         return Messages.LabelAccounts;
+    }
+
+    private void resetInput()
+    {
+        if (getClientEditor().getPreferenceStore().getBoolean(INACTIVE_ACCOUNTS))
+        {
+            accounts.setInput(getActiveAccounts());
+        }
+        else
+        {
+            accounts.setInput(getClient().getAccounts());
+        }
+    }
+
+    private List<Account> getActiveAccounts()
+    {
+        List<Account> result = new ArrayList<Account>();
+        for (Account a : getClient().getAccounts())
+        {
+            if (a.isActive())
+            {
+                result.add(a);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -69,20 +95,41 @@ public class AccountListView extends AbstractListView
                 getClient().addAccount(account);
                 markDirty();
 
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
                 accounts.editElement(account, 0);
             }
         };
         action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
         action.setToolTipText(Messages.AccountMenuAdd);
-
         new ActionContributionItem(action).fill(toolBar, -1);
+
+        Action filter = new Action()
+        {
+
+            @Override
+            public void run()
+            {
+                if (isChecked())
+                {
+                    getClientEditor().getPreferenceStore().setValue(INACTIVE_ACCOUNTS, true);
+                }
+                else
+                {
+                    getClientEditor().getPreferenceStore().setValue(INACTIVE_ACCOUNTS, false);
+                }
+                resetInput();
+            }
+        };
+        filter.setChecked(true);
+        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        filter.setToolTipText("Inaktive Accounts verbergen");
+        new ActionContributionItem(filter).fill(toolBar, -1);
     }
 
     @Override
     public void notifyModelUpdated()
     {
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
 
         Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (getClient().getAccounts().contains(account))
@@ -150,7 +197,7 @@ public class AccountListView extends AbstractListView
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
         accounts.refresh();
         ViewerHelper.pack(accounts);
 
@@ -197,6 +244,27 @@ public class AccountListView extends AbstractListView
         accountMenu.menuAboutToShow(manager, account);
         manager.add(new Separator());
 
+        String message = null;
+        if (account.isActive())
+        {
+            message = "Konto deaktivieren";
+        }
+        else
+        {
+            message = "Konto aktivieren";
+        }
+        manager.add(new Action(message)
+        {
+
+            @Override
+            public void run()
+            {
+                account.setActive(!account.isActive());
+                markDirty();
+                resetInput();
+            }
+
+        });
         manager.add(new Action(Messages.AccountMenuDelete)
         {
             @Override
@@ -204,8 +272,7 @@ public class AccountListView extends AbstractListView
             {
                 getClient().removeAccount(account);
                 markDirty();
-
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
             }
         });
     }

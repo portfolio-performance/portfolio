@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.util.Dates;
@@ -126,7 +128,7 @@ public class TransferDialog extends AbstractDialog
                 return ((Account) element).getName();
             }
         });
-        comboFrom.setInput(getModel().getClient().getAccounts().toArray());
+        comboFrom.setInput(getActiveAccounts());
         gdf.applyTo(comboFrom.getControl());
         final IViewerObservableValue observableFrom = ViewersObservables.observeSingleSelection(comboFrom);
 
@@ -143,7 +145,7 @@ public class TransferDialog extends AbstractDialog
                 return ((Account) element).getName();
             }
         });
-        comboTo.setInput(getModel().getClient().getAccounts().toArray());
+        comboTo.setInput(getActiveAccounts());
         gdf.applyTo(comboTo.getControl());
         final IViewerObservableValue observableTo = ViewersObservables.observeSingleSelection(comboTo);
 
@@ -182,5 +184,18 @@ public class TransferDialog extends AbstractDialog
         context.bindValue(validator.observeValidatedValue(observableTo), //
                         BeansObservables.observeValue(getModel(), "accountTo")); //$NON-NLS-1$
 
+    }
+
+    private Object[] getActiveAccounts()
+    {
+        List<Account> result = new ArrayList<Account>();
+        for (Account a : getModel().getClient().getAccounts())
+        {
+            if (a.isActive())
+            {
+                result.add(a);
+            }
+        }
+        return result.toArray();
     }
 }
