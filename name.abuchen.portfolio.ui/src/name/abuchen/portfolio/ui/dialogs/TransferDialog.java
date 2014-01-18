@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -115,6 +116,13 @@ public class TransferDialog extends AbstractDialog
     {
         GridDataFactory gdf = GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false);
 
+        // account list
+        List<Account> accounts = new ArrayList<Account>();
+        for (Account a : getModel().getClient().getAccounts())
+            if (!a.isRetired())
+                accounts.add(a);
+        Collections.sort(accounts, new Account.ByName());
+
         // account from
         Label label = new Label(editArea, SWT.NONE);
         label.setText(Messages.ColumnAccountFrom);
@@ -128,7 +136,7 @@ public class TransferDialog extends AbstractDialog
                 return ((Account) element).getName();
             }
         });
-        comboFrom.setInput(getActiveAccounts());
+        comboFrom.setInput(accounts);
         gdf.applyTo(comboFrom.getControl());
         final IViewerObservableValue observableFrom = ViewersObservables.observeSingleSelection(comboFrom);
 
@@ -145,7 +153,7 @@ public class TransferDialog extends AbstractDialog
                 return ((Account) element).getName();
             }
         });
-        comboTo.setInput(getActiveAccounts());
+        comboTo.setInput(accounts);
         gdf.applyTo(comboTo.getControl());
         final IViewerObservableValue observableTo = ViewersObservables.observeSingleSelection(comboTo);
 
@@ -184,18 +192,5 @@ public class TransferDialog extends AbstractDialog
         context.bindValue(validator.observeValidatedValue(observableTo), //
                         BeansObservables.observeValue(getModel(), "accountTo")); //$NON-NLS-1$
 
-    }
-
-    private Object[] getActiveAccounts()
-    {
-        List<Account> result = new ArrayList<Account>();
-        for (Account a : getModel().getClient().getAccounts())
-        {
-            if (a.isActive())
-            {
-                result.add(a);
-            }
-        }
-        return result.toArray();
     }
 }

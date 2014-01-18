@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -165,6 +166,12 @@ public class NewPlanDialog extends AbstractDialog
     {
         bindings().bindMandatoryStringInput(editArea, Messages.ColumnName, "name"); //$NON-NLS-1$
 
+        List<Security> securities = new ArrayList<Security>();
+        for (Security s : getModel().getClient().getSecurities())
+            if (!s.isRetired())
+                securities.add(s);
+        Collections.sort(securities, new Security.ByName());
+
         bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
@@ -172,7 +179,7 @@ public class NewPlanDialog extends AbstractDialog
                             {
                                 return ((Security) element).getName();
                             }
-                        }, getModel().getClient().getSecurities().toArray());
+                        }, securities.toArray());
 
         bindings().bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
                         {
@@ -194,7 +201,10 @@ public class NewPlanDialog extends AbstractDialog
 
         List<Account> accounts = new ArrayList<Account>();
         accounts.add(DELIVERY);
-        accounts.addAll(getActiveAccounts());
+        for (Account a : getModel().getClient().getAccounts())
+            if (!a.isRetired())
+                accounts.add(a);
+
         bindings().bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
@@ -221,18 +231,5 @@ public class NewPlanDialog extends AbstractDialog
 
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount"); //$NON-NLS-1$
         bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
-    }
-
-    private List<Account> getActiveAccounts()
-    {
-        List<Account> result = new ArrayList<Account>();
-        for (Account a : getModel().getClient().getAccounts())
-        {
-            if (a.isActive())
-            {
-                result.add(a);
-            }
-        }
-        return result;
     }
 }
