@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
@@ -45,14 +46,42 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class AccountListView extends AbstractListView
 {
+    private static final String FILTER_INACTIVE_ACCOUNTS = "filter-redired-accounts"; //$NON-NLS-1$
+
     private TableViewer accounts;
     private TableViewer transactions;
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
+
+    private boolean isFiltered = false;
 
     @Override
     protected String getTitle()
     {
         return Messages.LabelAccounts;
+    }
+
+    @Override
+    public void init(ClientEditor clientEditor, Object parameter)
+    {
+        super.init(clientEditor, parameter);
+
+        isFiltered = getClientEditor().getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+    }
+
+    private void resetInput()
+    {
+        if (isFiltered)
+        {
+            List<Account> list = new ArrayList<Account>();
+            for (Account a : getClient().getAccounts())
+                if (!a.isRetired())
+                    list.add(a);
+            accounts.setInput(list);
+        }
+        else
+        {
+            accounts.setInput(getClient().getAccounts());
+        }
     }
 
     @Override
@@ -69,20 +98,34 @@ public class AccountListView extends AbstractListView
                 getClient().addAccount(account);
                 markDirty();
 
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
                 accounts.editElement(account, 0);
             }
         };
         action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
         action.setToolTipText(Messages.AccountMenuAdd);
-
         new ActionContributionItem(action).fill(toolBar, -1);
+
+        Action filter = new Action()
+        {
+            @Override
+            public void run()
+            {
+                isFiltered = isChecked();
+                getClientEditor().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
+                resetInput();
+            }
+        };
+        filter.setChecked(isFiltered);
+        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_FILTER));
+        filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
+        new ActionContributionItem(filter).fill(toolBar, -1);
     }
 
     @Override
     public void notifyModelUpdated()
     {
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
 
         Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (getClient().getAccounts().contains(account))
@@ -121,6 +164,13 @@ public class AccountListView extends AbstractListView
             {
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                boolean isRetired = ((Account) e).isRetired();
+                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
+            }
         });
         column.setSorter(ColumnViewerSorter.create(Account.class, "name"), SWT.DOWN); //$NON-NLS-1$
         column.setMoveable(false);
@@ -150,7 +200,7 @@ public class AccountListView extends AbstractListView
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
         accounts.refresh();
         ViewerHelper.pack(accounts);
 
@@ -197,6 +247,18 @@ public class AccountListView extends AbstractListView
         accountMenu.menuAboutToShow(manager, account);
         manager.add(new Separator());
 
+        manager.add(new Action(account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate)
+        {
+            @Override
+            public void run()
+            {
+                account.setRetired(!account.isRetired());
+                markDirty();
+                resetInput();
+            }
+
+        });
+
         manager.add(new Action(Messages.AccountMenuDelete)
         {
             @Override
@@ -204,8 +266,7 @@ public class AccountListView extends AbstractListView
             {
                 getClient().removeAccount(account);
                 markDirty();
-
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
             }
         });
     }
