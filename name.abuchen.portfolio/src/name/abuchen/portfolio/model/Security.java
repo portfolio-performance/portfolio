@@ -32,6 +32,7 @@ public final class Security implements InvestmentVehicle
     private String wkn;
 
     private String feed;
+    private String feedURL;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
 
@@ -152,6 +153,16 @@ public final class Security implements InvestmentVehicle
     public void setFeed(String feed)
     {
         this.feed = feed;
+    }
+
+    public String getFeedURL()
+    {
+        return feedURL;
+    }
+
+    public void setFeedURL(String feedURL)
+    {
+        this.feedURL = feedURL;
     }
 
     public List<SecurityPrice> getPrices()
@@ -307,6 +318,7 @@ public final class Security implements InvestmentVehicle
         answer.wkn = wkn;
 
         answer.feed = feed;
+        answer.feedURL = feedURL;
         answer.prices = new ArrayList<SecurityPrice>(prices);
         answer.latest = latest;
 

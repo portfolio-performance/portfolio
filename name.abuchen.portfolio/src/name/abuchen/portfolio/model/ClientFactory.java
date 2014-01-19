@@ -135,6 +135,12 @@ public class ClientFactory
             client.setVersion(16);
         }
 
+        if (client.getVersion() == 16)
+        {
+            // do nothing --> added 'feedURL' property to account
+            client.setVersion(17);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));

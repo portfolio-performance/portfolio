@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class DividendsDialog extends AbstractDialog
 {
-    static class Model extends BindingHelper.Model
+    static final class Model extends BindingHelper.Model
     {
         private Security security;
         private Account account;

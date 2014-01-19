@@ -197,7 +197,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final void updateHistoricalQuotes(Security security) throws IOException
+    public final void updateHistoricalQuotes(Security security, List<Exception> errors) throws IOException
     {
         Calendar start = caculateStart(security);
 
@@ -224,7 +224,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
+    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+                    throws IOException
     {
         return internalGetQuotes(LatestSecurityPrice.class, security, start);
     }

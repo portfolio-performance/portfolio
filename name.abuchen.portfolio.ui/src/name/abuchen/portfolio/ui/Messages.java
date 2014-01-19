@@ -134,6 +134,8 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardQuoteFeedDescription;
+    public static String EditWizardQuoteFeedLabelFeedURL;
+    public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;

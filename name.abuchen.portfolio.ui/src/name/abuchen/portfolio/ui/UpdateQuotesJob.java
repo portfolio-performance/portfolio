@@ -116,7 +116,20 @@ public class UpdateQuotesJob extends Job
             {
                 QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
                 if (feed != null)
-                    feed.updateHistoricalQuotes(security);
+                {
+                    ArrayList<Exception> exceptions = new ArrayList<Exception>();
+                    feed.updateHistoricalQuotes(security, exceptions);
+
+                    if (!exceptions.isEmpty())
+                    {
+                        MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR,
+                                        security.getName(), null);
+                        for (Exception exception : exceptions)
+                            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(),
+                                            exception));
+                        errors.add(status);
+                    }
+                }
             }
             catch (IOException e)
             {

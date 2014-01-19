@@ -133,7 +133,7 @@ public class YahooFinanceQuoteFeedTest
         Security security = new Security();
         security.setTickerSymbol("DAI.DE");
 
-        feed.updateHistoricalQuotes(security);
+        feed.updateHistoricalQuotes(security, new ArrayList<Exception>());
 
         assertThat(security.getPrices().size(), is(2257));
 
@@ -159,7 +159,7 @@ public class YahooFinanceQuoteFeedTest
         Security security = new Security();
         security.setTickerSymbol("DAI.DE");
 
-        feed.updateHistoricalQuotes(security);
+        feed.updateHistoricalQuotes(security, new ArrayList<Exception>());
 
         assertThat(security.getPrices().size(), is(2257));
 
