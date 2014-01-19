@@ -73,4 +73,15 @@ public class EditSecurityWizard extends Wizard
         return true;
     }
 
+    private void shallowCopy(Security source, Security target)
+    {
+        target.setName(source.getName());
+        target.setIsin(source.getIsin());
+        target.setTickerSymbol(source.getTickerSymbol());
+        target.setWkn(source.getWkn());
+        target.setFeed(source.getFeed());
+        target.setRetired(source.isRetired());
+        target.setQuoteFeedURL(source.getQuoteFeedURL());
+    }
+
 }

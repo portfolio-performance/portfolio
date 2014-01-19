@@ -23,7 +23,7 @@ public class InvestmentPlan
 
     public InvestmentPlan()
     {
-        // needed for xstream de-serialization
+
     }
 
     public InvestmentPlan(String name)

@@ -412,6 +412,8 @@ public class QuoteProviderPage extends AbstractWizardPage
                 s.setIsin(model.getIsin());
                 s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
+                s.setName(model.getName());
+                s.setQuoteFeedURL(model.getFinanzenFeedURL());
 
                 // last 2 months as sample
                 Calendar cal = Calendar.getInstance();

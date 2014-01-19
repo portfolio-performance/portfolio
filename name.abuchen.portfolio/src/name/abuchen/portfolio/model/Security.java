@@ -34,6 +34,7 @@ public final class Security implements InvestmentVehicle
     private String feed;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
+    private String quoteFeedURL;
 
     private boolean isRetired = false;
 
@@ -320,4 +321,15 @@ public final class Security implements InvestmentVehicle
     {
         return getName();
     }
+
+    public String getQuoteFeedURL()
+    {
+        return quoteFeedURL;
+    }
+
+    public void setQuoteFeedURL(String finanzenFeedURL)
+    {
+        this.quoteFeedURL = finanzenFeedURL;
+    }
+
 }

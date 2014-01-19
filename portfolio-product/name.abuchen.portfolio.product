@@ -5,7 +5,8 @@
 
    <aboutInfo>
       <image path="icons/about.gif"/>
-      <text>Portfolio Performance
+      <text>
+         Portfolio Performance
 
 Version {0}
 
@@ -40,7 +41,6 @@ http://www.eclipse.org/legal/epl-v10.html
 
    <splash
       location="name.abuchen.portfolio.ui" />
-
    <launcher name="PortfolioPerformance">
       <linux icon="icons/pp.xpm"/>
       <macosx icon="icons/pp.icns"/>
@@ -56,12 +56,19 @@ http://www.eclipse.org/legal/epl-v10.html
 
    <plugins>
       <plugin id="com.ibm.icu"/>
+      <plugin id="com.springsource.com.thoughtworks.xstream"/>
+      <plugin id="com.springsource.javax.xml.stream"/>
+      <plugin id="com.springsource.org.apache.commons.csv"/>
+      <plugin id="com.springsource.org.htmlparser"/>
+      <plugin id="com.springsource.org.xmlpull"/>
+      <plugin id="de.engehausen.treemap"/>
+      <plugin id="de.engehausen.treemap.swt"/>
+      <plugin id="joda-time"/>
       <plugin id="name.abuchen.portfolio"/>
       <plugin id="name.abuchen.portfolio.ui"/>
-
       <plugin id="org.apache.commons.codec"/>
-      <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.commons.httpclient"/>
+      <plugin id="org.apache.commons.logging"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.ant.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.commands"/>
@@ -69,9 +76,9 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.contenttype.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding"/>
-      <plugin id="org.eclipse.core.databinding.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.beans"/>
       <plugin id="org.eclipse.core.databinding.beans.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable"/>
       <plugin id="org.eclipse.core.databinding.observable.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property"/>
@@ -81,63 +88,69 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filebuffers.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.linux.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.linux.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.macosx.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.filesystem.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.core.filesystem.linux.x86" fragment="true" os="linux" arch="x86"/>
-      <plugin id="org.eclipse.core.filesystem.linux.x86.nl_de" fragment="true" os="linux" arch="x86"/>
-      <plugin id="org.eclipse.core.filesystem.linux.x86_64" fragment="true" os="linux" arch="x86_64"/>
-      <plugin id="org.eclipse.core.filesystem.linux.x86_64.nl_de" fragment="true" os="linux" arch="x86_64"/>
-      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true" os="macosx"/>
-      <plugin id="org.eclipse.core.filesystem.macosx.nl_de" fragment="true" os="macosx"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true" os="win32" arch="x86"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86.nl_de" fragment="true" os="win32" arch="x86"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true" os="win32" arch="x86_64"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86_64.nl_de" fragment="true" os="win32" arch="x86_64"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86_64.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.jobs.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.net"/>
       <plugin id="org.eclipse.core.net.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.core.resources.win32.x86" fragment="true" os="win32" arch="x86"/>
+      <plugin id="org.eclipse.core.resources.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
       <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ecf"/>
-      <plugin id="org.eclipse.ecf.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ecf.filetransfer"/>
       <plugin id="org.eclipse.ecf.filetransfer.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.identity.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer"/>
-      <plugin id="org.eclipse.ecf.provider.filetransfer.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.app.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.common.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
       <plugin id="org.eclipse.equinox.concurrent.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.ds"/>
+      <plugin id="org.eclipse.equinox.ds.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.launcher"/>
+      <plugin id="org.eclipse.equinox.launcher.cocoa.macosx.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.cocoa.macosx.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86_64.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.launcher.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.launcher.cocoa.macosx.x86_64" fragment="true" os="macosx" ws="cocoa" arch="x86_64"/>
-      <plugin id="org.eclipse.equinox.launcher.cocoa.macosx.x86_64.nl_de" fragment="true" os="macosx" ws="cocoa" arch="x86_64"/>
-      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86" fragment="true" os="linux" ws="gtk" arch="x86"/>
-      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86.nl_de" fragment="true" os="linux" ws="gtk" arch="x86"/>
-      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86_64" fragment="true" os="linux" ws="gtk" arch="x86_64"/>
-      <plugin id="org.eclipse.equinox.launcher.gtk.linux.x86_64.nl_de" fragment="true" os="linux" ws="gtk" arch="x86_64"/>
-      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86" fragment="true" os="win32" ws="win32" arch="x86"/>
-      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86.nl_de" fragment="true" os="win32" ws="win32" arch="x86"/>
-      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86_64" fragment="true" os="win32" ws="win32" arch="x86_64"/>
-      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86_64.nl_de" fragment="true" os="win32" ws="win32" arch="x86_64"/>
+      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.equinox.launcher.win32.win32.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.director"/>
+      <plugin id="org.eclipse.equinox.p2.director.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
@@ -148,48 +161,42 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.equinox.p2.metadata.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.repository"/>
-      <plugin id="org.eclipse.equinox.p2.repository.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.director"/>
-      <plugin id="org.eclipse.equinox.p2.director.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.operations"/>
       <plugin id="org.eclipse.equinox.p2.operations.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.repository"/>
+      <plugin id="org.eclipse.equinox.p2.repository.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.natives"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.natives.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.transport.ecf"/>
       <plugin id="org.eclipse.equinox.p2.transport.ecf.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.ds"/>
-      <plugin id="org.eclipse.equinox.ds.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.preferences.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.registry.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.security.macosx" fragment="true" os="macosx"/>
-      <plugin id="org.eclipse.equinox.security.macosx.nl_de" fragment="true" os="macosx"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"  os="win32" arch="x86"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86.nl_de" fragment="true"  os="win32" arch="x86"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"  os="win32" arch="x86_64"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86_64.nl_de" fragment="true"  os="win32" arch="x86_64"/>
       <plugin id="org.eclipse.equinox.security"/>
+      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.macosx.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.win32.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.win32.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.util"/>
       <plugin id="org.eclipse.equinox.util.nl_de" fragment="true"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.help.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface"/>
-      <plugin id="org.eclipse.jface.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.databinding.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.jface.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.jface.text.nl_de" fragment="true"/>
       <plugin id="org.eclipse.osgi"/>
@@ -197,46 +204,44 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.nl_de" fragment="true"/>
       <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_de" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true" os="macosx" ws="cocoa" arch="x86_64"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_de" fragment="true" os="macosx" ws="cocoa" arch="x86_64"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86" fragment="true" os="linux" ws="gtk" arch="x86"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_de" fragment="true" os="linux" ws="gtk" arch="x86"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true" os="linux" ws="gtk" arch="x86_64"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_de" fragment="true" os="linux" ws="gtk" arch="x86_64"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true" os="win32" ws="win32" arch="x86"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86.nl_de" fragment="true" os="win32" ws="win32" arch="x86"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true" os="win32" ws="win32" arch="x86_64"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_de" fragment="true" os="win32" ws="win32" arch="x86_64"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_de" fragment="true"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.text.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui"/>
-      <plugin id="org.eclipse.ui.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.ui.cocoa" fragment="true" os="macosx" ws="cocoa"/>
-      <plugin id="org.eclipse.ui.cocoa.nl_de" fragment="true" os="macosx" ws="cocoa"/>
+      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.forms.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.views"/>
-      <plugin id="org.eclipse.ui.views.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.views.log"/>
       <plugin id="org.eclipse.ui.views.log.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.views.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.nl_de" fragment="true"/>
+      <plugin id="org.jsoup" version="1.7.2"/>
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
-
-      <plugin id="com.springsource.org.htmlparser"/>
-      <plugin id="com.springsource.com.thoughtworks.xstream"/>
-      <plugin id="com.springsource.javax.xml.stream"/>
-      <plugin id="com.springsource.org.xmlpull"/>
-      <plugin id="com.springsource.org.apache.commons.csv"/>
       <plugin id="org.swtchart"/>
+<<<<<<< HEAD
+=======
       <plugin id="de.engehausen.treemap"/>
       <plugin id="de.engehausen.treemap.swt"/>
       <plugin id="joda-time"/>
       <plugin id="org.jsoup"/>
 
       <plugin id="com.bandlem.eclipse.fullscreen.ui" os="macosx" ws="cocoa" arch="x86_64"/>
+>>>>>>> upstream/master
    </plugins>
 
    <configurations>

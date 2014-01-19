@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.Security;
 public interface QuoteFeed
 {
     String MANUAL = "MANUAL"; //$NON-NLS-1$
+    String URL = "URL"; //$NON-NLS-1$
 
     String getId();
 
