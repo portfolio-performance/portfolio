@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.ui.util.PieChart;
+import name.abuchen.portfolio.ui.util.PieChart.Slice;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -40,7 +41,7 @@ import org.eclipse.swt.widgets.Control;
                             getRenderer().getColorFor(child)));
         }
 
-        Collections.sort(slices);
+        Collections.sort(slices, new Slice.ByValue());
 
         pieChart.setSlices(slices);
         pieChart.redraw();

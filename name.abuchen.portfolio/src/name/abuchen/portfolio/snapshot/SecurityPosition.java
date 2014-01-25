@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 
 public class SecurityPosition
@@ -167,7 +168,7 @@ public class SecurityPosition
         }
 
         output.addAll(inbound);
-        Collections.sort(output);
+        Collections.sort(output, new Transaction.ByDate());
         return output;
     }
 

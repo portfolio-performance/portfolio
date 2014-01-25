@@ -399,6 +399,7 @@ public class ClientFactory
                             shares -= ((PortfolioTransaction) t).getShares();
                             break;
                         default:
+                            break;
                     }
                 }
             }

@@ -95,6 +95,7 @@ public class ImportOnvistaQuotes
             case 1:
                 if (hasOnlyClosingQuote)
                     item.setValue(parsePrice(t));
+                break;
             case 2:
                 if (!hasOnlyClosingQuote)
                     item.setLow(parsePrice(t));
@@ -108,6 +109,7 @@ public class ImportOnvistaQuotes
                     item.setValue(parsePrice(t));
                 break;
             default:
+                break;
         }
 
         return true;

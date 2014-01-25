@@ -129,7 +129,7 @@ public class Client
     public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
     {
         this.consumerPriceIndeces = prices;
-        Collections.sort(this.consumerPriceIndeces);
+        Collections.sort(this.consumerPriceIndeces, new ConsumerPriceIndex.ByDate());
     }
 
     public void addConsumerPriceIndex(ConsumerPriceIndex record)

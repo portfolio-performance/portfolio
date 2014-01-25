@@ -222,7 +222,7 @@ public class ConsumerPriceIndexListView extends AbstractListView
             return;
 
         List<ConsumerPriceIndex> indeces = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndeces());
-        Collections.sort(indeces);
+        Collections.sort(indeces, new ConsumerPriceIndex.ByDate());
 
         Date[] dates = new Date[indeces.size()];
         double[] cpis = new double[indeces.size()];

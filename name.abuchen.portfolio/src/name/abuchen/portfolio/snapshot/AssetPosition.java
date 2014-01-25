@@ -1,10 +1,21 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.util.Comparator;
+
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 
-public class AssetPosition implements Comparable<AssetPosition>
+public class AssetPosition
 {
+    public static final class ByDescription implements Comparator<AssetPosition>
+    {
+        @Override
+        public int compare(AssetPosition p1, AssetPosition p2)
+        {
+            return p1.getDescription().compareTo(p2.getDescription());
+        }
+    }
+
     private final InvestmentVehicle investmentVehicle;
     private final SecurityPosition position;
     private final long valuation;
@@ -56,10 +67,5 @@ public class AssetPosition implements Comparable<AssetPosition>
     public InvestmentVehicle getInvestmentVehicle()
     {
         return investmentVehicle;
-    }
-
-    public int compareTo(AssetPosition o)
-    {
-        return getDescription().compareTo(o.getDescription());
     }
 }

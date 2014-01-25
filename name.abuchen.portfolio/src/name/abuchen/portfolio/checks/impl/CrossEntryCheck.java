@@ -94,6 +94,7 @@ public class CrossEntryCheck implements Check
                             accountTransactions.add(new AccountEntry(account, t));
                             break;
                         default:
+                            break;
                     }
                 }
             }
@@ -117,6 +118,7 @@ public class CrossEntryCheck implements Check
                             portfolioTransactions.add(new PortfolioEntry(portfolio, t));
                             break;
                         default:
+                            break;
                     }
                 }
             }

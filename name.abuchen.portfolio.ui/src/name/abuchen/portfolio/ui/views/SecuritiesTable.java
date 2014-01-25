@@ -269,15 +269,15 @@ public final class SecuritiesTable
                     if (answer.length() > 0)
                         answer.append(", "); //$NON-NLS-1$
 
-                    switch (option)
+                    if (option == 100)
                     {
-                        case 100:
-                            answer.append(c.getPathName(false));
-                            break;
-                        default:
-                            List<Classification> path = c.getPathToRoot();
-                            if (option < path.size())
-                                answer.append(path.get(option).getName());
+                        answer.append(c.getPathName(false));
+                    }
+                    else
+                    {
+                        List<Classification> path = c.getPathToRoot();
+                        if (option < path.size())
+                            answer.append(path.get(option).getName());
                     }
                 }
 

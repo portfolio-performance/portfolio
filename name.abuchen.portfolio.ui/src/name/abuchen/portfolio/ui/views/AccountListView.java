@@ -196,7 +196,7 @@ public class AccountListView extends AbstractListView
 
         for (Account account : getClient().getAccounts())
         {
-            Collections.sort(account.getTransactions());
+            Collections.sort(account.getTransactions(), new Transaction.ByDate());
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());

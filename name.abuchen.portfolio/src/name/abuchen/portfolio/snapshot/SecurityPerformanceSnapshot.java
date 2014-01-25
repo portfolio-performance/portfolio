@@ -232,7 +232,7 @@ public class SecurityPerformanceSnapshot
 
         void prepare()
         {
-            Collections.sort(transactions);
+            Collections.sort(transactions, new Transaction.ByDate());
 
             if (!transactions.isEmpty())
             {
