@@ -34,7 +34,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 {
     private abstract static class Column
     {
-        private DecimalFormat decimalFormat = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
+        private DecimalFormat decimalFormat = new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
         private final Pattern[] patterns;
 
         protected Column(String[] strings)
@@ -44,7 +44,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 this.patterns[ii] = Pattern.compile(strings[ii]);
         }
 
-        public boolean matches(Element header)
+        protected boolean matches(Element header)
         {
             String text = header.text();
             for (Pattern pattern : patterns)
@@ -76,8 +76,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         void read(Element value, LatestSecurityPrice price) throws ParseException
         {
             String text = value.text();
-            Date date = new SimpleDateFormat("dd.MM.yy").parse(text); //$NON-NLS-1$
-            price.setTime(date);
+            try
+            {
+                Date date = new SimpleDateFormat("dd.MM.yy").parse(text); //$NON-NLS-1$
+                price.setTime(date);
+            }
+            catch (ParseException e)
+            {
+                Date date = new SimpleDateFormat("dd. MMM yyyy").parse(text); //$NON-NLS-1$
+                price.setTime(date);
+            }
         }
     }
 
@@ -99,7 +107,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         public HighColumn()
         {
-            super(new String[] { "Hoch.*", "Tageshoch.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
         @Override
@@ -201,106 +209,140 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return parse(Jsoup.parse(html), errors);
     }
 
-    @SuppressWarnings("nls")
-    protected List<LatestSecurityPrice> parse(Document document, List<Exception> errors) throws IOException
+    private List<LatestSecurityPrice> parse(Document document, List<Exception> errors) throws IOException
     {
         List<LatestSecurityPrice> prices = new ArrayList<LatestSecurityPrice>();
 
         // first: find tables
-        Elements tables = document.getElementsByTag("table");
+        Elements tables = document.getElementsByTag("table"); //$NON-NLS-1$
         for (Element table : tables)
         {
-            List<Spec> specs;
-            int rowIndex = 0;
+            List<Spec> specs = new ArrayList<Spec>();
 
-            // second: detect header - either via 'th' or via the regular rows
-            Elements header = table.getElementsByTag("th");
-            if (header.size() > 0)
+            int rowIndex = buildSpecFromTable(table, specs);
+
+            if (isSpecValid(specs))
             {
-                specs = buildSpec(header);
+                Elements rows = table.select("> tbody > tr"); //$NON-NLS-1$
+
+                int size = rows.size();
+                for (; rowIndex < size; rowIndex++)
+                {
+                    Element row = rows.get(rowIndex);
+
+                    try
+                    {
+                        LatestSecurityPrice price = extractPrice(row, specs);
+                        if (price != null)
+                            prices.add(price);
+                    }
+                    catch (Exception e)
+                    {
+                        errors.add(e);
+                    }
+                }
+
+                // skip all other tables
+                break;
             }
-            else
-            {
-                Elements rows = table.getElementsByTag("tr");
-                Element firstRow = rows.get(0);
-                specs = buildSpec(firstRow.getElementsByTag("td"));
-                rowIndex++;
-
-                // check the second row as well
-                if (specs.isEmpty())
-                {
-                    Element secondRow = rows.get(1);
-                    specs = buildSpec(secondRow.getElementsByTag("td"));
-                    rowIndex++;
-                }
-            }
-
-            if (specs.isEmpty())
-                continue;
-
-            Elements rows = table.getElementsByTag("tr");
-
-            int size = rows.size();
-            for (; rowIndex < size; rowIndex++)
-            {
-                Element row = rows.get(rowIndex);
-
-                try
-                {
-                    Elements cells = row.getElementsByTag("td");
-
-                    // row can be empty if it contains only 'th' elements
-                    if (cells.size() == 0)
-                        continue;
-
-                    LatestSecurityPrice price = new LatestSecurityPrice();
-
-                    for (Spec spec : specs)
-                        spec.column.read(cells.get(spec.index), price);
-
-                    prices.add(price);
-                }
-                catch (ParseException e)
-                {
-                    errors.add(e);
-                }
-                catch (IndexOutOfBoundsException e)
-                {
-                    errors.add(new IOException(row.html(), e));
-                }
-            }
-
-            // skip all other tables
-            break;
         }
 
         return prices;
     }
 
-    private List<Spec> buildSpec(Elements header)
+    @SuppressWarnings("nls")
+    private int buildSpecFromTable(Element table, List<Spec> specs)
+    {
+        // check if thead exists
+        Elements header = table.select("> thead > tr > th");
+        if (header.size() > 0)
+        {
+            buildSpecFromRow(header, specs);
+            return 0;
+        }
+
+        // check if th exist in body
+        header = table.select("> tbody > tr > th");
+        if (header.size() > 0)
+        {
+            buildSpecFromRow(header, specs);
+            return 0;
+        }
+
+        // then check first two regular rows
+        int rowIndex = 0;
+
+        Elements rows = table.select("> tbody > tr");
+        if (rows.size() > 0)
+        {
+            Element firstRow = rows.get(0);
+            buildSpecFromRow(firstRow.select("> td"), specs);
+            rowIndex++;
+        }
+
+        if (specs.isEmpty() && rows.size() > 1)
+        {
+            Element secondRow = rows.get(1);
+            buildSpecFromRow(secondRow.select("> td"), specs);
+            rowIndex++;
+        }
+
+        return rowIndex;
+    }
+
+    private void buildSpecFromRow(Elements row, List<Spec> specs)
     {
         Set<Column> available = new HashSet<Column>();
         for (Column column : columns)
             available.add(column);
 
-        List<Spec> answer = new ArrayList<Spec>();
-
-        for (int ii = 0; ii < header.size(); ii++)
+        for (int ii = 0; ii < row.size(); ii++)
         {
-            Element element = header.get(ii);
+            Element element = row.get(ii);
 
             for (Column column : available)
             {
                 if (column.matches(element))
                 {
-                    answer.add(new Spec(column, ii));
+                    specs.add(new Spec(column, ii));
                     available.remove(column);
                     break;
                 }
             }
         }
+    }
 
-        return answer;
+    private boolean isSpecValid(List<Spec> specs)
+    {
+        if (specs == null || specs.isEmpty())
+            return false;
+
+        boolean hasDate = false;
+        boolean hasClose = false;
+
+        for (Spec spec : specs)
+        {
+            hasDate = hasDate || spec.column instanceof DateColumn;
+            hasClose = hasClose || spec.column instanceof CloseColumn;
+        }
+
+        return hasDate && hasClose;
+    }
+
+    private LatestSecurityPrice extractPrice(Element row, List<Spec> specs) throws ParseException
+    {
+        Elements cells = row.select("> td"); //$NON-NLS-1$
+
+        // row can be empty if it contains only 'th' elements
+        if (cells.size() == 0)
+            return null;
+
+        LatestSecurityPrice price = new LatestSecurityPrice();
+
+        for (Spec spec : specs)
+            spec.column.read(cells.get(spec.index), price);
+
+        return price;
     }
 
     /**
@@ -348,8 +390,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             writer.print("\t");
             writer.print(Values.Quote.format(p.getLow()));
             writer.print("\t");
-            writer.print(Values.Quote.format(p.getHigh()));
-            writer.println("\n");
+            writer.println(Values.Quote.format(p.getHigh()));
         }
     }
 }
