@@ -186,7 +186,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<Exchange> getExchanges(Security subject) throws IOException
+    public List<Exchange> getExchanges(Security subject, List<Exception> errors) throws IOException
     {
         return null;
     }

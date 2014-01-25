@@ -36,7 +36,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     {}
 
     @Override
-    public List<Exchange> getExchanges(Security subject)
+    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
         return null;
     }

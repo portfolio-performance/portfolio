@@ -24,9 +24,11 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.Dates;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
@@ -41,6 +43,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // p = previous close
     // v = volume
     // Source = http://cliffngan.net/a/13
+
+    private static final String SEARCH_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback"; //$NON-NLS-1$
 
     protected static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
     {
@@ -72,8 +76,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     + "&a={1}&b={2}&c={3}" // begin
                     + "&d={4}&e={5}&f={6}" // end
                     + "&g=d"; // daily
-
-    private SecuritySearchProvider searchProvider = new YahooSearchProvider();
 
     @Override
     public String getId()
@@ -332,23 +334,44 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<Exchange> getExchanges(Security subject) throws IOException
+    public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
+        // strip away exchange suffix to search for all available exchanges
         String symbol = subject.getTickerSymbol();
         int p = symbol.indexOf('.');
         String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
-        if (p >= 0)
-            symbol = symbol.substring(0, p);
 
         List<Exchange> answer = new ArrayList<Exchange>();
 
-        List<ResultItem> result = searchProvider.search(prefix);
-        for (ResultItem item : result)
+        // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
+        String searchUrl = MessageFormat.format(SEARCH_URL, prefix);
+
+        try
         {
-            if (item.getSymbol() != null && (symbol.equals(item.getSymbol()) || item.getSymbol().startsWith(prefix)))
+            String html = new java.util.Scanner(openStream(searchUrl)).useDelimiter("\\A").next(); //$NON-NLS-1$
+
+            // strip away java script call back method
+            p = html.indexOf('(');
+            html = html.substring(p + 1, html.length() - 1);
+
+            JSONObject response = (JSONObject) JSONValue.parse(html);
+            if (response != null)
             {
-                answer.add(createExchange(item.getSymbol()));
+                JSONObject resultSet = (JSONObject) response.get("ResultSet"); //$NON-NLS-1$
+                if (resultSet != null)
+                {
+                    JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
+                    if (result != null)
+                    {
+                        for (int ii = 0; ii < result.size(); ii++)
+                            answer.add(createExchange(((JSONObject) result.get(ii)).get("symbol").toString())); //$NON-NLS-1$
+                    }
+                }
             }
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
         }
 
         if (answer.isEmpty())
@@ -375,11 +398,4 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         return new URL(wknUrl).openStream();
     }
-
-    /* enable testing */
-    /* package */final void setSearchProvider(SecuritySearchProvider searchProvider)
-    {
-        this.searchProvider = searchProvider;
-    }
-
 }

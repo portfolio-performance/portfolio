@@ -481,7 +481,11 @@ public class QuoteProviderPage extends AbstractWizardPage
                 {
                     Security s = new Security();
                     s.setTickerSymbol(model.getTickerSymbol());
-                    cacheExchanges.put(feed, feed.getExchanges(s));
+
+                    List<Exception> errors = new ArrayList<Exception>();
+                    cacheExchanges.put(feed, feed.getExchanges(s, errors));
+
+                    PortfolioPlugin.log(errors);
                 }
                 catch (IOException e)
                 {

@@ -34,10 +34,10 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130118183705/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="3.7.0.v20130724081219"/>
-<unit id="org.eclipse.babel.nls_rt.equinox_de.feature.group" version="3.7.0.v20130724081219"/>
-<unit id="org.eclipse.babel.nls_rt.equinox.p2_de.feature.group" version="3.7.0.v20130724081219"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.11.0/indigo"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="3.7.0.v20131123061707"/>
+<unit id="org.eclipse.babel.nls_rt.equinox_de.feature.group" version="3.7.0.v20131123061707"/>
+<unit id="org.eclipse.babel.nls_rt.equinox.p2_de.feature.group" version="3.7.0.v20131123061707"/>
+<repository location="http://download.eclipse.org/technology/babel/update-site/R0.11.1/indigo"/>
 </location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
