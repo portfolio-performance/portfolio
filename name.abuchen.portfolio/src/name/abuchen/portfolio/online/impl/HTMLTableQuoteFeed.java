@@ -91,9 +91,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private static class CloseColumn extends Column
     {
+        @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Rücknahmepreis.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+            super(new String[] { "Schluss.*", "Rücknahmepreis.*", "Close.*" });
         }
 
         @Override
@@ -105,9 +106,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private static class HighColumn extends Column
     {
+        @SuppressWarnings("nls")
         public HighColumn()
         {
-            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*" });
         }
 
         @Override
@@ -119,9 +121,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private static class LowColumn extends Column
     {
+        @SuppressWarnings("nls")
         public LowColumn()
         {
-            super(new String[] { "Tief.*", "Tagestief.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+            super(new String[] { "Tief.*", "Tagestief.*", "Low.*" });
         }
 
         @Override
@@ -190,7 +193,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (security.getFeedURL() == null || security.getFeedURL().length() == 0)
             throw new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName()));
 
-        return parse(Jsoup.connect(security.getFeedURL()).get(), errors);
+        return parseFromURL(security.getFeedURL(), errors);
     }
 
     @Override
@@ -199,9 +202,21 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return null;
     }
 
+    @SuppressWarnings("nls")
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors) throws IOException
     {
-        return parse(Jsoup.connect(url).get(), errors);
+        // without a user agent, some sites serve a mobile/alternative version
+        String userAgent = null;
+
+        String os = System.getProperty("os.name", "unknown").toLowerCase();
+        if (os.startsWith("windows"))
+            userAgent = "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36";
+        else if (os.startsWith("mac"))
+            userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.73.11 (KHTML, like Gecko) Version/7.0.1 Safari/537.73.11";
+        else
+            userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0";
+
+        return parse(Jsoup.connect(url).userAgent(userAgent).get(), errors);
     }
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors) throws IOException
@@ -246,6 +261,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 break;
             }
         }
+
+        // if no quotes could be extract, log HTML for further analysis
+        if (prices.isEmpty())
+            errors.add(new IOException(document.html()));
 
         return prices;
     }
