@@ -97,8 +97,8 @@ public class UpdateQuotesJob extends Job
                     ArrayList<Exception> exceptions = new ArrayList<Exception>();
                     feed.updateLatestQuotes(entry.getValue(), exceptions);
 
-                    for (Exception e : exceptions)
-                        errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                    if (!exceptions.isEmpty())
+                        addToErrors(feed.getName(), exceptions, errors);
                 }
             }
             catch (IOException e)
@@ -121,14 +121,7 @@ public class UpdateQuotesJob extends Job
                     feed.updateHistoricalQuotes(security, exceptions);
 
                     if (!exceptions.isEmpty())
-                    {
-                        MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR,
-                                        security.getName(), null);
-                        for (Exception exception : exceptions)
-                            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(),
-                                            exception));
-                        errors.add(status);
-                    }
+                        addToErrors(security.getName(), exceptions, errors);
                 }
             }
             catch (IOException e)
@@ -139,6 +132,14 @@ public class UpdateQuotesJob extends Job
 
             monitor.worked(1);
         }
+    }
+
+    private void addToErrors(String label, List<Exception> exceptions, List<IStatus> errors)
+    {
+        MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR, label, null);
+        for (Exception exception : exceptions)
+            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(), exception));
+        errors.add(status);
     }
 
     protected void notifyFinished()

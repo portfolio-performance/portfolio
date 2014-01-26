@@ -103,7 +103,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (symbolString.length() > 0)
                 symbolString.append("+"); //$NON-NLS-1$
             symbolString.append(security.getTickerSymbol());
-            requested.put(security.getTickerSymbol(), security);
+            requested.put(security.getTickerSymbol().toUpperCase(), security);
         }
 
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
@@ -113,13 +113,18 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         try
         {
-            reader = new BufferedReader(new InputStreamReader(openStream(url)));
+            reader = openReader(url, errors);
+            if (reader == null)
+                return;
 
             while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
                 if (values.length != 7)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
+                {
+                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line)));
+                    return;
+                }
 
                 String symbol = stripQuotes(values[0]);
 
@@ -158,11 +163,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         catch (NumberFormatException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (ParseException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         finally
         {
@@ -203,9 +208,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         Calendar start = caculateStart(security);
 
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime());
-        for (SecurityPrice p : quotes)
-            security.addPrice(p);
+        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime(), errors);
+        if (quotes != null)
+            for (SecurityPrice p : quotes)
+                security.addPrice(p);
     }
 
     /* package */final Calendar caculateStart(Security security)
@@ -229,11 +235,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
                     throws IOException
     {
-        return internalGetQuotes(LatestSecurityPrice.class, security, start);
+        return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
     }
 
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate)
-                    throws IOException
+    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate,
+                    List<Exception> errors) throws IOException
     {
         if (security.getTickerSymbol() == null)
             throw new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
@@ -258,7 +264,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         try
         {
-            reader = new BufferedReader(new InputStreamReader(openStream(wknUrl)));
+            reader = openReader(wknUrl, errors);
+            if (reader == null)
+                return answer;
 
             line = reader.readLine();
 
@@ -284,19 +292,19 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         catch (NumberFormatException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (ParseException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (InstantiationException e)
         {
-            throw new IOException(e);
+            errors.add(e);
         }
         catch (IllegalAccessException e)
         {
-            throw new IOException(e);
+            errors.add(e);
         }
         finally
         {
@@ -391,6 +399,19 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         String exchange = e >= 0 ? symbol.substring(e) : ".default"; //$NON-NLS-1$
         String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
         return new Exchange(symbol, String.format("%s (%s)", label, symbol)); //$NON-NLS-1$
+    }
+
+    protected BufferedReader openReader(String url, List<Exception> errors)
+    {
+        try
+        {
+            return new BufferedReader(new InputStreamReader(openStream(url)));
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
+        }
+        return null;
     }
 
     /* enable testing */
