@@ -47,4 +47,10 @@ public final class ManualQuoteFeed implements QuoteFeed
         return null;
     }
 
+    @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
+    {
+        return null;
+    }
+
 }

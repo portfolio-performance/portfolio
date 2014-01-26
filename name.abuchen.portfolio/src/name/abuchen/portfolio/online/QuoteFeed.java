@@ -23,5 +23,7 @@ public interface QuoteFeed
     List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
                     throws IOException;
 
+    List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException;
+
     List<Exchange> getExchanges(Security subject, List<Exception> errors) throws IOException;
 }

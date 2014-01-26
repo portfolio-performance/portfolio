@@ -238,6 +238,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
     }
 
+    @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
+    {
+        throw new UnsupportedOperationException();
+    }
+
     private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate,
                     List<Exception> errors) throws IOException
     {

@@ -197,6 +197,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
+    {
+        return parseFromHTML(response, errors);
+    }
+
+    @Override
     public List<Exchange> getExchanges(Security subject, List<Exception> errors) throws IOException
     {
         return null;
