@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -168,7 +169,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             try
             {
-                updateHistoricalQuotes(security, errors);
+                List<LatestSecurityPrice> quotes = getHistoricalQuotes(security, null, errors);
+                int size = quotes.size();
+                if (size > 0)
+                {
+                    Collections.sort(quotes);
+
+                    LatestSecurityPrice latest = quotes.get(size - 1);
+                    LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
+                    latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
+
+                    security.setLatest(latest);
+                }
             }
             catch (IOException e)
             {
