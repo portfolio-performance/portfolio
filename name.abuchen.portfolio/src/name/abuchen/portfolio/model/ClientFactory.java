@@ -133,6 +133,18 @@ public class ClientFactory
             client.setVersion(15);
         }
 
+        if (client.getVersion() == 15)
+        {
+            // do nothing --> added 'isRetired' property to account
+            client.setVersion(16);
+        }
+
+        if (client.getVersion() == 16)
+        {
+            // do nothing --> added 'feedURL' property to account
+            client.setVersion(17);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
@@ -430,6 +442,7 @@ public class ClientFactory
                             delta = -portfolioTransaction.getShares();
                             break;
                         default:
+                            break;
                     }
 
                     Long shares = account2shares.get(account);

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import org.swtchart.Range;
 
 public class TimelineChart extends Chart
 {
-    private static class MarkerLine implements Comparable<MarkerLine>
+    private static class MarkerLine
     {
         private Date date;
         private RGB color;
@@ -41,12 +42,6 @@ public class TimelineChart extends Chart
             this.date = date;
             this.color = color;
             this.label = label;
-        }
-
-        @Override
-        public int compareTo(MarkerLine o)
-        {
-            return date.compareTo(o.date);
         }
     }
 
@@ -106,7 +101,14 @@ public class TimelineChart extends Chart
     public void addMarkerLine(Date date, RGB color, String label)
     {
         this.markerLines.add(new MarkerLine(date, color, label));
-        Collections.sort(this.markerLines);
+        Collections.sort(this.markerLines, new Comparator<MarkerLine>()
+        {
+            @Override
+            public int compare(MarkerLine ml1, MarkerLine ml2)
+            {
+                return ml1.date.compareTo(ml2.date);
+            }
+        });
     }
 
     public void clearMarkerLines()

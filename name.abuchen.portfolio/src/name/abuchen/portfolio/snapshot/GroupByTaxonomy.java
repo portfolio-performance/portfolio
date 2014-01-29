@@ -148,7 +148,7 @@ public final class GroupByTaxonomy
                 }
 
                 // sort positions by name
-                Collections.sort(category.getPositions());
+                Collections.sort(category.getPositions(), new AssetPosition.ByDescription());
             }
         }
     }

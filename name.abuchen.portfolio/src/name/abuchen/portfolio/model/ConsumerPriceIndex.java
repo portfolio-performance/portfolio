@@ -1,8 +1,22 @@
 package name.abuchen.portfolio.model;
 
+import java.util.Comparator;
 
-public class ConsumerPriceIndex implements Comparable<ConsumerPriceIndex>
+public class ConsumerPriceIndex
 {
+    public static class ByDate implements Comparator<ConsumerPriceIndex>
+    {
+        @Override
+        public int compare(ConsumerPriceIndex p1, ConsumerPriceIndex p2)
+        {
+            if (p1.year != p2.year)
+                return Integer.valueOf(p1.year).compareTo(p2.year);
+            if (p1.month != p2.month)
+                return Integer.valueOf(p1.month).compareTo(p2.month);
+            return 0;
+        }
+    }
+
     private int year;
     private int month;
     private int index;
@@ -35,15 +49,5 @@ public class ConsumerPriceIndex implements Comparable<ConsumerPriceIndex>
     public void setIndex(int index)
     {
         this.index = index;
-    }
-
-    @Override
-    public int compareTo(ConsumerPriceIndex o)
-    {
-        if (this.year != o.year)
-            return Integer.valueOf(this.year).compareTo(o.year);
-        if (this.month != o.month)
-            return Integer.valueOf(this.month).compareTo(o.month);
-        return Integer.valueOf(this.index).compareTo(o.index);
     }
 }

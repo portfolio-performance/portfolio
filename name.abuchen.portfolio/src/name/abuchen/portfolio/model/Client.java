@@ -13,7 +13,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 15;
+    /* package */static final int CURRENT_VERSION = 17;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -129,7 +129,7 @@ public class Client
     public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
     {
         this.consumerPriceIndeces = prices;
-        Collections.sort(this.consumerPriceIndeces);
+        Collections.sort(this.consumerPriceIndeces, new ConsumerPriceIndex.ByDate());
     }
 
     public void addConsumerPriceIndex(ConsumerPriceIndex record)

@@ -214,7 +214,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
                                         .setConverter(new CurrencyToStringConverter(Values.Amount)));
 
         // fees
-        bindings().bindMandatoryAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+        bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$

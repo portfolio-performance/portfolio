@@ -100,6 +100,7 @@ import org.joda.time.Interval;
                             break;
                         default:
                             // do nothing
+                            break;
                     }
 
                     if (transferal != 0)
@@ -130,6 +131,7 @@ import org.joda.time.Interval;
                             break;
                         default:
                             // do nothing
+                            break;
                     }
 
                     if (transferal != 0)

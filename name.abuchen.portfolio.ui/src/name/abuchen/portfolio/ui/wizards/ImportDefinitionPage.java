@@ -5,7 +5,8 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -741,7 +742,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     private static class KeyMappingContentProvider implements IStructuredContentProvider
     {
         /* Map.Entry#setValue is not backed by EnumMap :-( */
-        public static final class Entry<M extends Enum<M>> implements Comparable<Entry<M>>
+        public static final class Entry<M extends Enum<M>>
         {
             private EnumMap<M, String> map;
             private M key;
@@ -767,12 +768,6 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             {
                 map.put(key, value);
             }
-
-            @Override
-            public int compareTo(Entry<M> other)
-            {
-                return key.name().compareTo(other.key.name());
-            }
         }
 
         private EnumMapFormat<?> mapFormat;
@@ -790,13 +785,21 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             if (mapFormat == null)
                 return new Object[0];
 
-            Entry<?>[] elements = new Entry[mapFormat.map().size()];
+            List<Entry<?>> elements = new ArrayList<Entry<?>>();
 
-            int ii = 0;
             for (Enum<?> entry : mapFormat.map().keySet())
-                elements[ii++] = new Entry(mapFormat.map(), entry);
-            Arrays.sort(elements);
-            return elements;
+                elements.add(new Entry(mapFormat.map(), entry));
+
+            Collections.sort(elements, new Comparator<Entry<?>>()
+            {
+                @Override
+                public int compare(Entry<?> e1, Entry<?> e2)
+                {
+                    return e1.key.name().compareTo(e2.key.name());
+                }
+            });
+
+            return elements.toArray();
         }
 
         @Override

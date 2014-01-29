@@ -70,6 +70,7 @@ public class Messages extends NLS
     public static String IssueMissingReferenceAccount;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
+    public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
     public static String LabelRemovals;
@@ -82,6 +83,7 @@ public class Messages extends NLS
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorsConvertingValue;
+    public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResulstsAvailable;

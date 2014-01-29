@@ -5,7 +5,10 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.ui.messages"; //$NON-NLS-1$
+    public static String AccountFilterRetiredAccounts;
+    public static String AccountMenuActivate;
     public static String AccountMenuAdd;
+    public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
@@ -131,6 +134,8 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardQuoteFeedDescription;
+    public static String EditWizardQuoteFeedLabelFeedURL;
+    public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;

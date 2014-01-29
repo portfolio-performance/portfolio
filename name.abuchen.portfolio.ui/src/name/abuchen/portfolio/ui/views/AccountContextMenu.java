@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
@@ -64,6 +65,18 @@ public class AccountContextMenu
 
         if (!owner.getClient().getPortfolios().isEmpty() && !owner.getClient().getSecurities().isEmpty())
         {
+            // preselect a portfolio that has the current
+            // account as a reference account
+            final Portfolio[] portfolio = new Portfolio[1];
+            for (Portfolio p : owner.getClient().getPortfolios())
+            {
+                if (p.getReferenceAccount().equals(account))
+                {
+                    portfolio[0] = p;
+                    break;
+                }
+            }
+
             manager.add(new Separator());
             manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
             {
@@ -71,7 +84,7 @@ public class AccountContextMenu
                 Dialog createDialog()
                 {
                     return new BuySellSecurityDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(),
-                                    null, PortfolioTransaction.Type.BUY);
+                                    portfolio[0], null, PortfolioTransaction.Type.BUY);
                 }
             });
 
@@ -81,7 +94,7 @@ public class AccountContextMenu
                 Dialog createDialog()
                 {
                     return new BuySellSecurityDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(),
-                                    null, PortfolioTransaction.Type.SELL);
+                                    portfolio[0], null, PortfolioTransaction.Type.SELL);
                 }
             });
 
@@ -90,7 +103,8 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new DividendsDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(), null);
+                    return new DividendsDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(),
+                                    account, null);
                 }
             });
         }

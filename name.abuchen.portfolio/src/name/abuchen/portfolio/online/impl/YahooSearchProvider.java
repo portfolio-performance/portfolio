@@ -195,6 +195,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
                     item.setExchange(t);
                     break;
                 default:
+                    break;
             }
 
             return true;

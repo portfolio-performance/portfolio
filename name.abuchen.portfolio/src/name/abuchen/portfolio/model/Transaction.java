@@ -1,9 +1,24 @@
 package name.abuchen.portfolio.model;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
-public abstract class Transaction implements Comparable<Transaction>
+public abstract class Transaction
 {
+    public static final class ByDate implements Comparator<Transaction>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(Transaction t1, Transaction t2)
+        {
+            return t1.getDate().compareTo(t2.getDate());
+        }
+    }
+
     private Date date;
     private Security security;
     private CrossEntry crossEntry;
@@ -49,13 +64,9 @@ public abstract class Transaction implements Comparable<Transaction>
 
     public abstract long getAmount();
 
-    @Override
-    public int compareTo(Transaction o)
+    public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
     {
-        if (date == null)
-            return -1;
-        if (o.date == null)
-            return 1;
-        return date.compareTo(o.date);
+        Collections.sort(transactions, new ByDate());
+        return transactions;
     }
 }

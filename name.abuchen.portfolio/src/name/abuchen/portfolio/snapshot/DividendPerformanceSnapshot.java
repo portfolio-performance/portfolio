@@ -3,7 +3,6 @@ package name.abuchen.portfolio.snapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -623,7 +622,7 @@ public class DividendPerformanceSnapshot
 
         void prepare(Date endDate)
         {
-            Collections.sort(transactions);
+            Transaction.sortByDate(transactions);
 
             if (!transactions.isEmpty())
             {

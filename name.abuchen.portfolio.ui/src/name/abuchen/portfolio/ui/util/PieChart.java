@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -14,8 +15,17 @@ import org.eclipse.swt.widgets.Listener;
 
 public class PieChart extends Composite implements Listener
 {
-    public static class Slice implements Comparable<Slice>
+    public static class Slice
     {
+        public static class ByValue implements Comparator<Slice>
+        {
+            @Override
+            public int compare(Slice o1, Slice o2)
+            {
+                return o1.value > o2.value ? -1 : o1.value == o2.value ? 0 : 1;
+            }
+        }
+
         private long value;
         private String label;
         private Color color;
@@ -45,12 +55,6 @@ public class PieChart extends Composite implements Listener
         public void setColor(Color color)
         {
             this.color = color;
-        }
-
-        @Override
-        public int compareTo(Slice o)
-        {
-            return value > o.value ? -1 : value == o.value ? 0 : 1;
         }
     }
 
