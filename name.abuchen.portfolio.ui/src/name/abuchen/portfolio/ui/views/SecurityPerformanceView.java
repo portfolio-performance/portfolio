@@ -66,7 +66,7 @@ public class SecurityPerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected void reportingPeriodUpdated()
+    public void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
         tree.setInput(SecurityPerformanceSnapshot.create(getClient(), period).getRecords());

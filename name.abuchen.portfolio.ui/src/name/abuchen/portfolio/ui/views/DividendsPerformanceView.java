@@ -133,7 +133,7 @@ public class DividendsPerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected void reportingPeriodUpdated()
+    public void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
         tree.setInput(DividendPerformanceSnapshot.create(getClient(), period).getRecords());

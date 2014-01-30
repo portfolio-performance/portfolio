@@ -67,7 +67,7 @@ public class PerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected void reportingPeriodUpdated()
+    public void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), period);
