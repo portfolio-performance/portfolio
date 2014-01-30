@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -10,6 +11,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DivRecord;
+import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendFinalTransaction;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendInitialTransaction;
 import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendTransaction;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -18,17 +20,27 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
+import name.abuchen.portfolio.ui.util.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -36,11 +48,11 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.ToolBar;
 
-public class DividendsPerformanceView extends AbstractHistoricView
+public class DividendsPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
     public static Color getColor(int color)
     {
@@ -107,7 +119,9 @@ public class DividendsPerformanceView extends AbstractHistoricView
     static final int colN_Amount = colN_Cost12Amount;
     static final int colO_Account = colO_PersonalRateOfDividendReturn;
 
-    private TreeViewer tree;
+    private TableViewer records;
+    private TableViewer transactions;
+    private ReportingPeriodDropDown dropDown;
 
     @Override
     protected String getTitle()
@@ -116,14 +130,165 @@ public class DividendsPerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected Control createBody(Composite parent)
+    protected void addButtons(ToolBar toolBar)
     {
-        tree = createTreeViewer(parent);
+        dropDown = new ReportingPeriodDropDown(toolBar, getClientEditor(), this);
+    }
+
+    @Override
+    protected void createTopTable(Composite parent)
+    {
+        records = createTreeViewer(parent);
 
         reportingPeriodUpdated();
-        ViewerHelper.pack(tree);
+        ViewerHelper.pack(records);
+    }
 
-        return tree.getControl();
+    @Override
+    protected void createBottomTable(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
+
+        transactions = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(DividendsPerformanceView.class.getSimpleName()
+                        + "@bottom1", transactions, layout); //$NON-NLS-1$
+
+        // date
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Transaction t = (Transaction) e;
+                return Values.Date.format(t.getDate());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
+        support.addColumn(column);
+
+        // transaction type
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof PortfolioTransaction)
+                    return ((PortfolioTransaction) t).getType().toString();
+                else if (t instanceof AccountTransaction)
+                    return ((AccountTransaction) t).getType().toString();
+                else if (t instanceof DividendTransaction)
+                    return Messages.LabelDividends;
+                else
+                    return Messages.LabelQuote;
+            }
+        });
+        support.addColumn(column);
+
+        // shares
+        column = new Column(Messages.ColumnShares, SWT.None, 80);
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object t)
+            {
+                if (t instanceof PortfolioTransaction)
+                    return ((PortfolioTransaction) t).getShares();
+                else if (t instanceof DividendInitialTransaction)
+                    return ((DividendInitialTransaction) t).getPosition().getShares();
+                else if (t instanceof DividendFinalTransaction)
+                    return ((DividendFinalTransaction) t).getPosition().getShares();
+                else if (t instanceof DividendTransaction)
+                    return ((DividendTransaction) t).getShares() != 0L ? ((DividendTransaction) t).getShares() : null;
+                else
+                    return null;
+            }
+        });
+        support.addColumn(column);
+
+        // dividend amount
+        column = new Column("Dividende", SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof DividendTransaction)
+                    return Values.Amount.format(((DividendTransaction) t).getAmount());
+                else
+                    return null;
+            }
+        });
+        support.addColumn(column);
+
+        // dividend per share
+        column = new Column("Dividende/Anteil", SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof DividendTransaction)
+                    return Values.Amount.formatNonZero(((DividendTransaction) t).getDividendPerShare());
+                else
+                    return null;
+            }
+        });
+        support.addColumn(column);
+
+        // einstandskurs / bewertung
+        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof PortfolioTransaction)
+                    return Values.Amount.format(((PortfolioTransaction) t).getAmount());
+                else if (t instanceof DividendInitialTransaction)
+                    return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
+                else if (t instanceof DividendFinalTransaction)
+                    return Values.Amount.format(((DividendFinalTransaction) t).getAmount());
+                else
+                    return null;
+            }
+        });
+        support.addColumn(column);
+
+        // gegenkonto
+        column = new Column(Messages.ColumnAccount, SWT.None, 120);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction p = (PortfolioTransaction) t;
+                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossEntity(p).toString() : null;
+                }
+                else if (t instanceof DividendTransaction)
+                {
+                    return ((DividendTransaction) t).getAccount().getName();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        });
+        support.addColumn(column);
+
+        support.createColumns();
+
+        transactions.getTable().setHeaderVisible(true);
+        transactions.getTable().setLinesVisible(true);
+
+        transactions.setContentProvider(new SimpleListContentProvider());
     }
 
     @Override
@@ -135,16 +300,16 @@ public class DividendsPerformanceView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        ReportingPeriod period = getReportingPeriod();
-        tree.setInput(DividendPerformanceSnapshot.create(getClient(), period).getRecords());
-        tree.refresh();
+        ReportingPeriod period = dropDown.getPeriods().getFirst();
+        records.setInput(DividendPerformanceSnapshot.create(getClient(), period).getRecords());
+        records.refresh();
     }
 
-    private TreeViewer createTreeViewer(Composite parent)
+    private TableViewer createTreeViewer(Composite parent)
     {
-        TreeViewer tree = new TreeViewer(parent, SWT.FULL_SELECTION);
-        TreeViewerColumn tvcol;
-        TreeColumn column;
+        TableViewer table = new TableViewer(parent, SWT.FULL_SELECTION);
+        TableViewerColumn tvcol;
+        TableColumn column;
 
         // enforce correct column sequence
         int cc = 0;
@@ -152,193 +317,193 @@ public class DividendsPerformanceView extends AbstractHistoricView
         // Name
         assert cc == colA_Name;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.None);
+        tvcol = new TableViewerColumn(table, SWT.None);
         column = tvcol.getColumn();
         column.setText(Messages.ColumnName);
         column.setWidth(150);
-        ColumnViewerSorter.create(DivRecord.class, "SecurityName").attachTo(tree, tvcol, true); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "SecurityName").attachTo(table, tvcol, true); //$NON-NLS-1$
         // ColumnViewerSorter: es muss eine getXxx-Methode in der
         // DivRecord-Klasse existieren, sonst crasht es !!!
 
         assert cc == colB_InternalRateOfReturn;
         cc++;
         // IZF über alles
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText(Messages.ColumnIRR);
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "irr").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "irr").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Anzahl aktuell
         assert cc == colC_Shares;
         cc++;
-        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
         column.setText("Stück");
         column.setWidth(50);
 
         // Einstandspreis für Dividendenberechnung
         assert cc == colD_Cost;
         cc++;
-        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
         column.setText("Einstand");
         column.setWidth(75);
 
         // Gesamtsumme der erhaltenen Dividenden
         assert cc == colE_DividendSum;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("∑Div");
         column.setWidth(75);
-        ColumnViewerSorter.create(DivRecord.class, "divAmount").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "divAmount").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Rendite insgesamt
         assert cc == colF_TotalRateOfDividendReturn;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("Div%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "totalRateOfReturnDiv").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "totalRateOfReturnDiv").attachTo(table, tvcol); //$NON-NLS-1$
 
         // jährliche Dividendenrendite bezogen auf den Einstandspreis (izf-div)
         assert cc == colG_InternalRateOfDivReturn;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("øDiv%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "irrDiv").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "irrDiv").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Anzahl der Dividendenereignisse | zugehörige Id
         assert cc == colH_DivEventCount;
         cc++;
-        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
         column.setText("#Div");
         column.setWidth(25);
 
         // Datum der letzten Dividendenzahlung | Vorgangsdatum
         assert cc == colI_LastReturn;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.None);
+        tvcol = new TableViewerColumn(table, SWT.None);
         column = tvcol.getColumn();
         column.setText("zuletzt am");
         column.setWidth(75);
-        ColumnViewerSorter.create(DivRecord.class, "dateTo").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "dateTo").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Periodizität der Dividendenzahlungen | Vorgangstyp
         assert cc == colJ_Periodicity;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.None);
+        tvcol = new TableViewerColumn(table, SWT.None);
         column = tvcol.getColumn();
         column.setText("Periodiziät");
         column.setWidth(100);
-        ColumnViewerSorter.create(DivRecord.class, "periodicitySort").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "periodicitySort").attachTo(table, tvcol); //$NON-NLS-1$
 
         // durchschnittliche Stückzahl in den letzten 12 Monaten
         assert cc == colK_Shares12;
         cc++;
-        column = new TreeColumn(tree.getTree(), SWT.None);
+        column = new TableColumn(table.getTable(), SWT.None);
         column.setText("øStck¹²");
         column.setWidth(50);
 
         // Summe der Zahlungen in den letzten 12 Monaten
         assert cc == colL_Dividends12;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("∑Div¹²"); //$NON-NLS-1$
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "div12Amount").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "div12Amount").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Dividende pro Stück in den letzten 12 Monaten
         assert cc == colM_Dividends12PerShare;
         cc++;
-        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
         column.setText("øDiv¹²");
         column.setWidth(50);
 
         // Einstand pro Stück
         assert cc == colN_Cost12Amount;
         cc++;
-        column = new TreeColumn(tree.getTree(), SWT.RIGHT);
+        column = new TableColumn(table.getTable(), SWT.RIGHT);
         column.setText("Einstand¹²");
         column.setWidth(50);
 
         // persönliche Dividende im letzen Jahr
         assert cc == colO_PersonalRateOfDividendReturn;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("pers.Div%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "personalDiv").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "personalDiv").attachTo(table, tvcol); //$NON-NLS-1$
 
         // erwartete Dividende im nächsten Jahr
         assert cc == colP_Dividends12Expected;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("Div¹²e");
         column.setWidth(75);
-        ColumnViewerSorter.create(DivRecord.class, "expectedDiv12Amount").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "expectedDiv12Amount").attachTo(table, tvcol); //$NON-NLS-1$
 
         // mittlere Dividendensteigerung der letzten Jahre
         assert cc == colQ_DividendIncreasingRate;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("DSR%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "divIncreasingRate").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingRate").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Zuverlässigkeit der Dividendensteigerung der letzten Jahre
         assert cc == colR_DividendIncreasingReliabilty;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("Zuverl.%");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "divIncreasingReliability").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingReliability").attachTo(table, tvcol); //$NON-NLS-1$
 
         // Anzahl der Jahre mit Dividendensteigerung
         assert cc == colS_DividendIncreasingYears;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("Jahre");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "divIncreasingYears").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "divIncreasingYears").attachTo(table, tvcol); //$NON-NLS-1$
 
         // erwartete Dividende in 5 Jahren
         assert cc == colT_DividendExpectedLongTerm5;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("Div¹² 5J.");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "div60Amount").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "div60Amount").attachTo(table, tvcol); //$NON-NLS-1$
 
         // erwartete Dividende in 10 Jahren
         assert cc == colU_DividendExpectedLongTerm10;
         cc++;
-        tvcol = new TreeViewerColumn(tree, SWT.RIGHT);
+        tvcol = new TableViewerColumn(table, SWT.RIGHT);
         column = tvcol.getColumn();
         column.setText("Div¹² 10J.");
         column.setWidth(50);
-        ColumnViewerSorter.create(DivRecord.class, "div120Amount").attachTo(tree, tvcol); //$NON-NLS-1$
+        ColumnViewerSorter.create(DivRecord.class, "div120Amount").attachTo(table, tvcol); //$NON-NLS-1$
 
-        tree.getTree().setHeaderVisible(true);
-        tree.getTree().setLinesVisible(true);
+        table.getTable().setHeaderVisible(true);
+        table.getTable().setLinesVisible(true);
 
-        tree.setLabelProvider(new DividendPerformanceLabelProvider());
-        tree.setContentProvider(new DividendPerformanceContentProvider());
+        table.setLabelProvider(new DividendPerformanceLabelProvider());
+        table.setContentProvider(new DividendPerformanceContentProvider());
 
-        tree.addDragSupport(DND.DROP_MOVE, //
+        table.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
-                        new SecurityDragListener(tree));
+                        new SecurityDragListener(table));
 
-        hookContextMenu(tree.getTree(), new IMenuListener()
+        hookContextMenu(table.getTable(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
             {
@@ -346,12 +511,22 @@ public class DividendsPerformanceView extends AbstractHistoricView
             }
         });
 
-        return tree;
+        table.addSelectionChangedListener(new ISelectionChangedListener()
+        {
+            public void selectionChanged(SelectionChangedEvent event)
+            {
+                DivRecord record = (DivRecord) ((IStructuredSelection) event.getSelection()).getFirstElement();
+                transactions.setInput(record != null ? record.getTransactions() : Collections.emptyList());
+                transactions.refresh();
+            }
+        });
+
+        return table;
     }
 
     private void fillContextMenu(IMenuManager manager)
     {
-        Object selection = ((IStructuredSelection) tree.getSelection()).getFirstElement();
+        Object selection = ((IStructuredSelection) records.getSelection()).getFirstElement();
         if (!(selection instanceof DivRecord))
             return;
 
@@ -424,123 +599,61 @@ public class DividendsPerformanceView extends AbstractHistoricView
 
         public String getColumnText(Object element, int columnIndex)
         {
+            DivRecord divRecord = (DivRecord) element;
 
-            if (element instanceof DivRecord)
+            if (!divRecord.getHasDiv12() && (columnIndex > colJ_Periodicity))
+                return null;
+
+            switch (columnIndex)
             {
-                DivRecord divRecord = (DivRecord) element;
-
-                if (!divRecord.getHasDiv12() && (columnIndex > colJ_Periodicity))
-                    return null;
-
-                switch (columnIndex)
-                {
-                    case colA_Name: // Wertpapier
-                        return divRecord.getSecurityName();
-                    case colB_InternalRateOfReturn: // IZF Gesamt
-                        return Values.Percent2.format(divRecord.getIrr());
-                    case colC_Shares: // aktuelle Stücke
-                        return Values.Share.format(divRecord.getStockShares());
-                    case colD_Cost: // Kaufpreis
-                        return Values.Amount.format(divRecord.getStockAmount());
-                    case colE_DividendSum: // Gewinn
-                        return Values.Amount.format(divRecord.getDivAmount());
-                    case colF_TotalRateOfDividendReturn: // Rendite insgesamt
-                        return Values.Percent2.format(divRecord.getTotalRateOfReturnDiv());
-                    case colG_InternalRateOfDivReturn: // IZF Dividenden
-                        return Values.Percent2.format(divRecord.getIrrDiv());
-                    case colH_DivEventCount: // Anzahl Dividendentermine
-                        return Values.Id.format(divRecord.getDivEventCount());
-                    case colI_LastReturn: // Datum letzte Zahlung
-                        return Values.Date.format(divRecord.getDateTo());
-                    case colJ_Periodicity: // Typ J/H/Q
-                        return divRecord.getPeriodicity().toString();
-                    case colK_Shares12: // Rendite insgesamt
-                        return Values.Share.format(divRecord.getDiv12MeanShares());
-                    case colL_Dividends12: // Summe der Dividenden der letzen 12
-                                           // Monate
-                        return Values.Amount.format(divRecord.getDiv12Amount());
-                    case colM_Dividends12PerShare: // Dividenden pro Stück der
-                                                   // letzten 12 Monate
-                        return Values.Amount.format(divRecord.getDiv12PerShare());
-                    case colN_Cost12Amount:
-                        return Values.Amount.format(divRecord.getCost12Amount());
-                    case colO_PersonalRateOfDividendReturn: // persönliche
-                                                            // Rendite
-                        return Values.Percent2.format(divRecord.getPersonalDiv());
-                    case colP_Dividends12Expected:
-                        return Values.Amount.formatNonZero(divRecord.getExpectedDiv12Amount());
-                    case colQ_DividendIncreasingRate:
-                        return Values.Percent0.formatNonZero(divRecord.getDivIncreasingRate(), 0.01);
-                    case colR_DividendIncreasingReliabilty:
-                        return Values.Percent0.formatNonZero(divRecord.getDivIncreasingReliability(), 0.01);
-                    case colS_DividendIncreasingYears:
-                        return Values.Integer.formatNonZero(divRecord.getDivIncreasingYears());
-                    case colT_DividendExpectedLongTerm5:
-                        return Values.Amount.formatNonZero(divRecord.getDiv60Amount());
-                    case colU_DividendExpectedLongTerm10:
-                        return Values.Amount.formatNonZero(divRecord.getDiv120Amount());
-                    default:
-                        throw new UnsupportedOperationException();
-                }
+                case colA_Name: // Wertpapier
+                    return divRecord.getSecurityName();
+                case colB_InternalRateOfReturn: // IZF Gesamt
+                    return Values.Percent2.format(divRecord.getIrr());
+                case colC_Shares: // aktuelle Stücke
+                    return Values.Share.format(divRecord.getStockShares());
+                case colD_Cost: // Kaufpreis
+                    return Values.Amount.format(divRecord.getStockAmount());
+                case colE_DividendSum: // Gewinn
+                    return Values.Amount.format(divRecord.getDivAmount());
+                case colF_TotalRateOfDividendReturn: // Rendite insgesamt
+                    return Values.Percent2.format(divRecord.getTotalRateOfReturnDiv());
+                case colG_InternalRateOfDivReturn: // IZF Dividenden
+                    return Values.Percent2.format(divRecord.getIrrDiv());
+                case colH_DivEventCount: // Anzahl Dividendentermine
+                    return Values.Id.format(divRecord.getDivEventCount());
+                case colI_LastReturn: // Datum letzte Zahlung
+                    return Values.Date.format(divRecord.getDateTo());
+                case colJ_Periodicity: // Typ J/H/Q
+                    return divRecord.getPeriodicity().toString();
+                case colK_Shares12: // Rendite insgesamt
+                    return Values.Share.format(divRecord.getDiv12MeanShares());
+                case colL_Dividends12: // Summe der Dividenden der letzen 12
+                                       // Monate
+                    return Values.Amount.format(divRecord.getDiv12Amount());
+                case colM_Dividends12PerShare: // Dividenden pro Stück der
+                                               // letzten 12 Monate
+                    return Values.Amount.format(divRecord.getDiv12PerShare());
+                case colN_Cost12Amount:
+                    return Values.Amount.format(divRecord.getCost12Amount());
+                case colO_PersonalRateOfDividendReturn: // persönliche
+                                                        // Rendite
+                    return Values.Percent2.format(divRecord.getPersonalDiv());
+                case colP_Dividends12Expected:
+                    return Values.Amount.formatNonZero(divRecord.getExpectedDiv12Amount());
+                case colQ_DividendIncreasingRate:
+                    return Values.Percent0.formatNonZero(divRecord.getDivIncreasingRate(), 0.01);
+                case colR_DividendIncreasingReliabilty:
+                    return Values.Percent0.formatNonZero(divRecord.getDivIncreasingReliability(), 0.01);
+                case colS_DividendIncreasingYears:
+                    return Values.Integer.formatNonZero(divRecord.getDivIncreasingYears());
+                case colT_DividendExpectedLongTerm5:
+                    return Values.Amount.formatNonZero(divRecord.getDiv60Amount());
+                case colU_DividendExpectedLongTerm10:
+                    return Values.Amount.formatNonZero(divRecord.getDiv120Amount());
+                default:
+                    throw new UnsupportedOperationException();
             }
-            else if (element instanceof Transaction)
-            {
-                Transaction t = (Transaction) element;
-
-                switch (columnIndex)
-                {
-                    case colH_DivEventId: // Datum
-                        if (t instanceof DividendTransaction)
-                            return Values.Id.formatNonZero(((DividendTransaction) t).getDivEventId());
-                        else
-                            return null;
-                    case colI_TransactionDate: // Datum
-                        return Values.Date.format(t.getDate());
-                    case colJ_TransactionType: // Vorgang
-                        if (t instanceof PortfolioTransaction)
-                            return ((PortfolioTransaction) t).getType().toString();
-                        else if (t instanceof AccountTransaction)
-                            return ((AccountTransaction) t).getType().toString();
-                        else if (t instanceof DividendTransaction)
-                            return Messages.LabelDividends;
-                        else
-                            return Messages.LabelQuote;
-                    case colK_Shares:
-                        if (t instanceof PortfolioTransaction)
-                            return Values.Share.format(((PortfolioTransaction) t).getShares());
-                        else if (t instanceof DividendInitialTransaction)
-                            return Values.Share.format(((DividendInitialTransaction) t).getPosition().getShares());
-                        else if (t instanceof DividendTransaction)
-                            return Values.Share.formatNonZero(((DividendTransaction) t).getShares());
-                        else
-                            return null;
-                    case colL_DividendAmount:
-                        if (t instanceof DividendTransaction)
-                            return Values.Amount.format(((DividendTransaction) t).getAmount());
-                        else
-                            return null;
-                    case colM_DividensPerShare:
-                        if (t instanceof DividendTransaction)
-                            return Values.Quote.formatNonZero(((DividendTransaction) t).getDividendPerShare());
-                        else
-                            return null;
-                    case colN_Amount:
-                        if (t instanceof PortfolioTransaction)
-                            return Values.Amount.format(Math.abs(t.getAmount()));
-                        else if (t instanceof DividendInitialTransaction)
-                            return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
-                        else
-                            return null;
-                    case colO_Account:
-                        if (t instanceof PortfolioTransaction)
-                            return ((PortfolioTransaction) t).getCrossEntry().getCrossEntity(t).toString();
-                        else if (t instanceof DividendTransaction)
-                            return ((DividendTransaction) t).getAccount().getName();
-                        else
-                            return null;
-                }
-            }
-            return null;
         }
 
         @Override
