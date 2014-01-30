@@ -245,6 +245,7 @@ public class Messages extends NLS
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelWithoutClassification;
+    public static String MenuAddAll;
     public static String MenuConfigureChart;
     public static String MenuExportChartData;
     public static String MenuExportData;

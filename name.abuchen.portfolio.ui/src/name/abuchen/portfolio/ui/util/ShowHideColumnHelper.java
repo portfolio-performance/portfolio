@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,6 +79,8 @@ public class ShowHideColumnHelper implements IMenuListener
         private String optionsColumnLabel;
         private Integer[] options;
 
+        private String groupLabel;
+
         public Column(String label, int style, int defaultWidth)
         {
             this(null, label, style, defaultWidth);
@@ -122,6 +125,11 @@ public class ShowHideColumnHelper implements IMenuListener
             this.optionsMenuLabel = menuPattern;
             this.optionsColumnLabel = columnPattern;
             this.options = options;
+        }
+
+        public void setGroupLabel(String groupLabel)
+        {
+            this.groupLabel = groupLabel;
         }
 
         String getLabel()
@@ -172,6 +180,11 @@ public class ShowHideColumnHelper implements IMenuListener
         String getOptionsMenuLabel()
         {
             return optionsMenuLabel;
+        }
+
+        String getGroupLabel()
+        {
+            return groupLabel;
         }
 
         private void create(TableViewer viewer, TableColumnLayout layout, Object option)
@@ -296,8 +309,25 @@ public class ShowHideColumnHelper implements IMenuListener
             }
         }
 
+        Map<String, IMenuManager> groups = new HashMap<String, IMenuManager>();
+
         for (final Column column : columns)
         {
+            IMenuManager managerToAdd = manager;
+
+            // create a sub-menu for each group label
+            if (column.getGroupLabel() != null)
+            {
+                managerToAdd = groups.get(column.getGroupLabel());
+
+                if (managerToAdd == null)
+                {
+                    managerToAdd = new MenuManager(column.getGroupLabel());
+                    groups.put(column.getGroupLabel(), managerToAdd);
+                    manager.add(managerToAdd);
+                }
+            }
+
             if (column.hasOptions())
             {
                 List<Object> options = visible.get(column);
@@ -311,13 +341,15 @@ public class ShowHideColumnHelper implements IMenuListener
                     addShowHideAction(subMenu, column, label, isVisible, option);
                 }
 
-                manager.add(subMenu);
+                managerToAdd.add(subMenu);
             }
             else
             {
-                addShowHideAction(manager, column, column.getLabel(), visible.containsKey(column), null);
+                addShowHideAction(managerToAdd, column, column.getLabel(), visible.containsKey(column), null);
             }
         }
+
+        addMenuAddGroup(groups, visible);
 
         manager.add(new Separator());
 
@@ -352,6 +384,31 @@ public class ShowHideColumnHelper implements IMenuListener
         };
         action.setChecked(isChecked);
         manager.add(action);
+    }
+
+    private void addMenuAddGroup(Map<String, IMenuManager> groups, final Map<Column, List<Object>> visible)
+    {
+        for (final Entry<String, IMenuManager> entry : groups.entrySet())
+        {
+            IMenuManager manager = entry.getValue();
+            manager.add(new Separator());
+            manager.add(new Action(Messages.MenuAddAll)
+            {
+                @Override
+                public void run()
+                {
+                    for (Column column : columns)
+                    {
+                        if (!entry.getKey().equals(column.getGroupLabel()))
+                            continue;
+                        if (visible.containsKey(column))
+                            continue;
+                        column.create(viewer, layout, null);
+                    }
+                    viewer.refresh();
+                }
+            });
+        }
     }
 
     public boolean isUserConfigured()
