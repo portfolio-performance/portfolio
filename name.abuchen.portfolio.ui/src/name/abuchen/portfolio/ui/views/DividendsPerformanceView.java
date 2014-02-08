@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
@@ -64,7 +65,24 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     protected void addButtons(ToolBar toolBar)
     {
         dropDown = new ReportingPeriodDropDown(toolBar, getClientEditor(), this);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
+    }
+
+    private void addExportButton(ToolBar toolBar)
+    {
+        Action export = new Action()
+        {
+            @Override
+            public void run()
+            {
+                new TableViewerCSVExporter(records).export(getTitle() + ".csv"); //$NON-NLS-1$
+            }
+        };
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setToolTipText(Messages.MenuExportData);
+
+        new ActionContributionItem(export).fill(toolBar, -1);
     }
 
     private void addConfigButton(ToolBar toolBar)
