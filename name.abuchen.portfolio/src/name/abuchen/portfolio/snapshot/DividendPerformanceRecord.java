@@ -39,6 +39,7 @@ public class DividendPerformanceRecord implements Adaptable
 
     private double irr;
     private long delta;
+    private long marketValue;
     private double irrdiv;
     private long divAmount;
     private long div12Shares;
@@ -86,6 +87,11 @@ public class DividendPerformanceRecord implements Adaptable
     public long getDelta()
     {
         return delta;
+    }
+
+    public long getMarketValue()
+    {
+        return marketValue;
     }
 
     public double getIrrDiv()
@@ -272,6 +278,9 @@ public class DividendPerformanceRecord implements Adaptable
     /* package */void add(Transaction t)
     {
         transactions.add(t);
+
+        if (t instanceof DividendFinalTransaction)
+            marketValue = t.getAmount();
     }
 
     /* package */void prepare(Date endDate)

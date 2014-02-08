@@ -205,25 +205,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // delta
-        column = new Column(Messages.ColumnDelta, SWT.RIGHT, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.format(((DividendPerformanceRecord) r).getDelta());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((DividendPerformanceRecord) e).getDelta());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "delta")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
         // shares held
         column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
@@ -249,12 +230,9 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         });
         column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "stockAmount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
-    }
 
-    private void createDividendColumns()
-    {
         // Gesamtsumme der erhaltenen Dividenden
-        Column column = new Column("∑Div", SWT.RIGHT, 80);
+        column = new Column("∑Div", SWT.RIGHT, 80);
         column.setGroupLabel("Dividenden");
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -267,8 +245,43 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "divAmount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
+        // market value
+        column = new Column(Messages.ColumnMarketValue, SWT.RIGHT, 75);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((DividendPerformanceRecord) r).getMarketValue());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // delta
+        column = new Column(Messages.ColumnDelta, SWT.RIGHT, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((DividendPerformanceRecord) r).getDelta());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((DividendPerformanceRecord) e).getDelta());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+    }
+
+    private void createDividendColumns()
+    {
         // Rendite insgesamt
-        column = new Column("Div%", SWT.RIGHT, 80);
+        Column column = new Column("Div%", SWT.RIGHT, 80);
         column.setGroupLabel("Dividenden");
         column.setLabelProvider(new ColumnLabelProvider()
         {
