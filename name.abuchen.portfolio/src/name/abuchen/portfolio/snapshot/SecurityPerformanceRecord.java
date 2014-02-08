@@ -14,12 +14,12 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendTransaction;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendFinalTransaction;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendInitialTransaction;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendTransaction;
 import name.abuchen.portfolio.util.Dates;
 
-public class DividendPerformanceRecord implements Adaptable
+public class SecurityPerformanceRecord implements Adaptable
 {
     public enum Periodicity
     {
@@ -61,7 +61,7 @@ public class DividendPerformanceRecord implements Adaptable
 
     private Periodicity periodicity = Periodicity.UNKNOWN;
 
-    /* package */DividendPerformanceRecord(Security security)
+    /* package */SecurityPerformanceRecord(Security security)
     {
         this.security = security;
     }
@@ -229,7 +229,7 @@ public class DividendPerformanceRecord implements Adaptable
         }
     }
 
-    public DividendPerformanceRecord.Periodicity getPeriodicity()
+    public SecurityPerformanceRecord.Periodicity getPeriodicity()
     {
         return periodicity;
     }
@@ -262,7 +262,7 @@ public class DividendPerformanceRecord implements Adaptable
         return type == Security.class ? type.cast(security) : null;
     }
 
-    /* package */void summarize(DividendPerformanceRecord d)
+    /* package */void summarize(SecurityPerformanceRecord d)
     {
         this.periodicity = Periodicity.INDEFINITE;
         this.divEventCount += 1; // d.divEventCount;

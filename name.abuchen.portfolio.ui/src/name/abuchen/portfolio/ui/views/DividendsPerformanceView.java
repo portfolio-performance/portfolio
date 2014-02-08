@@ -8,11 +8,11 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.DividendPerformanceRecord;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.DividendPerformanceSnapshot.DividendTransaction;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendFinalTransaction;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendInitialTransaction;
+import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendTransaction;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -58,7 +58,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     @Override
     protected String getTitle()
     {
-        return Messages.LabelDividendPerformance;
+        return Messages.LabelSecurityPerformance;
     }
 
     @Override
@@ -154,7 +154,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         {
             public void selectionChanged(SelectionChangedEvent event)
             {
-                DividendPerformanceRecord record = (DividendPerformanceRecord) ((IStructuredSelection) event
+                SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event
                                 .getSelection()).getFirstElement();
                 transactions.setInput(record != null ? record.getTransactions() : Collections.emptyList());
                 transactions.refresh();
@@ -174,7 +174,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return ((DividendPerformanceRecord) r).getSecurityName();
+                return ((SecurityPerformanceRecord) r).getSecurityName();
             }
 
             @Override
@@ -183,7 +183,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "SecurityName"), SWT.DOWN); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "SecurityName"), SWT.DOWN); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // internal rate of return
@@ -193,16 +193,16 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Percent2.format(((DividendPerformanceRecord) r).getIrr());
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
             }
 
             @Override
             public Color getForeground(Object e)
             {
-                return getColor(((DividendPerformanceRecord) e).getIrr());
+                return getColor(((SecurityPerformanceRecord) e).getIrr());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "irr")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // shares held
@@ -212,10 +212,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public Long getValue(Object e)
             {
-                return ((DividendPerformanceRecord) e).getStockShares();
+                return ((SecurityPerformanceRecord) e).getStockShares();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "stockShares")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "stockShares")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // cost value
@@ -225,10 +225,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((DividendPerformanceRecord) r).getStockAmount());
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getStockAmount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "stockAmount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "stockAmount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Gesamtsumme der erhaltenen Dividenden
@@ -239,10 +239,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((DividendPerformanceRecord) r).getDivAmount());
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getDivAmount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "divAmount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divAmount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // market value
@@ -252,10 +252,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((DividendPerformanceRecord) r).getMarketValue());
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getMarketValue());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // delta
@@ -265,16 +265,16 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((DividendPerformanceRecord) r).getDelta());
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getDelta());
             }
 
             @Override
             public Color getForeground(Object e)
             {
-                return getColor(((DividendPerformanceRecord) e).getDelta());
+                return getColor(((SecurityPerformanceRecord) e).getDelta());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
     }
 
@@ -288,10 +288,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Percent2.formatNonZero(((DividendPerformanceRecord) r).getTotalRateOfReturnDiv());
+                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getTotalRateOfReturnDiv());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "totalRateOfReturnDiv")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "totalRateOfReturnDiv")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // jährliche Dividendenrendite bezogen auf den Einstandspreis (izf-div)
@@ -302,10 +302,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Percent2.formatNonZero(((DividendPerformanceRecord) r).getIrrDiv(), 0.001d);
+                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getIrrDiv(), 0.001d);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "irrDiv")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irrDiv")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Anzahl der Dividendenereignisse
@@ -316,10 +316,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Id.format(((DividendPerformanceRecord) r).getDivEventCount());
+                return Values.Id.format(((SecurityPerformanceRecord) r).getDivEventCount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "divEventCount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divEventCount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Datum der letzten Dividendenzahlung
@@ -330,11 +330,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                Date date = ((DividendPerformanceRecord) r).getDateTo();
+                Date date = ((SecurityPerformanceRecord) r).getDateTo();
                 return date != null ? Values.Date.format(date) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "dateTo")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "dateTo")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Periodizität der Dividendenzahlungen
@@ -345,10 +345,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return ((DividendPerformanceRecord) r).getPeriodicity().toString();
+                return ((SecurityPerformanceRecord) r).getPeriodicity().toString();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
         recordColumns.addColumn(column);
     }
 
@@ -362,11 +362,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public Long getValue(Object r)
             {
-                long shares = ((DividendPerformanceRecord) r).getDiv12MeanShares();
+                long shares = ((SecurityPerformanceRecord) r).getDiv12MeanShares();
                 return shares != 0 ? shares : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "div12MeanShares")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div12MeanShares")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Summe der Zahlungen in den letzten 12 Monaten
@@ -377,10 +377,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.formatNonZero(((DividendPerformanceRecord) r).getDiv12Amount());
+                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv12Amount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "div12Amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div12Amount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Dividende pro Stück in den letzten 12 Monaten
@@ -391,10 +391,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.formatNonZero(((DividendPerformanceRecord) r).getDiv12PerShare());
+                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv12PerShare());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "div12PerShare")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div12PerShare")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Einstand pro Stück
@@ -405,10 +405,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.formatNonZero(((DividendPerformanceRecord) r).getCost12Amount());
+                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getCost12Amount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "cost12Amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "cost12Amount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Einstand pro Stück
@@ -419,10 +419,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Percent2.formatNonZero(((DividendPerformanceRecord) r).getPersonalDiv());
+                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getPersonalDiv());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "personalDiv")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "personalDiv")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // erwartete Dividende im nächsten Jahr
@@ -433,10 +433,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.formatNonZero(((DividendPerformanceRecord) r).getExpectedDiv12Amount());
+                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getExpectedDiv12Amount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "expectedDiv12Amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "expectedDiv12Amount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // mittlere Dividendensteigerung der letzten Jahre
@@ -447,10 +447,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Percent0.formatNonZero(((DividendPerformanceRecord) r).getDivIncreasingRate(), 0.01);
+                return Values.Percent0.formatNonZero(((SecurityPerformanceRecord) r).getDivIncreasingRate(), 0.01);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "divIncreasingRate")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divIncreasingRate")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Zuverlässigkeit der Dividendensteigerung der letzten Jahre
@@ -461,11 +461,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Percent0.formatNonZero(((DividendPerformanceRecord) r).getDivIncreasingReliability(),
+                return Values.Percent0.formatNonZero(((SecurityPerformanceRecord) r).getDivIncreasingReliability(),
                                 0.01);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "divIncreasingReliability")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divIncreasingReliability")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Anzahl der Jahre mit Dividendensteigerung
@@ -476,10 +476,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Integer.formatNonZero(((DividendPerformanceRecord) r).getDivIncreasingYears());
+                return Values.Integer.formatNonZero(((SecurityPerformanceRecord) r).getDivIncreasingYears());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "divIncreasingYears")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divIncreasingYears")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // erwartete Dividende in 5 Jahren
@@ -490,10 +490,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.formatNonZero(((DividendPerformanceRecord) r).getDiv60Amount());
+                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv60Amount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "div60Amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div60Amount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // erwartete Dividende in 10 Jahren
@@ -504,10 +504,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.formatNonZero(((DividendPerformanceRecord) r).getDiv120Amount());
+                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv120Amount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "div120Amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div120Amount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
     }
 
@@ -668,17 +668,17 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = dropDown.getPeriods().getFirst();
-        records.setInput(DividendPerformanceSnapshot.create(getClient(), period).getRecords());
+        records.setInput(SecurityPerformanceSnapshot.create(getClient(), period).getRecords());
         records.refresh();
     }
 
     private void fillContextMenu(IMenuManager manager)
     {
         Object selection = ((IStructuredSelection) records.getSelection()).getFirstElement();
-        if (!(selection instanceof DividendPerformanceRecord))
+        if (!(selection instanceof SecurityPerformanceRecord))
             return;
 
-        Security security = ((DividendPerformanceRecord) selection).getSecurity();
+        Security security = ((SecurityPerformanceRecord) selection).getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 

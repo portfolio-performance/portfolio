@@ -1,19 +1,15 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -25,7 +21,7 @@ public class SecurityPerformanceSnapshot
 {
     public static SecurityPerformanceSnapshot create(Client client, ReportingPeriod period)
     {
-        Map<Security, Record> transactions = initRecords(client);
+        Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
 
         Date startDate = period.getStartDate();
         Date endDate = period.getEndDate();
@@ -38,47 +34,84 @@ public class SecurityPerformanceSnapshot
             addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
         }
 
-        return doCreateSnapshot(transactions);
+        return doCreateSnapshot(transactions, endDate);
     }
 
-    public static SecurityPerformanceSnapshot create(Client client, Portfolio portfolio, Date startDate, Date endDate)
+    public static SecurityPerformanceSnapshot create(Client client, Portfolio portfolio, ReportingPeriod period)
     {
-        Map<Security, Record> transactions = initRecords(client);
+        Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
+
+        Date startDate = period.getStartDate();
+        Date endDate = period.getEndDate();
 
         if (portfolio.getReferenceAccount() != null)
             extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), startDate, endDate, transactions);
         extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
         addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
 
-        return doCreateSnapshot(transactions);
+        return doCreateSnapshot(transactions, endDate);
     }
 
-    private static Map<Security, Record> initRecords(Client client)
+    private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
     {
-        Map<Security, Record> transactions = new HashMap<Security, Record>();
+        Map<Security, SecurityPerformanceRecord> transactions = new HashMap<Security, SecurityPerformanceRecord>();
 
         for (Security s : client.getSecurities())
-            transactions.put(s, new Record(s));
+            transactions.put(s, new SecurityPerformanceRecord(s));
         return transactions;
     }
 
-    private static SecurityPerformanceSnapshot doCreateSnapshot(Map<Security, Record> transactions)
+    private static SecurityPerformanceSnapshot doCreateSnapshot(Map<Security, SecurityPerformanceRecord> transactions,
+                    Date endDate)
     {
-        for (Record c : transactions.values())
-            c.prepare();
+        for (SecurityPerformanceRecord c : transactions.values())
+            c.prepare(endDate);
 
-        for (Iterator<Map.Entry<Security, Record>> iter = transactions.entrySet().iterator(); iter.hasNext();)
+        for (Iterator<Map.Entry<Security, SecurityPerformanceRecord>> iter = transactions.entrySet().iterator(); iter
+                        .hasNext();)
         {
-            Map.Entry<Security, Record> entry = iter.next();
-            if (entry.getValue().transactions.isEmpty())
+            Map.Entry<Security, SecurityPerformanceRecord> entry = iter.next();
+            SecurityPerformanceRecord d = entry.getValue();
+            if (d.getTransactions().isEmpty())
                 iter.remove();
+            else if (d.getStockShares() == 0)
+                iter.remove();
+        }
+
+        // prepare pseudo summarize
+
+        SecurityPerformanceRecord sum1 = null;
+
+        for (SecurityPerformanceRecord c : transactions.values())
+        {
+            if (c.getSecurity().getName().equalsIgnoreCase("_summe_"))
+            {
+                sum1 = c;
+                break;
+            }
+        }
+
+        if (sum1 != null)
+        {
+
+            SecurityPerformanceRecord sum = sum1;
+            // DivRecord sum = new DivRecord(sum1.getSecurity());
+            // transactions.values().add(sum); // crasht mit new
+            // DivRecord(sum1.getSecurity());
+
+            for (SecurityPerformanceRecord c : transactions.values())
+            {
+                if (c != sum)
+                    sum.summarize(c);
+            }
+
         }
 
         return new SecurityPerformanceSnapshot(transactions.values());
     }
 
     private static void extractSecurityRelatedAccountTransactions(Account account, Date startDate, Date endDate,
-                    Map<Security, Record> transactions)
+                    Map<Security, SecurityPerformanceRecord> transactions)
     {
         for (AccountTransaction t : account.getTransactions())
         {
@@ -89,7 +122,14 @@ public class SecurityPerformanceSnapshot
                     case INTEREST:
                     case DIVIDENDS:
                         if (t.getSecurity() != null)
-                            transactions.get(t.getSecurity()).add(t);
+                        {
+                            DividendTransaction dt = new DividendTransaction();
+                            dt.setDate(t.getDate());
+                            dt.setSecurity(t.getSecurity());
+                            dt.setAccount(account);
+                            dt.setAmountAndShares(t.getAmount(), t.getShares());
+                            transactions.get(t.getSecurity()).add(dt);
+                        }
                         break;
                     case FEES:
                     case TAXES:
@@ -109,7 +149,7 @@ public class SecurityPerformanceSnapshot
     }
 
     private static void extractSecurityRelatedPortfolioTransactions(Portfolio portfolio, Date startDate, Date endDate,
-                    Map<Security, Record> transactions)
+                    Map<Security, SecurityPerformanceRecord> transactions)
     {
         for (PortfolioTransaction t : portfolio.getTransactions())
         {
@@ -134,41 +174,163 @@ public class SecurityPerformanceSnapshot
     }
 
     private static void addPseudoValuationTansactions(Portfolio portfolio, Date startDate, Date endDate,
-                    Map<Security, Record> transactions)
+                    Map<Security, SecurityPerformanceRecord> transactions)
     {
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, startDate);
         for (SecurityPosition position : snapshot.getPositions())
         {
-            transactions.get(position.getSecurity()).add(new SecurityPositionTransaction(true, position, startDate));
+            transactions.get(position.getSecurity()).add(new DividendInitialTransaction(position, startDate));
         }
 
         snapshot = PortfolioSnapshot.create(portfolio, endDate);
         for (SecurityPosition position : snapshot.getPositions())
         {
-            transactions.get(position.getSecurity()).add(new SecurityPositionTransaction(false, position, endDate));
+            transactions.get(position.getSecurity()).add(new DividendFinalTransaction(position, endDate));
         }
     }
 
-    private Collection<Record> calculations;
+    private Collection<SecurityPerformanceRecord> calculations;
 
-    private SecurityPerformanceSnapshot(Collection<Record> calculations)
+    private SecurityPerformanceSnapshot(Collection<SecurityPerformanceRecord> calculations)
     {
         this.calculations = calculations;
     }
 
-    public List<Record> getRecords()
+    public List<SecurityPerformanceRecord> getRecords()
     {
-        return new ArrayList<Record>(calculations);
+        return new ArrayList<SecurityPerformanceRecord>(calculations);
     }
 
-    public static class SecurityPositionTransaction extends Transaction
+    public static class DividendTransaction extends Transaction
     {
-        private boolean isStart;
+        // public enum Type
+        // {
+        // DEPOSIT, REMOVAL, INTEREST, DIVIDENDS, FEES, TAXES, BUY, SELL,
+        // TRANSFER_IN, TRANSFER_OUT;
+        //
+        //            private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+        //
+        // public String toString()
+        // {
+        //                return RESOURCES.getString("account." + name()); //$NON-NLS-1$
+        // }
+        // }
+
+        // private Type type;
+
+        long amount;
+        private Account account;
+        long shares;
+        private long dividendPerShare;
+        private boolean isDiv12;
+        private int divEventId;
+
+        public DividendTransaction()
+        {}
+
+        // public DividendTransaction(Date date, Security security, Type type,
+        // long amount)
+        // {
+        // super(date, security);
+        // this.type = type;
+        // this.amount = amount;
+        // }
+
+        // public Type getType()
+        // {
+        // return type;
+        // }
+        //
+        // public void setType(Type type)
+        // {
+        // this.type = type;
+        // }
+
+        public Account getAccount()
+        {
+            return account;
+        }
+
+        public void setAccount(Account account)
+        {
+            this.account = account;
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return amount;
+        }
+
+        public void setAmountAndShares(long amount, long shares)
+        {
+            this.amount = amount;
+            this.shares = shares;
+            this.dividendPerShare = amountPerShare(amount, shares);
+        }
+
+        public long getShares()
+        {
+            return shares;
+        }
+
+        public long getDividendPerShare()
+        {
+            return dividendPerShare;
+        }
+
+        public boolean getIsDiv12()
+        {
+            return isDiv12;
+        }
+
+        public void setIsDiv12(boolean isDiv12)
+        {
+            this.isDiv12 = isDiv12;
+        }
+
+        public int getDivEventId()
+        {
+            return divEventId;
+        }
+
+        public void setDivEventId(int divEventId)
+        {
+            this.divEventId = divEventId;
+        }
+
+        static public long amountPerShare(long amount, long shares)
+        {
+            if (shares != 0)
+            {
+                return Math.round((double) amount / (double) shares * Values.Share.divider());
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        static public long amountTimesShares(long price, long shares)
+        {
+            if (shares != 0)
+            {
+                return Math.round((double) price * (double) shares / Values.Share.divider());
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+    }
+
+    public static class DividendInitialTransaction extends Transaction
+    {
         private SecurityPosition position;
 
-        public SecurityPositionTransaction(boolean isStart, SecurityPosition position, Date time)
+        public DividendInitialTransaction(SecurityPosition position, Date time)
         {
-            this.isStart = isStart;
             this.position = position;
             this.setSecurity(position.getSecurity());
             this.setDate(time);
@@ -177,7 +339,7 @@ public class SecurityPerformanceSnapshot
         @Override
         public long getAmount()
         {
-            return position.calculateValue() * (isStart ? -1 : 1);
+            return position.calculateValue();
         }
 
         public SecurityPosition getPosition()
@@ -186,146 +348,26 @@ public class SecurityPerformanceSnapshot
         }
     }
 
-    public static class Record implements Adaptable
+    public static class DividendFinalTransaction extends Transaction
     {
-        private final Security security;
-        private List<Transaction> transactions = new ArrayList<Transaction>();
+        private SecurityPosition position;
 
-        private long delta;
-        private double irr;
-
-        /* package */Record(Security security)
+        public DividendFinalTransaction(SecurityPosition position, Date time)
         {
-            this.security = security;
-        }
-
-        public Security getSecurity()
-        {
-            return security;
-        }
-
-        public double getIrr()
-        {
-            return irr;
-        }
-
-        public long getDelta()
-        {
-            return delta;
-        }
-
-        public List<Transaction> getTransactions()
-        {
-            return transactions;
+            this.position = position;
+            this.setSecurity(position.getSecurity());
+            this.setDate(time);
         }
 
         @Override
-        public <T> T adapt(Class<T> type)
+        public long getAmount()
         {
-            return type == Security.class ? type.cast(security) : null;
+            return position.calculateValue();
         }
 
-        void add(Transaction t)
+        public SecurityPosition getPosition()
         {
-            transactions.add(t);
-        }
-
-        void prepare()
-        {
-            Collections.sort(transactions, new Transaction.ByDate());
-
-            if (!transactions.isEmpty())
-            {
-                calculateDelta();
-                calculateIRR();
-            }
-        }
-
-        private void calculateIRR()
-        {
-            List<Date> dates = new ArrayList<Date>();
-            List<Double> values = new ArrayList<Double>();
-
-            for (Transaction t : transactions)
-            {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(t.getDate());
-                dates.add(t.getDate());
-
-                if (t instanceof SecurityPositionTransaction)
-                {
-                    values.add(((SecurityPositionTransaction) t).getAmount() / Values.Amount.divider());
-                }
-                else if (t instanceof AccountTransaction)
-                {
-                    values.add(((AccountTransaction) t).getAmount() / Values.Amount.divider());
-                }
-                else if (t instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction pt = (PortfolioTransaction) t;
-                    switch (pt.getType())
-                    {
-                        case BUY:
-                        case DELIVERY_INBOUND:
-                        case TRANSFER_IN:
-                            values.add(-pt.getAmount() / Values.Amount.divider());
-                            break;
-                        case SELL:
-                        case DELIVERY_OUTBOUND:
-                        case TRANSFER_OUT:
-                            values.add(pt.getAmount() / Values.Amount.divider());
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
-                else
-                {
-                    throw new UnsupportedOperationException();
-                }
-            }
-
-            this.irr = IRR.calculate(dates, values);
-        }
-
-        private void calculateDelta()
-        {
-            for (Transaction t : transactions)
-            {
-                if (t instanceof SecurityPositionTransaction)
-                {
-                    delta += ((SecurityPositionTransaction) t).getAmount();
-                }
-                else if (t instanceof AccountTransaction)
-                {
-                    delta += ((AccountTransaction) t).getAmount();
-                }
-                else if (t instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction pt = (PortfolioTransaction) t;
-                    switch (pt.getType())
-                    {
-                        case BUY:
-                        case DELIVERY_INBOUND:
-                            delta -= pt.getAmount();
-                            break;
-                        case SELL:
-                        case DELIVERY_OUTBOUND:
-                            delta += pt.getAmount();
-                            break;
-                        case TRANSFER_IN:
-                        case TRANSFER_OUT:
-                            // transferals do not contribute to the delta
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
-                else
-                {
-                    throw new UnsupportedOperationException();
-                }
-            }
+            return position;
         }
     }
 }

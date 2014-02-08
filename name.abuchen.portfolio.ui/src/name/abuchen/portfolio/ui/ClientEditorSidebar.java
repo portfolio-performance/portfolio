@@ -225,8 +225,7 @@ import org.eclipse.swt.widgets.Menu;
         Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
                         "Performance")); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
-        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecurityPerformance")); //$NON-NLS-1$
-        new Entry(performance, new ActivateViewAction(Messages.LabelDividends, "DividendsPerformance")); //$NON-NLS-1$
+        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")); //$NON-NLS-1$
     }
 
     private void createTaxonomyDataSection(final Sidebar sidebar)
