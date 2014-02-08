@@ -5,7 +5,6 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
@@ -54,40 +53,6 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class DividendsPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
-    public static Color getColor(int color)
-    {
-        return Display.getCurrent().getSystemColor(color);
-    }
-
-    public static Color getMixedColor(int color1, int color2, double f2)
-    {
-        Color col1 = getColor(color1);
-        Color col2 = getColor(color2);
-
-        double f1 = 1 - f2;
-
-        double dr = col1.getRed() * f1 + col2.getRed() * f2;
-        double dg = col1.getGreen() * f1 + col2.getGreen() * f2;
-        double db = col1.getBlue() * f1 + col2.getBlue() * f2;
-
-        return new Color(Display.getCurrent(), (int) dr, (int) dg, (int) db);
-    }
-
-    public static Color getMixedColor(int color1, int color2, double f2, int color3, double f3)
-    {
-        Color col1 = getColor(color1);
-        Color col2 = getColor(color2);
-        Color col3 = getColor(color3);
-
-        double f1 = 1 - f2 - f3;
-
-        double dr = col1.getRed() * f1 + col2.getRed() * f2 + col3.getRed() * f3;
-        double dg = col1.getGreen() * f1 + col2.getGreen() * f2 + col3.getGreen() * f3;
-        double db = col1.getBlue() * f1 + col2.getBlue() * f2 + col3.getBlue() * f3;
-
-        return new Color(Display.getCurrent(), (int) dr, (int) dg, (int) db);
-    }
-
     static final int colA_Name = 0;
     static final int colB_InternalRateOfReturn = 1; // internal rate of return
     static final int colC_Shares = 2;
@@ -666,58 +631,19 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 switch (columnIndex)
                 {
                     case colB_InternalRateOfReturn:
-                        return record.getIrr() >= 0 ? getColor(SWT.COLOR_DARK_GREEN) : getColor(SWT.COLOR_DARK_RED);
+                        return Display.getCurrent().getSystemColor(
+                                        record.getIrr() >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
                     case colE_DividendSum:
-                        return record.getDivAmount() >= 0 ? getColor(SWT.COLOR_DARK_GREEN)
-                                        : getColor(SWT.COLOR_DARK_RED);
+                        return Display.getCurrent().getSystemColor(
+                                        record.getDivAmount() >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
                 }
             }
-            else if (element instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) element;
-                switch (columnIndex)
-                {
-                    case colJ_Periodicity:
-                        if (t.getType() == Type.BUY)
-                            return getColor(SWT.COLOR_BLUE);
-                        else if (t.getType() == Type.SELL)
-                            return getColor(SWT.COLOR_RED);
-                }
-            }
-
             return null;
         }
 
         @Override
         public Color getBackground(Object element, int columnIndex)
         {
-            if ((element instanceof DividendTransaction) && (columnIndex >= colH_DivEventCount))
-            {
-                DividendTransaction dt = (DividendTransaction) element;
-                if (dt.getIsDiv12()) // dt.getDate().before(this.))
-                {
-
-                    switch ((dt.getDivEventId() - 1) % 2)
-                    {
-                        case 0:
-                            return getMixedColor(SWT.COLOR_GREEN, SWT.COLOR_WHITE, 0.80);
-                        case 1:
-                            return getMixedColor(SWT.COLOR_YELLOW, SWT.COLOR_WHITE, 0.60);
-                    }
-
-                }
-                else
-                {
-                    switch ((dt.getDivEventId() - 1) % 2)
-                    {
-                        case 0:
-                            return getMixedColor(SWT.COLOR_BLACK, SWT.COLOR_WHITE, 0.85);
-                        case 1:
-                            return getMixedColor(SWT.COLOR_BLACK, SWT.COLOR_WHITE, 0.90);
-                    }
-                }
-
-            }
             return null;
         }
     }
