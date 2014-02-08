@@ -38,6 +38,7 @@ public class DividendPerformanceRecord implements Adaptable
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
     private double irr;
+    private long delta;
     private double irrdiv;
     private long divAmount;
     private long div12Shares;
@@ -80,6 +81,11 @@ public class DividendPerformanceRecord implements Adaptable
     public double getIrr()
     {
         return irr;
+    }
+
+    public long getDelta()
+    {
+        return delta;
     }
 
     public double getIrrDiv()
@@ -275,6 +281,7 @@ public class DividendPerformanceRecord implements Adaptable
         if (!transactions.isEmpty())
         {
             calculateIRR();
+            calculateDelta();
             calculateIRRDiv();
             calculateDiv12(endDate);
         }
@@ -303,10 +310,6 @@ public class DividendPerformanceRecord implements Adaptable
             {
                 values.add(((DividendTransaction) t).getAmount() / Values.Amount.divider());
             }
-            else if (t instanceof AccountTransaction)
-            {
-                values.add(((AccountTransaction) t).getAmount() / Values.Amount.divider());
-            }
             else if (t instanceof PortfolioTransaction)
             {
                 PortfolioTransaction pt = (PortfolioTransaction) t;
@@ -333,6 +336,50 @@ public class DividendPerformanceRecord implements Adaptable
         }
 
         this.irr = IRR.calculate(dates, values);
+    }
+
+    private void calculateDelta()
+    {
+        for (Transaction t : transactions)
+        {
+            if (t instanceof DividendInitialTransaction)
+            {
+                delta -= ((DividendInitialTransaction) t).getAmount();
+            }
+            else if (t instanceof DividendFinalTransaction)
+            {
+                delta += ((DividendFinalTransaction) t).getAmount();
+            }
+            else if (t instanceof DividendTransaction)
+            {
+                delta += ((DividendTransaction) t).getAmount();
+            }
+            else if (t instanceof PortfolioTransaction)
+            {
+                PortfolioTransaction pt = (PortfolioTransaction) t;
+                switch (pt.getType())
+                {
+                    case BUY:
+                    case DELIVERY_INBOUND:
+                        delta -= pt.getAmount();
+                        break;
+                    case SELL:
+                    case DELIVERY_OUTBOUND:
+                        delta += pt.getAmount();
+                        break;
+                    case TRANSFER_IN:
+                    case TRANSFER_OUT:
+                        // transferals do not contribute to the delta
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+            }
+            else
+            {
+                throw new UnsupportedOperationException(t.getClass().getName());
+            }
+        }
     }
 
     private void calculateIRRDiv()

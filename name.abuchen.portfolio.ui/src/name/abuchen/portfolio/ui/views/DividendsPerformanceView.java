@@ -205,6 +205,25 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
+        // delta
+        column = new Column(Messages.ColumnDelta, SWT.RIGHT, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((DividendPerformanceRecord) r).getDelta());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((DividendPerformanceRecord) e).getDelta());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(DividendPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
         // shares held
         column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
