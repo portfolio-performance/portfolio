@@ -136,7 +136,18 @@ public abstract class Values<E>
 
     public String formatNonZero(E amount)
     {
-        if (amount instanceof Number)
+        if (amount instanceof Double)
+        {
+            Double d = (Double) amount;
+
+            if (d.isNaN())
+                return null;
+            else if (d.doubleValue() == 0d)
+                return null;
+            else
+                return format(amount);
+        }
+        else if (amount instanceof Number)
         {
             boolean isNotZero = ((Number) amount).longValue() != 0;
             return isNotZero ? format(amount) : null;
