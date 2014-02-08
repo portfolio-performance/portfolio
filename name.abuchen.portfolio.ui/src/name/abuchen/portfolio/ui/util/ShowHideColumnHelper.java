@@ -420,17 +420,59 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 @Override
                 public void run()
                 {
-                    for (Column column : columns)
-                    {
-                        if (!entry.getKey().equals(column.getGroupLabel()))
-                            continue;
-                        if (visible.containsKey(column))
-                            continue;
-                        column.create(viewer, layout, null);
-                    }
-                    viewer.refresh();
+                    doAddGroup(entry.getKey(), visible);
                 }
             });
+            manager.add(new Action(Messages.MenuRemoveAll)
+            {
+                @Override
+                public void run()
+                {
+                    doRemoveGroup(entry.getKey());
+                }
+            });
+        }
+    }
+
+    private void doAddGroup(String group, Map<Column, List<Object>> visible)
+    {
+        try
+        {
+            viewer.getTable().setRedraw(false);
+
+            for (Column column : columns)
+            {
+                if (!group.equals(column.getGroupLabel()))
+                    continue;
+                if (visible.containsKey(column))
+                    continue;
+                column.create(viewer, layout, null);
+            }
+        }
+        finally
+        {
+            viewer.refresh();
+            viewer.getTable().setRedraw(true);
+        }
+    }
+
+    private void doRemoveGroup(String group)
+    {
+        try
+        {
+            viewer.getTable().setRedraw(false);
+
+            for (TableColumn col : viewer.getTable().getColumns())
+            {
+                Column column = (Column) col.getData(Column.class.getName());
+                if (group.equals(column.getGroupLabel()))
+                    col.dispose();
+            }
+        }
+        finally
+        {
+            viewer.refresh();
+            viewer.getTable().setRedraw(true);
         }
     }
 
