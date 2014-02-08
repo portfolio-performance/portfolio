@@ -19,13 +19,14 @@ import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfigurationStore;
+import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -56,7 +57,7 @@ import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
 
-/* package */class ChartConfigurator extends Composite
+/* package */class ChartConfigurator extends Composite implements ConfigurationStoreOwner
 {
     /* package */static final class DataSeries
     {
@@ -228,33 +229,6 @@ import org.swtchart.LineStyle;
         STATEMENT_OF_ASSETS, PERFORMANCE
     }
 
-    private static final class Configuration
-    {
-        private String name;
-        private String config;
-
-        public Configuration(String name, String config)
-        {
-            this.name = name;
-            this.config = config;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getConfig()
-        {
-            return config;
-        }
-
-        public void setConfig(String config)
-        {
-            this.config = config;
-        }
-    }
-
     private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
 
     private final String identifier;
@@ -268,11 +242,10 @@ import org.swtchart.LineStyle;
     private final List<DataSeries> selectedSeries = new ArrayList<DataSeries>();
 
     private String currentConfiguration;
-    private List<Configuration> storedConfigurations = new ArrayList<Configuration>();
+    private ConfigurationStore store;
 
     private LocalResourceManager resources;
     private Menu configContextMenu;
-    private Menu saveContextMenu;
 
     public ChartConfigurator(Composite parent, AbstractFinanceView view, Mode mode)
     {
@@ -283,6 +256,8 @@ import org.swtchart.LineStyle;
         this.client = clientEditor.getClient();
         this.mode = mode;
         this.resources = new LocalResourceManager(JFaceResources.getResources(), this);
+
+        this.store = new ConfigurationStore(identifier, client, this);
 
         buildAvailableDataSeries();
         load();
@@ -331,18 +306,7 @@ import org.swtchart.LineStyle;
 
     public void showSaveMenu(Shell shell)
     {
-        if (saveContextMenu == null)
-        {
-            saveContextMenu = createMenu(shell, new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    saveMenuAboutToShow(manager);
-                }
-            });
-        }
-        saveContextMenu.setVisible(true);
+        store.showSaveMenu(shell);
     }
 
     private Menu createMenu(Shell shell, IMenuListener listener)
@@ -474,8 +438,6 @@ import org.swtchart.LineStyle;
             addDefaultDataSeries();
             persist();
         }
-
-        loadStoredConfigurations();
     }
 
     private void load(String config)
@@ -523,38 +485,12 @@ import org.swtchart.LineStyle;
         client.setProperty(identifier, currentConfiguration);
     }
 
-    private void loadStoredConfigurations()
-    {
-        int index = 0;
-
-        String config = client.getProperty(identifier + '$' + index);
-        while (config != null)
-        {
-            String[] split = config.split(":="); //$NON-NLS-1$
-            storedConfigurations.add(new Configuration(split[0], split[1]));
-
-            index++;
-            config = client.getProperty(identifier + '$' + index);
-        }
-    }
-
-    private void persistStoredConfigurations()
-    {
-        for (int index = 0; index < storedConfigurations.size(); index++)
-        {
-            Configuration config = storedConfigurations.get(index);
-            client.setProperty(identifier + '$' + index, config.getName() + ":=" + config.getConfig()); //$NON-NLS-1$
-        }
-
-        client.removeProperity(identifier + '$' + storedConfigurations.size());
-    }
-
     private void widgetDisposed()
     {
         if (configContextMenu != null && !configContextMenu.isDisposed())
             configContextMenu.dispose();
-        if (saveContextMenu != null && !saveContextMenu.isDisposed())
-            saveContextMenu.dispose();
+
+        store.dispose();
     }
 
     private void configMenuAboutToShow(IMenuManager manager)
@@ -604,67 +540,6 @@ import org.swtchart.LineStyle;
                 doResetSeries(null);
             }
         });
-    }
-
-    private void saveMenuAboutToShow(IMenuManager manager)
-    {
-        for (final Configuration config : storedConfigurations)
-        {
-            if (config.getConfig().equals(currentConfiguration))
-            {
-                Action action = new Action(config.getName())
-                {
-                    @Override
-                    public void run()
-                    {
-                        doResetSeries(null);
-                    }
-                };
-                action.setChecked(true);
-                manager.add(action);
-            }
-            else
-            {
-                Action action = new Action(config.getName())
-                {
-                    @Override
-                    public void run()
-                    {
-                        doResetSeries(config.getConfig());
-                    }
-                };
-                manager.add(action);
-            }
-        }
-
-        manager.add(new Separator());
-
-        manager.add(new Action(Messages.ChartSeriesPickerSave)
-        {
-            @Override
-            public void run()
-            {
-                doSaveConfiguration();
-            }
-        });
-
-        if (!storedConfigurations.isEmpty())
-        {
-            MenuManager configMenu = new MenuManager(Messages.ChartSeriesPickerDelete);
-            for (final Configuration config : storedConfigurations)
-            {
-                configMenu.add(new Action(config.getName())
-                {
-                    @Override
-                    public void run()
-                    {
-                        storedConfigurations.remove(config);
-                        persistStoredConfigurations();
-                    }
-                });
-            }
-            manager.add(configMenu);
-        }
     }
 
     private void seriesMenuAboutToShow(IMenuManager manager, final PaintItem paintItem)
@@ -816,29 +691,22 @@ import org.swtchart.LineStyle;
         }
     }
 
-    private void doSaveConfiguration()
+    @Override
+    public String getCurrentConfiguration()
     {
-        InputDialog dlg = new InputDialog(clientEditor.getSite().getShell(), Messages.ChartSeriesPickerDialogTitle,
-                        Messages.ChartSeriesPickerDialogMsg, null, null);
-        if (dlg.open() != InputDialog.OK)
-            return;
+        return currentConfiguration;
+    }
 
-        String name = dlg.getValue();
+    @Override
+    public void handleConfigurationReset()
+    {
+        this.doResetSeries(null);
+    }
 
-        boolean replace = false;
-        for (Configuration config : storedConfigurations)
-        {
-            if (name.equals(config.getName()))
-            {
-                config.setConfig(currentConfiguration);
-                replace = true;
-                break;
-            }
-        }
-
-        if (!replace)
-            storedConfigurations.add(new Configuration(name, currentConfiguration));
-        persistStoredConfigurations();
+    @Override
+    public void handleConfigurationPicked(String data)
+    {
+        this.doResetSeries(data);
     }
 
     private static final class DataSeriesLabelProvider extends LabelProvider

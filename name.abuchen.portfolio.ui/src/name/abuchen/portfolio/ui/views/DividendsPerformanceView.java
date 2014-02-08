@@ -66,6 +66,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     {
         dropDown = new ReportingPeriodDropDown(toolBar, getClientEditor(), this);
         addExportButton(toolBar);
+        addSaveButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -83,6 +84,21 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
+    }
+
+    private void addSaveButton(ToolBar toolBar)
+    {
+        Action save = new Action()
+        {
+            @Override
+            public void run()
+            {
+                recordColumns.showSaveMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(save).fill(toolBar, -1);
     }
 
     private void addConfigButton(ToolBar toolBar)
@@ -109,7 +125,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         container.setLayout(layout);
 
         records = new TableViewer(container, SWT.FULL_SELECTION);
-        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), records, layout);
+        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(), records, layout);
 
         createCommonColumns();
         createDividendColumns();

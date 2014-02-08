@@ -10,8 +10,10 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -32,7 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-public class ShowHideColumnHelper implements IMenuListener
+public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
 {
     public static class OptionLabelProvider extends CellLabelProvider
     {
@@ -244,15 +246,25 @@ public class ShowHideColumnHelper implements IMenuListener
     private List<Column> columns = new ArrayList<Column>();
     private Map<String, Column> id2column = new HashMap<String, Column>();
 
+    private ConfigurationStore store;
+
     private TableViewer viewer;
     private TableColumnLayout layout;
     private Menu contextMenu;
 
     public ShowHideColumnHelper(String identifier, TableViewer viewer, TableColumnLayout layout)
     {
+        this(identifier, null, viewer, layout);
+    }
+
+    public ShowHideColumnHelper(String identifier, Client client, TableViewer viewer, TableColumnLayout layout)
+    {
         this.identifier = identifier;
         this.viewer = viewer;
         this.layout = layout;
+
+        if (client != null)
+            this.store = new ConfigurationStore(identifier, client, this);
 
         this.viewer.getTable().addDisposeListener(new DisposeListener()
         {
@@ -266,10 +278,21 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private void widgetDisposed()
     {
-        persistColumnConfig();
+        PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, getCurrentConfiguration());
 
         if (contextMenu != null)
             contextMenu.dispose();
+
+        if (store != null)
+            store.dispose();
+    }
+
+    public void showSaveMenu(Shell shell)
+    {
+        if (store == null)
+            throw new UnsupportedOperationException();
+
+        store.showSaveMenu(shell);
     }
 
     public void showHideShowColumnsMenu(Shell shell)
@@ -446,12 +469,19 @@ public class ShowHideColumnHelper implements IMenuListener
 
     private void createFromColumnConfig()
     {
-        String config = PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier);
+        createFromColumnConfig(PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier));
+    }
+
+    private void createFromColumnConfig(String config)
+    {
         if (config == null || config.trim().length() == 0)
             return;
 
         try
         {
+            viewer.getTable().setRedraw(false);
+            int count = viewer.getTable().getColumnCount();
+
             StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
             while (tokens.hasMoreTokens())
             {
@@ -477,34 +507,18 @@ public class ShowHideColumnHelper implements IMenuListener
 
                 col.create(viewer, layout, option, direction, width);
             }
+
+            for (int ii = 0; ii < count; ii++)
+                viewer.getTable().getColumn(0).dispose();
         }
         catch (NumberFormatException e)
         {
             PortfolioPlugin.log(e);
         }
-    }
-
-    private void persistColumnConfig()
-    {
-        StringBuilder buf = new StringBuilder();
-
-        TableColumn sortedColumn = viewer.getTable().getSortColumn();
-
-        for (int index : viewer.getTable().getColumnOrder())
+        finally
         {
-            TableColumn col = viewer.getTable().getColumn(index);
-            Column column = (Column) col.getData(Column.class.getName());
-            buf.append(column.id).append('=');
-
-            Object option = col.getData(OPTIONS_KEY);
-            if (option != null)
-                buf.append(option).append('|');
-            if (col.equals(sortedColumn))
-                buf.append(viewer.getTable().getSortDirection()).append('$');
-
-            buf.append(col.getWidth()).append(';');
+            viewer.getTable().setRedraw(true);
         }
-        PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, buf.toString());
     }
 
     private void doResetColumns()
@@ -531,5 +545,42 @@ public class ShowHideColumnHelper implements IMenuListener
             viewer.refresh();
             viewer.getTable().setRedraw(true);
         }
+    }
+
+    @Override
+    public String getCurrentConfiguration()
+    {
+        StringBuilder buf = new StringBuilder();
+
+        TableColumn sortedColumn = viewer.getTable().getSortColumn();
+
+        for (int index : viewer.getTable().getColumnOrder())
+        {
+            TableColumn col = viewer.getTable().getColumn(index);
+            Column column = (Column) col.getData(Column.class.getName());
+            buf.append(column.id).append('=');
+
+            Object option = col.getData(OPTIONS_KEY);
+            if (option != null)
+                buf.append(option).append('|');
+            if (col.equals(sortedColumn))
+                buf.append(viewer.getTable().getSortDirection()).append('$');
+
+            buf.append(col.getWidth()).append(';');
+        }
+        return buf.toString();
+    }
+
+    @Override
+    public void handleConfigurationReset()
+    {
+        doResetColumns();
+    }
+
+    @Override
+    public void handleConfigurationPicked(String data)
+    {
+        createFromColumnConfig(data);
+        viewer.refresh();
     }
 }
