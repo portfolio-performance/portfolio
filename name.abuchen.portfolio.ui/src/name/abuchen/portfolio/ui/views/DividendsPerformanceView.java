@@ -8,12 +8,12 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendFinalTransaction;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendInitialTransaction;
 import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendTransaction;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
@@ -600,7 +600,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public String getText(Object t)
             {
                 if (t instanceof DividendTransaction)
-                    return Values.Amount.formatNonZero(((DividendTransaction) t).getDividendPerShare());
+                    return Values.AmountFraction.formatNonZero(((DividendTransaction) t).getDividendPerShare());
                 else
                     return null;
             }

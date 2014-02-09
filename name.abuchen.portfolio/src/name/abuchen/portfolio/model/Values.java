@@ -14,6 +14,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 100000D, 100000) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long share)
+        {
+            return format.format(share / divider());
+        }
+    };
+
     public static final Values<Long> Share = new Values<Long>("#,##0.#####", 100000D, 100000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());

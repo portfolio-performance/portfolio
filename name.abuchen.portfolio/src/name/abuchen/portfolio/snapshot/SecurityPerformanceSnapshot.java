@@ -266,7 +266,7 @@ public class SecurityPerformanceSnapshot
         {
             this.amount = amount;
             this.shares = shares;
-            this.dividendPerShare = amountPerShare(amount, shares);
+            this.dividendPerShare = amountFractionPerShare(amount, shares);
         }
 
         public long getShares()
@@ -297,6 +297,15 @@ public class SecurityPerformanceSnapshot
         public void setDivEventId(int divEventId)
         {
             this.divEventId = divEventId;
+        }
+
+        static public long amountFractionPerShare(long amount, long shares)
+        {
+            if (shares == 0)
+                return 0;
+
+            return Math.round((double) (amount * (Values.AmountFraction.factor() / Values.Amount.factor()) * Values.Share
+                            .divider()) / (double) shares);
         }
 
         static public long amountPerShare(long amount, long shares)
