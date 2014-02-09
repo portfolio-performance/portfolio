@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.snapshot;
+package name.abuchen.portfolio.snapshot.security;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,9 +14,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.DividendTransaction;
 import name.abuchen.portfolio.util.Dates;
 
 public class SecurityPerformanceRecord implements Adaptable
@@ -634,10 +631,10 @@ public class SecurityPerformanceRecord implements Adaptable
                     divShares = 0;
                 }
 
-                if (dt.shares > 0)
+                if (dt.getShares() > 0)
                 {
-                    divAmount += dt.amount;
-                    divShares += dt.shares;
+                    divAmount += dt.getAmount();
+                    divShares += dt.getShares();
                 }
                 else
                 {

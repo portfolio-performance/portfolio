@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.snapshot;
+package name.abuchen.portfolio.snapshot.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +14,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
 
 public class SecurityPerformanceSnapshot
 {
@@ -199,184 +200,5 @@ public class SecurityPerformanceSnapshot
     public List<SecurityPerformanceRecord> getRecords()
     {
         return new ArrayList<SecurityPerformanceRecord>(calculations);
-    }
-
-    public static class DividendTransaction extends Transaction
-    {
-        // public enum Type
-        // {
-        // DEPOSIT, REMOVAL, INTEREST, DIVIDENDS, FEES, TAXES, BUY, SELL,
-        // TRANSFER_IN, TRANSFER_OUT;
-        //
-        //            private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
-        //
-        // public String toString()
-        // {
-        //                return RESOURCES.getString("account." + name()); //$NON-NLS-1$
-        // }
-        // }
-
-        // private Type type;
-
-        long amount;
-        private Account account;
-        long shares;
-        private long dividendPerShare;
-        private boolean isDiv12;
-        private int divEventId;
-
-        public DividendTransaction()
-        {}
-
-        // public DividendTransaction(Date date, Security security, Type type,
-        // long amount)
-        // {
-        // super(date, security);
-        // this.type = type;
-        // this.amount = amount;
-        // }
-
-        // public Type getType()
-        // {
-        // return type;
-        // }
-        //
-        // public void setType(Type type)
-        // {
-        // this.type = type;
-        // }
-
-        public Account getAccount()
-        {
-            return account;
-        }
-
-        public void setAccount(Account account)
-        {
-            this.account = account;
-        }
-
-        @Override
-        public long getAmount()
-        {
-            return amount;
-        }
-
-        public void setAmountAndShares(long amount, long shares)
-        {
-            this.amount = amount;
-            this.shares = shares;
-            this.dividendPerShare = amountFractionPerShare(amount, shares);
-        }
-
-        public long getShares()
-        {
-            return shares;
-        }
-
-        public long getDividendPerShare()
-        {
-            return dividendPerShare;
-        }
-
-        public boolean getIsDiv12()
-        {
-            return isDiv12;
-        }
-
-        public void setIsDiv12(boolean isDiv12)
-        {
-            this.isDiv12 = isDiv12;
-        }
-
-        public int getDivEventId()
-        {
-            return divEventId;
-        }
-
-        public void setDivEventId(int divEventId)
-        {
-            this.divEventId = divEventId;
-        }
-
-        static public long amountFractionPerShare(long amount, long shares)
-        {
-            if (shares == 0)
-                return 0;
-
-            return Math.round((double) (amount * (Values.AmountFraction.factor() / Values.Amount.factor()) * Values.Share
-                            .divider()) / (double) shares);
-        }
-
-        static public long amountPerShare(long amount, long shares)
-        {
-            if (shares != 0)
-            {
-                return Math.round((double) amount / (double) shares * Values.Share.divider());
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        static public long amountTimesShares(long price, long shares)
-        {
-            if (shares != 0)
-            {
-                return Math.round((double) price * (double) shares / Values.Share.divider());
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-    }
-
-    public static class DividendInitialTransaction extends Transaction
-    {
-        private SecurityPosition position;
-
-        public DividendInitialTransaction(SecurityPosition position, Date time)
-        {
-            this.position = position;
-            this.setSecurity(position.getSecurity());
-            this.setDate(time);
-        }
-
-        @Override
-        public long getAmount()
-        {
-            return position.calculateValue();
-        }
-
-        public SecurityPosition getPosition()
-        {
-            return position;
-        }
-    }
-
-    public static class DividendFinalTransaction extends Transaction
-    {
-        private SecurityPosition position;
-
-        public DividendFinalTransaction(SecurityPosition position, Date time)
-        {
-            this.position = position;
-            this.setSecurity(position.getSecurity());
-            this.setDate(time);
-        }
-
-        @Override
-        public long getAmount()
-        {
-            return position.calculateValue();
-        }
-
-        public SecurityPosition getPosition()
-        {
-            return position;
-        }
     }
 }
