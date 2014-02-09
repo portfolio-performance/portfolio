@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +39,7 @@ public class SecurityPerformanceSnapshot
 
     public static SecurityPerformanceSnapshot create(Client client, Portfolio portfolio, ReportingPeriod period)
     {
+        // FIXME create pseudo client --> transferals must add up
         Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
 
         Date startDate = period.getStartDate();
@@ -55,64 +55,39 @@ public class SecurityPerformanceSnapshot
 
     private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
     {
-        Map<Security, SecurityPerformanceRecord> transactions = new HashMap<Security, SecurityPerformanceRecord>();
+        Map<Security, SecurityPerformanceRecord> records = new HashMap<Security, SecurityPerformanceRecord>();
 
         for (Security s : client.getSecurities())
-            transactions.put(s, new SecurityPerformanceRecord(s));
-        return transactions;
+            records.put(s, new SecurityPerformanceRecord(s));
+        return records;
     }
 
-    private static SecurityPerformanceSnapshot doCreateSnapshot(Map<Security, SecurityPerformanceRecord> transactions,
+    private static SecurityPerformanceSnapshot doCreateSnapshot(Map<Security, SecurityPerformanceRecord> records,
                     Date endDate)
     {
-        for (SecurityPerformanceRecord c : transactions.values())
-            c.prepare(endDate);
+        List<SecurityPerformanceRecord> list = new ArrayList<SecurityPerformanceRecord>(records.values());
 
-        for (Iterator<Map.Entry<Security, SecurityPerformanceRecord>> iter = transactions.entrySet().iterator(); iter
-                        .hasNext();)
+        for (Iterator<SecurityPerformanceRecord> iter = list.iterator(); iter.hasNext();)
         {
-            Map.Entry<Security, SecurityPerformanceRecord> entry = iter.next();
-            SecurityPerformanceRecord d = entry.getValue();
-            if (d.getTransactions().isEmpty())
-                iter.remove();
-            else if (d.getStockShares() == 0)
-                iter.remove();
-        }
-
-        // prepare pseudo summarize
-
-        SecurityPerformanceRecord sum1 = null;
-
-        for (SecurityPerformanceRecord c : transactions.values())
-        {
-            if (c.getSecurity().getName().equalsIgnoreCase("_summe_"))
+            SecurityPerformanceRecord record = iter.next();
+            if (record.getTransactions().isEmpty())
             {
-                sum1 = c;
-                break;
+                // remove records that have no transactions
+                // during the reporting period
+                iter.remove();
+            }
+            else
+            {
+                // calculate values for each security
+                record.calculate(endDate);
             }
         }
 
-        if (sum1 != null)
-        {
-
-            SecurityPerformanceRecord sum = sum1;
-            // DivRecord sum = new DivRecord(sum1.getSecurity());
-            // transactions.values().add(sum); // crasht mit new
-            // DivRecord(sum1.getSecurity());
-
-            for (SecurityPerformanceRecord c : transactions.values())
-            {
-                if (c != sum)
-                    sum.summarize(c);
-            }
-
-        }
-
-        return new SecurityPerformanceSnapshot(transactions.values());
+        return new SecurityPerformanceSnapshot(list);
     }
 
     private static void extractSecurityRelatedAccountTransactions(Account account, Date startDate, Date endDate,
-                    Map<Security, SecurityPerformanceRecord> transactions)
+                    Map<Security, SecurityPerformanceRecord> records)
     {
         for (AccountTransaction t : account.getTransactions())
         {
@@ -128,8 +103,9 @@ public class SecurityPerformanceSnapshot
                             dt.setDate(t.getDate());
                             dt.setSecurity(t.getSecurity());
                             dt.setAccount(account);
-                            dt.setAmountAndShares(t.getAmount(), t.getShares());
-                            transactions.get(t.getSecurity()).add(dt);
+                            dt.setAmount(t.getAmount());
+                            dt.setShares(t.getShares());
+                            records.get(t.getSecurity()).addTransaction(dt);
                         }
                         break;
                     case FEES:
@@ -140,7 +116,6 @@ public class SecurityPerformanceSnapshot
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
-                        // transactions.get(null).add(t);
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -150,7 +125,7 @@ public class SecurityPerformanceSnapshot
     }
 
     private static void extractSecurityRelatedPortfolioTransactions(Portfolio portfolio, Date startDate, Date endDate,
-                    Map<Security, SecurityPerformanceRecord> transactions)
+                    Map<Security, SecurityPerformanceRecord> records)
     {
         for (PortfolioTransaction t : portfolio.getTransactions())
         {
@@ -164,7 +139,7 @@ public class SecurityPerformanceSnapshot
                     case SELL:
                     case DELIVERY_INBOUND:
                     case DELIVERY_OUTBOUND:
-                        transactions.get(t.getSecurity()).add(t);
+                        records.get(t.getSecurity()).addTransaction(t);
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -175,30 +150,30 @@ public class SecurityPerformanceSnapshot
     }
 
     private static void addPseudoValuationTansactions(Portfolio portfolio, Date startDate, Date endDate,
-                    Map<Security, SecurityPerformanceRecord> transactions)
+                    Map<Security, SecurityPerformanceRecord> records)
     {
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, startDate);
         for (SecurityPosition position : snapshot.getPositions())
         {
-            transactions.get(position.getSecurity()).add(new DividendInitialTransaction(position, startDate));
+            records.get(position.getSecurity()).addTransaction(new DividendInitialTransaction(position, startDate));
         }
 
         snapshot = PortfolioSnapshot.create(portfolio, endDate);
         for (SecurityPosition position : snapshot.getPositions())
         {
-            transactions.get(position.getSecurity()).add(new DividendFinalTransaction(position, endDate));
+            records.get(position.getSecurity()).addTransaction(new DividendFinalTransaction(position, endDate));
         }
     }
 
-    private Collection<SecurityPerformanceRecord> calculations;
+    private List<SecurityPerformanceRecord> records;
 
-    private SecurityPerformanceSnapshot(Collection<SecurityPerformanceRecord> calculations)
+    private SecurityPerformanceSnapshot(List<SecurityPerformanceRecord> records)
     {
-        this.calculations = calculations;
+        this.records = records;
     }
 
     public List<SecurityPerformanceRecord> getRecords()
     {
-        return new ArrayList<SecurityPerformanceRecord>(calculations);
+        return records;
     }
 }

@@ -8,7 +8,6 @@ import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.math.LogarithmicRegression;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -34,9 +33,23 @@ public class SecurityPerformanceRecord implements Adaptable
     private final Security security;
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
+    /**
+     * internal rate of return of security {@link #calculateIRR()}
+     */
     private double irr;
+
+    /**
+     * delta = market value + sells + dividends - purchase costs
+     * {@link #calculateDelta()}
+     */
     private long delta;
+
+    /**
+     * market value of holdings at end of period
+     * {@link #addTransaction(Transaction)}
+     */
     private long marketValue;
+
     private double irrdiv;
     private long divAmount;
     private long div12Shares;
@@ -47,8 +60,6 @@ public class SecurityPerformanceRecord implements Adaptable
     private long div120Amount;
     private long stockAmount; // Wert im Bestand
     private long stockShares; // Stücke im Bestand
-    private long poolAmount; // dto im Verrechnungpool
-    private long poolShares; // dto im Verrechnungpool
     private Date dateFrom;
     private Date dateTo;
     private int divEventCount;
@@ -70,10 +81,7 @@ public class SecurityPerformanceRecord implements Adaptable
 
     public String getSecurityName()
     {
-        if (getSecurity() != null)
-            return getSecurity().getName();
-        else
-            return null;
+        return getSecurity().getName();
     }
 
     public double getIrr()
@@ -183,21 +191,6 @@ public class SecurityPerformanceRecord implements Adaptable
         return DividendTransaction.amountPerShare(stockAmount, stockShares);
     }
 
-    public long getPoolAmount()
-    {
-        return poolAmount;
-    }
-
-    public long getPoolShares()
-    {
-        return poolShares;
-    }
-
-    public long getPoolPrice()
-    {
-        return DividendTransaction.amountPerShare(poolAmount, poolShares);
-    }
-
     public Date getDateFrom()
     {
         return dateFrom;
@@ -259,20 +252,7 @@ public class SecurityPerformanceRecord implements Adaptable
         return type == Security.class ? type.cast(security) : null;
     }
 
-    /* package */void summarize(SecurityPerformanceRecord d)
-    {
-        this.periodicity = Periodicity.INDEFINITE;
-        this.divEventCount += 1; // d.divEventCount;
-        this.divAmount += d.divAmount;
-        this.stockAmount += d.stockAmount;
-        this.div12Cost += d.div12Cost;
-        this.div12Amount += d.div12Amount;
-        this.div24Amount += d.div24Amount;
-        this.div60Amount += d.div60Amount;
-        this.div120Amount += d.div120Amount;
-    }
-
-    /* package */void add(Transaction t)
+    /* package */void addTransaction(Transaction t)
     {
         transactions.add(t);
 
@@ -280,7 +260,7 @@ public class SecurityPerformanceRecord implements Adaptable
             marketValue = t.getAmount();
     }
 
-    /* package */void prepare(Date endDate)
+    /* package */void calculate(Date endDate)
     {
         Transaction.sortByDate(transactions);
 
@@ -398,8 +378,8 @@ public class SecurityPerformanceRecord implements Adaptable
         Date tDateFinal = cal.getTime();
         stockAmount = 0;
         stockShares = 0;
-        poolAmount = 0;
-        poolShares = 0;
+        long poolAmount = 0;
+        long poolShares = 0;
         divEventCount = 0;
 
         Date dCurr, dLast = null;
@@ -460,10 +440,6 @@ public class SecurityPerformanceRecord implements Adaptable
                 }
 
             }
-            else if (t instanceof AccountTransaction)
-            {
-                // Zinsen (?) ignorieren
-            }
             else if (t instanceof PortfolioTransaction)
             {
                 // Bestandsveränderungen
@@ -480,7 +456,8 @@ public class SecurityPerformanceRecord implements Adaptable
                             // der Kaufpreis wird anteilig um den im Pool
                             // gespeicherten Gewinn/Verlust reduziert
                             long ps = Math.min(shares, poolShares);
-                            long pa = DividendTransaction.amountTimesShares(getPoolPrice(), ps);
+                            long pa = DividendTransaction.amountTimesShares(
+                                            DividendTransaction.amountPerShare(poolAmount, poolShares), ps);
 
                             poolShares -= ps;
                             poolAmount -= pa;

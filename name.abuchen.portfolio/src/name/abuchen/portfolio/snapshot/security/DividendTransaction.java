@@ -6,10 +6,11 @@ import name.abuchen.portfolio.model.Values;
 
 public class DividendTransaction extends Transaction
 {
-    private long amount;
     private Account account;
+
     private long shares;
-    private long dividendPerShare;
+    private long amount;
+
     private boolean isDiv12;
     private int divEventId;
 
@@ -21,7 +22,7 @@ public class DividendTransaction extends Transaction
         return account;
     }
 
-    public void setAccount(Account account)
+    /* package */void setAccount(Account account)
     {
         this.account = account;
     }
@@ -32,11 +33,9 @@ public class DividendTransaction extends Transaction
         return amount;
     }
 
-    public void setAmountAndShares(long amount, long shares)
+    /* package */void setAmount(long amount)
     {
         this.amount = amount;
-        this.shares = shares;
-        this.dividendPerShare = amountFractionPerShare(amount, shares);
     }
 
     public long getShares()
@@ -44,9 +43,14 @@ public class DividendTransaction extends Transaction
         return shares;
     }
 
+    /* package */void setShares(long shares)
+    {
+        this.shares = shares;
+    }
+
     public long getDividendPerShare()
     {
-        return dividendPerShare;
+        return amountFractionPerShare(amount, shares);
     }
 
     public boolean getIsDiv12()
