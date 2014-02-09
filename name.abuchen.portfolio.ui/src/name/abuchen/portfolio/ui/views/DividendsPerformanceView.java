@@ -205,6 +205,25 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
+        // True time-weighted rate of return
+        column = new Column("TWROR", SWT.RIGHT, 50);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getIrr());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
         // shares held
         column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
@@ -212,10 +231,36 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public Long getValue(Object e)
             {
-                return ((SecurityPerformanceRecord) e).getStockShares();
+                return ((SecurityPerformanceRecord) e).getSharesHeld();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "stockShares")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sharesHeld")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // cost value - fifo
+        column = new Column(Messages.ColumnPurchaseValue, SWT.RIGHT, 75);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getFifoCost());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // cost value per share - fifo
+        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 75);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // cost value
@@ -601,6 +646,21 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             {
                 if (t instanceof DividendTransaction)
                     return Values.AmountFraction.formatNonZero(((DividendTransaction) t).getDividendPerShare());
+                else
+                    return null;
+            }
+        });
+        support.addColumn(column);
+
+        // dividend per share
+        column = new Column("pers. Dividendenrendite", SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof DividendTransaction)
+                    return Values.Percent2.formatNonZero(((DividendTransaction) t).getPersonalDividendYield());
                 else
                     return null;
             }

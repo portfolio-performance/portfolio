@@ -11,6 +11,8 @@ public class DividendTransaction extends Transaction
     private long shares;
     private long amount;
 
+    private long fifoCost;
+
     private boolean isDiv12;
     private int divEventId;
 
@@ -51,6 +53,21 @@ public class DividendTransaction extends Transaction
     public long getDividendPerShare()
     {
         return amountFractionPerShare(amount, shares);
+    }
+
+    public long getFifoCost()
+    {
+        return fifoCost;
+    }
+
+    /* package */void setFifoCost(long fifoCost)
+    {
+        this.fifoCost = fifoCost;
+    }
+
+    public double getPersonalDividendYield()
+    {
+        return amount / (double) fifoCost;
     }
 
     public boolean getIsDiv12()

@@ -9,10 +9,13 @@ import java.util.ResourceBundle;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.math.LogarithmicRegression;
 import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Dates;
 
 public class SecurityPerformanceRecord implements Adaptable
@@ -39,6 +42,12 @@ public class SecurityPerformanceRecord implements Adaptable
     private double irr;
 
     /**
+     * True time-weighted rate of return
+     * {@link #calculatePerformance(ReportingPeriod)}
+     */
+    private double twror;
+
+    /**
      * delta = market value + sells + dividends - purchase costs
      * {@link #calculateDelta()}
      */
@@ -49,6 +58,21 @@ public class SecurityPerformanceRecord implements Adaptable
      * {@link #addTransaction(Transaction)}
      */
     private long marketValue;
+
+    /**
+     * fifo cost of shares held {@link #calculateFifoCosts()}
+     */
+    private long fifoCost;
+
+    /**
+     * shares held {@link #calculateFifoCosts()}
+     */
+    private long sharesHeld;
+
+    /**
+     * cost per shares held {@link #calculateFifoCosts()}
+     */
+    private long fifoCostPerSharesHeld;
 
     private double irrdiv;
     private long divAmount;
@@ -89,6 +113,11 @@ public class SecurityPerformanceRecord implements Adaptable
         return irr;
     }
 
+    public double getTrueTimeWeightedRateOfReturn()
+    {
+        return twror;
+    }
+
     public long getDelta()
     {
         return delta;
@@ -97,6 +126,21 @@ public class SecurityPerformanceRecord implements Adaptable
     public long getMarketValue()
     {
         return marketValue;
+    }
+
+    public long getFifoCost()
+    {
+        return fifoCost;
+    }
+
+    public long getSharesHeld()
+    {
+        return sharesHeld;
+    }
+
+    public long getFifoCostPerSharesHeld()
+    {
+        return fifoCostPerSharesHeld;
     }
 
     public double getIrrDiv()
@@ -260,112 +304,49 @@ public class SecurityPerformanceRecord implements Adaptable
             marketValue = t.getAmount();
     }
 
-    /* package */void calculate(Date endDate)
+    /* package */void calculate(Client client, ReportingPeriod period)
     {
         Transaction.sortByDate(transactions);
 
         if (!transactions.isEmpty())
         {
             calculateIRR();
+            calculatePerformance(client, period);
             calculateDelta();
+            calculateFifoCosts();
             calculateIRRDiv();
-            calculateDiv12(endDate);
+            calculateDiv12(period.getEndDate());
         }
     }
 
     private void calculateIRR()
     {
-        List<Date> dates = new ArrayList<Date>();
-        List<Double> values = new ArrayList<Double>();
+        IRRCalculation calc = new IRRCalculation();
+        calc.visitAll(transactions);
+        this.irr = calc.getIRR();
+    }
 
-        for (Transaction t : transactions)
-        {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(t.getDate());
-            dates.add(t.getDate());
-
-            if (t instanceof DividendInitialTransaction)
-            {
-                values.add(-((DividendInitialTransaction) t).getAmount() / Values.Amount.divider());
-            }
-            else if (t instanceof DividendFinalTransaction)
-            {
-                values.add(((DividendFinalTransaction) t).getAmount() / Values.Amount.divider());
-            }
-            else if (t instanceof DividendTransaction)
-            {
-                values.add(((DividendTransaction) t).getAmount() / Values.Amount.divider());
-            }
-            else if (t instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction pt = (PortfolioTransaction) t;
-                switch (pt.getType())
-                {
-                    case BUY:
-                    case DELIVERY_INBOUND:
-                    case TRANSFER_IN:
-                        values.add(-pt.getAmount() / Values.Amount.divider());
-                        break;
-                    case SELL:
-                    case DELIVERY_OUTBOUND:
-                    case TRANSFER_OUT:
-                        values.add(pt.getAmount() / Values.Amount.divider());
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
-            else
-            {
-                throw new UnsupportedOperationException();
-            }
-        }
-
-        this.irr = IRR.calculate(dates, values);
+    private void calculatePerformance(Client client, ReportingPeriod period)
+    {
+        PerformanceIndex index = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>());
+        double[] performance = index.getAccumulatedPercentage();
+        this.twror = performance.length > 0 ? performance[performance.length - 1] : 0d;
     }
 
     private void calculateDelta()
     {
-        for (Transaction t : transactions)
-        {
-            if (t instanceof DividendInitialTransaction)
-            {
-                delta -= ((DividendInitialTransaction) t).getAmount();
-            }
-            else if (t instanceof DividendFinalTransaction)
-            {
-                delta += ((DividendFinalTransaction) t).getAmount();
-            }
-            else if (t instanceof DividendTransaction)
-            {
-                delta += ((DividendTransaction) t).getAmount();
-            }
-            else if (t instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction pt = (PortfolioTransaction) t;
-                switch (pt.getType())
-                {
-                    case BUY:
-                    case DELIVERY_INBOUND:
-                        delta -= pt.getAmount();
-                        break;
-                    case SELL:
-                    case DELIVERY_OUTBOUND:
-                        delta += pt.getAmount();
-                        break;
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                        // transferals do not contribute to the delta
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
-            else
-            {
-                throw new UnsupportedOperationException(t.getClass().getName());
-            }
-        }
+        DeltaCalculation calc = new DeltaCalculation();
+        calc.visitAll(transactions);
+        this.delta = calc.getDelta();
+    }
+
+    private void calculateFifoCosts()
+    {
+        CostCalculation cost = new CostCalculation();
+        cost.visitAll(transactions);
+        this.fifoCost = cost.getFifoCost();
+        this.sharesHeld = cost.getSharesHeld();
+        this.fifoCostPerSharesHeld = Math.round(fifoCost * Values.Share.factor() / (double) sharesHeld);
     }
 
     private void calculateIRRDiv()
