@@ -34,7 +34,7 @@ public class SecurityPerformanceSnapshot
             addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
         }
 
-        return doCreateSnapshot(transactions, period);
+        return doCreateSnapshot(client, transactions, period);
     }
 
     public static SecurityPerformanceSnapshot create(Client client, Portfolio portfolio, ReportingPeriod period)
@@ -50,7 +50,7 @@ public class SecurityPerformanceSnapshot
         extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
         addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
 
-        return doCreateSnapshot(transactions, period);
+        return doCreateSnapshot(client, transactions, period);
     }
 
     private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
@@ -62,8 +62,8 @@ public class SecurityPerformanceSnapshot
         return records;
     }
 
-    private static SecurityPerformanceSnapshot doCreateSnapshot(Map<Security, SecurityPerformanceRecord> records,
-                    ReportingPeriod period)
+    private static SecurityPerformanceSnapshot doCreateSnapshot(Client client,
+                    Map<Security, SecurityPerformanceRecord> records, ReportingPeriod period)
     {
         List<SecurityPerformanceRecord> list = new ArrayList<SecurityPerformanceRecord>(records.values());
 
