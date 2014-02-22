@@ -23,6 +23,7 @@ public class Account implements InvestmentVehicle
 
     private String uuid;
     private String name;
+    private String note;
     private boolean isRetired = false;
 
     private List<AccountTransaction> transactions = new ArrayList<AccountTransaction>();
@@ -60,6 +61,18 @@ public class Account implements InvestmentVehicle
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public String getNote()
+    {
+        return note;
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        this.note = note;
     }
 
     public boolean isRetired()

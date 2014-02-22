@@ -8,6 +8,7 @@ public class Portfolio
 {
     private String uuid;
     private String name;
+    private String note;
 
     private Account referenceAccount;
 
@@ -37,6 +38,16 @@ public class Portfolio
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getNote()
+    {
+        return note;
+    }
+
+    public void setNote(String note)
+    {
+        this.note = note;
     }
 
     public Account getReferenceAccount()

@@ -412,6 +412,19 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                return element.isSecurity() ? element.getSecurity().getNote() : null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         assets.getTable().setHeaderVisible(true);

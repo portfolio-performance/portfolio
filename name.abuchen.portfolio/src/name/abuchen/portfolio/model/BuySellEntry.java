@@ -81,6 +81,7 @@ public class BuySellEntry implements CrossEntry
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
             portfolioTransaction.setAmount(accountTransaction.getAmount());
             portfolioTransaction.setType(PortfolioTransaction.Type.valueOf(accountTransaction.getType().name()));
+            portfolioTransaction.setNote(accountTransaction.getNote());
         }
         else if (t == portfolioTransaction)
         {
@@ -88,6 +89,7 @@ public class BuySellEntry implements CrossEntry
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
             accountTransaction.setAmount(portfolioTransaction.getAmount());
             accountTransaction.setType(AccountTransaction.Type.valueOf(portfolioTransaction.getType().name()));
+            accountTransaction.setNote(portfolioTransaction.getNote());
         }
         else
         {

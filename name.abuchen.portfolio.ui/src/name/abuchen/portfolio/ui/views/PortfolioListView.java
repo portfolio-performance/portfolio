@@ -98,7 +98,7 @@ public class PortfolioListView extends AbstractListView
 
         portfolios = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         portfolios, layout);
 
         Column column = new Column(Messages.ColumnPortfolio, SWT.None, 100);
@@ -131,6 +131,19 @@ public class PortfolioListView extends AbstractListView
             }
         });
         column.setSorter(ColumnViewerSorter.create(Portfolio.class, "referenceAccount")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Portfolio) e).getNote();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Portfolio.class, "note")); //$NON-NLS-1$
         column.setMoveable(false);
         support.addColumn(column);
 
@@ -175,7 +188,8 @@ public class PortfolioListView extends AbstractListView
                             }
                         }) //
                         .editable("name") // //$NON-NLS-1$
-                        .combobox("referenceAccount", getClient().getAccounts()) // //$NON-NLS-1$
+                        .combobox("referenceAccount", getClient().getAccounts()) //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(portfolios.getTable(), new IMenuListener()

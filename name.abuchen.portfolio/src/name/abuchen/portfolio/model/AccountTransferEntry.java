@@ -54,19 +54,18 @@ public class AccountTransferEntry implements CrossEntry
     public void updateFrom(Transaction t)
     {
         if (t == transactionFrom)
-        {
-            transactionTo.setDate(transactionFrom.getDate());
-            transactionTo.setAmount(transactionFrom.getAmount());
-        }
+            copyAttributesOver(transactionFrom, transactionTo);
         else if (t == transactionTo)
-        {
-            transactionFrom.setDate(transactionTo.getDate());
-            transactionFrom.setAmount(transactionTo.getAmount());
-        }
+            copyAttributesOver(transactionTo, transactionFrom);
         else
-        {
             throw new UnsupportedOperationException();
-        }
+    }
+
+    private void copyAttributesOver(AccountTransaction source, AccountTransaction target)
+    {
+        target.setDate(source.getDate());
+        target.setAmount(source.getAmount());
+        target.setNote(source.getNote());
     }
 
     @Override

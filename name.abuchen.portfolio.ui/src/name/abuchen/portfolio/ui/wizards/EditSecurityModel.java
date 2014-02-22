@@ -133,6 +133,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private Security security;
 
     private String name;
+    private String note;
     private String isin;
     private String tickerSymbol;
     private String wkn;
@@ -149,6 +150,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.security = security;
 
         this.name = security.getName();
+        this.note = security.getNote();
         this.isin = security.getIsin();
         this.tickerSymbol = security.getTickerSymbol();
         this.wkn = security.getWkn();
@@ -168,6 +170,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setName(String name)
     {
         firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
+    }
+
+    public String getNote()
+    {
+        return note;
+    }
+
+    public void setNote(String note)
+    {
+        firePropertyChange("note", this.note, this.note = note); //$NON-NLS-1$
     }
 
     public String getIsin()
@@ -239,6 +251,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void applyChanges()
     {
         security.setName(name);
+        security.setNote(note);
         security.setIsin(isin);
         security.setTickerSymbol(tickerSymbol);
         security.setWkn(wkn);

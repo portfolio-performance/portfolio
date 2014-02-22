@@ -54,6 +54,7 @@ public class SecurityMasterDataPage extends AbstractWizardPage
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn"); //$NON-NLS-1$
         bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
+        bindings.bindStringInput(container, Messages.ColumnNote, "note"); //$NON-NLS-1$
 
         Link link = new Link(container, SWT.UNDERLINE_LINK);
         link.setText(Messages.EditWizardMasterDataLinkToSearch);

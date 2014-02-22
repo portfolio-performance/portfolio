@@ -85,7 +85,7 @@ public final class PortfolioTransactionsViewer
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
-        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName(), tableViewer, layout);
+        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "2", tableViewer, layout); //$NON-NLS-1$
 
         addColumns();
         support.createColumns();
@@ -270,6 +270,19 @@ public final class PortfolioTransactionsViewer
         });
         column.setMoveable(false);
         support.addColumn(column);
+
+        column = new Column(Messages.ColumnNote, SWT.None, 200);
+        column.setLabelProvider(new TransactionLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((PortfolioTransaction) e).getNote();
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
     }
 
     private void addEditingSupport(AbstractFinanceView owner)
@@ -290,15 +303,16 @@ public final class PortfolioTransactionsViewer
                                 PortfolioTransactionsViewer.this.owner.notifyModelUpdated();
                             }
                         }) //
-                        .editable("date") // //$NON-NLS-1$
-                        .readonly("type") // //$NON-NLS-1$
-                        .combobox("security", securities) // //$NON-NLS-1$
-                        .shares("shares") // //$NON-NLS-1$
+                        .editable("date") //$NON-NLS-1$
+                        .readonly("type") //$NON-NLS-1$
+                        .combobox("security", securities) //$NON-NLS-1$
+                        .shares("shares") //$NON-NLS-1$
                         .readonly("actualPurchasePrice") //$NON-NLS-1$
                         .readonly("lumpSumPrice") //$NON-NLS-1$
-                        .amount("fees") // //$NON-NLS-1$
-                        .amount("amount") // //$NON-NLS-1$
+                        .amount("fees") //$NON-NLS-1$
+                        .amount("amount") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
     }
 

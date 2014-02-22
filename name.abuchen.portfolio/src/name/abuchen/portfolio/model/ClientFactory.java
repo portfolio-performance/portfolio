@@ -141,6 +141,12 @@ public class ClientFactory
             client.setVersion(17);
         }
 
+        if (client.getVersion() == 17)
+        {
+            // do nothing --> added notes attribute
+            client.setVersion(18);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));

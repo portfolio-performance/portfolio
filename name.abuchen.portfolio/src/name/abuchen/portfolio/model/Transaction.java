@@ -23,6 +23,8 @@ public abstract class Transaction
     private Security security;
     private CrossEntry crossEntry;
 
+    private String note;
+
     public Transaction()
     {}
 
@@ -60,6 +62,16 @@ public abstract class Transaction
     /* package */void setCrossEntry(CrossEntry crossEntry)
     {
         this.crossEntry = crossEntry;
+    }
+
+    public String getNote()
+    {
+        return note;
+    }
+
+    public void setNote(String note)
+    {
+        this.note = note;
     }
 
     public abstract long getAmount();

@@ -26,6 +26,7 @@ public final class Security implements InvestmentVehicle
     private String uuid;
 
     private String name;
+    private String note;
 
     private String isin;
     private String tickerSymbol;
@@ -80,6 +81,18 @@ public final class Security implements InvestmentVehicle
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public String getNote()
+    {
+        return note;
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        this.note = note;
     }
 
     public String getIsin()
@@ -313,6 +326,7 @@ public final class Security implements InvestmentVehicle
         Security answer = new Security();
 
         answer.name = name;
+        answer.note = note;
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;

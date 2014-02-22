@@ -147,7 +147,7 @@ public class AccountListView extends AbstractListView
 
         accounts = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         accounts, layout);
 
         Column column = new Column(Messages.ColumnAccount, SWT.None, 150);
@@ -189,6 +189,19 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Account) e).getNote();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Account.class, "note")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         accounts.getTable().setHeaderVisible(true);
@@ -225,8 +238,9 @@ public class AccountListView extends AbstractListView
                                 accounts.refresh(transactions.getData(Account.class.toString()));
                             }
                         }) //
-                        .editable("name") // //$NON-NLS-1$
-                        .readonly("balance") // //$NON-NLS-1$
+                        .editable("name") //$NON-NLS-1$
+                        .readonly("balance") //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(accounts.getTable(), new IMenuListener()
@@ -283,7 +297,7 @@ public class AccountListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom4", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         transactions, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -447,6 +461,24 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnNote, SWT.None, 200);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((AccountTransaction) e).getNote();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
@@ -463,8 +495,13 @@ public class AccountListView extends AbstractListView
                             @Override
                             public boolean canModify(Object element, String property)
                             {
+                                AccountTransaction t = (AccountTransaction) element;
                                 if ("shares".equals(property)) //$NON-NLS-1$
-                                    return ((AccountTransaction) element).getType() == AccountTransaction.Type.DIVIDENDS;
+                                    return t.getType() == AccountTransaction.Type.DIVIDENDS;
+                                if ("security".equals(property)) //$NON-NLS-1$
+                                    return t.getType() == AccountTransaction.Type.BUY
+                                                    || t.getType() == AccountTransaction.Type.SELL
+                                                    || t.getType() == AccountTransaction.Type.DIVIDENDS;
 
                                 return true;
                             }
@@ -484,10 +521,11 @@ public class AccountListView extends AbstractListView
                         .editable("date") //$NON-NLS-1$
                         .readonly("type") //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
-                        .combobox("security", securities, true) //$NON-NLS-1$
+                        .combobox("security", securities) //$NON-NLS-1$
                         .shares("shares") //$NON-NLS-1$
                         .readonly("actualPurchasePrice") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()
