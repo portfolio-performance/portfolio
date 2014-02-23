@@ -309,7 +309,7 @@ public final class CellEditorFactory
 
     private interface Modifier
     {
-        static final Object UNMODIFIED = new Object();
+        Object UNMODIFIED = new Object();
 
         Object getValue(Object element) throws Exception;
 

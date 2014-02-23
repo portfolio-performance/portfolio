@@ -13,9 +13,6 @@ public class DividendTransaction extends Transaction
 
     private long fifoCost;
 
-    private boolean isDiv12;
-    private int divEventId;
-
     public DividendTransaction()
     {}
 
@@ -70,27 +67,7 @@ public class DividendTransaction extends Transaction
         return amount / (double) fifoCost;
     }
 
-    public boolean getIsDiv12()
-    {
-        return isDiv12;
-    }
-
-    public void setIsDiv12(boolean isDiv12)
-    {
-        this.isDiv12 = isDiv12;
-    }
-
-    public int getDivEventId()
-    {
-        return divEventId;
-    }
-
-    public void setDivEventId(int divEventId)
-    {
-        this.divEventId = divEventId;
-    }
-
-    static public long amountFractionPerShare(long amount, long shares)
+    static long amountFractionPerShare(long amount, long shares)
     {
         if (shares == 0)
             return 0;
@@ -98,29 +75,4 @@ public class DividendTransaction extends Transaction
         return Math.round((double) (amount * (Values.AmountFraction.factor() / Values.Amount.factor()) * Values.Share
                         .divider()) / (double) shares);
     }
-
-    static public long amountPerShare(long amount, long shares)
-    {
-        if (shares != 0)
-        {
-            return Math.round((double) amount / (double) shares * Values.Share.divider());
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    static public long amountTimesShares(long price, long shares)
-    {
-        if (shares != 0)
-        {
-            return Math.round((double) price * (double) shares / Values.Share.divider());
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
 }

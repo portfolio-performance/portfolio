@@ -91,37 +91,26 @@ public class SecurityPerformanceSnapshot
     {
         for (AccountTransaction t : account.getTransactions())
         {
-            if (t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime())
-            {
-                switch (t.getType())
-                {
-                    case INTEREST:
-                    case DIVIDENDS:
-                        if (t.getSecurity() != null)
-                        {
-                            DividendTransaction dt = new DividendTransaction();
-                            dt.setDate(t.getDate());
-                            dt.setSecurity(t.getSecurity());
-                            dt.setAccount(account);
-                            dt.setAmount(t.getAmount());
-                            dt.setShares(t.getShares());
-                            dt.setNote(t.getNote());
-                            records.get(t.getSecurity()).addTransaction(dt);
-                        }
-                        break;
-                    case FEES:
-                    case TAXES:
-                    case DEPOSIT:
-                    case REMOVAL:
-                    case BUY:
-                    case SELL:
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
+            if (t.getSecurity() == null)
+                continue;
+
+            if (t.getType() != AccountTransaction.Type.DIVIDENDS && t.getType() != AccountTransaction.Type.INTEREST)
+                continue;
+
+            if (t.getDate().getTime() <= startDate.getTime())
+                continue;
+
+            if (t.getDate().getTime() > endDate.getTime())
+                continue;
+
+            DividendTransaction dt = new DividendTransaction();
+            dt.setDate(t.getDate());
+            dt.setSecurity(t.getSecurity());
+            dt.setAccount(account);
+            dt.setAmount(t.getAmount());
+            dt.setShares(t.getShares());
+            dt.setNote(t.getNote());
+            records.get(t.getSecurity()).addTransaction(dt);
         }
     }
 

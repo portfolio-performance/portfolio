@@ -13,7 +13,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
-public class SecurityPerformanceRecord implements Adaptable
+public final class SecurityPerformanceRecord implements Adaptable
 {
     public enum Periodicity
     {
