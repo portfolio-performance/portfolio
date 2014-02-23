@@ -263,19 +263,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // cost value
-        column = new Column("Einstand", SWT.RIGHT, 75);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getStockAmount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "stockAmount")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
         // Gesamtsumme der erhaltenen Dividenden
         column = new Column("∑Div", SWT.RIGHT, 80);
         column.setGroupLabel("Dividenden");
@@ -284,10 +271,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getDivAmount());
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getSumOfDividends());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divAmount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // market value
@@ -361,10 +348,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Id.format(((SecurityPerformanceRecord) r).getDivEventCount());
+                return Values.Id.format(((SecurityPerformanceRecord) r).getDividendEventCount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divEventCount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "dividendEventCount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Datum der letzten Dividendenzahlung
@@ -375,11 +362,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                Date date = ((SecurityPerformanceRecord) r).getDateTo();
+                Date date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
                 return date != null ? Values.Date.format(date) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "dateTo")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Periodizität der Dividendenzahlungen
@@ -391,6 +378,20 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public String getText(Object r)
             {
                 return ((SecurityPerformanceRecord) r).getPeriodicity().toString();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // Periodizität der Dividendenzahlungen
+        column = new Column("Periodiziät (neu)", SWT.None, 100);
+        column.setGroupLabel("Dividenden");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return ((SecurityPerformanceRecord) r).getPeriodicity2().toString();
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$

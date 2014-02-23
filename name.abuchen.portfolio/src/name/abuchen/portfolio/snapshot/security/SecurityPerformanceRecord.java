@@ -74,6 +74,22 @@ public class SecurityPerformanceRecord implements Adaptable
      */
     private long fifoCostPerSharesHeld;
 
+    /**
+     * sum of all dividend payments {@link #calculateDividends()}
+     */
+    private long sumOfDividends;
+
+    /**
+     * number of dividend events during reporting period
+     * {@link #calculateDividends()}
+     */
+    private int dividendEventCount;
+
+    /**
+     * last dividend payment in reporting period {@link #calculateDividends()}
+     */
+    private Date lastDividendPayment;
+
     private double irrdiv;
     private long divAmount;
     private long div12Shares;
@@ -143,6 +159,21 @@ public class SecurityPerformanceRecord implements Adaptable
         return fifoCostPerSharesHeld;
     }
 
+    public long getSumOfDividends()
+    {
+        return sumOfDividends;
+    }
+
+    public int getDividendEventCount()
+    {
+        return dividendEventCount;
+    }
+
+    public Date getLastDividendPayment()
+    {
+        return lastDividendPayment;
+    }
+
     public double getIrrDiv()
     {
         return irrdiv;
@@ -150,14 +181,7 @@ public class SecurityPerformanceRecord implements Adaptable
 
     public double getTotalRateOfReturnDiv()
     {
-        if (stockAmount > 0)
-        {
-            return (double) divAmount / (double) stockAmount;
-        }
-        else
-        {
-            return 0;
-        }
+        return sharesHeld > 0 ? (double) sumOfDividends / (double) fifoCost : 0;
     }
 
     public long getDivAmount()
@@ -314,6 +338,7 @@ public class SecurityPerformanceRecord implements Adaptable
             calculatePerformance(client, period);
             calculateDelta();
             calculateFifoCosts();
+            calculateDividends();
             calculateIRRDiv();
             calculateDiv12(period.getEndDate());
         }
@@ -342,6 +367,14 @@ public class SecurityPerformanceRecord implements Adaptable
         this.fifoCost = cost.getFifoCost();
         this.sharesHeld = cost.getSharesHeld();
         this.fifoCostPerSharesHeld = Math.round(fifoCost * Values.Share.factor() / (double) sharesHeld);
+    }
+
+    private void calculateDividends()
+    {
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, transactions);
+        this.sumOfDividends = dividends.getSum();
+        this.dividendEventCount = dividends.getNumOfEvents();
+        this.lastDividendPayment = dividends.getLastDividendPayment();
     }
 
     private void calculateIRRDiv()
