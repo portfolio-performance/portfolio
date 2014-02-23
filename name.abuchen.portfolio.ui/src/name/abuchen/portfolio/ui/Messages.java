@@ -127,6 +127,9 @@ public class Messages extends NLS
     public static String DialogConssitencyChecksMessage;
     public static String DialogTaxonomyNamePrompt;
     public static String DialogTaxonomyNameTitle;
+    public static String DividendsDialogLabelPortfolioSharesHeld;
+    public static String DividendsDialogLabelSpecialDistribution;
+    public static String DividendsDialogTitleShares;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataMsgClassificationMissing;
