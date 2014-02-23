@@ -5,7 +5,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 
-/* package */abstract class AbstractTransactionVisitor
+/* package */abstract class Calculation
 {
     public void visit(DividendInitialTransaction t)
     {}
@@ -33,6 +33,20 @@ import name.abuchen.portfolio.model.Transaction;
                 visit((PortfolioTransaction) t);
             else
                 throw new UnsupportedOperationException();
+        }
+    }
+
+    public static <T extends Calculation> T perform(Class<T> type, List<? extends Transaction> transactions)
+    {
+        try
+        {
+            T thing = type.newInstance();
+            thing.visitAll(transactions);
+            return thing;
+        }
+        catch (Exception e)
+        {
+            throw new UnsupportedOperationException(e);
         }
     }
 }

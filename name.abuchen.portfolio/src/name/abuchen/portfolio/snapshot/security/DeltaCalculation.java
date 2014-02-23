@@ -2,7 +2,7 @@ package name.abuchen.portfolio.snapshot.security;
 
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
-/* package */class DeltaCalculation extends AbstractTransactionVisitor
+/* package */class DeltaCalculation extends Calculation
 {
     private long delta;
 

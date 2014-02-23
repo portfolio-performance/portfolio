@@ -8,7 +8,7 @@ import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Values;
 
-/* package */class IRRCalculation extends AbstractTransactionVisitor
+/* package */class IRRCalculation extends Calculation
 {
     private List<Date> dates = new ArrayList<Date>();
     private List<Double> values = new ArrayList<Double>();

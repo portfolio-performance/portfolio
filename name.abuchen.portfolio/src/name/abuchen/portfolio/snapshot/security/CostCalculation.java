@@ -5,7 +5,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
-/* package */class CostCalculation extends AbstractTransactionVisitor
+/* package */class CostCalculation extends Calculation
 {
     private List<long[]> fifo = new ArrayList<long[]>();
 

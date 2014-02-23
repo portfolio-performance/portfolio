@@ -321,9 +321,7 @@ public class SecurityPerformanceRecord implements Adaptable
 
     private void calculateIRR()
     {
-        IRRCalculation calc = new IRRCalculation();
-        calc.visitAll(transactions);
-        this.irr = calc.getIRR();
+        this.irr = Calculation.perform(IRRCalculation.class, transactions).getIRR();
     }
 
     private void calculatePerformance(Client client, ReportingPeriod period)
@@ -335,15 +333,12 @@ public class SecurityPerformanceRecord implements Adaptable
 
     private void calculateDelta()
     {
-        DeltaCalculation calc = new DeltaCalculation();
-        calc.visitAll(transactions);
-        this.delta = calc.getDelta();
+        this.delta = Calculation.perform(DeltaCalculation.class, transactions).getDelta();
     }
 
     private void calculateFifoCosts()
     {
-        CostCalculation cost = new CostCalculation();
-        cost.visitAll(transactions);
+        CostCalculation cost = Calculation.perform(CostCalculation.class, transactions);
         this.fifoCost = cost.getFifoCost();
         this.sharesHeld = cost.getSharesHeld();
         this.fifoCostPerSharesHeld = Math.round(fifoCost * Values.Share.factor() / (double) sharesHeld);
