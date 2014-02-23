@@ -9,7 +9,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -381,32 +385,74 @@ public class ClientFactory
     {
         for (Security security : client.getSecurities())
         {
-            List<Transaction> transactions = security.getTransactions(client);
-            Transaction.sortByDate(transactions);
+            List<TransactionPair<?>> transactions = security.getTransactions(client);
 
-            long shares = 0;
-            for (Transaction t : transactions)
+            // sort by date of transaction
+            Collections.sort(transactions, new Comparator<TransactionPair<?>>()
             {
-                if (t instanceof AccountTransaction
-                                && ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
+                @Override
+                public int compare(TransactionPair<?> one, TransactionPair<?> two)
                 {
-                    ((AccountTransaction) t).setShares(shares);
+                    return one.getTransaction().getDate().compareTo(two.getTransaction().getDate());
                 }
-                else if (t instanceof PortfolioTransaction)
+            });
+
+            // count and assign number of shares by account
+            Map<Account, Long> account2shares = new HashMap<Account, Long>();
+            for (TransactionPair<? extends Transaction> t : transactions)
+            {
+                if (t.getTransaction() instanceof AccountTransaction)
                 {
-                    switch (((PortfolioTransaction) t).getType())
+                    AccountTransaction accountTransaction = (AccountTransaction) t.getTransaction();
+
+                    switch (accountTransaction.getType())
+                    {
+                        case DIVIDENDS:
+                        case INTEREST:
+                            Long shares = account2shares.get(t.getOwner());
+                            accountTransaction.setShares(shares != null ? shares : 0);
+                            break;
+                        default:
+                    }
+                }
+                else if (t.getTransaction() instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction portfolioTransaction = (PortfolioTransaction) t.getTransaction();
+
+                    // determine account: if it exists, take the cross entry;
+                    // otherwise the reference account
+                    Account account = null;
+                    switch (portfolioTransaction.getType())
+                    {
+                        case BUY:
+                        case SELL:
+                            if (portfolioTransaction.getCrossEntry() != null)
+                                account = (Account) portfolioTransaction.getCrossEntry().getCrossEntity(
+                                                portfolioTransaction);
+                        case TRANSFER_IN:
+                        case TRANSFER_OUT:
+                        default:
+                            if (account == null)
+                                account = ((Portfolio) t.getOwner()).getReferenceAccount();
+                    }
+
+                    long delta = 0;
+                    switch (portfolioTransaction.getType())
                     {
                         case BUY:
                         case TRANSFER_IN:
-                            shares += ((PortfolioTransaction) t).getShares();
+                            delta = portfolioTransaction.getShares();
                             break;
                         case SELL:
                         case TRANSFER_OUT:
-                            shares -= ((PortfolioTransaction) t).getShares();
+                            delta = -portfolioTransaction.getShares();
                             break;
                         default:
                             break;
                     }
+
+                    Long shares = account2shares.get(account);
+                    account2shares.put(account, shares != null ? shares + delta : delta);
                 }
             }
         }

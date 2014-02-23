@@ -10,6 +10,7 @@ Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,
  name.abuchen.portfolio.snapshot,
+ name.abuchen.portfolio.snapshot.security,
  name.abuchen.portfolio.util
 Import-Package: com.thoughtworks.xstream,
  com.thoughtworks.xstream.converters,

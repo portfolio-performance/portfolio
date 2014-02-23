@@ -401,12 +401,14 @@ public class AccountListView extends AbstractListView
                 {
                     return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
                 }
-                else if (t.getType() == Type.DIVIDENDS)
+                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
-                    if (t.getShares() != 0)
-                        return t.getShares();
+                    return t.getShares();
                 }
-                return null;
+                else
+                {
+                    return null;
+                }
             }
 
             @Override
@@ -431,13 +433,14 @@ public class AccountListView extends AbstractListView
                                     .getPortfolioTransaction();
                     return Values.Amount.format(portfolioTransaction.getActualPurchasePrice());
                 }
-                else if (t.getType() == Type.DIVIDENDS)
+                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
-                    if (t.getShares() != 0)
-                        return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / t.getShares()));
+                    return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / t.getShares()));
                 }
-
-                return null;
+                else
+                {
+                    return null;
+                }
             }
 
             @Override

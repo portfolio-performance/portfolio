@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public class Account implements InvestmentVehicle
+public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle
 {
     public static final class ByName implements Comparator<Account>, Serializable
     {
@@ -85,11 +85,13 @@ public class Account implements InvestmentVehicle
         this.isRetired = isRetired;
     }
 
+    @Override
     public List<AccountTransaction> getTransactions()
     {
         return transactions;
     }
 
+    @Override
     public void addTransaction(AccountTransaction transaction)
     {
         this.transactions.add(transaction);

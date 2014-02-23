@@ -88,7 +88,7 @@ public class PortfolioTransferEntry implements CrossEntry
     }
 
     @Override
-    public Object getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return portfolioFrom;
@@ -110,7 +110,7 @@ public class PortfolioTransferEntry implements CrossEntry
     }
 
     @Override
-    public Object getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return portfolioTo;

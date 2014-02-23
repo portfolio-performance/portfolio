@@ -19,9 +19,9 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPerformanceSnapshot.Record;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -334,7 +334,7 @@ public class StatementOfAssetsViewer
                 if (element.isSecurity())
                 {
                     calculatePerformance(element, option);
-                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
+                    SecurityPerformanceRecord record = element.getPerformance(option);
                     return Values.Percent.format(record.getIrr());
                 }
                 return null;
@@ -347,7 +347,7 @@ public class StatementOfAssetsViewer
                 if (element.isSecurity())
                 {
                     calculatePerformance(element, option);
-                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
+                    SecurityPerformanceRecord record = element.getPerformance(option);
                     double irr = record.getIrr();
 
                     if (irr < 0)
@@ -372,7 +372,7 @@ public class StatementOfAssetsViewer
                 if (element.isSecurity())
                 {
                     calculatePerformance(element, option);
-                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
+                    SecurityPerformanceRecord record = element.getPerformance(option);
                     return Values.Amount.format(record.getDelta());
                 }
                 return null;
@@ -385,7 +385,7 @@ public class StatementOfAssetsViewer
                 if (element.isSecurity())
                 {
                     calculatePerformance(element, option);
-                    SecurityPerformanceSnapshot.Record record = element.getPerformance(option);
+                    SecurityPerformanceRecord record = element.getPerformance(option);
                     long delta = record.getDelta();
 
                     if (delta < 0)
@@ -579,10 +579,11 @@ public class StatementOfAssetsViewer
 
         SecurityPerformanceSnapshot sps = null;
 
+        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(cal.getTime(), endDate);
         if (clientSnapshot != null)
-            sps = SecurityPerformanceSnapshot.create(client, new ReportingPeriod.FromXtoY(cal.getTime(), endDate));
+            sps = SecurityPerformanceSnapshot.create(client, period);
         else
-            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getSource(), cal.getTime(), endDate);
+            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getSource(), period);
 
         StatementOfAssetsContentProvider contentProvider = (StatementOfAssetsContentProvider) assets
                         .getContentProvider();
@@ -591,7 +592,7 @@ public class StatementOfAssetsViewer
         {
             if (e.isSecurity())
             {
-                for (Record r : sps.getRecords())
+                for (SecurityPerformanceRecord r : sps.getRecords())
                 {
                     if (r.getSecurity().equals(e.getSecurity()))
                     {
@@ -618,7 +619,7 @@ public class StatementOfAssetsViewer
         private AssetCategory category;
         private AssetPosition position;
 
-        private transient Map<Integer, SecurityPerformanceSnapshot.Record> performance = new HashMap<Integer, SecurityPerformanceSnapshot.Record>();
+        private transient Map<Integer, SecurityPerformanceRecord> performance = new HashMap<Integer, SecurityPerformanceRecord>();
 
         private Element(AssetCategory category)
         {
@@ -635,12 +636,12 @@ public class StatementOfAssetsViewer
             this.groupByTaxonomy = groupByTaxonomy;
         }
 
-        public void setPerformance(Integer year, Record record)
+        public void setPerformance(Integer year, SecurityPerformanceRecord record)
         {
             performance.put(year, record);
         }
 
-        public Record getPerformance(Integer year)
+        public SecurityPerformanceRecord getPerformance(Integer year)
         {
             return performance.get(year);
         }

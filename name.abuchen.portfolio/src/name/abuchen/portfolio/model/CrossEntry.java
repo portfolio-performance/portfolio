@@ -6,9 +6,9 @@ public interface CrossEntry
 
     void delete();
 
-    Object getEntity(Transaction t);
+    TransactionOwner<? extends Transaction> getEntity(Transaction t);
 
     Transaction getCrossTransaction(Transaction t);
 
-    Object getCrossEntity(Transaction t);
+    TransactionOwner<? extends Transaction> getCrossEntity(Transaction t);
 }
