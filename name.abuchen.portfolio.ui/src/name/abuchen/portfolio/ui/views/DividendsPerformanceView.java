@@ -129,7 +129,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         createCommonColumns();
         createDividendColumns();
-        createDividendProjectionColumns();
 
         recordColumns.createColumns();
 
@@ -326,20 +325,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "totalRateOfReturnDiv")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // jährliche Dividendenrendite bezogen auf den Einstandspreis (izf-div)
-        column = new Column("øDiv%", SWT.RIGHT, 80);
-        column.setGroupLabel("Dividenden");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getIrrDiv(), 0.001d);
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irrDiv")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
         // Anzahl der Dividendenereignisse
         column = new Column("#Div", SWT.RIGHT, 25);
         column.setGroupLabel("Dividenden");
@@ -381,179 +366,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Periodizität der Dividendenzahlungen
-        column = new Column("Periodiziät (neu)", SWT.None, 100);
-        column.setGroupLabel("Dividenden");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return ((SecurityPerformanceRecord) r).getPeriodicity2().toString();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-    }
-
-    private void createDividendProjectionColumns()
-    {
-        // durchschnittliche Stückzahl in den letzten 12 Monaten
-        Column column = new Column("øStck¹²", SWT.None, 80);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new SharesLabelProvider()
-        {
-            @Override
-            public Long getValue(Object r)
-            {
-                long shares = ((SecurityPerformanceRecord) r).getDiv12MeanShares();
-                return shares != 0 ? shares : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div12MeanShares")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Summe der Zahlungen in den letzten 12 Monaten
-        column = new Column("∑Div¹²", SWT.RIGHT, 75);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv12Amount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div12Amount")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Dividende pro Stück in den letzten 12 Monaten
-        column = new Column("øDiv¹²", SWT.RIGHT, 50);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv12PerShare());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div12PerShare")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Einstand pro Stück
-        column = new Column("Einstand¹²", SWT.RIGHT, 75);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getCost12Amount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "cost12Amount")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Einstand pro Stück
-        column = new Column("pers.Div%", SWT.RIGHT, 50);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getPersonalDiv());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "personalDiv")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // erwartete Dividende im nächsten Jahr
-        column = new Column("Div¹²e", SWT.RIGHT, 75);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getExpectedDiv12Amount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "expectedDiv12Amount")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // mittlere Dividendensteigerung der letzten Jahre
-        column = new Column("DSR%", SWT.RIGHT, 50);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent0.formatNonZero(((SecurityPerformanceRecord) r).getDivIncreasingRate(), 0.01);
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divIncreasingRate")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Zuverlässigkeit der Dividendensteigerung der letzten Jahre
-        column = new Column("Zuverl.%", SWT.RIGHT, 50);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent0.formatNonZero(((SecurityPerformanceRecord) r).getDivIncreasingReliability(),
-                                0.01);
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divIncreasingReliability")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Anzahl der Jahre mit Dividendensteigerung
-        column = new Column("Jahre", SWT.RIGHT, 50);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Integer.formatNonZero(((SecurityPerformanceRecord) r).getDivIncreasingYears());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "divIncreasingYears")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // erwartete Dividende in 5 Jahren
-        column = new Column("Div¹² 5J.", SWT.RIGHT, 75);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv60Amount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div60Amount")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // erwartete Dividende in 10 Jahren
-        column = new Column("Div¹² 10J.", SWT.RIGHT, 75);
-        column.setGroupLabel("Dividenden Prognose");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.formatNonZero(((SecurityPerformanceRecord) r).getDiv120Amount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "div120Amount")); //$NON-NLS-1$
         recordColumns.addColumn(column);
     }
 
