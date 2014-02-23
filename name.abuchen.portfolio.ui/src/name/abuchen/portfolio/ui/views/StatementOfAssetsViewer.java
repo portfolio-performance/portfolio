@@ -412,7 +412,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -420,6 +420,17 @@ public class StatementOfAssetsViewer
             {
                 Element element = (Element) e;
                 return element.isSecurity() ? element.getSecurity().getNote() : null;
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isSecurity())
+                    return null;
+
+                String note = element.getSecurity().getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
         column.setVisible(false);

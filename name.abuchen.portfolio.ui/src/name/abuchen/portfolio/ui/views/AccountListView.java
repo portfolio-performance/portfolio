@@ -197,6 +197,13 @@ public class AccountListView extends AbstractListView
             {
                 return ((Account) e).getNote();
             }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((Account) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
         });
         column.setSorter(ColumnViewerSorter.create(Account.class, "note")); //$NON-NLS-1$
         column.setMoveable(false);
@@ -474,6 +481,13 @@ public class AccountListView extends AbstractListView
             public Color getForeground(Object element)
             {
                 return colorFor((AccountTransaction) element);
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((AccountTransaction) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
         column.setMoveable(false);

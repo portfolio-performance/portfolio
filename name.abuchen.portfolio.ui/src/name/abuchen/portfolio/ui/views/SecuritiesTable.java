@@ -155,13 +155,20 @@ public final class SecuritiesTable
         column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
                 return ((Security) e).getNote();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((Security) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$

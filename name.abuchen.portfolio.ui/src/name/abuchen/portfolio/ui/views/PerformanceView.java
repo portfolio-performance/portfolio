@@ -252,7 +252,7 @@ public class PerformanceView extends AbstractHistoricView
 
         earnings = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@earnings", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@earnings2", //$NON-NLS-1$
                         earnings, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -307,6 +307,25 @@ public class PerformanceView extends AbstractHistoricView
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "security")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Transaction) element).getNote();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((Transaction) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
