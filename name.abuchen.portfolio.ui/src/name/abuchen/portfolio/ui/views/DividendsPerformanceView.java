@@ -313,6 +313,27 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
+
+        // note
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return ((SecurityPerformanceRecord) r).getSecurity().getNote();
+            }
+
+            @Override
+            public Image getImage(Object r)
+            {
+                String note = ((SecurityPerformanceRecord) r).getSecurity().getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "note")); //$NON-NLS-1$
+        column.setVisible(false);
+        recordColumns.addColumn(column);
     }
 
     private void createDividendColumns()
@@ -393,7 +414,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(DividendsPerformanceView.class.getSimpleName()
-                        + "@bottom1", transactions, layout); //$NON-NLS-1$
+                        + "@bottom3", transactions, layout); //$NON-NLS-1$
 
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -535,6 +556,26 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 }
             }
         });
+        support.addColumn(column);
+
+        // note
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return ((Transaction) r).getNote();
+            }
+
+            @Override
+            public Image getImage(Object r)
+            {
+                String note = ((Transaction) r).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();

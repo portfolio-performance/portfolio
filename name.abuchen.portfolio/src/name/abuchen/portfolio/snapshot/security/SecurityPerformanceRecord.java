@@ -105,6 +105,11 @@ public class SecurityPerformanceRecord implements Adaptable
         return getSecurity().getName();
     }
 
+    public String getNote()
+    {
+        return getSecurity().getNote();
+    }
+
     public double getIrr()
     {
         return irr;

@@ -105,6 +105,7 @@ public class SecurityPerformanceSnapshot
                             dt.setAccount(account);
                             dt.setAmount(t.getAmount());
                             dt.setShares(t.getShares());
+                            dt.setNote(t.getNote());
                             records.get(t.getSecurity()).addTransaction(dt);
                         }
                         break;
