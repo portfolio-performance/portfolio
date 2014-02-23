@@ -502,6 +502,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         // dividend per share
         column = new Column(Messages.ColumnPersonalDividendYield, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnPersonalDividendYield_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

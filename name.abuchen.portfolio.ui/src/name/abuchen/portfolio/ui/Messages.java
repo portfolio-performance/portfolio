@@ -86,6 +86,7 @@ public class Messages extends NLS
     public static String ColumnNote;
     public static String ColumnOffsetAccount;
     public static String ColumnPersonalDividendYield;
+    public static String ColumnPersonalDividendYield_Description;
     public static String ColumnPortfolio;
     public static String ColumnPortfolioFrom;
     public static String ColumnPortfolioTo;
