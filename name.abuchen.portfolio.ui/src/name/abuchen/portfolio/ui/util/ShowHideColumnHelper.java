@@ -82,6 +82,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         private Integer[] options;
 
         private String groupLabel;
+        private String menuLabel;
+        private String description;
 
         public Column(String label, int style, int defaultWidth)
         {
@@ -134,9 +136,24 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             this.groupLabel = groupLabel;
         }
 
+        public void setMenuLabel(String menuLabel)
+        {
+            this.menuLabel = menuLabel;
+        }
+
+        public void setDescription(String description)
+        {
+            this.description = description;
+        }
+
         String getLabel()
         {
             return label;
+        }
+
+        String getMenuLabel()
+        {
+            return menuLabel != null ? menuLabel : label;
         }
 
         int getStyle()
@@ -200,6 +217,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             col.getColumn().setText(option == null ? getLabel() : MessageFormat.format(optionsColumnLabel, option));
             col.getColumn().setMoveable(isMoveable);
             col.setLabelProvider(getLabelProvider());
+
+            if (description != null)
+                col.getColumn().setToolTipText(description);
+            else if (menuLabel != null)
+                col.getColumn().setToolTipText(menuLabel);
 
             layout.setColumnData(col.getColumn(), new ColumnPixelData(width));
             col.getColumn().setWidth(width);
@@ -355,7 +377,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             {
                 List<Object> options = visible.get(column);
 
-                MenuManager subMenu = new MenuManager(column.getLabel());
+                MenuManager subMenu = new MenuManager(column.getMenuLabel());
 
                 for (final Object option : column.getOptions())
                 {
@@ -368,7 +390,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             }
             else
             {
-                addShowHideAction(managerToAdd, column, column.getLabel(), visible.containsKey(column), null);
+                addShowHideAction(managerToAdd, column, column.getMenuLabel(), visible.containsKey(column), null);
             }
         }
 
