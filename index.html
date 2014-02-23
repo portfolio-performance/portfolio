@@ -43,26 +43,27 @@
 inklusive internen Zinsfuß.</p>
 
 <p><ul>
-<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.10.0/PortfolioPerformance-0.10.0-win32.win32.x86.zip">Windows 32bit</a> / 
-<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.10.0/PortfolioPerformance-0.10.0-win32.win32.x86_64.zip">64bit</a>
+<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.11.0/PortfolioPerformance-0.11.0-win32.win32.x86.zip">Windows 32bit</a> / 
+<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.11.0/PortfolioPerformance-0.11.0-win32.win32.x86_64.zip">64bit</a>
 <a id="popup">[?]<span>Portfolio Performance ist in Java programmiert. Darum kommt es darauf an, ob die Java Virtual Machine (JVM) in der 32bit oder 64bit Version installiert ist. Das kann man mit dem Befehl <code>java -version</code> auf der Kommandozeile feststellen.</span></a>
 </li>
-<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.10.0/PortfolioPerformance-0.10.0-macosx.cocoa.x86_64.tar.gz">Mac OS XML</a></li>
-<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.10.0/PortfolioPerformance-0.10.0-linux.gtk.x86.tar.gz">Linux 32bit</a> /
-<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.10.0/PortfolioPerformance-0.10.0-linux.gtk.x86_64.tar.gz">64bit</a></li>
+<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.11.0/PortfolioPerformance-0.11.0-macosx.cocoa.x86_64.tar.gz">Mac OS XML</a></li>
+<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.11.0/PortfolioPerformance-0.11.0-linux.gtk.x86.tar.gz">Linux 32bit</a> /
+<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.11.0/PortfolioPerformance-0.11.0-linux.gtk.x86_64.tar.gz">64bit</a></li>
 </ul>
 </p>
 
-Aktuelle Version 0.10.0 (via Online Aktualisierung & Download) - <a href="new_and_noteworthy.html">was ist neu?</a>
+Aktuelle Version 0.11.0 (via Online Aktualisierung & Download) - <a href="new_and_noteworthy.html">was ist neu?</a>
 
 <h2>Features</h2>
 
 <ul>
     <li>Historische Performance auf Basis aller Transaktionen und Dividenden</li>
+    <li>Performance-Berechnung nach der <a href="http://en.wikipedia.org/wiki/True_time-weighted_rate_of_return">True-Time Weighted Rate of Return Methode</a></li>
     <li>Berechnung des internen Zinsfußes (Internal Rate of Return)</li>
     <li>Aggregation mehrerer Konten (z.B. Tagesgeldkonten) und mehrerer Portfolios</li>
     <li>Vergleich mit den deutschen Verbraucherpreisen (Inflationsrate)</li>
-    <li>Aktualisierung der Kurse von <a href="http://de.finance.yahoo.com">Yahoo Finance</a></li>
+    <li>Aktualisierung der Kurse von <a href="http://de.finance.yahoo.com">Yahoo Finance</a> und beliebigen HTML Seiten</li>
     <li>Offenes Dateiformat: alle Daten sind als XML gespeichert oder können als CSV exportiert werden</li>
 </ul>
 
@@ -169,6 +170,17 @@ Aktuelle Version 0.10.0 (via Online Aktualisierung & Download) - <a href="new_an
 
 <div id="versions">
 <a href="new_and_noteworthy.html">Was ist neu?</a>
+
+<h3>0.11.0 / 23. Februar 2014</h3>
+
+<ul>
+    <li>Neu: Mehr Kennzahlen in der Wertpapier-Performance Ansicht <a href="https://github.com/buchen/portfolio/issues/122">#122</a></li>
+    <li>Neu: Erfassung von (kurzen) Notizen zu Konten, Portfolios, Wertpapieren und Buchungen <a href="https://github.com/buchen/portfolio/issues/138">#138</a></li>
+    <li>Verbesserung: Eingabe der Stückzahl, auf die sich eine Dividende bezieht</li>
+    <li>Fix: Wenn Kurse aus einer HTML Seite aktualisiert werden, wird jetzt der letzte Kurs korrekt gesetzt</li>
+    <li>Fix: Spaltenbeschriftung in der Tabelle "historische Kurse"</li>
+    <li>Fix: Gebühren sind bei Ein-/Auslieferungen jetzt optional</li>
+</ul>
 
 <h3>0.10.0 / 26. Januar 2014</h3>
 
