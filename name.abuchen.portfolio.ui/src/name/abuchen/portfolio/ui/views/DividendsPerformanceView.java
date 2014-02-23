@@ -166,8 +166,21 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
     private void createCommonColumns()
     {
+        // shares held
+        Column column = new Column("shares", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object e)
+            {
+                return ((SecurityPerformanceRecord) e).getSharesHeld();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sharesHeld")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
         // security name
-        Column column = new Column(Messages.ColumnName, SWT.None, 300);
+        column = new Column("name", Messages.ColumnName, SWT.None, 300); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -185,27 +198,9 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "SecurityName"), SWT.DOWN); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // internal rate of return
-        column = new Column(Messages.ColumnIRR, SWT.RIGHT, 50);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getIrr());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
         // True time-weighted rate of return
-        column = new Column("TWROR", SWT.RIGHT, 50);
+        column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 50); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnTWROR_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -223,21 +218,29 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // shares held
-        column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
-        column.setLabelProvider(new SharesLabelProvider()
+        // internal rate of return
+        column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 50); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public Long getValue(Object e)
+            public String getText(Object r)
             {
-                return ((SecurityPerformanceRecord) e).getSharesHeld();
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getIrr());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sharesHeld")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // cost value - fifo
-        column = new Column(Messages.ColumnPurchaseValue, SWT.RIGHT, 75);
+        column = new Column("pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnPurchaseValue_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -250,7 +253,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // cost value per share - fifo
-        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 75);
+        column = new Column("pp", Messages.ColumnPurchasePrice, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnPurchasePrice_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -263,8 +267,9 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // Gesamtsumme der erhaltenen Dividenden
-        column = new Column("∑Div", SWT.RIGHT, 80);
-        column.setGroupLabel("Dividenden");
+        column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDividends);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -277,7 +282,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // market value
-        column = new Column(Messages.ColumnMarketValue, SWT.RIGHT, 75);
+        column = new Column("mv", Messages.ColumnMarketValue, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -290,7 +295,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // delta
-        column = new Column(Messages.ColumnDelta, SWT.RIGHT, 100);
+        column = new Column("delta", Messages.ColumnDelta, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnDelta_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -312,8 +318,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     private void createDividendColumns()
     {
         // Rendite insgesamt
-        Column column = new Column("Div%", SWT.RIGHT, 80);
-        column.setGroupLabel("Dividenden");
+        Column column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
+        column.setVisible(false);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -326,8 +334,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // Anzahl der Dividendenereignisse
-        column = new Column("#Div", SWT.RIGHT, 25);
-        column.setGroupLabel("Dividenden");
+        column = new Column("dcount", Messages.ColumnDividendPaymentCount, SWT.RIGHT, 25); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setMenuLabel(Messages.ColumnDividendPaymentCount_MenuLabel);
+        column.setVisible(false);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -340,8 +350,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // Datum der letzten Dividendenzahlung
-        column = new Column("zuletzt am", SWT.None, 75);
-        column.setGroupLabel("Dividenden");
+        column = new Column("dlast", Messages.ColumnLastDividendPayment, SWT.None, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnLastDividendPayment_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setVisible(false);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -355,8 +367,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // Periodizität der Dividendenzahlungen
-        column = new Column("Periodiziät", SWT.None, 100);
-        column.setGroupLabel("Dividenden");
+        column = new Column("dperiod", Messages.ColumnDividendPeriodicity, SWT.None, 100); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setDescription(Messages.ColumnDividendPeriodicity_Description);
+        column.setVisible(false);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -436,7 +450,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         support.addColumn(column);
 
         // dividend amount
-        column = new Column("Dividende", SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -451,7 +465,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         support.addColumn(column);
 
         // dividend per share
-        column = new Column("Dividende/Anteil", SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnDividendPerShare, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -466,7 +480,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         support.addColumn(column);
 
         // dividend per share
-        column = new Column("pers. Dividendenrendite", SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnPersonalDividendYield, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
