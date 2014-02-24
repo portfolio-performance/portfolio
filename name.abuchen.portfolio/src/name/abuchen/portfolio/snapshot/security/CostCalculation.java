@@ -29,6 +29,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
                 long sold = t.getShares();
                 for (long[] entry : fifo)
                 {
+                    if (entry[0] == 0)
+                        continue;
+
                     if (sold <= 0)
                         break;
 
@@ -39,6 +42,12 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 
                     sold -= n;
                 }
+
+                if (sold > 0)
+                {
+                    // FIXME Oops. More sold than bought. Report error? Ignore?
+                }
+
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:

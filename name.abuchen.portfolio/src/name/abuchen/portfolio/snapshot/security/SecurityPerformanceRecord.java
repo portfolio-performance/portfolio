@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -196,7 +197,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     /* package */void calculate(Client client, ReportingPeriod period)
     {
-        Transaction.sortByDate(transactions);
+        Collections.sort(transactions, new TransactionComparator());
 
         if (!transactions.isEmpty())
         {

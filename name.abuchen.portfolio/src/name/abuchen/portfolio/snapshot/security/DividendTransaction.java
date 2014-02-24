@@ -64,7 +64,7 @@ public class DividendTransaction extends Transaction
 
     public double getPersonalDividendYield()
     {
-        return amount / (double) fifoCost;
+        return fifoCost > 0 ? amount / (double) fifoCost : 0;
     }
 
     static long amountFractionPerShare(long amount, long shares)

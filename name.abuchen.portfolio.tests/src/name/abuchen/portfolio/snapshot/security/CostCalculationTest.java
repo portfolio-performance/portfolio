@@ -59,4 +59,25 @@ public class CostCalculationTest
         assertThat(cost.getFifoCost(), is(0L));
     }
 
+    @Test
+    public void testWhenSharesHeldGoToZero()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(security, "2010-01-01", 100 * Values.Share.factor(), 314920) //
+                        .sell(security, "2010-02-01", 100 * Values.Share.factor(), 53150) //
+                        .buy(security, "2010-03-01", 50 * Values.Share.factor(), 168492) //
+                        .sell(security, "2010-04-01", 50 * Values.Share.factor(), 53150) //
+                        .addTo(client);
+
+        CostCalculation cost = new CostCalculation();
+        cost.visitAll(portfolio.getTransactions());
+
+        assertThat(cost.getFifoCost(), is(0L));
+    }
+
 }
