@@ -25,8 +25,8 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.3.0.v20130724043401"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.11.0/kepler"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.3.0.v20131123020001"/>
+<repository location="http://download.eclipse.org/technology/babel/update-site/R0.11.1/kepler"/>
 </location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>

@@ -47,7 +47,7 @@
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.11.0/kepler</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.11.1/kepler</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
