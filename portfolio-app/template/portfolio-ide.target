@@ -4,13 +4,12 @@
 <target name="portfolio-ide" sequenceNumber="9">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rcp.source.feature.group" version="4.3.0.v20130605-2000"/>
-<unit id="org.eclipse.platform.feature.group" version="4.3.0.v20130605-2000"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20130521-0416"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.3.0.v20130605-2000"/>
-<unit id="org.eclipse.platform.source.feature.group" version="4.3.0.v20130605-2000"/>
-<unit id="org.eclipse.platform.ide" version="4.3.0.I20130605-2000"/>
-<repository location="http://download.eclipse.org/releases/kepler"/>
+<unit id="org.eclipse.rcp.source.feature.group" version="4.4.0.v20140123-1925"/>
+<unit id="org.eclipse.platform.feature.group" version="4.4.0.v20140123-1925"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20131206-1618"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140123-1925"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.4.0.v20140123-1925"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4M5-201401231600"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
