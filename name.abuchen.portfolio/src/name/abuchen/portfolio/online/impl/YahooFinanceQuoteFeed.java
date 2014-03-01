@@ -24,9 +24,11 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.Dates;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
@@ -41,6 +43,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // p = previous close
     // v = volume
     // Source = http://cliffngan.net/a/13
+
+    private static final String SEARCH_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback"; //$NON-NLS-1$
 
     protected static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
     {
@@ -73,8 +77,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     + "&d={4}&e={5}&f={6}" // end
                     + "&g=d"; // daily
 
-    private SecuritySearchProvider searchProvider = new YahooSearchProvider();
-
     @Override
     public String getId()
     {
@@ -101,7 +103,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (symbolString.length() > 0)
                 symbolString.append("+"); //$NON-NLS-1$
             symbolString.append(security.getTickerSymbol());
-            requested.put(security.getTickerSymbol(), security);
+            requested.put(security.getTickerSymbol().toUpperCase(), security);
         }
 
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
@@ -111,13 +113,18 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         try
         {
-            reader = new BufferedReader(new InputStreamReader(openStream(url)));
+            reader = openReader(url, errors);
+            if (reader == null)
+                return;
 
             while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
                 if (values.length != 7)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
+                {
+                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line)));
+                    return;
+                }
 
                 String symbol = stripQuotes(values[0]);
 
@@ -156,11 +163,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         catch (NumberFormatException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (ParseException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         finally
         {
@@ -197,13 +204,14 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final void updateHistoricalQuotes(Security security) throws IOException
+    public final void updateHistoricalQuotes(Security security, List<Exception> errors) throws IOException
     {
         Calendar start = caculateStart(security);
 
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime());
-        for (SecurityPrice p : quotes)
-            security.addPrice(p);
+        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime(), errors);
+        if (quotes != null)
+            for (SecurityPrice p : quotes)
+                security.addPrice(p);
     }
 
     /* package */final Calendar caculateStart(Security security)
@@ -224,13 +232,20 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start) throws IOException
+    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+                    throws IOException
     {
-        return internalGetQuotes(LatestSecurityPrice.class, security, start);
+        return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
     }
 
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate)
-                    throws IOException
+    @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate,
+                    List<Exception> errors) throws IOException
     {
         if (security.getTickerSymbol() == null)
             throw new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
@@ -255,7 +270,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         try
         {
-            reader = new BufferedReader(new InputStreamReader(openStream(wknUrl)));
+            reader = openReader(wknUrl, errors);
+            if (reader == null)
+                return answer;
 
             line = reader.readLine();
 
@@ -281,19 +298,19 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         catch (NumberFormatException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (ParseException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e);
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (InstantiationException e)
         {
-            throw new IOException(e);
+            errors.add(e);
         }
         catch (IllegalAccessException e)
         {
-            throw new IOException(e);
+            errors.add(e);
         }
         finally
         {
@@ -331,23 +348,44 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<Exchange> getExchanges(Security subject) throws IOException
+    public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
+        // strip away exchange suffix to search for all available exchanges
         String symbol = subject.getTickerSymbol();
         int p = symbol.indexOf('.');
         String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
-        if (p >= 0)
-            symbol = symbol.substring(0, p);
 
         List<Exchange> answer = new ArrayList<Exchange>();
 
-        List<ResultItem> result = searchProvider.search(prefix);
-        for (ResultItem item : result)
+        // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
+        String searchUrl = MessageFormat.format(SEARCH_URL, prefix);
+
+        try
         {
-            if (item.getSymbol() != null && (symbol.equals(item.getSymbol()) || item.getSymbol().startsWith(prefix)))
+            String html = new java.util.Scanner(openStream(searchUrl)).useDelimiter("\\A").next(); //$NON-NLS-1$
+
+            // strip away java script call back method
+            p = html.indexOf('(');
+            html = html.substring(p + 1, html.length() - 1);
+
+            JSONObject response = (JSONObject) JSONValue.parse(html);
+            if (response != null)
             {
-                answer.add(createExchange(item.getSymbol()));
+                JSONObject resultSet = (JSONObject) response.get("ResultSet"); //$NON-NLS-1$
+                if (resultSet != null)
+                {
+                    JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
+                    if (result != null)
+                    {
+                        for (int ii = 0; ii < result.size(); ii++)
+                            answer.add(createExchange(((JSONObject) result.get(ii)).get("symbol").toString())); //$NON-NLS-1$
+                    }
+                }
             }
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
         }
 
         if (answer.isEmpty())
@@ -369,16 +407,22 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return new Exchange(symbol, String.format("%s (%s)", label, symbol)); //$NON-NLS-1$
     }
 
+    protected BufferedReader openReader(String url, List<Exception> errors)
+    {
+        try
+        {
+            return new BufferedReader(new InputStreamReader(openStream(url)));
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
+        }
+        return null;
+    }
+
     /* enable testing */
     protected InputStream openStream(String wknUrl) throws IOException
     {
         return new URL(wknUrl).openStream();
     }
-
-    /* enable testing */
-    /* package */final void setSearchProvider(SecuritySearchProvider searchProvider)
-    {
-        this.searchProvider = searchProvider;
-    }
-
 }

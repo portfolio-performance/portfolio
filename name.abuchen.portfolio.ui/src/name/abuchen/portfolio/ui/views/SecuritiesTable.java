@@ -85,63 +85,7 @@ public final class SecuritiesTable
 
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), securities, layout);
 
-        Column column = new Column("0", Messages.ColumnName, SWT.LEFT, 400); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getName();
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
-        support.addColumn(column);
-
-        column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getIsin();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "isin")); //$NON-NLS-1$
-        support.addColumn(column);
-
-        column = new Column("2", Messages.ColumnTicker, SWT.LEFT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getTickerSymbol();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
-        support.addColumn(column);
-
-        column = new Column("7", Messages.ColumnWKN, SWT.LEFT, 60); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getWkn();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
-        column.setVisible(false);
-        support.addColumn(column);
-
-        // column "3" used to be hard-coded to asset class (type)
-
+        addMasterDataColumns();
         addColumnLatestPrice();
         addDeltaColumn();
         addColumnDateOfLatestPrice();
@@ -149,19 +93,6 @@ public final class SecuritiesTable
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
             addTaxonomyColumn(support, taxonomy);
-
-        column = new Column("8", Messages.ColumnRetired, SWT.LEFT, 40); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
-        column.setVisible(false);
-        support.addColumn(column);
 
         support.createColumns();
 
@@ -201,6 +132,96 @@ public final class SecuritiesTable
         });
 
         hookContextMenu();
+    }
+
+    private void addMasterDataColumns()
+    {
+        Column column = new Column("0", Messages.ColumnName, SWT.LEFT, 400); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getName();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getNote();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((Security) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getIsin();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "isin")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("2", Messages.ColumnTicker, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getTickerSymbol();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("7", Messages.ColumnWKN, SWT.LEFT, 60); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).getWkn();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("8", Messages.ColumnRetired, SWT.LEFT, 40); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private void addTaxonomyColumn(ShowHideColumnHelper support, final Taxonomy taxonomy)
@@ -268,15 +289,15 @@ public final class SecuritiesTable
                     if (answer.length() > 0)
                         answer.append(", "); //$NON-NLS-1$
 
-                    switch (option)
+                    if (option == 100)
                     {
-                        case 100:
-                            answer.append(c.getPathName(false));
-                            break;
-                        default:
-                            List<Classification> path = c.getPathToRoot();
-                            if (option < path.size())
-                                answer.append(path.get(option).getName());
+                        answer.append(c.getPathName(false));
+                    }
+                    else
+                    {
+                        List<Classification> path = c.getPathToRoot();
+                        if (option < path.size())
+                            answer.append(path.get(option).getName());
                     }
                 }
 
@@ -641,7 +662,7 @@ public final class SecuritiesTable
             @Override
             Dialog createDialog(Security security)
             {
-                return new DividendsDialog(getShell(), getClient(), security);
+                return new DividendsDialog(getShell(), getClient(), null, security);
             }
         });
         manager.add(new Separator());

@@ -6,7 +6,10 @@ public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.ui.messages"; //$NON-NLS-1$
     public static String AboutText;
+    public static String AccountFilterRetiredAccounts;
+    public static String AccountMenuActivate;
     public static String AccountMenuAdd;
+    public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
@@ -42,20 +45,34 @@ public class Messages extends NLS
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
     public static String ColumnDelta;
+    public static String ColumnDelta_Description;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
+    public static String ColumnDividendPayment;
+    public static String ColumnDividendPaymentCount;
+    public static String ColumnDividendPaymentCount_MenuLabel;
+    public static String ColumnDividendPeriodicity;
+    public static String ColumnDividendPeriodicity_Description;
+    public static String ColumnDividendPerShare;
+    public static String ColumnDividendSum;
+    public static String ColumnDividendSum_MenuLabel;
+    public static String ColumnDividendTotalRateOfReturn;
+    public static String ColumnDividendTotalRateOfReturn_Description;
     public static String ColumnEntity;
     public static String ColumnFees;
     public static String ColumnFix;
     public static String ColumnIndex;
     public static String ColumnInterval;
     public static String ColumnIRR;
+    public static String ColumnIRR_MenuLabel;
     public static String ColumnIRRPerformance;
     public static String ColumnIRRPerformanceOption;
     public static String ColumnISIN;
     public static String ColumnIssue;
     public static String ColumnLable;
+    public static String ColumnLastDividendPayment;
+    public static String ColumnLastDividendPayment_MenuLabel;
     public static String ColumnLastTrade;
     public static String ColumnLatest;
     public static String ColumnLatestDate;
@@ -67,7 +84,10 @@ public class Messages extends NLS
     public static String ColumnMarketValue;
     public static String ColumnMonth;
     public static String ColumnName;
+    public static String ColumnNote;
     public static String ColumnOffsetAccount;
+    public static String ColumnPersonalDividendYield;
+    public static String ColumnPersonalDividendYield_Description;
     public static String ColumnPortfolio;
     public static String ColumnPortfolioFrom;
     public static String ColumnPortfolioTo;
@@ -75,7 +95,9 @@ public class Messages extends NLS
     public static String ColumnPrice;
     public static String ColumnProfitLoss;
     public static String ColumnPurchasePrice;
+    public static String ColumnPurchasePrice_Description;
     public static String ColumnPurchaseValue;
+    public static String ColumnPurchaseValue_Description;
     public static String ColumnQuote;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
@@ -95,6 +117,8 @@ public class Messages extends NLS
     public static String ColumnTotalProfitLoss;
     public static String ColumnTotalProfitLossOption;
     public static String ColumnTransactionType;
+    public static String ColumnTWROR;
+    public static String ColumnTWROR_Description;
     public static String ColumnValue;
     public static String ColumnVolume;
     public static String ColumnWeight;
@@ -124,6 +148,9 @@ public class Messages extends NLS
     public static String DialogConssitencyChecksMessage;
     public static String DialogTaxonomyNamePrompt;
     public static String DialogTaxonomyNameTitle;
+    public static String DividendsDialogLabelPortfolioSharesHeld;
+    public static String DividendsDialogLabelSpecialDistribution;
+    public static String DividendsDialogTitleShares;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataMsgClassificationMissing;
@@ -132,6 +159,8 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardQuoteFeedDescription;
+    public static String EditWizardQuoteFeedLabelFeedURL;
+    public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;
@@ -146,6 +175,7 @@ public class Messages extends NLS
     public static String ExportWizardSelectDirectory;
     public static String ExportWizardTitle;
     public static String ExportWizardUnsupportedExport;
+    public static String GroupLabelDividends;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;
@@ -223,6 +253,7 @@ public class Messages extends NLS
     public static String LabelSearch;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
+    public static String LabelDividends;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
@@ -240,10 +271,12 @@ public class Messages extends NLS
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelWithoutClassification;
+    public static String MenuAddAll;
     public static String MenuConfigureChart;
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuOpenSecurityOnSite;
+    public static String MenuRemoveAll;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
     public static String MenuShowHideColumns;

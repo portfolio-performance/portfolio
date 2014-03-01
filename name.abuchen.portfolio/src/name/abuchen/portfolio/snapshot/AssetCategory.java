@@ -23,14 +23,25 @@ public class AssetCategory
         return this.valuation;
     }
 
-    protected void setValuation(long valuation)
-    {
-        this.valuation = valuation;
-    }
-
     public double getShare()
     {
         return (double) this.valuation / (double) this.totalAssets;
+    }
+
+    public long getFIFOPurchaseValue()
+    {
+        long purchaseValue = 0;
+        for (AssetPosition p : positions)
+            purchaseValue += p.getFIFOPurchaseValue();
+        return purchaseValue;
+    }
+
+    public long getProfitLoss()
+    {
+        long profitLoss = 0;
+        for (AssetPosition p : positions)
+            profitLoss += p.getProfitLoss();
+        return profitLoss;
     }
 
     public Classification getClassification()

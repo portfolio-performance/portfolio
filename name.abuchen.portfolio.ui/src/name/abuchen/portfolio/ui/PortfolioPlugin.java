@@ -84,11 +84,13 @@ public class PortfolioPlugin implements BundleActivator
     public static final String IMG_PORTFOLIO = "portfolio"; //$NON-NLS-1$
     public static final String IMG_WATCHLIST = "watchlist"; //$NON-NLS-1$
     public static final String IMG_INVESTMENTPLAN = "investmentplan"; //$NON-NLS-1$
+    public static final String IMG_NOTE = "note"; //$NON-NLS-1$
 
     public static final String IMG_PLUS = "plus"; //$NON-NLS-1$
     public static final String IMG_CONFIG = "config"; //$NON-NLS-1$
     public static final String IMG_EXPORT = "export"; //$NON-NLS-1$
     public static final String IMG_SAVE = "save"; //$NON-NLS-1$
+    public static final String IMG_FILTER = "filter"; //$NON-NLS-1$
 
     public static final String IMG_VIEW_TABLE = "view_table"; //$NON-NLS-1$
     public static final String IMG_VIEW_TREEMAP = "view_treemap"; //$NON-NLS-1$
@@ -172,9 +174,10 @@ public class PortfolioPlugin implements BundleActivator
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
         for (String key : new String[] { IMG_LOGO, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST,
-                        IMG_INVESTMENTPLAN, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_VIEW_TABLE,
-                        IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING, IMG_VIEW_STACKEDCHART, IMG_CHECK,
-                        IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY, IMG_UNASSIGNED_CATEGORY })
+                        IMG_INVESTMENTPLAN, IMG_NOTE, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_FILTER,
+                        IMG_VIEW_TABLE, IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING,
+                        IMG_VIEW_STACKEDCHART, IMG_CHECK, IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY,
+                        IMG_UNASSIGNED_CATEGORY })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);

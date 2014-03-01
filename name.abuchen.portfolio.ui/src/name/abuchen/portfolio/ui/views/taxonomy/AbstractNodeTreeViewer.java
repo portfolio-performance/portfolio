@@ -329,9 +329,6 @@ import org.eclipse.swt.widgets.Control;
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                if (!node.isClassification())
-                    return null;
-
                 // actual %
                 // --> root is compared to target = total assets
                 long actual = node.getActual();

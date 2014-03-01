@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
-Bundle-Version: 0.9.1.qualifier
+Bundle-Version: 0.11.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
@@ -17,6 +17,7 @@ Import-Package: de.engehausen.treemap,
  name.abuchen.portfolio.model,
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.snapshot,
+ name.abuchen.portfolio.snapshot.security,
  name.abuchen.portfolio.util,
  org.apache.commons.csv;version="1.0.0.BUILD-20080106",
  org.eclipse.core.commands.common,

@@ -3,6 +3,9 @@ package name.abuchen.portfolio.util;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
 public class Dates
 {
     public static final long DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -39,8 +42,6 @@ public class Dates
 
     public static int daysBetween(Date start, Date end)
     {
-        int answer = 0;
-
         if (start.after(end))
         {
             Date temp = start;
@@ -48,26 +49,7 @@ public class Dates
             end = temp;
         }
 
-        Calendar c1 = Calendar.getInstance();
-        c1.setTime(start);
-
-        Calendar c2 = Calendar.getInstance();
-        c2.setTime(end);
-
-        while (c1.get(Calendar.YEAR) < c2.get(Calendar.YEAR))
-        {
-            int dayOfYear = c1.get(Calendar.DAY_OF_YEAR);
-            int daysInYear = c1.getActualMaximum(Calendar.DAY_OF_YEAR);
-
-            answer += daysInYear - dayOfYear + 1;
-            c1.set(Calendar.DATE, 1);
-            c1.set(Calendar.MONDAY, Calendar.JANUARY);
-            c1.add(Calendar.YEAR, 1);
-        }
-
-        answer += c2.get(Calendar.DAY_OF_YEAR) - c1.get(Calendar.DAY_OF_YEAR);
-
-        return answer;
+        return Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
     }
 
     public static int monthsBetween(Date start, Date end)
@@ -92,5 +74,10 @@ public class Dates
         answer += c2.get(Calendar.DAY_OF_MONTH) >= c1.get(Calendar.DAY_OF_MONTH) ? 0 : -1;
 
         return answer;
+    }
+
+    public static Date addDays(Date date, int offset)
+    {
+        return new DateTime(date).plusDays(offset).toDate();
     }
 }

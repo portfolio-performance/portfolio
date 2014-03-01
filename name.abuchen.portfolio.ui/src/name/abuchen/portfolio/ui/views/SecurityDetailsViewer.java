@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,25 +38,6 @@ public class SecurityDetailsViewer
 {
     private static final String EMPTY_LABEL = ""; //$NON-NLS-1$
 
-    public enum Facet
-    {
-        MASTER_DATA(MasterDataFacet.class), //
-        LATEST_QUOTE(LatestQuoteFacet.class);
-
-        private Class<? extends SecurityFacet> clazz;
-
-        private Facet(Class<? extends SecurityFacet> clazz)
-        {
-            this.clazz = clazz;
-        }
-
-        public SecurityFacet create(Font font, Color color) throws InstantiationException, IllegalAccessException,
-                        InvocationTargetException, NoSuchMethodException
-        {
-            return clazz.getConstructor(Font.class, Color.class).newInstance(font, color);
-        }
-    }
-
     private abstract static class SecurityFacet
     {
         private Font boldFont;
@@ -92,6 +72,10 @@ public class SecurityDetailsViewer
             value.setLayoutData(data);
         }
 
+        protected String escape(String label)
+        {
+            return label.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
     }
 
     private static class MasterDataFacet extends SecurityFacet
@@ -154,6 +138,54 @@ public class SecurityDetailsViewer
                 valueISIN.setText(security.getIsin());
                 valueTickerSymbol.setText(security.getTickerSymbol());
             }
+        }
+    }
+
+    private static class NoteFacet extends SecurityFacet
+    {
+        private Label valueNote;
+
+        public NoteFacet(Font boldFont, Color color)
+        {
+            super(boldFont, color);
+        }
+
+        @Override
+        Control createViewControl(Composite parent, Client client)
+        {
+            Composite composite = new Composite(parent, SWT.NONE);
+
+            Label heading = createHeading(composite, Messages.ColumnNote);
+
+            valueNote = new Label(composite, SWT.NONE);
+
+            // layout
+
+            FormLayout layout = new FormLayout();
+            layout.marginLeft = 5;
+            layout.marginRight = 5;
+            composite.setLayout(layout);
+
+            FormData data = new FormData();
+            data.top = new FormAttachment(0, 5);
+            heading.setLayoutData(data);
+
+            data = new FormData();
+            data.top = new FormAttachment(heading, 5);
+            data.left = new FormAttachment(0);
+            data.right = new FormAttachment(100);
+            valueNote.setLayoutData(data);
+
+            return composite;
+        }
+
+        @Override
+        void setInput(Security security)
+        {
+            if (security == null || security.getNote() == null)
+                valueNote.setText(EMPTY_LABEL);
+            else
+                valueNote.setText(escape(security.getNote()));
         }
     }
 
@@ -371,11 +403,6 @@ public class SecurityDetailsViewer
             for (int ii = 0; ii < labels.size(); ii++)
                 labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getName()) : EMPTY_LABEL);
         }
-
-        private String escape(String label)
-        {
-            return label.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
     }
 
     private Composite container;
@@ -410,6 +437,8 @@ public class SecurityDetailsViewer
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             children.add(new TaxonomyFacet(taxonomy, boldFont, color));
+
+        children.add(new NoteFacet(boldFont, color));
 
         for (SecurityFacet child : children)
         {

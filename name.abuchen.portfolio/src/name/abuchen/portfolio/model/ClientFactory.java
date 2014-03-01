@@ -9,6 +9,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -118,6 +123,32 @@ public class ClientFactory
             fixStoredClassificationChartConfiguration(client);
 
             client.setVersion(14);
+        }
+
+        if (client.getVersion() == 14)
+        {
+            // added shares to track dividends per share
+            assignSharesToDividendTransactions(client);
+
+            client.setVersion(15);
+        }
+
+        if (client.getVersion() == 15)
+        {
+            // do nothing --> added 'isRetired' property to account
+            client.setVersion(16);
+        }
+
+        if (client.getVersion() == 16)
+        {
+            // do nothing --> added 'feedURL' property to account
+            client.setVersion(17);
+        }
+
+        if (client.getVersion() == 17)
+        {
+            // do nothing --> added notes attribute
+            client.setVersion(18);
         }
 
         if (client.getVersion() != Client.CURRENT_VERSION)
@@ -348,6 +379,83 @@ public class ClientFactory
         for (int ii = 0; ii < replacements.length; ii += 2)
             newValue = newValue.replaceAll(replacements[ii], replacements[ii + 1]);
         client.setProperty(key, newValue);
+    }
+
+    private static void assignSharesToDividendTransactions(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            List<TransactionPair<?>> transactions = security.getTransactions(client);
+
+            // sort by date of transaction
+            Collections.sort(transactions, new Comparator<TransactionPair<?>>()
+            {
+                @Override
+                public int compare(TransactionPair<?> one, TransactionPair<?> two)
+                {
+                    return one.getTransaction().getDate().compareTo(two.getTransaction().getDate());
+                }
+            });
+
+            // count and assign number of shares by account
+            Map<Account, Long> account2shares = new HashMap<Account, Long>();
+            for (TransactionPair<? extends Transaction> t : transactions)
+            {
+                if (t.getTransaction() instanceof AccountTransaction)
+                {
+                    AccountTransaction accountTransaction = (AccountTransaction) t.getTransaction();
+
+                    switch (accountTransaction.getType())
+                    {
+                        case DIVIDENDS:
+                        case INTEREST:
+                            Long shares = account2shares.get(t.getOwner());
+                            accountTransaction.setShares(shares != null ? shares : 0);
+                            break;
+                        default:
+                    }
+                }
+                else if (t.getTransaction() instanceof PortfolioTransaction)
+                {
+                    PortfolioTransaction portfolioTransaction = (PortfolioTransaction) t.getTransaction();
+
+                    // determine account: if it exists, take the cross entry;
+                    // otherwise the reference account
+                    Account account = null;
+                    switch (portfolioTransaction.getType())
+                    {
+                        case BUY:
+                        case SELL:
+                            if (portfolioTransaction.getCrossEntry() != null)
+                                account = (Account) portfolioTransaction.getCrossEntry().getCrossEntity(
+                                                portfolioTransaction);
+                        case TRANSFER_IN:
+                        case TRANSFER_OUT:
+                        default:
+                            if (account == null)
+                                account = ((Portfolio) t.getOwner()).getReferenceAccount();
+                    }
+
+                    long delta = 0;
+                    switch (portfolioTransaction.getType())
+                    {
+                        case BUY:
+                        case TRANSFER_IN:
+                            delta = portfolioTransaction.getShares();
+                            break;
+                        case SELL:
+                        case TRANSFER_OUT:
+                            delta = -portfolioTransaction.getShares();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Long shares = account2shares.get(account);
+                    account2shares.put(account, shares != null ? shares + delta : delta);
+                }
+            }
+        }
     }
 
     @SuppressWarnings("nls")

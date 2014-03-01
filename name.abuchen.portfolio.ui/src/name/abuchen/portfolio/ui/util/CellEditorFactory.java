@@ -138,7 +138,7 @@ public final class CellEditorFactory
                 }
                 else
                 {
-                    return null;
+                    return UNMODIFIED;
                 }
             }
         });
@@ -216,7 +216,7 @@ public final class CellEditorFactory
             }
             else
             {
-                return null;
+                return UNMODIFIED;
             }
         }
     }
@@ -232,21 +232,13 @@ public final class CellEditorFactory
         }
     }
 
-    public CellEditorFactory combobox(String name, final List<?> items)
-    {
-        return combobox(name, items, false);
-    }
-
-    public CellEditorFactory combobox(String name, List<?> items, boolean includeEmpty)
+    public CellEditorFactory combobox(String name, List<?> items)
     {
         final PropertyDescriptor descriptor = descriptorFor(name);
 
         properties.add(name);
 
-        final List<Object> comboBoxItems = new ArrayList<Object>();
-        if (includeEmpty)
-            comboBoxItems.add(null);
-        comboBoxItems.addAll(items);
+        final List<Object> comboBoxItems = new ArrayList<Object>(items);
 
         // cell editor
         String[] names = new String[comboBoxItems.size()];
@@ -265,7 +257,9 @@ public final class CellEditorFactory
                 for (int ii = 0; ii < comboBoxItems.size(); ii++)
                 {
                     Object item = comboBoxItems.get(ii);
-                    if (item.equals(property))
+                    if (item != null && item.equals(property))
+                        return ii;
+                    else if (item == null && property == null)
                         return ii;
                 }
 
@@ -284,7 +278,7 @@ public final class CellEditorFactory
                 }
                 else
                 {
-                    return null;
+                    return UNMODIFIED;
                 }
             }
 
@@ -315,12 +309,14 @@ public final class CellEditorFactory
 
     private interface Modifier
     {
+        Object UNMODIFIED = new Object();
+
         Object getValue(Object element) throws Exception;
 
         /**
          * modifies the attribute
          * 
-         * @return old value, null if value is unchanged
+         * @return old value, UNMODIFIED if value is unchanged
          */
         Object modify(Object element, Object newValue) throws Exception;
     }
@@ -369,7 +365,7 @@ public final class CellEditorFactory
             {
                 Object elem = ((Item) element).getData();
                 Object oldValue = modifier[indexOf(property)].modify(elem, newValue);
-                if (oldValue != null)
+                if (!Modifier.UNMODIFIED.equals(oldValue))
                     listener.onModified(elem, property, oldValue);
             }
             catch (Exception e)
@@ -418,7 +414,7 @@ public final class CellEditorFactory
                     }
                     else
                     {
-                        return null;
+                        return UNMODIFIED;
                     }
                 }
             };
@@ -446,7 +442,7 @@ public final class CellEditorFactory
                     }
                     else
                     {
-                        return null;
+                        return UNMODIFIED;
                     }
                 }
             };
@@ -481,7 +477,7 @@ public final class CellEditorFactory
                     }
                     else
                     {
-                        return null;
+                        return UNMODIFIED;
                     }
                 }
             };
@@ -508,7 +504,7 @@ public final class CellEditorFactory
                     }
                     else
                     {
-                        return null;
+                        return UNMODIFIED;
                     }
                 }
             };
@@ -534,7 +530,7 @@ public final class CellEditorFactory
                     }
                     else
                     {
-                        return null;
+                        return UNMODIFIED;
                     }
                 }
             };

@@ -9,7 +9,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.9.1-SNAPSHOT</version>
+	<version>0.11.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -112,6 +112,11 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.7.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -180,6 +185,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>2.1</version>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -218,6 +228,11 @@
 						<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
 						<xmlOutput>true</xmlOutput>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>2.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

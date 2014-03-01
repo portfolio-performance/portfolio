@@ -47,6 +47,9 @@ public class ExportWizard extends Wizard
 
         File file = getFile(exportItem);
 
+        if (file == null)
+            return false;
+
         try
         {
             // account transactions

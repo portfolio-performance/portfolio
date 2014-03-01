@@ -71,27 +71,24 @@ public class PortfolioTransferEntry implements CrossEntry
         transactionFrom.setFees(0);
 
         if (t.equals(transactionFrom))
-        {
-            transactionTo.setDate(transactionFrom.getDate());
-            transactionTo.setSecurity(transactionFrom.getSecurity());
-            transactionTo.setShares(transactionFrom.getShares());
-            transactionTo.setAmount(transactionFrom.getAmount());
-        }
+            copyAttributesOver(transactionFrom, transactionTo);
         else if (t.equals(transactionTo))
-        {
-            transactionFrom.setDate(transactionTo.getDate());
-            transactionFrom.setSecurity(transactionTo.getSecurity());
-            transactionFrom.setShares(transactionTo.getShares());
-            transactionFrom.setAmount(transactionTo.getAmount());
-        }
+            copyAttributesOver(transactionTo, transactionFrom);
         else
-        {
             throw new UnsupportedOperationException();
-        }
+    }
+
+    private void copyAttributesOver(PortfolioTransaction source, PortfolioTransaction target)
+    {
+        target.setDate(source.getDate());
+        target.setSecurity(source.getSecurity());
+        target.setShares(source.getShares());
+        target.setAmount(source.getAmount());
+        target.setNote(source.getNote());
     }
 
     @Override
-    public Object getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return portfolioFrom;
@@ -113,7 +110,7 @@ public class PortfolioTransferEntry implements CrossEntry
     }
 
     @Override
-    public Object getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return portfolioTo;

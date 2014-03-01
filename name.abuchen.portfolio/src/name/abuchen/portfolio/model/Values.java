@@ -14,6 +14,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 100000D, 100000) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long share)
+        {
+            return format.format(share / divider());
+        }
+    };
+
     public static final Values<Long> Share = new Values<Long>("#,##0.#####", 100000D, 100000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
@@ -40,6 +51,15 @@ public abstract class Values<E>
         public String format(Integer index)
         {
             return String.format("%,.2f", index / divider()); //$NON-NLS-1$
+        }
+    };
+
+    public static final Values<Integer> Integer = new Values<Integer>("#,##0", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer i)
+        {
+            return String.format("%,.0f", i / divider()); //$NON-NLS-1$
         }
     };
 
@@ -70,6 +90,33 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Double> Percent0 = new Values<Double>("0%", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%,.0f%%", percent * 100); //$NON-NLS-1$ 
+        }
+    };
+
+    public static final Values<Double> Percent2 = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%,.2f%%", percent * 100); //$NON-NLS-1$ 
+        }
+    };
+
+    public static final Values<Integer> Id = new Values<Integer>("#,##0", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer amount)
+        {
+            return String.format("%,.0f", amount / divider()); //$NON-NLS-1$
+        }
+    };
+
     private final String pattern;
     private final double divider;
     private final int factor;
@@ -97,4 +144,38 @@ public abstract class Values<E>
     }
 
     public abstract String format(E amount);
+
+    public String formatNonZero(E amount)
+    {
+        if (amount instanceof Double)
+        {
+            Double d = (Double) amount;
+
+            if (d.isNaN())
+                return null;
+            else if (d.doubleValue() == 0d)
+                return null;
+            else
+                return format(amount);
+        }
+        else if (amount instanceof Number)
+        {
+            boolean isNotZero = ((Number) amount).longValue() != 0;
+            return isNotZero ? format(amount) : null;
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    public String formatNonZero(E amount, double threshold)
+    {
+        if (amount instanceof Double)
+        {
+            boolean isNotZero = Math.abs(((Double) amount).doubleValue()) >= threshold;
+            return isNotZero ? format(amount) : null;
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
 }

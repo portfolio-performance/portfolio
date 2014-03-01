@@ -7,4 +7,8 @@ public interface InvestmentVehicle
     String getName();
 
     void setName(String name);
+
+    String getNote();
+
+    void setNote(String note);
 }

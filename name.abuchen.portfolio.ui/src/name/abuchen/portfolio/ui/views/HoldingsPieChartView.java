@@ -10,6 +10,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.PieChart;
+import name.abuchen.portfolio.ui.util.PieChart.Slice;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.swt.SWT;
@@ -41,7 +42,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
         for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
             slices.add(new PieChart.Slice(position.calculateValue(), position.getSecurity().getName(), null));
 
-        Collections.sort(slices);
+        Collections.sort(slices, new Slice.ByValue());
 
         ColorWheel colors = new ColorWheel(canvas, slices.size());
         for (int ii = 0; ii < slices.size(); ii++)

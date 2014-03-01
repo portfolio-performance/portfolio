@@ -38,6 +38,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
         private Security security;
         private long shares;
         private long price;
+        private long fees;
         private long total;
         private Date date = Dates.today();
 
@@ -66,7 +67,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
 
         private long calculatePrice()
         {
-            return shares == 0 ? 0 : Math.max(0, total * Values.Share.factor() / shares);
+            return shares == 0 ? 0 : Math.max(0, (total - fees) * Values.Share.factor() / shares);
         }
 
         public Portfolio getPortfolio()
@@ -111,6 +112,17 @@ public class SecurityDeliveryDialog extends AbstractDialog
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
         }
 
+        public long getFees()
+        {
+            return fees;
+        }
+
+        public void setFees(long fees)
+        {
+            firePropertyChange("fees", this.fees, this.fees = fees); //$NON-NLS-1$
+            firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
+        }
+
         public Date getDate()
         {
             return date;
@@ -131,6 +143,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
             t.setType(type);
             t.setDate(date);
             t.setSecurity(security);
+            t.setFees(fees);
             t.setShares(shares);
             t.setAmount(total);
 
@@ -199,6 +212,9 @@ public class SecurityDeliveryDialog extends AbstractDialog
                                         .setConverter(new StringToCurrencyConverter(Values.Amount)), //
                         new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_UPDATE)
                                         .setConverter(new CurrencyToStringConverter(Values.Amount)));
+
+        // fees
+        bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
 
         // total
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$

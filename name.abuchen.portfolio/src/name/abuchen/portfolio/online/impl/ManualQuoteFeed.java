@@ -32,17 +32,23 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateHistoricalQuotes(Security security) throws IOException
+    public void updateHistoricalQuotes(Security security, List<Exception> errors) throws IOException
     {}
 
     @Override
-    public List<Exchange> getExchanges(Security subject)
+    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
         return null;
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start)
+    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+    {
+        return null;
+    }
+
+    @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
     {
         return null;
     }

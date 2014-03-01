@@ -54,23 +54,22 @@ public class AccountTransferEntry implements CrossEntry
     public void updateFrom(Transaction t)
     {
         if (t == transactionFrom)
-        {
-            transactionTo.setDate(transactionFrom.getDate());
-            transactionTo.setAmount(transactionFrom.getAmount());
-        }
+            copyAttributesOver(transactionFrom, transactionTo);
         else if (t == transactionTo)
-        {
-            transactionFrom.setDate(transactionTo.getDate());
-            transactionFrom.setAmount(transactionTo.getAmount());
-        }
+            copyAttributesOver(transactionTo, transactionFrom);
         else
-        {
             throw new UnsupportedOperationException();
-        }
+    }
+
+    private void copyAttributesOver(AccountTransaction source, AccountTransaction target)
+    {
+        target.setDate(source.getDate());
+        target.setAmount(source.getAmount());
+        target.setNote(source.getNote());
     }
 
     @Override
-    public Object getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return accountFrom;
@@ -92,7 +91,7 @@ public class AccountTransferEntry implements CrossEntry
     }
 
     @Override
-    public Object getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
     {
         if (t.equals(transactionFrom))
             return accountTo;

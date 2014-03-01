@@ -33,6 +33,7 @@ public class Messages extends NLS
     public static String CSVDefSecurities;
     public static String CSVDefSecurityMasterData;
     public static String CSVFormatDDMMYYYY;
+    public static String CSVFormatDDMMYYYY1;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
@@ -60,6 +61,7 @@ public class Messages extends NLS
     public static String FixReferenceAccountNameProposal;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
+    public static String IssueInconsistentSharesHeld;
     public static String IssueInterestWithSecurity;
     public static String IssueMissingAccountTransfer;
     public static String IssueMissingBuySellInAccount;
@@ -68,6 +70,7 @@ public class Messages extends NLS
     public static String IssueMissingReferenceAccount;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
+    public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
     public static String LabelRemovals;
@@ -80,6 +83,7 @@ public class Messages extends NLS
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorsConvertingValue;
+    public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResulstsAvailable;

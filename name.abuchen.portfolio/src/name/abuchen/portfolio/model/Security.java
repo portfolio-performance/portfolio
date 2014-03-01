@@ -26,12 +26,14 @@ public final class Security implements InvestmentVehicle
     private String uuid;
 
     private String name;
+    private String note;
 
     private String isin;
     private String tickerSymbol;
     private String wkn;
 
     private String feed;
+    private String feedURL;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
 
@@ -79,6 +81,18 @@ public final class Security implements InvestmentVehicle
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public String getNote()
+    {
+        return note;
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        this.note = note;
     }
 
     public String getIsin()
@@ -152,6 +166,16 @@ public final class Security implements InvestmentVehicle
     public void setFeed(String feed)
     {
         this.feed = feed;
+    }
+
+    public String getFeedURL()
+    {
+        return feedURL;
+    }
+
+    public void setFeedURL(String feedURL)
+    {
+        this.feedURL = feedURL;
     }
 
     public List<SecurityPrice> getPrices()
@@ -239,9 +263,9 @@ public final class Security implements InvestmentVehicle
         this.isRetired = isRetired;
     }
 
-    public List<Transaction> getTransactions(Client client)
+    public List<TransactionPair<?>> getTransactions(Client client)
     {
-        List<Transaction> answer = new ArrayList<Transaction>();
+        List<TransactionPair<?>> answer = new ArrayList<TransactionPair<?>>();
 
         for (Account account : client.getAccounts())
         {
@@ -254,7 +278,7 @@ public final class Security implements InvestmentVehicle
                 {
                     case INTEREST:
                     case DIVIDENDS:
-                        answer.add(t);
+                        answer.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case FEES:
                     case TAXES:
@@ -286,7 +310,7 @@ public final class Security implements InvestmentVehicle
                     case SELL:
                     case DELIVERY_INBOUND:
                     case DELIVERY_OUTBOUND:
-                        answer.add(t);
+                        answer.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -302,11 +326,13 @@ public final class Security implements InvestmentVehicle
         Security answer = new Security();
 
         answer.name = name;
+        answer.note = note;
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
 
         answer.feed = feed;
+        answer.feedURL = feedURL;
         answer.prices = new ArrayList<SecurityPrice>(prices);
         answer.latest = latest;
 

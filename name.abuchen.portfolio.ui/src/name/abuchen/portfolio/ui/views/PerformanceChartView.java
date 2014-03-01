@@ -128,7 +128,7 @@ public class PerformanceChartView extends AbstractHistoricView
     }
 
     @Override
-    protected void reportingPeriodUpdated()
+    public void reportingPeriodUpdated()
     {
         dataCache.clear();
         updateChart();

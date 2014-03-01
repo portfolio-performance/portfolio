@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
@@ -45,14 +46,42 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class AccountListView extends AbstractListView
 {
+    private static final String FILTER_INACTIVE_ACCOUNTS = "filter-redired-accounts"; //$NON-NLS-1$
+
     private TableViewer accounts;
     private TableViewer transactions;
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
+
+    private boolean isFiltered = false;
 
     @Override
     protected String getTitle()
     {
         return Messages.LabelAccounts;
+    }
+
+    @Override
+    public void init(ClientEditor clientEditor, Object parameter)
+    {
+        super.init(clientEditor, parameter);
+
+        isFiltered = getClientEditor().getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+    }
+
+    private void resetInput()
+    {
+        if (isFiltered)
+        {
+            List<Account> list = new ArrayList<Account>();
+            for (Account a : getClient().getAccounts())
+                if (!a.isRetired())
+                    list.add(a);
+            accounts.setInput(list);
+        }
+        else
+        {
+            accounts.setInput(getClient().getAccounts());
+        }
     }
 
     @Override
@@ -69,20 +98,34 @@ public class AccountListView extends AbstractListView
                 getClient().addAccount(account);
                 markDirty();
 
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
                 accounts.editElement(account, 0);
             }
         };
         action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
         action.setToolTipText(Messages.AccountMenuAdd);
-
         new ActionContributionItem(action).fill(toolBar, -1);
+
+        Action filter = new Action()
+        {
+            @Override
+            public void run()
+            {
+                isFiltered = isChecked();
+                getClientEditor().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
+                resetInput();
+            }
+        };
+        filter.setChecked(isFiltered);
+        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_FILTER));
+        filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
+        new ActionContributionItem(filter).fill(toolBar, -1);
     }
 
     @Override
     public void notifyModelUpdated()
     {
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
 
         Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (getClient().getAccounts().contains(account))
@@ -104,7 +147,7 @@ public class AccountListView extends AbstractListView
 
         accounts = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         accounts, layout);
 
         Column column = new Column(Messages.ColumnAccount, SWT.None, 150);
@@ -120,6 +163,13 @@ public class AccountListView extends AbstractListView
             public Image getImage(Object element)
             {
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                boolean isRetired = ((Account) e).isRetired();
+                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Account.class, "name"), SWT.DOWN); //$NON-NLS-1$
@@ -139,6 +189,26 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Account) e).getNote();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((Account) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Account.class, "note")); //$NON-NLS-1$
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         accounts.getTable().setHeaderVisible(true);
@@ -146,11 +216,11 @@ public class AccountListView extends AbstractListView
 
         for (Account account : getClient().getAccounts())
         {
-            Collections.sort(account.getTransactions());
+            Collections.sort(account.getTransactions(), new Transaction.ByDate());
         }
 
         accounts.setContentProvider(new SimpleListContentProvider());
-        accounts.setInput(getClient().getAccounts());
+        resetInput();
         accounts.refresh();
         ViewerHelper.pack(accounts);
 
@@ -175,8 +245,9 @@ public class AccountListView extends AbstractListView
                                 accounts.refresh(transactions.getData(Account.class.toString()));
                             }
                         }) //
-                        .editable("name") // //$NON-NLS-1$
-                        .readonly("balance") // //$NON-NLS-1$
+                        .editable("name") //$NON-NLS-1$
+                        .readonly("balance") //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(accounts.getTable(), new IMenuListener()
@@ -197,6 +268,18 @@ public class AccountListView extends AbstractListView
         accountMenu.menuAboutToShow(manager, account);
         manager.add(new Separator());
 
+        manager.add(new Action(account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate)
+        {
+            @Override
+            public void run()
+            {
+                account.setRetired(!account.isRetired());
+                markDirty();
+                resetInput();
+            }
+
+        });
+
         manager.add(new Action(Messages.AccountMenuDelete)
         {
             @Override
@@ -204,8 +287,7 @@ public class AccountListView extends AbstractListView
             {
                 getClient().removeAccount(account);
                 markDirty();
-
-                accounts.setInput(getClient().getAccounts());
+                resetInput();
             }
         });
     }
@@ -222,7 +304,7 @@ public class AccountListView extends AbstractListView
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom4", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         transactions, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -316,8 +398,17 @@ public class AccountListView extends AbstractListView
             {
                 AccountTransaction t = (AccountTransaction) e;
                 if (t.getCrossEntry() instanceof BuySellEntry)
+                {
                     return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
-                return null;
+                }
+                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+                {
+                    return t.getShares();
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             @Override
@@ -342,7 +433,14 @@ public class AccountListView extends AbstractListView
                                     .getPortfolioTransaction();
                     return Values.Amount.format(portfolioTransaction.getActualPurchasePrice());
                 }
-                return null;
+                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+                {
+                    return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / t.getShares()));
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             @Override
@@ -373,6 +471,31 @@ public class AccountListView extends AbstractListView
         column.setMoveable(false);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnNote, SWT.None, 200);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((AccountTransaction) e).getNote();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((AccountTransaction) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
@@ -386,6 +509,21 @@ public class AccountListView extends AbstractListView
         new CellEditorFactory(transactions, AccountTransaction.class) //
                         .notify(new CellEditorFactory.ModificationListener()
                         {
+                            @Override
+                            public boolean canModify(Object element, String property)
+                            {
+                                AccountTransaction t = (AccountTransaction) element;
+                                if ("shares".equals(property)) //$NON-NLS-1$
+                                    return t.getType() == AccountTransaction.Type.DIVIDENDS;
+                                if ("security".equals(property)) //$NON-NLS-1$
+                                    return t.getType() == AccountTransaction.Type.BUY
+                                                    || t.getType() == AccountTransaction.Type.SELL
+                                                    || t.getType() == AccountTransaction.Type.DIVIDENDS;
+
+                                return true;
+                            }
+
+                            @Override
                             public void onModified(Object element, String property)
                             {
                                 AccountTransaction t = (AccountTransaction) element;
@@ -400,10 +538,11 @@ public class AccountListView extends AbstractListView
                         .editable("date") //$NON-NLS-1$
                         .readonly("type") //$NON-NLS-1$
                         .amount("amount") //$NON-NLS-1$
-                        .combobox("security", securities, true) //$NON-NLS-1$
-                        .readonly("shares") //$NON-NLS-1$
+                        .combobox("security", securities) //$NON-NLS-1$
+                        .shares("shares") //$NON-NLS-1$
                         .readonly("actualPurchasePrice") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
 
         hookContextMenu(transactions.getTable(), new IMenuListener()

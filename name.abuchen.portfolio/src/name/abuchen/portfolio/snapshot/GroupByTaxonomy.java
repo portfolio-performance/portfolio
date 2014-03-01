@@ -148,7 +148,7 @@ public final class GroupByTaxonomy
                 }
 
                 // sort positions by name
-                Collections.sort(category.getPositions());
+                Collections.sort(category.getPositions(), new AssetPosition.ByDescription());
             }
         }
     }
@@ -194,6 +194,22 @@ public final class GroupByTaxonomy
     public long getValuation()
     {
         return valuation;
+    }
+
+    public long getFIFOPurchaseValue()
+    {
+        long purchaseValue = 0;
+        for (AssetCategory category : categories)
+            purchaseValue += category.getFIFOPurchaseValue();
+        return purchaseValue;
+    }
+
+    public long getProfitLoss()
+    {
+        long profitLoss = 0;
+        for (AssetCategory category : categories)
+            profitLoss += category.getProfitLoss();
+        return profitLoss;
     }
 
     public List<AssetCategory> asList()

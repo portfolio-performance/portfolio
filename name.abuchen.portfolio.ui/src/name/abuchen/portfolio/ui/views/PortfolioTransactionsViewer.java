@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
@@ -36,6 +37,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -85,7 +87,7 @@ public final class PortfolioTransactionsViewer
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
-        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName(), tableViewer, layout);
+        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "2", tableViewer, layout); //$NON-NLS-1$
 
         addColumns();
         support.createColumns();
@@ -270,6 +272,26 @@ public final class PortfolioTransactionsViewer
         });
         column.setMoveable(false);
         support.addColumn(column);
+
+        column = new Column(Messages.ColumnNote, SWT.None, 200);
+        column.setLabelProvider(new TransactionLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((PortfolioTransaction) e).getNote();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((PortfolioTransaction) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
+        column.setMoveable(false);
+        support.addColumn(column);
+
     }
 
     private void addEditingSupport(AbstractFinanceView owner)
@@ -290,15 +312,16 @@ public final class PortfolioTransactionsViewer
                                 PortfolioTransactionsViewer.this.owner.notifyModelUpdated();
                             }
                         }) //
-                        .editable("date") // //$NON-NLS-1$
-                        .readonly("type") // //$NON-NLS-1$
-                        .combobox("security", securities) // //$NON-NLS-1$
-                        .shares("shares") // //$NON-NLS-1$
+                        .editable("date") //$NON-NLS-1$
+                        .readonly("type") //$NON-NLS-1$
+                        .combobox("security", securities) //$NON-NLS-1$
+                        .shares("shares") //$NON-NLS-1$
                         .readonly("actualPurchasePrice") //$NON-NLS-1$
                         .readonly("lumpSumPrice") //$NON-NLS-1$
-                        .amount("fees") // //$NON-NLS-1$
-                        .amount("amount") // //$NON-NLS-1$
+                        .amount("fees") //$NON-NLS-1$
+                        .amount("amount") //$NON-NLS-1$
                         .readonly("crossentry") //$NON-NLS-1$
+                        .editable("note") //$NON-NLS-1$
                         .apply();
     }
 
