@@ -419,17 +419,25 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                return element.isSecurity() ? element.getSecurity().getNote() : null;
+                if (element.isSecurity())
+                    return element.getSecurity().getNote();
+                else if (element.isAccount())
+                    return element.getAccount().getNote();
+                else
+                    return null;
             }
 
             @Override
             public Image getImage(Object e)
             {
+                String note = null;
+                
                 Element element = (Element) e;
-                if (!element.isSecurity())
-                    return null;
+                if (element.isSecurity())
+                    note = element.getSecurity().getNote();
+                else if (element.isAccount())
+                    note = element.getAccount().getNote();
 
-                String note = element.getSecurity().getNote();
                 return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
