@@ -30,11 +30,11 @@ public class NewFileHandler
         WizardDialog dialog = new WizardDialog(shell, wizard);
         if (dialog.open() == Window.OK)
         {
-            MPart part = partService.createPart(UIConstants.PORTFOLIO_PART);
+            MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(Messages.LabelUnsavedFile);
             part.getTransientData().put(Client.class.getName(), wizard.getClient());
 
-            MPartStack stack = (MPartStack) modelService.find(UIConstants.MAIN_PARTSTACK, app);
+            MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
             stack.getChildren().add(part);
 
             partService.showPart(part, PartState.ACTIVATE);

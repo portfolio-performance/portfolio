@@ -80,7 +80,7 @@ public class PortfolioPart
 
     private void loadClient(MPart part) throws IOException
     {
-        String filename = part.getPersistedState().get("file");
+        String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
 
         if (filename != null)
         {
@@ -110,7 +110,7 @@ public class PortfolioPart
 
         try
         {
-            part.getPersistedState().put("file", clientFile.getAbsolutePath());
+            part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
             ClientFactory.save(client, clientFile);
             dirty.setDirty(false);
 

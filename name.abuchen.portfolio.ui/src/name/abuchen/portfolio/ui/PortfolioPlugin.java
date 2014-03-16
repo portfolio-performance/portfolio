@@ -106,6 +106,12 @@ public class PortfolioPlugin implements BundleActivator
     public static final String IMG_CATEGORY = "category"; //$NON-NLS-1$
     public static final String IMG_UNASSIGNED_CATEGORY = "unassigned"; //$NON-NLS-1$
 
+    public static final String IMG_TEXT = "text"; //$NON-NLS-1$
+
+    public static final String IMG_ERROR = "error"; //$NON-NLS-1$
+    public static final String IMG_WARNING = "warning"; //$NON-NLS-1$
+    public static final String IMG_INFO = "info"; //$NON-NLS-1$
+
     private static PortfolioPlugin instance;
 
     private Bundle bundle;
@@ -177,7 +183,7 @@ public class PortfolioPlugin implements BundleActivator
                         IMG_INVESTMENTPLAN, IMG_NOTE, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_FILTER,
                         IMG_VIEW_TABLE, IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING,
                         IMG_VIEW_STACKEDCHART, IMG_CHECK, IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY,
-                        IMG_UNASSIGNED_CATEGORY })
+                        IMG_UNASSIGNED_CATEGORY, IMG_TEXT, IMG_ERROR, IMG_WARNING, IMG_INFO })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);

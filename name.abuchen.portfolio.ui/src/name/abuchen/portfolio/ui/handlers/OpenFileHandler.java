@@ -30,11 +30,11 @@ public class OpenFileHandler
 
         if (fileSelected != null)
         {
-            MPart part = partService.createPart(UIConstants.PORTFOLIO_PART);
+            MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(fileSelected);
-            part.getPersistedState().put("file", fileSelected);
+            part.getPersistedState().put(UIConstants.Parameter.FILE, fileSelected);
 
-            MPartStack stack = (MPartStack) modelService.find(UIConstants.MAIN_PARTSTACK, app);
+            MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
             stack.getChildren().add(part);
 
             partService.showPart(part, PartState.ACTIVATE);
