@@ -46,6 +46,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -53,6 +54,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -704,6 +706,7 @@ public class SecurityListView extends AbstractListView
         container.setLayout(layout);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
+        ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
                         + "@transactions2", //$NON-NLS-1$
@@ -763,6 +766,13 @@ public class SecurityListView extends AbstractListView
                     return shares != 0 ? shares : null;
                 }
                 return null;
+            }
+            
+            @Override
+            public String getToolTipText(Object element)
+            {
+                Long v = getValue(element);
+                return v != null ? Values.Share.format(v) : null;
             }
         });
         support.addColumn(column);

@@ -44,10 +44,12 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
@@ -124,6 +126,7 @@ public class StatementOfAssetsViewer
         container.setLayout(layout);
 
         assets = new TableViewer(container, SWT.FULL_SELECTION);
+        ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), assets, layout);
 
@@ -135,6 +138,13 @@ public class StatementOfAssetsViewer
             {
                 Element element = (Element) e;
                 return element.isSecurity() ? element.getSecurityPosition().getShares() : null;
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                Element element = (Element) e;
+                return element.isSecurity() ? Values.Share.format(element.getSecurityPosition().getShares()) : null;
             }
         });
         support.addColumn(column);
@@ -168,6 +178,18 @@ public class StatementOfAssetsViewer
             public Font getFont(Object e)
             {
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                Element element = (Element) e;
+                if (element.isSecurity())
+                    return element.getSecurity().toInfoString();
+                else if (element.isAccount())
+                    return element.getAccount().getName();
+                else
+                    return null;
             }
         });
         support.addColumn(column);

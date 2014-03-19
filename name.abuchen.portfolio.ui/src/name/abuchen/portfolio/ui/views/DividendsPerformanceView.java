@@ -34,10 +34,12 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
@@ -126,6 +128,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         records = new TableViewer(container, SWT.FULL_SELECTION);
         recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(), records, layout);
+        ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
 
         createCommonColumns();
         createDividendColumns();
@@ -174,6 +177,12 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public Long getValue(Object e)
             {
                 return ((SecurityPerformanceRecord) e).getSharesHeld();
+            }
+            
+            @Override
+            public String getToolTipText(Object e)
+            {
+                return Values.Share.format(((SecurityPerformanceRecord) e).getSharesHeld());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sharesHeld")); //$NON-NLS-1$
