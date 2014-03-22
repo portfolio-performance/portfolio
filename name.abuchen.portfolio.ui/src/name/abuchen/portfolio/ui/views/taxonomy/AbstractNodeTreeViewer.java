@@ -317,6 +317,27 @@ import org.eclipse.ui.PlatformUI;
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
+        
+        column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
+        column.getColumn().setText(Messages.ColumnNote);
+        column.getColumn().setWidth(22);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(22));
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Security security = ((TaxonomyNode)element).getBackingSecurity();
+                return security != null && security.getNote() != null && security.getNote().length() > 0 ? security.getNote() : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                Security security = ((TaxonomyNode)element).getBackingSecurity();
+                return security != null && security.getNote() != null && security.getNote().length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
+        });
     }
 
     protected void addActualColumns(TreeColumnLayout layout)
