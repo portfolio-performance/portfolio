@@ -92,6 +92,9 @@ public class PortfolioTransaction extends Transaction
         }
     }
 
+    /**
+     * Returns the purchase price before fees
+     */
     public long getActualPurchasePrice()
     {
         if (shares == 0)

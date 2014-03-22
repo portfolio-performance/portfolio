@@ -164,6 +164,7 @@ public class Messages extends NLS
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;
     public static String ExportWizardAccountTransactions;
+    public static String ExportWizardAllTransactionsAktienfreundeNet;
     public static String ExportWizardDescription;
     public static String ExportWizardErrorExporting;
     public static String ExportWizardHistoricalQuotes;

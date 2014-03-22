@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import name.abuchen.portfolio.datatransfer.AktienfreundeNetExporter;
 import name.abuchen.portfolio.datatransfer.CSVExporter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -84,6 +85,8 @@ public class ExportWizard extends Wizard
                     new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
                 else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
                     new CSVExporter().exportMergedSecurityPrices(file, client.getSecurities());
+                else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
+                    new AktienfreundeNetExporter().exportAllTransactions(file, client);
             }
 
             // historical quotes
