@@ -84,7 +84,7 @@ public final class SecuritiesTable
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION);
 
-        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), securities, layout);
+        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
 
         addMasterDataColumns();
         addColumnLatestPrice();

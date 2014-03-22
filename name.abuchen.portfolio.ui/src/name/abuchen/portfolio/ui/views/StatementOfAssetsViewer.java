@@ -128,7 +128,7 @@ public class StatementOfAssetsViewer
         assets = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
 
-        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), assets, layout);
+        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, assets, layout);
 
         Column column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
@@ -560,6 +560,11 @@ public class StatementOfAssetsViewer
 
         manager.add(new LabelOnly(Messages.LabelColumns));
         support.menuAboutToShow(manager);
+    }
+    
+    public void showSaveMenu(Shell shell)
+    {
+        support.showSaveMenu(shell);
     }
 
     public void setInput(ClientSnapshot snapshot)

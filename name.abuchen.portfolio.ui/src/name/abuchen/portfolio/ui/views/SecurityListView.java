@@ -136,6 +136,7 @@ public class SecurityListView extends AbstractListView
 
         addCreateSecurityButton(toolBar);
         addExportButton(toolBar);
+        addSaveButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -214,6 +215,21 @@ public class SecurityListView extends AbstractListView
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
+    }
+
+    private void addSaveButton(ToolBar toolBar)
+    {
+        Action save = new Action()
+        {
+            @Override
+            public void run()
+            {
+                securities.getColumnHelper().showSaveMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(save).fill(toolBar, -1);
     }
 
     private void addConfigButton(ToolBar toolBar)
