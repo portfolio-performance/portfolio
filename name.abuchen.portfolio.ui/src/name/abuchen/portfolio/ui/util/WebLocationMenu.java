@@ -34,7 +34,13 @@ public class WebLocationMenu extends MenuManager
                         new WebLocation("OnVista", //$NON-NLS-1$
                                         "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS"), //$NON-NLS-1$
                         new WebLocation("Finanzen.net", //$NON-NLS-1$
-                                        "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}") }; //$NON-NLS-1$
+                                        "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}"), //$NON-NLS-1$
+                        new WebLocation("justETF", //$NON-NLS-1$
+                                        "https://www.justetf.com/de/etf-profile.html?isin={isin}"), //$NON-NLS-1$
+                        new WebLocation("fondsweb.de", //$NON-NLS-1$
+                                        "http://www.fondsweb.de/{isin}"), //$NON-NLS-1$
+                        new WebLocation("Morningstar.de", //$NON-NLS-1$
+                                        "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}") }; //$NON-NLS-1$
 
         for (final WebLocation loc : locations)
         {
