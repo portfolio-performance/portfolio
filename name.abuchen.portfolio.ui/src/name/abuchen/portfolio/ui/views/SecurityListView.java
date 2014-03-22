@@ -273,17 +273,22 @@ public class SecurityListView extends AbstractListView
                     return true;
 
                 Security security = (Security) element;
+                
+                String[] properties = new String[] {
+                                security.getName(), //
+                                security.getIsin(), //
+                                security.getTickerSymbol(), //
+                                security.getWkn(), //
+                                security.getNote() //
+                };
 
-                if (security.getName() != null && filterPattern.matcher(security.getName()).matches())
-                    return true;
-
-                if (security.getIsin() != null && filterPattern.matcher(security.getIsin()).matches())
-                    return true;
-
-                if (security.getTickerSymbol() != null && filterPattern.matcher(security.getTickerSymbol()).matches())
-                    return true;
-
-                return false;
+                for (String property : properties)
+                {
+                    if (property != null && filterPattern.matcher(property).matches())
+                        return true;
+                }
+                
+                 return false;
             }
         });
 
