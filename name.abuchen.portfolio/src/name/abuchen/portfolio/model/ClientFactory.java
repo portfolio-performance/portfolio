@@ -151,6 +151,12 @@ public class ClientFactory
             client.setVersion(18);
         }
 
+        if (client.getVersion() == 18)
+        {
+            // do nothing --> added events (stock split) to securities
+            client.setVersion(19);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));
@@ -505,6 +511,8 @@ public class ClientFactory
                     xstream.alias("taxonomy", Taxonomy.class);
                     xstream.alias("classification", Classification.class);
                     xstream.alias("assignment", Assignment.class);
+
+                    xstream.alias("event", SecurityEvent.class);
 
                     // omitting 'type' will prevent writing the field
                     // (making it transient prevents reading it as well ->

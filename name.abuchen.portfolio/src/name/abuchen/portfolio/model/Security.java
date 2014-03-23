@@ -37,6 +37,8 @@ public final class Security implements InvestmentVehicle
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
 
+    private List<SecurityEvent> events;
+
     private boolean isRetired = false;
 
     @Deprecated
@@ -263,6 +265,20 @@ public final class Security implements InvestmentVehicle
         this.isRetired = isRetired;
     }
 
+    public List<SecurityEvent> getEvents()
+    {
+        if (this.events == null)
+            this.events = new ArrayList<SecurityEvent>();
+        return events;
+    }
+
+    public void addEvent(SecurityEvent event)
+    {
+        if (this.events == null)
+            this.events = new ArrayList<SecurityEvent>();
+        this.events.add(event);
+    }
+
     public List<TransactionPair<?>> getTransactions(Client client)
     {
         List<TransactionPair<?>> answer = new ArrayList<TransactionPair<?>>();
@@ -335,6 +351,8 @@ public final class Security implements InvestmentVehicle
         answer.feedURL = feedURL;
         answer.prices = new ArrayList<SecurityPrice>(prices);
         answer.latest = latest;
+
+        answer.events = new ArrayList<SecurityEvent>(getEvents());
 
         answer.isRetired = isRetired;
 
