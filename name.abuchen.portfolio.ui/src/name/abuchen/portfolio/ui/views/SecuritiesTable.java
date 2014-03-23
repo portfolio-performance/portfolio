@@ -32,6 +32,7 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -666,6 +667,17 @@ public final class SecuritiesTable
                 return new DividendsDialog(getShell(), getClient(), null, security);
             }
         });
+
+        manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                return new WizardDialog(getShell(), wizard);
+            }
+        });
+
         manager.add(new Separator());
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)

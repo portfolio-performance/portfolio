@@ -7,7 +7,7 @@ import org.eclipse.jface.databinding.swt.WidgetValueProperty;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 
-/* package */class SimpleDateTimeSelectionProperty extends WidgetValueProperty
+public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
 {
     private static final ThreadLocal<Calendar> CALENDAR = new ThreadLocal<Calendar>()
     {

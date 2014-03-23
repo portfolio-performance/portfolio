@@ -40,6 +40,8 @@ public class Messages extends NLS
     public static String ColumnAmount;
     public static String ColumnBalance;
     public static String ColumnColor;
+    public static String ColumnCurrentQuote;
+    public static String ColumnCurrentShares;
     public static String ColumnDate;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
@@ -48,6 +50,7 @@ public class Messages extends NLS
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
+    public static String ColumnDetails;
     public static String ColumnDividendPayment;
     public static String ColumnDividendPaymentCount;
     public static String ColumnDividendPaymentCount_MenuLabel;
@@ -59,6 +62,7 @@ public class Messages extends NLS
     public static String ColumnDividendTotalRateOfReturn;
     public static String ColumnDividendTotalRateOfReturn_Description;
     public static String ColumnEntity;
+    public static String ColumnExDate;
     public static String ColumnFees;
     public static String ColumnFix;
     public static String ColumnIndex;
@@ -118,6 +122,8 @@ public class Messages extends NLS
     public static String ColumnTransactionType;
     public static String ColumnTWROR;
     public static String ColumnTWROR_Description;
+    public static String ColumnUpdatedQuote;
+    public static String ColumnUpdatedShares;
     public static String ColumnValue;
     public static String ColumnVolume;
     public static String ColumnWeight;
@@ -353,6 +359,7 @@ public class Messages extends NLS
     public static String SecurityMenuImportQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
     public static String SecurityMenuSell;
+    public static String SecurityMenuStockSplit;
     public static String SecurityMenuTransfer;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityTabChart;
@@ -365,8 +372,20 @@ public class Messages extends NLS
     public static String SecurityTabChart5Y;
     public static String SecurityTabChart6M;
     public static String SecurityTabChartAll;
+    public static String SecurityTabEvents;
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTransactions;
+    public static String SplitWizardDefinitionDescription;
+    public static String SplitWizardDefinitionTitle;
+    public static String SplitWizardErrorNewAndOldMustNotBeEqual;
+    public static String SplitWizardLabelNewForOld;
+    public static String SplitWizardLabelSplit;
+    public static String SplitWizardLabelUpdateQuotes;
+    public static String SplitWizardLabelUpdateTransactions;
+    public static String SplitWizardReviewQuotesDescription;
+    public static String SplitWizardReviewQuotesTitle;
+    public static String SplitWizardReviewTransactionsDescription;
+    public static String SplitWizardReviewTransactionsTitle;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuShowErrorLog;
     public static String SystemMenuWelcome;

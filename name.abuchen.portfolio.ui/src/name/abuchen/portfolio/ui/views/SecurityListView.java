@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -83,6 +84,7 @@ public class SecurityListView extends AbstractListView
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
+    private TableViewer events;
     private TimelineChart chart;
     private SecurityDetailsViewer latest;
 
@@ -313,6 +315,8 @@ public class SecurityListView extends AbstractListView
 
         transactions.setInput(security != null ? security.getTransactions(getClient()) : new ArrayList<Transaction>(0));
 
+        events.setInput(security != null ? security.getEvents() : Collections.emptyList());
+
         updateChart(security);
     }
 
@@ -382,6 +386,11 @@ public class SecurityListView extends AbstractListView
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabTransactions);
         item.setControl(createTransactionTable(folder));
+
+        // tab 4: event
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabEvents);
+        item.setControl(createEventsTable(folder));
 
         folder.setSelection(0);
     }
@@ -481,6 +490,7 @@ public class SecurityListView extends AbstractListView
                                 prices.refresh(element);
                                 latest.setInput(security);
                                 transactions.setInput(security.getTransactions(getClient()));
+                                events.setInput(security.getEvents());
                                 updateChart(security);
                             }
                         }) //
@@ -523,6 +533,7 @@ public class SecurityListView extends AbstractListView
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
                     updateChart(security);
 
                     prices.setSelection(new StructuredSelection(price), true);
@@ -558,6 +569,7 @@ public class SecurityListView extends AbstractListView
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
                     updateChart(security);
                 }
             });
@@ -581,6 +593,7 @@ public class SecurityListView extends AbstractListView
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
                     updateChart(security);
                 }
             });
@@ -710,7 +723,12 @@ public class SecurityListView extends AbstractListView
                     }
                 }
             }
+        }
 
+        for (SecurityEvent event : security.getEvents())
+        {
+            if (chartPeriod == null || chartPeriod.before(event.getDate()))
+                chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
         }
 
         chart.redraw();
@@ -878,6 +896,64 @@ public class SecurityListView extends AbstractListView
         transactions.getTable().setLinesVisible(true);
 
         transactions.setContentProvider(new SimpleListContentProvider(true));
+
+        return container;
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // tab item: transactions
+    // //////////////////////////////////////////////////////////////
+
+    protected Composite createEventsTable(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
+
+        events = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events", //$NON-NLS-1$
+                        events, layout);
+
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Date.format(((SecurityEvent) element).getDate());
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((SecurityEvent) element).getType().toString();
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnDetails, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((SecurityEvent) element).getDetails();
+            }
+        });
+        support.addColumn(column);
+
+        support.createColumns();
+
+        events.getTable().setHeaderVisible(true);
+        events.getTable().setLinesVisible(true);
+
+        events.setContentProvider(new SimpleListContentProvider(true));
 
         return container;
     }

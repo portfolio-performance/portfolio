@@ -9,7 +9,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 
@@ -35,7 +34,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     {
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
-        container.setLayout(new FormLayout());
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         bindings = new BindingHelper(model)
