@@ -30,8 +30,8 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
-import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
-import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
 

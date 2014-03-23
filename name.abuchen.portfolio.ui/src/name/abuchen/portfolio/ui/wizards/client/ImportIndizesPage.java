@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -65,7 +66,7 @@ public class ImportIndizesPage extends AbstractWizardPage
         setTitle(Messages.NewFileWizardSecurityTitle);
         setDescription(Messages.NewFileWizardSecurityDescription);
 
-        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.ui.wizards.index"); //$NON-NLS-1$
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.ui.wizards.client.index"); //$NON-NLS-1$
         String indices = bundle.getString("proposals"); //$NON-NLS-1$
         String[] indAr = indices.split(","); //$NON-NLS-1$
         for (String index : indAr)

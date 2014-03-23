@@ -1,7 +1,8 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.security;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.layout.GridDataFactory;

@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.handlers;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ClientEditor;
-import name.abuchen.portfolio.ui.wizards.ExportWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ExportWizard;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

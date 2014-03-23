@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;

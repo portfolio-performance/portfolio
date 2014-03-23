@@ -1,10 +1,11 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.wizard.Wizard;
 

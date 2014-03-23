@@ -32,8 +32,8 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
-import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
-import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;

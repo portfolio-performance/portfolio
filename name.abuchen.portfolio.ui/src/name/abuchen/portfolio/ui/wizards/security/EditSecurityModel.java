@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.security;
 
 import java.util.ArrayList;
 import java.util.HashMap;

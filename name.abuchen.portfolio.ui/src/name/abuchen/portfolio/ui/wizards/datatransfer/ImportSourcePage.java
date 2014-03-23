@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;

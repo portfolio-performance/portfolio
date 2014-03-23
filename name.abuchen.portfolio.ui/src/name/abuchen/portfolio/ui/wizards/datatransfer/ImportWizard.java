@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
 import java.text.MessageFormat;

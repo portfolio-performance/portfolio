@@ -5,7 +5,7 @@ import java.io.File;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.wizards.ImportWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizard;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
