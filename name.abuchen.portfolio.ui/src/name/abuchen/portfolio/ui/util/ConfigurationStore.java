@@ -207,7 +207,7 @@ public class ConfigurationStore
             client.setProperty(identifier + '$' + index, config.getName() + ":=" + config.getData()); //$NON-NLS-1$
         }
 
-        client.removeProperity(identifier + '$' + storedConfigurations.size());
+        client.removeProperty(identifier + '$' + storedConfigurations.size());
     }
 
 }
