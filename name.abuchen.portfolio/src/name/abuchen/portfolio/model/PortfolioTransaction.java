@@ -18,7 +18,6 @@ public class PortfolioTransaction extends Transaction
     }
 
     private Type type;
-    private long shares;
     private long amount;
     private long fees;
 
@@ -27,9 +26,8 @@ public class PortfolioTransaction extends Transaction
 
     public PortfolioTransaction(Date date, Security security, Type type, long shares, long amount, long fees)
     {
-        super(date, security);
+        super(date, security, shares);
         this.type = type;
-        this.shares = shares;
         this.amount = amount;
         this.fees = fees;
     }
@@ -42,16 +40,6 @@ public class PortfolioTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
-    }
-
-    public long getShares()
-    {
-        return shares;
-    }
-
-    public void setShares(long shares)
-    {
-        this.shares = shares;
     }
 
     @Override
@@ -97,9 +85,9 @@ public class PortfolioTransaction extends Transaction
      */
     public long getActualPurchasePrice()
     {
-        if (shares == 0)
+        if (getShares() == 0)
             return 0;
 
-        return getLumpSumPrice() * Values.Share.factor() / shares;
+        return getLumpSumPrice() * Values.Share.factor() / getShares();
     }
 }
