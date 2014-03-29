@@ -32,6 +32,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_BvUYkBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help.updateproduct" label="%command.update.name" command="_59FgcBiREeOR1rNFCzC82A"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="&#xdc;ber Portfolio Performance" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_SQAUsKHtEeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.menu.help.errorlog" label="%command.showErrorView.label" command="_dtV6sKHtEeONB5LYBnC_Tw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZqFHkLdMEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.menu.help.preferences" label="Einstellungen..." command="_7aSvMLdLEeO0acAVfaNMbA"/>
       </children>
     </mainMenu>
   </children>
@@ -48,6 +49,7 @@
   <handlers xmi:id="_akdeMKHtEeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.handler.errorlog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.OpenErrorLogPartHandler" command="_dtV6sKHtEeONB5LYBnC_Tw"/>
   <handlers xmi:id="_HtZEMKSjEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handler.clearerrorlog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.ClearLogHandler" command="_8B-l8KSiEeO6qtqDeqiitg"/>
   <handlers xmi:id="_IUyO8Kz0EeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handler.openerrorlogtext" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.OpenErrorLogFileHandler" command="_h9fugKz0EeO6qtqDeqiitg"/>
+  <handlers xmi:id="_pqCZoLdLEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.handler.preferences" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPreferenceDialogHandler" command="_7aSvMLdLEeO0acAVfaNMbA"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4BjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -74,6 +76,7 @@
   <commands xmi:id="_dtV6sKHtEeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.command.openerrorlog" commandName="Fehlerprotokoll &#xf6;ffnen"/>
   <commands xmi:id="_8B-l8KSiEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.clearerrorlog" commandName="Eintr&#xe4;ge im Fehlerprotokoll l&#xf6;schen" description=""/>
   <commands xmi:id="_h9fugKz0EeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.openerrorlogtext" commandName="Fehlerlogdatei &#xf6;ffnen"/>
+  <commands xmi:id="_7aSvMLdLEeO0acAVfaNMbA" elementId="org.eclipse.ui.window.preferences" commandName="openPreferenceDialog"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_D8SDohfFEeOders_POVQHQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>

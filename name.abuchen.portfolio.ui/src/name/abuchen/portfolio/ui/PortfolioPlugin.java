@@ -9,6 +9,8 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.List;
 
+import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
+
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,8 +19,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -134,8 +136,7 @@ public class PortfolioPlugin implements BundleActivator
         imageRegistry = new ImageRegistry();
         initializeImageRegistry(imageRegistry);
 
-        preferenceStore = new PreferenceStore();
-        // FIXME: read preferences from state location
+        preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, PortfolioPlugin.PLUGIN_ID);
 
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
