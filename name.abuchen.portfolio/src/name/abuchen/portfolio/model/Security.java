@@ -37,6 +37,8 @@ public final class Security implements InvestmentVehicle
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
 
+    private List<SecurityEvent> events;
+
     private boolean isRetired = false;
 
     @Deprecated
@@ -263,6 +265,20 @@ public final class Security implements InvestmentVehicle
         this.isRetired = isRetired;
     }
 
+    public List<SecurityEvent> getEvents()
+    {
+        if (this.events == null)
+            this.events = new ArrayList<SecurityEvent>();
+        return events;
+    }
+
+    public void addEvent(SecurityEvent event)
+    {
+        if (this.events == null)
+            this.events = new ArrayList<SecurityEvent>();
+        this.events.add(event);
+    }
+
     public List<TransactionPair<?>> getTransactions(Client client)
     {
         List<TransactionPair<?>> answer = new ArrayList<TransactionPair<?>>();
@@ -336,6 +352,8 @@ public final class Security implements InvestmentVehicle
         answer.prices = new ArrayList<SecurityPrice>(prices);
         answer.latest = latest;
 
+        answer.events = new ArrayList<SecurityEvent>(getEvents());
+
         answer.isRetired = isRetired;
 
         return answer;
@@ -345,5 +363,28 @@ public final class Security implements InvestmentVehicle
     public String toString()
     {
         return getName();
+    }
+    
+    public String toInfoString()
+    {
+        StringBuilder b = new StringBuilder();
+        b.append(name);
+        
+        if (notEmpty(isin))
+            b.append('\n').append(isin);
+        if (notEmpty(wkn))
+            b.append('\n').append(wkn);
+        if (notEmpty(tickerSymbol))
+            b.append('\n').append(tickerSymbol);
+        
+        if (notEmpty(note))
+            b.append("\n\n").append(note); //$NON-NLS-1$
+        
+        return b.toString();
+    }
+
+    private boolean notEmpty(String s)
+    {
+        return s != null && s.length() > 0;
     }
 }

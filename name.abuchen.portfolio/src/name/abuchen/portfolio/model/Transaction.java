@@ -23,6 +23,8 @@ public abstract class Transaction
     private Security security;
     private CrossEntry crossEntry;
 
+    private long shares;
+
     private String note;
 
     public Transaction()
@@ -30,8 +32,14 @@ public abstract class Transaction
 
     public Transaction(Date date, Security security)
     {
+        this(date, security, 0);
+    }
+
+    public Transaction(Date date, Security security, long shares)
+    {
         this.date = date;
         this.security = security;
+        this.shares = shares;
     }
 
     public Date getDate()
@@ -62,6 +70,16 @@ public abstract class Transaction
     /* package */void setCrossEntry(CrossEntry crossEntry)
     {
         this.crossEntry = crossEntry;
+    }
+
+    public long getShares()
+    {
+        return shares;
+    }
+
+    public void setShares(long shares)
+    {
+        this.shares = shares;
     }
 
     public String getNote()

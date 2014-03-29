@@ -19,7 +19,6 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
-    private long shares;
     private long amount;
 
     public AccountTransaction()
@@ -40,16 +39,6 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
-    }
-
-    public long getShares()
-    {
-        return shares;
-    }
-
-    public void setShares(long shares)
-    {
-        this.shares = shares;
     }
 
     @Override

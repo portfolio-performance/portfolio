@@ -7,7 +7,7 @@ import javax.inject.Named;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.wizards.ImportWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizard;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;

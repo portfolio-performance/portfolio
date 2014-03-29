@@ -30,8 +30,9 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
-import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
-import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
+import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -83,7 +84,7 @@ public final class SecuritiesTable
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION);
 
-        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), securities, layout);
+        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
 
         addMasterDataColumns();
         addColumnLatestPrice();
@@ -665,6 +666,17 @@ public final class SecuritiesTable
                 return new DividendsDialog(getShell(), getClient(), null, security);
             }
         });
+
+        manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                return new WizardDialog(getShell(), wizard);
+            }
+        });
+
         manager.add(new Separator());
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)

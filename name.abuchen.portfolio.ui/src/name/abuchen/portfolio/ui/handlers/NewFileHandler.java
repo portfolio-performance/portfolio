@@ -5,7 +5,7 @@ import javax.inject.Named;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.wizards.NewClientWizard;
+import name.abuchen.portfolio.ui.wizards.client.NewClientWizard;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;

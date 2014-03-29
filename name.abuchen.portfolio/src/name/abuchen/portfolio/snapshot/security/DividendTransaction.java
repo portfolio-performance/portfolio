@@ -8,7 +8,6 @@ public class DividendTransaction extends Transaction
 {
     private Account account;
 
-    private long shares;
     private long amount;
 
     private long fifoCost;
@@ -37,19 +36,9 @@ public class DividendTransaction extends Transaction
         this.amount = amount;
     }
 
-    public long getShares()
-    {
-        return shares;
-    }
-
-    /* package */void setShares(long shares)
-    {
-        this.shares = shares;
-    }
-
     public long getDividendPerShare()
     {
-        return amountFractionPerShare(amount, shares);
+        return amountFractionPerShare(amount, getShares());
     }
 
     public long getFifoCost()

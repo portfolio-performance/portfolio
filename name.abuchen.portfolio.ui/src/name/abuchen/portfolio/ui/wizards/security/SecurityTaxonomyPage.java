@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -11,8 +11,9 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.wizards.EditSecurityModel.ClassificationLink;
-import name.abuchen.portfolio.ui.wizards.EditSecurityModel.TaxonomyDesignation;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;

@@ -1,9 +1,10 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import name.abuchen.portfolio.datatransfer.AktienfreundeNetExporter;
 import name.abuchen.portfolio.datatransfer.CSVExporter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -14,6 +15,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -84,6 +86,8 @@ public class ExportWizard extends Wizard
                     new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
                 else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
                     new CSVExporter().exportMergedSecurityPrices(file, client.getSecurities());
+                else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
+                    new AktienfreundeNetExporter().exportAllTransactions(file, client);
             }
 
             // historical quotes

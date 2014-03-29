@@ -49,6 +49,18 @@ public class StatementOfAssetsView extends AbstractFinanceView
         export.setToolTipText(Messages.MenuExportData);
         new ActionContributionItem(export).fill(toolBar, -1);
 
+        Action save = new Action()
+        {
+            @Override
+            public void run()
+            {
+                assetViewer.showSaveMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(save).fill(toolBar, -1);
+
         Action config = new Action()
         {
             @Override

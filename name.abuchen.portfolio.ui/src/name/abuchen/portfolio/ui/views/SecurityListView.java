@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -31,8 +32,8 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
-import name.abuchen.portfolio.ui.wizards.EditSecurityWizard;
-import name.abuchen.portfolio.ui.wizards.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -46,6 +47,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -53,6 +55,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -81,6 +84,7 @@ public class SecurityListView extends AbstractListView
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
+    private TableViewer events;
     private TimelineChart chart;
     private SecurityDetailsViewer latest;
 
@@ -134,6 +138,7 @@ public class SecurityListView extends AbstractListView
 
         addCreateSecurityButton(toolBar);
         addExportButton(toolBar);
+        addSaveButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -214,6 +219,21 @@ public class SecurityListView extends AbstractListView
         new ActionContributionItem(export).fill(toolBar, -1);
     }
 
+    private void addSaveButton(ToolBar toolBar)
+    {
+        Action save = new Action()
+        {
+            @Override
+            public void run()
+            {
+                securities.getColumnHelper().showSaveMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(save).fill(toolBar, -1);
+    }
+
     private void addConfigButton(ToolBar toolBar)
     {
         Action config = new Action()
@@ -255,17 +275,22 @@ public class SecurityListView extends AbstractListView
                     return true;
 
                 Security security = (Security) element;
+                
+                String[] properties = new String[] {
+                                security.getName(), //
+                                security.getIsin(), //
+                                security.getTickerSymbol(), //
+                                security.getWkn(), //
+                                security.getNote() //
+                };
 
-                if (security.getName() != null && filterPattern.matcher(security.getName()).matches())
-                    return true;
-
-                if (security.getIsin() != null && filterPattern.matcher(security.getIsin()).matches())
-                    return true;
-
-                if (security.getTickerSymbol() != null && filterPattern.matcher(security.getTickerSymbol()).matches())
-                    return true;
-
-                return false;
+                for (String property : properties)
+                {
+                    if (property != null && filterPattern.matcher(property).matches())
+                        return true;
+                }
+                
+                 return false;
             }
         });
 
@@ -289,6 +314,8 @@ public class SecurityListView extends AbstractListView
         latest.setInput(security);
 
         transactions.setInput(security != null ? security.getTransactions(getClient()) : new ArrayList<Transaction>(0));
+
+        events.setInput(security != null ? security.getEvents() : Collections.emptyList());
 
         updateChart(security);
     }
@@ -359,6 +386,11 @@ public class SecurityListView extends AbstractListView
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabTransactions);
         item.setControl(createTransactionTable(folder));
+
+        // tab 4: event
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabEvents);
+        item.setControl(createEventsTable(folder));
 
         folder.setSelection(0);
     }
@@ -458,6 +490,7 @@ public class SecurityListView extends AbstractListView
                                 prices.refresh(element);
                                 latest.setInput(security);
                                 transactions.setInput(security.getTransactions(getClient()));
+                                events.setInput(security.getEvents());
                                 updateChart(security);
                             }
                         }) //
@@ -500,6 +533,7 @@ public class SecurityListView extends AbstractListView
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
                     updateChart(security);
 
                     prices.setSelection(new StructuredSelection(price), true);
@@ -535,6 +569,7 @@ public class SecurityListView extends AbstractListView
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
                     updateChart(security);
                 }
             });
@@ -558,6 +593,7 @@ public class SecurityListView extends AbstractListView
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
                     updateChart(security);
                 }
             });
@@ -687,7 +723,12 @@ public class SecurityListView extends AbstractListView
                     }
                 }
             }
+        }
 
+        for (SecurityEvent event : security.getEvents())
+        {
+            if (chartPeriod == null || chartPeriod.before(event.getDate()))
+                chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
         }
 
         chart.redraw();
@@ -704,6 +745,7 @@ public class SecurityListView extends AbstractListView
         container.setLayout(layout);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
+        ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
                         + "@transactions2", //$NON-NLS-1$
@@ -763,6 +805,13 @@ public class SecurityListView extends AbstractListView
                     return shares != 0 ? shares : null;
                 }
                 return null;
+            }
+            
+            @Override
+            public String getToolTipText(Object element)
+            {
+                Long v = getValue(element);
+                return v != null ? Values.Share.format(v) : null;
             }
         });
         support.addColumn(column);
@@ -847,6 +896,64 @@ public class SecurityListView extends AbstractListView
         transactions.getTable().setLinesVisible(true);
 
         transactions.setContentProvider(new SimpleListContentProvider(true));
+
+        return container;
+    }
+
+    // //////////////////////////////////////////////////////////////
+    // tab item: transactions
+    // //////////////////////////////////////////////////////////////
+
+    protected Composite createEventsTable(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NONE);
+        TableColumnLayout layout = new TableColumnLayout();
+        container.setLayout(layout);
+
+        events = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events", //$NON-NLS-1$
+                        events, layout);
+
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Date.format(((SecurityEvent) element).getDate());
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((SecurityEvent) element).getType().toString();
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnDetails, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((SecurityEvent) element).getDetails();
+            }
+        });
+        support.addColumn(column);
+
+        support.createColumns();
+
+        events.getTable().setHeaderVisible(true);
+        events.getTable().setLinesVisible(true);
+
+        events.setContentProvider(new SimpleListContentProvider(true));
 
         return container;
     }

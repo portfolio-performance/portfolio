@@ -13,7 +13,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 18;
+    /* package */static final int CURRENT_VERSION = 19;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -215,7 +215,7 @@ public class Client
         propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
     }
 
-    public void removeProperity(String key)
+    public void removeProperty(String key)
     {
         String oldValue = properties.remove(key);
         propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$

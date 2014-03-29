@@ -10,10 +10,12 @@ import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.wizard.WizardDialog;
 
 public class SecurityContextMenu
 {
@@ -71,6 +73,21 @@ public class SecurityContextMenu
             {
                 DividendsDialog dialog = new DividendsDialog(owner.getClientEditor().getSite().getShell(), owner
                                 .getClient(), null, security);
+                if (dialog.open() == DividendsDialog.OK)
+                {
+                    owner.markDirty();
+                    owner.notifyModelUpdated();
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.SecurityMenuStockSplit)
+        {
+            @Override
+            public void run()
+            {
+                StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
+                WizardDialog dialog = new WizardDialog(owner.getClientEditor().getSite().getShell(), wizard);
                 if (dialog.open() == DividendsDialog.OK)
                 {
                     owner.markDirty();

@@ -207,7 +207,7 @@ public final class PortfolioTransactionsViewer
         column.setMoveable(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
         column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override

@@ -1,7 +1,8 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.security;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -9,7 +10,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 
@@ -35,7 +35,6 @@ public class SecurityMasterDataPage extends AbstractWizardPage
     {
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
-        container.setLayout(new FormLayout());
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         bindings = new BindingHelper(model)

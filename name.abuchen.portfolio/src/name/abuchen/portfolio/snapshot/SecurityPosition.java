@@ -168,13 +168,13 @@ public class SecurityPosition
         }
 
         output.addAll(inbound);
-        Collections.sort(output, new Transaction.ByDate());
         return output;
     }
 
     private void calculatePurchaseValuePrice(List<PortfolioTransaction> input)
     {
-        // assume: list is sorted, to FIFO
+        Collections.sort(input, new Transaction.ByDate());
+
         long sharesSold = 0;
         for (PortfolioTransaction t : input)
         {

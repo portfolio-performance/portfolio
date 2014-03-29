@@ -1,6 +1,7 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.client;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.wizard.Wizard;
 

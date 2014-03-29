@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards;
+package name.abuchen.portfolio.ui.wizards.client;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
