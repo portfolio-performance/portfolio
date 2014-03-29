@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
@@ -620,19 +621,15 @@ import org.swtchart.LineStyle;
         for (DataSeries s : selectedSeries)
             list.remove(s);
 
-        // FIXME replace ElementListSelectionDialog
-        // ElementListSelectionDialog dialog = new
-        // ElementListSelectionDialog(getShell(), new
-        // DataSeriesLabelProvider());
-        // dialog.setElements(list.toArray());
-        // dialog.setTitle(Messages.ChartSeriesPickerTitle);
-        // dialog.setMessage(Messages.ChartSeriesPickerTitle);
-        // dialog.setMultipleSelection(true);
-        //
-        // if (dialog.open() != Window.OK)
-        // return;
+        ListSelectionDialog dialog = new ListSelectionDialog(getShell(), new DataSeriesLabelProvider());
+        dialog.setTitle(Messages.ChartSeriesPickerTitle);
+        dialog.setMessage(Messages.ChartSeriesPickerTitle);
+        dialog.setElements(list);
 
-        Object[] result = null; // dialog.getResult();
+        if (dialog.open() != ListSelectionDialog.OK)
+            return;
+
+        Object[] result = dialog.getResult();
         if (result.length == 0)
             return;
 
