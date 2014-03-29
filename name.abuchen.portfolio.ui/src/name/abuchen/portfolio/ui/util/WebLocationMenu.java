@@ -40,7 +40,11 @@ public class WebLocationMenu extends MenuManager
                         new WebLocation("fondsweb.de", //$NON-NLS-1$
                                         "http://www.fondsweb.de/{isin}"), //$NON-NLS-1$
                         new WebLocation("Morningstar.de", //$NON-NLS-1$
-                                        "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}") }; //$NON-NLS-1$
+                                        "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}"), //$NON-NLS-1$
+                        new WebLocation(
+                                        "maxblue Kauforder", //$NON-NLS-1$
+                                        "https://meine.deutsche-bank.de/trxm/db/init.do" //$NON-NLS-1$
+                                                        + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}") }; //$NON-NLS-1$
 
         for (final WebLocation loc : locations)
         {
