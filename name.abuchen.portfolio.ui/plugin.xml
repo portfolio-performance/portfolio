@@ -36,4 +36,17 @@
             class="name.abuchen.portfolio.ui.preferences.UpdateInitializer">
       </initializer>
    </extension>
+
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="name.abuchen.portfolio.ui.expression.IsNotMacOSX">
+         <not>
+            <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+            </systemTest>
+         </not>
+      </definition>
+   </extension>
 </plugin>
