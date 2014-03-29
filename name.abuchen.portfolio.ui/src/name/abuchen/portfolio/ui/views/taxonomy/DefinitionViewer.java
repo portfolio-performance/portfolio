@@ -111,6 +111,7 @@ import org.eclipse.swt.widgets.Display;
                             }
                         }) //
                         .editable("name") //$NON-NLS-1$
+                        .readonly("isin") //$NON-NLS-1$
                         .readonly("note") //$NON-NLS-1$
                         .decimal("weight", Values.Weight) //$NON-NLS-1$
                         .readonly("color") //$NON-NLS-1$

@@ -17,6 +17,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -317,7 +318,21 @@ import org.eclipse.ui.PlatformUI;
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
-        
+
+        column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
+        column.getColumn().setText(Messages.ColumnISIN);
+        column.getColumn().setWidth(100);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Security security = ((TaxonomyNode) element).getBackingSecurity();
+                return security != null ? security.getIsin() : null;
+            }
+        });
+
         column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
         column.getColumn().setText(Messages.ColumnNote);
         column.getColumn().setWidth(22);
@@ -327,15 +342,17 @@ import org.eclipse.ui.PlatformUI;
             @Override
             public String getText(Object element)
             {
-                Security security = ((TaxonomyNode)element).getBackingSecurity();
-                return security != null && security.getNote() != null && security.getNote().length() > 0 ? security.getNote() : null;
+                Security security = ((TaxonomyNode) element).getBackingSecurity();
+                return security != null && security.getNote() != null && security.getNote().length() > 0 ? security
+                                .getNote() : null;
             }
 
             @Override
             public Image getImage(Object element)
             {
-                Security security = ((TaxonomyNode)element).getBackingSecurity();
-                return security != null && security.getNote() != null && security.getNote().length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                Security security = ((TaxonomyNode) element).getBackingSecurity();
+                return security != null && security.getNote() != null && security.getNote().length() > 0 ? PortfolioPlugin
+                                .image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
     }
@@ -531,6 +548,13 @@ import org.eclipse.ui.PlatformUI;
                         onTaxnomyNodeEdited(getModel().getRootNode());
                     }
                 });
+
+                Security security = node.getBackingSecurity();
+                if (security != null)
+                {
+                    manager.add(new Separator());
+                    manager.add(new WebLocationMenu(security));
+                }
             }
         }
     }

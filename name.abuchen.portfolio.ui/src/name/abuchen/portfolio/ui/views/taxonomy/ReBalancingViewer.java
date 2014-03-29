@@ -175,6 +175,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         new CellEditorFactory(getNodeViewer(), TaxonomyNode.class) //
                         .notify(new NodeModificationListener(this)) //
                         .editable("name") // //$NON-NLS-1$
+                        .readonly("isin") //$NON-NLS-1$
                         .readonly("note") //$NON-NLS-1$
                         .decimal("weight", Values.Weight) // //$NON-NLS-1$
                         .apply();
