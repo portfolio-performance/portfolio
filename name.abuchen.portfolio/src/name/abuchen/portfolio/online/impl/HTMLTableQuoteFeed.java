@@ -95,7 +95,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Rücknahmepreis.*", "Close.*" });
+            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*" });
         }
 
         @Override
