@@ -15,12 +15,17 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
@@ -43,7 +48,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
-public final class PortfolioTransactionsViewer
+public final class PortfolioTransactionsViewer implements ModificationListener
 {
     private class TransactionLabelProvider extends ColumnLabelProvider
     {
@@ -87,6 +92,8 @@ public final class PortfolioTransactionsViewer
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
+        ColumnEditingSupport.prepare(tableViewer);
+
         support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "2", tableViewer, layout); //$NON-NLS-1$
 
         addColumns();
@@ -95,8 +102,6 @@ public final class PortfolioTransactionsViewer
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
         tableViewer.setContentProvider(new SimpleListContentProvider());
-
-        addEditingSupport(owner);
 
         hookContextMenu(parent);
     }
@@ -138,6 +143,17 @@ public final class PortfolioTransactionsViewer
         return portfolio;
     }
 
+    @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        PortfolioTransaction t = (PortfolioTransaction) element;
+        if (t.getCrossEntry() != null)
+            t.getCrossEntry().updateFrom(t);
+
+        owner.markDirty();
+        owner.notifyModelUpdated();
+    }
+
     private void addColumns()
     {
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -149,8 +165,8 @@ public final class PortfolioTransactionsViewer
                 return Values.Date.format(((PortfolioTransaction) element).getDate());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new DateEditingSupport(PortfolioTransaction.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -162,8 +178,7 @@ public final class PortfolioTransactionsViewer
                 return ((PortfolioTransaction) element).getType().toString();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "type")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "type").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
@@ -176,8 +191,10 @@ public final class PortfolioTransactionsViewer
                 return t.getSecurity() != null ? String.valueOf(t.getSecurity()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "security")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "security").attachTo(column); //$NON-NLS-1$
+        List<Security> securities = new ArrayList<Security>(owner.getClient().getSecurities());
+        Collections.sort(securities, new Security.ByName());
+        new ListEditingSupport(PortfolioTransaction.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
@@ -203,8 +220,8 @@ public final class PortfolioTransactionsViewer
                 return colors.getBackground(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "shares")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "shares").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(PortfolioTransaction.class, "shares", Values.Share).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -217,8 +234,7 @@ public final class PortfolioTransactionsViewer
                 return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
@@ -230,8 +246,7 @@ public final class PortfolioTransactionsViewer
                 return Values.Amount.format(((PortfolioTransaction) element).getLumpSumPrice());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
@@ -243,8 +258,8 @@ public final class PortfolioTransactionsViewer
                 return Values.Amount.format(((PortfolioTransaction) element).getFees());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "fees")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(PortfolioTransaction.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
@@ -256,8 +271,8 @@ public final class PortfolioTransactionsViewer
                 return Values.Amount.format(((PortfolioTransaction) element).getAmount());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(PortfolioTransaction.class, "amount")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(PortfolioTransaction.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
@@ -270,7 +285,6 @@ public final class PortfolioTransactionsViewer
                 return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
             }
         });
-        column.setMoveable(false);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnNote, SWT.None, 200);
@@ -289,40 +303,14 @@ public final class PortfolioTransactionsViewer
                 return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
-        column.setMoveable(false);
+        ColumnViewerSorter.create(PortfolioTransaction.class, "note").attachTo(column); //$NON-NLS-1$
+        new StringEditingSupport(PortfolioTransaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
-
     }
 
-    private void addEditingSupport(AbstractFinanceView owner)
+    public ShowHideColumnHelper getColumnSupport()
     {
-        List<Security> securities = new ArrayList<Security>(owner.getClient().getSecurities());
-        Collections.sort(securities, new Security.ByName());
-
-        new CellEditorFactory(tableViewer, PortfolioTransaction.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                PortfolioTransaction t = (PortfolioTransaction) element;
-                                if (t.getCrossEntry() != null)
-                                    t.getCrossEntry().updateFrom(t);
-
-                                PortfolioTransactionsViewer.this.owner.markDirty();
-                                PortfolioTransactionsViewer.this.owner.notifyModelUpdated();
-                            }
-                        }) //
-                        .editable("date") //$NON-NLS-1$
-                        .readonly("type") //$NON-NLS-1$
-                        .combobox("security", securities) //$NON-NLS-1$
-                        .shares("shares") //$NON-NLS-1$
-                        .readonly("actualPurchasePrice") //$NON-NLS-1$
-                        .readonly("lumpSumPrice") //$NON-NLS-1$
-                        .amount("fees") //$NON-NLS-1$
-                        .amount("amount") //$NON-NLS-1$
-                        .readonly("crossentry") //$NON-NLS-1$
-                        .editable("note") //$NON-NLS-1$
-                        .apply();
+        return support;
     }
 
     private void hookContextMenu(Composite parent)

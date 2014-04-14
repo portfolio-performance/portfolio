@@ -5,11 +5,15 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
@@ -17,6 +21,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -32,11 +37,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 
-public class PortfolioListView extends AbstractListView
+public class PortfolioListView extends AbstractListView implements ModificationListener
 {
     private TableViewer portfolios;
     private StatementOfAssetsViewer statementOfAssets;
     private PortfolioTransactionsViewer transactions;
+
+    private ShowHideColumnHelper portfolioColumns;
 
     @Override
     protected String getTitle()
@@ -51,7 +58,19 @@ public class PortfolioListView extends AbstractListView
     }
 
     @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        markDirty();
+    }
+
+    @Override
     protected void addButtons(ToolBar toolBar)
+    {
+        addNewPortfolioButton(toolBar);
+        addConfigButton(toolBar);
+    }
+
+    private void addNewPortfolioButton(ToolBar toolBar)
     {
         Action action = new Action()
         {
@@ -86,6 +105,25 @@ public class PortfolioListView extends AbstractListView
         new ActionContributionItem(action).fill(toolBar, -1);
     }
 
+    private void addConfigButton(final ToolBar toolBar)
+    {
+        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, //
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_CONFIG), SWT.NONE)
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                MenuManager m = new MenuManager(Messages.LabelPortfolios);
+                portfolioColumns.menuAboutToShow(m);
+                manager.add(m);
+
+                m = new MenuManager(Messages.LabelTransactions);
+                transactions.getColumnSupport().menuAboutToShow(m);
+                manager.add(m);
+            }
+        };
+    }
+
     // //////////////////////////////////////////////////////////////
     // top table: accounts
     // //////////////////////////////////////////////////////////////
@@ -98,7 +136,9 @@ public class PortfolioListView extends AbstractListView
 
         portfolios = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
+        ColumnEditingSupport.prepare(portfolios);
+
+        portfolioColumns = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         portfolios, layout);
 
         Column column = new Column(Messages.ColumnPortfolio, SWT.None, 100);
@@ -116,9 +156,9 @@ public class PortfolioListView extends AbstractListView
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Portfolio.class, "name"), SWT.DOWN); //$NON-NLS-1$
-        column.setMoveable(false);
-        support.addColumn(column);
+        ColumnViewerSorter.create(Portfolio.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new StringEditingSupport(Portfolio.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
+        portfolioColumns.addColumn(column);
 
         column = new Column(Messages.ColumnReferenceAccount, SWT.None, 160);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -129,10 +169,18 @@ public class PortfolioListView extends AbstractListView
                 Portfolio p = (Portfolio) e;
                 return p.getReferenceAccount() != null ? p.getReferenceAccount().getName() : null;
             }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = ((Portfolio) e).getNote();
+                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+            }
         });
-        column.setSorter(ColumnViewerSorter.create(Portfolio.class, "referenceAccount")); //$NON-NLS-1$
-        column.setMoveable(false);
-        support.addColumn(column);
+        ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(Portfolio.class, "referenceAccount", getClient().getAccounts()) //$NON-NLS-1$
+                        .addListener(this).attachTo(column);
+        portfolioColumns.addColumn(column);
 
         column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
@@ -143,18 +191,18 @@ public class PortfolioListView extends AbstractListView
                 return ((Portfolio) e).getNote();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Portfolio.class, "note")); //$NON-NLS-1$
-        column.setMoveable(false);
-        support.addColumn(column);
+        ColumnViewerSorter.create(Portfolio.class, "note").attachTo(column); //$NON-NLS-1$
+        new StringEditingSupport(Portfolio.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        portfolioColumns.addColumn(column);
 
-        support.createColumns();
+        portfolioColumns.createColumns();
 
         portfolios.getTable().setHeaderVisible(true);
         portfolios.getTable().setLinesVisible(true);
 
         portfolios.setContentProvider(new SimpleListContentProvider());
         portfolios.setInput(getClient().getPortfolios());
-        if (!support.isUserConfigured())
+        if (!portfolioColumns.isUserConfigured())
             ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
@@ -177,20 +225,6 @@ public class PortfolioListView extends AbstractListView
                 }
             }
         });
-
-        new CellEditorFactory(portfolios, Portfolio.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                markDirty();
-                                portfolios.refresh(transactions.getPortfolio());
-                            }
-                        }) //
-                        .editable("name") // //$NON-NLS-1$
-                        .combobox("referenceAccount", getClient().getAccounts()) //$NON-NLS-1$
-                        .editable("note") //$NON-NLS-1$
-                        .apply();
 
         hookContextMenu(portfolios.getTable(), new IMenuListener()
         {
