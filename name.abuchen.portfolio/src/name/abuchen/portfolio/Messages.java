@@ -86,12 +86,11 @@ public class Messages extends NLS
     public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
-    public static String MsgMoreResulstsAvailable;
+    public static String MsgMoreResultsAvailable;
     public static String MsgNoResults;
     public static String MsgResponseContainsNoIndices;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedSymbol;
-    public static String MsgUnexpectedTag;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String QuoteFeedManual;
