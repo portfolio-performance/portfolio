@@ -5,6 +5,12 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+    public static String AttributesAUMColumn;
+    public static String AttributesAUMName;
+    public static String AttributesTERColumn;
+    public static String AttributesTERName;
+    public static String AttributesVendorColumn;
+    public static String AttributesVendorName;
     public static String ColumnCapitalGains;
     public static String ColumnEarnings;
     public static String ColumnFinalValue;
@@ -88,6 +94,7 @@ public class Messages extends NLS
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResultsAvailable;
     public static String MsgNoResults;
+    public static String MsgNotANumber;
     public static String MsgResponseContainsNoIndices;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedSymbol;

@@ -157,6 +157,12 @@ public class ClientFactory
             client.setVersion(19);
         }
 
+        if (client.getVersion() == 19)
+        {
+            // do nothing --> added attribute types
+            client.setVersion(20);
+        }
+
         if (client.getVersion() != Client.CURRENT_VERSION)
             throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                             client.getVersion()));

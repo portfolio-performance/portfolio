@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public final class Security implements InvestmentVehicle
+public final class Security implements Attributable, InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
     {
@@ -36,6 +36,8 @@ public final class Security implements InvestmentVehicle
     private String feedURL;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
     private LatestSecurityPrice latest;
+
+    private Attributes attributes;
 
     private List<SecurityEvent> events;
 
@@ -277,6 +279,20 @@ public final class Security implements InvestmentVehicle
         if (this.events == null)
             this.events = new ArrayList<SecurityEvent>();
         this.events.add(event);
+    }
+
+    @Override
+    public Attributes getAttributes()
+    {
+        if (attributes == null)
+            attributes = new Attributes();
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Attributes attributes)
+    {
+        this.attributes = attributes;
     }
 
     public List<TransactionPair<?>> getTransactions(Client client)
