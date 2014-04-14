@@ -85,6 +85,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         private String menuLabel;
         private String description;
 
+        private ColumnEditingSupport editingSupport;
+
         public Column(String label, int style, int defaultWidth)
         {
             this(null, label, style, defaultWidth);
@@ -144,6 +146,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         public void setDescription(String description)
         {
             this.description = description;
+        }
+
+        public void setEditingSupport(ColumnEditingSupport editingSupport)
+        {
+            this.editingSupport = editingSupport;
         }
 
         String getLabel()
@@ -235,6 +242,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             col.getColumn().setData(Column.class.getName(), this);
             col.getColumn().setData(OPTIONS_KEY, option);
+
+            if (editingSupport != null)
+                col.setEditingSupport(new ColumnEditingSupportWrapper(viewer, editingSupport));
         }
 
         public void destroy(TableViewer viewer, Object option)

@@ -27,6 +27,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupportFactory;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
@@ -48,9 +49,13 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -58,8 +63,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -91,6 +94,22 @@ public final class SecuritiesTable
 
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
 
+        ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(
+                        this.securities)
+        {
+            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
+            {
+                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+                                || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
+                                || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+            }
+        };
+
+        int feature = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                        | ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION;
+        TableViewerEditor.create(this.securities, null, activationStrategy, feature);
+
         addMasterDataColumns();
         addColumnLatestPrice();
         addDeltaColumn();
@@ -117,28 +136,6 @@ public final class SecuritiesTable
             ViewerHelper.pack(securities);
         securities.refresh();
 
-        securities.getTable().addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                if (security == null)
-                    return;
-
-                Dialog dialog = new WizardDialog(getShell(), new EditSecurityWizard(getClient(), security));
-                if (dialog.open() != Dialog.OK)
-                    return;
-
-                markDirty();
-                if (!securities.getControl().isDisposed())
-                {
-                    refresh(security);
-                    updateQuotes(security);
-                }
-            }
-        });
-
         hookContextMenu();
     }
 
@@ -160,6 +157,7 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
+        column.setEditingSupport(ColumnEditingSupportFactory.create(Security.class, "name")); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
@@ -179,6 +177,7 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$
+        column.setEditingSupport(ColumnEditingSupportFactory.create(Security.class, "note")); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
@@ -556,6 +555,7 @@ public final class SecuritiesTable
                     return attribute.getComparator().compare(v1, v2);
                 }
             }));
+            column.setEditingSupport(ColumnEditingSupportFactory.attribute(Security.class, attribute));
 
             support.addColumn(column);
         }
