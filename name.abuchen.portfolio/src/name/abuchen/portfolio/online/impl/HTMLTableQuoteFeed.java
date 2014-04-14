@@ -3,6 +3,8 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
@@ -234,7 +236,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         else
             userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0";
 
-        return parse(Jsoup.connect(url).userAgent(userAgent).get(), errors);
+        try
+        {
+            String escapedUrl = new URI(url).toASCIIString();
+            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).get(), errors);
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IOException(e);
+        }
     }
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors) throws IOException
