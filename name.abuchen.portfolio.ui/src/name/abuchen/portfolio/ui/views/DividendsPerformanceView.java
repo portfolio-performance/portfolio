@@ -204,7 +204,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "SecurityName"), SWT.DOWN); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // True time-weighted rate of return

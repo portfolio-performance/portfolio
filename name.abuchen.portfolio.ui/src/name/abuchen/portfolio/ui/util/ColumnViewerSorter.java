@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -99,13 +102,16 @@ public final class ColumnViewerSorter extends ViewerComparator
         @Override
         public int compare(Object o1, Object o2)
         {
-            if (!clazz.isInstance(o1) || !clazz.isInstance(o2))
+            Object c1 = Adaptor.adapt(clazz, o1);
+            Object c2 = Adaptor.adapt(clazz, o2);
+
+            if (!clazz.isInstance(c1) || !clazz.isInstance(c2))
                 return 0;
 
             try
             {
-                Object attribute1 = method.invoke(o1);
-                Object attribute2 = method.invoke(o2);
+                Object attribute1 = method.invoke(c1);
+                Object attribute2 = method.invoke(c2);
 
                 if (attribute1 == null)
                     return attribute2 == null ? 0 : -1;
@@ -179,6 +185,16 @@ public final class ColumnViewerSorter extends ViewerComparator
             return dir * -1;
 
         return dir * comparator.compare(element1, element2);
+    }
+
+    public void attachTo(Column column)
+    {
+        column.setSorter(this);
+    }
+
+    public void attachTo(Column column, int direction)
+    {
+        column.setSorter(this, direction);
     }
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column)
