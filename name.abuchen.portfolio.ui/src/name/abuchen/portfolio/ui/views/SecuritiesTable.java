@@ -6,6 +6,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Attributable;
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeTypes;
+import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -95,6 +99,8 @@ public final class SecuritiesTable
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
             addTaxonomyColumn(support, taxonomy);
+
+        addAttributeColumns();
 
         support.createColumns();
 
@@ -514,6 +520,45 @@ public final class SecuritiesTable
             }
         }));
         support.addColumn(column);
+    }
+
+    private void addAttributeColumns()
+    {
+        for (final AttributeType attribute : AttributeTypes.available(Security.class))
+        {
+            int align = attribute.isNumber() ? SWT.RIGHT : SWT.LEFT;
+
+            Column column = new Column("attribute$" + attribute.getId(), attribute.getColumnLabel(), align, 80); //$NON-NLS-1$
+            column.setMenuLabel(attribute.getName());
+            column.setGroupLabel(Messages.GroupLabelAttributes);
+            column.setLabelProvider(new ColumnLabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    Attributes attributes = ((Attributable) element).getAttributes();
+
+                    if (!attributes.exists(attribute))
+                        return null;
+
+                    Object value = attributes.get(attribute);
+                    return attribute.getConverter().toString(value);
+                }
+            });
+            column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
+            {
+                @Override
+                public int compare(Object o1, Object o2)
+                {
+                    Object v1 = ((Attributable) o1).getAttributes().get(attribute);
+                    Object v2 = ((Attributable) o2).getAttributes().get(attribute);
+
+                    return attribute.getComparator().compare(v1, v2);
+                }
+            }));
+
+            support.addColumn(column);
+        }
     }
 
     public void addSelectionChangedListener(ISelectionChangedListener listener)
