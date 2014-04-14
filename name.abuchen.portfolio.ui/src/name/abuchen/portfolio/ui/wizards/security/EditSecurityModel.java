@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeTypes;
+import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
@@ -130,6 +133,38 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         {}
     }
 
+    static class AttributeDesignation extends BindingHelper.Model
+    {
+        private final AttributeType type;
+        private Object value;
+
+        public AttributeDesignation(AttributeType type, Object value)
+        {
+            this.type = type;
+            this.value = value;
+        }
+
+        public AttributeType getType()
+        {
+            return type;
+        }
+
+        public Object getValue()
+        {
+            return value;
+        }
+
+        public void setValue(Object value)
+        {
+            firePropertyChange("value", this.value, this.value = value); //$NON-NLS-1$
+        }
+
+        @Override
+        public void applyChanges()
+        {
+        }
+    }
+
     private Security security;
 
     private String name;
@@ -141,7 +176,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String feedURL;
     private boolean isRetired;
 
-    private List<TaxonomyDesignation> designations = new ArrayList<TaxonomyDesignation>();
+    private List<TaxonomyDesignation> taxonomies = new ArrayList<TaxonomyDesignation>();
+    private List<AttributeDesignation> attributes = new ArrayList<AttributeDesignation>();
 
     public EditSecurityModel(Client client, Security security)
     {
@@ -159,7 +195,17 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.isRetired = security.isRetired();
 
         for (Taxonomy taxonomy : client.getTaxonomies())
-            this.designations.add(new TaxonomyDesignation(taxonomy, security));
+            this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
+
+        Attributes a = security.getAttributes();
+        for (AttributeType attributeType : AttributeTypes.available(Security.class))
+        {
+            if (a.exists(attributeType))
+            {
+                AttributeDesignation designation = new AttributeDesignation(attributeType, a.get(attributeType));
+                attributes.add(designation);
+            }
+        }
     }
 
     public String getName()
@@ -244,7 +290,12 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
     public List<TaxonomyDesignation> getDesignations()
     {
-        return designations;
+        return taxonomies;
+    }
+
+    public List<AttributeDesignation> getAttributes()
+    {
+        return attributes;
     }
 
     @Override
@@ -259,7 +310,12 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setFeedURL(feedURL);
         security.setRetired(isRetired);
 
-        for (TaxonomyDesignation designation : designations)
+        for (TaxonomyDesignation designation : taxonomies)
             designation.applyChanges();
+
+        Attributes a = new Attributes();
+        for (AttributeDesignation attribute : attributes)
+            a.put(attribute.getType(), attribute.getValue());
+        security.setAttributes(a);
     }
 }

@@ -156,6 +156,8 @@ public class Messages extends NLS
     public static String DividendsDialogLabelPortfolioSharesHeld;
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
+    public static String EditWizardAttributesDescription;
+    public static String EditWizardAttributesTitle;
     public static String EditWizardMasterDataDescription;
     public static String EditWizardMasterDataLinkToSearch;
     public static String EditWizardMasterDataMsgClassificationMissing;
@@ -219,6 +221,7 @@ public class Messages extends NLS
     public static String LabelAccounts;
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
+    public static String LabelAvailableAttributes;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelDefaultReferenceAccountName;

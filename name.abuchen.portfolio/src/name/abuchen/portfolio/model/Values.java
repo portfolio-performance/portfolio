@@ -65,15 +65,6 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Integer = new Values<Integer>("#,##0", 1D, 1) //$NON-NLS-1$
-    {
-        @Override
-        public String format(Integer i)
-        {
-            return String.format("%,.0f", i / divider()); //$NON-NLS-1$
-        }
-    };
-
     public static final Values<Date> Date = new Values<Date>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
     {
         @Override
@@ -107,15 +98,6 @@ public abstract class Values<E>
         public String format(Integer weight)
         {
             return String.format("%,.2f", weight / divider()); //$NON-NLS-1$
-        }
-    };
-
-    public static final Values<Double> Percent0 = new Values<Double>("0%", 1D, 1) //$NON-NLS-1$
-    {
-        @Override
-        public String format(Double percent)
-        {
-            return String.format("%,.0f%%", percent * 100); //$NON-NLS-1$ 
         }
     };
 

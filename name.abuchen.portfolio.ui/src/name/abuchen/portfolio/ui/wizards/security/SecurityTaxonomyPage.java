@@ -38,7 +38,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -150,7 +149,6 @@ public class SecurityTaxonomyPage extends AbstractWizardPage
 
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
-        container.setLayout(new FormLayout());
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         bindings = new BindingHelper(model)
