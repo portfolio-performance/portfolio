@@ -269,6 +269,7 @@ public class Messages extends NLS
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
     public static String LabelTotalSum;
+    public static String LabelTransactions;
     public static String LabelTransferals;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;

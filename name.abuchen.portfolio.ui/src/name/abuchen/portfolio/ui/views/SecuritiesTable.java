@@ -27,9 +27,11 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupportFactory;
+import name.abuchen.portfolio.ui.util.AttributeEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -49,13 +51,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -92,23 +90,9 @@ public final class SecuritiesTable
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(securities);
+
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
-
-        ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(
-                        this.securities)
-        {
-            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
-            {
-                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-                                || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
-                                || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-            }
-        };
-
-        int feature = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-                        | ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION;
-        TableViewerEditor.create(this.securities, null, activationStrategy, feature);
 
         addMasterDataColumns();
         addColumnLatestPrice();
@@ -156,8 +140,8 @@ public final class SecuritiesTable
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
-        column.setEditingSupport(ColumnEditingSupportFactory.create(Security.class, "name")); //$NON-NLS-1$
+        ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "name").setMandatory(true).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
@@ -177,7 +161,7 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$
-        column.setEditingSupport(ColumnEditingSupportFactory.create(Security.class, "note")); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "note").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
@@ -555,7 +539,7 @@ public final class SecuritiesTable
                     return attribute.getComparator().compare(v1, v2);
                 }
             }));
-            column.setEditingSupport(ColumnEditingSupportFactory.attribute(Security.class, attribute));
+            new AttributeEditingSupport(Security.class, attribute).attachTo(column);
 
             support.addColumn(column);
         }
