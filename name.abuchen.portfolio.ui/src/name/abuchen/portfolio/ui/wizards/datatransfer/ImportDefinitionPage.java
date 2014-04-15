@@ -23,9 +23,10 @@ import name.abuchen.portfolio.datatransfer.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
-import name.abuchen.portfolio.ui.util.CellEditorFactory.ModificationListener;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupportWrapper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.core.runtime.Status;
@@ -38,7 +39,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -50,6 +51,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -641,31 +643,37 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             glf.applyTo(keyArea);
             final TableViewer tableViewer = new TableViewer(keyArea, SWT.FULL_SELECTION);
             tableViewer.setContentProvider(new KeyMappingContentProvider());
-            tableViewer.setLabelProvider(new KeyMappingLabelProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);
             GridDataFactory.fillDefaults().grab(false, true).applyTo(tableViewer.getTable());
 
-            new CellEditorFactory(tableViewer, KeyMappingContentProvider.Entry.class) //
-                            .notify(new ModificationListener()
-                            {
-                                @Override
-                                public void onModified(Object element, String property)
-                                {
-                                    tableViewer.refresh(element);
-                                }
-                            }) //
-                            .readonly("key") //$NON-NLS-1$
-                            .editable("value") //$NON-NLS-1$
-                            .apply();
+            TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.NONE);
+            col.getColumn().setText(Messages.CSVImportLabelExpectedValue);
+            col.getColumn().setWidth(100);
+            col.setLabelProvider(new ColumnLabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    return ((KeyMappingContentProvider.Entry<?>) element).getKey();
+                }
+            });
 
-            TableColumn col = new TableColumn(tableViewer.getTable(), SWT.NONE);
-            col.setText(Messages.CSVImportLabelExpectedValue);
-            col.setWidth(100);
+            col = new TableViewerColumn(tableViewer, SWT.NONE);
+            col.getColumn().setText(Messages.CSVImportLabelProvidedValue);
+            col.getColumn().setWidth(100);
+            col.setLabelProvider(new ColumnLabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    return ((KeyMappingContentProvider.Entry<?>) element).getValue();
+                }
+            });
 
-            col = new TableColumn(tableViewer.getTable(), SWT.NONE);
-            col.setText(Messages.CSVImportLabelProvidedValue);
-            col.setWidth(100);
+            ColumnEditingSupport.prepare(tableViewer);
+            col.setEditingSupport(new ColumnEditingSupportWrapper(tableViewer, new StringEditingSupport(
+                            KeyMappingContentProvider.Entry.class, "value"))); //$NON-NLS-1$
 
             layout.topControl = emptyArea;
 
@@ -806,23 +814,5 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         @Override
         public void dispose()
         {}
-    }
-
-    public static class KeyMappingLabelProvider extends BaseLabelProvider implements ITableLabelProvider
-    {
-
-        @Override
-        public String getColumnText(Object element, int columnIndex)
-        {
-            @SuppressWarnings("unchecked")
-            KeyMappingContentProvider.Entry<? extends Enum<?>> entry = (KeyMappingContentProvider.Entry<? extends Enum<?>>) element;
-            return columnIndex == 0 ? entry.getKey() : entry.getValue();
-        }
-
-        @Override
-        public Image getColumnImage(Object element, int columnIndex)
-        {
-            return null;
-        }
     }
 }
