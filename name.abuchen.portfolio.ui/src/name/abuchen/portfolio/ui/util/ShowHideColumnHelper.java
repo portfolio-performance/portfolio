@@ -22,258 +22,65 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.Widget;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
 {
-    public static class OptionLabelProvider extends CellLabelProvider
+    private abstract static class ViewerPolicy
     {
-        public String getText(Object element, Integer option)
+        abstract ColumnViewer getViewer();
+
+        abstract int getColumnCount();
+
+        abstract Widget[] getColumns();
+
+        abstract Widget getColumn(int index);
+
+        abstract Widget getSortColumn();
+
+        abstract int[] getColumnOrder();
+
+        abstract int getSortDirection();
+
+        abstract int getWidth(Widget col);
+
+        abstract void create(Column column, Object option, Integer direction, int width);
+
+        void setCommonParameters(Column column, ViewerColumn viewerColumn, Integer direction)
         {
-            return null;
+            viewerColumn.setLabelProvider(column.getLabelProvider());
+
+            if (column.getSorter() != null)
+            {
+                column.getSorter().attachTo(getViewer(), viewerColumn);
+                if (direction != null)
+                    column.getSorter().setSorter(direction);
+            }
+
+            if (column.getEditingSupport() != null)
+                viewerColumn.setEditingSupport(new ColumnEditingSupportWrapper(getViewer(), column.getEditingSupport()));
         }
 
-        public Color getForeground(Object element, Integer option)
+        void setRedraw(boolean redraw)
         {
-            return null;
-        }
-
-        @Override
-        public void update(ViewerCell cell)
-        {
-            Table table = (Table) cell.getControl();
-            int columnIndex = cell.getColumnIndex();
-            Integer option = (Integer) table.getColumn(columnIndex).getData(OPTIONS_KEY);
-
-            Object element = cell.getElement();
-            cell.setText(getText(element, option));
-            cell.setForeground(getForeground(element, option));
+            getViewer().getControl().setRedraw(redraw);
         }
     }
 
-    public static class Column
-    {
-        /**
-         * Uniquely identifies a column to store/load a configuration
-         */
-        private String id;
-
-        private String label;
-        private int style;
-        private int defaultWidth;
-        private boolean isMoveable = true;
-        private boolean isVisible = true;
-        private ColumnViewerSorter sorter;
-        private Integer defaultSortDirection;
-        private CellLabelProvider labelProvider;
-
-        private String optionsMenuLabel;
-        private String optionsColumnLabel;
-        private Integer[] options;
-
-        private String groupLabel;
-        private String menuLabel;
-        private String description;
-
-        private ColumnEditingSupport editingSupport;
-
-        public Column(String label, int style, int defaultWidth)
-        {
-            this(null, label, style, defaultWidth);
-        }
-
-        public Column(String id, String label, int style, int defaultWidth)
-        {
-            this.id = id;
-            this.label = label;
-            this.style = style;
-            this.defaultWidth = defaultWidth;
-        }
-
-        String getId()
-        {
-            return id;
-        }
-
-        void setId(String id)
-        {
-            this.id = id;
-        }
-
-        public void setVisible(boolean isVisible)
-        {
-            this.isVisible = isVisible;
-        }
-
-        public void setMoveable(boolean isMoveable)
-        {
-            this.isMoveable = isMoveable;
-        }
-
-        public void setSorter(ColumnViewerSorter sorter)
-        {
-            this.sorter = sorter;
-        }
-
-        public void setSorter(ColumnViewerSorter sorter, int direction)
-        {
-            setSorter(sorter);
-            this.defaultSortDirection = direction;
-        }
-
-        public void setLabelProvider(CellLabelProvider labelProvider)
-        {
-            this.labelProvider = labelProvider;
-        }
-
-        public void setOptions(String menuPattern, String columnPattern, Integer... options)
-        {
-            this.optionsMenuLabel = menuPattern;
-            this.optionsColumnLabel = columnPattern;
-            this.options = options;
-        }
-
-        public void setGroupLabel(String groupLabel)
-        {
-            this.groupLabel = groupLabel;
-        }
-
-        public void setMenuLabel(String menuLabel)
-        {
-            this.menuLabel = menuLabel;
-        }
-
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
-
-        public void setEditingSupport(ColumnEditingSupport editingSupport)
-        {
-            this.editingSupport = editingSupport;
-        }
-
-        String getLabel()
-        {
-            return label;
-        }
-
-        String getMenuLabel()
-        {
-            return menuLabel != null ? menuLabel : label;
-        }
-
-        String getDescription()
-        {
-            return description;
-        }
-
-        int getStyle()
-        {
-            return style;
-        }
-
-        int getDefaultWidth()
-        {
-            return defaultWidth;
-        }
-
-        boolean isVisible()
-        {
-            return isVisible;
-        }
-
-        ColumnViewerSorter getSorter()
-        {
-            return sorter;
-        }
-
-        Integer getDefaultSortDirection()
-        {
-            return defaultSortDirection;
-        }
-
-        CellLabelProvider getLabelProvider()
-        {
-            return labelProvider;
-        }
-
-        boolean hasOptions()
-        {
-            return options != null;
-        }
-
-        Integer[] getOptions()
-        {
-            return options;
-        }
-
-        String getOptionsColumnLabel()
-        {
-            return optionsColumnLabel;
-        }
-
-        String getOptionsMenuLabel()
-        {
-            return optionsMenuLabel;
-        }
-
-        String getGroupLabel()
-        {
-            return groupLabel;
-        }
-
-        boolean isMoveable()
-        {
-            return isMoveable;
-        }
-
-        ColumnEditingSupport getEditingSupport()
-        {
-            return editingSupport;
-        }
-    }
-
-    private interface ViewerPolicy
-    {
-        ColumnViewer getViewer();
-
-        int getColumnCount();
-
-        Widget[] getColumns();
-
-        Widget getColumn(int index);
-
-        Widget getSortColumn();
-
-        int[] getColumnOrder();
-
-        int getSortDirection();
-
-        int getWidth(Widget col);
-
-        void setRedraw(boolean redraw);
-
-        void create(Column column, Object option, Integer direction, int width);
-    }
-
-    private static class TableViewerPolicy implements ViewerPolicy
+    private static class TableViewerPolicy extends ViewerPolicy
     {
         private TableViewer table;
         private TableColumnLayout layout;
@@ -333,45 +140,25 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public void setRedraw(boolean redraw)
-        {
-            table.getTable().setRedraw(redraw);
-        }
-
-        @Override
         public void create(Column column, Object option, Integer direction, int width)
         {
             TableViewerColumn col = new TableViewerColumn(table, column.getStyle());
-            col.getColumn().setText(
-                            option == null ? column.getLabel() : MessageFormat.format(column.getOptionsColumnLabel(),
-                                            option));
-            col.getColumn().setMoveable(column.isMoveable());
-            col.setLabelProvider(column.getLabelProvider());
 
-            if (column.getDescription() != null)
-                col.getColumn().setToolTipText(column.getDescription());
-            else if (column.getMenuLabel() != null)
-                col.getColumn().setToolTipText(column.getMenuLabel());
+            TableColumn tableColumn = col.getColumn();
+            tableColumn.setText(column.getText(option));
+            tableColumn.setToolTipText(column.getToolTipText());
+            tableColumn.setMoveable(column.isMoveable());
+            tableColumn.setWidth(width);
+            tableColumn.setData(Column.class.getName(), column);
+            tableColumn.setData(OPTIONS_KEY, option);
 
-            layout.setColumnData(col.getColumn(), new ColumnPixelData(width));
-            col.getColumn().setWidth(width);
+            layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
-            if (column.getSorter() != null)
-            {
-                column.getSorter().attachTo(table, col);
-                if (direction != null)
-                    column.getSorter().setSorter(direction);
-            }
-
-            col.getColumn().setData(Column.class.getName(), column);
-            col.getColumn().setData(OPTIONS_KEY, option);
-
-            if (column.getEditingSupport() != null)
-                col.setEditingSupport(new ColumnEditingSupportWrapper(table, column.getEditingSupport()));
+            setCommonParameters(column, col, direction);
         }
     }
 
-    private static class TreeViewerPolicy implements ViewerPolicy
+    private static class TreeViewerPolicy extends ViewerPolicy
     {
         private TreeViewer tree;
         private TreeColumnLayout layout;
@@ -431,45 +218,25 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public void setRedraw(boolean redraw)
-        {
-            tree.getTree().setRedraw(redraw);
-        }
-
-        @Override
         public void create(Column column, Object option, Integer direction, int width)
         {
             TreeViewerColumn col = new TreeViewerColumn(tree, column.getStyle());
-            col.getColumn().setText(
-                            option == null ? column.getLabel() : MessageFormat.format(column.getOptionsColumnLabel(),
-                                            option));
-            col.getColumn().setMoveable(column.isMoveable());
-            col.setLabelProvider(column.getLabelProvider());
 
-            if (column.getDescription() != null)
-                col.getColumn().setToolTipText(column.getDescription());
-            else if (column.getMenuLabel() != null)
-                col.getColumn().setToolTipText(column.getMenuLabel());
+            TreeColumn treeColumn = col.getColumn();
+            treeColumn.setText(column.getText(option));
+            treeColumn.setToolTipText(column.getToolTipText());
+            treeColumn.setMoveable(column.isMoveable());
+            treeColumn.setWidth(width);
+            treeColumn.setData(Column.class.getName(), column);
+            treeColumn.setData(OPTIONS_KEY, option);
 
-            layout.setColumnData(col.getColumn(), new ColumnPixelData(width));
-            col.getColumn().setWidth(width);
+            layout.setColumnData(treeColumn, new ColumnPixelData(width));
 
-            if (column.getSorter() != null)
-            {
-                column.getSorter().attachTo(tree, col);
-                if (direction != null)
-                    column.getSorter().setSorter(direction);
-            }
-
-            col.getColumn().setData(Column.class.getName(), column);
-            col.getColumn().setData(OPTIONS_KEY, option);
-
-            if (column.getEditingSupport() != null)
-                col.setEditingSupport(new ColumnEditingSupportWrapper(tree, column.getEditingSupport()));
+            setCommonParameters(column, col, direction);
         }
     }
 
-    private static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
+    /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
     private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:(\\d*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
     private String identifier;
@@ -636,7 +403,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             {
                 if (isChecked)
                 {
-                    destroyColumnWithOption(column, option);
+                    if (column.isRemovable())
+                        destroyColumnWithOption(column, option);
                 }
                 else
                 {
@@ -651,18 +419,19 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void destroyColumnWithOption(Column column, Object option)
     {
-        for (Widget col : policy.getColumns())
+        for (Widget widget : policy.getColumns())
         {
-            if (col.getData(Column.class.getName()) == this //
-                            && (option == null || option.equals(col.getData(OPTIONS_KEY))))
+            if (column.equals(widget.getData(Column.class.getName())) //
+                            && (option == null || option.equals(widget.getData(OPTIONS_KEY))))
             {
                 try
                 {
                     policy.setRedraw(false);
-                    col.dispose();
+                    widget.dispose();
                 }
                 finally
                 {
+                    policy.getViewer().refresh();
                     policy.setRedraw(true);
                 }
                 break;

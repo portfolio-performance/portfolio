@@ -47,7 +47,7 @@ public abstract class ColumnEditingSupport
         return this;
     }
 
-    public void attachTo(ShowHideColumnHelper.Column column)
+    public void attachTo(Column column)
     {
         column.setEditingSupport(this);
     }

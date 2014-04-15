@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Adaptor;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;

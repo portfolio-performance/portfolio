@@ -6,9 +6,9 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.util.Dates;
 

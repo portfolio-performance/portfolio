@@ -27,11 +27,11 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
