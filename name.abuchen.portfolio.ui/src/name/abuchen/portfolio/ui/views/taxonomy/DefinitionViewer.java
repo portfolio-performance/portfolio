@@ -3,17 +3,17 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -30,14 +30,11 @@ import org.eclipse.swt.widgets.Display;
     }
 
     @Override
-    protected void addColumns(TreeColumnLayout layout)
+    protected void addColumns(ShowHideColumnHelper support)
     {
-        addDimensionColumn(layout);
+        addDimensionColumn(support);
 
-        TreeViewerColumn column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnWeight);
-        column.getColumn().setWidth(70);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(70));
+        Column column = new Column("weigth", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -72,11 +69,28 @@ import org.eclipse.swt.widgets.Display;
             }
 
         });
+        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TaxonomyNode) element).isUnassignedCategory())
+                    return false;
+                if (((TaxonomyNode) element).isClassification())
+                    return false;
+                return super.canEdit(element);
+            }
+        }.addListener(new ModificationListener()
+        {
+            @Override
+            public void onModified(Object element, Object newValue, Object oldValue)
+            {
+                onWeightModified(element, newValue, oldValue);
+            }
+        }).attachTo(column);
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.LEFT);
-        column.getColumn().setText(Messages.ColumnColor);
-        column.getColumn().setWidth(60);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
+        column = new Column("color", Messages.ColumnColor, SWT.LEFT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -95,27 +109,9 @@ import org.eclipse.swt.widgets.Display;
                     return null;
             }
         });
+        support.addColumn(column);
 
-        addActualColumns(layout);
-
-        new CellEditorFactory(getNodeViewer(), TaxonomyNode.class) //
-                        .notify(new NodeModificationListener(this)
-                        {
-                            @Override
-                            public boolean canModify(Object element, String property)
-                            {
-                                if ("weight".equals(property) && ((TaxonomyNode) element).isClassification()) //$NON-NLS-1$
-                                    return false;
-
-                                return super.canModify(element, property);
-                            }
-                        }) //
-                        .editable("name") //$NON-NLS-1$
-                        .readonly("isin") //$NON-NLS-1$
-                        .readonly("note") //$NON-NLS-1$
-                        .decimal("weight", Values.Weight) //$NON-NLS-1$
-                        .readonly("color") //$NON-NLS-1$
-                        .apply();
+        addActualColumns(support);
     }
 
     @Override

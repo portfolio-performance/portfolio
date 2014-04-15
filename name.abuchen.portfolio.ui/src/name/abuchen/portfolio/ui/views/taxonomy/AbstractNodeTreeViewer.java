@@ -15,7 +15,11 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 
@@ -26,12 +30,10 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
@@ -46,7 +48,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-/* package */abstract class AbstractNodeTreeViewer extends Page
+/* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
     private static class ItemContentProvider implements ITreeContentProvider
     {
@@ -188,52 +190,6 @@ import org.eclipse.ui.PlatformUI;
         }
     }
 
-    protected static class NodeModificationListener extends CellEditorFactory.ModificationListener
-    {
-        private AbstractNodeTreeViewer viewer;
-
-        public NodeModificationListener(AbstractNodeTreeViewer viewer)
-        {
-            this.viewer = viewer;
-        }
-
-        @Override
-        public boolean canModify(Object element, String property)
-        {
-            TaxonomyNode node = (TaxonomyNode) element;
-
-            if (node.isUnassignedCategory())
-                return false;
-
-            if ("name".equals(property) && node.isAssignment()) //$NON-NLS-1$
-                return false;
-
-            return true;
-        }
-
-        @Override
-        public void onModified(Object element, String property, Object oldValue)
-        {
-            if ("weight".equals(property)) //$NON-NLS-1$
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-
-                if (node.getWeight() > Classification.ONE_HUNDRED_PERCENT)
-                    node.setWeight(Classification.ONE_HUNDRED_PERCENT);
-                else if (node.getWeight() < 0)
-                    node.setWeight(0);
-
-                if (node.isAssignment())
-                {
-                    int oldWeight = (Integer) oldValue;
-                    viewer.doChangeAssignmentWeight(node, oldWeight);
-                }
-            }
-
-            viewer.onTaxnomyNodeEdited((TaxonomyNode) element);
-        }
-    }
-
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
@@ -252,6 +208,30 @@ import org.eclipse.ui.PlatformUI;
         return nodeViewer;
     }
 
+    @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        onTaxnomyNodeEdited((TaxonomyNode) element);
+    }
+
+    public void onWeightModified(Object element, Object newValue, Object oldValue)
+    {
+        TaxonomyNode node = (TaxonomyNode) element;
+
+        if (node.getWeight() > Classification.ONE_HUNDRED_PERCENT)
+            node.setWeight(Classification.ONE_HUNDRED_PERCENT);
+        else if (node.getWeight() < 0)
+            node.setWeight(0);
+
+        if (node.isAssignment())
+        {
+            int oldWeight = (Integer) oldValue;
+            doChangeAssignmentWeight(node, oldWeight);
+        }
+
+        onModified(element, newValue, oldValue);
+    }
+
     public final Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -260,7 +240,13 @@ import org.eclipse.ui.PlatformUI;
 
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION);
 
-        addColumns(layout);
+        ColumnEditingSupport.prepare(nodeViewer);
+
+        ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName(), nodeViewer, layout);
+
+        addColumns(support);
+
+        support.createColumns();
 
         nodeViewer.getTree().setHeaderVisible(true);
         nodeViewer.getTree().setLinesVisible(true);
@@ -287,14 +273,11 @@ import org.eclipse.ui.PlatformUI;
         return container;
     }
 
-    protected abstract void addColumns(TreeColumnLayout layout);
+    protected abstract void addColumns(ShowHideColumnHelper support);
 
-    protected void addDimensionColumn(TreeColumnLayout layout)
+    protected void addDimensionColumn(ShowHideColumnHelper support)
     {
-        TreeViewerColumn column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
-        column.getColumn().setText(Messages.ColumnLevels);
-        column.getColumn().setWidth(400);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(400));
+        Column column = new Column("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -318,11 +301,21 @@ import org.eclipse.ui.PlatformUI;
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             }
         });
+        new StringEditingSupport(TaxonomyNode.class, "name") //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TaxonomyNode) element).isUnassignedCategory())
+                    return false;
+                if (((TaxonomyNode) element).isAssignment())
+                    return false;
+                return super.canEdit(element);
+            }
+        }.setMandatory(true).addListener(this).attachTo(column);
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
-        column.getColumn().setText(Messages.ColumnISIN);
-        column.getColumn().setWidth(100);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        column = new Column("isin", Messages.ColumnISIN, SWT.NONE, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -332,11 +325,9 @@ import org.eclipse.ui.PlatformUI;
                 return security != null ? security.getIsin() : null;
             }
         });
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.NONE);
-        column.getColumn().setText(Messages.ColumnNote);
-        column.getColumn().setWidth(22);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(22));
+        column = new Column("note", Messages.ColumnNote, SWT.NONE, 22); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -355,14 +346,12 @@ import org.eclipse.ui.PlatformUI;
                                 .image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
+        support.addColumn(column);
     }
 
-    protected void addActualColumns(TreeColumnLayout layout)
+    protected void addActualColumns(ShowHideColumnHelper support)
     {
-        TreeViewerColumn column;
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnActualPercent);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
+        Column column = new Column("act%", Messages.ColumnActualPercent, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -380,10 +369,9 @@ import org.eclipse.ui.PlatformUI;
                     return Values.Percent.format(((double) actual / (double) base));
             }
         });
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnActualValue);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        column = new Column("act", Messages.ColumnActualValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -393,6 +381,7 @@ import org.eclipse.ui.PlatformUI;
                 return Values.Amount.format(node.getActual());
             }
         });
+        support.addColumn(column);
     }
 
     private void expandNodes()
