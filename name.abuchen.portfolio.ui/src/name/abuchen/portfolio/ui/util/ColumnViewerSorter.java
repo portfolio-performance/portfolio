@@ -102,20 +102,26 @@ public final class ColumnViewerSorter extends ViewerComparator
         @Override
         public int compare(Object o1, Object o2)
         {
-            Object c1 = Adaptor.adapt(clazz, o1);
-            Object c2 = Adaptor.adapt(clazz, o2);
+            Object object1 = Adaptor.adapt(clazz, o1);
+            Object object2 = Adaptor.adapt(clazz, o2);
 
-            if (!clazz.isInstance(c1) || !clazz.isInstance(c2))
+            if (object1 == null && object2 == null)
                 return 0;
+            else if (object1 == null)
+                return -1;
+            else if (object2 == null)
+                return 1;
 
             try
             {
-                Object attribute1 = method.invoke(c1);
-                Object attribute2 = method.invoke(c2);
+                Object attribute1 = method.invoke(object1);
+                Object attribute2 = method.invoke(object2);
 
-                if (attribute1 == null)
-                    return attribute2 == null ? 0 : -1;
-                if (attribute2 == null)
+                if (attribute1 == null && attribute2 == null)
+                    return 0;
+                else if (attribute1 == null)
+                    return -1;
+                else if (attribute2 == null)
                     return 1;
 
                 switch (type)

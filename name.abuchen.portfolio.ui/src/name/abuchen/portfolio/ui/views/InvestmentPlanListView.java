@@ -13,16 +13,23 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.NewPlanDialog;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -38,11 +45,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.PlatformUI;
 
-public class InvestmentPlanListView extends AbstractListView
+public class InvestmentPlanListView extends AbstractListView implements ModificationListener
 {
 
     private TableViewer plans;
     private PortfolioTransactionsViewer transactions;
+    private ShowHideColumnHelper planColumns;
 
     @Override
     protected String getTitle()
@@ -57,7 +65,23 @@ public class InvestmentPlanListView extends AbstractListView
     }
 
     @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        InvestmentPlan plan = (InvestmentPlan) element;
+        if (plan.getAccount() != null && plan.getAccount().equals(NewPlanDialog.DELIVERY))
+            plan.setAccount(null);
+
+        markDirty();
+    }
+
+    @Override
     protected void addButtons(ToolBar toolBar)
+    {
+        addNewInvestmentPlanButton(toolBar);
+        addConfigButton(toolBar);
+    }
+
+    private void addNewInvestmentPlanButton(ToolBar toolBar)
     {
         Action action = new Action()
         {
@@ -79,6 +103,25 @@ public class InvestmentPlanListView extends AbstractListView
         new ActionContributionItem(action).fill(toolBar, -1);
     }
 
+    private void addConfigButton(final ToolBar toolBar)
+    {
+        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, //
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_CONFIG), SWT.NONE)
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                MenuManager m = new MenuManager(Messages.LabelAccounts);
+                planColumns.menuAboutToShow(m);
+                manager.add(m);
+
+                m = new MenuManager(Messages.LabelTransactions);
+                transactions.getColumnSupport().menuAboutToShow(m);
+                manager.add(m);
+            }
+        };
+    }
+
     @Override
     protected void createTopTable(Composite parent)
     {
@@ -87,18 +130,20 @@ public class InvestmentPlanListView extends AbstractListView
         container.setLayout(layout);
 
         plans = new TableViewer(container, SWT.FULL_SELECTION);
-        ShowHideColumnHelper support = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", //$NON-NLS-1$
-                        plans, layout);
 
-        addColumns(support);
+        ColumnEditingSupport.prepare(plans);
 
-        support.createColumns();
+        planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", plans, layout); //$NON-NLS-1$
+
+        addColumns(planColumns);
+
+        planColumns.createColumns();
         plans.getTable().setHeaderVisible(true);
         plans.getTable().setLinesVisible(true);
         plans.setContentProvider(ArrayContentProvider.getInstance());
         plans.setInput(getClient().getPlans());
 
-        if (!support.isUserConfigured())
+        if (!planColumns.isUserConfigured())
             ViewerHelper.pack(plans);
 
         plans.addSelectionChangedListener(new ISelectionChangedListener()
@@ -115,8 +160,6 @@ public class InvestmentPlanListView extends AbstractListView
                 transactions.refresh();
             }
         });
-
-        addEditingSupport();
 
         hookContextMenu(plans.getTable(), new IMenuListener()
         {
@@ -144,12 +187,12 @@ public class InvestmentPlanListView extends AbstractListView
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_INVESTMENTPLAN);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(InvestmentPlan.class, "name"), SWT.DOWN); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(InvestmentPlan.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new StringEditingSupport(InvestmentPlan.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
-        Column secCol = new Column(Messages.ColumnSecurity, SWT.NONE, 250);
-        secCol.setLabelProvider(new ColumnLabelProvider()
+        column = new Column(Messages.ColumnSecurity, SWT.NONE, 250);
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
@@ -163,8 +206,11 @@ public class InvestmentPlanListView extends AbstractListView
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             }
         });
-        secCol.setMoveable(false);
-        support.addColumn(secCol);
+        ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
+        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
+        Collections.sort(securities, new Security.ByName());
+        new ListEditingSupport(InvestmentPlan.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
 
         column = new Column(Messages.ColumnPortfolio, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -181,8 +227,8 @@ public class InvestmentPlanListView extends AbstractListView
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(InvestmentPlan.class, "portfolio")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getPortfolios()).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAccount, SWT.None, 120);
@@ -202,7 +248,11 @@ public class InvestmentPlanListView extends AbstractListView
                 return plan.getAccount() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT) : null;
             }
         });
-        column.setMoveable(false);
+        ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$
+        List<Account> accounts = new ArrayList<Account>();
+        accounts.add(NewPlanDialog.DELIVERY);
+        accounts.addAll(getClient().getAccounts());
+        new ListEditingSupport(InvestmentPlan.class, "account", accounts).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnStartDate, SWT.None, 80);
@@ -214,7 +264,8 @@ public class InvestmentPlanListView extends AbstractListView
                 return Values.Date.format(((InvestmentPlan) e).getStart());
             }
         });
-        column.setMoveable(false);
+        ColumnViewerSorter.create(InvestmentPlan.class, "start").attachTo(column); //$NON-NLS-1$
+        new DateEditingSupport(InvestmentPlan.class, "start").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnInterval, SWT.None, 80);
@@ -226,7 +277,11 @@ public class InvestmentPlanListView extends AbstractListView
                 return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, ((InvestmentPlan) e).getInterval());
             }
         });
-        column.setMoveable(false);
+        ColumnViewerSorter.create(InvestmentPlan.class, "interval").attachTo(column); //$NON-NLS-1$
+        List<Integer> available = new ArrayList<Integer>();
+        for (int ii = 1; ii <= 12; ii++)
+            available.add(ii);
+        new ListEditingSupport(InvestmentPlan.class, "interval", available).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
@@ -238,7 +293,8 @@ public class InvestmentPlanListView extends AbstractListView
                 return Values.Amount.format(((InvestmentPlan) e).getAmount());
             }
         });
-        column.setMoveable(false);
+        ColumnViewerSorter.create(InvestmentPlan.class, "amount").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(InvestmentPlan.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
@@ -250,48 +306,9 @@ public class InvestmentPlanListView extends AbstractListView
                 return Values.Amount.format(((InvestmentPlan) e).getFees());
             }
         });
-        column.setMoveable(false);
+        ColumnViewerSorter.create(InvestmentPlan.class, "fees").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(InvestmentPlan.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
-    }
-
-    private void addEditingSupport()
-    {
-        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
-        Collections.sort(securities, new Security.ByName());
-
-        List<Account> accounts = new ArrayList<Account>();
-        accounts.add(NewPlanDialog.DELIVERY);
-        accounts.addAll(getClient().getAccounts());
-
-        List<Integer> available = new ArrayList<Integer>();
-        for (int ii = 1; ii <= 12; ii++)
-            available.add(ii);
-
-        new CellEditorFactory(plans, InvestmentPlan.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                if ("account".equals(property)) //$NON-NLS-1$
-                                {
-                                    InvestmentPlan plan = (InvestmentPlan) element;
-                                    if (plan.getAccount().equals(NewPlanDialog.DELIVERY))
-                                        plan.setAccount(null);
-                                }
-
-                                markDirty();
-                                plans.refresh();
-                            }
-                        }) //
-                        .editable("name") //$NON-NLS-1$
-                        .combobox("security", securities) //$NON-NLS-1$
-                        .combobox("portfolio", getClient().getPortfolios()) //$NON-NLS-1$
-                        .combobox("account", accounts) //$NON-NLS-1$
-                        .editable("start") //$NON-NLS-1$
-                        .combobox("interval", available) //$NON-NLS-1$
-                        .amount("amount") //$NON-NLS-1$
-                        .amount("fees") //$NON-NLS-1$
-                        .apply();
     }
 
     private void fillPlansContextMenu(IMenuManager manager)

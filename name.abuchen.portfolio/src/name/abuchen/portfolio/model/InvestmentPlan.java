@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-public class InvestmentPlan
+public class InvestmentPlan implements Adaptable
 {
     private String name;
     private Security security;
@@ -119,6 +119,19 @@ public class InvestmentPlan
     public void removeTransaction(PortfolioTransaction transaction)
     {
         transactions.remove(transaction);
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Security.class)
+            return type.cast(security);
+        else if (type == Account.class)
+            return type.cast(account);
+        else if (type == Portfolio.class)
+            return type.cast(portfolio);
+        else
+            return null;
     }
 
     private DateTime getLastDate()
