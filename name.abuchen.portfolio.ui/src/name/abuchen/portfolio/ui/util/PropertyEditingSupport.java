@@ -6,16 +6,24 @@ import java.beans.PropertyDescriptor;
 
 public abstract class PropertyEditingSupport extends ColumnEditingSupport
 {
+    private Class<?> subjectType;
     private PropertyDescriptor descriptor;
 
     public PropertyEditingSupport(Class<?> subjectType, String attributeName)
     {
+        this.subjectType = subjectType;
         this.descriptor = descriptorFor(subjectType, attributeName);
     }
 
     protected PropertyDescriptor descriptor()
     {
         return descriptor;
+    }
+
+    @Override
+    public boolean canEdit(Object element)
+    {
+        return subjectType.isInstance(element);
     }
 
     private PropertyDescriptor descriptorFor(Class<?> subjectType, String attributeName)

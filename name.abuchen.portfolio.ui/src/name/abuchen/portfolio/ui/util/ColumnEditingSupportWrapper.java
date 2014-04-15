@@ -1,21 +1,22 @@
 package name.abuchen.portfolio.ui.util;
 
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.widgets.Composite;
 
 public class ColumnEditingSupportWrapper extends EditingSupport
 {
-    private TableViewer viewer;
+    private ColumnViewer viewer;
     private ColumnEditingSupport proxy;
     private CellEditor editor;
 
-    public ColumnEditingSupportWrapper(TableViewer viewer, ColumnEditingSupport proxy)
+    public ColumnEditingSupportWrapper(ColumnViewer viewer, ColumnEditingSupport proxy)
     {
         super(viewer);
         this.viewer = viewer;
         this.proxy = proxy;
-        this.editor = proxy.createEditor(viewer.getTable());
+        this.editor = proxy.createEditor((Composite) viewer.getControl());
     }
 
     @Override
