@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -53,14 +56,23 @@ public class DateEditingSupport extends PropertyEditingSupport
     @Override
     public void setValue(Object element, Object value) throws Exception
     {
-        Date newValue = format.parse(String.valueOf(value));
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(newValue);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        newValue = cal.getTime();
+        Date newValue = null;
+
+        try
+        {
+            newValue = format.parse(String.valueOf(value));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(newValue);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            newValue = cal.getTime();
+        }
+        catch (ParseException e)
+        {
+            newValue = Dates.today();
+        }
 
         Date oldValue = (Date) descriptor().getReadMethod().invoke(element);
 

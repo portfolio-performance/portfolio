@@ -24,14 +24,17 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -79,7 +82,7 @@ import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
-public class SecurityListView extends AbstractListView
+public class SecurityListView extends AbstractListView implements ModificationListener
 {
     private SecuritiesTable securities;
     private TableViewer prices;
@@ -118,6 +121,30 @@ public class SecurityListView extends AbstractListView
     {
         if (securities != null)
             setSecurityTableInput();
+    }
+
+    @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        // called from prices table
+        Security security = (Security) prices.getData(Security.class.toString());
+
+        // if the date changed, the prices must be reordered --> binary search
+        if (newValue instanceof Date)
+        {
+            SecurityPrice price = (SecurityPrice) element;
+            security.removePrice(price);
+            security.addPrice(price);
+        }
+
+        securities.refresh(security);
+        prices.refresh(element);
+        latest.setInput(security);
+        transactions.setInput(security.getTransactions(getClient()));
+        events.setInput(security.getEvents());
+        updateChart(security);
+
+        markDirty();
     }
 
     @Override
@@ -440,7 +467,7 @@ public class SecurityListView extends AbstractListView
         container.setLayout(layout);
 
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
-
+        ColumnEditingSupport.prepare(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@prices", //$NON-NLS-1$
                         prices, layout);
 
@@ -453,8 +480,8 @@ public class SecurityListView extends AbstractListView
                 return Values.Date.format(((SecurityPrice) element).getTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPrice.class, "time"), SWT.UP); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "time").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -466,8 +493,8 @@ public class SecurityListView extends AbstractListView
                 return Values.Quote.format(((SecurityPrice) element).getValue());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPrice.class, "value")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
@@ -476,27 +503,6 @@ public class SecurityListView extends AbstractListView
         prices.getTable().setLinesVisible(true);
 
         prices.setContentProvider(new SimpleListContentProvider(true));
-
-        new CellEditorFactory(prices, SecurityPrice.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                markDirty();
-
-                                Security security = (Security) prices.getData(Security.class.toString());
-
-                                securities.refresh(security);
-                                prices.refresh(element);
-                                latest.setInput(security);
-                                transactions.setInput(security.getTransactions(getClient()));
-                                events.setInput(security.getEvents());
-                                updateChart(security);
-                            }
-                        }) //
-                        .editable("time") // //$NON-NLS-1$
-                        .amount("value") // //$NON-NLS-1$
-                        .apply();
 
         hookContextMenu(prices.getTable(), new IMenuListener()
         {
