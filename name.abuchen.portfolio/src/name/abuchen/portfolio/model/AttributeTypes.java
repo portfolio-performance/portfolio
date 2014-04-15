@@ -9,9 +9,9 @@ import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
 import name.abuchen.portfolio.model.AttributeType.LongConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
-public class AttributeTypes
+public final class AttributeTypes
 {
-    private static List<AttributeType> TYPES = Arrays.asList( //
+    private static final List<AttributeType> TYPES = Arrays.asList( //
 
                     new AttributeType("ter") //$NON-NLS-1$
                                     .name(Messages.AttributesTERName) //
@@ -48,4 +48,6 @@ public class AttributeTypes
         return answer;
     }
 
+    private AttributeTypes()
+    {}
 }

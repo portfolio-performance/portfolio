@@ -33,7 +33,7 @@ import org.apache.commons.csv.CSVStrategy;
 /* not thread safe */
 public class CSVExporter
 {
-    /* package */ static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
+    /* package */static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
                     CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$

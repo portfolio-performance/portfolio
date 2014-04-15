@@ -18,8 +18,9 @@ public class ClientEditorInput extends PlatformObject implements IPathEditorInpu
     {
         this.client = client;
     }
-    
-    public Client getClient() {
+
+    public Client getClient()
+    {
         return client;
     }
 

@@ -53,8 +53,8 @@ public class SharesHeldConsistencyCheck implements Check
         @Override
         public String getLabel()
         {
-            return MessageFormat.format(Messages.IssueInconsistentSharesHeld, security,
-                            portfolio, Values.Share.format(shares));
+            return MessageFormat.format(Messages.IssueInconsistentSharesHeld, security, portfolio,
+                            Values.Share.format(shares));
         }
 
         @Override

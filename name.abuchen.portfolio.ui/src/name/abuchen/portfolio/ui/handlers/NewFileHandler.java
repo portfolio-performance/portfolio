@@ -21,7 +21,7 @@ public class NewFileHandler extends AbstractHandler
 
     public Object execute(ExecutionEvent event) throws ExecutionException
     {
-    try
+        try
         {
             IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
             IWorkbenchPage page = window.getActivePage();

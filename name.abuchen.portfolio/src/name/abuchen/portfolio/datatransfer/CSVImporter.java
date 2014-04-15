@@ -42,7 +42,7 @@ public class CSVImporter
         private Field field;
         private FieldFormat format;
 
-        /* package */ Column(int columnIndex, String label)
+        /* package */Column(int columnIndex, String label)
         {
             this.columnIndex = columnIndex;
             this.label = label;
@@ -106,7 +106,7 @@ public class CSVImporter
     public static class Field
     {
         private final String name;
-        private boolean isOptional = false; 
+        private boolean isOptional = false;
 
         public Field(String name)
         {
@@ -117,13 +117,13 @@ public class CSVImporter
         {
             return name;
         }
-        
+
         public Field setOptional(boolean isOptional)
         {
             this.isOptional = isOptional;
             return this;
         }
-        
+
         public boolean isOptional()
         {
             return isOptional;

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util;
 
-
 public class StringEditingSupport extends PropertyEditingSupport
 {
     private boolean isMandatory = false;

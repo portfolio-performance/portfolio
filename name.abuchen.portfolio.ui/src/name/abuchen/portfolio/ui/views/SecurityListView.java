@@ -302,9 +302,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return true;
 
                 Security security = (Security) element;
-                
-                String[] properties = new String[] {
-                                security.getName(), //
+
+                String[] properties = new String[] { security.getName(), //
                                 security.getIsin(), //
                                 security.getTickerSymbol(), //
                                 security.getWkn(), //
@@ -316,8 +315,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     if (property != null && filterPattern.matcher(property).matches())
                         return true;
                 }
-                
-                 return false;
+
+                return false;
             }
         });
 
@@ -812,7 +811,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 }
                 return null;
             }
-            
+
             @Override
             public String getToolTipText(Object element)
             {

@@ -130,7 +130,9 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
         @Override
         public void applyChanges()
-        {}
+        {
+            // done by TaxonomyDesignation
+        }
     }
 
     static class AttributeDesignation extends BindingHelper.Model
@@ -162,6 +164,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         @Override
         public void applyChanges()
         {
+            // done by EditSecuritModel
         }
     }
 

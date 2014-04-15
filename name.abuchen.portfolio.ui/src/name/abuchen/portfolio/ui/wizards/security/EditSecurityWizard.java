@@ -14,12 +14,6 @@ public class EditSecurityWizard extends Wizard
 
     private final EditSecurityModel model;
 
-    private SecurityMasterDataPage dataPage;
-    private SecurityTaxonomyPage taxonomyPage;
-    private AttributesPage attributesPage;
-    private QuoteProviderPage quotesPage;
-    private SearchSecurityWizardPage searchPage;
-
     public EditSecurityWizard(Client client, Security security)
     {
         this.security = security;
@@ -32,20 +26,11 @@ public class EditSecurityWizard extends Wizard
     @Override
     public void addPages()
     {
-        dataPage = new SecurityMasterDataPage(model);
-        addPage(dataPage);
-
-        attributesPage = new AttributesPage(model);
-        addPage(attributesPage);
-
-        taxonomyPage = new SecurityTaxonomyPage(model);
-        addPage(taxonomyPage);
-
-        quotesPage = new QuoteProviderPage(model);
-        addPage(quotesPage);
-
-        searchPage = new SearchSecurityWizardPage(model);
-        addPage(searchPage);
+        addPage(new SecurityMasterDataPage(model));
+        addPage(new AttributesPage(model));
+        addPage(new SecurityTaxonomyPage(model));
+        addPage(new QuoteProviderPage(model));
+        addPage(new SearchSecurityWizardPage(model));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }

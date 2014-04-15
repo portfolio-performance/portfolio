@@ -380,22 +380,22 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         return getName();
     }
-    
+
     public String toInfoString()
     {
         StringBuilder b = new StringBuilder();
         b.append(name);
-        
+
         if (notEmpty(isin))
             b.append('\n').append(isin);
         if (notEmpty(wkn))
             b.append('\n').append(wkn);
         if (notEmpty(tickerSymbol))
             b.append('\n').append(tickerSymbol);
-        
+
         if (notEmpty(note))
             b.append("\n\n").append(note); //$NON-NLS-1$
-        
+
         return b.toString();
     }
 

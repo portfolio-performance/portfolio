@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui;
 
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IElementFactory;

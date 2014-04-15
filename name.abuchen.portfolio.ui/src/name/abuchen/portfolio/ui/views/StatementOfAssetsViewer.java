@@ -453,7 +453,7 @@ public class StatementOfAssetsViewer
             public Image getImage(Object e)
             {
                 String note = null;
-                
+
                 Element element = (Element) e;
                 if (element.isSecurity())
                     note = element.getSecurity().getNote();
@@ -561,7 +561,7 @@ public class StatementOfAssetsViewer
         manager.add(new LabelOnly(Messages.LabelColumns));
         support.menuAboutToShow(manager);
     }
-    
+
     public void showSaveMenu(Shell shell)
     {
         support.showSaveMenu(shell);

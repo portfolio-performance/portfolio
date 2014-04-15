@@ -205,7 +205,7 @@ public class AttributesPage extends AbstractWizardPage implements IMenuListener
     public void menuAboutToShow(IMenuManager manager)
     {
         manager.add(new LabelOnly(Messages.LabelAvailableAttributes));
-        
+
         Set<AttributeType> existing = new HashSet<AttributeType>();
         for (AttributeDesignation d : model.getAttributes())
             existing.add(d.getType());
@@ -215,7 +215,7 @@ public class AttributesPage extends AbstractWizardPage implements IMenuListener
             // add only if it does not exist yet
             if (existing.contains(attribute))
                 continue;
-            
+
             manager.add(new Action(attribute.getName())
             {
                 @Override

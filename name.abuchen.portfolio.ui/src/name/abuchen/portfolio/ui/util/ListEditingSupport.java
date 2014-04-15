@@ -53,7 +53,7 @@ public class ListEditingSupport extends PropertyEditingSupport
         Object newValue = comboBoxItems.get((Integer) value);
         Object oldValue = descriptor().getReadMethod().invoke(element);
 
-        if (newValue != oldValue)
+        if (!newValue.equals(oldValue))
         {
             descriptor().getWriteMethod().invoke(element, newValue);
             notify(element, newValue, oldValue);

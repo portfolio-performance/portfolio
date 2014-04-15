@@ -18,8 +18,8 @@ public class VersionNumberSplashHandler extends BasicSplashHandler
     {
         super.init(splash);
 
-        setProgressRect(new Rectangle(5,194,445,10));
-        setMessageRect(new Rectangle(193,120,257,20));
+        setProgressRect(new Rectangle(5, 194, 445, 10));
+        setMessageRect(new Rectangle(193, 120, 257, 20));
         setForeground(new RGB(255, 255, 255));
 
         getContent().addPaintListener(new PaintListener()

@@ -20,7 +20,7 @@ public abstract class ColumnEditingSupport
 {
     public interface ModificationListener
     {
-        public void onModified(Object element, Object newValue, Object oldValue);
+        void onModified(Object element, Object newValue, Object oldValue);
     }
 
     private List<ModificationListener> listeners;

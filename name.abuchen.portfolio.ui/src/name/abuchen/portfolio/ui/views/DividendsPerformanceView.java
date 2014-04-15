@@ -178,7 +178,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             {
                 return ((SecurityPerformanceRecord) e).getSharesHeld();
             }
-            
+
             @Override
             public String getToolTipText(Object e)
             {

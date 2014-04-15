@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-public class Adaptor
+public final class Adaptor
 {
     public static <T> T adapt(Class<T> type, Object subject)
     {
@@ -15,4 +15,7 @@ public class Adaptor
 
         return null;
     }
+
+    private Adaptor()
+    {}
 }
