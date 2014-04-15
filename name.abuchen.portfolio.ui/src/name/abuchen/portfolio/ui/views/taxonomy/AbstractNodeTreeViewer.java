@@ -140,6 +140,7 @@ import org.eclipse.ui.PlatformUI;
 
             TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
 
+            // no categories allowed below the unassigned category
             if (target.isUnassignedCategory() && droppedNode.isClassification())
                 return false;
 
@@ -157,11 +158,16 @@ import org.eclipse.ui.PlatformUI;
                     viewer.onTaxnomyNodeEdited(droppedParent);
                     break;
                 case ViewerDropAdapter.LOCATION_ON:
-                    if (droppedNode != target.getParent())
-                    {
-                        droppedNode.moveTo(target);
-                        viewer.onTaxnomyNodeEdited(droppedParent);
-                    }
+                    // parent must not be dropped into child
+                    if (target.getPath().contains(droppedNode))
+                        break;
+
+                    // target must not be dropped into same node
+                    if (droppedParent.equals(target))
+                        break;
+
+                    droppedNode.moveTo(target);
+                    viewer.onTaxnomyNodeEdited(droppedParent);
                     break;
                 case ViewerDropAdapter.LOCATION_NONE:
                     break;
