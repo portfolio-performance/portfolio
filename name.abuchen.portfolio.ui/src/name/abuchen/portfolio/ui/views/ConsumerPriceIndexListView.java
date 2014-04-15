@@ -11,14 +11,17 @@ import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.MonthEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.util.Dates;
 
@@ -35,7 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
-public class ConsumerPriceIndexListView extends AbstractListView
+public class ConsumerPriceIndexListView extends AbstractListView implements ModificationListener
 {
     private TableViewer indeces;
     private TimelineChart chart;
@@ -76,6 +79,13 @@ public class ConsumerPriceIndexListView extends AbstractListView
     }
 
     @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        markDirty();
+        refreshChart();
+    }
+
+    @Override
     protected void createTopTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -83,6 +93,8 @@ public class ConsumerPriceIndexListView extends AbstractListView
         container.setLayout(layout);
 
         indeces = new TableViewer(container, SWT.FULL_SELECTION);
+
+        ColumnEditingSupport.prepare(indeces);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(ConsumerPriceIndexListView.class.getSimpleName()
                         + "@bottom", indeces, layout); //$NON-NLS-1$
@@ -96,8 +108,8 @@ public class ConsumerPriceIndexListView extends AbstractListView
                 return String.valueOf(((ConsumerPriceIndex) element).getYear());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(ConsumerPriceIndex.class, "year", "month"), SWT.DOWN); //$NON-NLS-1$ //$NON-NLS-2$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(ConsumerPriceIndex.class, "year", "month").attachTo(column, SWT.DOWN); //$NON-NLS-1$ //$NON-NLS-2$
+        new ValueEditingSupport(ConsumerPriceIndex.class, "year", Values.Year).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnMonth, SWT.None, 80);
@@ -111,8 +123,8 @@ public class ConsumerPriceIndexListView extends AbstractListView
                 return String.valueOf(MONTHS[((ConsumerPriceIndex) element).getMonth()]);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(ConsumerPriceIndex.class, "month", "year")); //$NON-NLS-1$ //$NON-NLS-2$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(ConsumerPriceIndex.class, "month", "year").attachTo(column); //$NON-NLS-1$ //$NON-NLS-2$
+        new MonthEditingSupport(ConsumerPriceIndex.class, "month").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnIndex, SWT.RIGHT, 80);
@@ -124,8 +136,8 @@ public class ConsumerPriceIndexListView extends AbstractListView
                 return Values.Index.format(((ConsumerPriceIndex) element).getIndex());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(ConsumerPriceIndex.class, "index")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(ConsumerPriceIndex.class, "index").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(ConsumerPriceIndex.class, "index", Values.Index).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
@@ -138,21 +150,6 @@ public class ConsumerPriceIndexListView extends AbstractListView
         indeces.setInput(getClient().getConsumerPriceIndeces());
         indeces.refresh();
         ViewerHelper.pack(indeces);
-
-        new CellEditorFactory(indeces, ConsumerPriceIndex.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                markDirty();
-                                indeces.refresh(element);
-                                refreshChart();
-                            }
-                        }) //
-                        .editable("year") // //$NON-NLS-1$
-                        .month("month") // //$NON-NLS-1$
-                        .index("index") // //$NON-NLS-1$
-                        .apply();
 
         hookContextMenu(indeces.getTable(), new IMenuListener()
         {

@@ -119,6 +119,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Integer> Year = new Values<Integer>("0", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer amount)
+        {
+            return String.valueOf(amount);
+        }
+    };
+
     private final String pattern;
     private final double divider;
     private final int factor;

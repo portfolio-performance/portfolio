@@ -12,13 +12,14 @@ public class ValueEditingSupport extends PropertyEditingSupport
     private final StringToCurrencyConverter stringToLong;
     private final CurrencyToStringConverter longToString;
 
-    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<Long> valueType)
+    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType)
     {
         super(subjectType, attributeName);
 
-        if (Long.class.isAssignableFrom(descriptor().getPropertyType()))
+        Class<?> propertyType = descriptor().getPropertyType();
+        if (!long.class.isAssignableFrom(propertyType) && !int.class.isAssignableFrom(propertyType))
             throw new UnsupportedOperationException(String.format(
-                            "Property %s needs to be of type long to serve as decimal", attributeName)); //$NON-NLS-1$
+                            "Property %s needs to be of type long or int to serve as decimal", attributeName)); //$NON-NLS-1$
 
         this.stringToLong = new StringToCurrencyConverter(valueType);
         this.longToString = new CurrencyToStringConverter(valueType);
@@ -43,6 +44,10 @@ public class ValueEditingSupport extends PropertyEditingSupport
     public void setValue(Object element, Object value) throws Exception
     {
         Number newValue = (Number) stringToLong.convert(String.valueOf(value));
+        if (int.class.isAssignableFrom(descriptor().getPropertyType())
+                        || Integer.class.isAssignableFrom(descriptor().getPropertyType()))
+            newValue = Integer.valueOf(newValue.intValue());
+
         Number oldValue = (Number) descriptor().getReadMethod().invoke(element);
 
         if (!newValue.equals(oldValue))
