@@ -45,6 +45,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
@@ -195,6 +196,7 @@ import org.eclipse.ui.PlatformUI;
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
     private TreeViewer nodeViewer;
+    private ShowHideColumnHelper support;
 
     private boolean isFirstView = true;
 
@@ -232,6 +234,12 @@ import org.eclipse.ui.PlatformUI;
         onModified(element, newValue, oldValue);
     }
 
+    @Override
+    public void showConfigMenu(Shell shell)
+    {
+        support.showHideShowColumnsMenu(shell);
+    }
+
     public final Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -242,7 +250,8 @@ import org.eclipse.ui.PlatformUI;
 
         ColumnEditingSupport.prepare(nodeViewer);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName(), nodeViewer, layout);
+        support = new ShowHideColumnHelper(getClass().getSimpleName() + '#' + getModel().getTaxonomy().getId(),
+                        nodeViewer, layout);
 
         addColumns(support);
 
@@ -313,6 +322,7 @@ import org.eclipse.ui.PlatformUI;
                 return super.canEdit(element);
             }
         }.setMandatory(true).addListener(this).attachTo(column);
+        column.setRemovable(false);
         support.addColumn(column);
 
         column = new Column("isin", Messages.ColumnISIN, SWT.NONE, 100); //$NON-NLS-1$
@@ -325,6 +335,7 @@ import org.eclipse.ui.PlatformUI;
                 return security != null ? security.getIsin() : null;
             }
         });
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("note", Messages.ColumnNote, SWT.NONE, 22); //$NON-NLS-1$
@@ -346,6 +357,7 @@ import org.eclipse.ui.PlatformUI;
                                 .image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
+        column.setVisible(false);
         support.addColumn(column);
     }
 

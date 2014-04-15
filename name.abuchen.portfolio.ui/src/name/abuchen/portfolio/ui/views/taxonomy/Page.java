@@ -4,6 +4,7 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChang
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 
 /* package */abstract class Page implements TaxonomyModelChangeListener
 {
@@ -27,6 +28,9 @@ import org.eclipse.swt.widgets.Control;
     {
         return renderer;
     }
+
+    public void showConfigMenu(Shell shell)
+    {}
 
     public abstract Control createControl(Composite parent);
 
