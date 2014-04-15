@@ -30,11 +30,12 @@ import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.AttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
@@ -69,7 +70,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-public final class SecuritiesTable
+public final class SecuritiesTable implements ModificationListener
 {
     private AbstractFinanceView view;
 
@@ -141,7 +142,7 @@ public final class SecuritiesTable
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "name").setMandatory(true).attachTo(column); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
@@ -161,7 +162,7 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "note").attachTo(column); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
@@ -539,7 +540,8 @@ public final class SecuritiesTable
                     return attribute.getComparator().compare(v1, v2);
                 }
             }));
-            new AttributeEditingSupport(Security.class, attribute).attachTo(column);
+            new AttributeEditingSupport(Security.class, attribute).addListener(this).attachTo(column);
+            column.setVisible(false);
 
             support.addColumn(column);
         }
@@ -583,6 +585,12 @@ public final class SecuritiesTable
         {
             securities.getControl().setRedraw(true);
         }
+    }
+
+    @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        markDirty();
     }
 
     public void updateQuotes(Security security)
