@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Date;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -27,6 +29,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -132,6 +135,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         createCommonColumns();
         createDividendColumns();
+        createAdditionalColumns();
 
         recordColumns.createColumns();
 
@@ -411,6 +415,17 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
         recordColumns.addColumn(column);
+    }
+
+    private void createAdditionalColumns()
+    {
+        for (final AttributeType attribute : AttributeTypes.available(Security.class))
+        {
+            Column column = new AttributeColumn(attribute);
+            column.setVisible(false);
+            column.setEditingSupport(null);
+            recordColumns.addColumn(column);
+        }
     }
 
     @Override

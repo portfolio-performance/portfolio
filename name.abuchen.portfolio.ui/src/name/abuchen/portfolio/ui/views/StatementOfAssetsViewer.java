@@ -9,6 +9,9 @@ import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Attributable;
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -33,6 +36,7 @@ import name.abuchen.portfolio.ui.util.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -466,6 +470,8 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        addAttributeColumns();
+
         support.createColumns();
 
         assets.getTable().setHeaderVisible(true);
@@ -479,6 +485,18 @@ public class StatementOfAssetsViewer
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
+    }
+
+    private void addAttributeColumns()
+    {
+        for (final AttributeType attribute : AttributeTypes.available(Security.class))
+        {
+            Column column = new AttributeColumn(attribute);
+            column.setVisible(false);
+            column.setSorter(null);
+            column.setEditingSupport(null);
+            support.addColumn(column);
+        }
     }
 
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
@@ -764,7 +782,12 @@ public class StatementOfAssetsViewer
         @Override
         public <T> T adapt(Class<T> type)
         {
-            return type == Security.class ? type.cast(getSecurity()) : null;
+            if (type == Security.class)
+                return type.cast(getSecurity());
+            else if (type == Attributable.class)
+                return type.cast(getSecurity());
+            else
+                return null;
         }
     }
 

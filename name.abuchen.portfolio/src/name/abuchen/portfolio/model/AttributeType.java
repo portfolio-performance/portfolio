@@ -211,11 +211,12 @@ public class AttributeType
             @Override
             public int compare(Object o1, Object o2)
             {
-                if (o1 == null)
-                    return o2 == null ? 0 : 1;
-
-                if (o2 == null)
+                if (o1 == null && o2 == null)
+                    return 0;
+                else if (o1 == null)
                     return -1;
+                else if (o2 == null)
+                    return 1;
 
                 if (type == Long.class)
                     return ((Long) o1).compareTo((Long) o2);

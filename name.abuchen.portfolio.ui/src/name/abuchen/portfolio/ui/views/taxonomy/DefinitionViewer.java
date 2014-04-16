@@ -112,6 +112,8 @@ import org.eclipse.swt.widgets.Display;
         support.addColumn(column);
 
         addActualColumns(support);
+
+        addAdditionalColumns(support);
     }
 
     @Override

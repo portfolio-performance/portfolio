@@ -183,6 +183,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             }
         });
         support.addColumn(column);
+
+        addAdditionalColumns(support);
     }
 
     @Override

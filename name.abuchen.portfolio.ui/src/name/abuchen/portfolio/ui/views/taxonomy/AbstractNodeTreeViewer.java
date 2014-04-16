@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -22,6 +24,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -400,6 +403,18 @@ import org.eclipse.ui.PlatformUI;
             }
         });
         support.addColumn(column);
+    }
+
+    protected void addAdditionalColumns(ShowHideColumnHelper support)
+    {
+        for (final AttributeType attribute : AttributeTypes.available(Security.class))
+        {
+            Column column = new AttributeColumn(attribute);
+            column.setVisible(false);
+            column.setSorter(null);
+            column.setEditingSupport(null);
+            support.addColumn(column);
+        }
     }
 
     private void expandNodes()
