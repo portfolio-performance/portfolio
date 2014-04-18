@@ -230,9 +230,8 @@ http://www.eclipse.org/legal/epl-v10.html
       <plugin id="org.sat4j.pb"/>
 
       <plugin id="com.springsource.org.htmlparser"/>
-      <plugin id="com.springsource.com.thoughtworks.xstream"/>
-      <plugin id="com.springsource.javax.xml.stream"/>
-      <plugin id="com.springsource.org.xmlpull"/>
+      <plugin id="org.apache.servicemix.bundles.xstream"/>
+      <plugin id="org.apache.servicemix.bundles.xpp3"/>
       <plugin id="com.springsource.org.apache.commons.csv"/>
       <plugin id="org.swtchart"/>
       <plugin id="de.engehausen.treemap"/>

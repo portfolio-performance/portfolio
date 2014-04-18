@@ -71,20 +71,17 @@
 			<artifactId>com.springsource.org.htmlparser</artifactId>
 			<version>1.6.0</version>
 		</dependency>
+		<!-- the original XML stream bundle imports sun.misc - too annoying to 
+			create a framework bundle to make it work. Apache has the import optional -->
 		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>com.springsource.com.thoughtworks.xstream</artifactId>
-			<version>1.3.1</version>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.xstream</artifactId>
+			<version>1.4.7_1</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.stream</groupId>
-			<artifactId>com.springsource.javax.xml.stream</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.xmlpull</groupId>
-			<artifactId>com.springsource.org.xmlpull</artifactId>
-			<version>1.1.4.c</version>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.xpp3</artifactId>
+			<version>1.1.4c_7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

@@ -151,6 +151,12 @@ public final class Security implements Attributable, InvestmentVehicle
     }
 
     @Deprecated
+    /* package */void setIndustryClassification(String industryClassification)
+    {
+        this.industryClassification = industryClassification;
+    }
+
+    @Deprecated
     /* package */String getType()
     {
         return type;

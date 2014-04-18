@@ -121,6 +121,7 @@ public class ClientFactory
             addIndustryClassificationAsTaxonomy(client);
             addAssetAllocationAsTaxonomy(client);
             fixStoredClassificationChartConfiguration(client);
+            setDeprecatedFieldsToNull(client);
 
             client.setVersion(14);
         }
@@ -393,6 +394,18 @@ public class ClientFactory
         client.setProperty(key, newValue);
     }
 
+    private static void setDeprecatedFieldsToNull(Client client)
+    {
+        client.setRootCategory(null);
+        client.setIndustryTaxonomy(null);
+
+        for (Security security : client.getSecurities())
+        {
+            security.setIndustryClassification(null);
+            security.setType(null);
+        }
+    }
+
     private static void assignSharesToDividendTransactions(Client client)
     {
         for (Security security : client.getSecurities())
@@ -519,14 +532,6 @@ public class ClientFactory
                     xstream.alias("assignment", Assignment.class);
 
                     xstream.alias("event", SecurityEvent.class);
-
-                    // omitting 'type' will prevent writing the field
-                    // (making it transient prevents reading it as well ->
-                    // compatibility!)
-                    xstream.omitField(Security.class, "type");
-                    xstream.omitField(Security.class, "industryClassification");
-                    xstream.omitField(Client.class, "industryTaxonomyId");
-                    xstream.omitField(Client.class, "rootCategory");
                 }
             }
         }

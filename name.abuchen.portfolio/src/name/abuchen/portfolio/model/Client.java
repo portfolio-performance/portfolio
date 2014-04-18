@@ -179,9 +179,21 @@ public class Client
     }
 
     @Deprecated
+    /* package */void setRootCategory(Category rootCategory)
+    {
+        this.rootCategory = rootCategory;
+    }
+
+    @Deprecated
     /* package */String getIndustryTaxonomy()
     {
         return industryTaxonomyId;
+    }
+
+    @Deprecated
+    /* package */void setIndustryTaxonomy(String industryTaxonomyId)
+    {
+        this.industryTaxonomyId = industryTaxonomyId;
     }
 
     public List<Taxonomy> getTaxonomies()
