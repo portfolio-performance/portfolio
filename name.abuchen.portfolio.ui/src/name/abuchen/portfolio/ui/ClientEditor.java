@@ -15,7 +15,6 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -24,9 +23,15 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
@@ -35,14 +40,40 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.PageBook;
 
-public class ClientEditor extends EditorPart
+public class ClientEditor extends EditorPart implements LoadClientJob.Callback
 {
+    private abstract class BuildContainerRunnable implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            if (container != null && !container.isDisposed())
+            {
+                Composite parent = container.getParent();
+                parent.setRedraw(false);
+                try
+                {
+                    container.dispose();
+                    createContainer(parent);
+                    parent.layout(true);
+                }
+                finally
+                {
+                    parent.setRedraw(true);
+                }
+            }
+        }
+
+        public abstract void createContainer(Composite parent);
+    }
+
     private boolean isDirty = false;
     private IPath clientFile;
     private Client client;
 
     private PreferenceStore preferences = new PreferenceStore();
 
+    private Composite container;
     private PageBook book;
     private AbstractFinanceView view;
 
@@ -56,38 +87,46 @@ public class ClientEditor extends EditorPart
         setSite(site);
         setInput(input);
 
-        try
+        if (input instanceof ClientEditorInput)
         {
-            if (input instanceof ClientEditorInput)
-            {
-                clientFile = ((ClientEditorInput) input).getPath();
+            clientFile = ((ClientEditorInput) input).getPath();
+            client = ((ClientEditorInput) input).getClient();
+        }
+        else if (input instanceof IPathEditorInput)
+        {
+            clientFile = ((IPathEditorInput) input).getPath();
+            client = null;
+        }
+        else
+        {
+            throw new PartInitException(MessageFormat.format("Unsupported editor input: {0}", input.getClass() //$NON-NLS-1$
+                            .getName()));
+        }
 
-                if (clientFile != null)
-                {
-                    client = ClientFactory.load(clientFile.toFile());
-                    isDirty = false;
-                }
-                else
-                {
-                    client = ((ClientEditorInput) input).getClient();
-                    isDirty = true;
-                }
-            }
-            else if (input instanceof IPathEditorInput)
-            {
-                clientFile = ((IPathEditorInput) input).getPath();
-                client = ClientFactory.load(clientFile.toFile());
-            }
-            else
-            {
-                throw new PartInitException(MessageFormat.format("Unsupported editor input: {0}", input.getClass() //$NON-NLS-1$
-                                .getName()));
-            }
-        }
-        catch (IOException e)
+        if (client != null)
         {
-            throw new PartInitException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            client = ((ClientEditorInput) input).getClient();
+            setClient(client);
+            isDirty = clientFile == null;
         }
+        else if (clientFile != null)
+        {
+            new LoadClientJob(this, clientFile.toFile()).schedule();
+        }
+
+        loadPreferences();
+
+        if (clientFile != null)
+            setPartName(clientFile.lastSegment());
+        else
+            setPartName(Messages.LabelUnsavedFile);
+    }
+
+    @Override
+    public void setClient(Client client)
+    {
+        this.client = client;
+        this.isDirty = false;
 
         client.addPropertyChangeListener(new PropertyChangeListener()
         {
@@ -98,15 +137,30 @@ public class ClientEditor extends EditorPart
             }
         });
 
-        loadPreferences();
-
-        if (clientFile != null)
-            setPartName(clientFile.lastSegment());
-        else
-            setPartName(Messages.LabelUnsavedFile);
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        {
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithViews(parent);
+            }
+        });
 
         new ConsistencyChecksJob(this, client, false).schedule(100);
         scheduleOnlineUpdateJobs();
+    }
+
+    @Override
+    public void setErrorMessage(final String message)
+    {
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        {
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithMessage(parent, message, false);
+            }
+        });
     }
 
     private void scheduleOnlineUpdateJobs()
@@ -145,7 +199,15 @@ public class ClientEditor extends EditorPart
     @Override
     public void createPartControl(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
+        if (client != null)
+            createContainerWithViews(parent);
+        else
+            createContainerWithMessage(parent, MessageFormat.format("Loading {0}", getPartName()), true);
+    }
+
+    private void createContainerWithViews(Composite parent)
+    {
+        container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 1).applyTo(container);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
@@ -156,6 +218,41 @@ public class ClientEditor extends EditorPart
         GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
 
         sidebar.selectDefaultView();
+    }
+
+    private void createContainerWithMessage(Composite parent, String message, boolean showProgressBar)
+    {
+        container = new Composite(parent, SWT.NONE);
+        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setLayout(new FormLayout());
+
+        Label label = new Label(container, SWT.CENTER | SWT.WRAP);
+        label.setText(message);
+
+        Label image = new Label(container, SWT.BORDER);
+        image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_SMALL));
+
+        FormData data = new FormData();
+        data.top = new FormAttachment(50);
+        data.left = new FormAttachment(50, -100);
+        data.width = 200;
+        label.setLayoutData(data);
+
+        data = new FormData();
+        data.bottom = new FormAttachment(label, -10);
+        data.left = new FormAttachment(label, 0, SWT.CENTER);
+        image.setLayoutData(data);
+
+        if (showProgressBar)
+        {
+            ProgressBar bar = new ProgressBar(container, SWT.INDETERMINATE);
+
+            data = new FormData();
+            data.top = new FormAttachment(label, 10);
+            data.left = new FormAttachment(50, -100);
+            data.width = 200;
+            bar.setLayoutData(data);
+        }
     }
 
     protected void activateView(String target, Object parameter)
@@ -201,7 +298,8 @@ public class ClientEditor extends EditorPart
     @Override
     public void setFocus()
     {
-        book.setFocus();
+        if (book != null)
+            book.setFocus();
     }
 
     public Client getClient()

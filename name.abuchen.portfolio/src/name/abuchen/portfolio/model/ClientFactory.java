@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,6 +22,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
 
 @SuppressWarnings("deprecation")
@@ -30,8 +32,21 @@ public class ClientFactory
 
     public static Client load(File file) throws IOException
     {
-        Client client = (Client) xstream().fromXML(
-                        new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))); //$NON-NLS-1$
+        Client client = null;
+
+        try
+        {
+            client = (Client) xstream().fromXML(
+                            new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))); //$NON-NLS-1$
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new IOException(MessageFormat.format("Datei {0} existiert nicht (mehr).", file.getAbsolutePath()), e);
+        }
+        catch (XStreamException e)
+        {
+            throw new IOException(MessageFormat.format("XML kann nicht geparst werden: {0}", e.getMessage()), e);
+        }
 
         client.doPostLoadInitialization();
 
