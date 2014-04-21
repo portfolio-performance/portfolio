@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -20,6 +21,9 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
@@ -30,23 +34,36 @@ public class ClientFactory
 {
     private static XStream xstream;
 
-    public static Client load(File file) throws IOException
+    public static Client load(File file, IProgressMonitor monitor) throws IOException
     {
+        InputStream input = null;
         Client client = null;
 
         try
         {
-            client = (Client) xstream().fromXML(
-                            new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))); //$NON-NLS-1$
+            long bytesTotal = file.length();
+            int increment = (int) Math.min(bytesTotal / 20L, Integer.MAX_VALUE);
+            monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
+            input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
+
+            client = (Client) xstream().fromXML(new InputStreamReader(input, Charset.forName("UTF-8"))); //$NON-NLS-1$
         }
         catch (FileNotFoundException e)
         {
-            throw new IOException(MessageFormat.format("Datei {0} existiert nicht (mehr).", file.getAbsolutePath()), e);
+            throw new IOException(MessageFormat.format(Messages.MsgFileNotFound, file.getAbsolutePath()), e);
         }
         catch (XStreamException e)
         {
-            throw new IOException(MessageFormat.format("XML kann nicht geparst werden: {0}", e.getMessage()), e);
+            throw new IOException(MessageFormat.format(Messages.MsgXMLFormatInvalid, e.getMessage()), e);
         }
+        finally
+        {
+            if (input != null)
+                input.close();
+        }
+
+        if (client.getVersion() != Client.CURRENT_VERSION)
+            throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, client.getVersion()));
 
         client.doPostLoadInitialization();
 
@@ -178,10 +195,6 @@ public class ClientFactory
             // do nothing --> added attribute types
             client.setVersion(20);
         }
-
-        if (client.getVersion() != Client.CURRENT_VERSION)
-            throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
-                            client.getVersion()));
 
         return client;
     }

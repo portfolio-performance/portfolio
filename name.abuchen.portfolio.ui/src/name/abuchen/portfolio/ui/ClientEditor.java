@@ -40,7 +40,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.PageBook;
 
-public class ClientEditor extends EditorPart implements LoadClientJob.Callback
+public class ClientEditor extends EditorPart implements LoadClientThread.Callback
 {
     private abstract class BuildContainerRunnable implements Runnable
     {
@@ -108,10 +108,6 @@ public class ClientEditor extends EditorPart implements LoadClientJob.Callback
             client = ((ClientEditorInput) input).getClient();
             setClient(client);
             isDirty = clientFile == null;
-        }
-        else if (clientFile != null)
-        {
-            new LoadClientJob(this, clientFile.toFile()).schedule();
         }
 
         loadPreferences();
@@ -200,9 +196,16 @@ public class ClientEditor extends EditorPart implements LoadClientJob.Callback
     public void createPartControl(Composite parent)
     {
         if (client != null)
+        {
             createContainerWithViews(parent);
+        }
         else
-            createContainerWithMessage(parent, MessageFormat.format("Loading {0}", getPartName()), true);
+        {
+            ProgressBar bar = createContainerWithMessage(parent,
+                            MessageFormat.format(Messages.MsgLoadingFile, getPartName()), true);
+
+            new LoadClientThread(new ProgressMonitor(bar), this, clientFile.toFile()).start();
+        }
     }
 
     private void createContainerWithViews(Composite parent)
@@ -220,7 +223,7 @@ public class ClientEditor extends EditorPart implements LoadClientJob.Callback
         sidebar.selectDefaultView();
     }
 
-    private void createContainerWithMessage(Composite parent, String message, boolean showProgressBar)
+    private ProgressBar createContainerWithMessage(Composite parent, String message, boolean showProgressBar)
     {
         container = new Composite(parent, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -243,9 +246,11 @@ public class ClientEditor extends EditorPart implements LoadClientJob.Callback
         data.left = new FormAttachment(label, 0, SWT.CENTER);
         image.setLayoutData(data);
 
+        ProgressBar bar = null;
+
         if (showProgressBar)
         {
-            ProgressBar bar = new ProgressBar(container, SWT.INDETERMINATE);
+            bar = new ProgressBar(container, SWT.SMOOTH);
 
             data = new FormData();
             data.top = new FormAttachment(label, 10);
@@ -253,6 +258,8 @@ public class ClientEditor extends EditorPart implements LoadClientJob.Callback
             data.width = 200;
             bar.setLayoutData(data);
         }
+
+        return bar;
     }
 
     protected void activateView(String target, Object parameter)

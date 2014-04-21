@@ -8,6 +8,7 @@ import name.abuchen.portfolio.datatransfer.CSVExporter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
@@ -61,7 +62,7 @@ public class CommandLineApplication implements IApplication
         Client client = null;
         try
         {
-            client = ClientFactory.load(portfolio);
+            client = ClientFactory.load(portfolio, new NullProgressMonitor());
         }
         catch (IOException e)
         {
