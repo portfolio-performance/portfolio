@@ -291,133 +291,63 @@ public class ClientFactory
     {
         client.doPostLoadInitialization();
 
-        if (client.getVersion() == 1)
+        switch (client.getVersion())
         {
-            fixAssetClassTypes(client);
-            addFeedAndExchange(client);
-            client.setVersion(2);
-        }
-
-        if (client.getVersion() == 2)
-        {
-            addDecimalPlaces(client);
-            client.setVersion(3);
-        }
-
-        if (client.getVersion() == 3)
-        {
-            // do nothing --> added industry classification
-            client.setVersion(4);
-        }
-
-        if (client.getVersion() == 4)
-        {
-            for (Security s : client.getSecurities())
-                s.generateUUID();
-            client.setVersion(5);
-        }
-
-        if (client.getVersion() == 5)
-        {
-            // do nothing --> save industry taxonomy in client
-            client.setVersion(6);
-        }
-
-        if (client.getVersion() == 6)
-        {
-            // do nothing --> added WKN attribute to security
-            client.setVersion(7);
-        }
-
-        if (client.getVersion() == 7)
-        {
-            // new portfolio transaction types:
-            // DELIVERY_INBOUND, DELIVERY_OUTBOUND
-            changePortfolioTransactionTypeToDelivery(client);
-            client.setVersion(8);
-        }
-
-        if (client.getVersion() == 8)
-        {
-            // do nothing --> added 'retired' property to securities
-            client.setVersion(9);
-        }
-
-        if (client.getVersion() == 9)
-        {
-            // do nothing --> added 'cross entries' to transactions
-            client.setVersion(10);
-        }
-
-        if (client.getVersion() == 10)
-        {
-            generateUUIDs(client);
-            client.setVersion(11);
-        }
-
-        if (client.getVersion() == 11)
-        {
-            // do nothing --> added 'properties' to client
-            client.setVersion(12);
-        }
-
-        if (client.getVersion() == 12)
-        {
-            // added investment plans
-            // added security on chart as benchmark *and* performance
-            fixStoredBenchmarkChartConfigurations(client);
-
-            client.setVersion(13);
-        }
-
-        if (client.getVersion() == 13)
-        {
-            // introduce arbitrary taxonomies
-            addAssetClassesAsTaxonomy(client);
-            addIndustryClassificationAsTaxonomy(client);
-            addAssetAllocationAsTaxonomy(client);
-            fixStoredClassificationChartConfiguration(client);
-            setDeprecatedFieldsToNull(client);
-
-            client.setVersion(14);
-        }
-
-        if (client.getVersion() == 14)
-        {
-            // added shares to track dividends per share
-            assignSharesToDividendTransactions(client);
-
-            client.setVersion(15);
-        }
-
-        if (client.getVersion() == 15)
-        {
-            // do nothing --> added 'isRetired' property to account
-            client.setVersion(16);
-        }
-
-        if (client.getVersion() == 16)
-        {
-            // do nothing --> added 'feedURL' property to account
-            client.setVersion(17);
-        }
-
-        if (client.getVersion() == 17)
-        {
-            // do nothing --> added notes attribute
-            client.setVersion(18);
-        }
-
-        if (client.getVersion() == 18)
-        {
-            // do nothing --> added events (stock split) to securities
-            client.setVersion(19);
-        }
-
-        if (client.getVersion() == 19)
-        {
-            // do nothing --> added attribute types
-            client.setVersion(20);
+            case 1:
+                fixAssetClassTypes(client);
+                addFeedAndExchange(client);
+            case 2:
+                addDecimalPlaces(client);
+            case 3:
+                // do nothing --> added industry classification
+            case 4:
+                for (Security s : client.getSecurities())
+                    s.generateUUID();
+            case 5:
+                // do nothing --> save industry taxonomy in client
+            case 6:
+                // do nothing --> added WKN attribute to security
+            case 7:
+                // new portfolio transaction types:
+                // DELIVERY_INBOUND, DELIVERY_OUTBOUND
+                changePortfolioTransactionTypeToDelivery(client);
+            case 8:
+                // do nothing --> added 'retired' property to securities
+            case 9:
+                // do nothing --> added 'cross entries' to transactions
+            case 10:
+                generateUUIDs(client);
+            case 11:
+                // do nothing --> added 'properties' to client
+            case 12:
+                // added investment plans
+                // added security on chart as benchmark *and* performance
+                fixStoredBenchmarkChartConfigurations(client);
+            case 13:
+                // introduce arbitrary taxonomies
+                addAssetClassesAsTaxonomy(client);
+                addIndustryClassificationAsTaxonomy(client);
+                addAssetAllocationAsTaxonomy(client);
+                fixStoredClassificationChartConfiguration(client);
+                setDeprecatedFieldsToNull(client);
+            case 14:
+                // added shares to track dividends per share
+                assignSharesToDividendTransactions(client);
+            case 15:
+                // do nothing --> added 'isRetired' property to account
+            case 16:
+                // do nothing --> added 'feedURL' property to account
+            case 17:
+                // do nothing --> added notes attribute
+            case 18:
+                // do nothing --> added events (stock split) to securities
+            case 19:
+                // do nothing --> added attribute types
+                client.setVersion(Client.CURRENT_VERSION);
+            case Client.CURRENT_VERSION:
+                break;
+            default:
+                break;
         }
     }
 
