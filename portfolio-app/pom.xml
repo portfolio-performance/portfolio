@@ -15,7 +15,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>0.18.1</tycho-version>
+		<tycho-version>0.20.0</tycho-version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
@@ -36,7 +36,7 @@
 		<repository>
 			<id>p2-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130118183705/repository</url>
 		</repository>
 		<repository>
 			<id>p2-indigo</id>
