@@ -62,7 +62,7 @@ public class CommandLineApplication implements IApplication
         Client client = null;
         try
         {
-            client = ClientFactory.load(portfolio, new NullProgressMonitor());
+            client = ClientFactory.load(portfolio, null, new NullProgressMonitor());
         }
         catch (IOException e)
         {

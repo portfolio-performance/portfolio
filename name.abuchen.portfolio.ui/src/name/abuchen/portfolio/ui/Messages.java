@@ -240,6 +240,8 @@ public class Messages extends NLS
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
     public static String LabelOther;
+    public static String LabelPassword;
+    public static String LabelPasswordRepeat;
     public static String LabelPerformanceCalculation;
     public static String LabelPerformanceChart;
     public static String LabelPortfolioPerformance;
@@ -327,6 +329,9 @@ public class Messages extends NLS
     public static String MsgNoIssuesFound;
     public static String MsgNoProfileFound;
     public static String MsgNoUpdatesAvailable;
+    public static String MsgOpenFile;
+    public static String MsgPasswordMinCharacters;
+    public static String MsgPasswordNotIdentical;
     public static String MsgPortfolioFromMissing;
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
@@ -396,6 +401,7 @@ public class Messages extends NLS
     public static String SystemMenuShowErrorLog;
     public static String SystemMenuWelcome;
     public static String TabTransactions;
+    public static String TitlePasswordDialog;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;

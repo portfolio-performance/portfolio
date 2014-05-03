@@ -19,12 +19,14 @@ public class LoadClientThread extends Thread
     private final IProgressMonitor monitor;
     private final Callback callback;
     private final File file;
+    private final char[] password;
 
-    public LoadClientThread(IProgressMonitor monitor, Callback callback, File file)
+    public LoadClientThread(IProgressMonitor monitor, Callback callback, File file, char[] password)
     {
         this.monitor = monitor;
         this.callback = callback;
         this.file = file;
+        this.password = password;
     }
 
     @Override
@@ -32,13 +34,13 @@ public class LoadClientThread extends Thread
     {
         try
         {
-            Client client = ClientFactory.load(file, monitor);
+            Client client = ClientFactory.load(file, password, monitor);
             callback.setClient(client);
         }
-        catch (Throwable t)
+        catch (Exception exception)
         {
-            callback.setErrorMessage(t.getMessage());
-            PortfolioPlugin.log(t);
+            callback.setErrorMessage(exception.getMessage());
+            PortfolioPlugin.log(exception);
         }
     }
 }

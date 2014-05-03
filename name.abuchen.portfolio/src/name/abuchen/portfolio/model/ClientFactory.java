@@ -7,15 +7,34 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.security.AlgorithmParameters;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -32,39 +51,244 @@ import com.thoughtworks.xstream.converters.basic.DateConverter;
 @SuppressWarnings("deprecation")
 public class ClientFactory
 {
+    private abstract static class Interceptor
+    {
+        protected Interceptor next;
+
+        public Interceptor(Interceptor next)
+        {
+            this.next = next;
+        }
+
+        abstract Client load(InputStream input) throws IOException;
+
+        abstract void save(Client client, OutputStream output) throws IOException;
+    }
+
+    private static class XmlSerialization extends Interceptor
+    {
+        public XmlSerialization()
+        {
+            super(null);
+        }
+
+        @Override
+        public Client load(InputStream input) throws IOException
+        {
+            try
+            {
+                Client client = (Client) xstream().fromXML(new InputStreamReader(input, Charset.forName("UTF-8"))); //$NON-NLS-1$
+
+                if (client.getVersion() > Client.CURRENT_VERSION)
+                    throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
+                                    client.getVersion()));
+
+                upgradeModel(client);
+
+                return client;
+            }
+            catch (XStreamException e)
+            {
+                throw new IOException(MessageFormat.format(Messages.MsgXMLFormatInvalid, e.getMessage()), e);
+            }
+        }
+
+        @Override
+        void save(Client client, OutputStream output) throws IOException
+        {
+            Writer writer = new OutputStreamWriter(output, Charset.forName("UTF-8")); //$NON-NLS-1$
+
+            xstream().toXML(client, writer);
+
+            writer.flush();
+        }
+    }
+
+    private static class Decryptor extends Interceptor
+    {
+        private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
+
+        private static final byte[] SALT = new byte[] { 112, 67, 103, 107, -92, -125, -112, -95, //
+                        -97, -114, 117, -56, -53, -69, -25, -28 };
+
+        private static final String AES = "AES"; //$NON-NLS-1$
+        private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"; //$NON-NLS-1$
+        private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"; //$NON-NLS-1$
+        private static final int ITERATION_COUNT = 65536;
+        private static final int KEY_LENGTH = 256;
+        private static final int IV_LENGTH = 16;
+
+        private char[] password;
+
+        public Decryptor(Interceptor next, char[] password)
+        {
+            super(next);
+            this.password = password;
+        }
+
+        @Override
+        public Client load(final InputStream input) throws IOException
+        {
+            try
+            {
+                // check signature
+                byte[] signature = new byte[SIGNATURE.length];
+                input.read(signature);
+                if (!Arrays.equals(signature, SIGNATURE))
+                    throw new IOException(Messages.MsgNotAPortflioFile);
+
+                // build secret key
+                SecretKey secret = buildSecretKey();
+
+                // read initialization vector
+                byte[] iv = new byte[IV_LENGTH];
+                input.read(iv);
+
+                // build cipher and stream
+                Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+                cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+                InputStream decrypted = new CipherInputStream(input, cipher);
+
+                // wrap with zip input stream
+                ZipInputStream zipin = new ZipInputStream(decrypted);
+                zipin.getNextEntry();
+
+                Client client = next.load(zipin);
+
+                // save secret key for next save
+                client.setSecret(secret);
+
+                return client;
+            }
+            catch (GeneralSecurityException e)
+            {
+                throw new IOException(MessageFormat.format(Messages.MsgErrorDecrypting, e.getMessage()), e);
+            }
+        }
+
+        @Override
+        void save(Client client, final OutputStream output) throws IOException
+        {
+            try
+            {
+                // get or build secret key
+                // if password is given, it is used (when the user chooses
+                // "save as" from the menu)
+                SecretKey secret = password != null ? buildSecretKey() : client.getSecret();
+                if (secret == null)
+                    throw new IOException(Messages.MsgPasswordMissing);
+
+                // save secret key for next save
+                client.setSecret(secret);
+
+                // write signature
+                output.write(SIGNATURE);
+
+                // build cipher and stream
+                Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+                cipher.init(Cipher.ENCRYPT_MODE, secret);
+
+                // write initialization vector
+                AlgorithmParameters params = cipher.getParameters();
+                byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+                output.write(iv);
+
+                // encrypted stream
+                OutputStream encrpyted = new CipherOutputStream(output, cipher);
+
+                // wrap with zip output stream
+                ZipOutputStream zipout = new ZipOutputStream(encrpyted);
+                zipout.putNextEntry(new ZipEntry("data.xml")); //$NON-NLS-1$
+
+                next.save(client, zipout);
+
+                zipout.closeEntry();
+                zipout.flush();
+                zipout.finish();
+                output.flush();
+            }
+            catch (GeneralSecurityException e)
+            {
+                throw new IOException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
+            }
+        }
+
+        private SecretKey buildSecretKey() throws NoSuchAlgorithmException, InvalidKeySpecException
+        {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
+            KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, KEY_LENGTH);
+            SecretKey tmp = factory.generateSecret(spec);
+            return new SecretKeySpec(tmp.getEncoded(), AES);
+        }
+    }
+
     private static XStream xstream;
 
-    public static Client load(File file, IProgressMonitor monitor) throws IOException
+    public static boolean isEncrypted(File file)
     {
+        return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
+    }
+
+    public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
+    {
+        if (isEncrypted(file) && password == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
         InputStream input = null;
-        Client client = null;
 
         try
         {
+            // progress monitor
             long bytesTotal = file.length();
             int increment = (int) Math.min(bytesTotal / 20L, Integer.MAX_VALUE);
             monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
             input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
 
-            client = (Client) xstream().fromXML(new InputStreamReader(input, Charset.forName("UTF-8"))); //$NON-NLS-1$
+            return buildChain(file, password).load(input);
         }
         catch (FileNotFoundException e)
         {
             throw new IOException(MessageFormat.format(Messages.MsgFileNotFound, file.getAbsolutePath()), e);
-        }
-        catch (XStreamException e)
-        {
-            throw new IOException(MessageFormat.format(Messages.MsgXMLFormatInvalid, e.getMessage()), e);
         }
         finally
         {
             if (input != null)
                 input.close();
         }
+    }
 
-        if (client.getVersion() != Client.CURRENT_VERSION)
-            throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, client.getVersion()));
+    public static void save(final Client client, final File file, char[] password) throws IOException
+    {
+        if (isEncrypted(file) && password == null && client.getSecret() == null)
+            throw new IOException(Messages.MsgPasswordMissing);
 
+        OutputStream output = null;
+
+        try
+        {
+            output = new FileOutputStream(file);
+
+            buildChain(file, password).save(client, output);
+        }
+        finally
+        {
+            if (output != null)
+                output.close();
+        }
+    }
+
+    private static Interceptor buildChain(File file, char[] password)
+    {
+        Interceptor chain = new XmlSerialization();
+
+        if (isEncrypted(file))
+            chain = new Decryptor(chain, password);
+
+        return chain;
+    }
+
+    private static void upgradeModel(Client client)
+    {
         client.doPostLoadInitialization();
 
         if (client.getVersion() == 1)
@@ -195,17 +419,6 @@ public class ClientFactory
             // do nothing --> added attribute types
             client.setVersion(20);
         }
-
-        return client;
-    }
-
-    public static void save(Client client, File file) throws IOException
-    {
-        String xml = xstream().toXML(client);
-
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-        writer.write(xml);
-        writer.close();
     }
 
     private static void fixAssetClassTypes(Client client)

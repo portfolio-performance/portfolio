@@ -15,9 +15,11 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -244,18 +246,6 @@ public class BindingHelper
         return txtValue;
     }
 
-    public Control bindSharesInput(Composite editArea, final String label, String property)
-    {
-        Text txtValue = createTextInput(editArea, label);
-        context.bindValue(
-                        SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
-                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Share)),
-                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Share)));
-
-        return txtValue;
-    }
-
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
@@ -278,10 +268,15 @@ public class BindingHelper
 
     private Text createTextInput(Composite editArea, final String label)
     {
+        return createTextInput(editArea, label, SWT.NONE);
+    }
+
+    private Text createTextInput(Composite editArea, final String label, int style)
+    {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
 
-        final Text txtValue = new Text(editArea, SWT.BORDER);
+        final Text txtValue = new Text(editArea, SWT.BORDER | style);
         txtValue.addFocusListener(new FocusAdapter()
         {
             @Override
@@ -314,12 +309,19 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final void bindStringInput(Composite editArea, final String label, String property)
+    public final IObservableValue bindStringInput(Composite editArea, final String label, String property)
     {
-        Text txtValue = createTextInput(editArea, label);
+        return bindStringInput(editArea, label, property, SWT.NONE);
+    }
 
-        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property));
+    public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style)
+    {
+        Text txtValue = createTextInput(editArea, label, style);
+
+        ISWTObservableValue observeText = SWTObservables.observeText(txtValue, SWT.Modify);
+        context.bindValue(observeText, BeansObservables.observeValue(model, property));
+
+        return observeText;
     }
 
     public final Control bindMandatoryStringInput(Composite editArea, final String label, String property)

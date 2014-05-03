@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Client
@@ -35,6 +37,8 @@ public class Client
 
     @Deprecated
     private Category rootCategory;
+
+    private transient SecretKey secret;
 
     public Client()
     {
@@ -236,6 +240,16 @@ public class Client
     public String getProperty(String key)
     {
         return properties.get(key);
+    }
+
+    /* package */SecretKey getSecret()
+    {
+        return secret;
+    }
+
+    /* package */void setSecret(SecretKey secret)
+    {
+        this.secret = secret;
     }
 
     private void deleteCrossEntries(List<? extends Transaction> transactions)

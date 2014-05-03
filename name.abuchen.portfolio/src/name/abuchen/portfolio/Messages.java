@@ -88,6 +88,8 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgErrorDecrypting;
+    public static String MsgErrorEncrypting;
     public static String MsgErrorsConvertingValue;
     public static String MsgFileNotFound;
     public static String MsgMissingFeedURL;
@@ -96,6 +98,8 @@ public class Messages extends NLS
     public static String MsgMoreResultsAvailable;
     public static String MsgNoResults;
     public static String MsgNotANumber;
+    public static String MsgNotAPortflioFile;
+    public static String MsgPasswordMissing;
     public static String MsgReadingFile;
     public static String MsgResponseContainsNoIndices;
     public static String MsgUnexpectedHeader;

@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,6 +24,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -32,6 +35,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
@@ -76,6 +80,8 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
     private Composite container;
     private PageBook book;
     private AbstractFinanceView view;
+
+    private Control focus;
 
     // //////////////////////////////////////////////////////////////
     // init
@@ -154,7 +160,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
             @Override
             public void createContainer(Composite parent)
             {
-                createContainerWithMessage(parent, message, false);
+                createContainerWithMessage(parent, message, false, ClientFactory.isEncrypted(clientFile.toFile()));
             }
         });
     }
@@ -199,12 +205,16 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         {
             createContainerWithViews(parent);
         }
+        else if (ClientFactory.isEncrypted(clientFile.toFile()))
+        {
+            createContainerWithMessage(parent, MessageFormat.format(Messages.MsgOpenFile, getPartName()), false, true);
+        }
         else
         {
             ProgressBar bar = createContainerWithMessage(parent,
-                            MessageFormat.format(Messages.MsgLoadingFile, getPartName()), true);
+                            MessageFormat.format(Messages.MsgLoadingFile, getPartName()), true, false);
 
-            new LoadClientThread(new ProgressMonitor(bar), this, clientFile.toFile()).start();
+            new LoadClientThread(new ProgressMonitor(bar), this, clientFile.toFile(), null).start();
         }
     }
 
@@ -221,45 +231,91 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
 
         sidebar.selectDefaultView();
+
+        focus = book;
     }
 
-    private ProgressBar createContainerWithMessage(Composite parent, String message, boolean showProgressBar)
+    /**
+     * Creates window with logo and message. Optional a progress bar (while
+     * loading) or a password input field (if encrypted).
+     */
+    private ProgressBar createContainerWithMessage(Composite parent, String message, boolean showProgressBar,
+                    boolean showPasswordField)
     {
+        ProgressBar bar = null;
+
         container = new Composite(parent, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         container.setLayout(new FormLayout());
-
-        Label label = new Label(container, SWT.CENTER | SWT.WRAP);
-        label.setText(message);
 
         Label image = new Label(container, SWT.BORDER);
         image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_SMALL));
 
         FormData data = new FormData();
-        data.top = new FormAttachment(50);
-        data.left = new FormAttachment(50, -100);
-        data.width = 200;
-        label.setLayoutData(data);
-
-        data = new FormData();
-        data.bottom = new FormAttachment(label, -10);
-        data.left = new FormAttachment(label, 0, SWT.CENTER);
+        data.top = new FormAttachment(50, -50);
+        data.left = new FormAttachment(50, -24);
         image.setLayoutData(data);
 
-        ProgressBar bar = null;
+        if (showPasswordField)
+        {
+            Text pwd = createPasswordField(parent);
 
-        if (showProgressBar)
+            data = new FormData();
+            data.top = new FormAttachment(image, 10);
+            data.left = new FormAttachment(50, -50);
+            data.width = 100;
+            pwd.setLayoutData(data);
+
+            focus = pwd;
+        }
+        else if (showProgressBar)
         {
             bar = new ProgressBar(container, SWT.SMOOTH);
 
             data = new FormData();
-            data.top = new FormAttachment(label, 10);
+            data.top = new FormAttachment(image, 10);
             data.left = new FormAttachment(50, -100);
             data.width = 200;
             bar.setLayoutData(data);
         }
 
+        Label label = new Label(container, SWT.CENTER | SWT.WRAP);
+        label.setText(message);
+
+        data = new FormData();
+        data.top = new FormAttachment(image, 40);
+        data.left = new FormAttachment(50, -100);
+        data.width = 200;
+        label.setLayoutData(data);
+
         return bar;
+    }
+
+    private Text createPasswordField(Composite parent)
+    {
+        final Text pwd = new Text(container, SWT.PASSWORD | SWT.BORDER);
+        pwd.setFocus();
+        pwd.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+                final String password = pwd.getText();
+                Display.getDefault().syncExec(new BuildContainerRunnable()
+                {
+                    @Override
+                    public void createContainer(Composite parent)
+                    {
+                        ProgressBar bar = createContainerWithMessage(parent,
+                                        MessageFormat.format(Messages.MsgLoadingFile, getPartName()), true, false);
+                        new LoadClientThread(new ProgressMonitor(bar), ClientEditor.this, clientFile.toFile(), password
+                                        .toCharArray()).start();
+                    }
+                });
+            }
+        });
+
+        return pwd;
     }
 
     protected void activateView(String target, Object parameter)
@@ -305,8 +361,8 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
     @Override
     public void setFocus()
     {
-        if (book != null)
-            book.setFocus();
+        if (focus != null)
+            focus.setFocus();
     }
 
     public Client getClient()
@@ -376,7 +432,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
 
         try
         {
-            ClientFactory.save(client, clientFile.toFile());
+            ClientFactory.save(client, clientFile.toFile(), null);
             isDirty = false;
             firePropertyChange(PROP_DIRTY);
 
@@ -384,6 +440,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         }
         catch (IOException e)
         {
+            PortfolioPlugin.log(e);
             ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
                             PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
@@ -407,13 +464,22 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         if (path == null)
             return;
 
+        File localFile = new File(path);
+        char[] password = null;
+
+        if (ClientFactory.isEncrypted(localFile))
+        {
+            PasswordDialog pwdDialog = new PasswordDialog(getSite().getShell());
+            if (pwdDialog.open() != PasswordDialog.OK)
+                return;
+            password = pwdDialog.getPassword().toCharArray();
+        }
+
         try
         {
-            File localFile = new File(path);
-
             IEditorInput newInput = new ClientEditorInput(new Path(path));
 
-            ClientFactory.save(client, localFile);
+            ClientFactory.save(client, localFile, password);
 
             clientFile = new Path(path);
 
@@ -427,6 +493,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         }
         catch (IOException e)
         {
+            PortfolioPlugin.log(e);
             ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
                             PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
