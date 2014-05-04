@@ -126,7 +126,7 @@ public final class TaxonomyTemplate
 
             String description = getString(bundle, childId + ".description"); //$NON-NLS-1$
             if (description != null)
-                child.setDescription(description);
+                child.setNote(description);
 
             parent.addChild(child);
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Portfolio implements TransactionOwner<PortfolioTransaction>
+public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
 {
     private String uuid;
     private String name;
@@ -30,21 +30,25 @@ public class Portfolio implements TransactionOwner<PortfolioTransaction>
         uuid = UUID.randomUUID().toString();
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;
     }
 
+    @Override
     public String getNote()
     {
         return note;
     }
 
+    @Override
     public void setNote(String note)
     {
         this.note = note;

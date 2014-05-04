@@ -6,9 +6,10 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-public class InvestmentPlan implements Adaptable
+public class InvestmentPlan implements Named, Adaptable
 {
     private String name;
+    private String note;
     private Security security;
     private Portfolio portfolio;
     private Account account;
@@ -31,14 +32,28 @@ public class InvestmentPlan implements Adaptable
         this.name = name;
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public String getNote()
+    {
+        return note;
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        this.note = note;
     }
 
     public Security getSecurity()

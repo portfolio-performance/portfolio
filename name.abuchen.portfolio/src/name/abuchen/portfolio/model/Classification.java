@@ -11,7 +11,7 @@ import java.util.Random;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.util.ColorConversion;
 
-public class Classification
+public class Classification implements Named
 {
     public static final class ByRank implements Comparator<Classification>, Serializable
     {
@@ -131,24 +131,28 @@ public class Classification
         this.id = id;
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;
     }
 
-    public String getDescription()
+    @Override
+    public String getNote()
     {
         return description;
     }
 
-    public void setDescription(String description)
+    @Override
+    public void setNote(String note)
     {
-        this.description = description;
+        this.description = note;
     }
 
     public String getColor()

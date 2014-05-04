@@ -364,6 +364,8 @@ public class ClientFactory
                 // do nothing --> added events (stock split) to securities
             case 19:
                 // do nothing --> added attribute types
+            case 20:
+                // do nothing --> added note to investment plan
                 client.setVersion(Client.CURRENT_VERSION);
             case Client.CURRENT_VERSION:
                 break;
