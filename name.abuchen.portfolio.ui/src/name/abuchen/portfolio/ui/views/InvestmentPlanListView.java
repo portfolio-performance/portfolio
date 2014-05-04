@@ -111,7 +111,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public void menuAboutToShow(IMenuManager manager)
             {
-                MenuManager m = new MenuManager(Messages.LabelAccounts);
+                MenuManager m = new MenuManager(Messages.LabelInvestmentPlans);
                 planColumns.menuAboutToShow(m);
                 manager.add(m);
 
