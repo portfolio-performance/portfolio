@@ -37,6 +37,7 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
@@ -144,24 +145,8 @@ public final class SecuritiesTable implements ModificationListener
         new StringEditingSupport(Security.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getNote();
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((Security) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new IsinColumn("1"); //$NON-NLS-1$

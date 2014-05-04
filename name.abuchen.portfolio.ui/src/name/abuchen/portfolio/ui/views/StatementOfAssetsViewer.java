@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
@@ -40,6 +41,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -434,35 +436,8 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                    return element.getSecurity().getNote();
-                else if (element.isAccount())
-                    return element.getAccount().getNote();
-                else
-                    return null;
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = null;
-
-                Element element = (Element) e;
-                if (element.isSecurity())
-                    note = element.getSecurity().getNote();
-                else if (element.isAccount())
-                    note = element.getAccount().getNote();
-
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
-            }
-        });
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -490,7 +465,7 @@ public class StatementOfAssetsViewer
             Column column = new AttributeColumn(attribute);
             column.setVisible(false);
             column.setSorter(null);
-            column.setEditingSupport(null);
+            column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
             support.addColumn(column);
         }
     }
@@ -782,6 +757,15 @@ public class StatementOfAssetsViewer
                 return type.cast(getSecurity());
             else if (type == Attributable.class)
                 return type.cast(getSecurity());
+            else if (type == Named.class)
+            {
+                if (isSecurity())
+                    return type.cast(getSecurity());
+                else if (isAccount())
+                    return type.cast(getAccount());
+                else
+                    return null;
+            }
             else
                 return null;
         }

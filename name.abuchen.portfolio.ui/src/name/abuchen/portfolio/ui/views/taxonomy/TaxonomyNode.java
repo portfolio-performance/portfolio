@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
@@ -83,6 +84,15 @@ public abstract class TaxonomyNode implements Adaptable
         public String getColor()
         {
             return classification.getColor();
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            if (type == Named.class)
+                return type.cast(classification);
+            else
+                return super.adapt(type);
         }
     }
 
@@ -166,6 +176,15 @@ public abstract class TaxonomyNode implements Adaptable
                 return Colors.EQUITY.asHex();
             else
                 return Colors.CASH.asHex();
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            if (type == Named.class)
+                return type.cast(assignment.getInvestmentVehicle());
+            else
+                return super.adapt(type);
         }
     }
 

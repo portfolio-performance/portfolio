@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -338,23 +339,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
 
         // note
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return ((SecurityPerformanceRecord) r).getSecurity().getNote();
-            }
-
-            @Override
-            public Image getImage(Object r)
-            {
-                String note = ((SecurityPerformanceRecord) r).getSecurity().getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "note")); //$NON-NLS-1$
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(new MarkDirtyListener(this));
         column.setVisible(false);
         recordColumns.addColumn(column);
     }

@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -243,24 +244,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
         ColumnViewerSorter.create(Account.class, "currentAmount").attachTo(column); //$NON-NLS-1$
         accountColumns.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Account) e).getNote();
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((Account) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
-            }
-        });
-        ColumnViewerSorter.create(Account.class, "note").attachTo(column); //$NON-NLS-1$
-        new StringEditingSupport(Account.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
         accountColumns.createColumns();
