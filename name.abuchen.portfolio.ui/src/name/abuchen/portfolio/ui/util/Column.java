@@ -192,7 +192,7 @@ public class Column
         return isMoveable;
     }
 
-    /* package */ColumnEditingSupport getEditingSupport()
+    public ColumnEditingSupport getEditingSupport()
     {
         return editingSupport;
     }

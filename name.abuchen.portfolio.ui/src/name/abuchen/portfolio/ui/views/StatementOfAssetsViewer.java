@@ -31,12 +31,15 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.MarkDirtyListener;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -131,10 +134,11 @@ public class StatementOfAssetsViewer
 
         assets = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
+        ColumnEditingSupport.prepare(assets);
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, assets, layout);
 
-        Column column = new Column(Messages.ColumnSharesOwned, SWT.RIGHT, 80);
+        Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
         {
             @Override
@@ -153,7 +157,7 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnName, SWT.LEFT, 300);
+        column = new Column("1", Messages.ColumnName, SWT.LEFT, 300); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -198,7 +202,7 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnTicker, SWT.None, 60);
+        column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -210,16 +214,8 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnISIN, SWT.None, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? element.getSecurity().getIsin() : null;
-            }
-        });
+        column = new IsinColumn("3"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
         column.setVisible(false);
         support.addColumn(column);
 

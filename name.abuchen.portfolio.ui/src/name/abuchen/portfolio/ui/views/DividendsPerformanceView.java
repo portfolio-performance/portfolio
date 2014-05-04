@@ -21,6 +21,8 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.MarkDirtyListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
@@ -30,6 +32,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -132,6 +135,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         records = new TableViewer(container, SWT.FULL_SELECTION);
         recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(), records, layout);
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
+        ColumnEditingSupport.prepare(records);
 
         createCommonColumns();
         createDividendColumns();
@@ -325,6 +329,12 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // isin
+        column = new IsinColumn();
+        column.getEditingSupport().addListener(new MarkDirtyListener(this));
+        column.setVisible(false);
         recordColumns.addColumn(column);
 
         // note

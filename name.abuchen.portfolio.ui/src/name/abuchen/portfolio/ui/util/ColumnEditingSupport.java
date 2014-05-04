@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -21,6 +23,22 @@ public abstract class ColumnEditingSupport
     public interface ModificationListener
     {
         void onModified(Object element, Object newValue, Object oldValue);
+    }
+
+    public static class MarkDirtyListener implements ModificationListener
+    {
+        private final AbstractFinanceView view;
+
+        public MarkDirtyListener(AbstractFinanceView view)
+        {
+            this.view = view;
+        }
+
+        @Override
+        public void onModified(Object element, Object newValue, Object oldValue)
+        {
+            view.markDirty();
+        }
     }
 
     private List<ModificationListener> listeners;

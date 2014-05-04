@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -334,16 +335,8 @@ import org.eclipse.ui.PlatformUI;
         column.setRemovable(false);
         support.addColumn(column);
 
-        column = new Column("isin", Messages.ColumnISIN, SWT.NONE, 100); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                Security security = ((TaxonomyNode) element).getBackingSecurity();
-                return security != null ? security.getIsin() : null;
-            }
-        });
+        column = new IsinColumn();
+        column.getEditingSupport().addListener(this);
         column.setVisible(false);
         support.addColumn(column);
 

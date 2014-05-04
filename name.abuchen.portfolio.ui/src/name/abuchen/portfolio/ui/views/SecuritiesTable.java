@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
@@ -163,16 +164,8 @@ public final class SecuritiesTable implements ModificationListener
         new StringEditingSupport(Security.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getIsin();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "isin")); //$NON-NLS-1$
+        column = new IsinColumn("1"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.LEFT, 80); //$NON-NLS-1$
@@ -185,6 +178,8 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "tickerSymbol").addListener(this).attachTo(column); //$NON-NLS-1$
+
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnWKN, SWT.LEFT, 60); //$NON-NLS-1$
@@ -197,6 +192,7 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "wkn").addListener(this).attachTo(column); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
 
