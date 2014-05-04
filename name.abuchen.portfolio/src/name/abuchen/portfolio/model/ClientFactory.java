@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
@@ -129,6 +130,8 @@ public class ClientFactory
         @Override
         public Client load(final InputStream input) throws IOException
         {
+            InputStream decrypted = null;
+
             try
             {
                 // check signature
@@ -147,7 +150,16 @@ public class ClientFactory
                 // build cipher and stream
                 Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
                 cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-                InputStream decrypted = new CipherInputStream(input, cipher);
+                decrypted = new CipherInputStream(input, cipher);
+
+                // read version information
+                byte[] bytes = new byte[4];
+                decrypted.read(bytes); // major version number
+                decrypted.read(bytes); // version number
+                int version = ByteBuffer.wrap(bytes).getInt();
+
+                if (version > Client.CURRENT_VERSION)
+                    throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
 
                 // wrap with zip input stream
                 ZipInputStream zipin = new ZipInputStream(decrypted);
@@ -163,6 +175,11 @@ public class ClientFactory
             catch (GeneralSecurityException e)
             {
                 throw new IOException(MessageFormat.format(Messages.MsgErrorDecrypting, e.getMessage()), e);
+            }
+            finally
+            {
+                if (decrypted != null)
+                    decrypted.close();
             }
         }
 
@@ -195,6 +212,10 @@ public class ClientFactory
 
                 // encrypted stream
                 OutputStream encrpyted = new CipherOutputStream(output, cipher);
+
+                // write version information
+                encrpyted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
+                encrpyted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
 
                 // wrap with zip output stream
                 ZipOutputStream zipout = new ZipOutputStream(encrpyted);
