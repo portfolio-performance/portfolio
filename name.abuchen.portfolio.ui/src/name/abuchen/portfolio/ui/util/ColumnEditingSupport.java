@@ -39,7 +39,7 @@ public abstract class ColumnEditingSupport
 
     public abstract void setValue(Object element, Object value) throws Exception;
 
-    public ColumnEditingSupport addListener(ModificationListener listener)
+    public final ColumnEditingSupport addListener(ModificationListener listener)
     {
         if (listeners == null)
             listeners = new ArrayList<ModificationListener>();
@@ -47,12 +47,12 @@ public abstract class ColumnEditingSupport
         return this;
     }
 
-    public void attachTo(Column column)
+    public final void attachTo(Column column)
     {
         column.setEditingSupport(this);
     }
 
-    protected void notify(Object element, Object newValue, Object oldValue)
+    protected final void notify(Object element, Object newValue, Object oldValue)
     {
         if (listeners != null)
         {

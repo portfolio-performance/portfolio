@@ -1,9 +1,16 @@
 package name.abuchen.portfolio.ui.util;
 
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 public class ColumnEditingSupportWrapper extends EditingSupport
 {
@@ -54,7 +61,12 @@ public class ColumnEditingSupportWrapper extends EditingSupport
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            PortfolioPlugin.log(e);
+            ErrorDialog dialog = new ErrorDialog(Display.getDefault().getActiveShell(), Messages.LabelError,
+                            Messages.LabelInputValidationFailed, new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID,
+                                            e.getMessage(), e), IStatus.ERROR);
+            dialog.setBlockOnOpen(false);
+            dialog.open();
         }
     }
 }
