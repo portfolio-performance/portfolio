@@ -34,20 +34,22 @@ public class MonthEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public Object getValue(Object element) throws Exception
+    public final Object getValue(Object element) throws Exception
     {
-        return descriptor().getReadMethod().invoke(element);
+        return descriptor().getReadMethod().invoke(adapt(element));
     }
 
     @Override
-    public void setValue(Object element, Object value) throws Exception
+    public final void setValue(Object element, Object value) throws Exception
     {
+        Object subject = adapt(element);
+
         Integer newValue = (Integer) value;
-        Integer oldValue = (Integer) descriptor().getReadMethod().invoke(element);
+        Integer oldValue = (Integer) descriptor().getReadMethod().invoke(subject);
 
         if (!newValue.equals(oldValue))
         {
-            descriptor().getWriteMethod().invoke(element, newValue);
+            descriptor().getWriteMethod().invoke(subject, newValue);
             notify(element, newValue, oldValue);
         }
     }

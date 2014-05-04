@@ -31,9 +31,9 @@ public class ListEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public Object getValue(Object element) throws Exception
+    public final Object getValue(Object element) throws Exception
     {
-        Object property = descriptor().getReadMethod().invoke(element);
+        Object property = descriptor().getReadMethod().invoke(adapt(element));
 
         for (int ii = 0; ii < comboBoxItems.size(); ii++)
         {
@@ -48,14 +48,16 @@ public class ListEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public void setValue(Object element, Object value) throws Exception
+    public final void setValue(Object element, Object value) throws Exception
     {
+        Object subject = adapt(element);
+
         Object newValue = comboBoxItems.get((Integer) value);
-        Object oldValue = descriptor().getReadMethod().invoke(element);
+        Object oldValue = descriptor().getReadMethod().invoke(subject);
 
         if (!newValue.equals(oldValue))
         {
-            descriptor().getWriteMethod().invoke(element, newValue);
+            descriptor().getWriteMethod().invoke(subject, newValue);
             notify(element, newValue, oldValue);
         }
     }

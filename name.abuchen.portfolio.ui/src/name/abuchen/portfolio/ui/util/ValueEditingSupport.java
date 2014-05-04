@@ -35,24 +35,26 @@ public class ValueEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public Object getValue(Object element) throws Exception
+    public final Object getValue(Object element) throws Exception
     {
-        return longToString.convert(descriptor().getReadMethod().invoke(element));
+        return longToString.convert(descriptor().getReadMethod().invoke(adapt(element)));
     }
 
     @Override
     public void setValue(Object element, Object value) throws Exception
     {
+        Object subject = adapt(element);
+
         Number newValue = (Number) stringToLong.convert(String.valueOf(value));
         if (int.class.isAssignableFrom(descriptor().getPropertyType())
                         || Integer.class.isAssignableFrom(descriptor().getPropertyType()))
             newValue = Integer.valueOf(newValue.intValue());
 
-        Number oldValue = (Number) descriptor().getReadMethod().invoke(element);
+        Number oldValue = (Number) descriptor().getReadMethod().invoke(subject);
 
         if (!newValue.equals(oldValue))
         {
-            descriptor().getWriteMethod().invoke(element, newValue);
+            descriptor().getWriteMethod().invoke(subject, newValue);
             notify(element, newValue, oldValue);
         }
     }

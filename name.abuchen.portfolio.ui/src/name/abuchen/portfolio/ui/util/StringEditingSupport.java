@@ -19,21 +19,23 @@ public class StringEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public Object getValue(Object element) throws Exception
+    public final Object getValue(Object element) throws Exception
     {
-        String v = (String) descriptor().getReadMethod().invoke(element);
+        String v = (String) descriptor().getReadMethod().invoke(adapt(element));
         return v != null ? v : ""; //$NON-NLS-1$
     }
 
     @Override
-    public void setValue(Object element, Object value) throws Exception
+    public final void setValue(Object element, Object value) throws Exception
     {
+        Object subject = adapt(element);
+
         String newValue = (String) value;
-        String oldValue = (String) descriptor().getReadMethod().invoke(element);
+        String oldValue = (String) descriptor().getReadMethod().invoke(subject);
 
         if (!value.equals(oldValue) && (!isMandatory || newValue.trim().length() > 0))
         {
-            descriptor().getWriteMethod().invoke(element, newValue);
+            descriptor().getWriteMethod().invoke(subject, newValue);
             notify(element, newValue, oldValue);
         }
     }

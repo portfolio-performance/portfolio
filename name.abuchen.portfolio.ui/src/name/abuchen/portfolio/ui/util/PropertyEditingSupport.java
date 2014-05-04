@@ -4,6 +4,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 
+import name.abuchen.portfolio.model.Adaptor;
+
 public abstract class PropertyEditingSupport extends ColumnEditingSupport
 {
     private Class<?> subjectType;
@@ -23,7 +25,12 @@ public abstract class PropertyEditingSupport extends ColumnEditingSupport
     @Override
     public boolean canEdit(Object element)
     {
-        return subjectType.isInstance(element);
+        return adapt(element) != null;
+    }
+
+    protected Object adapt(Object element)
+    {
+        return Adaptor.adapt(subjectType, element);
     }
 
     private PropertyDescriptor descriptorFor(Class<?> subjectType, String attributeName)
