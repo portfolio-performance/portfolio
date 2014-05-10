@@ -44,7 +44,7 @@ public class ClientEditorInput extends PlatformObject implements IPathEditorInpu
     @Override
     public String getName()
     {
-        return Messages.LabelPortfolioPerformanceFile;
+        return path != null ? path.toOSString() : Messages.LabelPortfolioPerformanceFile;
     }
 
     @Override
