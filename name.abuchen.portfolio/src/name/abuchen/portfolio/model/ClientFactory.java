@@ -156,10 +156,11 @@ public class ClientFactory
                 // read version information
                 byte[] bytes = new byte[4];
                 decrypted.read(bytes); // major version number
+                int majorVersion = ByteBuffer.wrap(bytes).getInt();
                 decrypted.read(bytes); // version number
                 int version = ByteBuffer.wrap(bytes).getInt();
 
-                if (version > Client.CURRENT_VERSION)
+                if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
 
                 // wrap with zip input stream
