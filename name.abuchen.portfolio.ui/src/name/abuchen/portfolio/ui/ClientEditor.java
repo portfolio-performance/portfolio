@@ -248,7 +248,8 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         container.setLayout(new FormLayout());
 
-        Label image = new Label(container, SWT.BORDER);
+        Label image = new Label(container, SWT.NONE);
+        image.setBackground(container.getBackground());
         image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_SMALL));
 
         FormData data = new FormData();
@@ -262,7 +263,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
 
             data = new FormData();
             data.top = new FormAttachment(image, 10);
-            data.left = new FormAttachment(50, -50);
+            data.left = new FormAttachment(image, 0, SWT.CENTER);
             data.width = 100;
             pwd.setLayoutData(data);
 
@@ -280,6 +281,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         }
 
         Label label = new Label(container, SWT.CENTER | SWT.WRAP);
+        label.setBackground(container.getBackground());
         label.setText(message);
 
         data = new FormData();
