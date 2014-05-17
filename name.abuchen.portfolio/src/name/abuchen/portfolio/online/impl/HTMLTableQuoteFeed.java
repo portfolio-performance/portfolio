@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
@@ -70,9 +71,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private static class DateColumn extends Column
     {
+        private DateFormatSymbols alternativeSymbols = null;
+
+        @SuppressWarnings("nls")
         public DateColumn()
         {
-            super(new String[] { "Datum" }); //$NON-NLS-1$
+            super(new String[] { "Datum" });
+
+            // some sites return "mär" instead of the default "mrz"
+            alternativeSymbols = new DateFormatSymbols(Locale.GERMANY);
+            alternativeSymbols.setShortMonths(new String[] { "jan", "feb", "mär", "apr", "may", "jun", "jul", "aug",
+                            "sep", "oct", "nov", "dec" });
         }
 
         @Override
@@ -86,8 +95,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             }
             catch (ParseException e)
             {
-                Date date = new SimpleDateFormat("dd. MMM yyyy").parse(text); //$NON-NLS-1$
-                price.setTime(date);
+                try
+                {
+                    Date date = new SimpleDateFormat("dd. MMM yyyy").parse(text); //$NON-NLS-1$
+                    price.setTime(date);
+                }
+                catch (ParseException e2)
+                {
+                    Date date = new SimpleDateFormat("dd. MMM yyyy", alternativeSymbols).parse(text); //$NON-NLS-1$
+                    price.setTime(date);
+                }
             }
         }
     }
