@@ -48,6 +48,9 @@ public final class GroupByTaxonomy
         // cash
         for (AccountSnapshot a : snapshot.getAccounts())
         {
+            if (a.getFunds() == 0)
+                continue;
+
             SecurityPosition sp = new SecurityPosition(null);
             sp.setShares(Values.Share.factor());
             sp.setPrice(new SecurityPrice(snapshot.getTime(), a.getFunds()));
