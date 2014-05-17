@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.ui.Messages;
@@ -33,6 +36,33 @@ public class NoteColumn extends Column
                 String note = getText(e);
                 return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                String note = getText(e);
+                if (note == null)
+                    return null;
+
+                // add a word boundary to correctly match a full line
+                note += "X"; //$NON-NLS-1$
+
+                StringBuilder tooltip = new StringBuilder();
+                Pattern p = Pattern.compile(".{0,80}\\b[ \\t\\n\\x0b\\r\\f,.]*"); //$NON-NLS-1$
+                Matcher m = p.matcher(note);
+                while (m.find())
+                {
+                    if (tooltip.length() > 0)
+                        tooltip.append("\n"); //$NON-NLS-1$
+
+                    String substring = note.substring(m.start(), m.end());
+                    tooltip.append(substring.replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+
+                // remove added character needed to create a word boundary
+                return tooltip.substring(0, tooltip.length() - 2);
+            }
+
         });
         setSorter(ColumnViewerSorter.create(Named.class, "note")); //$NON-NLS-1$
         new StringEditingSupport(Named.class, "note").attachTo(this); //$NON-NLS-1$

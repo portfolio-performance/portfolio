@@ -35,12 +35,14 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -260,6 +262,7 @@ import org.eclipse.ui.PlatformUI;
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION);
 
         ColumnEditingSupport.prepare(nodeViewer);
+        ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
 
         support = new ShowHideColumnHelper(getClass().getSimpleName() + '#' + getModel().getTaxonomy().getId(),
                         nodeViewer, layout);
