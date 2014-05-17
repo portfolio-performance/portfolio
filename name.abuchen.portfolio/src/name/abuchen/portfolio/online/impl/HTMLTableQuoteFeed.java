@@ -422,8 +422,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
         else
         {
-            String html = new Scanner(new File(source), "UTF-8").useDelimiter("\\A").next();
-            prices = new HTMLTableQuoteFeed().parseFromHTML(html, errors);
+            Scanner scanner = null;
+            try
+            {
+                scanner = new Scanner(new File(source), "UTF-8");
+                String html = scanner.useDelimiter("\\A").next();
+                prices = new HTMLTableQuoteFeed().parseFromHTML(html, errors);
+            }
+            finally
+            {
+                if (scanner != null)
+                    scanner.close();
+            }
         }
 
         for (Exception error : errors)
