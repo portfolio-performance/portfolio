@@ -338,11 +338,13 @@ import org.eclipse.ui.PlatformUI;
 
         column = new IsinColumn();
         column.getEditingSupport().addListener(this);
+        column.setSorter(null);
         column.setVisible(false);
         support.addColumn(column);
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(this);
+        column.setSorter(null);
         column.setVisible(false);
         support.addColumn(column);
     }
@@ -389,7 +391,7 @@ import org.eclipse.ui.PlatformUI;
             Column column = new AttributeColumn(attribute);
             column.setVisible(false);
             column.setSorter(null);
-            column.setEditingSupport(null);
+            column.getEditingSupport().addListener(this);
             support.addColumn(column);
         }
     }
