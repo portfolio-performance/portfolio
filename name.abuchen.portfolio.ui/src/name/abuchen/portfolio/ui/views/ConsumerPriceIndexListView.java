@@ -174,7 +174,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
                 if (index == null)
                     return;
 
-                getClient().getConsumerPriceIndeces().remove(index);
+                getClient().removeConsumerPriceIndex(index);
                 markDirty();
 
                 indeces.setInput(getClient().getConsumerPriceIndeces());

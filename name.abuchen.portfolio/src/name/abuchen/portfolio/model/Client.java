@@ -142,6 +142,11 @@ public class Client
         consumerPriceIndeces.add(record);
     }
 
+    public void removeConsumerPriceIndex(ConsumerPriceIndex record)
+    {
+        consumerPriceIndeces.remove(record);
+    }
+
     public void addAccount(Account account)
     {
         accounts.add(account);
