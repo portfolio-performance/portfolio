@@ -219,6 +219,9 @@ public class Messages extends NLS
     public static String JobMsgLoadingExchanges;
     public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
+    public static String JurisdictionFilesDownloadExplanation;
+    public static String JurisdictionFilesDownloadMessage;
+    public static String JurisdictionFilesDownloadTitle;
     public static String LabelAccounts;
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;

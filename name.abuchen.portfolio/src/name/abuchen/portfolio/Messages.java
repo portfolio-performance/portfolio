@@ -92,6 +92,7 @@ public class Messages extends NLS
     public static String MsgErrorEncrypting;
     public static String MsgErrorsConvertingValue;
     public static String MsgFileNotFound;
+    public static String MsgKeyLengthNotSupported;
     public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;

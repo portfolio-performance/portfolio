@@ -434,7 +434,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
 
         try
         {
-            ClientFactory.save(client, clientFile.toFile(), null);
+            ClientFactory.save(client, clientFile.toFile(), null, null);
             isDirty = false;
             firePropertyChange(PROP_DIRTY);
 
@@ -451,20 +451,33 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
     @Override
     public void doSaveAs()
     {
+        doSaveAs(null, null);
+    }
+
+    public void doSaveAs(String extension, String encryptionMethod)
+    {
         FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
-        if (clientFile != null)
+
+        // if an extension is given, make sure the file name proposal has the
+        // right extension in the save as dialog
+        String fileNameProposal = clientFile != null ? clientFile.lastSegment() : Messages.LabelUnnamedXml;
+        if (extension != null && !fileNameProposal.endsWith('.' + extension))
         {
-            dialog.setFileName(clientFile.lastSegment());
-            dialog.setFilterPath(clientFile.toOSString());
+            int p = fileNameProposal.lastIndexOf('.');
+            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
         }
-        else
-        {
-            dialog.setFileName(Messages.LabelUnnamedXml);
-        }
+
+        dialog.setFileName(fileNameProposal);
+        dialog.setFilterPath(clientFile != null ? clientFile.toOSString() : System.getProperty("user.home")); //$NON-NLS-1$
 
         String path = dialog.open();
         if (path == null)
             return;
+
+        // again make sure the extension is correct as the user might have
+        // changed it in the save dialog
+        if (extension != null && !path.endsWith('.' + extension))
+            path += '.' + extension;
 
         File localFile = new File(path);
         char[] password = null;
@@ -481,7 +494,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         {
             IEditorInput newInput = new ClientEditorInput(new Path(path));
 
-            ClientFactory.save(client, localFile, password);
+            ClientFactory.save(client, localFile, encryptionMethod, password);
 
             clientFile = new Path(path);
 

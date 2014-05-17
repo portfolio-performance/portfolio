@@ -117,15 +117,19 @@ public class ClientFactory
         private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"; //$NON-NLS-1$
         private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"; //$NON-NLS-1$
         private static final int ITERATION_COUNT = 65536;
-        private static final int KEY_LENGTH = 256;
         private static final int IV_LENGTH = 16;
 
-        private char[] password;
+        private static final int AES128_KEYLENGTH = 128;
+        private static final int AES256_KEYLENGTH = 256;
 
-        public Decryptor(Interceptor next, char[] password)
+        private char[] password;
+        private int keyLength;
+
+        public Decryptor(Interceptor next, String method, char[] password)
         {
             super(next);
             this.password = password;
+            this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
         }
 
         @Override
@@ -140,6 +144,14 @@ public class ClientFactory
                 input.read(signature);
                 if (!Arrays.equals(signature, SIGNATURE))
                     throw new IOException(Messages.MsgNotAPortflioFile);
+
+                // read encryption method
+                int method = input.read();
+                this.keyLength = method == 1 ? AES256_KEYLENGTH : AES128_KEYLENGTH;
+
+                // check if key length is supported
+                if (!isKeyLengthSupported(this.keyLength))
+                    throw new IOException(Messages.MsgKeyLengthNotSupported);
 
                 // build secret key
                 SecretKey secret = buildSecretKey();
@@ -190,6 +202,10 @@ public class ClientFactory
         {
             try
             {
+                // check if key length is supported
+                if (!isKeyLengthSupported(this.keyLength))
+                    throw new IOException(Messages.MsgKeyLengthNotSupported);
+
                 // get or build secret key
                 // if password is given, it is used (when the user chooses
                 // "save as" from the menu)
@@ -202,6 +218,9 @@ public class ClientFactory
 
                 // write signature
                 output.write(SIGNATURE);
+
+                // write method
+                output.write(keyLength == AES256_KEYLENGTH ? 1 : 0);
 
                 // build cipher and stream
                 Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
@@ -239,7 +258,7 @@ public class ClientFactory
         private SecretKey buildSecretKey() throws NoSuchAlgorithmException, InvalidKeySpecException
         {
             SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
-            KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, KEY_LENGTH);
+            KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, keyLength);
             SecretKey tmp = factory.generateSecret(spec);
             return new SecretKeySpec(tmp.getEncoded(), AES);
         }
@@ -250,6 +269,18 @@ public class ClientFactory
     public static boolean isEncrypted(File file)
     {
         return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
+    }
+
+    public static boolean isKeyLengthSupported(int keyLength)
+    {
+        try
+        {
+            return keyLength <= Cipher.getMaxAllowedKeyLength(Decryptor.CIPHER_ALGORITHM);
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
+        }
     }
 
     public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
@@ -267,7 +298,7 @@ public class ClientFactory
             monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
             input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
 
-            return buildChain(file, password).load(input);
+            return buildChain(file, null, password).load(input);
         }
         catch (FileNotFoundException e)
         {
@@ -280,7 +311,7 @@ public class ClientFactory
         }
     }
 
-    public static void save(final Client client, final File file, char[] password) throws IOException
+    public static void save(final Client client, final File file, String method, char[] password) throws IOException
     {
         if (isEncrypted(file) && password == null && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
@@ -291,7 +322,7 @@ public class ClientFactory
         {
             output = new FileOutputStream(file);
 
-            buildChain(file, password).save(client, output);
+            buildChain(file, method, password).save(client, output);
         }
         finally
         {
@@ -300,12 +331,12 @@ public class ClientFactory
         }
     }
 
-    private static Interceptor buildChain(File file, char[] password)
+    private static Interceptor buildChain(File file, String method, char[] password)
     {
         Interceptor chain = new XmlSerialization();
 
         if (isEncrypted(file))
-            chain = new Decryptor(chain, password);
+            chain = new Decryptor(chain, method, password);
 
         return chain;
     }

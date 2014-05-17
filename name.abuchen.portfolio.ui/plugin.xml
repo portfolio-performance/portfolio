@@ -107,10 +107,45 @@
                   id="org.eclipse.ui.file.save"
                   commandId="org.eclipse.ui.file.save">
             </command>
-            <command
-                  id="org.eclipse.ui.file.save"
-                  commandId="org.eclipse.ui.file.saveAs">
-            </command>
+            <menu
+                  id="%command.saveAs.name"
+                  label="Speichern unter">
+               <command
+                     commandId="name.abuchen.portfolio.ui.menus.saveAsCommand"
+                     label="%command.saveAs.xml"
+                     style="push">
+                  <parameter
+                        name="name.abuchen.portfolio.ui.param.extension"
+                        value="xml">
+                  </parameter>
+               </command>
+               <command
+                     commandId="name.abuchen.portfolio.ui.menus.saveAsCommand"
+                     label="%command.saveAs.AES128"
+                     style="push">
+                  <parameter
+                        name="name.abuchen.portfolio.ui.param.extension"
+                        value="portfolio">
+                  </parameter>
+                  <parameter
+                        name="name.abuchen.portfolio.ui.param.encryptionmethod"
+                        value="AES128">
+                  </parameter>
+               </command>
+               <command
+                     commandId="name.abuchen.portfolio.ui.menus.saveAsCommand"
+                     label="%command.saveAs.AES256"
+                     style="push">
+                  <parameter
+                        name="name.abuchen.portfolio.ui.param.extension"
+                        value="portfolio">
+                  </parameter>
+                  <parameter
+                        name="name.abuchen.portfolio.ui.param.encryptionmethod"
+                        value="AES256">
+                  </parameter>
+               </command>
+            </menu>
             <separator
                   name="name.abuchen.portfolio.ui.menus.operationsSeparator"
                   visible="true">
@@ -255,6 +290,21 @@
             id="name.abuchen.portfolio.ui.commands.consistencyChecksCommand"
             name="%command.consistencyChecks.name">
       </command>
+      <command
+            categoryId="name.abuchen.portfolio.ui.commands.category"
+            id="name.abuchen.portfolio.ui.menus.saveAsCommand"
+            name="%command.saveAs.name">
+         <commandParameter
+               id="name.abuchen.portfolio.ui.param.extension"
+               name="extension"
+               optional="false">
+         </commandParameter>
+         <commandParameter
+               id="name.abuchen.portfolio.ui.param.encryptionmethod"
+               name="encryptionmethod"
+               optional="true">
+         </commandParameter>
+      </command>
    </extension>
 
    <extension
@@ -314,6 +364,15 @@
       <handler
             class="name.abuchen.portfolio.ui.handlers.RunConsistencyChecksHandler"
             commandId="name.abuchen.portfolio.ui.commands.consistencyChecksCommand">
+         <activeWhen>
+            <with variable="activeEditorId">
+               <equals value="name.abuchen.portfolio.ui.editor"/>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="name.abuchen.portfolio.ui.handlers.SaveAsFileHandler"
+            commandId="name.abuchen.portfolio.ui.menus.saveAsCommand">
          <activeWhen>
             <with variable="activeEditorId">
                <equals value="name.abuchen.portfolio.ui.editor"/>
