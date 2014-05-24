@@ -11,7 +11,6 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
 
@@ -41,9 +40,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Spinner;
 
-public class SecurityTaxonomyPage extends AbstractWizardPage
+public class SecurityTaxonomyPage extends AbstractPage
 {
 
     private static final class ClassificationNotTwiceValidator extends MultiValidator
@@ -126,18 +126,16 @@ public class SecurityTaxonomyPage extends AbstractWizardPage
     }
 
     public static final String PAGE_NAME = "taxonomies"; //$NON-NLS-1$
-    private EditSecurityModel model;
+    private final EditSecurityModel model;
+    private final BindingHelper bindings;
     private Font boldFont;
     private List<ValidationStatusProvider> validators = new ArrayList<ValidationStatusProvider>();
-    private BindingHelper bindings;
 
-    public SecurityTaxonomyPage(EditSecurityModel model)
+    public SecurityTaxonomyPage(EditSecurityModel model, BindingHelper bindings)
     {
-        super(PAGE_NAME);
         this.model = model;
-        setTitle(Messages.EditWizardMasterDataTitle);
-        setDescription(Messages.EditWizardMasterDataDescription);
-
+        this.bindings = bindings;
+        setTitle(Messages.LabelTaxonomies);
     }
 
     @Override
@@ -151,16 +149,6 @@ public class SecurityTaxonomyPage extends AbstractWizardPage
         setControl(container);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
-        bindings = new BindingHelper(model)
-        {
-            @Override
-            public void onValidationStatusChanged(IStatus status)
-            {
-                boolean isOK = status.getSeverity() == IStatus.OK;
-                setErrorMessage(isOK ? null : status.getMessage());
-                setPageComplete(isOK);
-            }
-        };
         final Composite taxonomyPicker = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span(2, 1).grab(true, false).applyTo(taxonomyPicker);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(taxonomyPicker);
@@ -176,15 +164,20 @@ public class SecurityTaxonomyPage extends AbstractWizardPage
         label.setFont(boldFont);
         label.setText(designation.getTaxonomy().getName());
 
-        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(label);
+        boolean isFirst = designation.equals(model.getDesignations().get(0));
+
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).align(SWT.BEGINNING, SWT.CENTER)
+                        .indent(0, isFirst ? 0 : 20).applyTo(label);
 
         // drop-down selection block
         addBlock(taxonomyPicker, designation);
 
         // add button
-        final Button addButton = new Button(taxonomyPicker, SWT.PUSH);
-        addButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_ADD));
-        addButton.addSelectionListener(new SelectionAdapter()
+        Link link = new Link(taxonomyPicker, SWT.UNDERLINE_LINK);
+        link.setText(Messages.EditWizardMasterDataLinkNewCategory);
+        GridDataFactory.fillDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
+
+        link.addSelectionListener(new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
@@ -196,8 +189,6 @@ public class SecurityTaxonomyPage extends AbstractWizardPage
                 recreateTaxonomyPicker(taxonomyPicker);
             }
         });
-
-        GridDataFactory.fillDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(addButton);
     }
 
     private void addBlock(final Composite taxonomyPicker, final TaxonomyDesignation designation)
@@ -321,7 +312,7 @@ public class SecurityTaxonomyPage extends AbstractWizardPage
             }
         });
         combo.setInput(designation.getElements());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(combo.getControl());
+        GridDataFactory.fillDefaults().grab(false, false).applyTo(combo.getControl());
 
         classificationObservables.add(ViewersObservables.observeSingleSelection(combo));
     }

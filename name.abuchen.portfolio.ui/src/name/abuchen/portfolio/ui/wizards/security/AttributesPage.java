@@ -10,14 +10,12 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,6 +24,8 @@ import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
-public class AttributesPage extends AbstractWizardPage implements IMenuListener
+public class AttributesPage extends AbstractPage implements IMenuListener
 {
     private static final class ToAttributeStringConverter implements IConverter
     {
@@ -92,30 +92,17 @@ public class AttributesPage extends AbstractWizardPage implements IMenuListener
         }
     }
 
-    private EditSecurityModel model;
-    private BindingHelper bindings;
+    private final EditSecurityModel model;
+    private final BindingHelper bindings;
 
     private Composite attributeContainer;
     private Menu menu;
 
-    public AttributesPage(EditSecurityModel model)
+    public AttributesPage(EditSecurityModel model, BindingHelper bindings)
     {
-        super("attributes"); //$NON-NLS-1$
-
         this.model = model;
+        this.bindings = bindings;
         setTitle(Messages.EditWizardAttributesTitle);
-        setDescription(Messages.EditWizardAttributesDescription);
-
-        bindings = new BindingHelper(model)
-        {
-            @Override
-            public void onValidationStatusChanged(IStatus status)
-            {
-                boolean isOK = status.getSeverity() == IStatus.OK;
-                setErrorMessage(isOK ? null : status.getMessage());
-                setPageComplete(isOK);
-            }
-        };
     }
 
     @Override
@@ -145,6 +132,16 @@ public class AttributesPage extends AbstractWizardPage implements IMenuListener
         });
 
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(addButton);
+
+        parent.addDisposeListener(new DisposeListener()
+        {
+            @Override
+            public void widgetDisposed(DisposeEvent e)
+            {
+                if (menu != null && !menu.isDisposed())
+                    menu.dispose();
+            }
+        });
     }
 
     private void addAttributeBlock(Composite container, final AttributeDesignation attribute)
@@ -228,14 +225,5 @@ public class AttributesPage extends AbstractWizardPage implements IMenuListener
                 }
             });
         }
-    }
-
-    @Override
-    public void dispose()
-    {
-        if (menu != null && !menu.isDisposed())
-            menu.dispose();
-
-        super.dispose();
     }
 }

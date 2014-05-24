@@ -179,6 +179,12 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String feedURL;
     private boolean isRetired;
 
+    /**
+     * Used to pipe the status of a manually validated quote provider into the
+     * binding context
+     */
+    private String statusQuoteProvider;
+
     private List<TaxonomyDesignation> taxonomies = new ArrayList<TaxonomyDesignation>();
     private List<AttributeDesignation> attributes = new ArrayList<AttributeDesignation>();
 
@@ -291,6 +297,17 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$
     }
 
+    public String getStatusQuoteProvider()
+    {
+        return statusQuoteProvider;
+    }
+
+    public void setStatusQuoteProvider(String statusQuoteProvider)
+    {
+        firePropertyChange(
+                        "statusQuoteProvider", this.statusQuoteProvider, this.statusQuoteProvider = statusQuoteProvider); //$NON-NLS-1$
+    }
+
     public List<TaxonomyDesignation> getDesignations()
     {
         return taxonomies;
@@ -299,6 +316,11 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public List<AttributeDesignation> getAttributes()
     {
         return attributes;
+    }
+
+    public Security getSecurity()
+    {
+        return security;
     }
 
     @Override

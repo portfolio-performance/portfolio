@@ -29,6 +29,8 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -125,6 +127,9 @@ public class BindingHelper
     private Model model;
     private ModelStatusListener listener = new ModelStatusListener();
     private DataBindingContext context;
+
+    /** average char width needed to resize input fields on length */
+    private int averageCharWidth = -1;
 
     public BindingHelper(Model model)
     {
@@ -268,10 +273,10 @@ public class BindingHelper
 
     private Text createTextInput(Composite editArea, final String label)
     {
-        return createTextInput(editArea, label, SWT.NONE);
+        return createTextInput(editArea, label, SWT.NONE, SWT.DEFAULT);
     }
 
-    private Text createTextInput(Composite editArea, final String label, int style)
+    private Text createTextInput(Composite editArea, final String label, int style, int lenghtInCharacters)
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
@@ -285,7 +290,14 @@ public class BindingHelper
                 txtValue.selectAll();
             }
         });
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+
+        if (lenghtInCharacters == SWT.DEFAULT)
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+        else
+            GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
+                            .hint((lenghtInCharacters + 5) * getAverageCharWidth(txtValue), SWT.DEFAULT)
+                            .applyTo(txtValue);
+
         return txtValue;
     }
 
@@ -311,12 +323,18 @@ public class BindingHelper
 
     public final IObservableValue bindStringInput(Composite editArea, final String label, String property)
     {
-        return bindStringInput(editArea, label, property, SWT.NONE);
+        return bindStringInput(editArea, label, property, SWT.NONE, SWT.DEFAULT);
     }
 
     public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style)
     {
-        Text txtValue = createTextInput(editArea, label, style);
+        return bindStringInput(editArea, label, property, style, SWT.DEFAULT);
+    }
+
+    public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style,
+                    int lenghtInCharacters)
+    {
+        Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
 
         ISWTObservableValue observeText = SWTObservables.observeText(txtValue, SWT.Modify);
         context.bindValue(observeText, BeansObservables.observeValue(model, property));
@@ -346,7 +364,8 @@ public class BindingHelper
 
     public final Control bindISINInput(Composite editArea, final String label, String property)
     {
-        Text txtValue = createTextInput(editArea, label);
+        Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
+        txtValue.setTextLimit(12);
 
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
@@ -378,4 +397,16 @@ public class BindingHelper
         return btnCheckbox;
     }
 
+    private int getAverageCharWidth(Control control)
+    {
+        if (averageCharWidth > 0)
+            return averageCharWidth;
+
+        GC gc = new GC(control);
+        FontMetrics fm = gc.getFontMetrics();
+        this.averageCharWidth = fm.getAverageCharWidth();
+        gc.dispose();
+
+        return averageCharWidth;
+    }
 }

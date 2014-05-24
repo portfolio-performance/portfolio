@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,9 +15,13 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.MultiValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -26,7 +29,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -34,7 +36,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -47,7 +48,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-public class QuoteProviderPage extends AbstractWizardPage
+public class QuoteProviderPage extends AbstractPage
 {
     private static final String YAHOO = "YAHOO"; //$NON-NLS-1$
     private static final String HTML = "HTML"; //$NON-NLS-1$
@@ -60,7 +61,7 @@ public class QuoteProviderPage extends AbstractWizardPage
     private ComboViewer comboExchange;
     private Text textFeedURL;
 
-    private EditSecurityModel model;
+    private final EditSecurityModel model;
 
     /*
      * used to identify a changed ISIN and ticker symbol when switching pages
@@ -78,13 +79,25 @@ public class QuoteProviderPage extends AbstractWizardPage
      */
     private LoadHistoricalQuotes currentJob;
 
-    protected QuoteProviderPage(EditSecurityModel model)
+    protected QuoteProviderPage(EditSecurityModel model, BindingHelper bindings)
     {
-        super("feedprovider"); //$NON-NLS-1$
-        setTitle(Messages.EditWizardQuoteFeedTitle);
-        setDescription(Messages.EditWizardQuoteFeedDescription);
-
         this.model = model;
+
+        setTitle(Messages.EditWizardQuoteFeedTitle);
+
+        // validate that quote provider message is null -> no errors
+        bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
+        {
+            IObservableValue observable = BeansObservables.observeValue(QuoteProviderPage.this.model,
+                            "statusQuoteProvider"); //$NON-NLS-1$
+
+            @Override
+            protected IStatus validate()
+            {
+                return observable.getValue() == null ? ValidationStatus.ok() : ValidationStatus.error(observable
+                                .getValue().toString());
+            }
+        });
     }
 
     @Override
@@ -99,18 +112,7 @@ public class QuoteProviderPage extends AbstractWizardPage
             cacheExchanges = new HashMap<QuoteFeed, List<Exchange>>();
             cacheQuotes = new HashMap<Object, List<LatestSecurityPrice>>();
 
-            try
-            {
-                getContainer().run(true, false, new LoadExchangesJob());
-            }
-            catch (InvocationTargetException e)
-            {
-                PortfolioPlugin.log(e);
-            }
-            catch (InterruptedException e)
-            {
-                PortfolioPlugin.log(e);
-            }
+            new LoadExchangesJob().schedule();
 
             QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
 
@@ -143,12 +145,6 @@ public class QuoteProviderPage extends AbstractWizardPage
         {
             model.setFeedURL(textFeedURL.getText());
         }
-    }
-
-    @Override
-    public IWizardPage getNextPage()
-    {
-        return null;
     }
 
     @Override
@@ -236,9 +232,7 @@ public class QuoteProviderPage extends AbstractWizardPage
             if (!exchangeSelected)
                 comboExchange.setSelection(null);
 
-            setErrorMessage(exchangeSelected ? null : Messages.MsgErrorExchangeMissing);
-            setPageComplete(exchangeSelected);
-
+            model.setStatusQuoteProvider(exchangeSelected ? null : Messages.MsgErrorExchangeMissing);
         }
         else if (textFeedURL != null)
         {
@@ -247,22 +241,19 @@ public class QuoteProviderPage extends AbstractWizardPage
             if (hasURL)
                 textFeedURL.setText(model.getFeedURL());
 
-            setErrorMessage(hasURL ? null : Messages.EditWizardQuoteFeedMsgErrorMissingURL);
-            setPageComplete(hasURL);
+            model.setStatusQuoteProvider(hasURL ? null : Messages.EditWizardQuoteFeedMsgErrorMissingURL);
         }
         else
         {
             clearSampleQuotes();
-            setErrorMessage(null);
-            setPageComplete(true);
+            model.setStatusQuoteProvider(null);
         }
     }
 
     private void onExchangeChanged(SelectionChangedEvent event)
     {
         Exchange exchange = (Exchange) ((IStructuredSelection) event.getSelection()).getFirstElement();
-        setErrorMessage(null);
-        setPageComplete(true);
+        model.setStatusQuoteProvider(null);
 
         if (exchange == null)
         {
@@ -284,15 +275,13 @@ public class QuoteProviderPage extends AbstractWizardPage
         if (!hasURL)
         {
             clearSampleQuotes();
-            setErrorMessage(Messages.EditWizardQuoteFeedMsgErrorMissingURL);
-            setPageComplete(false);
+            model.setStatusQuoteProvider(Messages.EditWizardQuoteFeedMsgErrorMissingURL);
         }
         else
         {
             QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
             showSampleQuotes(feed, null, model.getFeedURL());
-            setErrorMessage(null);
-            setPageComplete(true);
+            model.setStatusQuoteProvider(null);
         }
     }
 
@@ -470,10 +459,16 @@ public class QuoteProviderPage extends AbstractWizardPage
         tableSampleData.refresh();
     }
 
-    class LoadExchangesJob implements IRunnableWithProgress
+    class LoadExchangesJob extends Job
     {
+        public LoadExchangesJob()
+        {
+            super(Messages.JobMsgLoadingExchanges);
+            setSystem(true);
+        }
+
         @Override
-        public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+        public IStatus run(IProgressMonitor monitor)
         {
             List<QuoteFeed> provider = Factory.getQuoteFeedProvider();
             monitor.beginTask(Messages.JobMsgLoadingExchanges, provider.size());
@@ -497,7 +492,7 @@ public class QuoteProviderPage extends AbstractWizardPage
                 monitor.worked(1);
             }
 
-            Display.getDefault().syncExec(new Runnable()
+            Display.getDefault().asyncExec(new Runnable()
             {
                 @Override
                 public void run()
@@ -536,6 +531,7 @@ public class QuoteProviderPage extends AbstractWizardPage
             });
 
             monitor.done();
+            return Status.OK_STATUS;
         }
     }
 
@@ -592,7 +588,7 @@ public class QuoteProviderPage extends AbstractWizardPage
 
                 });
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 Display.getDefault().asyncExec(new Runnable()
                 {

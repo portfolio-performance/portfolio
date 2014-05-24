@@ -39,7 +39,7 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
 
@@ -491,6 +491,7 @@ public final class SecuritiesTable implements ModificationListener
         {
             Column column = new AttributeColumn(attribute);
             column.setVisible(false);
+            column.getEditingSupport().addListener(this);
             support.addColumn(column);
         }
     }
@@ -670,7 +671,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new WizardDialog(getShell(), new EditSecurityWizard(getClient(), security));
+                return new EditSecurityDialog(getShell(), getClient(), security);
             }
 
             @Override

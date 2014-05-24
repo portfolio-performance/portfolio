@@ -12,7 +12,6 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
-    public static String CellEditor_Error;
     public static String CellEditor_NotANumber;
     public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesPickerAddBenchmark;
@@ -156,16 +155,13 @@ public class Messages extends NLS
     public static String DividendsDialogLabelPortfolioSharesHeld;
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
-    public static String EditWizardAttributesDescription;
     public static String EditWizardAttributesTitle;
-    public static String EditWizardMasterDataDescription;
-    public static String EditWizardMasterDataLinkToSearch;
+    public static String EditWizardMasterDataLinkNewCategory;
     public static String EditWizardMasterDataMsgClassificationMissing;
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
-    public static String EditWizardQuoteFeedDescription;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
@@ -372,7 +368,9 @@ public class Messages extends NLS
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuImportQuotes;
+    public static String SecurityMenuNewSecurity;
     public static String SecurityMenuRemoveFromWatchlist;
+    public static String SecurityMenuSearchYahoo;
     public static String SecurityMenuSell;
     public static String SecurityMenuStockSplit;
     public static String SecurityMenuTransfer;
