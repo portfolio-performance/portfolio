@@ -231,6 +231,7 @@ public class Messages extends NLS
     public static String LabelFullClassification;
     public static String LabelInfo;
     public static String LabelInputValidationFailed;
+    public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;

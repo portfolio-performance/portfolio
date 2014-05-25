@@ -28,6 +28,7 @@ import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.jface.action.Action;
@@ -154,7 +155,7 @@ public class PerformanceChartView extends AbstractHistoricView
             for (DataSeries item : picker.getSelectedDataSeries())
             {
                 if (item.getType() == Client.class)
-                    addClient(item, (Client) item.getInstance(), warnings);
+                    addClient(item, (ClientDataSeries) item.getInstance(), warnings);
                 else if (item.getType() == ConsumerPriceIndex.class)
                     addConsumerPriceIndex(item, warnings);
                 else if (item.getType() == Security.class)
@@ -190,25 +191,29 @@ public class PerformanceChartView extends AbstractHistoricView
         return index;
     }
 
-    private void addClient(DataSeries item, Client client, List<Exception> warnings)
+    private void addClient(DataSeries item, ClientDataSeries type, List<Exception> warnings)
     {
         PerformanceIndex clientIndex = getClientIndex(warnings);
         PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(clientIndex,
                         aggregationPeriod) : clientIndex;
 
-        if (client != null)
+        switch (type)
         {
-            ILineSeries series = chart.addDateSeries(aggregatedIndex.getDates(), //
-                            aggregatedIndex.getAccumulatedPercentage(), //
-                            Messages.PerformanceChartLabelAccumulatedIRR);
-            item.configure(series);
-        }
-        else
-        {
-            IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
-                            aggregatedIndex.getDeltaPercentage(), //
-                            aggregationPeriod != null ? aggregationPeriod.toString() : Messages.LabelAggregationDaily);
-            item.configure(barSeries);
+            case TOTALS:
+                ILineSeries series = chart.addDateSeries(aggregatedIndex.getDates(), //
+                                aggregatedIndex.getAccumulatedPercentage(), //
+                                Messages.PerformanceChartLabelAccumulatedIRR);
+                item.configure(series);
+                break;
+            case TRANSFERALS:
+                IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
+                                aggregatedIndex.getDeltaPercentage(), //
+                                aggregationPeriod != null ? aggregationPeriod.toString()
+                                                : Messages.LabelAggregationDaily);
+                item.configure(barSeries);
+                break;
+            default:
+                break;
         }
     }
 

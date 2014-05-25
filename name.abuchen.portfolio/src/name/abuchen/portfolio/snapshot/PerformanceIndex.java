@@ -123,6 +123,17 @@ public class PerformanceIndex
         return transferals;
     }
 
+    public long[] calculateInvestedCapital()
+    {
+        long[] investedCapital = new long[transferals.length];
+
+        long current = investedCapital[0] = totals[0];
+        for (int ii = 1; ii < investedCapital.length; ii++)
+            current = investedCapital[ii] = current + transferals[ii];
+
+        return investedCapital;
+    }
+
     public DateTime getFirstDataPoint()
     {
         for (int ii = 0; ii < totals.length; ii++)

@@ -259,7 +259,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
 
         if (showPasswordField)
         {
-            Text pwd = createPasswordField(parent);
+            Text pwd = createPasswordField(container);
 
             data = new FormData();
             data.top = new FormAttachment(image, 10);
@@ -293,7 +293,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         return bar;
     }
 
-    private Text createPasswordField(Composite parent)
+    private Text createPasswordField(Composite container)
     {
         final Text pwd = new Text(container, SWT.PASSWORD | SWT.BORDER);
         pwd.setFocus();
@@ -363,7 +363,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
     @Override
     public void setFocus()
     {
-        if (focus != null)
+        if (focus != null && !focus.isDisposed())
             focus.setFocus();
     }
 
