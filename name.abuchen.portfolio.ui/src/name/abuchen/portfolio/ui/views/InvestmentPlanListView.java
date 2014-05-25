@@ -21,9 +21,9 @@ import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
@@ -173,23 +173,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     private void addColumns(ShowHideColumnHelper support)
     {
-        Column column = new Column(Messages.ColumnName, SWT.None, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((InvestmentPlan) e).getName();
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_INVESTMENTPLAN);
-            }
-        });
-        ColumnViewerSorter.create(InvestmentPlan.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
-        new StringEditingSupport(InvestmentPlan.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
+        Column column = new NameColumn("0", Messages.ColumnName, SWT.None, 100); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.NONE, 250);

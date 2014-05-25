@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
@@ -26,6 +27,8 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
@@ -53,8 +56,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
@@ -300,40 +301,26 @@ import org.eclipse.ui.PlatformUI;
 
     protected void addDimensionColumn(ShowHideColumnHelper support)
     {
-        Column column = new Column("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
+        Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider()
         {
             @Override
-            public String getText(Object element)
+            public Image getImage(Object e)
             {
-                return ((TaxonomyNode) element).getName();
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-
-                if (node.isUnassignedCategory())
+                if (((TaxonomyNode) e).isUnassignedCategory())
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_UNASSIGNED_CATEGORY);
-                else if (node.getClassification() != null)
-                    return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-                else if (node.getBackingSecurity() != null)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
-                else
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return super.getImage(e);
             }
         });
-        new StringEditingSupport(TaxonomyNode.class, "name") //$NON-NLS-1$
+        new StringEditingSupport(Named.class, "name") //$NON-NLS-1$
         {
             @Override
             public boolean canEdit(Object element)
             {
                 if (((TaxonomyNode) element).isUnassignedCategory())
                     return false;
-                if (((TaxonomyNode) element).isAssignment())
-                    return false;
-                return super.canEdit(element);
+                else
+                    return super.canEdit(element);
             }
         }.setMandatory(true).addListener(this).attachTo(column);
         column.setRemovable(false);

@@ -30,6 +30,8 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
@@ -206,21 +208,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", accounts, layout); //$NON-NLS-1$
 
-        Column column = new Column(Messages.ColumnAccount, SWT.None, 150);
-        column.setLabelProvider(new ColumnLabelProvider()
+        Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider()
         {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Account) e).getName();
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
-            }
-
             @Override
             public Color getForeground(Object e)
             {
@@ -228,8 +218,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
             }
         });
-        ColumnViewerSorter.create(Account.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
-        new StringEditingSupport(Account.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
         column = new Column(Messages.ColumnBalance, SWT.RIGHT, 80);

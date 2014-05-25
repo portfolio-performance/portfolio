@@ -13,8 +13,8 @@ import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.util.Dates;
 
@@ -142,23 +142,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         portfolioColumns = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         portfolios, layout);
 
-        Column column = new Column(Messages.ColumnPortfolio, SWT.None, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Portfolio) e).getName();
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
-            }
-        });
-        ColumnViewerSorter.create(Portfolio.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
-        new StringEditingSupport(Portfolio.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
+        Column column = new NameColumn("0", Messages.ColumnPortfolio, SWT.None, 100); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
 
         column = new Column(Messages.ColumnReferenceAccount, SWT.None, 160);

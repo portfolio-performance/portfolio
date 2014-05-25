@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
@@ -28,7 +29,6 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
@@ -38,9 +38,12 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 import org.eclipse.jface.action.Action;
@@ -159,29 +162,15 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column("1", Messages.ColumnName, SWT.LEFT, 300); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
+        column = new NameColumn("1"); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                Element element = (Element) e;
-                if (element.isGroupByTaxonomy())
+                if (((Element) e).isGroupByTaxonomy())
                     return Messages.LabelTotalSum;
-                else if (element.isCategory())
-                    return element.getCategory().getClassification().toString();
-                else
-                    return element.getPosition().getDescription();
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                Element element = (Element) e;
-                if (element.isPosition())
-                    return PortfolioPlugin.image(element.isSecurity() ? PortfolioPlugin.IMG_SECURITY
-                                    : PortfolioPlugin.IMG_ACCOUNT);
-                return null;
+                return super.getText(e);
             }
 
             @Override
@@ -191,17 +180,27 @@ public class StatementOfAssetsViewer
             }
 
             @Override
-            public String getToolTipText(Object e)
+            public Image getImage(Object e)
             {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                    return element.getSecurity().toInfoString();
-                else if (element.isAccount())
-                    return element.getAccount().getName();
-                else
+                if (((Element) e).isCategory())
                     return null;
+                return super.getImage(e);
             }
         });
+        column.setEditingSupport(new StringEditingSupport(Named.class, "name") //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                boolean isCategory = ((Element) element).isCategory();
+                boolean isUnassignedCategory = isCategory
+                                && Classification.UNASSIGNED_ID.equals(((Element) element).getCategory()
+                                                .getClassification().getId());
+
+                return !isUnassignedCategory ? super.canEdit(element) : false;
+            }
+
+        }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
@@ -680,11 +679,6 @@ public class StatementOfAssetsViewer
             return category != null;
         }
 
-        public boolean isPosition()
-        {
-            return position != null;
-        }
-
         public boolean isSecurity()
         {
             return position != null && position.getSecurity() != null;
@@ -763,6 +757,8 @@ public class StatementOfAssetsViewer
                     return type.cast(getSecurity());
                 else if (isAccount())
                     return type.cast(getAccount());
+                else if (isCategory())
+                    return type.cast(getCategory().getClassification());
                 else
                     return null;
             }
