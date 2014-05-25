@@ -220,7 +220,7 @@ public class ClientFactory
                 output.write(SIGNATURE);
 
                 // write method
-                output.write(keyLength == AES256_KEYLENGTH ? 1 : 0);
+                output.write(secret.getEncoded().length * 8 == AES256_KEYLENGTH ? 1 : 0);
 
                 // build cipher and stream
                 Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
