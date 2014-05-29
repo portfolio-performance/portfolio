@@ -197,6 +197,12 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                                 item.getLabel());
                 item.configure(ivSeries);
                 break;
+            case ABSOLUTE_DELTA:
+                ILineSeries dSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.calculateAbsoluteDelta(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(dSeries);
+                break;
             case TAXES:
                 ILineSeries txSeries = chart.addDateSeries(clientIndex.getDates(), //
                                 accumulateAndToDouble(clientIndex.getTaxes(), Values.Amount.divider()), //

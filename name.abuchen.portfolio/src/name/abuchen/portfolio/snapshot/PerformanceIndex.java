@@ -140,6 +140,16 @@ public class PerformanceIndex
         return investedCapital;
     }
 
+    public long[] calculateAbsoluteDelta()
+    {
+        long[] answer = calculateInvestedCapital();
+
+        for (int ii = 0; ii < answer.length; ii++)
+            answer[ii] = totals[ii] - answer[ii];
+
+        return answer;
+    }
+
     public DateTime getFirstDataPoint()
     {
         for (int ii = 0; ii < totals.length; ii++)

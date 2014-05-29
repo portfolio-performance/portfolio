@@ -61,7 +61,7 @@ import org.swtchart.LineStyle;
 {
     /* package */static enum ClientDataSeries
     {
-        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES;
+        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA;
     }
 
     /* package */static final class DataSeries
@@ -357,6 +357,10 @@ import org.swtchart.LineStyle;
                 series = new DataSeries(Client.class, ClientDataSeries.INVESTED_CAPITAL, Messages.LabelInvestedCapital,
                                 Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
                 series.setShowArea(true);
+                availableSeries.add(series);
+
+                series = new DataSeries(Client.class, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
+                                Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
                 availableSeries.add(series);
 
                 series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes, Display
