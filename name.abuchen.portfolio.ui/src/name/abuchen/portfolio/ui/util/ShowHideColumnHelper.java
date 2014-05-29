@@ -477,7 +477,15 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 if (visible.containsKey(column))
                     continue;
 
-                policy.create(column, null, column.getDefaultSortDirection(), column.getDefaultWidth());
+                if (column.hasOptions())
+                {
+                    for (Integer option : column.getOptions())
+                        policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
+                }
+                else
+                {
+                    policy.create(column, null, column.getDefaultSortDirection(), column.getDefaultWidth());
+                }
             }
         }
         finally

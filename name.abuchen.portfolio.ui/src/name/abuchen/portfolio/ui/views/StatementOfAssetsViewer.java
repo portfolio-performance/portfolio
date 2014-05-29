@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -45,6 +46,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -203,6 +205,11 @@ public class StatementOfAssetsViewer
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
         support.addColumn(column);
 
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -215,12 +222,25 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
+        column = new Column("12", Messages.ColumnWKN, SWT.None, 60); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                return element.isSecurity() ? element.getSecurity().getWkn() : null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new IsinColumn("3"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 60);
+        column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -233,7 +253,7 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnMarketValue, SWT.RIGHT, 80);
+        column = new Column("5", Messages.ColumnMarketValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -251,7 +271,7 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnShareInPercent, SWT.RIGHT, 80);
+        column = new Column("6", Messages.ColumnShareInPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -274,7 +294,7 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 60);
+        column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -292,7 +312,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnPurchaseValue, SWT.RIGHT, 80);
+        column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -312,7 +332,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnProfitLoss, SWT.RIGHT, 80);
+        column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -346,7 +366,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnIRRPerformance, SWT.RIGHT, 80);
+        column = new Column("10", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(Messages.LabelReportingYears, Messages.ColumnIRRPerformanceOption, 1, 2, 3, 4, 5, 10);
         column.setLabelProvider(new OptionLabelProvider()
         {
@@ -384,7 +404,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80);
+        column = new Column("11", Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(Messages.LabelReportingYears, Messages.ColumnTotalProfitLossOption, 1, 2, 3, 4, 5, 10);
         column.setLabelProvider(new OptionLabelProvider()
         {
@@ -422,24 +442,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnWKN, SWT.None, 60);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? element.getSecurity().getWkn() : null;
-            }
-        });
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new NoteColumn();
-        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setVisible(false);
-        support.addColumn(column);
-
+        addTaxonomyColumns();
         addAttributeColumns();
 
         support.createColumns();
@@ -465,6 +468,16 @@ public class StatementOfAssetsViewer
             column.setVisible(false);
             column.setSorter(null);
             column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+            support.addColumn(column);
+        }
+    }
+
+    private void addTaxonomyColumns()
+    {
+        for (Taxonomy taxonomy : client.getTaxonomies())
+        {
+            Column column = new TaxonomyColumn(taxonomy);
+            column.setVisible(false);
             support.addColumn(column);
         }
     }
@@ -748,9 +761,13 @@ public class StatementOfAssetsViewer
         public <T> T adapt(Class<T> type)
         {
             if (type == Security.class)
+            {
                 return type.cast(getSecurity());
+            }
             else if (type == Attributable.class)
+            {
                 return type.cast(getSecurity());
+            }
             else if (type == Named.class)
             {
                 if (isSecurity())
@@ -762,8 +779,19 @@ public class StatementOfAssetsViewer
                 else
                     return null;
             }
+            else if (type == InvestmentVehicle.class)
+            {
+                if (isSecurity())
+                    return type.cast(getSecurity());
+                else if (isAccount())
+                    return type.cast(getAccount());
+                else
+                    return null;
+            }
             else
+            {
                 return null;
+            }
         }
     }
 

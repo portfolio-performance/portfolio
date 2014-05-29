@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -191,6 +192,8 @@ public final class SecurityPerformanceRecord implements Adaptable
         else if (type == Attributable.class)
             return type.cast(security);
         else if (type == Named.class)
+            return type.cast(security);
+        else if (type == InvestmentVehicle.class)
             return type.cast(security);
         else
             return null;
