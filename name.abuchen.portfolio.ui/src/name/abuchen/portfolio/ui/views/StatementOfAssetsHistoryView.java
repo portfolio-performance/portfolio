@@ -197,6 +197,12 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                                 item.getLabel());
                 item.configure(ivSeries);
                 break;
+            case TAXES:
+                ILineSeries txSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                accumulateAndToDouble(clientIndex.getTaxes(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(txSeries);
+                break;
         }
     }
 
@@ -271,4 +277,17 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             answer[ii] = input[ii] / divider;
         return answer;
     }
+
+    private double[] accumulateAndToDouble(long[] input, double divider)
+    {
+        double[] answer = new double[input.length];
+        long current = 0;
+        for (int ii = 0; ii < answer.length; ii++)
+        {
+            current += input[ii];
+            answer[ii] = current / divider;
+        }
+        return answer;
+    }
+
 }

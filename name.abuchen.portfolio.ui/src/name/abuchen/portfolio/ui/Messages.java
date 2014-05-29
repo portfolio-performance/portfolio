@@ -219,6 +219,7 @@ public class Messages extends NLS
     public static String JurisdictionFilesDownloadMessage;
     public static String JurisdictionFilesDownloadTitle;
     public static String LabelAccounts;
+    public static String LabelAccumulatedTaxes;
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
     public static String LabelAvailableAttributes;

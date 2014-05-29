@@ -30,6 +30,7 @@ public class PerformanceIndex
     protected Date[] dates;
     protected long[] totals;
     protected long[] transferals;
+    protected long[] taxes;
     protected double[] accumulated;
     protected double[] delta;
 
@@ -121,6 +122,11 @@ public class PerformanceIndex
     public long[] getTransferals()
     {
         return transferals;
+    }
+
+    public long[] getTaxes()
+    {
+        return taxes;
     }
 
     public long[] calculateInvestedCapital()
