@@ -2,7 +2,7 @@
 <feature
       id="name.abuchen.portfolio.feature"
       label="Portfolio Performance"
-      version="0.12.2.qualifier"
+      version="0.13.1.qualifier"
       provider-name="Andreas Buchen">
 
    <description url="http://buchen.github.io/portfolio/">
@@ -69,14 +69,7 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          unpack="false"/>
 
    <plugin
-         id="com.springsource.com.thoughtworks.xstream"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.springsource.javax.xml.stream"
+         id="org.apache.servicemix.bundles.xstream"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -97,7 +90,7 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          unpack="false"/>
 
    <plugin
-         id="com.springsource.org.xmlpull"
+         id="org.apache.servicemix.bundles.xpp3"
          download-size="0"
          install-size="0"
          version="0.0.0"

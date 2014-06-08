@@ -24,7 +24,7 @@ public class OpenFileHandler
                     EModelService modelService)
     {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
+        dialog.setFilterExtensions(new String[] { "*.xml;*.portfolio" }); //$NON-NLS-1$
         dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
         String fileSelected = dialog.open();
 

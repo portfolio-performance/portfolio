@@ -15,9 +15,11 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -27,6 +29,8 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -123,6 +127,9 @@ public class BindingHelper
     private Model model;
     private ModelStatusListener listener = new ModelStatusListener();
     private DataBindingContext context;
+
+    /** average char width needed to resize input fields on length */
+    private int averageCharWidth = -1;
 
     public BindingHelper(Model model)
     {
@@ -244,18 +251,6 @@ public class BindingHelper
         return txtValue;
     }
 
-    public Control bindSharesInput(Composite editArea, final String label, String property)
-    {
-        Text txtValue = createTextInput(editArea, label);
-        context.bindValue(
-                        SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
-                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Share)),
-                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Share)));
-
-        return txtValue;
-    }
-
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
@@ -278,10 +273,15 @@ public class BindingHelper
 
     private Text createTextInput(Composite editArea, final String label)
     {
+        return createTextInput(editArea, label, SWT.NONE, SWT.DEFAULT);
+    }
+
+    private Text createTextInput(Composite editArea, final String label, int style, int lenghtInCharacters)
+    {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
 
-        final Text txtValue = new Text(editArea, SWT.BORDER);
+        final Text txtValue = new Text(editArea, SWT.BORDER | style);
         txtValue.addFocusListener(new FocusAdapter()
         {
             @Override
@@ -290,7 +290,14 @@ public class BindingHelper
                 txtValue.selectAll();
             }
         });
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+
+        if (lenghtInCharacters == SWT.DEFAULT)
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
+        else
+            GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
+                            .hint((lenghtInCharacters + 5) * getAverageCharWidth(txtValue), SWT.DEFAULT)
+                            .applyTo(txtValue);
+
         return txtValue;
     }
 
@@ -314,12 +321,25 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final void bindStringInput(Composite editArea, final String label, String property)
+    public final IObservableValue bindStringInput(Composite editArea, final String label, String property)
     {
-        Text txtValue = createTextInput(editArea, label);
+        return bindStringInput(editArea, label, property, SWT.NONE, SWT.DEFAULT);
+    }
 
-        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property));
+    public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style)
+    {
+        return bindStringInput(editArea, label, property, style, SWT.DEFAULT);
+    }
+
+    public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style,
+                    int lenghtInCharacters)
+    {
+        Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
+
+        ISWTObservableValue observeText = SWTObservables.observeText(txtValue, SWT.Modify);
+        context.bindValue(observeText, BeansObservables.observeValue(model, property));
+
+        return observeText;
     }
 
     public final Control bindMandatoryStringInput(Composite editArea, final String label, String property)
@@ -344,7 +364,8 @@ public class BindingHelper
 
     public final Control bindISINInput(Composite editArea, final String label, String property)
     {
-        Text txtValue = createTextInput(editArea, label);
+        Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
+        txtValue.setTextLimit(12);
 
         context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
                         BeansObservables.observeValue(model, property), //
@@ -376,4 +397,16 @@ public class BindingHelper
         return btnCheckbox;
     }
 
+    private int getAverageCharWidth(Control control)
+    {
+        if (averageCharWidth > 0)
+            return averageCharWidth;
+
+        GC gc = new GC(control);
+        FontMetrics fm = gc.getFontMetrics();
+        this.averageCharWidth = fm.getAverageCharWidth();
+        gc.dispose();
+
+        return averageCharWidth;
+    }
 }

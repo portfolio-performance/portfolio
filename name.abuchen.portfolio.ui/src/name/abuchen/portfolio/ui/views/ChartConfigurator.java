@@ -56,6 +56,11 @@ import org.swtchart.LineStyle;
 
 /* package */class ChartConfigurator extends Composite implements ConfigurationStoreOwner
 {
+    /* package */static enum ClientDataSeries
+    {
+        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA;
+    }
+
     /* package */static final class DataSeries
     {
         private Class<?> type;
@@ -189,7 +194,7 @@ import org.swtchart.LineStyle;
             if (type == Security.class)
                 return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
             else if (type == Client.class)
-                return prefix + Client.class.getSimpleName() + (instance != null ? "-totals" : "-transferals"); //$NON-NLS-1$ //$NON-NLS-2$
+                return prefix + Client.class.getSimpleName() + "-" + ((ClientDataSeries) instance).name().toLowerCase(); //$NON-NLS-1$
             else if (type == Account.class)
                 return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
             else if (type == Portfolio.class)
@@ -338,24 +343,40 @@ import org.swtchart.LineStyle;
         {
             case STATEMENT_OF_ASSETS:
             {
-                availableSeries.add(new DataSeries(Client.class, client, Messages.LabelTotalSum,
+                availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
                                 colorFor(Colors.TOTALS)));
 
-                DataSeries series = new DataSeries(Client.class, null, Messages.LabelTransferals, //
-                                Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
+                DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS,
+                                Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
                 series.setLineChart(false);
                 availableSeries.add(series);
+
+                series = new DataSeries(Client.class, ClientDataSeries.INVESTED_CAPITAL, Messages.LabelInvestedCapital,
+                                Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
+                series.setShowArea(true);
+                availableSeries.add(series);
+
+                series = new DataSeries(Client.class, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
+                                Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
+                availableSeries.add(series);
+
+                series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes, Display
+                                .getDefault().getSystemColor(SWT.COLOR_RED));
+                availableSeries.add(series);
+
                 break;
             }
             case PERFORMANCE:
             {
                 // accumulated performance
-                availableSeries.add(new DataSeries(Client.class, client, Messages.PerformanceChartLabelAccumulatedIRR,
-                                colorFor(Colors.TOTALS)));
+                availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS,
+                                Messages.PerformanceChartLabelAccumulatedIRR, colorFor(Colors.TOTALS)));
 
-                // daily change
-                DataSeries series = new DataSeries(Client.class, null, Messages.LabelAggregationDaily, Display
-                                .getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
+                // daily change - must be TRANSFERALS for historical reasons as
+                // it was stored this way in the XML file
+                DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS,
+                                Messages.LabelAggregationDaily, Display.getDefault()
+                                                .getSystemColor(SWT.COLOR_DARK_GRAY));
                 series.setLineChart(false);
                 availableSeries.add(series);
 

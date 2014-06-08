@@ -9,11 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Client
 {
-    /* package */static final int CURRENT_VERSION = 19;
+    /* package */static final int MAJOR_VERSION = 1;
+    /* package */static final int CURRENT_VERSION = 21;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -35,6 +38,8 @@ public class Client
 
     @Deprecated
     private Category rootCategory;
+
+    private transient SecretKey secret;
 
     public Client()
     {
@@ -137,6 +142,11 @@ public class Client
         consumerPriceIndeces.add(record);
     }
 
+    public void removeConsumerPriceIndex(ConsumerPriceIndex record)
+    {
+        consumerPriceIndeces.remove(record);
+    }
+
     public void addAccount(Account account)
     {
         accounts.add(account);
@@ -179,9 +189,21 @@ public class Client
     }
 
     @Deprecated
+    /* package */void setRootCategory(Category rootCategory)
+    {
+        this.rootCategory = rootCategory;
+    }
+
+    @Deprecated
     /* package */String getIndustryTaxonomy()
     {
         return industryTaxonomyId;
+    }
+
+    @Deprecated
+    /* package */void setIndustryTaxonomy(String industryTaxonomyId)
+    {
+        this.industryTaxonomyId = industryTaxonomyId;
     }
 
     public List<Taxonomy> getTaxonomies()
@@ -224,6 +246,16 @@ public class Client
     public String getProperty(String key)
     {
         return properties.get(key);
+    }
+
+    /* package */SecretKey getSecret()
+    {
+        return secret;
+    }
+
+    /* package */void setSecret(SecretKey secret)
+    {
+        this.secret = secret;
     }
 
     private void deleteCrossEntries(List<? extends Transaction> transactions)

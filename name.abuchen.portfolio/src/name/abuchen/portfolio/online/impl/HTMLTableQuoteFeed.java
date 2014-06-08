@@ -3,6 +3,9 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
@@ -68,9 +71,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private static class DateColumn extends Column
     {
+        private DateFormatSymbols alternativeSymbols = null;
+
+        @SuppressWarnings("nls")
         public DateColumn()
         {
-            super(new String[] { "Datum" }); //$NON-NLS-1$
+            super(new String[] { "Datum" });
+
+            // some sites return "mär" instead of the default "mrz"
+            alternativeSymbols = new DateFormatSymbols(Locale.GERMANY);
+            alternativeSymbols.setShortMonths(new String[] { "jan", "feb", "mär", "apr", "may", "jun", "jul", "aug",
+                            "sep", "oct", "nov", "dec" });
         }
 
         @Override
@@ -84,8 +95,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             }
             catch (ParseException e)
             {
-                Date date = new SimpleDateFormat("dd. MMM yyyy").parse(text); //$NON-NLS-1$
-                price.setTime(date);
+                try
+                {
+                    Date date = new SimpleDateFormat("dd. MMM yyyy").parse(text); //$NON-NLS-1$
+                    price.setTime(date);
+                }
+                catch (ParseException e2)
+                {
+                    Date date = new SimpleDateFormat("dd. MMM yyyy", alternativeSymbols).parse(text); //$NON-NLS-1$
+                    price.setTime(date);
+                }
             }
         }
     }
@@ -95,7 +114,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Rücknahmepreis.*", "Close.*" });
+            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*" });
         }
 
         @Override
@@ -234,7 +253,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         else
             userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0";
 
-        return parse(Jsoup.connect(url).userAgent(userAgent).get(), errors);
+        try
+        {
+            String escapedUrl = new URI(url).toASCIIString();
+            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).get(), errors);
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IOException(e);
+        }
     }
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors) throws IOException
@@ -412,8 +439,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
         else
         {
-            String html = new Scanner(new File(source), "UTF-8").useDelimiter("\\A").next();
-            prices = new HTMLTableQuoteFeed().parseFromHTML(html, errors);
+            Scanner scanner = null;
+            try
+            {
+                scanner = new Scanner(new File(source), "UTF-8");
+                String html = scanner.useDelimiter("\\A").next();
+                prices = new HTMLTableQuoteFeed().parseFromHTML(html, errors);
+            }
+            finally
+            {
+                if (scanner != null)
+                    scanner.close();
+            }
         }
 
         for (Exception error : errors)

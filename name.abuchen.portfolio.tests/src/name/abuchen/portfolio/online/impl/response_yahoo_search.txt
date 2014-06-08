@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="de-DE">
 <head>
@@ -7,16 +6,17 @@
     <meta name="description" content="Suchen Sie nach Aktienkursen, Fonds, ETFs, Indizes und Termingeschäften auf Yahoo! Finanzen.">
     <meta name="keywords" content="Aktiensuche, Kurssuche, Aktienkurse, WKN-Suche, ISIN, Ticker">
     
-<link rel="stylesheet" type="text/css" href="http://l.yimg.com/bm/combo?fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/reset-fonts-grids/2.0.0/mini/reset-fonts-grids.css&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/tabview/assets/skins/sam/2.0.0/mini/tabview.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_base.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/lookup.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_siab_lookup.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_lego.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_topnav_base_lego.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_topnav_theme_lego.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_portfolio.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_quotebar.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_footer_base.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_nav_footer_theme.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yui_helper.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/yfi_symbol_suggest.css&fi/common/p/d/static/css/2.0.200214/2.0.0/mini/lego.css" />
+<link rel="stylesheet" type="text/css" href="https://s.yimg.com/bm/combo?fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/reset-fonts-grids/2.0.0/mini/reset-fonts-grids.css&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/tabview/assets/skins/sam/2.0.0/mini/tabview.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_base.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/lookup.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_siab_lookup.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_lego.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_topnav_base_lego.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_topnav_theme_lego.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_portfolio.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_quotebar.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_footer_base.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_nav_footer_theme.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yui_helper.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_symbol_suggest.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/lego.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/yfi_theme_teal.css&fi/common/p/d/static/css/2.0.327871/2.0.0/mini/DE.css" />
+<script type="text/javascript" src="https://s.yimg.com/bm/combo?fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/yahoo-dom-event/2.0.0/mini/yahoo-dom-event.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/element/2.0.0/mini/element-min.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/get/2.0.0/mini/get.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/tabview/2.0.0/mini/tabview-min.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yui-min-3.5.1.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/yuiloader-dom-event/2.0.0/mini/yuiloader-dom-event.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/cookie/2.0.0/mini/cookie.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/connection/2.0.0/mini/connection.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/container/2.0.0/mini/container.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/datasource/2.0.0/mini/datasource.js&fi/common/p/d/static/js/2.0.327871/yui_2.8.0/build/autocomplete/2.0.0/mini/autocomplete.js"></script>
 </head>
-<body id="yfi_fp" class="yfi_lookup">
+<body id="yfi_fp" class="yfi_lookup yfin_nogs gsg-0">
     <!-- skip nav -->
     <a href="#y-nav-sec" id="skip_nav">Navigation überspringen</a>
     <!--skip nav -->
         
         <div id="yfi_fp_hd">
-	    <div class="yfi_doc">
-            <link type='text/css' rel='stylesheet' href='http://l.yimg.com/zz/combo?kx/ucs/uh/css/255/yunivhead-min.css&kx/ucs/uh/css/221/logo-min.css&kx/ucs/search/css/190/search_all-min.css&kx/ucs/search/css/190/search_buttons-min.css'/><style>/* customizable */
+            <div class="yfi_doc yog-hd" id="yog-hd">
+                <link type='text/css' rel='stylesheet' href='https://s.yimg.com/zz/combo?kx/ucs/uh/css/294/yunivhead-min.css&kx/ucs/uh/css/221/logo-min.css&kx/ucs/avatar/css/17/avatar-min.css&kx/ucs/mailcount/css/39/mailcount_v2-min.css&kx/ucs/mailcount/css/77/mail_preview-min.css&kx/ucs/search/css/190/search_all-min.css&kx/ucs/search/css/190/search_buttons-min.css&kx/ucs/uh/css/288/yunivhead_https-min.css&kx/yucs/uh_common/meta/3/css/meta-min.css'/><div class=""><style>/* customizable */
 #yUnivHead{}
 #yUnivHead .yuhead-bullet-down{background-position:right -119px;}
 
@@ -43,64 +43,113 @@
 	background:transparent;
 }
 /*logos*/
-#yUnivHead .yuhead-logo h2 {background-position:0px -120px;}
-#yUnivHead .yuhead-logo h2.small {background-position:0px -360px;}</style><div id="yUnivHead" class="yucs-de-de" data-lang="de-de" data-property="finance">        <a href="#yuhead-search" class="yucs-skipto-search yucs-activate">Zur Suche gehen.</a>        <div id="yuhead-hd" class="yuhead-clearfix">        <div id="yuhead-mepanel-cont">            <ul id="yuhead-mepanel" class="yucs-toolbar yucs-activate"  aria-label="Nutzerservices"><li class="yuhead-me yuhead-nodivide yuhead-nopad">    <a class="yuhead-signup" href="https://us.lrd.yahoo.com/_ylt=ApX13z1orMmERY2pky1W7rCtPqZG;_ylu=X3oDMTEzajBkMGRxBHNlYwNVSCBVc2VyIFN1cHBvcnQEc2xrA1VIIFJlZ2lzdGVy/SIG=15o698pi5/EXP=1334080899/**https%3A//edit.yahoo.com/config/eval_register%3F.src=quote%26.intl=de%26.lang=de-DE%26.done=http%3A//de.finance.yahoo.com/lookup%253fs=SAP.*%2526t=A%2526b=0%2526m=ALL" target="_top" rel="nofollow">    <em>Neuer Nutzer?</em> Registrieren</a></li><li class="yuhead-me">        <a href="https://us.lrd.yahoo.com/_ylt=AnRpdQl76QR93EBnHVuUfCGtPqZG;_ylu=X3oDMTEyMjcxNXExBHNlYwNVSCBVc2VyIFN1cHBvcnQEc2xrA1VIIFNpZ24gSW4-/SIG=15hfelgd4/EXP=1334080899/**https%3A//login.yahoo.com/config/login%3F.src=quote%26.intl=de%26.lang=de-DE%26.done=http%3A//de.finance.yahoo.com/lookup%253fs=SAP.*%2526t=A%2526b=0%2526m=ALL"  target="_top" rel="nofollow">    <em>Anmelden</em></a></li><li class="yuhead-me"><a href="http://us.lrd.yahoo.com/_ylt=Amo.bHo2s8yT1nnGtSSbRqKtPqZG;_ylu=X3oDMTB2dDlkZHNzBHNlYwNVSCBVc2VyIFN1cHBvcnQEc2xrA1VIIEhlbHA-/SIG=11t0trken/EXP=1334080899/**http%3A//help.yahoo.com/l/de/yahoo/finance/" rel="nofollow" target="_top">Hilfe</a></li></ul>        </div>        <div id="yuhead-promo"><style>/* panels */.yucs-sethp .yucs-sethp-panel {font-size:x-small;border:1px solid #4333BC;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:5px;background:#fff;width:360px;padding:10px 10px;position:absolute;z-index:100;margin-top:6px;}.yucs-sethp .pnt{background-position:-29px 0;background-repeat:no-repeat;height:6px;width:11px;position:absolute;left:50%;z-index:100;}.yucs-sethp .yucs-sethp-panel .yucs-sethp-panel-logo {background-position:0 -16px;background-repeat:no-repeat;display:block;font-size:0;height:37px;line-height:0;width:40px;text-indent:-1000px;overflow:hidden;float:left;}.yucs-sethp .myyhpbg {background-image:url(http://l.yimg.com/a/i/us/uh/bt2/myyhp_sprite_v1.gif);}.yucs-sethp .yucs-sethp-panel ol {width:300px;display:block;float:left;margin:0 0 10px;list-style:decimal inside;padding:0 0 0 10px;text-align:left;}.yucs-sethp .yucs-sethp-panel .hr {clear:both;text-align:center;}.yucs-sethp .yucs-sethp-panel .hr a {color:#000;}.yucs-sethp .hide {display:none;}</style><div class="yucs-sethp yucs-activate" data-prop="finance" data-detectscript="http://de.yahoo.com/includes/hdhpdetect.php"><a href="http://us.lrd.yahoo.com/_ylt=AkWG36dV3g4N987xRy_4z7GtPqZG;_ylu=X3oDMTFlbTdwMTRhBHNlYwNVSCBOZXR3b3JrIEVuZ2FnZW1lbnQEc2xrA1VIIEhvbWUgUGFnZSBTZXQ-/SIG=11fepga0b/EXP=1334080899/**http%3A//de.yahoo.com/bin/set" target="_top" rel="nofollow">Y! zur Startseite machen<abbr title="Yahoo!"></abbr> </a><div class="myyhpbg pnt hide">&nbsp;</div><div class="yucs-sethp-panel shdw hide"><div class="bd"><a title="Yahoo!" href="http://de.yahoo.com" class="yucs-sethp-panel-logo myyhpbg">Yahoo!</a><ol class="yuheadhpinstr"><li>Ziehen Sie das "Y!" auf das "Start"-Symbol.</li><li>Klicken Sie im Popup-Fenster auf "Ja".</li><li>Fertig!</li></ol><div class="hr"><p>Wenn dies nicht funktioniert, lesen Sie die <a href="http://us.lrd.yahoo.com/_ylt=AvGT9niYXF1n4EFyyCtwyIytPqZG;_ylu=X3oDMTFlbTdwMTRhBHNlYwNVSCBOZXR3b3JrIEVuZ2FnZW1lbnQEc2xrA1VIIEhvbWUgUGFnZSBTZXQ-/SIG=11fepga0b/EXP=1334080899/**http%3A//de.yahoo.com/bin/set"class="yuheadshps yuheadshpdetails"target="_top">ausführlichen Anweisungen</a></p><p><a href="javascript:void(0);" class="yucs-sethp-panel-close">Dieses Fenster schließen</a></p></div></div></div></div></div>        <div id="yuhead-com-links-cont">            <ul id="yuhead-com-links" class="yucs-toolbar yucs-activate" aria-label="Yahoo! Services">                                <li class="yuhead-com-link-item">    <a class="sp yuhead-ico-mail" href="http://us.lrd.yahoo.com/_ylt=AqAVZqa4M6UtbU63uSwsjc2tPqZG;_ylu=X3oDMTE1MWxsYWxiBHNlYwNVSCBOZXR3b3JrIE5hdmlnYXRpb24Ec2xrA1VIIE1haWw-/SIG=126jusva3/EXP=1334080899/**http%3A//de.mail.yahoo.com/%3F.intl=de%26.lang=de-DE" rel="nofollow" target="_top">Mail</a></li><li class="yuhead-com-link-item">    <a href="http://us.lrd.yahoo.com/_ylt=AiA_QQTLn.2TJ5mFgiIYCb2tPqZG;_ylu=X3oDMTFhNjJ1dnRmBHNlYwNVSCBOZXR3b3JrIE5hdmlnYXRpb24Ec2xrA1VIIE15IFlhaG9vIQ--/SIG=11bikf4u6/EXP=1334080899/**http%3A//de.my.yahoo.com/"     rel="nofollow"     target="_top">   Mein Y!    </a></li><li id="yuhead-com-home"><a class="sp yuhead-ico-home" href="http://us.lrd.yahoo.com/_ylt=AudOqjuGezBhqTBnFGMAK9ytPqZG;_ylu=X3oDMTE3c290bjZuBHNlYwNVSCBOZXR3b3JrIE5hdmlnYXRpb24Ec2xrA1VIIFlhaG9vIQ--/SIG=1183hr8p0/EXP=1334080899/**http%3A//de.yahoo.com/" rel="nofollow" target="_top">Yahoo!</a></li>            </ul>        </div>    </div>    <div id="yuhead-bd" class="yuhead-clearfix">        <div class="yuhead-logo">   <style>      .yuhead-logo h2{        width:266px;        height:38px;        background-image:url(http://l.yimg.com/a/i/brand/purplelogo/uh/de/20/finance/finance.png);        _background-image:url(http://l.yimg.com/a/i/brand/purplelogo/uh/de/20/finance/finance_de_v2-484852.gif);      }      .yuhead-logo a{        width:266px;        height:38px;      }      .yuhead-logo div.yuhead-comarketing {       width:266px;      }         </style>   <h2>      <a href="http://de.finance.yahoo.com/;_ylt=Av0ZeMdfsybmFKphhBRdrUqtPqZG;_ylu=X3oDMTFjdW5iMGo4BHNlYwNVSCBCcmFuZCBJZGVudGlmaWVyBHNsawNVSCBQcm9wZXJ0eSBMb2dv"       target="_top" tabindex="-1">         Yahoo! Deutschland Finanzen      </a>   </h2>   </div>        <div id="yuhead-search">        <div id="yuhead-sform-cont" class="yuhead-s-web yuhead-search-form">        <form role="search" class="yucs-search yucs-activate" target="_top"    action="http://us.lrd.yahoo.com/_ylt=AgyVQfoSp5TRAh_DMuLfFa.tPqZG;_ylu=X3oDMTB2dHRkMDd1BHNlYwNVSCBTZWFyY2gEc2xrA1VIIFdlYiBTZWFyY2g-/SIG=11l28barv/EXP=1334080899/*-http%3A//de.search.yahoo.com/search" method="get"><table role="presentation">   <tbody role="presentation"><tr role="presentation"><td class="yucs-form-input" role="presentation"> <label for="yuhead-sform-searchfield">     <span>Suche</span>             </label>                 <input autocomplete="off" type="text" class="sp yuhead-ico-mglass yuhead-search-hint yucs-search-field" name="p"                  data-sh="Suche"                                    data-gosurl=""                  id="yuhead-sform-searchfield"                 data-pubid="" /></td><td NOWRAP class="yucs-form-btn" role="presentation"><div class="yucs-btn-wrap">    <button class="yucs-sweb-btn" type="submit">Web-Suche</button></div>            </td>         </tr>        </tbody></table><input type="hidden" id="fr" name="fr" value="ush1-finance" /><!-- desktop device --></form>            </div>    </div>    </div>                    <!-- desktop device --></div>
-            
+#yUnivHead .yuhead-logo h2 {background-position:-350px top;}
+  #yUnivHead.yucs-en-au .yuhead-logo h2 {background-position:0px -120px;}
+/*  #yUnivHead.yucs-en-nz .yuhead-logo h2 {background-position:0px -120px;} */
+#yUnivHead .yuhead-logo h2.small {background-position:0px -360px;}</style><div id="yUnivHead" class="yucs-de-de" data-lang="de-de" data-property="finance" data-flight="1397460016" data-uhvc="/;_ylt=Ao4zFKYsMzuD1hqkwIF4CPitPqZG;_ylu=X3oDMTFkOTFpZ2hhBHNlYwNVSCBWaWV3IENvdW50BHNsawNVSCAyIFN0YW5kYXJkIFBhZ2UgVmlldw--">    <div class="yucs-eprivacy yucs-activate hide"     data-nagtext="Wenn Sie Yahoo nutzen, stimmen Sie der Verwendung von Cookies durch Yahoo und {thirdPartiesLink}Drittanbietern auf Yahoo zu{linkEnd}. Dies dient u. a. der Anpassung von Inhalten und Werbung. In unserer {cookieLink}Datenschutzerklärung erhalten Sie weitere Informationen{linkEnd}."     data-ylt-cookielink="https://us.lrd.yahoo.com/_ylt=AjKV7iL8MtnC38p9pE0dSvutPqZG;_ylu=X3oDMTFwNTdvMjc3BHNlYwNVSCBFVSBlUHJpdmFjeSBOYWcgYmFyBHNsawNVSCBFVSBlUHJpdmFjeSBDb29raWUgbGluaw--/SIG=1238oso9c/EXP=1398669616/**http%3A//info.yahoo.com/privacy/de/yahoo/cookies/"    data-ylt-aimlink="https://us.lrd.yahoo.com/_ylt=Av0kc45wCiLKDSrvMst7NiStPqZG;_ylu=X3oDMTFtMjZ0djRlBHNlYwNVSCBFVSBlUHJpdmFjeSBOYWcgYmFyBHNsawNVSCBFVSBlUHJpdmFjeSBBSU0gbGluaw--/SIG=12p81ttrv/EXP=1398669616/**http%3A//info.yahoo.com/privacy/de/yahoo/opt_out/targeting/details.html"    data-ylt-thirdPartieslink="https://us.lrd.yahoo.com/_ylt=AqafJA1ae3flkFJ4NJjrQLWtPqZG;_ylu=X3oDMTFtMjZ0djRlBHNlYwNVSCBFVSBlUHJpdmFjeSBOYWcgYmFyBHNsawNVSCBFVSBlUHJpdmFjeSBBSU0gbGluaw--/SIG=128m9qe8c/EXP=1398669616/**http%3A//info.yahoo.com/privacy/de/yahoo/thirdparties/"    data-ylt-nagbaropen="/;_ylt=AtBsCg1npZsr2RPu4XISuX.tPqZG;_ylu=X3oDMTFydW0wN3BvBHNlYwNVSCBFVSBlUHJpdmFjeSBOYWcgYmFyBHNsawNVSCBFVSBlUHJpdmFjeSBOYWdiYXIgb3BlbmVk"    data-ylt-nagbarclose="/;_ylt=Aptd4SGnLrKERs2kL.F7IdutPqZG;_ylu=X3oDMTFyZm90c2xuBHNlYwNVSCBFVSBlUHJpdmFjeSBOYWcgYmFyBHNsawNVSCBFVSBlUHJpdmFjeSBOYWdiYXIgY2xvc2Vk"    data-autohide="false"    data-linktarget="_top"    data-close-txt="Dieses Fenster schließen"></div>    <a href="#yuhead-search" class="yucs-skipto-search yucs-activate">Zur Suche gehen.</a>        <div id="yuhead-hd" class="yuhead-clearfix">        <div id="yuhead-mepanel-cont">            <ul id="yuhead-mepanel" class="yucs-toolbar yucs-activate"  aria-label="Nutzerservices"><li class="yuhead-me yuhead-nodivide yuhead-nopad">    <a class="yuhead-signup" href="https://us.lrd.yahoo.com/_ylt=ArZaEZMypLwl3B2Pe9vGJWWtPqZG;_ylu=X3oDMTEzajBkMGRxBHNlYwNVSCBVc2VyIFN1cHBvcnQEc2xrA1VIIFJlZ2lzdGVy/SIG=15p3j0ucr/EXP=1398669616/**https%3A//edit.yahoo.com/config/eval_register%3F.src=quote%26.intl=de%26.lang=de-DE%26.done=https%3A//de.finance.yahoo.com/lookup%253fs=BASF*%2526t=A%2526b=0%2526m=ALL" target="_top" rel="nofollow">    <em>Neuer Nutzer?</em> Registrieren</a></li><li class="yuhead-me">        <a href="https://login.yahoo.com/config/login;_ylt=AqoDLMEnqrovkhX87sGQd8CtPqZG;_ylu=X3oDMTEyMjcxNXExBHNlYwNVSCBVc2VyIFN1cHBvcnQEc2xrA1VIIFNpZ24gSW4-?.src=quote&.intl=de&.lang=de-DE&.done=https://de.finance.yahoo.com/lookup%3fs=BASF*%26t=A%26b=0%26m=ALL"  target="_top" rel="nofollow">    <em>Anmelden</em></a></li><li class="yuhead-me"><a href="https://help.yahoo.com/l/de/yahoo/finance/;_ylt=AlL.ePx.fVLnw9UjMG38CRmtPqZG;_ylu=X3oDMTEwczYxbnFtBHNlYwNVSCBVc2VyIFN1cHBvcnQgBHNsawNVSCBIZWxw" rel="nofollow" target="_top">Hilfe</a></li></ul>                                </div>        <div id="yuhead-promo"><a href="https://us.lrd.yahoo.com/_ylt=Av0qKgRAwTaPKzwLGLWjm4WtPqZG;_ylu=X3oDMTFlbTdwMTRhBHNlYwNVSCBOZXR3b3JrIEVuZ2FnZW1lbnQEc2xrA1VIIEhvbWUgUGFnZSBTZXQ-/SIG=11ql5odc2/EXP=1398669616/**http%3A//www.yahoo.com/bin/set/%3Filc=37" target="_top" rel="nofollow">Yahoo zur Startseite machen<abbr title="Yahoo!"></abbr></a></div>        <div id="yuhead-com-links-cont">            <ul id="yuhead-com-links" class="yucs-toolbar yucs-activate" aria-label="Yahoo Services">                                <li class="yuhead-com-link-item yucs-mailpreview-ancestor">    <a class="sp yltasis yuhead-ico-mail" href="https://us.lrd.yahoo.com/_ylt=AjkQy8_UnHhfvCdhxHq2_HetPqZG;_ylu=X3oDMTE5OGMwaGExBHNlYwNVSCBOZXR3b3JrIE5hdmlnYXRpb24gMTAwBHNsawNVSCBNYWls/SIG=126raf19u/EXP=1398669616/**http%3A//de.mail.yahoo.com/%3F.intl=de%26.lang=de-DE" rel="nofollow" target="_top">Mail</a><ul class="yucs-mail-preview-panel hide"    data-uri-scheme="http"     data-uri-path="ucs.query.yahoo.com/v1/console/yql"     data-mail-txt="Mail"    data-mail-view="Alle Yahoo Mails anzeigen"    data-mail-help-txt="Hilfe"    data-mail-help-url="http://help.yahoo.com/l/de/yahoo/mail/ymail/"    data-mail-loading-txt="Laden..."    data-languagetag="de-de"    data-mrd-crumb="vQSYFe7vFEU"    data-authstate="signedout"    data-middleauth-signin-text="Hier klicken, um Ihre Mail anzuzeigen"    data-popup-login-url="https://login.yahoo.com/config/login_verify2?.pd=c%3DOIVaOGq62e5hAP8Tv..nr5E3&.src=sc"    data-middleauthtext="Sie haben {count} neue Mails."    data-yltmessage-link="https://us.lrd.yahoo.com/_ylt=AtLdZ92oD_TEfVb_Dz6OJfmtPqZG;_ylu=X3oDMTFvaHNsNXF0BHNlYwNVSCBNYWlsIFByZXZpZXcgMTAwBHNsawNVSCBNYWlsIFByZXZpZXcgTWVzc2FnZSBMaW5r/SIG=132te4cgb/EXP=1398669616/**http%3A//mrd.mail.yahoo.com/msg%3Fmid=%7BmsgID%7D%26fid=Inbox%26src=uh%26.crumb="    data-yltviewall-link="https://us.lrd.yahoo.com/_ylt=AkmYRXXeuzUp5F.0oSamJUatPqZG;_ylu=X3oDMTFraDJvYzQzBHNlYwNVSCBNYWlsIFByZXZpZXcgMTAwBHNsawNVSCBNYWlsIFByZXZpZXcgVmlldyBBbGw-/SIG=11d58ve27/EXP=1398669616/**http%3A//de.mail.yahoo.com/"    data-yltpanelshown="/;_ylt=Avl0igGkV27hOuC0NIwOaGmtPqZG;_ylu=X3oDMTFtYWU5ZDFyBHNlYwNVSCBNYWlsIFByZXZpZXcgMTAwBHNsawNVSCBNYWlsIFByZXZpZXcgUGFuZWwgT3Blbg--"></ul></li><li class="yuhead-com-link-item">    <a href="https://us.lrd.yahoo.com/_ylt=ApxW63vYasOmC9XE9OvwsIWtPqZG;_ylu=X3oDMTFhNjJ1dnRmBHNlYwNVSCBOZXR3b3JrIE5hdmlnYXRpb24Ec2xrA1VIIE15IFlhaG9vIQ--/SIG=11bjbnat8/EXP=1398669616/**http%3A//de.my.yahoo.com/"     rel="nofollow"     target="_top">   Mein Yahoo    </a></li><li id="yuhead-com-home"><a class="sp yuhead-ico-home" href="https://us.lrd.yahoo.com/_ylt=AjVqbBYOUNKzVeeCwc2FQlWtPqZG;_ylu=X3oDMTFic2Zqb2wxBHNlYwNVSCBOZXR3b3JrIE5hdmlnYXRpb24gMTAwBHNsawNVSCBZYWhvbyE-/SIG=1185huseh/EXP=1398669616/**http%3A//de.yahoo.com/" rel="nofollow" target="_top">Yahoo</a></li>            </ul>        </div>    </div>    <div id="yuhead-bd" class="yuhead-clearfix">        <div class="yuhead-logo">   <style>      .yuhead-logo h2{        width:350px;        height:38px;        background-image:url(https://s1.yimg.com/rz/d/yahoo_finance_de-DE_s_f_pw_351x40_finance.png
+);        _background-image:url(https://s1.yimg.com/rz/d/yahoo_finance_de-DE_s_f_pw_351x40_finance.gif
+);      }      .yuhead-logo a{        width:350px;        height:38px;      }      .yuhead-logo div.yuhead-comarketing {       width:350px;      }      .yog-tablet #yUnivHead h2 {        background-position: -350px 5px !important;      }      .yog-smartphone #yUnivHead h2 {        background-position: -265px 0;        background-size: 534px;        margin-left: 26%;      }            .yog-tablet .yuhead-logo h2{       background-repeat: repeat-x;       }       .yog-tablet.yog-version-v2 #yUnivHead h2 {        background-position: center !important;      }      .yog-tablet #yUnivHead .yuhead-logo h2 {       height: 40px !important;       }       .yog-rtl.yog-smartphone #yUnivHead .yuhead-logo h2 {        background-position: -352px 0; !important;        background-size: 536px !important;        margin-left: 30% !important;        }                html[lang='ar'] .yog-rtl.yog-smartphone #yUnivHead .yuhead-logo h2 {        background-position: -386px 0; !important;        }        .yog-smartphone #yUnivHead h2.yuhead-music {            background-position: 0 0 !important;            width: 260px !important;        }                html[lang='en-US'] .yog-smartphone #yUnivHead h2 {        background-size:  auto 21px !important;        background-position: -350px 0;                }        html[lang='pt-BR'] .yog-smartphone #yUnivHead h2.yuhead-sports {        background-position: -265px 0 !important;        background-size: 534px;        margin-left: 17%;                }                html[lang='ar'] .yog-smartphone #yUnivHead h2.yuhead-omg {        background-position: -383px 0 !important;        background-size: 605px;        margin-left: 0;        width: auto;        }                html[lang='en-NZ'] .yog-smartphone #yUnivHead h2 {        background-size: auto;        background-position: 0px -358px;                }         html[lang='en-AU'] .yog-smartphone #yUnivHead h2 {         background-size: auto;         background-position: 0px -358px;                 }        html[lang='en-PH'] .yog-tablet #yUnivHead .yuhead-logo h2 {        height: 47px !important;       }        html[lang='en-PH'] .yog-smartphone #yUnivHead h2 {        width: 255px;       }                                   </style>   <h2 class="yuhead-finance yuhead-standard">      <a href="https://de.finance.yahoo.com/;_ylt=AouSKYtTnWmubPLJg6uLC4.tPqZG;_ylu=X3oDMTFkczM4ZmprBHNlYwNVSCBCcmFuZCBJZGVudGlmaWVyIARzbGsDVUggUHJvcGVydHkgTG9nbw--"       target="_top" tabindex="-1">         Yahoo Deutschland Finanzen      </a>   </h2>   </div>        <div id="yuhead-search">        <div id="yuhead-sform-cont" class="yuhead-s-web yuhead-search-form">        <form role="search" class="yucs-search yucs-activate" target="_top"    action="https://de.search.yahoo.com/search;_ylt=Au5CbnkCIkpyeEaFO0_ro92tPqZG;_ylu=X3oDMTEzdmNraGxoBHNlYwNVSCBTZWFyY2ggMTAwBHNsawNVSCBXZWIgU2VhcmNo" method="get"><table role="presentation">   <tbody role="presentation"><tr role="presentation"><td class="yucs-form-input" role="presentation"> <label for="yuhead-sform-searchfield">     <span>Suche</span>             </label>                 <input autocomplete="off" type="text" class="sp yuhead-ico-mglass yuhead-search-hint yucs-search-field" name="p"                  data-sh="Suche"                                    data-gosurl=""                  id="yuhead-sform-searchfield"                 data-pubid="" /></td><td NOWRAP class="yucs-form-btn" role="presentation"><div class="yucs-btn-wrap">    <button class="yucs-sweb-btn" type="submit">Web-Suche</button></div>            </td>         </tr>        </tbody></table><input type="hidden" id="fr" name="fr" value="ush1-finance" /></form>            </div>    </div>            </div>                                                       <!-- contextual_shortcuts --><!-- /contextual_shortcuts --><!-- property: finance | languagetag: de-de | status: active | spaceid:  | cobrand: standard | markup: empty -->    <!-- meta --><div id="yucs-meta" data-authstate="signedout" data-cobrand="standard" data-crumb="UGifdPKGGR9" data-device="desktop" data-firstname="" data-flight="1397460016" data-forcecobrand="standard" data-guid="" data-host="de.finance.yahoo.com" data-https="1" data-languagetag="de-de" data-property="finance" data-protocol="" data-shortfirstname="" data-shortuserid="" data-status="active" data-spaceid="" data-userid="" ></div><!-- /meta --></div></div><script type="text/javascript">
+    var yfi_dd = "finance.yahoo.com";
+</script>
+
+<script>
+        if(typeof YAHOO == "undefined"){YAHOO={};}
+        if(typeof YAHOO.Finance == "undefined"){YAHOO.Finance={};}
+        if(typeof YAHOO.Finance.ComscoreConfig == "undefined"){YAHOO.Finance.ComscoreConfig={};}
+        YAHOO.Finance.ComscoreConfig={ "config" : [
+        {
+                c5: "1185300141",
+                c7: "https://de.finance.yahoo.com/lookup?s=BASF*&amp;t=A&amp;b=0&amp;m=ALL"
+        } ] }
+</script>
+
+
+
+            </div>
+	    <div class="ad_in_head">	
+		<div class="yfi_doc">
+                
+		</div>
 	    </div>
             <div id="yfi_nav_header">
-                <div id="navigation" class="yom-mod yom-nav" role="navigation">
-    <div class="bd">
-        <div class="nav">
-            <!-- skip nav >
-                <a href="#y-nav-sec" id="skip_nav">Navigation überspringen</a>
-             nav -->
-             <div class="y-nav-pri-legobg">
-                <div id="y-nav-pri" class="nav-stack nav-0 yfi_doc">
-                    <ul class="yog-grid" id="y-main-nav">
-                        <li class="selected"><a href="/;_ylt=Ai5cJKGa7C3XTF.OZ8PI7BqtPqZG;_ylu=X3oDMTFjMGxndjRhBHBvcwMxBHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNob21l" ><span>Home</span></a></li><li>
-<a href="/kurse-maerkte;_ylt=AjboACYUHLslHn0dbuXjTpKtPqZG;_ylu=X3oDMTFrNmFnb3YzBHBvcwMyBHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNrdXJzZWFtcG1hdW0-" ><span>Kurse &amp; M&auml;rkte</span></a><div class="arrow"><em></em></div>
+                <div id="navigation" class="yom-mod yom-nav" role="navigation"><div class="bd"><div class="nav">
+<div class="y-nav-pri-legobg"><div id="y-nav-pri" class="nav-stack nav-0 yfi_doc"><ul class="yog-grid" id="y-main-nav">
+<li id="home"><div class="level1">
+<a href="/;_ylt=AlaTiSrJPoC5zff4RJ5mJdOtPqZG;_ylu=X3oDMTE2ZzE1a2wwBHBvcwMxBHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawNob21l" ><span>Home</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
 <ul class="nav-sub">
-<li><a href="/indices;_ylt=AtSrRemQPNBc3mLAZDAjtnutPqZG;_ylu=X3oDMTFmdW9zZ2kyBHBvcwMzBHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNpbmRpemVz?e=aktien" >Indizes</a></li>
-<li><a href="/waehrungen/devisen.html;_ylt=Aie..BVbstqoFf73XSB.4dCtPqZG;_ylu=X3oDMTFmaGFybXJjBHBvcwM0BHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNkZXZpc2Vu" >Devisen</a></li>
-<li><a href="/waehrungen/waehrungsrechner/;_ylt=Ak77my2FQTEuIsGfq94JBuKtPqZG;_ylu=X3oDMTFrY3ZuNGhpBHBvcwM1BHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawN3aHJ1bmdzcmVjaG4-" >Währungsrechner</a></li>
+<li><a href="/waehrungen/waehrungsrechner/;_ylt=AucCFBcALc_2BUwWykemh4StPqZG;_ylu=X3oDMTFlNXBsbXNyBHBvcwMyBHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawN3aHJ1bmdzcmVjaG4-" >Währungsrechner</a></li>
+<li><a href="/vergleichsrechner/;_ylt=AllflD83jDEarKcItz_Hbk.tPqZG;_ylu=X3oDMTFlaTM5NmdxBHBvcwMzBHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawN2ZXJnbGVpY2hzcmU-" >Vergleichsrechner</a></li>
+<li><a href="/blogs/;_ylt=AnGUWFQCB6izKseDQxjp0HCtPqZG;_ylu=X3oDMTE3cGVsaTd1BHBvcwM0BHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawNibG9ncw--" >Blogs</a></li>
+<li><a href="/fotos/;_ylt=AkeYBai7GzRjtCGV9Rlyl32tPqZG;_ylu=X3oDMTFlMW4yc2M2BHBvcwM1BHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawNiaWxkZXJnYWxlcmk-" >Bildergalerien</a></li>
+<li><a href="/video/;_ylt=Anb1SPljeuEEa97B30O7kaWtPqZG;_ylu=X3oDMTE4aWdjZDBxBHBvcwM2BHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawN2aWRlb3M-" >Videos</a></li>
+<li><a href="/glossar/;_ylt=AsQ5CBd91Umydd_pCAuXOqmtPqZG;_ylu=X3oDMTFlMGZnYnFkBHBvcwM3BHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawNmaW5hbnpsZXhpa28-" >Finanzlexikon</a></li>
+<li><a href="/nachrichten/rssindex/;_ylt=AjOLTWfGHtmQPZlZKj1riUmtPqZG;_ylu=X3oDMTE1N21xODc1BHBvcwM4BHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawNyc3M-" >RSS</a></li>
+<li><a href="/karriere/jobboerse/;_ylt=AuBDj_19I89sHM9FKdwHXwatPqZG;_ylu=X3oDMTFhdG0wNW9wBHBvcwM5BHNlYwN5ZmlOYXZUb3BuYXZMZWdvTmV3BHNsawNqb2JzdWNoZQ--" >Jobsuche</a></li>
 </ul>
-</li><li>
-<a href="/nachrichten;_ylt=ApO_t.9yxXUz.mTCZ5jsBamtPqZG;_ylu=X3oDMTFqbHA2M2k0BHBvcwM2BHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNuYWNocmljaHRlbg--" ><span>Nachrichten</span></a><div class="arrow"><em></em></div>
+</div></li>
+<li id="nachrichten"><div class="level1">
+<a href="/nachrichten/;_ylt=As53P7.JH8UlsGF8.PgKag.tPqZG;_ylu=X3oDMTFla2l2MXI3BHBvcwMxMARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDbmFjaHJpY2h0ZW4-" ><span>Nachrichten</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
 <ul class="nav-sub">
-<li><a href="/nachrichten/uebersicht;_ylt=Aq8n7nXL2UZU52EEtzWEwputPqZG;_ylu=X3oDMTFpbjRmZHY2BHBvcwM3BHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNhbGxldGhlbWVu" >Alle Themen</a></li>
-<li><a href="/nachrichten/kategorie-aktien;_ylt=ArloOgzOjC0VcRiNs6snUuKtPqZG;_ylu=X3oDMTFlZnZraWIzBHBvcwM4BHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNha3RpZW4-" >Aktien</a></li>
-<li><a href="/nachrichten/kategorie-fonds;_ylt=AhgGr93Pdcmt52eBQRDLkFGtPqZG;_ylu=X3oDMTFkZ3JjODR1BHBvcwM5BHNlYwN5ZmlOYXZUb3BuYXZNYWluTGlua3NMZWdvBHNsawNmb25kcw--" >Fonds</a></li>
-<li><a href="/nachrichten/kategorie-technische-analysen;_ylt=AlHn3HlbsOzGWd.GM1WMyYCtPqZG;_ylu=X3oDMTFsY2ZmcGZxBHBvcwMxMARzZWMDeWZpTmF2VG9wbmF2TWFpbkxpbmtzTGVnbwRzbGsDdGVjaG5pc2NoZWFu" >Technische Analysen</a></li>
-<li><a href="/nachrichten/thema-adhoc-meldungen;_ylt=Ah8OLiISJm6RxdfreP_D2KGtPqZG;_ylu=X3oDMTFsZGUxaDJsBHBvcwMxMQRzZWMDeWZpTmF2VG9wbmF2TWFpbkxpbmtzTGVnbwRzbGsDYWQtaG9jbWVsZHVu" >Ad-hoc Meldungen</a></li>
-<li><a href="/nachrichten/kategorie-wirtschaft-politik;_ylt=Anf79CG6qT5CLVjfPMsq7hytPqZG;_ylu=X3oDMTFsM25iZzA3BHBvcwMxMgRzZWMDeWZpTmF2VG9wbmF2TWFpbkxpbmtzTGVnbwRzbGsDd2lydHNjaGFmdGFt" >Wirtschaft &amp; Politik</a></li>
-<li><a href="/news/rssindex/;_ylt=As0kV97NbffVvZaMXlsBLkatPqZG;_ylu=X3oDMTFoOWJwNGNuBHBvcwMxMwRzZWMDeWZpTmF2VG9wbmF2TWFpbkxpbmtzTGVnbwRzbGsDcnNzZmVlZHM-" >RSS Feeds</a></li>
+<li><a href="/nachrichten/;_ylt=AknnLupvnbh_lEBLX8Lbd4ytPqZG;_ylu=X3oDMTE3dWpkMmFrBHBvcwMxMQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaG9tZQ--" >Home</a></li>
+<li><a href="/nachrichten/kategorie-wirtschaft-politik/;_ylt=Ap11UyHMhh7sP3heslTtD..tPqZG;_ylu=X3oDMTFmaHJoZjR0BHBvcwMxMgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDd2lydHNjaGFmdHBv" >Wirtschaft & Politik</a></li>
+<li><a href="/nachrichten/kategorie-ergebnisse/;_ylt=Apsch1s4.OSju1p9fDLd_g6tPqZG;_ylu=X3oDMTFlaWxxdHF2BHBvcwMxMwRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDdW50ZXJuZWhtZW4-" >Unternehmen</a></li>
+<li><a href="/boerse/;_ylt=Am9qiLpT4HtD2SpI3Cw2NoutPqZG;_ylu=X3oDMTE3N3NiYjl2BHBvcwMxNARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDYnJzZQ--" >Börse</a></li>
+<li><a href="/nachrichten/uebersicht/;_ylt=At922hhw7saLLZ_YI3jPjaCtPqZG;_ylu=X3oDMTFkZ2M2dWk3BHBvcwMxNQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDYWxsZXRoZW1lbg--" >Alle Themen</a></li>
 </ul>
-</li>
-
-                        <li xmlns:strings="http://exslt.org/strings" class="nav-fin-portfolios">
-<a href="/portfolios/;_ylt=Ak88owYm5DyKVLBiUJTyN0GtPqZG;_ylu=X3oDMTFwbWtwdXN2BHBvcwMxBHNlYwN5ZmlOYXZUb3BuYXZQb3J0Zm9saW9MaW5rc0xlZ28Ec2xrA21laW5lcG9ydGZvbA--" id="yfmya"><span>Meine Portfolios</span></a><div class="arrow"><em></em></div>
-<ul class="nav-sub"><li><a href="/portfolios/;_ylt=AnvXbxCljDLUOI6rN0vjeGOtPqZG;_ylu=X3oDMTFwamgxMHZ1BHBvcwMyBHNlYwN5ZmlOYXZUb3BuYXZQb3J0Zm9saW9MaW5rc0xlZ28Ec2xrA2FubWVsZGVudW1tZQ--" >Anmelden um "Meine Portfolios" zu sehen.</a></li></ul>
-</li>
-
-                        <li>
-<a href="http://us.lrd.yahoo.com/_ylt=AkqOxyyoglax8LKtynO9juutPqZG;_ylu=X3oDMTFwN2NkcWFjBHBvcwMxBHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA3ByaXZhdGVmaW5hbg--/SIG=11ctnv3pb/EXP=1334080899/**http%3A//yahoo.check24.de/" ><span>Private Finanzen</span></a><div class="arrow"><em></em></div>
+</div></li>
+<li id="kurse%2520%2526%2520m%25c3%25a4rkte"><div class="level1">
+<a href="/kurse-maerkte;_ylt=AoTCO7hOZbvg7p7PMZTuIVmtPqZG;_ylu=X3oDMTFmbWpiaGFzBHBvcwMxNgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDa3Vyc2VhbXBtcmt0" ><span>Kurse &amp; Märkte</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
 <ul class="nav-sub">
-<li><a href="http://us.lrd.yahoo.com/_ylt=Ar_g.6xtGtHoj3_SIeAlk5OtPqZG;_ylu=X3oDMTFrMDltbGtwBHBvcwMyBHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA2tyZWRpdGU-/SIG=12nl4m6u6/EXP=1334080899/**http%3A//www.creditplus.de/fileadmin/pics/Microsites/Yahoo/index.html" >Kredite</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AmYVeXGcPPCsSDSlwLcmMnWtPqZG;_ylu=X3oDMTFuYzY1cWVjBHBvcwMzBHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA3ZlcmdsZWljaGU-/SIG=11ctnv3pb/EXP=1334080899/**http%3A//yahoo.check24.de/" >Vergleiche</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Apsb8ovRiCHPA2dah5sQx4atPqZG;_ylu=X3oDMTFuZTFsZWo1BHBvcwM0BHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA2ltbW9iaWxpZW4-/SIG=13ilok6e6/EXP=1334080899/**http%3A//www.immobilienscout24.de/marktplatz/yahoo/index.jsp%3Fftc=2011JMP%26_s_cclid=1319534351" >Immobilien</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AiwsCC_lwzSVJMuZn4XfEmCtPqZG;_ylu=X3oDMTFwcjc0YXV0BHBvcwM1BHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA3ZlcnNpY2hlcnVuZw--/SIG=12bfvt422/EXP=1334080899/**http%3A//de.specials.finance.yahoo.com/cosmosdirekt/index" >Versicherungen</a></li>
+<li><a href="/kurse-maerkte;_ylt=AlzAb4UZajSyL9G3eLecLRitPqZG;_ylu=X3oDMTE3djNhMnByBHBvcwMxNwRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaG9tZQ--" >Home</a></li>
+<li><a href="/waehrungen/devisen.html;_ylt=AhIGB_6vGqAml39cZahNFJmtPqZG;_ylu=X3oDMTFhN2IyN2FyBHBvcwMxOARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDZGV2aXNlbg--" >Devisen</a></li>
+<li><a href="/indices;_ylt=AmLoIW7hKGIn8F8kYDGq2iitPqZG;_ylu=X3oDMTFmZmpna2JtBHBvcwMxOQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDYWt0aWVuaW5kaXpl?e=aktien" >Aktien/Indizes</a></li>
+<li><a href="/fonds/;_ylt=ArorRpFynVFe8G_E5hliSA.tPqZG;_ylu=X3oDMTE4cjltaTlkBHBvcwMyMARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDZm9uZHM-" >Fonds</a></li>
+<li><a href="/nachrichten/kategorie-rohstoffe/;_ylt=AkBaxc3sypZ3z.16syUK3f.tPqZG;_ylu=X3oDMTFjcW83OTRnBHBvcwMyMQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDcm9oc3RvZmZl" >Rohstoffe</a></li>
 </ul>
-</li><li><a href="http://us.lrd.yahoo.com/_ylt=AuECJnIMCNesnjvClP_Y4rCtPqZG;_ylu=X3oDMTFvc2J0c20xBHBvcwM2BHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA2ZpbmFuenRpcHBz/SIG=11q18f6k2/EXP=1334080899/**http%3A//www.ratgeber-finanzen-yahoo.de/" ><span>Finanztipps</span></a></li><li><a href="http://us.lrd.yahoo.com/_ylt=ArZIhjujGx2blnTmJ5p8X22tPqZG;_ylu=X3oDMTFpMWFpZW5qBHBvcwM3BHNlYwN5ZmlOYXZUb3BuYXZFZGl0b3JpYWxMaW5rc0xlZ28Ec2xrA2ZvcmVu/SIG=11plck5pg/EXP=1334080899/**http%3A//de.messages.finance.yahoo.com/" ><span>Foren</span></a></li>
-
-                    </ul>
-                </div>    
-             </div>
-             <div class="y-nav-sub-legobg"><div class="nav-stack nav-1 yfi_doc"><ul class="yog-grid"></ul></div></div>
-
-             
-        </div>
-    </div>
-</div>
+</div></li>
+<li xmlns:strings="http://exslt.org/strings" class="nav-fin-portfolios"><div class="level1">
+<a href="/portfolios/;_ylt=An_7B.dzPKO_JAFURFk_lJatPqZG;_ylu=X3oDMTFmamdjOG1qBHBvcwMyMgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDbWVpbmVwb3J0Zm9s" id="yfmya"><span>Meine Portfolios</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
+<ul class="nav-sub"><li><a href="/portfolios/;_ylt=ArboasEqUgPbFMfwbId3as.tPqZG;_ylu=X3oDMTFmNGZtMGs2BHBvcwMyMwRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDYW5tZWxkZW51bW1l" >Anmelden um "Meine Portfolios" zu sehen.</a></li></ul>
+</div></li>
+<li id="finanztipps"><div class="level1">
+<a href="/nachrichten/finanztipps/;_ylt=AlU2wZ4G.0G4fNf4TZbkncGtPqZG;_ylu=X3oDMTFlODU3MDAyBHBvcwMyNARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDZmluYW56dGlwcHM-" ><span>Finanztipps</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
+<ul class="nav-sub">
+<li><a href="/nachrichten/finanztipps/;_ylt=AoccsYmd1Vhxe_ZQi6cqryutPqZG;_ylu=X3oDMTE3MHV2ZTd1BHBvcwMyNQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaG9tZQ--" >Home</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AtD5mr.9GXpmNLoFEQsvLeitPqZG;_ylu=X3oDMTFkZDdydnVsBHBvcwMyNgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaW1tb2JpbGllbg--/SIG=13i7cs1p8/EXP=1398669616/**http%3A//www.immobilienscout24.de/marktplatz/yahoo/index.jsp%3Fftc=2011JMP%26_s_cclid=1326797601" >Immobilien</a></li>
+<li><a href="/steuern/;_ylt=AliJe2.EjSo3OIQhecfw8HWtPqZG;_ylu=X3oDMTFhbDhtamcyBHBvcwMyNwRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDc3RldWVybg--" >Steuern</a></li>
+<li><a href="/versicherungen/;_ylt=AnIUPWbNjmt4ykc6hwg51JutPqZG;_ylu=X3oDMTFmZHM2NzE1BHBvcwMyOARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDdmVyc2ljaGVydW5n" >Versicherungen</a></li>
+<li><a href="/recht/;_ylt=AnToo2e6hmQ4ySj._P_UkL2tPqZG;_ylu=X3oDMTE4ZWs3Z3JrBHBvcwMyOQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDcmVjaHQ-" >Recht</a></li>
+<li><a href="/banken/;_ylt=Am2CPfZGotXtsVODA8HXsKatPqZG;_ylu=X3oDMTE5Zm43YnI5BHBvcwMzMARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDYmFua2Vu" >Banken</a></li>
+</ul>
+</div></li>
+<li id="verbrauchertipps"><div class="level1">
+<a href="/verbrauchertipps/;_ylt=AirF9AipKdbIf6.CYkAoxH.tPqZG;_ylu=X3oDMTFmcXNqZTJvBHBvcwMzMQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDdmVyYnJhdWNoZXJ0" ><span>Verbrauchertipps</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
+<ul class="nav-sub">
+<li><a href="/verbrauchertipps/;_ylt=AqU1sIG2txSOkIwp3902ACqtPqZG;_ylu=X3oDMTE3YjVnYzhlBHBvcwMzMgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaG9tZQ--" >Home</a></li>
+<li><a href="/blogs/klueger-kaufen/;_ylt=AtLHSK.4OyaNrz3du8hI_XCtPqZG;_ylu=X3oDMTFlOWVsb2dmBHBvcwMzMwRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDa2xnZXJrYXVmZW4-" >Klüger kaufen</a></li>
+<li><a href="/haus-garten/;_ylt=ArwXjgXCJW2rzACXYwv9XjetPqZG;_ylu=X3oDMTFkaG5lNmVwBHBvcwMzNARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaGF1c2dhcnRlbg--" >Haus & Garten</a></li>
+<li><a href="/vergleichsrechner/versicherungen/;_ylt=ArtD6zj_H4Yqp_eJPmr0YeKtPqZG;_ylu=X3oDMTFmcWRoaWdsBHBvcwMzNQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDdmVyc2ljaGVydW5n" >Versicherungen vergleichen</a></li>
+</ul>
+</div></li>
+<li id="karriere"><div class="level1">
+<a href="/karriere/;_ylt=Aow9808qKul3vInT8OGX.86tPqZG;_ylu=X3oDMTFiOTNqN3J0BHBvcwMzNgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDa2FycmllcmU-" ><span>Karriere</span></a><div class="arrow"><em></em></div>
+<div class="pointer"></div>
+<ul class="nav-sub">
+<li><a href="/karriere/;_ylt=AgkOGe77A4Ny8AfvyKAVAyCtPqZG;_ylu=X3oDMTE3ZDBvOGF2BHBvcwMzNwRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDaG9tZQ--" >Home</a></li>
+<li><a href="/karriere/news/;_ylt=AutOhvjVIfJIHUwvAoHPBYKtPqZG;_ylu=X3oDMTE3aWFuYjBvBHBvcwMzOARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDbmV3cw--" >News</a></li>
+<li><a href="/karriere/jobboerse/;_ylt=Aj.r5NDpcZgdrcPILLk74ZmtPqZG;_ylu=X3oDMTFiYXNscTE2BHBvcwMzOQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDam9ic3VjaGU-" >Jobsuche</a></li>
+<li><a href="/karriere/tipps/;_ylt=ApBaXOjxo6NrTTIhqH1eAemtPqZG;_ylu=X3oDMTE4bnE0azlvBHBvcwM0MARzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDdGlwcHM-" >Tipps</a></li>
+<li><a href="/karriere/bewerbung/;_ylt=AgQJOz8I9ZbeGgteoR9E.7utPqZG;_ylu=X3oDMTFjNzE1OGgxBHBvcwM0MQRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDYmV3ZXJidW5n" >Bewerbung</a></li>
+</ul>
+</div></li>
+<li id="videos"><div class="level1"><a href="/video/;_ylt=ApwOirJRVXkiuD8TDT6iUjWtPqZG;_ylu=X3oDMTE5MmoxZjhjBHBvcwM0MgRzZWMDeWZpTmF2VG9wbmF2TGVnb05ldwRzbGsDdmlkZW9z" ><span>Videos</span></a></div></li>
+</ul></div></div>       </div></div></div>
 
             </div>
             <script>
@@ -124,52 +173,61 @@
 <div class="hd"></div>
 <div class="bd"><form id="quote" name="quote" action="/q">
 <h2 class="yfi_signpost">Aktienkurse suchen</h2>
-<label for="txtQuotes">Aktienkurse suchen</label><input id="txtQuotes" name="s" value="" type="text" autocomplete="off"><input id="get_quote_logic_opt" name="ql" value="1" type="hidden" autocomplete="off"><div id="yfi_quotes_submit"><span><span><span><input type="submit" value="Kurs abfragen"></span></span></span></div>
+<label for="txtQuotes">Aktienkurse suchen</label><input id="txtQuotes" name="s" value="" type="text" autocomplete="off" placeholder="Symbol eingeben"><input id="get_quote_logic_opt" name="ql" value="1" type="hidden" autocomplete="off"><div id="yfi_quotes_submit"><span><span><span><input type="submit" value="Kurs abfragen" id="btnQuotes" class="rapid-nf"></span></span></span></div>
 </form></div>
-<div class="ft"><p><span id="yfs_market_time">Di., 27. Mär 2012 20:01 - Deutsche Märkte geschlossen</span></p></div>
+<div class="ft"><p><span id="yfs_market_time">Mo., 14. Apr 2014 09:20 - Deutsche Märkte schließen in 8 Stunden 40 Minuten</span></p></div>
 </div></div></div></div>
 
         </div>
     <div id="yfi_doc">
+    
+	<!-- SpaceID=1185300141 loc=NT1 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_SELECTED,,10.207.7.33;;NT1;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['CMDWHwrPBvc-']='(as$12590von6,aid$CMDWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=NT1)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$12590von6,aid$CMDWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=NT1)"></noscript>
         <div id="yfi_fp_bd">
             <div id="yfi_ad_FB2">
-                <!-- gd2-status-2 --><!-- SpaceID=1185300141 loc=FB2 noad -->
-<script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['zcmXJE3uvHo-']='&U=12b44vcee%2fN%3dzcmXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=17vvv3jr9%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d989273178%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=12b44vcee%2fN%3dzcmXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0"></noscript><!--QYZ ,;;FB2;1185300141;2;--><!-- gd2-status-2 --><!-- SpaceID=1185300141 loc=FB2 noad -->
-<script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['y8mXJE3uvHo-']='&U=12bp8b9or%2fN%3dy8mXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=180hc9srr%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d4174350940%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=12bp8b9or%2fN%3dy8mXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0"></noscript><!--QYZ ,;;FB2;1185300141;2;--><!-- gd2-status-2 --><!-- SpaceID=1185300141 loc=FB2 noad -->
-<script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['ycmXJE3uvHo-']='&U=12br49gfn%2fN%3dycmXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=180tarivg%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d1221347763%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=12br49gfn%2fN%3dycmXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0"></noscript><!--QYZ ,;;FB2;1185300141;2;--><!-- gd2-status-2 --><!-- SpaceID=1185300141 loc=FB2 noad -->
-<script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['x8mXJE3uvHo-']='&U=12bigdebn%2fN%3dx8mXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=1805852nv%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d3498473850%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=12bigdebn%2fN%3dx8mXJE3uvHo-%2fC%3d-1%2fD%3dFB2%2fB%3d-1%2fV%3d0"></noscript><!--QYZ ,;;FB2;1185300141;2;-->
+                           <div id="yfi_ads_4x4">             <span id="yfi_ads_4x4_1">
+                <!-- SpaceID=1185300141 loc=FB2 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_SELECTED,,10.207.7.33;;FB2;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['mgXWHwrPBvc-']='(as$125atce64,aid$mgXWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125atce64,aid$mgXWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)"></noscript>
+            </span>            <span id="yfi_ads_4x4_2">
+                <!-- SpaceID=1185300141 loc=FB2 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_SELECTED,,10.207.7.33;;FB2;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['PCDWHwrPBvc-']='(as$1251viir1,aid$PCDWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$1251viir1,aid$PCDWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)"></noscript>
+            </span>            <span id="yfi_ads_4x4_3">
+                <!-- SpaceID=1185300141 loc=FB2 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_SELECTED,,10.207.7.33;;FB2;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['3jrWHwrPBvc-']='(as$125r2tr8a,aid$3jrWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125r2tr8a,aid$3jrWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)"></noscript>
+            </span>            <span id="yfi_ads_4x4_4">
+                <!-- SpaceID=1185300141 loc=FB2 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_SELECTED,,10.207.7.33;;FB2;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['gFXWHwrPBvc-']='(as$125dni9vr,aid$gFXWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125dni9vr,aid$gFXWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=FB2)"></noscript>
+            </span>           </div> 
             </div>		
             <div id="yfi_fp_left">
                 <div id="yfi_fp_left_top">
-                    <div id="yfi_sym_lookup_results"><h1>Börsenergebnisse anzeigen für SAP.*</h1><form name="symlookupform" id="symlookupform" action=""><input type="hidden" name="s" value="SAP.*"><input type="hidden" name="t" value="A"><input type="hidden" name="b" value="0"><fieldset><legend>Ergebnisse filtern</legend><label for="m">Markt</label><select name="m" id="m" class="sldd"><option value="ALL" selected> Alle Märkte </option><option value="US" > USA & Kanada </option><option value="DR" > Deutschland </option></select></fieldset></form><div id="yfi_sym_lookup" class="yui-navset"><ul class="yui-nav"><li class="selected"><a href="/lookup/all;_ylt=AuKYVtPHjTS5EUjQQBK3vc6tPqZG;_ylu=X3oDMTE5bmpxaWlhBHBvcwMxBHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNhbGxl?s=SAP.*&t=A&m=ALL&r=" title="Alle"><em>Alle<br>
-               (10046)
-			</em></a></li><li><a href="/lookup/stocks;_ylt=AgM_nW3H5CrWlvMKAEmkEI2tPqZG;_ylu=X3oDMTFiajV2MWxjBHBvcwMyBHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNha3RpZW4-?s=SAP.*&t=S&m=ALL&r=" title="Aktien"><em>Aktien<br>
-               (25)
-			</em></a></li><li><a href="/lookup/funds;_ylt=Aspxn_rUNxuEvOrJMUDLprutPqZG;_ylu=X3oDMTFha2IyY2hzBHBvcwMzBHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNmb25kcw--?s=SAP.*&t=M&m=ALL&r=" title="Fonds"><em>Fonds<br>
+                    <div id="yfi_sym_lookup_results"><h1>Börsenergebnisse anzeigen für BASF*</h1><form name="symlookupform" id="symlookupform" action=""><input type="hidden" name="s" value="BASF*"><input type="hidden" name="t" value="A"><input type="hidden" name="b" value="0"><fieldset><legend>Ergebnisse filtern</legend><label for="m">Markt</label><select name="m" id="m" class="sldd"><option value="ALL" selected> Alle Märkte </option><option value="US" > USA & Kanada </option><option value="DR" > Deutschland </option></select></fieldset></form><div id="yfi_sym_lookup" class="yui-navset"><ul class="yui-nav"><li class="selected"><a href="/lookup/all;_ylt=Aix.KefTiUDHUtp8WyWHGJutPqZG;_ylu=X3oDMTE5bmpxaWlhBHBvcwMxBHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNhbGxl?s=BASF*&t=A&m=ALL&r=" title="Alle"><em>Alle<br>
+               (72)
+			</em></a></li><li><a href="/lookup/stocks;_ylt=AvFBVWhVlC1yMBpWWLn16FKtPqZG;_ylu=X3oDMTFiajV2MWxjBHBvcwMyBHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNha3RpZW4-?s=BASF*&t=S&m=ALL&r=" title="Aktien"><em>Aktien<br>
+               (24)
+			</em></a></li><li><a href="/lookup/funds;_ylt=ArKwi9wE8pjM86nZHSBOGJytPqZG;_ylu=X3oDMTFha2IyY2hzBHBvcwMzBHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNmb25kcw--?s=BASF*&t=M&m=ALL&r=" title="Fonds"><em>Fonds<br>
                (0)
-			</em></a></li><li><a href="/lookup/etfs;_ylt=AniTMbYUtj3pMfDiNdFoR8itPqZG;_ylu=X3oDMTE5ZWk5NGEwBHBvcwM0BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNldGZz?s=SAP.*&t=E&m=ALL&r=" title="ETFs"><em>ETFs<br>
+			</em></a></li><li><a href="/lookup/etfs;_ylt=AqeRJjpPJIToPfjMzcRYDLytPqZG;_ylu=X3oDMTE5ZWk5NGEwBHBvcwM0BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNldGZz?s=BASF*&t=E&m=ALL&r=" title="ETFs"><em>ETFs<br>
                (0)
-			</em></a></li><li><a href="/lookup/indices;_ylt=Am5nVSYqZJp.KU470DnsqUCtPqZG;_ylu=X3oDMTFjdWhqODZxBHBvcwM1BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNpbmRpemVz?s=SAP.*&t=I&m=ALL&r=" title="Indizes"><em>Indizes<br>
+			</em></a></li><li><a href="/lookup/indices;_ylt=AlPBtwzuAWeb13oeTydlG1StPqZG;_ylu=X3oDMTFjdWhqODZxBHBvcwM1BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNpbmRpemVz?s=BASF*&t=I&m=ALL&r=" title="Indizes"><em>Indizes<br>
                (0)
-			</em></a></li><li><a href="/lookup/futures;_ylt=ArGeGPnwNxd.PlY66ejlc9OtPqZG;_ylu=X3oDMTFjZmcxN2hsBHBvcwM2BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNmdXR1cmVz?s=SAP.*&t=F&m=ALL&r=" title="Futures"><em>Futures<br>
-               (8)
-			</em></a></li><li><a href="/lookup/warrants;_ylt=At5z1gMf3GKoIiJBdq.vDEetPqZG;_ylu=X3oDMTFodWgxdms3BHBvcwM3BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawN6ZXJ0aWZpa2F0ZW8-?s=SAP.*&t=W&m=ALL&r=" title="Zertifikate &amp; OS"><em>Zertifikate & OS<br>
-               (10013)
-			</em></a></li><li><a href="/lookup/currency;_ylt=AtIiCsDJYQyKr39MohNgOfGtPqZG;_ylu=X3oDMTFkdjRna2VmBHBvcwM4BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawN3aHJ1bmdlbg--?s=SAP.*&t=C&m=ALL&r=" title="Währungen"><em>Währungen<br>
+			</em></a></li><li><a href="/lookup/futures;_ylt=Aoh9.AcY5Ss6OcI3kMmU09.tPqZG;_ylu=X3oDMTFjZmcxN2hsBHBvcwM2BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawNmdXR1cmVz?s=BASF*&t=F&m=ALL&r=" title="Futures"><em>Futures<br>
+               (2)
+			</em></a></li><li><a href="/lookup/warrants;_ylt=Agehe7tX_f7gXPtiTeyZAjmtPqZG;_ylu=X3oDMTFodWgxdms3BHBvcwM3BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawN6ZXJ0aWZpa2F0ZW8-?s=BASF*&t=W&m=ALL&r=" title="Zertifikate &amp; OS"><em>Zertifikate & OS<br>
+               (46)
+			</em></a></li><li><a href="/lookup/currency;_ylt=ApEiZVWLBHHg6h.AMJczy9GtPqZG;_ylu=X3oDMTFkdjRna2VmBHBvcwM4BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawN3aHJ1bmdlbg--?s=BASF*&t=C&m=ALL&r=" title="Währungen"><em>Währungen<br>
                (0)
-			</em></a></li></ul><div class="yui-content"><div id="yfi_sym_results"><table class="yui-dt" summary="YFT_SL_TABLE_SUMMARY"><thead><tr><th><a href="/lookup/all;_ylt=AgyRYSuplfcfLqRHO1CRfm2tPqZG;_ylu=X3oDMTFiOTcwcW1hBHBvcwM5BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawN0aWNrZXI-?s=SAP.%2a&t=A&m=ALL&r=1" >Ticker</a></th><th><a href="/lookup/all;_ylt=Aq7trlLMGWDx2ydond_jiEmtPqZG;_ylu=X3oDMTFhcHNnZTYzBHBvcwMxMARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbmFtZQ--?s=SAP.%2a&t=A&m=ALL&r=3" >Name</a></th><th scope="col">Isin</th><th scope="col">Letzter Kurs</th><th scope="col">Typ</th><th><a href="/lookup/all;_ylt=AkdHXwQEKICi0nSzy4lGe.6tPqZG;_ylu=X3oDMTFnazRjMnFjBHBvcwMxMQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYnJzZW5wbGF0eg--?s=SAP.%2a&t=A&m=ALL&r=7" >Börsenplatz</a></th></tr></thead><tbody><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AnVZQ2LJE3bX88dksSTL5nitPqZG;_ylu=X3oDMTFic2FtOGI2BHBvcwMxMgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwZGU-?s=SAP.DE" >SAP.DE</a></td><td>Sap AG</td><td>DE0007164600</td><td class="ticker_down">53,09</td><td>Aktien</td><td>GER</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=AkMyUmTKsThNGVLq46pvh0WtPqZG;_ylu=X3oDMTFha2c2bGtjBHBvcwMxMwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwZg--?s=SAP.F" >SAP.F</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_down">53,00</td><td>Aktien</td><td>FRA</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AjxB6ozUkiH_kkPOLx1vuumtPqZG;_ylu=X3oDMTFiZDVoNGhhBHBvcwMxNARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2Fwc2c-?s=SAP.SG" >SAP.SG</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_down">53,04</td><td>Aktien</td><td>STU</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=Ak4oQovxaycEk.OK5LnzCGStPqZG;_ylu=X3oDMTE5MG43MzdwBHBvcwMxNQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2Fw?s=SAP" >SAP</a></td><td>SAP AG</td><td></td><td class="ticker_down">70,82</td><td>Aktien</td><td>NYQ</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AtjAvNb9PGTtYBnpsy27agitPqZG;_ylu=X3oDMTFibHE4dDNqBHBvcwMxNgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwbXU-?s=SAP.MU" >SAP.MU</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_up">53,23</td><td>Aktien</td><td>MUN</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=AgiviIkAEuGQpT5WuPpX2h6tPqZG;_ylu=X3oDMTFiZDYwYnQ2BHBvcwMxNwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwZHU-?s=SAP.DU" >SAP.DU</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_up">53,12</td><td>Aktien</td><td>DUS</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AmzEJh48fSWtVBhTgBw2exKtPqZG;_ylu=X3oDMTFiM2pudWU1BHBvcwMxOARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwaG0-?s=SAP.HM" >SAP.HM</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_down">53,06</td><td>Aktien</td><td>HAM</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=AmJasIywh9deb5IIf5H8h4atPqZG;_ylu=X3oDMTFiMjJvMDdrBHBvcwMxOQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwYmU-?s=SAP.BE" >SAP.BE</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_up">53,16</td><td>Aktien</td><td>BER</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AtcwUH_LdGyKiawVFluU2retPqZG;_ylu=X3oDMTFjOW1wZTlzBHBvcwMyMARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwYWRl?s=SAPA.DE" >SAPA.DE</a></td><td>Sap AG</td><td>US8030542042</td><td class="ticker_up">53,15</td><td>Aktien</td><td>GER</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=Aouc68asQ39U3fl0mO8JHnWtPqZG;_ylu=X3oDMTFidjhnYjFnBHBvcwMyMQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDc2FwaGE-?s=SAP.HA" >SAP.HA</a></td><td>SAP</td><td>DE0007164600</td><td class="ticker_down">53,46</td><td>Aktien</td><td>HAN</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=Arav0zKRfXSihPRzprQNaM6tPqZG;_ylu=X3oDMTFlZGY3bHZpBHBvcwMyMgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZ3M5OHpmc2c-?s=GS98ZF.SG" >GS98ZF.SG</a></td><td>SAP/GOSA 12 ZT</td><td>DE000GS98ZF4</td><td class="ticker_down">72,46</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=Ap4emhbCDtXNARNpjvABBAetPqZG;_ylu=X3oDMTFlMjdpc3JnBHBvcwMyMwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDdnQybGtuc2c-?s=VT2LKN.SG" >VT2LKN.SG</a></td><td>SAP/VONT OPT 12</td><td>DE000VT2LKN6</td><td class="ticker_up">1,83</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AlfyZKdFQN1QpO2FsaL9C3GtPqZG;_ylu=X3oDMTFlYXFzMWVkBHBvcwMyNARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZ3M4OGpuc2c-?s=GS88JN.SG" >GS88JN.SG</a></td><td>SAP/GOSA 12 ZT</td><td>DE000GS88JN3</td><td class="ticker_up">78,28</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=Ah9zzlkM_xyyQnxnEMTdsIStPqZG;_ylu=X3oDMTFlcjBwYjBuBHBvcwMyNQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDY2s1dTR0c2c-?s=CK5U4T.SG" >CK5U4T.SG</a></td><td>SAP/COBA 14 ZT</td><td>DE000CK5U4T2</td><td class="ticker_up">39,95</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AiiMa1thup6P95tCCjj6NCmtPqZG;_ylu=X3oDMTFlcmFpOGxqBHBvcwMyNgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDY2syZ2toc2c-?s=CK2GKH.SG" >CK2GKH.SG</a></td><td>SAP/COBA 13 ZT</td><td>DE000CK2GKH0</td><td class="ticker_up">39,39</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=AnJFvSkbfT0DDz1WL9EEKACtPqZG;_ylu=X3oDMTFlMWRucTRhBHBvcwMyNwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDY2c3cjg5c2c-?s=CG7R89.SG" >CG7R89.SG</a></td><td>SAP/CITI OPT 12</td><td>DE000CG7R893</td><td class="ticker_up">0,83</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AuK_VWdLkcpqVXB56IrsHdCtPqZG;_ylu=X3oDMTFldDZqNmtzBHBvcwMyOARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDdGIyeXI4c2c-?s=TB2YR8.SG" >TB2YR8.SG</a></td><td>SAP/TUBD ZT</td><td>DE000TB2YR85</td><td class="ticker_down">2,79</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=ArCx4nL6oa_jWsrQNLV3SKGtPqZG;_ylu=X3oDMTFlNmQ1MGcwBHBvcwMyOQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDY2sxbndic2c-?s=CK1NWB.SG" >CK1NWB.SG</a></td><td>SAP/COBA ZT</td><td>DE000CK1NWB6</td><td>0,00</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-odd"><td><a href="http://de.finance.yahoo.com/q;_ylt=AgbqBqC1.osnPbXE8ZOhu3WtPqZG;_ylu=X3oDMTFlYmttNTc4BHBvcwMzMARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZ3QwZXduc2c-?s=GT0EWN.SG" >GT0EWN.SG</a></td><td>SAP/GOSA P-OPT 12</td><td>DE000GT0EWN9</td><td class="ticker_down">0,57</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr><tr class="yui-dt-even"><td><a href="http://de.finance.yahoo.com/q;_ylt=AjtaNugELaRxdq9YKB3vMWOtPqZG;_ylu=X3oDMTFlOTQycXA1BHBvcwMzMQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDdGIzMjVic2c-?s=TB325B.SG" >TB325B.SG</a></td><td>SAP/TUBD OPT</td><td>DE000TB325B6</td><td class="ticker_down">1,23</td><td>Zertifikate &amp; OS</td><td>EWX</td></tr></tbody></table></div><div id="pagination">Zeige 1 - 20 von 10.046 |  Erste  |  Vorherige  | <a href="/lookup/all;_ylt=As.kXJ2GkDQuwF_vc.Tb1UWtPqZG;_ylu=X3oDMTFjb3BsdTdiBHBvcwMzMgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbmNoc3Rl?s=SAP.%2a&t=A&m=ALL&r=&b=20" >Nächste</a> | <a href="/lookup/all;_ylt=Al.fGhtWN0vLBMlUy22siemtPqZG;_ylu=X3oDMTFjNGxkM3MyBHBvcwMzMwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbGV0enRl?s=SAP.%2a&t=A&m=ALL&r=&b=10040" >Letzte</a></div></div></div></div>
+			</em></a></li></ul><div class="yui-content"><div id="yfi_sym_results"><table class="yui-dt" summary="YFT_SL_TABLE_SUMMARY"><thead><tr><th><a href="/lookup/all;_ylt=AtaLS0IamM1Elnv_ygDqn_StPqZG;_ylu=X3oDMTFiOTcwcW1hBHBvcwM5BHNlYwN5ZmlTeW1ib2xMb29rdXBSZXN1bHRzBHNsawN0aWNrZXI-?s=BASF%2a&t=A&m=ALL&r=1" >Ticker</a></th><th><a href="/lookup/all;_ylt=AlDUbhgDgtClKY9.6k.2rHutPqZG;_ylu=X3oDMTFhcHNnZTYzBHBvcwMxMARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbmFtZQ--?s=BASF%2a&t=A&m=ALL&r=3" >Name</a></th><th scope="col">Isin</th><th scope="col">Letzter Kurs</th><th scope="col">Typ</th><th><a href="/lookup/all;_ylt=AmyiH6g_J0n.PhA1wtfgzbStPqZG;_ylu=X3oDMTFnazRjMnFjBHBvcwMxMQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYnJzZW5wbGF0eg--?s=BASF%2a&t=A&m=ALL&r=7" >Börsenplatz</a></th></tr></thead><tbody><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AreW_Cd.avKO6xiarKcEO22tPqZG;_ylu=X3oDMTFkaGgzdmg3BHBvcwMxMgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZDk3OWNscw--?s=D979C.LS" >D979C.LS</a></td><td>BASF AG/CITI WT 14</td><td>DE000CF79JW9</td><td class="ticker_down">0,11</td><td>Zertifikate &amp; OS</td><td>LIS</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=Ao8lw3lAxJlvxPkzFDM7SEetPqZG;_ylu=X3oDMTFkb3NoMTcxBHBvcwMxMwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDdjAzMWJwYQ--?s=V031B.PA" >V031B.PA</a></td><td>BASF AG/BNP P-WT</td><td>FR0011643105</td><td class="ticker_up">1,23</td><td>Zertifikate &amp; OS</td><td>PAR</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=Au78gMQt3RAkPdyX9qnevxmtPqZG;_ylu=X3oDMTFiMW41OWs4BHBvcwMxNARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzaGE-?s=BAS.HA" >BAS.HA</a></td><td>BASF N</td><td>DE000BASF111</td><td class="ticker_down">77,95</td><td>Aktien</td><td>HAN</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=Ahir5wqe7UWd9LSXfIUmkAWtPqZG;_ylu=X3oDMTFjdWQ0cGlsBHBvcwMxNQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzZnRp?s=BASF.TI" >BASF.TI</a></td><td>BASF N</td><td>DE000BASF111</td><td class="ticker_down">77,50</td><td>Aktien</td><td>TLO</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AoL.RhxcDwqzOQIS4_XOsOWtPqZG;_ylu=X3oDMTFkajFuNTM2BHBvcwMxNgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDdzc2MGJwYQ--?s=W760B.PA" >W760B.PA</a></td><td>BASF AG/BNP WT OPEN</td><td>FR0011695261</td><td class="ticker_down">2,52</td><td>Zertifikate &amp; OS</td><td>PAR</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=AprYaV5zar2hhEtkkH7OUyGtPqZG;_ylu=X3oDMTFkaGhlODhhBHBvcwMxNwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbjkyMG5hcw--?s=N920N.AS" >N920N.AS</a></td><td>BASF/RBS CT</td><td>NL0009169655</td><td class="ticker_down">5,88</td><td>Zertifikate &amp; OS</td><td>AMS</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AtoqakTijav0eOeZke0fDk6tPqZG;_ylu=X3oDMTFkYzl0bXVyBHBvcwMxOARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDeTE3Mm5wYQ--?s=Y172N.PA" >Y172N.PA</a></td><td>BASF/RBS WTS</td><td>NL0009434596</td><td class="ticker_down">3,91</td><td>Zertifikate &amp; OS</td><td>PAR</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=Avg51kEKSLaZrKKTxBg7jhatPqZG;_ylu=X3oDMTFkNWlsa2hmBHBvcwMxOQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDOTA4OW5hcw--?s=9089N.AS" >9089N.AS</a></td><td>BASF AG/RBS WT OPEN</td><td>NL0010438933</td><td class="ticker_down">30,39</td><td>Zertifikate &amp; OS</td><td>AMS</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AkpRAzYt8aK2oQnKg_rVgyCtPqZG;_ylu=X3oDMTFkb3BxNzE4BHBvcwMyMARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDOTQ4NWNscw--?s=9485C.LS" >9485C.LS</a></td><td>BASF A/CITI P-WT 14</td><td>DE000CF03AB2</td><td>0,02</td><td>Zertifikate &amp; OS</td><td>LIS</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=ApSqpf2xVHaV3kj_3JlmIi6tPqZG;_ylu=X3oDMTFidHRtc2UyBHBvcwMyMQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzaG0-?s=BAS.HM" >BAS.HM</a></td><td>BASF N</td><td>DE000BASF111</td><td class="ticker_down">76,90</td><td>Aktien</td><td>HAM</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AmZKQ4iaZtYeDHA7LCo1.g.tPqZG;_ylu=X3oDMTFiN2FqMTlpBHBvcwMyMgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzc3c-?s=BAS.SW" >BAS.SW</a></td><td>BASF N</td><td>DE000BASF111</td><td class="ticker_down">93,85</td><td>Aktien</td><td>EBS</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=AqwQlNMglhcvpFrjpeF5suitPqZG;_ylu=X3oDMTFkMWc0ZjA0BHBvcwMyMwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDcTUyMm5hcw--?s=Q522N.AS" >Q522N.AS</a></td><td>BASF/AAB WT OPEN</td><td>NL0009428051</td><td class="ticker_down">4,37</td><td>Zertifikate &amp; OS</td><td>AMS</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AltRkgnPycjASbYCAu9mNUGtPqZG;_ylu=X3oDMTFkY3N2aHFoBHBvcwMyNARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDaDUzNGFhcw--?s=H534A.AS" >H534A.AS</a></td><td>BASF AG/ABN WT OPEN</td><td>NL0010706107</td><td class="ticker_down">0,90</td><td>Zertifikate &amp; OS</td><td>AMS</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=Aksk_OdjHr7IigLU.SVto56tPqZG;_ylu=X3oDMTFmcTMxb3MxBHBvcwMyNQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzZjE0bnlt?s=BASF14.NYM" >BASF14.NYM</a></td><td>BAS Future JAN 2014</td><td></td><td>40,78</td><td>Futures</td><td>NYM</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=AtOldOVWuyU1.r96LsYZzuqtPqZG;_ylu=X3oDMTFiamliY242BHBvcwMyNgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzbXU-?s=BAS.MU" >BAS.MU</a></td><td>BASF N</td><td>DE000BASF111</td><td class="ticker_down">77,10</td><td>Aktien</td><td>MUN</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=AgnksnxQTuECmpDOrZXwjz2tPqZG;_ylu=X3oDMTFhZWVxNWVqBHBvcwMyNwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmZhbA--?s=BFA.L" >BFA.L</a></td><td>BASF SE</td><td>DE000BASF111</td><td class="ticker_down">77,61</td><td>Aktien</td><td>LSE</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=Au17JWXp7L45TYeNJKHsgoatPqZG;_ylu=X3oDMTFjc2Y0MWpuBHBvcwMyOARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDYmFzZm1p?s=BASF.MI" >BASF.MI</a></td><td>BASF SE</td><td>DE000BASF111</td><td class="ticker_down">77,95</td><td>Aktien</td><td>MIL</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=ArETZnhyWJ9uUFy4XPDqhLqtPqZG;_ylu=X3oDMTFkZ3Fnc2gwBHBvcwMyOQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZDA3MWFhcw--?s=D071A.AS" >D071A.AS</a></td><td>BASF AG/ABN WT OPEN</td><td>NL0010315867</td><td class="ticker_down">1,84</td><td>Zertifikate &amp; OS</td><td>AMS</td></tr><tr class="yui-dt-odd"><td><a href="https://de.finance.yahoo.com/q;_ylt=Ai4Bh1KS5W5PbUI9cXPUeoKtPqZG;_ylu=X3oDMTFkMWVyYm5xBHBvcwMzMARzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZzk3MGFhcw--?s=G970A.AS" >G970A.AS</a></td><td>BASF AG/ABN WT OPEN</td><td>NL0010509428</td><td class="ticker_down">0,57</td><td>Zertifikate &amp; OS</td><td>AMS</td></tr><tr class="yui-dt-even"><td><a href="https://de.finance.yahoo.com/q;_ylt=AvSmk15e20I58i5OpkhZogCtPqZG;_ylu=X3oDMTFkZm1jZXZrBHBvcwMzMQRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDZDk3NmNscw--?s=D976C.LS" >D976C.LS</a></td><td>BASF AG/CITI WT 14</td><td>DE000CF79JT5</td><td>0,05</td><td>Zertifikate &amp; OS</td><td>LIS</td></tr></tbody></table></div><div id="pagination">Zeige 1 - 20 von 72 |  Erste  |  Vorherige  | <a href="/lookup/all;_ylt=AlfcySP87R28F0vU7nENGlitPqZG;_ylu=X3oDMTFjb3BsdTdiBHBvcwMzMgRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbmNoc3Rl?s=BASF%2a&t=A&m=ALL&r=&b=20" >Nächste</a> | <a href="/lookup/all;_ylt=ApsYOC3.t3YmNL72WUNipHetPqZG;_ylu=X3oDMTFjNGxkM3MyBHBvcwMzMwRzZWMDeWZpU3ltYm9sTG9va3VwUmVzdWx0cwRzbGsDbGV0enRl?s=BASF%2a&t=A&m=ALL&r=&b=60" >Letzte</a></div></div></div></div>
 
                 </div>		
                 <div id="yfi_fp_left_bottom">
@@ -177,12 +235,28 @@ window.yzq_d['x8mXJE3uvHo-']='&U=12bigdebn%2fN%3dx8mXJE3uvHo-%2fC%3d-1%2fD%3dFB2
                 </div>
             </div>
             <div id="yfi_fp_right">
-                <!-- http://global.ard.yahoo.com/SIG=15vgj54pn/M=200092964.201945333.203234993.200320442/D=defin99/S=1185300141:SKY/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=1cmXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=200727281/R=0/* -->
-<DIV STYLE="color:#000000;font-size:10px;font-family:Verdana,arial,sans-serif;text-align:center">ANZEIGE<BR> 
-<IFRAME ALLOWTRANSPARENCY=TRUE FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=120 HEIGHT=600 SRC="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=120x600,160x600&site=154957&section_code=201945333&cb=1332871299587722&yud=yrc%3D%26ycg%3D%26yyob%3D%26ybt%3D1;11;17;59;68;91;113;140;148;219;243;244;281;302;417;577;800;970;1020;1117;2878;6858;7753;7934;8500;8622;9130;9646;9736;9833;10649;6000473"></IFRAME></div><script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['1cmXJE3uvHo-']='&U=13n988ohd%2fN%3d1cmXJE3uvHo-%2fC%3d200092964.201945333.203234993.200320442%2fD%3dSKY%2fB%3d200727281%2fV%3d1';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=1805mgsb3%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d3642273490%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=13n988ohd%2fN%3d1cmXJE3uvHo-%2fC%3d200092964.201945333.203234993.200320442%2fD%3dSKY%2fB%3d200727281%2fV%3d1"></noscript><!--QYZ ,;;SKY;1185300141;2;-->
+                <style type="text/css">
+.can_ad_slug {font-family:arial;font-size:11px;color:#999;text-decoration:none;background-image:url('https://secure.footprint.net/yieldmanager/apex/mediastore/adchoice_1.png');background-repeat:no-repeat;background-position:right;padding:0px 14px 0px 1px !important;margin:1px 0px 1px 0;cursor:hand;height:12px;display:inline-block;line-height:12px;background-color:#ffffff;}
+.ad_slug_table {position: relative;}
+.ad_slug_table a {text-decoration:none;}
+.ad_slug_table div.CAN_marker { display:none;}
+.can_ad_slug span {display:none;}
+.can_ad_slug:hover {zoom: 1;}
+.ad_slug_table .ad_slug_table .can_ad_tr td {display: none;}
+.can_ad_slug:hover span {display:inline-block;color:#999;font-family:arial;font-size:11px;}
+.can_ad_tr {position:absolute;top:0;right:1px;z-index:999;}
+</style>
+<div class="CAN_ad">
+<table class="ad_slug_table" cellspacing="0" cellpadding="0" border="0">
+<tr class="can_ad_tr"><td align="right"><a href="https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE3NW92YTVsOShnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyNzY5NTMxNTMyLHYkMi4wLGFpZCRacVhXSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMjA4Nzk3NTMyLG1tZSQyNjE5OTIxNTk4NDcwMDU0MjQzLHckMCx5b28kMSxhZ3AkMjY5MTQ0MDMyLGFwJFNLWSkp/0/*http://info.yahoo.com/privacy/de/yahoo/relevantads.html" class="CAN_link can_ad_slug" target="_blank"><span>Datenschutzinfo</span></a></td></tr>
+<tr><td><!-- APT Vendor: Doubleclick, Format: Standard Graphical -->
+<iframe src="https://ad-emea.doubleclick.net/adi/N4382.134177.YAHOO.DE/B7970963.2;sz=160x600;click=https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE3NWxxaTVuNShnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyNzY5NTMxNTMyLHYkMi4wLGFpZCRacVhXSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMjA4Nzk3NTMyLG1tZSQyNjE5OTIxNTk4NDcwMDU0MjQzLHIkMCx5b28kMSxhZ3AkMjY5MTQ0MDMyLGFwJFNLWSkp/0/*;mtfIFrameRequest=false;ord=1397460016.484082?" WIDTH=160 HEIGHT=600 MARGINWIDTH=0 MARGINHEIGHT=0 HSPACE=0 VSPACE=0 FRAMEBORDER=0 SCROLLING=no BORDERCOLOR='#000000'><SCRIPT language='JavaScript1.1' src="https://ad-emea.doubleclick.net/adj/N4382.134177.YAHOO.DE/B7970963.2;abr=!ie;sz=160x600;click=https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE3NWdwZjdvNChnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyNzY5NTMxNTMyLHYkMi4wLGFpZCRacVhXSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMjA4Nzk3NTMyLG1tZSQyNjE5OTIxNTk4NDcwMDU0MjQzLHIkMSx5b28kMSxhZ3AkMjY5MTQ0MDMyLGFwJFNLWSkp/0/*;ord=1397460016.484082?"></SCRIPT><NOSCRIPT><A HREF="https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE3aWZibWZpcChnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyNzY5NTMxNTMyLHYkMi4wLGFpZCRacVhXSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMjA4Nzk3NTMyLG1tZSQyNjE5OTIxNTk4NDcwMDU0MjQzLHIkMixyZCQxM3AzY2Joa2IseW9vJDEsYWdwJDI2OTE0NDAzMixhcCRTS1kpKQ/2/*https://ad-emea.doubleclick.net/jump/N4382.134177.YAHOO.DE/B7970963.2;abr=!ie4;abr=!ie5;sz=160x600;ord=1397460016.484082?"><IMG SRC="https://ad-emea.doubleclick.net/ad/N4382.134177.YAHOO.DE/B7970963.2;abr=!ie4;abr=!ie5;sz=160x600;ord=1397460016.484082?" BORDER=0 WIDTH=160 HEIGHT=600 ALT="Advertisement"></A></NOSCRIPT></IFRAME>
+<span style='visibility:hidden;background:url("https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE4MTZ2Y2hmbyhnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyNzY5NTMxNTMyLHYkMi4wLGFpZCRacVhXSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMjA4Nzk3NTMyLG1tZSQyNjE5OTIxNTk4NDcwMDU0MjQzLHckMSxpZCRub25fY3NjX2ltcCxyZCQxMXUyYmdwOG4seW9vJDEsYWdwJDI2OTE0NDAzMixhcCRTS1kpKQ/2/*https://s.yimg.com/dh/ap/noncscsec/pixel.png?1397460016.484082") no-repeat;'></span><!--QYZ 208797532,2769531532,10.207.7.33;;SKY;1185300141;1;--></td></tr>
+</table>
+</div><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['ZqXWHwrPBvc-']='(as$12qdt04q8,aid$ZqXWHwrPBvc-,bi$208797532,cr$2769531532,ct$25,at$HR,eob$gd1_match_id=-1:ypos=SKY)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$12qdt04q8,aid$ZqXWHwrPBvc-,bi$208797532,cr$2769531532,ct$25,at$HR,eob$gd1_match_id=-1:ypos=SKY)"></noscript>
             </div>
         </div>
     </div>
@@ -192,15 +266,15 @@ window.yzq_d['1cmXJE3uvHo-']='&U=13n988ohd%2fN%3d1cmXJE3uvHo-%2fC%3d200092964.20
 <div class="hd"><h2>Yahoo! Finanzen</h2></div>
 <div class="bd"><div class="content"><div class="wrap">
 <ul class="yom-list col first" style="width: 50%;">
-<li><a href="/;_ylt=Aoz0dOazZgo4dzxF.ol0Z7etPqZG;_ylu=X3oDMTEyZ2NtZjJsBHBvcwMxBHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2hvbWU-" >Home</a></li>
-<li><a href="/kurse-maerkte;_ylt=AuMfwiCxl.zcax7Vn3n0_rKtPqZG;_ylu=X3oDMTFhZjlkNmkzBHBvcwMyBHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2t1cnNlbWF1bWxyaw--" >Kurse & M&auml;rkte</a></li>
-<li><a href="/nachrichten;_ylt=AtwMPBf0BzoFvsv4igN4KyqtPqZG;_ylu=X3oDMTE5YWViZTNuBHBvcwMzBHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA25hY2hyaWNodGVu" >Nachrichten</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AvMEj9NZKxTmIOkKlRN4PgatPqZG;_ylu=X3oDMTFhdTk2MnJiBHBvcwM0BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA21laW5lcG9ydGZvbA--/SIG=11v2257al/EXP=1334080899/**http%3A//de.finedit.yahoo.com/e3%3F.src=quote" >Meine Portfolios</a></li>
+<li><a href="/;_ylt=AtXSF7x_Td7DqLJWtk492mutPqZG;_ylu=X3oDMTEyZ2NtZjJsBHBvcwMxBHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2hvbWU-" >Home</a></li>
+<li><a href="/kurse-maerkte;_ylt=Ai4rdsUa.rdCcIsFeSLLVO2tPqZG;_ylu=X3oDMTFhZjlkNmkzBHBvcwMyBHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2t1cnNlbWF1bWxyaw--" >Kurse & M&auml;rkte</a></li>
+<li><a href="/nachrichten;_ylt=AtMJsFht9IKkFxlcyH9uMb.tPqZG;_ylu=X3oDMTE5YWViZTNuBHBvcwMzBHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA25hY2hyaWNodGVu" >Nachrichten</a></li>
+<li><a href="https://de.finance.yahoo.com/portfolios.html;_ylt=Akd9lQ4_JlTHW_vcT8EUJpStPqZG;_ylu=X3oDMTFhdTk2MnJiBHBvcwM0BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA21laW5lcG9ydGZvbA--" >Meine Portfolios</a></li>
 </ul>
 <ul class="yom-list col last" style="width: 50%;" start="5">
-<li><a href="http://us.lrd.yahoo.com/_ylt=AukuNMRUYda83fE04yr9fLWtPqZG;_ylu=X3oDMTFhazZ0NG1yBHBvcwM1BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA3ByaXZhdGVmaW5hbg--/SIG=11ctnv3pb/EXP=1334080899/**http%3A//yahoo.check24.de/" >Private Finanzen</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AojAa6z5.uPAOUkZQwB1sMutPqZG;_ylu=X3oDMTE5a2x1c21sBHBvcwM2BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2ZpbmFuenRpcHBz/SIG=11q18f6k2/EXP=1334080899/**http%3A//www.ratgeber-finanzen-yahoo.de/" >Finanztipps</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AueEAdxWfGVvTMUtmULe1VCtPqZG;_ylu=X3oDMTEzNW4zZGkyBHBvcwM3BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2ZvcmVu/SIG=11plck5pg/EXP=1334080899/**http%3A//de.messages.finance.yahoo.com/" >Foren</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AssZO4.jeCMpchC0y6S1AU6tPqZG;_ylu=X3oDMTFhazZ0NG1yBHBvcwM1BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA3ByaXZhdGVmaW5hbg--/SIG=11c0q5etl/EXP=1398669616/**http%3A//yahoo.check24.de/" >Private Finanzen</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AuMS.moqvMYBRGhK_NoCeFWtPqZG;_ylu=X3oDMTE5a2x1c21sBHBvcwM2BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2ZpbmFuenRpcHBz/SIG=11qdsd04l/EXP=1398669616/**http%3A//www.ratgeber-finanzen-yahoo.de/" >Finanztipps</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=Aq3VB3T7sKPwdxMWudeTi8GtPqZG;_ylu=X3oDMTEzNW4zZGkyBHBvcwM3BHNlYwNmb290ZXIteWZpbmFuY2UEc2xrA2ZvcmVu/SIG=11purntdv/EXP=1398669616/**http%3A//de.messages.finance.yahoo.com/" >Foren</a></li>
 </ul>
 </div></div></div>
 </div></div>
@@ -209,92 +283,103 @@ window.yzq_d['1cmXJE3uvHo-']='&U=13n988ohd%2fN%3d1cmXJE3uvHo-%2fC%3d200092964.20
 <div class="hd"><h2>Auch bei Yahoo!</h2></div>
 <div class="bd"><div class="content"><div class="wrap">
 <ul class="yom-list col first" style="width: 33.333333333333%;">
-<li><a href="http://us.lrd.yahoo.com/_ylt=AnlnGYGXTE7QU.xEmmgGkrytPqZG;_ylu=X3oDMTE2dTM4bnZzBHBvcwM4BHNlYwNmb290ZXItYWxzb29ueWFob28Ec2xrA2F1dG9z/SIG=11dal3rl1/EXP=1334080899/**http%3A//de.cars.yahoo.com/" >Autos</a></li>
-<li><a href="http://de.answers.yahoo.com/;_ylt=Aro.dDVPlm5U9BfzJilxKXStPqZG;_ylu=X3oDMTE3cTdxanM3BHBvcwM5BHNlYwNmb290ZXItYWxzb29ueWFob28Ec2xrA2NsZXZlcg--" >Clever</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AnE97aXBqQfW6QNHKdOiqk2tPqZG;_ylu=X3oDMTE4NTBrdThlBHBvcwMxMARzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNmbGlja3I-/SIG=11a77mtd0/EXP=1334080899/**http%3A//www.flickr.com/" >Flickr</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Ak9nUHWf9m_p2v0_pnLwgkGtPqZG;_ylu=X3oDMTE4aDlkNDlpBHBvcwMxMQRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNtb2JpbGU-/SIG=11fr4mjbk/EXP=1334080899/**http%3A//de.mobile.yahoo.com/" >Mobile</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AhYz4vkrqW90ncfmvyMMYkitPqZG;_ylu=X3oDMTE2dTM4bnZzBHBvcwM4BHNlYwNmb290ZXItYWxzb29ueWFob28Ec2xrA2F1dG9z/SIG=11d9vg9g1/EXP=1398669616/**http%3A//de.cars.yahoo.com/" >Autos</a></li>
+<li><a href="http://de.answers.yahoo.com/;_ylt=AnKKfFVpCxQwXroMxfs8XdGtPqZG;_ylu=X3oDMTE3cTdxanM3BHBvcwM5BHNlYwNmb290ZXItYWxzb29ueWFob28Ec2xrA2NsZXZlcg--" >Clever</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=Au_I4w6z1_Kc7kjQ1lMzXmGtPqZG;_ylu=X3oDMTE4NTBrdThlBHBvcwMxMARzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNmbGlja3I-/SIG=11alr1g66/EXP=1398669616/**http%3A//www.flickr.com/" >Flickr</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AiK4i8tRWgj4euDXIQcnFsytPqZG;_ylu=X3oDMTE4aDlkNDlpBHBvcwMxMQRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNtb2JpbGU-/SIG=11fg279rg/EXP=1398669616/**http%3A//de.mobile.yahoo.com/" >Mobile</a></li>
 </ul>
 <ul start="5" class="yom-list col" style="width: 33.333333333333%;">
-<li><a href="http://us.lrd.yahoo.com/_ylt=AsHNb4oua2xp0bAEox0MSd6tPqZG;_ylu=X3oDMTE4MWpqbWJ0BHBvcwMxMgRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNtb3ZpZXM-/SIG=11fgd8n2b/EXP=1334080899/**http%3A//de.movies.yahoo.com/" >Movies</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AvUE6tIu_umF4QIgPXBe_o6tPqZG;_ylu=X3oDMTE3dmJ0ajZjBHBvcwMxMwRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNtdXNpaw--/SIG=11ibh0ia8/EXP=1334080899/**http%3A//new.de.music.yahoo.com/" >Musik</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Au9IVsfD.dtGvL8LjkxkJ9OtPqZG;_ylu=X3oDMTFkM2kyaWYzBHBvcwMxNARzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNuYWNocmljaHRlbg--/SIG=11d7alh96/EXP=1334080899/**http%3A//de.news.yahoo.com/" >Nachrichten</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=ArHyrFX1SZI4A7HEDO0jh3StPqZG;_ylu=X3oDMTE4MzhqcGhiBHBvcwMxNQRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNyZWlzZW4-/SIG=11fg58nn7/EXP=1334080899/**http%3A//de.reisen.yahoo.com/" >Reisen</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AkHDzEGGF22byJSqLsTxEd.tPqZG;_ylu=X3oDMTE4MWpqbWJ0BHBvcwMxMgRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNtb3ZpZXM-/SIG=11fa30snt/EXP=1398669616/**http%3A//de.movies.yahoo.com/" >Movies</a></li>
+<li><a href="http://new.de.music.yahoo.com/;_ylt=ArBmaj613QWf1ioE_L_o3SKtPqZG;_ylu=X3oDMTE3dmJ0ajZjBHBvcwMxMwRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNtdXNpaw--" >Musik</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=Ag9qZQCfSpxn6X5vgm.PNO6tPqZG;_ylu=X3oDMTFkM2kyaWYzBHBvcwMxNARzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNuYWNocmljaHRlbg--/SIG=11durl3b1/EXP=1398669616/**http%3A//de.news.yahoo.com/" >Nachrichten</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AuhnmfRVCNjPlKEuni68bIStPqZG;_ylu=X3oDMTE4MzhqcGhiBHBvcwMxNQRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNyZWlzZW4-/SIG=11febboa5/EXP=1398669616/**http%3A//de.reisen.yahoo.com/" >Reisen</a></li>
 </ul>
 <ul start="9" class="yom-list col last" style="width: 33.333333333333%;">
-<li><a href="http://us.lrd.yahoo.com/_ylt=AnjT2b9Cfc2wg2CLwuulRpetPqZG;_ylu=X3oDMTE3aWM4cjBrBHBvcwMxNgRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNnYW1lcw--/SIG=11eortpga/EXP=1334080899/**http%3A//de.games.yahoo.com/" >Games</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Aj9MnjOMNc8p7Wn1T3r1chatPqZG;_ylu=X3oDMTE3YWk4bmg0BHBvcwMxNwRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNzcG9ydA--/SIG=11ihm03ga/EXP=1334080899/**http%3A//de.eurosport.yahoo.com/" >Sport</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AtlLF.QF5vj4YIq7OtRZ3TWtPqZG;_ylu=X3oDMTE0ZWsxbTkyBHBvcwMxOARzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawN0dg--/SIG=11bji8290/EXP=1334080899/**http%3A//de.tv.yahoo.com/" >TV</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=ArR0OmA8K7cBEKyDfniVvKitPqZG;_ylu=X3oDMTE3aWM4cjBrBHBvcwMxNgRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNnYW1lcw--/SIG=11e7h65e3/EXP=1398669616/**http%3A//de.games.yahoo.com/" >Games</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AvtwXibNQ4FA7ILO72LkZzatPqZG;_ylu=X3oDMTE3YWk4bmg0BHBvcwMxNwRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawNzcG9ydA--/SIG=11iu1pror/EXP=1398669616/**http%3A//de.eurosport.yahoo.com/" >Sport</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=ArbEEToNTcLapHbLUnvoSa2tPqZG;_ylu=X3oDMTE0ZWsxbTkyBHBvcwMxOARzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawN0dg--/SIG=11bl9577u/EXP=1398669616/**http%3A//de.tv.yahoo.com/" >TV</a></li>
 </ul>
 </div></div></div>
-<div class="ft"><a href="http://us.lrd.yahoo.com/_ylt=AiaUnndsYnRkhIgE3B58rwitPqZG;_ylu=X3oDMTFlNGwxYnRkBHBvcwMxOQRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawN2aWRlb25ic3ByYXE-/SIG=11ebtr3ui/EXP=1334080899/**http%3A//de.video.yahoo.com/" class="more">Video&nbsp;&raquo;</a></div>
+<div class="ft"><a href="https://us.lrd.yahoo.com/_ylt=Ao8pzemOwTnfMXsqQJzA2AitPqZG;_ylu=X3oDMTFlNGwxYnRkBHBvcwMxOQRzZWMDZm9vdGVyLWFsc29vbnlhaG9vBHNsawN2aWRlb25ic3ByYXE-/SIG=11ec2rkn4/EXP=1398669616/**http%3A//de.video.yahoo.com/" class="more">Video&nbsp;&raquo;</a></div>
 </div></div>
 <div class="yog-col yog-8u last"><div class="yom-mod yom-linkbox yom-things-to-do" id="things-to-do">
 <div class="hd"><h2>Verschiedenes</h2></div>
 <div class="bd"><div class="content"><div class="wrap"><ul>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Asi3SnAdW66X3OpojYT8LFOtPqZG;_ylu=X3oDMTE5Z2txNnBsBHBvcwMyMARzZWMDZm9vdGVyLXRoaW5nc3RvZG8Ec2xrA2ZlZWRiYWNr/SIG=129i7alm2/EXP=1334080899/**http%3A//help.yahoo.com/l/de/yahoo/finance/general.html" >Feedback</a></li>
-<li><a href="/waehrungen/waehrungsrechner/;_ylt=ApEAg41qUPFcEgiEyTBwsp2tPqZG;_ylu=X3oDMTFkZThkMzVwBHBvcwMyMQRzZWMDZm9vdGVyLXRoaW5nc3RvZG8Ec2xrA3docnVuZ3NyZWNobg--" >Währungsrechner</a></li>
+<li><a href="https://us.lrd.yahoo.com/_ylt=AjEZfWQinrKW_qIpv234qwatPqZG;_ylu=X3oDMTE5Z2txNnBsBHBvcwMyMARzZWMDZm9vdGVyLXRoaW5nc3RvZG8Ec2xrA2ZlZWRiYWNr/SIG=126kfiuft/EXP=1398669616/**http%3A//feedback.yahoo.com/forums/170314-de-finance" >Feedback</a></li>
+<li><a href="/waehrungen/waehrungsrechner/;_ylt=AqfK6K7CmUfey9.AtAYAP0ytPqZG;_ylu=X3oDMTFkZThkMzVwBHBvcwMyMQRzZWMDZm9vdGVyLXRoaW5nc3RvZG8Ec2xrA3docnVuZ3NyZWNobg--" >Währungsrechner</a></li>
 </ul></div></div></div>
 </div></div>
 </div></div>
 </div></div></div></div>
 
-            <div class="y-footer"><div class="footer-wrapper"><div class="footer-wrapper-inner"><div class="worldwide yog-24u">
-<h2>Yahoo! Finanzen Weltweit</h2>
-<ul>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AnkjeUCilFj99Ns141qolROtPqZG;_ylu=X3oDMTFmbjNmdjU1BHBvcwMxBHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2FyZ2VudGluaWVu/SIG=11gv4j23e/EXP=1334080899/**http%3A//ar.finance.yahoo.com/" >Argentinien</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Ak6l_1bfQfW9qyvZJ6woQCutPqZG;_ylu=X3oDMTFlaG0wOHJtBHBvcwMyBHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2F1c3RyYWxpZW4-/SIG=11gh3ok8i/EXP=1334080899/**http%3A//au.finance.yahoo.com/" >Australien</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Ajtnw_EtpBfruzHg4pfgBgqtPqZG;_ylu=X3oDMTFkN21ncTFsBHBvcwMzBHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2JyYXNpbGllbg--/SIG=11gumvk97/EXP=1334080899/**http%3A//br.finance.yahoo.com/" >Brasilien</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AijN_i0nVBs9duFiJcEMUWWtPqZG;_ylu=X3oDMTE5aDdnNGpyBHBvcwM0BHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2NoaW5h/SIG=11gi6ocab/EXP=1334080899/**http%3A//finance.cn.yahoo.com/" >China</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Aod.ln6lYkH0ERN1RVsDcSmtPqZG;_ylu=X3oDMTFlNnY4YW1wBHBvcwM1BHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2NoaW5lc2lzY2g-/SIG=11lsl7q0m/EXP=1334080899/**http%3A//chinese.finance.yahoo.com/" >Chinesisch</a></li>
-<li><a href="http://de.finance.yahoo.com/;_ylt=AnWLHzMnTEoTzE.puz_tuJWtPqZG;_ylu=X3oDMTFmNnFtMHIyBHBvcwM2BHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2RldXRzY2hsYW5k" >Deutschland</a></li>
-<li><a href="http://fr.finance.yahoo.com/;_ylt=AlS9SrdcbwDLTeYYXS37Ch6tPqZG;_ylu=X3oDMTFlOGV1YjU4BHBvcwM3BHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2ZyYW5rcmVpY2g-" >Frankreich</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AlYL5tv_F_hLbyZKO_erG1WtPqZG;_ylu=X3oDMTFmcDZjY21oBHBvcwM4BHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2ZyYW56a2FuYWRh/SIG=11jod4k2p/EXP=1334080899/**http%3A//fr-ca.finance.yahoo.com/" >Franz. Kanada</a></li>
-<li><a href="http://uk.finance.yahoo.com/;_ylt=AtN1mgkbe.UP3BgNGEwNqLOtPqZG;_ylu=X3oDMTFnbTU1ZGt0BHBvcwM5BHNlYwN5ZmlOYXZGb290ZXJXb3JsZHdpZGUEc2xrA2dyb2JyaXRhbm5pZQ--" >Großbritannien</a></li>
-</ul>
-<ul>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AuAh2jOISbKk34ipcn54Uh2tPqZG;_ylu=X3oDMTFkMWo5NWZhBHBvcwMxMARzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNob25na29uZw--/SIG=11gkmqe58/EXP=1334080899/**http%3A//hk.finance.yahoo.com/" >Hongkong</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=ArnHNHFzsZTEovlN3dz7WdWtPqZG;_ylu=X3oDMTFiZGg0Y3NjBHBvcwMxMQRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNpbmRpZW4-/SIG=11ggci3kf/EXP=1334080899/**http%3A//in.finance.yahoo.com/" >Indien</a></li>
-<li><a href="http://it.finance.yahoo.com/;_ylt=AqImtjxRqWzpLEE8Nq.fv_GtPqZG;_ylu=X3oDMTFjb3EyNjM5BHBvcwMxMgRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNpdGFsaWVu" >Italien</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Avle3zkiHj4MOxKtYLYbKb.tPqZG;_ylu=X3oDMTFhbTk4bGFvBHBvcwMxMwRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNqYXBhbg--/SIG=11fm3v00b/EXP=1334080899/**http%3A//finance.yahoo.co.jp/" >Japan</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AuDMcuoDWilN77X_9TFuCfStPqZG;_ylu=X3oDMTFiM3YwMnM5BHBvcwMxNARzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNrYW5hZGE-/SIG=11gerdksr/EXP=1334080899/**http%3A//ca.finance.yahoo.com/" >Kanada</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Ar5UPYoscsPVz.7hgN_qs42tPqZG;_ylu=X3oDMTFhaDRuYmk0BHBvcwMxNQRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNrb3JlYQ--/SIG=11ge8t678/EXP=1334080899/**http%3A//kr.finance.yahoo.com/" >Korea</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Av_gQaIheimi634e7DcmwTOtPqZG;_ylu=X3oDMTFicWt1djBzBHBvcwMxNgRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNtZXhpa28-/SIG=11g48e12h/EXP=1334080899/**http%3A//mx.finance.yahoo.com/" >Mexiko</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Aoc20uwjGP3ZM3azGrrTjzitPqZG;_ylu=X3oDMTFmbHZ0M3FmBHBvcwMxNwRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNuZXVzZWVsYW5k/SIG=11g4plfok/EXP=1334080899/**http%3A//nz.finance.yahoo.com/" >Neuseeland</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Akb_u6TyE.sh8MgPbZ5DycutPqZG;_ylu=X3oDMTFkams4aWRkBHBvcwMxOARzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNzaW5nYXB1cg--/SIG=11gqj4vo6/EXP=1334080899/**http%3A//sg.finance.yahoo.com/" >Singapur</a></li>
-<li><a href="http://es.finance.yahoo.com/;_ylt=AhNGmIwiiDho5CafYc44M66tPqZG;_ylu=X3oDMTFjbzU3bGJvBHBvcwMxOQRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNzcGFuaWVu" >Spanien</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=AvnnFbii9zuBIaMLpdJAbrqtPqZG;_ylu=X3oDMTFkbGRvYzh1BHBvcwMyMARzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawNzcGFuaXNjaA--/SIG=11lso4606/EXP=1334080899/**http%3A//espanol.finance.yahoo.com/" >Spanisch</a></li>
-<li><a href="http://us.lrd.yahoo.com/_ylt=Av3AiO1Qgad3Yw3oMBzZPjWtPqZG;_ylu=X3oDMTFiNmZrbjZtBHBvcwMyMQRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawN0YWl3YW4-/SIG=11e552gll/EXP=1334080899/**http%3A//tw.stock.yahoo.com/" >Taiwan</a></li>
-<li><a href="http://finance.yahoo.com/;_ylt=AplzIm2nTDkmOLv7Ohc1m..tPqZG;_ylu=X3oDMTE4b2wzZzE0BHBvcwMyMgRzZWMDeWZpTmF2Rm9vdGVyV29ybGR3aWRlBHNsawN1c2E-" >USA</a></li>
-</ul>
-</div></div></div></div>
-
+            
             <div class="footer_copyright">
-    <div class="yog-24u">
-    <div class="footer_legal">
-        <p>
-Copyright &copy; <script>document.write((new Date()).getFullYear());</script> Yahoo! Inc.
-<a href="http://global.ard.yahoo.com/SIG=1602rkirj/M=200071361.202019092.203344053.201512086/D=defin99/S=1185300141:FOOT/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=z8mXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=201165740/R=0/SIG=11fes9jg8/*http://info.yahoo.com/legal/de/yahoo/tos.html">AGB</a> -
-<a href="http://global.ard.yahoo.com/SIG=1602rkirj/M=200071361.202019092.203344053.201512086/D=defin99/S=1185300141:FOOT/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=z8mXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=201165740/R=1/SIG=119goke2j/*http://info.yahoo.com/privacy/de/yahoo/"><font color="#CC0033">NEU</font> Datenschutz</a> 
- -
- <a href="http://global.ard.yahoo.com/SIG=1602rkirj/M=200071361.202019092.203344053.201512086/D=defin99/S=1185300141:FOOT/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=z8mXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=201165740/R=2/SIG=11pd5tejf/*http://info.yahoo.com/privacy/de/yahoo/relevantads.html">Informationen zu unserer Werbung</a> -
-<a href="http://global.ard.yahoo.com/SIG=1602rkirj/M=200071361.202019092.203344053.201512086/D=defin99/S=1185300141:FOOT/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=z8mXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=201165740/R=3/SIG=119326b7k/*http://de.docs.yahoo.com/copyright.html">Copyright-Richtlinien</a> -
-<a href="http://global.ard.yahoo.com/SIG=1602rkirj/M=200071361.202019092.203344053.201512086/D=defin99/S=1185300141:FOOT/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=z8mXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=201165740/R=4/SIG=11numjgrj/*http://help.yahoo.com/l/de/yahoo/finance/general.html">Feedback</a> -
-<a href="http://global.ard.yahoo.com/SIG=1602rkirj/M=200071361.202019092.203344053.201512086/D=defin99/S=1185300141:FOOT/Y=DE/EXP=1332878499/L=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO/B=z8mXJE3uvHo-/J=1332871299587722/K=QKDA_sYswSFqk_M.Q0Z.Rg/A=201165740/R=5/SIG=11ro5rntf/*http://help.yahoo.com/l/de/yahoo/finance/forms_index.html">Hilfe</a> - <font size=-1>Yahoo! News Network</font>
-</p><script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['z8mXJE3uvHo-']='&U=13ovts2u2%2fN%3dz8mXJE3uvHo-%2fC%3d200071361.202019092.203344053.201512086%2fD%3dFOOT%2fB%3d201165740%2fV%3d1';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=1806tf0ol%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d3008480338%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=13ovts2u2%2fN%3dz8mXJE3uvHo-%2fC%3d200071361.202019092.203344053.201512086%2fD%3dFOOT%2fB%3d201165740%2fV%3d1"></noscript><!--QYZ ,;;;1185300141;11;-->
-    </div>
-    
-  <div class="footer_disclaimer">
-<p><strong>Die Börsennotierungen für NYSE, Nasdaq und NYSEAmex sind Real-Time-Kurse</strong> und werden, falls verfügbar, von Nasdaq Last Sale zur Verfügung gestellt. Wenn Börsennotierungen nicht von NLS bereitgestellt werden können, werden Sie mit zeitlicher Verzögerung über die primäre Quelle für Börsennotierungen zur Verfügung gestellt.<br /> Siehe auch Verzögerungszeiten <a href="http://us.lrd.yahoo.com/_ylt=AgoHDA4xrlN2wYce_kTiXeqtPqZG;_ylu=X3oDMTFoM2czN21qBHBvcwMxBHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNhbmRlcmVyYnJzZW4-/SIG=12ju91g67/EXP=1334080899/**http%3A//help.yahoo.com/l/de/yahoo/finance/basics/fitadelay2.html" >anderer Börsenplätze</a>. Alle Daten werden ohne Gewähr bereitgestellt und dienen lediglich der Information, sie sind weder für Handelszwecke vorgesehen noch als Empfehlung zu verstehen. Yahoo! und die unabhängigen Anbieter haften weder für fehlerhafte, unvollständige oder verzögerte Informationen noch für Maßnahmen, die auf Grundlage der hierin enthaltenen Informationen ergriffen werden. Durch den Zugriff auf die Yahoo! Website verpflichten Sie sich, die hierin gefundenen Informationen nicht an Dritte weiterzugeben. Real-Time-Kurse sind verfügbar über unseren <a href="http://us.lrd.yahoo.com/_ylt=AjW0111Xup_sRoBUTGPTX.KtPqZG;_ylu=X3oDMTFodTNkc2V0BHBvcwMyBHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNwcmVtaXVtc2Vydmk-/SIG=137cdq49a/EXP=1334080899/**http%3A//billing.finance.yahoo.com/realtime_quotes/signup%3F.src=quote%26.refer=quote" >Premium Service.</a> Sie können die Streaming Quotes-Funktion ein- oder ausschalten.</p>
-<p>Grundlegende Firmendaten werden von <a href="http://us.lrd.yahoo.com/_ylt=AjAMEubBOUfTdeagk1mFTEqtPqZG;_ylu=X3oDMTFldmFrYmpuBHBvcwMzBHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNjYXBpdGFsaXE-/SIG=11djc22t6/EXP=1334080899/**http%3A//www.capitaliq.com/" >Capital IQ</a> bereitgestellt. Historische Chart-Daten und tägliche Aktualisierungen werden von <a href="http://us.lrd.yahoo.com/_ylt=Apvc_Mxk32SKVCo3HeFqgmytPqZG;_ylu=X3oDMTFoa2dpYTFmBHBvcwM0BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNjb21tb2RpdHlzeXM-/SIG=11b53q577/EXP=1334080899/**http%3A//www.csidata.com/" >Commodity Systems Inc. (CSI)</a> bereitgestellt. Fondsdaten und Morningstar Index-Daten werden von <a href="http://us.lrd.yahoo.com/_ylt=Apw0vBxcwP7RDTBTNmvreMitPqZG;_ylu=X3oDMTFoazVtNGhzBHBvcwM1BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNtb3JuaW5nc3Rhcmk-/SIG=11f4sh5ln/EXP=1334080899/**http%3A//www.morningstar.com/" >Morningstar, Inc.</a> bereitgestellt.</p>
+               <div class="yog-24u">
+                   <div class="footer_legal">
+                       <!-- EMEA FOOTC FAC Expansion--><!--QYZ 105969032,2261049532,10.207.7.33;;FOOTC;1185300141;1;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['qtrWHwrPBvc-']='(as$12qp6ui7i,aid$qtrWHwrPBvc-,bi$105969032,cr$2261049532,ct$25,at$HR,eob$gd1_match_id=-1:ypos=PP.FOOT-FOOTC)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$12qp6ui7i,aid$qtrWHwrPBvc-,bi$105969032,cr$2261049532,ct$25,at$HR,eob$gd1_match_id=-1:ypos=PP.FOOT-FOOTC)"></noscript><!-- SZM VERSION="1.3" --><SCRIPT LANGUAGE="JavaScript">
+<!-- 
+var IVW="https://yahoo.ivwbox.de/cgi-bin/ivw/CP/20483043"; 
+document.write("<IMG SRC=\""+IVW+"?r="+escape(document.referrer.split('?')[0])+"\" WIDTH=\"1\" HEIGHT=\"1\">"); 
+// -->
+</SCRIPT>
+<NOSCRIPT><IMG SRC="https://yahoo.ivwbox.de/cgi-bin/ivw/CP/20483043" WIDTH="1" HEIGHT="1"></NOSCRIPT>
+<!-- /SZM -->
+
+
+<!-- SZMng -->
+<script type="text/javascript" src="https://script.ioam.de/iam.js"></script> 
+<!-- SZM VERSION="2.0" --> 
+<script type="text/javascript"> 
+var iam_data = { 
+"st":"yahoo", // site/domain 
+"cp":"20483043" , // code 
+"sv":"i2", // survey
+"co":"kommentar" // comment 
+} 
+iom.c(iam_data); 
+</script> 
+<!--/SZM -->
+
+<!-- survey -->
+<script type="text/javascript">
+var szmvars = "yahoo//CP//20483043";
+</script>
+<script src="https://s.yimg.com/hl/a/agofsrvy/newlogo/survey.js" type="text/javascript">
+</script>
+<!--https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE3NnFiajZiNyhnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyMjg2NjY1MDMyLHYkMi4wLGFpZCRUUFhXSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMTE0NTc0NTMyLG1tZSQyMjMyNzc5Njg4ODU4MTQ5ODgxLHIkMCx5b28kMSxhZ3AkMTI1NTc5MDMyLGFwJEFHT0YpKQ/2/*--><!--QYZ 114574532,2286665032,10.207.7.33;;AGOF;1185300141;1;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['TPXWHwrPBvc-']='(as$12q80n714,aid$TPXWHwrPBvc-,bi$114574532,cr$2286665032,ct$25,at$HR,eob$gd1_match_id=-1:ypos=AGOF)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$12q80n714,aid$TPXWHwrPBvc-,bi$114574532,cr$2286665032,ct$25,at$HR,eob$gd1_match_id=-1:ypos=AGOF)"></noscript><!-- SpaceID=1185300141 loc=AUD noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_AVAIL,,10.207.7.33;;AUD;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['7g_XHwrPBvc-']='(as$1255pk8no,aid$7g_XHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=AUD)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$1255pk8no,aid$7g_XHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=AUD)"></noscript><!-- SpaceID=1185300141 loc=BCN1 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_AVAIL,,10.207.7.33;;BCN1;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['kCrXHwrPBvc-']='(as$125ijnt3v,aid$kCrXHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=BCN1)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125ijnt3v,aid$kCrXHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=BCN1)"></noscript><!-- APT Vendor: Nugg.ad, Format: Standard Graphical -->
+<div style="display: none;">
+<iframe src="https://yahoo-s.nuggad.net/ht?nuggn=1154829101&nuggsid=2133766681"></iframe>
+</div>
+<!--https://clicks.beap.bc.yahoo.com/yc/YnY9MS4wLjAmYnM9KDE3NjlsdXNvMihnaWQkY2xEVkF6ZzNMaklyLjRXT1VrMnh5UU9tTWk0eU5GTkxqREFBQUFBQSxzdCQxMzk3NDYwMDE2NDQ2NjEyLHNpJDI2NjMwMzIsc3AkMTE4NTMwMDE0MSxjciQyNzQwODc3NTMyLHYkMi4wLGFpZCRNa1hYSHdyUEJ2Yy0sY3QkMjUseWJ4JEgxa2lHV1J3enRMaHlSdkN5TmJjOXcsYmkkMTg5NDAzNTMyLG1tZSQyNTM5MDM0NDc5Mzg0MTk5MjE0LHIkMCx5b28kMSxhZ3AkMjM5OTE3MDMyLGFwJE5VR0cpKQ/2/*--><!--QYZ 189403532,2740877532,10.207.7.33;;NUGG;1185300141;1;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['MkXXHwrPBvc-']='(as$12q1rok7j,aid$MkXXHwrPBvc-,bi$189403532,cr$2740877532,ct$25,at$HR,eob$gd1_match_id=-1:ypos=NUGG)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$12q1rok7j,aid$MkXXHwrPBvc-,bi$189403532,cr$2740877532,ct$25,at$HR,eob$gd1_match_id=-1:ypos=NUGG)"></noscript><!-- SpaceID=1185300141 loc=RMBT noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_AVAIL,,10.207.7.33;;RMBT;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['1F_XHwrPBvc-']='(as$125las6in,aid$1F_XHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=RMBT)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125las6in,aid$1F_XHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=RMBT)"></noscript><!-- SpaceID=1185300141 loc=SIP noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_AVAIL,,10.207.7.33;;SIP;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['dnrXHwrPBvc-']='(as$125lsb6go,aid$dnrXHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=SIP)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125lsb6go,aid$dnrXHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=SIP)"></noscript>
+                   </div>
+                   <div class="footer_legal"><p>Copyright &copy; <script>document.write((new Date()).getFullYear());</script> Yahoo! Inc. <a href="https://us.lrd.yahoo.com/_ylt=AtR0DE8rNt2hRv1M867v8VytPqZG;_ylu=X3oDMTE4MGFsYXI1BHBvcwMxBHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNhZ2I-/SIG=121su2vno/EXP=1398669616/**http%3A//info.yahoo.com/legal/de/yahoo/tos.html" >AGB</a> - <a href="https://us.lrd.yahoo.com/_ylt=AqN9j9C_lmo_lD0k399HLqOtPqZG;_ylu=X3oDMTE4OTdtNzdvBHBvcwMyBHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNuZXU-/SIG=11ri5ed7u/EXP=1398669616/**http%3A//info.yahoo.com/privacy/de/yahoo/" ><font color="#CC0033">NEU</font> Datenschutz</a> - <a href="https://us.lrd.yahoo.com/_ylt=ApRs.eZMNZnVAzpFMObEzJOtPqZG;_ylu=X3oDMTFoYzNwNDV1BHBvcwMzBHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNpbmZvcm1hdGlvbmU-/SIG=12btkv9n8/EXP=1398669616/**http%3A//info.yahoo.com/privacy/de/yahoo/relevantads.html" >Informationen zu unserer Werbung</a> - <a href="https://us.lrd.yahoo.com/_ylt=AnKUBgJnVblxc9JBBAFn2s2tPqZG;_ylu=X3oDMTFocjBwM3N0BHBvcwM0BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNjb3B5cmlnaHQtcmk-/SIG=11rl55jb9/EXP=1398669616/**http%3A//de.docs.yahoo.com/copyright.html" >Copyright-Richtlinien</a> - <a href="http://help.yahoo.com/l/de/yahoo/finance/general.html;_ylt=AlecGHHfFzaqiSxMY9bmibGtPqZG;_ylu=X3oDMTFkcTgzdDlyBHBvcwM1BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNmZWVkYmFjaw--" >Feedback</a> - <a href="http://help.yahoo.com/l/de/yahoo/finance/forms_index.html;_ylt=Aoy75zBNGiYMbd7FaSpoqJatPqZG;_ylu=X3oDMTFhYzBxZnIyBHBvcwM2BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNoaWxmZQ--" >Hilfe</a> - <font size=-1>Yahoo! News Network</font></p></div><div class="footer_disclaimer">
+<p><strong>Die Börsennotierungen für NYSE, Nasdaq und NYSEAmex sind Real-Time-Kurse</strong> und werden, falls verfügbar, von Nasdaq Last Sale zur Verfügung gestellt. Wenn Börsennotierungen nicht von NLS bereitgestellt werden können, werden Sie mit zeitlicher Verzögerung über die primäre Quelle für Börsennotierungen zur Verfügung gestellt.<br /> Siehe auch Verzögerungszeiten <a href="http://help.yahoo.com/kb/index;_ylt=AiebTWefvd89fXa20Ok3hcatPqZG;_ylu=X3oDMTFoNDJzdjk0BHBvcwM3BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNhbmRlcmVyYnJzZW4-?page=content&y=PROD_FIN&locale=de_DE&id=SLN2310&impressions=false" >anderer Börsenplätze</a>. Alle Daten werden ohne Gewähr bereitgestellt und dienen lediglich der Information, sie sind weder für Handelszwecke vorgesehen noch als Empfehlung zu verstehen. Yahoo! und die unabhängigen Anbieter haften weder für fehlerhafte, unvollständige oder verzögerte Informationen noch für Maßnahmen, die auf Grundlage der hierin enthaltenen Informationen ergriffen werden. Durch den Zugriff auf die Yahoo! Website verpflichten Sie sich, die hierin gefundenen Informationen nicht an Dritte weiterzugeben.</p>
+<p>Grundlegende Firmendaten werden von <a href="https://us.lrd.yahoo.com/_ylt=AkZf48obr4HOLC8yO5JzekqtPqZG;_ylu=X3oDMTFlcTZscDAxBHBvcwM4BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNjYXBpdGFsaXE-/SIG=11dq8ortb/EXP=1398669616/**http%3A//www.capitaliq.com/" >Capital IQ</a> bereitgestellt. Historische Chart-Daten und tägliche Aktualisierungen werden von <a href="https://us.lrd.yahoo.com/_ylt=AnQkAy4Jgs32W14MUKUYYM.tPqZG;_ylu=X3oDMTFodWZuNTd0BHBvcwM5BHNlYwN5ZmlOYXZGb290ZXJEaXNjbGFpbWVyBHNsawNjb21tb2RpdHlzeXM-/SIG=11brdie07/EXP=1398669616/**http%3A//www.csidata.com/" >Commodity Systems Inc. (CSI)</a> bereitgestellt. Fondsdaten und Morningstar Index-Daten werden von <a href="https://us.lrd.yahoo.com/_ylt=AqnMzRp5YGZiCfmzOyRkA8OtPqZG;_ylu=X3oDMTFpOGc2dWNkBHBvcwMxMARzZWMDeWZpTmF2Rm9vdGVyRGlzY2xhaW1lcgRzbGsDbW9ybmluZ3N0YXJp/SIG=11ffo2htf/EXP=1398669616/**http%3A//www.morningstar.com/" >Morningstar, Inc.</a> bereitgestellt.</p>
 </div>
 
-
-    </div>
-</div>
-
+               </div>
+            </div>
         </div>
 
     <div id="spaceid" style="display:none;">1185300141</div><script type="text/javascript">
@@ -303,38 +388,47 @@ window.yzq_d['z8mXJE3uvHo-']='&U=13ovts2u2%2fN%3dz8mXJE3uvHo-%2fC%3d200071361.20
                 if(typeof YAHOO.Finance.SymbolSuggestConfig == "undefined"){YAHOO.Finance.SymbolSuggestConfig=[];}
 
                     YAHOO.Finance.SymbolSuggestConfig.push({
-                        dsServer:'http://d.yimg.com/aq/autoc',
+                        dsServer:'https://s.yimg.com/aq/autoc',
                         dsRegion:'DE',
                         dsLang:'de-DE',
-                        dsFooter:'<div class="moreresults"><a class="[[tickdquote]]" href="http://de.finance.yahoo.com/lookup?s=[[link]]">Alle Ergebnisse anzeigen für  [[tickdquote]]</a></div><div class="tip"><em>Tipp:</em> Verwenden Sie ein Komma (,), um mehrere Börsennotierungen zu trennen. <a href="http://help.yahoo.com/l/de/yahoo/finance/basics/quotelookup.html">Weitere Informationen...</a></div>',
+                        dsFooter:'<div class="moreresults"><a class="[[tickdquote]]" href="https://de.finance.yahoo.com/lookup?s=[[link]]">Alle Ergebnisse anzeigen für  [[tickdquote]]</a></div><div class="tip"><em>Tipp:</em> Verwenden Sie ein Komma (,), um mehrere Börsennotierungen zu trennen. <a href="http://help.yahoo.com/l/de/yahoo/finance/basics/quotelookup.html">Weitere Informationen...</a></div>',
                         acInputId:'txtQuotes',
                         acInputFormId:'quote',
-                        acContainerId:'quoteContainer'
+                        acContainerId:'quoteContainer',
+                        acModId:'mediaquotessearch',
+			acInputFocus:'0'
                     });
 				</script>
 
     
-<script type="text/javascript" src="http://l.yimg.com/bm/combo?fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/yahoo-dom-event/2.0.0/mini/yahoo-dom-event.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/element/2.0.0/mini/element-min.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/get/2.0.0/mini/get.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/tabview/2.0.0/mini/tabview-min.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/yuiloader-dom-event/2.0.0/mini/yuiloader-dom-event.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/cookie/2.0.0/mini/cookie.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/connection/2.0.0/mini/connection.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/container/2.0.0/mini/container.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/datasource/2.0.0/mini/datasource.js&fi/common/p/d/static/js/2.0.200214/yui_2.8.0/build/autocomplete/2.0.0/mini/autocomplete.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yui-min-3.2.0.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_nav_topnav.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_nav_topnav_init.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_nav_portfolio.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_symbol_suggest.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_loader.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_init_symbol_suggest.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/ylc_1.9.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi.js&fi/common/p/d/static/js/2.0.200214/2.0.0/mini/yfi_common.js"></script>
+<script type="text/javascript" src="https://s.yimg.com/bm/combo?fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_lazy_load.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_nav_topnav.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_nav_topnav_init.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_nav_portfolio.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_symbol_suggest.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_loader.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_init_symbol_suggest.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/ylc_1.9.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi.js&fi/common/p/d/static/js/2.0.327871/2.0.0/mini/yfi_common.js"></script>
 
-<script type="text/javascript" src="http://l.yimg.com/zz/combo?kx/ucs/sts/js/290/skip-min.js&kx/ucs/menu_utils/js/163/menu_utils_v2-min.js&kx/ucs/uh/js/267/aria_toolbar-min.js&kx/ucs/username/js/42/user_menu-min.js&kx/ucs/help/js/41/help_menu-min.js&kx/ucs/utility_link/js/20/utility_menu-min.js&kx/ucs/uh/js/262/logo_debug-min.js&kx/ucs/homepage/js/157/homepage-min.js&kx/ucs/common/js/1/setup-min.js&kx/ucs/search/js/220/search-min.js&kx/ucs/search/js/210/search_text_dir-min.js"></script>
+<script type="text/javascript" src="https://s.yimg.com/zz/combo?kx/ucs/common/js/140/setup-min.js&kx/ucs/sts/js/442/skip-min.js&kx/ucs/uh/js/279/timestamp_library-min.js&kx/ucs/menu_utils/js/164/menu_utils_v2-min.js&kx/ucs/uh/js/267/aria_toolbar-min.js&kx/ucs/username/js/43/user_menu-min.js&kx/ucs/help/js/41/help_menu-min.js&kx/ucs/utility_link/js/20/utility_menu-min.js&kx/ucs/uh/js/262/logo_debug-min.js&kx/ucs/eueprivacy/js/12/eu_eprivacy_seed-min.js&kx/ucs/common/js/131/jsonp-super-cached-min.js&kx/ucs/avatar/js/30/avatar-min.js&kx/ucs/mailcount/js/70/mailcount_v2-min.js&kx/ucs/search/js/226/search-min.js&kx/ucs/search/js/210/search_text_dir-min.js&kx/ucs/uh/js/286/activate_library-min.js&kx/yucs/uh_common/meta/10/js/meta-min.js"></script>
 
-                                  
-            <script type="text/javascript">   
-             yinc="<script type=\"text/javascript\" src=\"http://us.js2.yimg.com/us.js.yimg.com/lib/common/utils/2/yahoo_2.0.6.js\">\<\/\script>"  
-             yevent="<script type=\"text/javascript\" src=\"http://us.js2.yimg.com/us.js.yimg.com/lib/common/utils/2/event_2.0.6.js\">\<\/\script>" 
-             ystrip="<script type=\"text/javascript\" src=\"http://l.yimg.com/d/lib/ult/strip_1.12.js\">\<\/\script>"
-                                    
-             if(typeof YAHOO=="undefined")      
-			 {                                    
-			    document.write(yinc);             
-			    document.write(yevent);           
-                document.write(ystrip);           
-			 }else                                
-			 {                                    
-			    document.write(ystrip);           
-			 }                                    
-		     </script>
+                    <script>
+                        var ll_js = new Array();
+                    </script>
+                
 
+<script type="text/javascript">
+yinc="<script type=\"text/javascript\" src=\"https://s.yimg.com/lq/lib/common/utils/2/yahoo_2.0.6.js\">\<\/\script>";
+yevent="<script type=\"text/javascript\" src=\"https://s.yimg.com/lq/lib/common/utils/2/event_2.0.6.js\">\<\/\script>";
+ystrip="<script type=\"text/javascript\" src=\"https://s.yimg.com/lq/lib/ult/strip_1.12.js\">\<\/\script>";
+if(typeof YAHOO=="undefined")
+{
+document.write(yinc);
+document.write(yevent);
+}
+document.write(ystrip);
+</script>
+
+
+                                <script>
+                                    ll_js.push({
+                                    'file': "https://s.yimg.com/bm/lib/fi/common/p/d/static/js/latest/2.0.0/yfi_comscore.js"
+                                    });
+                                </script>
+                            
 
     
     <script type="text/javascript">
@@ -343,51 +437,28 @@ window.yzq_d['z8mXJE3uvHo-']='&U=13ovts2u2%2fN%3dz8mXJE3uvHo-%2fC%3d200071361.20
         document.getElementById("symlookupform").submit();
         }
         YAHOO.util.Event.addListener(document.getElementById("m"), "change", YAHOO.Finance.submitMarketSelect);
-         if ("SAP.*" != "") document.getElementById("txtQuotes").value = "SAP.*".replace( "&amp;" , "&" ); 
+         if ("BASF*" != "") document.getElementById("txtQuotes").value = "BASF*".replace( "&amp;" , "&" ); 
     </script>
-
-    <!-- SZM VERSION="1.3" --><SCRIPT LANGUAGE="JavaScript">
-<!-- 
-var IVW="http://yahoo.ivwbox.de/cgi-bin/ivw/CP/20483043"; 
-document.write("<IMG SRC=\""+IVW+"?r="+escape(document.referrer.split('?')[0])+"\" WIDTH=\"1\" HEIGHT=\"1\">"); 
-// -->
-</SCRIPT>
-<NOSCRIPT><IMG SRC="http://yahoo.ivwbox.de/cgi-bin/ivw/CP/20483043" WIDTH="1" HEIGHT="1"></NOSCRIPT>
-<!-- /SZM -->
-<iframe src="http://yahoo.nuggad.net/ht?nuggn=1154829101&nuggsid=2133766681" style="display:none"></iframe><script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['2cmXJE3uvHo-']='&U=13n14v7hf%2fN%3d2cmXJE3uvHo-%2fC%3d200066141.202052903.203317243.201542135%2fD%3dRS3%2fB%3d201146897%2fV%3d1';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=180jvns7g%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d2399585550%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=13n14v7hf%2fN%3d2cmXJE3uvHo-%2fC%3d200066141.202052903.203317243.201542135%2fD%3dRS3%2fB%3d201146897%2fV%3d1"></noscript>
-<!-- SpaceID=1185300141 loc=RTG1 noad -->
-<script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['18mXJE3uvHo-']='&U=12cj1ed7h%2fN%3d18mXJE3uvHo-%2fC%3d-1%2fD%3dRTG1%2fB%3d-1%2fV%3d0';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=180np5aig%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d3257164667%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=12cj1ed7h%2fN%3d18mXJE3uvHo-%2fC%3d-1%2fD%3dRTG1%2fB%3d-1%2fV%3d0"></noscript><script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['0MmXJE3uvHo-']='&U=13m5cku3r%2fN%3d0MmXJE3uvHo-%2fC%3d200066141.202091968.203346340.200613533%2fD%3dRS%2fB%3d200454337%2fV%3d1';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=180u82ilf%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d3829013251%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=13m5cku3r%2fN%3d0MmXJE3uvHo-%2fC%3d200066141.202091968.203346340.200613533%2fD%3dRS%2fB%3d200454337%2fV%3d1"></noscript><!--QYZ ,;;RS;1185300141;6;-->
-    <script type="text/javascript">
-var szmvars = "yahoo//CP//20483043";
-</script>
-<script src="http://ads.yimg.com/ev/de/any/agof227/survey.js" type="text/javascript"></script>
-<img src="http://ad.yieldmanager.com/pixel?id=305590&t=2" width="1" height="1" /><script language=javascript>
-if(window.yzq_d==null)window.yzq_d=new Object();
-window.yzq_d['0smXJE3uvHo-']='&U=13nj32hju%2fN%3d0smXJE3uvHo-%2fC%3d200066141.201797155.203036134.201303163%2fD%3dRS2%2fB%3d200927015%2fV%3d1';
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=1802uockl%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d2.1%2fW%3dHR%2fY%3dDE%2fF%3d3409871743%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D&U=13nj32hju%2fN%3d0smXJE3uvHo-%2fC%3d200066141.201797155.203036134.201303163%2fD%3dRS2%2fB%3d200927015%2fV%3d1"></noscript><!--QYZ ,;;;1185300141;11;-->
+    
+    <!-- SpaceID=1185300141 loc=RS noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_AVAIL,,10.207.7.33;;RS;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['InDWHwrPBvc-']='(as$125qvt8e9,aid$InDWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=RS)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125qvt8e9,aid$InDWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=RS)"></noscript>
+    <!-- SpaceID=1185300141 loc=RS2 noad --><!-- fac-gd2-noad --><!-- gd2-status-2 --><!--QYZ CMS_NONE_AVAIL,,10.207.7.33;;RS2;1185300141;2;--><script language=javascript>
+if(window.xzq_d==null)window.xzq_d=new Object();
+window.xzq_d['xIrWHwrPBvc-']='(as$125mpneli,aid$xIrWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=RS2)';
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3&al=(as$125mpneli,aid$xIrWHwrPBvc-,cr$-1,ct$25,at$HR,eob$gd1_match_id=-1:ypos=RS2)"></noscript>
+    
 </body>
 </html>
 
 <!-- finance:myservice-de:0:Success -->
 <script language=javascript>
-if(window.yzq_p==null)document.write("<scr"+"ipt language=javascript src=http://l.yimg.com/d/lib/bc/bcr_2.0.5.js></scr"+"ipt>");
-</script><script language=javascript>
-if(window.yzq_p)yzq_p('P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=17qj8pm6b%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d1.1%2fW%3dJR%2fY%3dDE%2fF%3d316237043%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fS%3d1%2fJ%3d9EBFEE4D');
-if(window.yzq_s)yzq_s();
-</script><noscript><img width=1 height=1 alt="" src="http://row.bc.yahoo.com/b?P=zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO&T=180avbjej%2fX%3d1332871299%2fE%3d1185300141%2fR%3ddefin99%2fK%3d5%2fV%3d3.1%2fW%3dJR%2fY%3dDE%2fF%3d3837289480%2fH%3dc2VydmVJZD0ienpQUGJFM3V2dWg4LnZURFN6RVNIQU91WDNUQTVrOXlBSU1BQjViTyIgc2l0ZUlkPSIyNjYzMDMyIiB0U3RtcD0iMTMzMjg3MTI5OTUxNzc1MiIg%2fQ%3d-1%2fS%3d1%2fJ%3d9EBFEE4D"></noscript><script language=javascript>
 (function(){window.xzq_p=function(R){M=R};window.xzq_svr=function(R){J=R};function F(S){var T=document;if(T.xzq_i==null){T.xzq_i=new Array();T.xzq_i.c=0}var R=T.xzq_i;R[++R.c]=new Image();R[R.c].src=S}window.xzq_sr=function(){var S=window;var Y=S.xzq_d;if(Y==null){return }if(J==null){return }var T=J+M;if(T.length>P){C();return }var X="";var U=0;var W=Math.random();var V=(Y.hasOwnProperty!=null);var R;for(R in Y){if(typeof Y[R]=="string"){if(V&&!Y.hasOwnProperty(R)){continue}if(T.length+X.length+Y[R].length<=P){X+=Y[R]}else{if(T.length+Y[R].length>P){}else{U++;N(T,X,U,W);X=Y[R]}}}}if(U){U++}N(T,X,U,W);C()};function N(R,U,S,T){if(U.length>0){R+="&al="}F(R+U+"&s="+S+"&r="+T)}function C(){window.xzq_d=null;M=null;J=null}function K(R){xzq_sr()}function B(R){xzq_sr()}function L(U,V,W){if(W){var R=W.toString();var T=U;var Y=R.match(new RegExp("\\\\(([^\\\\)]*)\\\\)"));Y=(Y[1].length>0?Y[1]:"e");T=T.replace(new RegExp("\\\\([^\\\\)]*\\\\)","g"),"("+Y+")");if(R.indexOf(T)<0){var X=R.indexOf("{");if(X>0){R=R.substring(X,R.length)}else{return W}R=R.replace(new RegExp("([^a-zA-Z0-9$_])this([^a-zA-Z0-9$_])","g"),"$1xzq_this$2");var Z=T+";var rv = f( "+Y+",this);";var S="{var a0 = '"+Y+"';var ofb = '"+escape(R)+"' ;var f = new Function( a0, 'xzq_this', unescape(ofb));"+Z+"return rv;}";return new Function(Y,S)}else{return W}}return V}window.xzq_eh=function(){if(E||I){this.onload=L("xzq_onload(e)",K,this.onload,0);if(E&&typeof (this.onbeforeunload)!=O){this.onbeforeunload=L("xzq_dobeforeunload(e)",B,this.onbeforeunload,0)}}};window.xzq_s=function(){setTimeout("xzq_sr()",1)};var J=null;var M=null;var Q=navigator.appName;var H=navigator.appVersion;var G=navigator.userAgent;var A=parseInt(H);var D=Q.indexOf("Microsoft");var E=D!=-1&&A>=4;var I=(Q.indexOf("Netscape")!=-1||Q.indexOf("Opera")!=-1)&&A>=4;var O="undefined";var P=2000})();
 </script><script language=javascript>
-if(window.xzq_svr)xzq_svr('http://csc.beap.bc.yahoo.com/');
-if(window.xzq_p)xzq_p('yi?bv=1.0.0&bs=(128ec27r1(gid$zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO,st$1332871299517752,v$1.0))&t=JR_3-DR_3');
+if(window.xzq_svr)xzq_svr('https://csc.beap.bc.yahoo.com/');
+if(window.xzq_p)xzq_p('yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3');
 if(window.xzq_s)xzq_s();
-</script><noscript><img width=1 height=1 alt="" src="http://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(128ec27r1(gid$zzPPbE3uvuh8.vTDSzESHAOuX3TA5k9yAIMAB5bO,st$1332871299517752,v$1.0))&t=JR_3-DR_3"></noscript>
-<!-- xsltm4.finance.ird.yahoo.com compressed/chunked Tue Mar 27 11:01:39 PDT 2012 -->
+</script><noscript><img width=1 height=1 alt="" src="https://csc.beap.bc.yahoo.com/yi?bv=1.0.0&bs=(136t99rku(gid$clDVAzg3LjIr.4WOUk2xyQOmMi4yNFNLjDAAAAAA,st$1397460016446612,si$2663032,sp$1185300141,pv$1,v$2.0))&t=JR_3-DR_3"></noscript><script>(function(c){var e="https://",a=c&&c.JSON,f="ypcdb",g=document,d=["yahoo.com","flickr.com","rivals.com","yahoo.net","yimg.com"],b;function i(l,o,n,m){var k,p;try{k=new Date();k.setTime(k.getTime()+m*1000);g.cookie=[l,"=",encodeURIComponent(o),"; domain=",n,"; path=/; max-age=",m,"; expires=",k.toUTCString()].join("")}catch(p){}}function h(l){var k,m;try{k=new Image();k.onerror=k.onload=function(){k.onerror=k.onload=null;k=null};k.src=l}catch(m){}}function j(u,A,n,y){var w=0,v,z,x,s,t,p,m,r,l,o,k,q;try{b=location}catch(r){b=null}try{if(a){k=a.parse(y)}else{q=new Function("return "+y);k=q()}}catch(r){k=null}try{v=b.hostname;z=b.protocol;if(z){z+="//"}}catch(r){v=z=""}if(!v){try{x=g.URL||b.href||"";s=x.match(/^((http[s]?)\:[\/]+)?([^:\/\s]+|[\:\dabcdef\.]+)/i);if(s&&s[1]&&s[3]){z=s[1]||"";v=s[3]||""}}catch(r){z=v=""}}if(!v||!k||!z||!A){return}while(l=d[w++]){t=l.replace(/\./g,"\\.");p=new RegExp("(\\.)+"+t+"$");if(v==l||v.search(p)!=-1){o=l;break}}if(!o){return}if(z===e){A=n}w=0;while(m=A[w++]){h(z+m+k[m.substr(1+m.lastIndexOf("="))])}i(f,u,o,86400)}j('aeffa53d57da1e1cb59cddff182c5c3e',['ad.yieldmanager.com/csync?ver=2.1','u2sb.interclick.com/beacon.gif?ver=2.1'],['ad.yieldmanager.com/csync?ver=2.1','cdnk.interclick.com/beacon.gif?ver=2.1'],'{"2.1":"&id=23351&value=2ahf5uc94epr9%26o%3d3%26f%3dtz&optout=b%3d1%26f%3d1%26qag%3d1&timeout=1397460016&sig=127qi44a3"}')})(window);
+</script>
+<!-- xsltm3.finance.ch1.yahoo.com compressed/chunked Mon Apr 14 07:20:16 UTC 2014 -->

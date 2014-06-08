@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Scanner;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
@@ -360,9 +361,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
         String searchUrl = MessageFormat.format(SEARCH_URL, prefix);
 
+        Scanner scanner = null;
         try
         {
-            String html = new java.util.Scanner(openStream(searchUrl)).useDelimiter("\\A").next(); //$NON-NLS-1$
+            scanner = new Scanner(openStream(searchUrl));
+            String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 
             // strip away java script call back method
             p = html.indexOf('(');
@@ -386,6 +389,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         catch (IOException e)
         {
             errors.add(e);
+        }
+        finally
+        {
+            if (scanner != null)
+                scanner.close();
         }
 
         if (answer.isEmpty())

@@ -5,6 +5,12 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+    public static String AttributesAUMColumn;
+    public static String AttributesAUMName;
+    public static String AttributesTERColumn;
+    public static String AttributesTERName;
+    public static String AttributesVendorColumn;
+    public static String AttributesVendorName;
     public static String ColumnCapitalGains;
     public static String ColumnEarnings;
     public static String ColumnFinalValue;
@@ -82,18 +88,26 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgErrorDecrypting;
+    public static String MsgErrorEncrypting;
     public static String MsgErrorsConvertingValue;
+    public static String MsgFileNotFound;
+    public static String MsgKeyLengthNotSupported;
     public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
-    public static String MsgMoreResulstsAvailable;
+    public static String MsgMoreResultsAvailable;
     public static String MsgNoResults;
+    public static String MsgNotANumber;
+    public static String MsgNotAPortflioFile;
+    public static String MsgPasswordMissing;
+    public static String MsgReadingFile;
     public static String MsgResponseContainsNoIndices;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedSymbol;
-    public static String MsgUnexpectedTag;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
+    public static String MsgXMLFormatInvalid;
     public static String QuoteFeedManual;
     static
     {

@@ -30,6 +30,7 @@ public class PerformanceIndex
     protected Date[] dates;
     protected long[] totals;
     protected long[] transferals;
+    protected long[] taxes;
     protected double[] accumulated;
     protected double[] delta;
 
@@ -121,6 +122,32 @@ public class PerformanceIndex
     public long[] getTransferals()
     {
         return transferals;
+    }
+
+    public long[] getTaxes()
+    {
+        return taxes;
+    }
+
+    public long[] calculateInvestedCapital()
+    {
+        long[] investedCapital = new long[transferals.length];
+
+        long current = investedCapital[0] = totals[0];
+        for (int ii = 1; ii < investedCapital.length; ii++)
+            current = investedCapital[ii] = current + transferals[ii];
+
+        return investedCapital;
+    }
+
+    public long[] calculateAbsoluteDelta()
+    {
+        long[] answer = calculateInvestedCapital();
+
+        for (int ii = 0; ii < answer.length; ii++)
+            answer[ii] = totals[ii] - answer[ii];
+
+        return answer;
     }
 
     public DateTime getFirstDataPoint()

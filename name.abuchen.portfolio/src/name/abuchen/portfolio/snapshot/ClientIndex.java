@@ -32,7 +32,7 @@ import org.joda.time.Interval;
         delta = new double[size];
         accumulated = new double[size];
 
-        transferals = collectTransferals(size, interval);
+        collectTransferalsAndTaxes(size, interval);
 
         // first value = reference value
         dates[0] = interval.getStart().toDate();
@@ -78,9 +78,10 @@ import org.joda.time.Interval;
         }
     }
 
-    private long[] collectTransferals(int size, Interval interval)
+    private void collectTransferalsAndTaxes(int size, Interval interval)
     {
-        long[] transferals = new long[size];
+        this.transferals = new long[size];
+        this.taxes = new long[size];
 
         for (Account a : getClient().getAccounts())
         {
@@ -90,6 +91,7 @@ import org.joda.time.Interval;
                                 && t.getDate().getTime() <= interval.getEndMillis())
                 {
                     long transferal = 0;
+                    long tax = 0;
                     switch (t.getType())
                     {
                         case DEPOSIT:
@@ -97,6 +99,9 @@ import org.joda.time.Interval;
                             break;
                         case REMOVAL:
                             transferal = -t.getAmount();
+                            break;
+                        case TAXES:
+                            tax = t.getAmount();
                             break;
                         default:
                             // do nothing
@@ -107,6 +112,12 @@ import org.joda.time.Interval;
                     {
                         int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
                         transferals[ii] += transferal;
+                    }
+
+                    if (tax != 0)
+                    {
+                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
+                        taxes[ii] += tax;
                     }
                 }
             }
@@ -143,7 +154,5 @@ import org.joda.time.Interval;
                 }
             }
         }
-
-        return transferals;
     }
 }

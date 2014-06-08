@@ -16,6 +16,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.jface.action.Action;
@@ -176,19 +177,38 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             dataCache.put(Client.class, clientIndex);
         }
 
-        if (item.getInstance() != null)
+        switch ((ClientDataSeries) item.getInstance())
         {
-            ILineSeries series = chart.addDateSeries(clientIndex.getDates(), //
-                            toDouble(clientIndex.getTotals(), Values.Amount.divider()), //
-                            Messages.LabelTotalSum);
-            item.configure(series);
-        }
-        else
-        {
-            IBarSeries barSeries = chart.addDateBarSeries(clientIndex.getDates(), //
-                            toDouble(clientIndex.getTransferals(), Values.Amount.divider()), //
-                            Messages.LabelTransferals);
-            item.configure(barSeries);
+            case TOTALS:
+                ILineSeries tSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.getTotals(), Values.Amount.divider()), //
+                                Messages.LabelTotalSum);
+                item.configure(tSeries);
+                break;
+            case TRANSFERALS:
+                IBarSeries tfSeries = chart.addDateBarSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.getTransferals(), Values.Amount.divider()), //
+                                Messages.LabelTransferals);
+                item.configure(tfSeries);
+                break;
+            case INVESTED_CAPITAL:
+                ILineSeries ivSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.calculateInvestedCapital(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(ivSeries);
+                break;
+            case ABSOLUTE_DELTA:
+                ILineSeries dSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.calculateAbsoluteDelta(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(dSeries);
+                break;
+            case TAXES:
+                ILineSeries txSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                accumulateAndToDouble(clientIndex.getTaxes(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(txSeries);
+                break;
         }
     }
 
@@ -263,4 +283,17 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             answer[ii] = input[ii] / divider;
         return answer;
     }
+
+    private double[] accumulateAndToDouble(long[] input, double divider)
+    {
+        double[] answer = new double[input.length];
+        long current = 0;
+        for (int ii = 0; ii < answer.length; ii++)
+        {
+            current += input[ii];
+            answer[ii] = current / divider;
+        }
+        return answer;
+    }
+
 }

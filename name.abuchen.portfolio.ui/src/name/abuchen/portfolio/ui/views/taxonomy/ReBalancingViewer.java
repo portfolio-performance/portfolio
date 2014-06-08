@@ -6,16 +6,16 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -29,13 +29,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     }
 
     @Override
-    protected void addColumns(TreeColumnLayout layout)
+    protected void addColumns(ShowHideColumnHelper support)
     {
-        addDimensionColumn(layout);
+        addDimensionColumn(support);
 
-        TreeViewerColumn column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnWeight);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(70));
+        Column column = new Column("weight", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -69,10 +67,27 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return getModel().hasWeightError(node) ? PortfolioPlugin.image(PortfolioPlugin.IMG_QUICKFIX) : null;
             }
         });
+        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TaxonomyNode) element).isUnassignedCategory())
+                    return false;
+                return super.canEdit(element);
+            }
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnTargetValue);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        }.addListener(new ModificationListener()
+        {
+            @Override
+            public void onModified(Object element, Object newValue, Object oldValue)
+            {
+                onWeightModified(element, newValue, oldValue);
+            }
+        }).attachTo(column);
+        support.addColumn(column);
+
+        column = new Column("targetvalue", Messages.ColumnTargetValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -82,12 +97,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return node.isClassification() ? Values.Amount.format(node.getTarget()) : null;
             }
         });
+        support.addColumn(column);
 
-        addActualColumns(layout);
+        addActualColumns(support);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnDeltaPercent);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
+        column = new Column("delta%", Messages.ColumnDeltaPercent, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -106,10 +120,9 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                 node.getActual() >= node.getTarget() ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
             }
         });
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnDeltaValue);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        column = new Column("delta", Messages.ColumnDeltaValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -127,10 +140,9 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                 node.getActual() >= node.getTarget() ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
             }
         });
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnQuote);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(60));
+        column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -146,10 +158,9 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return Values.Quote.format(price.getValue());
             }
         });
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(getNodeViewer(), SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnDeltaShares);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100));
+        column = new Column("deltashares", Messages.ColumnDeltaShares, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -171,15 +182,9 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return Values.Share.format(shares);
             }
         });
+        support.addColumn(column);
 
-        new CellEditorFactory(getNodeViewer(), TaxonomyNode.class) //
-                        .notify(new NodeModificationListener(this)) //
-                        .editable("name") // //$NON-NLS-1$
-                        .readonly("isin") //$NON-NLS-1$
-                        .readonly("note") //$NON-NLS-1$
-                        .decimal("weight", Values.Weight) // //$NON-NLS-1$
-                        .apply();
-
+        addAdditionalColumns(support);
     }
 
     @Override

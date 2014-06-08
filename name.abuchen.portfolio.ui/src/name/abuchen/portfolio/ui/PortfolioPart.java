@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.inject.Named;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.Focus;
@@ -28,21 +30,57 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
-public class PortfolioPart
+public class PortfolioPart implements LoadClientThread.Callback
 {
+    private abstract class BuildContainerRunnable implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            if (container != null && !container.isDisposed())
+            {
+                Composite parent = container.getParent();
+                parent.setRedraw(false);
+                try
+                {
+                    container.dispose();
+                    createContainer(parent);
+                    parent.layout(true);
+                }
+                finally
+                {
+                    parent.setRedraw(true);
+                }
+            }
+        }
+
+        public abstract void createContainer(Composite parent);
+    }
+
     private File clientFile;
     private Client client;
 
     private PreferenceStore preferences = new PreferenceStore();
 
+    private Composite container;
     private PageBook book;
     private AbstractFinanceView view;
+
+    private Control focus;
 
     @Inject
     MDirtyable dirty;
@@ -50,19 +88,31 @@ public class PortfolioPart
     @PostConstruct
     public void createComposite(Composite parent, MPart part) throws IOException
     {
-        loadClient(part);
-        loadPreferences();
+        String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
+        if (filename != null)
+            clientFile = new File(filename);
 
-        client.addPropertyChangeListener(new PropertyChangeListener()
+        if (client != null)
         {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                markDirty();
-            }
-        });
+            createContainerWithViews(parent);
+        }
+        else if (ClientFactory.isEncrypted(clientFile))
+        {
+            createContainerWithMessage(parent, MessageFormat.format(Messages.MsgOpenFile, clientFile.getName()), false,
+                            true);
+        }
+        else
+        {
+            ProgressBar bar = createContainerWithMessage(parent,
+                            MessageFormat.format(Messages.MsgLoadingFile, clientFile.getName()), true, false);
 
-        Composite container = new Composite(parent, SWT.NONE);
+            new LoadClientThread(new ProgressMonitor(bar), this, clientFile, null).start();
+        }
+    }
+
+    private void createContainerWithViews(Composite parent)
+    {
+        container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 1).applyTo(container);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(new ClientEditor(this));
@@ -74,29 +124,142 @@ public class PortfolioPart
 
         sidebar.selectDefaultView();
 
+        focus = book;
+    }
+
+    /**
+     * Creates window with logo and message. Optional a progress bar (while
+     * loading) or a password input field (if encrypted).
+     */
+    private ProgressBar createContainerWithMessage(Composite parent, String message, boolean showProgressBar,
+                    boolean showPasswordField)
+    {
+        ProgressBar bar = null;
+
+        container = new Composite(parent, SWT.NONE);
+        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setLayout(new FormLayout());
+
+        Label image = new Label(container, SWT.NONE);
+        image.setBackground(container.getBackground());
+        image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_SMALL));
+
+        FormData data = new FormData();
+        data.top = new FormAttachment(50, -50);
+        data.left = new FormAttachment(50, -24);
+        image.setLayoutData(data);
+
+        if (showPasswordField)
+        {
+            Text pwd = createPasswordField(container);
+
+            data = new FormData();
+            data.top = new FormAttachment(image, 10);
+            data.left = new FormAttachment(image, 0, SWT.CENTER);
+            data.width = 100;
+            pwd.setLayoutData(data);
+
+            focus = pwd;
+        }
+        else if (showProgressBar)
+        {
+            bar = new ProgressBar(container, SWT.SMOOTH);
+
+            data = new FormData();
+            data.top = new FormAttachment(image, 10);
+            data.left = new FormAttachment(50, -100);
+            data.width = 200;
+            bar.setLayoutData(data);
+        }
+
+        Label label = new Label(container, SWT.CENTER | SWT.WRAP);
+        label.setBackground(container.getBackground());
+        label.setText(message);
+
+        data = new FormData();
+        data.top = new FormAttachment(image, 40);
+        data.left = new FormAttachment(50, -100);
+        data.width = 200;
+        label.setLayoutData(data);
+
+        return bar;
+    }
+
+    private Text createPasswordField(Composite container)
+    {
+        final Text pwd = new Text(container, SWT.PASSWORD | SWT.BORDER);
+        pwd.setFocus();
+        pwd.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+                final String password = pwd.getText();
+                Display.getDefault().syncExec(new BuildContainerRunnable()
+                {
+                    @Override
+                    public void createContainer(Composite parent)
+                    {
+                        ProgressBar bar = createContainerWithMessage(
+                                        parent,
+                                        MessageFormat.format(Messages.MsgLoadingFile,
+                                                        PortfolioPart.this.clientFile.getName()), true, false);
+                        new LoadClientThread(new ProgressMonitor(bar), PortfolioPart.this, clientFile, password
+                                        .toCharArray()).start();
+                    }
+                });
+            }
+        });
+
+        return pwd;
+    }
+
+    @Override
+    public void setClient(Client client)
+    {
+        this.client = client;
+        this.dirty.setDirty(false);
+
+        client.addPropertyChangeListener(new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                markDirty();
+            }
+        });
+
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        {
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithViews(parent);
+            }
+        });
+
         new ConsistencyChecksJob(new ClientEditor(this), client, false).schedule(100);
         scheduleOnlineUpdateJobs();
     }
 
-    private void loadClient(MPart part) throws IOException
+    @Override
+    public void setErrorMessage(final String message)
     {
-        String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
-
-        if (filename != null)
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
         {
-            clientFile = new File(filename);
-            client = ClientFactory.load(clientFile);
-        }
-        else
-        {
-            client = new Client();
-        }
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithMessage(parent, message, false, ClientFactory.isEncrypted(clientFile));
+            }
+        });
     }
 
     @Focus
     public void setFocus()
     {
-        book.setFocus();
+        if (focus != null && !focus.isDisposed())
+            focus.setFocus();
     }
 
     @Persist
@@ -104,14 +267,14 @@ public class PortfolioPart
     {
         if (clientFile == null)
         {
-            doSaveAs(shell);
+            doSaveAs(shell, null, null);
             return;
         }
 
         try
         {
             part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
-            ClientFactory.save(client, clientFile);
+            ClientFactory.save(client, clientFile, null, null);
             dirty.setDirty(false);
 
             storePreferences();
@@ -123,28 +286,47 @@ public class PortfolioPart
         }
     }
 
-    private void doSaveAs(Shell shell)
+    public void doSaveAs(Shell shell, String extension, String encryptionMethod)
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 
-        if (clientFile != null)
+        // if an extension is given, make sure the file name proposal has the
+        // right extension in the save as dialog
+        String fileNameProposal = clientFile != null ? clientFile.getName() : Messages.LabelUnnamedXml;
+        if (extension != null && !fileNameProposal.endsWith('.' + extension))
         {
-            dialog.setFileName(clientFile.getName());
-            dialog.setFilterPath(clientFile.getAbsolutePath());
+            int p = fileNameProposal.lastIndexOf('.');
+            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
         }
-        else
-        {
-            dialog.setFileName(Messages.LabelUnnamedXml);
-        }
+
+        dialog.setFileName(fileNameProposal);
+        dialog.setFilterPath(clientFile != null ? clientFile.getAbsolutePath() : System.getProperty("user.home")); //$NON-NLS-1$
 
         String path = dialog.open();
         if (path == null)
             return;
 
+        // again make sure the extension is correct as the user might have
+        // changed it in the save dialog
+        if (extension != null && !path.endsWith('.' + extension))
+            path += '.' + extension;
+
+        File localFile = new File(path);
+        char[] password = null;
+
+        if (ClientFactory.isEncrypted(localFile))
+        {
+            PasswordDialog pwdDialog = new PasswordDialog(shell);
+            if (pwdDialog.open() != PasswordDialog.OK)
+                return;
+            password = pwdDialog.getPassword().toCharArray();
+        }
+
         try
         {
-            File clientFile = new File(path);
-            ClientFactory.save(client, clientFile);
+            ClientFactory.save(client, localFile, encryptionMethod, password);
+
+            clientFile = localFile;
 
             dirty.setDirty(false);
             storePreferences();

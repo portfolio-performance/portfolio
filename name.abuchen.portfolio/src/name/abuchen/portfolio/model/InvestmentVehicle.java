@@ -1,14 +1,6 @@
 package name.abuchen.portfolio.model;
 
-public interface InvestmentVehicle
+public interface InvestmentVehicle extends Named
 {
     String getUUID();
-
-    String getName();
-
-    void setName(String name);
-
-    String getNote();
-
-    void setNote(String note);
 }

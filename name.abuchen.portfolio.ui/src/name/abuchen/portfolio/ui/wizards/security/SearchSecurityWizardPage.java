@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.Factory;
@@ -11,7 +12,6 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -24,7 +24,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,45 +39,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-public class SearchSecurityWizardPage extends AbstractWizardPage
+public class SearchSecurityWizardPage extends WizardPage
 {
-    public static final String PAGE_NAME = "searchpage"; //$NON-NLS-1$
+    private Client client;
 
-    private EditSecurityModel model;
     private ResultItem item;
 
-    public SearchSecurityWizardPage(EditSecurityModel model)
+    public SearchSecurityWizardPage(Client client)
     {
-        super(PAGE_NAME);
+        super("searchpage"); //$NON-NLS-1$
         setTitle(Messages.SecurityMenuAddNewSecurity);
         setDescription(Messages.SecurityMenuAddNewSecurityDescription);
 
-        this.model = model;
-    }
-
-    @Override
-    public void beforePage()
-    {}
-
-    @Override
-    public void afterPage()
-    {
-        if (item != null)
-        {
-            // keep name (overwriting is confusing to the user)
-            String name = model.getName();
-            if (name == null || name.trim().length() == 0)
-                model.setName(item.getName());
-
-            model.setTickerSymbol(item.getSymbol());
-            model.setIsin(item.getIsin());
-        }
-    }
-
-    @Override
-    public IWizardPage getNextPage()
-    {
-        return getWizard().getPage(SecurityMasterDataPage.PAGE_NAME);
+        this.client = client;
     }
 
     @Override
@@ -125,7 +99,7 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
         resultTable.getTable().setLinesVisible(true);
 
         final Set<String> existingSymbols = new HashSet<String>();
-        for (Security s : model.getClient().getSecurities())
+        for (Security s : client.getSecurities())
             existingSymbols.add(s.getTickerSymbol());
 
         resultTable.setLabelProvider(new ResultItemLabelProvider(existingSymbols));
@@ -176,6 +150,11 @@ public class SearchSecurityWizardPage extends AbstractWizardPage
         });
 
         setControl(container);
+    }
+
+    public ResultItem getResult()
+    {
+        return item;
     }
 
     private static class ResultItemLabelProvider extends LabelProvider implements ITableLabelProvider,

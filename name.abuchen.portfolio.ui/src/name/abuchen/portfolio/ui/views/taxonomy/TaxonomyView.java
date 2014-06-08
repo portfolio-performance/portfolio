@@ -68,6 +68,25 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART, 2);
         addView(toolBar, Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
         addView(toolBar, Messages.LabelViewStackedChart, PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
+        addConfigButton(toolBar);
+    }
+
+    private void addConfigButton(ToolBar toolBar)
+    {
+        Action config = new Action()
+        {
+            @Override
+            public void run()
+            {
+                StackLayout layout = (StackLayout) container.getLayout();
+                if (layout.topControl != null)
+                    ((Page) layout.topControl.getData()).showConfigMenu(getClientEditor().getSite().getShell());
+            }
+        };
+        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setToolTipText(Messages.MenuShowHideColumns);
+
+        new ActionContributionItem(config).fill(toolBar, -1);
     }
 
     @Override

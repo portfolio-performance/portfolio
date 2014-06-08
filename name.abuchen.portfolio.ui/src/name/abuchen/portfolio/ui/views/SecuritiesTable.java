@@ -1,12 +1,12 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -23,15 +23,21 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
 
@@ -54,8 +60,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -63,7 +67,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
-public final class SecuritiesTable
+public final class SecuritiesTable implements ModificationListener
 {
     private AbstractFinanceView view;
 
@@ -84,6 +88,8 @@ public final class SecuritiesTable
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(securities);
+
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
 
         addMasterDataColumns();
@@ -93,7 +99,13 @@ public final class SecuritiesTable
         addColumnDateOfLatestHistoricalPrice();
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
-            addTaxonomyColumn(support, taxonomy);
+        {
+            Column column = new TaxonomyColumn(taxonomy);
+            column.setVisible(false);
+            support.addColumn(column);
+        }
+
+        addAttributeColumns();
 
         support.createColumns();
 
@@ -109,28 +121,6 @@ public final class SecuritiesTable
         if (!support.isUserConfigured())
             ViewerHelper.pack(securities);
         securities.refresh();
-
-        securities.getTable().addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-                if (security == null)
-                    return;
-
-                Dialog dialog = new WizardDialog(getShell(), new EditSecurityWizard(getClient(), security));
-                if (dialog.open() != Dialog.OK)
-                    return;
-
-                markDirty();
-                if (!securities.getControl().isDisposed())
-                {
-                    refresh(security);
-                    updateQuotes(security);
-                }
-            }
-        });
 
         hookContextMenu();
     }
@@ -152,38 +142,16 @@ public final class SecuritiesTable
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "name"), SWT.DOWN); //$NON-NLS-1$
+        ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getNote();
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((Security) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "note")); //$NON-NLS-1$
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
-        column = new Column("1", Messages.ColumnISIN, SWT.LEFT, 100); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getIsin();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "isin")); //$NON-NLS-1$
+        column = new IsinColumn("1"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.LEFT, 80); //$NON-NLS-1$
@@ -196,6 +164,8 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "tickerSymbol").addListener(this).attachTo(column); //$NON-NLS-1$
+
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnWKN, SWT.LEFT, 60); //$NON-NLS-1$
@@ -208,6 +178,7 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "wkn").addListener(this).attachTo(column); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
 
@@ -221,90 +192,6 @@ public final class SecuritiesTable
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
-        column.setVisible(false);
-        support.addColumn(column);
-    }
-
-    private void addTaxonomyColumn(ShowHideColumnHelper support, final Taxonomy taxonomy)
-    {
-        String name = taxonomy.getName();
-        List<String> labels = taxonomy.getDimensions();
-
-        List<Integer> options = new ArrayList<Integer>();
-
-        StringBuilder menuLabels = new StringBuilder("{0,choice,"); //$NON-NLS-1$
-        StringBuilder columnLabels = new StringBuilder("{0,choice,"); //$NON-NLS-1$
-
-        int heigth = taxonomy.getHeigth();
-        for (int ii = 1; ii < heigth; ii++) // 1 --> skip taxonomy root node
-        {
-            options.add(ii);
-
-            if (ii > 1)
-            {
-                menuLabels.append('|');
-                columnLabels.append('|');
-            }
-
-            String label = null;
-            if (labels != null && ii <= labels.size())
-                label = labels.get(ii - 1);
-
-            menuLabels.append(ii).append('#');
-            columnLabels.append(ii).append('#');
-
-            if (label != null)
-            {
-                menuLabels.append(label);
-                columnLabels.append(label);
-            }
-            else
-            {
-                menuLabels.append(MessageFormat.format(Messages.LabelLevelNumber, ii));
-                columnLabels.append(MessageFormat.format(Messages.LabelLevelNameNumber, name, ii));
-            }
-        }
-
-        options.add(100);
-
-        menuLabels.append("|100#" + Messages.LabelFullClassification + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-        columnLabels.append("|100#").append(name).append("}"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        Column column = new Column(taxonomy.getId(), name, SWT.LEFT, 120);
-        column.setOptions(menuLabels.toString(), columnLabels.toString(), options.toArray(new Integer[0]));
-        column.setLabelProvider(new OptionLabelProvider()
-        {
-            @Override
-            public String getText(Object e, Integer option)
-            {
-                Security security = (Security) e;
-                List<Classification> classifications = taxonomy.getClassifications(security);
-
-                if (classifications.isEmpty())
-                    return null;
-
-                StringBuilder answer = new StringBuilder();
-
-                for (Classification c : classifications)
-                {
-                    if (answer.length() > 0)
-                        answer.append(", "); //$NON-NLS-1$
-
-                    if (option == 100)
-                    {
-                        answer.append(c.getPathName(false));
-                    }
-                    else
-                    {
-                        List<Classification> path = c.getPathToRoot();
-                        if (option < path.size())
-                            answer.append(path.get(option).getName());
-                    }
-                }
-
-                return answer.toString();
-            }
-        });
         column.setVisible(false);
         support.addColumn(column);
     }
@@ -515,6 +402,17 @@ public final class SecuritiesTable
         support.addColumn(column);
     }
 
+    private void addAttributeColumns()
+    {
+        for (final AttributeType attribute : AttributeTypes.available(Security.class))
+        {
+            Column column = new AttributeColumn(attribute);
+            column.setVisible(false);
+            column.getEditingSupport().addListener(this);
+            support.addColumn(column);
+        }
+    }
+
     public void addSelectionChangedListener(ISelectionChangedListener listener)
     {
         this.securities.addSelectionChangedListener(listener);
@@ -553,6 +451,12 @@ public final class SecuritiesTable
         {
             securities.getControl().setRedraw(true);
         }
+    }
+
+    @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        markDirty();
     }
 
     public void updateQuotes(Security security)
@@ -684,7 +588,7 @@ public final class SecuritiesTable
             @Override
             Dialog createDialog(Security security)
             {
-                return new WizardDialog(getShell(), new EditSecurityWizard(getClient(), security));
+                return new EditSecurityDialog(getShell(), getClient(), security);
             }
 
             @Override

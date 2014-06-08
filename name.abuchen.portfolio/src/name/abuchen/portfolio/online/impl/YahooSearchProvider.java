@@ -1,11 +1,9 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +14,14 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 
-import org.htmlparser.Node;
-import org.htmlparser.Tag;
-import org.htmlparser.Text;
-import org.htmlparser.lexer.Lexer;
-import org.htmlparser.util.ParserException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
-    private static final String SEARCH_URL = "http://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
+    private static final String SEARCH_URL = "https://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
 
     private static final ThreadLocal<DecimalFormat> FMT_INDEX = new ThreadLocal<DecimalFormat>()
     {
@@ -53,199 +50,78 @@ public class YahooSearchProvider implements SecuritySearchProvider
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
-        try
+        String url = String.format(SEARCH_URL, URLEncoder.encode(query + "*", "UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
+        Document document = Jsoup.connect(url).get();
+
+        List<ResultItem> answer = extractFrom(document);
+
+        if (answer.isEmpty())
         {
-            URL url = new URL(String.format(SEARCH_URL, URLEncoder.encode(query + "*", "UTF-8"))); //$NON-NLS-1$ //$NON-NLS-2$
-            Lexer lexer = new Lexer(url.openConnection());
-
-            List<ResultItem> answer = new Visitor().visit(lexer);
-
-            if (answer.isEmpty())
-            {
-                ResultItem item = new YahooResultItem();
-                item.setName(String.format(Messages.MsgNoResults, query));
-                answer.add(item);
-            }
-            else if (answer.size() == 20)
-            {
-                ResultItem item = new YahooResultItem();
-                item.setName(Messages.MsgMoreResulstsAvailable);
-                answer.add(item);
-            }
-
-            return answer;
+            ResultItem item = new YahooResultItem();
+            item.setName(String.format(Messages.MsgNoResults, query));
+            answer.add(item);
         }
-        catch (ParserException e)
+        else if (answer.size() == 20)
         {
-            throw new IOException(e);
+            ResultItem item = new YahooResultItem();
+            item.setName(Messages.MsgMoreResultsAvailable);
+            answer.add(item);
         }
+
+        return answer;
     }
 
-    static class Visitor
+    /* protected */List<ResultItem> extractFrom(Document document) throws IOException
     {
-        private List<ResultItem> items;
-        private ResultItem item;
+        List<ResultItem> answer = new ArrayList<ResultItem>();
 
-        private boolean insideTable = false;
-        private boolean insideTBody = false;
-        private boolean insideRow = false;
-        private boolean insideColumn = false;
-        private int columnIndex = -1;
+        Elements tables = document.getElementsByAttribute("SUMMARY"); //$NON-NLS-1$
 
-        public boolean tag(Tag tag) throws IOException
+        for (Element table : tables)
         {
-            return true;
-        }
+            if (!"YFT_SL_TABLE_SUMMARY".equals(table.attr("SUMMARY"))) //$NON-NLS-1$ //$NON-NLS-2$
+                continue;
 
-        public boolean table(Tag tag) throws IOException
-        {
-            if (!insideTable)
+            Elements rows = table.select("> tbody > tr"); //$NON-NLS-1$
+
+            for (Element row : rows)
             {
-                if ("YFT_SL_TABLE_SUMMARY".equals(tag.getAttribute("SUMMARY"))) //$NON-NLS-1$ //$NON-NLS-2$
-                    insideTable = true;
-                return true;
-            }
+                Elements cells = row.select("> td"); //$NON-NLS-1$
 
-            insideTable = false;
-            if (tag.isEndTag())
-                return false;
+                if (cells.size() != 6)
+                    continue;
 
-            throw new IOException(MessageFormat.format(Messages.MsgUnexpectedTag, tag));
-        }
+                ResultItem item = new YahooResultItem();
 
-        public boolean tbody(Tag tag) throws IOException
-        {
-            if (!insideTable)
-                return true;
+                item.setSymbol(cells.get(0).text());
+                item.setName(cells.get(1).text());
+                item.setIsin(cells.get(2).text());
 
-            if (!tag.isEndTag())
-            {
-                insideTBody = true;
-            }
-            else
-            {
-                insideTBody = false;
-            }
+                // last trace
+                String lastTrade = cells.get(3).text();
+                if (!"NaN".equals(lastTrade)) //$NON-NLS-1$
+                    item.setLastTrade(parseIndex(lastTrade));
 
-            return true;
-        }
+                item.setType(cells.get(4).text());
+                item.setExchange(cells.get(5).text());
 
-        public boolean tr(Tag tag) throws IOException
-        {
-            if (!insideTBody)
-                return true;
-
-            if (!tag.isEndTag())
-            {
-                insideRow = true;
-                item = new YahooResultItem();
-            }
-            else
-            {
-                insideRow = false;
-                columnIndex = -1;
-
-                if (item != null)
-                    items.add(item);
-                item = null;
-            }
-            return true;
-        }
-
-        public boolean td(Tag tag) throws IOException
-        {
-            if (!insideRow)
-                return true;
-
-            insideColumn = !tag.isEndTag();
-            if (insideColumn)
-                columnIndex++;
-
-            return true;
-        }
-
-        public boolean text(Text text) throws IOException
-        {
-            if (!insideColumn)
-                return true;
-
-            String t = text.getText().trim();
-            if (t.length() == 0)
-                t = null;
-
-            switch (columnIndex)
-            {
-                case 0:
-                    item.setSymbol(t);
-                    break;
-                case 1:
-                    item.setName(t);
-                    break;
-                case 2:
-                    item.setIsin(t);
-                    break;
-                case 3:
-                    if (!"NaN".equals(t)) //$NON-NLS-1$
-                        item.setLastTrade(parseIndex(t));
-                    break;
-                case 4:
-                    item.setType(t);
-                    break;
-                case 5:
-                    item.setExchange(t);
-                    break;
-                default:
-                    break;
-            }
-
-            return true;
-        }
-
-        private long parseIndex(String text) throws IOException
-        {
-            try
-            {
-                Number q = FMT_INDEX.get().parse(text);
-                return (long) (q.doubleValue() * Values.Quote.factor());
-            }
-            catch (ParseException e)
-            {
-                throw new IOException(e);
+                answer.add(item);
             }
         }
 
-        public List<ResultItem> visit(Lexer lexer) throws ParserException, IOException
+        return answer;
+    }
+
+    private long parseIndex(String text) throws IOException
+    {
+        try
         {
-            this.items = new ArrayList<ResultItem>();
-
-            boolean doContinue = true;
-
-            Node node = lexer.nextNode();
-            while (node != null && doContinue)
-            {
-                if (node instanceof Tag)
-                {
-                    Tag tag = (Tag) node;
-                    String tagName = tag.getTagName();
-
-                    if ("TABLE".equals(tagName)) //$NON-NLS-1$
-                        doContinue = table(tag);
-                    else if ("TBODY".equals(tagName)) //$NON-NLS-1$
-                        doContinue = tbody(tag);
-                    else if ("TR".equals(tagName)) //$NON-NLS-1$
-                        doContinue = tr(tag);
-                    else if ("TD".equals(tagName)) //$NON-NLS-1$
-                        doContinue = td(tag);
-                    else
-                        doContinue = tag(tag);
-                }
-                else if (node instanceof Text)
-                {
-                    doContinue = text((Text) node);
-                }
-                node = lexer.nextNode();
-            }
-            return this.items;
+            Number q = FMT_INDEX.get().parse(text);
+            return (long) (q.doubleValue() * Values.Quote.factor());
+        }
+        catch (ParseException e)
+        {
+            throw new IOException(e);
         }
     }
 }

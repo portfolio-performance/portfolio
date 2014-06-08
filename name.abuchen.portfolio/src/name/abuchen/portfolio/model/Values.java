@@ -25,6 +25,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> AmountPlain = new Values<Long>("#,##0.##", 100D, 100) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long amount)
+        {
+            return format.format(amount / divider());
+        }
+    };
+
     public static final Values<Long> Share = new Values<Long>("#,##0.#####", 100000D, 100000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
@@ -54,15 +65,6 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Integer = new Values<Integer>("#,##0", 1D, 1) //$NON-NLS-1$
-    {
-        @Override
-        public String format(Integer i)
-        {
-            return String.format("%,.0f", i / divider()); //$NON-NLS-1$
-        }
-    };
-
     public static final Values<Date> Date = new Values<Date>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
     {
         @Override
@@ -81,21 +83,21 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Double> PercentPlain = new Values<Double>("0.00", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%,.2f", percent); //$NON-NLS-1$
+        }
+    };
+
     public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
     {
         @Override
         public String format(Integer weight)
         {
             return String.format("%,.2f", weight / divider()); //$NON-NLS-1$
-        }
-    };
-
-    public static final Values<Double> Percent0 = new Values<Double>("0%", 1D, 1) //$NON-NLS-1$
-    {
-        @Override
-        public String format(Double percent)
-        {
-            return String.format("%,.0f%%", percent * 100); //$NON-NLS-1$ 
         }
     };
 
@@ -114,6 +116,15 @@ public abstract class Values<E>
         public String format(Integer amount)
         {
             return String.format("%,.0f", amount / divider()); //$NON-NLS-1$
+        }
+    };
+
+    public static final Values<Integer> Year = new Values<Integer>("0", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer amount)
+        {
+            return String.valueOf(amount);
         }
     };
 

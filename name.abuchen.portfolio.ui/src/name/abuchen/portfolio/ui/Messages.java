@@ -13,7 +13,6 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
-    public static String CellEditor_Error;
     public static String CellEditor_NotANumber;
     public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesPickerAddBenchmark;
@@ -157,14 +156,13 @@ public class Messages extends NLS
     public static String DividendsDialogLabelPortfolioSharesHeld;
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
-    public static String EditWizardMasterDataDescription;
-    public static String EditWizardMasterDataLinkToSearch;
+    public static String EditWizardAttributesTitle;
+    public static String EditWizardMasterDataLinkNewCategory;
     public static String EditWizardMasterDataMsgClassificationMissing;
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
-    public static String EditWizardQuoteFeedDescription;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
@@ -182,6 +180,7 @@ public class Messages extends NLS
     public static String ExportWizardSelectDirectory;
     public static String ExportWizardTitle;
     public static String ExportWizardUnsupportedExport;
+    public static String GroupLabelAttributes;
     public static String GroupLabelDividends;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
@@ -218,9 +217,15 @@ public class Messages extends NLS
     public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String LabelAbout;
+    public static String JurisdictionFilesDownloadExplanation;
+    public static String JurisdictionFilesDownloadMessage;
+    public static String JurisdictionFilesDownloadTitle;
+    public static String LabelAbsoluteDelta;
     public static String LabelAccounts;
+    public static String LabelAccumulatedTaxes;
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
+    public static String LabelAvailableAttributes;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelDefaultReferenceAccountName;
@@ -229,6 +234,8 @@ public class Messages extends NLS
     public static String LabelExport;
     public static String LabelFullClassification;
     public static String LabelInfo;
+    public static String LabelInputValidationFailed;
+    public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
@@ -238,6 +245,8 @@ public class Messages extends NLS
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
     public static String LabelOther;
+    public static String LabelPassword;
+    public static String LabelPasswordRepeat;
     public static String LabelPerformanceCalculation;
     public static String LabelPerformanceChart;
     public static String LabelPortfolioPerformance;
@@ -267,6 +276,7 @@ public class Messages extends NLS
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
     public static String LabelTotalSum;
+    public static String LabelTransactions;
     public static String LabelTransferals;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
@@ -316,6 +326,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidISIN;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningEditor;
+    public static String MsgLoadingFile;
     public static String MsgMissingAccount;
     public static String MsgMissingPortfolio;
     public static String MsgMissingReferenceAccount;
@@ -323,6 +334,9 @@ public class Messages extends NLS
     public static String MsgNoIssuesFound;
     public static String MsgNoProfileFound;
     public static String MsgNoUpdatesAvailable;
+    public static String MsgOpenFile;
+    public static String MsgPasswordMinCharacters;
+    public static String MsgPasswordNotIdentical;
     public static String MsgPortfolioFromMissing;
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
@@ -359,7 +373,9 @@ public class Messages extends NLS
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuImportQuotes;
+    public static String SecurityMenuNewSecurity;
     public static String SecurityMenuRemoveFromWatchlist;
+    public static String SecurityMenuSearchYahoo;
     public static String SecurityMenuSell;
     public static String SecurityMenuStockSplit;
     public static String SecurityMenuTransfer;
@@ -392,6 +408,7 @@ public class Messages extends NLS
     public static String SystemMenuShowErrorLog;
     public static String SystemMenuWelcome;
     public static String TabTransactions;
+    public static String TitlePasswordDialog;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;

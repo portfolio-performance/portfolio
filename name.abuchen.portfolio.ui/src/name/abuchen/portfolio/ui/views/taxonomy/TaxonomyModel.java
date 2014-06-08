@@ -37,6 +37,7 @@ public final class TaxonomyModel
         void nodeChange(TaxonomyNode node);
     }
 
+    private Taxonomy taxonomy;
     private ClientSnapshot snapshot;
 
     private TaxonomyNode rootNode;
@@ -47,7 +48,8 @@ public final class TaxonomyModel
 
     /* package */TaxonomyModel(Client client, Taxonomy taxonomy)
     {
-        snapshot = ClientSnapshot.create(client, Dates.today());
+        this.taxonomy = taxonomy;
+        this.snapshot = ClientSnapshot.create(client, Dates.today());
 
         Classification root = taxonomy.getRoot();
         rootNode = new ClassificationNode(null, root);
@@ -214,6 +216,11 @@ public final class TaxonomyModel
                 }
             }
         });
+    }
+
+    public Taxonomy getTaxonomy()
+    {
+        return taxonomy;
     }
 
     public TaxonomyNode getRootNode()

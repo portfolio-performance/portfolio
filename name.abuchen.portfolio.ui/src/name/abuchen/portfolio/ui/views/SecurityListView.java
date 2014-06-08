@@ -24,16 +24,21 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.CellEditorFactory;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper.Column;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimelineChart;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -79,8 +84,65 @@ import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
-public class SecurityListView extends AbstractListView
+public class SecurityListView extends AbstractListView implements ModificationListener
 {
+    private class CreateSecurityDropDown extends AbstractDropDown
+    {
+        public CreateSecurityDropDown(ToolBar toolBar)
+        {
+            super(toolBar, Messages.SecurityMenuAddNewSecurity, //
+                            PortfolioPlugin.image(PortfolioPlugin.IMG_PLUS), SWT.NONE);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new Action(Messages.SecurityMenuNewSecurity)
+            {
+                @Override
+                public void run()
+                {
+                    Security newSecurity = new Security();
+                    newSecurity.setFeed(QuoteFeed.MANUAL);
+                    openEditDialog(newSecurity);
+                }
+            });
+
+            manager.add(new Action(Messages.SecurityMenuSearchYahoo)
+            {
+                @Override
+                public void run()
+                {
+                    SearchYahooWizard wizard = new SearchYahooWizard(getClient());
+                    Dialog dialog = new WizardDialog(getToolBar().getShell(), wizard);
+
+                    if (dialog.open() == Dialog.OK)
+                    {
+                        Security newSecurity = wizard.getSecurity();
+                        openEditDialog(newSecurity);
+                    }
+                }
+            });
+        }
+
+        private void openEditDialog(Security newSecurity)
+        {
+            Dialog dialog = new EditSecurityDialog(getToolBar().getShell(), getClient(), newSecurity);
+
+            if (dialog.open() == Dialog.OK)
+            {
+                markDirty();
+                getClient().addSecurity(newSecurity);
+
+                if (watchlist != null)
+                    watchlist.getSecurities().add(newSecurity);
+
+                setSecurityTableInput();
+                securities.updateQuotes(newSecurity);
+            }
+        }
+    }
+
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
@@ -121,6 +183,30 @@ public class SecurityListView extends AbstractListView
     }
 
     @Override
+    public void onModified(Object element, Object newValue, Object oldValue)
+    {
+        // called from prices table
+        Security security = (Security) prices.getData(Security.class.toString());
+
+        // if the date changed, the prices must be reordered --> binary search
+        if (newValue instanceof Date)
+        {
+            SecurityPrice price = (SecurityPrice) element;
+            security.removePrice(price);
+            security.addPrice(price);
+        }
+
+        securities.refresh(security);
+        prices.refresh(element);
+        latest.setInput(security);
+        transactions.setInput(security.getTransactions(getClient()));
+        events.setInput(security.getEvents());
+        updateChart(security);
+
+        markDirty();
+    }
+
+    @Override
     public void init(ClientEditor clientEditor, Object parameter)
     {
         super.init(clientEditor, parameter);
@@ -136,7 +222,7 @@ public class SecurityListView extends AbstractListView
 
         new ToolItem(toolBar, SWT.SEPARATOR | SWT.VERTICAL).setWidth(20);
 
-        addCreateSecurityButton(toolBar);
+        new CreateSecurityDropDown(toolBar);
         addExportButton(toolBar);
         addSaveButton(toolBar);
         addConfigButton(toolBar);
@@ -170,36 +256,6 @@ public class SecurityListView extends AbstractListView
                 }
             }
         });
-    }
-
-    private void addCreateSecurityButton(ToolBar toolBar)
-    {
-        Action createSecurity = new Action()
-        {
-            @Override
-            public void run()
-            {
-                Security newSecurity = new Security();
-                newSecurity.setFeed(QuoteFeed.MANUAL);
-                Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new EditSecurityWizard(
-                                getClient(), newSecurity));
-                if (dialog.open() == Dialog.OK)
-                {
-                    markDirty();
-                    getClient().addSecurity(newSecurity);
-
-                    if (watchlist != null)
-                        watchlist.getSecurities().add(newSecurity);
-
-                    setSecurityTableInput();
-                    securities.updateQuotes(newSecurity);
-                }
-            }
-        };
-        createSecurity.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        createSecurity.setToolTipText(Messages.SecurityMenuAddNewSecurity);
-
-        new ActionContributionItem(createSecurity).fill(toolBar, -1);
     }
 
     private void addExportButton(ToolBar toolBar)
@@ -275,9 +331,8 @@ public class SecurityListView extends AbstractListView
                     return true;
 
                 Security security = (Security) element;
-                
-                String[] properties = new String[] {
-                                security.getName(), //
+
+                String[] properties = new String[] { security.getName(), //
                                 security.getIsin(), //
                                 security.getTickerSymbol(), //
                                 security.getWkn(), //
@@ -289,8 +344,8 @@ public class SecurityListView extends AbstractListView
                     if (property != null && filterPattern.matcher(property).matches())
                         return true;
                 }
-                
-                 return false;
+
+                return false;
             }
         });
 
@@ -440,7 +495,7 @@ public class SecurityListView extends AbstractListView
         container.setLayout(layout);
 
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
-
+        ColumnEditingSupport.prepare(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@prices", //$NON-NLS-1$
                         prices, layout);
 
@@ -453,8 +508,8 @@ public class SecurityListView extends AbstractListView
                 return Values.Date.format(((SecurityPrice) element).getTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPrice.class, "time"), SWT.UP); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "time").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -466,8 +521,8 @@ public class SecurityListView extends AbstractListView
                 return Values.Quote.format(((SecurityPrice) element).getValue());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPrice.class, "value")); //$NON-NLS-1$
-        column.setMoveable(false);
+        ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
@@ -476,27 +531,6 @@ public class SecurityListView extends AbstractListView
         prices.getTable().setLinesVisible(true);
 
         prices.setContentProvider(new SimpleListContentProvider(true));
-
-        new CellEditorFactory(prices, SecurityPrice.class) //
-                        .notify(new CellEditorFactory.ModificationListener()
-                        {
-                            public void onModified(Object element, String property)
-                            {
-                                markDirty();
-
-                                Security security = (Security) prices.getData(Security.class.toString());
-
-                                securities.refresh(security);
-                                prices.refresh(element);
-                                latest.setInput(security);
-                                transactions.setInput(security.getTransactions(getClient()));
-                                events.setInput(security.getEvents());
-                                updateChart(security);
-                            }
-                        }) //
-                        .editable("time") // //$NON-NLS-1$
-                        .amount("value") // //$NON-NLS-1$
-                        .apply();
 
         hookContextMenu(prices.getTable(), new IMenuListener()
         {
@@ -806,7 +840,7 @@ public class SecurityListView extends AbstractListView
                 }
                 return null;
             }
-            
+
             @Override
             public String getToolTipText(Object element)
             {

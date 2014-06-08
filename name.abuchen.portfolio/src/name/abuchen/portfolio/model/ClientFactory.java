@@ -2,175 +2,409 @@ package name.abuchen.portfolio.model;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.security.AlgorithmParameters;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
 {
-    private static XStream xstream;
-
-    public static Client load(File file) throws IOException
+    private abstract static class Interceptor
     {
-        Client client = (Client) xstream().fromXML(
-                        new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))); //$NON-NLS-1$
+        protected Interceptor next;
 
-        client.doPostLoadInitialization();
-
-        if (client.getVersion() == 1)
+        public Interceptor(Interceptor next)
         {
-            fixAssetClassTypes(client);
-            addFeedAndExchange(client);
-            client.setVersion(2);
+            this.next = next;
         }
 
-        if (client.getVersion() == 2)
-        {
-            addDecimalPlaces(client);
-            client.setVersion(3);
-        }
+        abstract Client load(InputStream input) throws IOException;
 
-        if (client.getVersion() == 3)
-        {
-            // do nothing --> added industry classification
-            client.setVersion(4);
-        }
-
-        if (client.getVersion() == 4)
-        {
-            for (Security s : client.getSecurities())
-                s.generateUUID();
-            client.setVersion(5);
-        }
-
-        if (client.getVersion() == 5)
-        {
-            // do nothing --> save industry taxonomy in client
-            client.setVersion(6);
-        }
-
-        if (client.getVersion() == 6)
-        {
-            // do nothing --> added WKN attribute to security
-            client.setVersion(7);
-        }
-
-        if (client.getVersion() == 7)
-        {
-            // new portfolio transaction types:
-            // DELIVERY_INBOUND, DELIVERY_OUTBOUND
-            changePortfolioTransactionTypeToDelivery(client);
-            client.setVersion(8);
-        }
-
-        if (client.getVersion() == 8)
-        {
-            // do nothing --> added 'retired' property to securities
-            client.setVersion(9);
-        }
-
-        if (client.getVersion() == 9)
-        {
-            // do nothing --> added 'cross entries' to transactions
-            client.setVersion(10);
-        }
-
-        if (client.getVersion() == 10)
-        {
-            generateUUIDs(client);
-            client.setVersion(11);
-        }
-
-        if (client.getVersion() == 11)
-        {
-            // do nothing --> added 'properties' to client
-            client.setVersion(12);
-        }
-
-        if (client.getVersion() == 12)
-        {
-            // added investment plans
-            // added security on chart as benchmark *and* performance
-            fixStoredBenchmarkChartConfigurations(client);
-
-            client.setVersion(13);
-        }
-
-        if (client.getVersion() == 13)
-        {
-            // introduce arbitrary taxonomies
-            addAssetClassesAsTaxonomy(client);
-            addIndustryClassificationAsTaxonomy(client);
-            addAssetAllocationAsTaxonomy(client);
-            fixStoredClassificationChartConfiguration(client);
-
-            client.setVersion(14);
-        }
-
-        if (client.getVersion() == 14)
-        {
-            // added shares to track dividends per share
-            assignSharesToDividendTransactions(client);
-
-            client.setVersion(15);
-        }
-
-        if (client.getVersion() == 15)
-        {
-            // do nothing --> added 'isRetired' property to account
-            client.setVersion(16);
-        }
-
-        if (client.getVersion() == 16)
-        {
-            // do nothing --> added 'feedURL' property to account
-            client.setVersion(17);
-        }
-
-        if (client.getVersion() == 17)
-        {
-            // do nothing --> added notes attribute
-            client.setVersion(18);
-        }
-
-        if (client.getVersion() == 18)
-        {
-            // do nothing --> added events (stock split) to securities
-            client.setVersion(19);
-        }
-
-        if (client.getVersion() != Client.CURRENT_VERSION)
-            throw new UnsupportedOperationException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
-                            client.getVersion()));
-
-        return client;
+        abstract void save(Client client, OutputStream output) throws IOException;
     }
 
-    public static void save(Client client, File file) throws IOException
+    private static class XmlSerialization extends Interceptor
     {
-        String xml = xstream().toXML(client);
+        public XmlSerialization()
+        {
+            super(null);
+        }
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-        writer.write(xml);
-        writer.close();
+        @Override
+        public Client load(InputStream input) throws IOException
+        {
+            try
+            {
+                Client client = (Client) xstream().fromXML(new InputStreamReader(input, Charset.forName("UTF-8"))); //$NON-NLS-1$
+
+                if (client.getVersion() > Client.CURRENT_VERSION)
+                    throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
+                                    client.getVersion()));
+
+                upgradeModel(client);
+
+                return client;
+            }
+            catch (XStreamException e)
+            {
+                throw new IOException(MessageFormat.format(Messages.MsgXMLFormatInvalid, e.getMessage()), e);
+            }
+        }
+
+        @Override
+        void save(Client client, OutputStream output) throws IOException
+        {
+            Writer writer = new OutputStreamWriter(output, Charset.forName("UTF-8")); //$NON-NLS-1$
+
+            xstream().toXML(client, writer);
+
+            writer.flush();
+        }
+    }
+
+    private static class Decryptor extends Interceptor
+    {
+        private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
+
+        private static final byte[] SALT = new byte[] { 112, 67, 103, 107, -92, -125, -112, -95, //
+                        -97, -114, 117, -56, -53, -69, -25, -28 };
+
+        private static final String AES = "AES"; //$NON-NLS-1$
+        private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"; //$NON-NLS-1$
+        private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"; //$NON-NLS-1$
+        private static final int ITERATION_COUNT = 65536;
+        private static final int IV_LENGTH = 16;
+
+        private static final int AES128_KEYLENGTH = 128;
+        private static final int AES256_KEYLENGTH = 256;
+
+        private char[] password;
+        private int keyLength;
+
+        public Decryptor(Interceptor next, String method, char[] password)
+        {
+            super(next);
+            this.password = password;
+            this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
+        }
+
+        @Override
+        public Client load(final InputStream input) throws IOException
+        {
+            InputStream decrypted = null;
+
+            try
+            {
+                // check signature
+                byte[] signature = new byte[SIGNATURE.length];
+                input.read(signature);
+                if (!Arrays.equals(signature, SIGNATURE))
+                    throw new IOException(Messages.MsgNotAPortflioFile);
+
+                // read encryption method
+                int method = input.read();
+                this.keyLength = method == 1 ? AES256_KEYLENGTH : AES128_KEYLENGTH;
+
+                // check if key length is supported
+                if (!isKeyLengthSupported(this.keyLength))
+                    throw new IOException(Messages.MsgKeyLengthNotSupported);
+
+                // build secret key
+                SecretKey secret = buildSecretKey();
+
+                // read initialization vector
+                byte[] iv = new byte[IV_LENGTH];
+                input.read(iv);
+
+                // build cipher and stream
+                Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+                cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+                decrypted = new CipherInputStream(input, cipher);
+
+                // read version information
+                byte[] bytes = new byte[4];
+                decrypted.read(bytes); // major version number
+                int majorVersion = ByteBuffer.wrap(bytes).getInt();
+                decrypted.read(bytes); // version number
+                int version = ByteBuffer.wrap(bytes).getInt();
+
+                if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
+                    throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
+
+                // wrap with zip input stream
+                ZipInputStream zipin = new ZipInputStream(decrypted);
+                zipin.getNextEntry();
+
+                Client client = next.load(zipin);
+
+                // save secret key for next save
+                client.setSecret(secret);
+
+                return client;
+            }
+            catch (GeneralSecurityException e)
+            {
+                throw new IOException(MessageFormat.format(Messages.MsgErrorDecrypting, e.getMessage()), e);
+            }
+            finally
+            {
+                if (decrypted != null)
+                    decrypted.close();
+            }
+        }
+
+        @Override
+        void save(Client client, final OutputStream output) throws IOException
+        {
+            try
+            {
+                // check if key length is supported
+                if (!isKeyLengthSupported(this.keyLength))
+                    throw new IOException(Messages.MsgKeyLengthNotSupported);
+
+                // get or build secret key
+                // if password is given, it is used (when the user chooses
+                // "save as" from the menu)
+                SecretKey secret = password != null ? buildSecretKey() : client.getSecret();
+                if (secret == null)
+                    throw new IOException(Messages.MsgPasswordMissing);
+
+                // save secret key for next save
+                client.setSecret(secret);
+
+                // write signature
+                output.write(SIGNATURE);
+
+                // write method
+                output.write(secret.getEncoded().length * 8 == AES256_KEYLENGTH ? 1 : 0);
+
+                // build cipher and stream
+                Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+                cipher.init(Cipher.ENCRYPT_MODE, secret);
+
+                // write initialization vector
+                AlgorithmParameters params = cipher.getParameters();
+                byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+                output.write(iv);
+
+                // encrypted stream
+                OutputStream encrpyted = new CipherOutputStream(output, cipher);
+
+                // write version information
+                encrpyted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
+                encrpyted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
+
+                // wrap with zip output stream
+                ZipOutputStream zipout = new ZipOutputStream(encrpyted);
+                zipout.putNextEntry(new ZipEntry("data.xml")); //$NON-NLS-1$
+
+                next.save(client, zipout);
+
+                zipout.closeEntry();
+                zipout.flush();
+                zipout.finish();
+                output.flush();
+            }
+            catch (GeneralSecurityException e)
+            {
+                throw new IOException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
+            }
+        }
+
+        private SecretKey buildSecretKey() throws NoSuchAlgorithmException, InvalidKeySpecException
+        {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
+            KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, keyLength);
+            SecretKey tmp = factory.generateSecret(spec);
+            return new SecretKeySpec(tmp.getEncoded(), AES);
+        }
+    }
+
+    private static XStream xstream;
+
+    public static boolean isEncrypted(File file)
+    {
+        return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
+    }
+
+    public static boolean isKeyLengthSupported(int keyLength)
+    {
+        try
+        {
+            return keyLength <= Cipher.getMaxAllowedKeyLength(Decryptor.CIPHER_ALGORITHM);
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
+        }
+    }
+
+    public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
+    {
+        if (isEncrypted(file) && password == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
+        InputStream input = null;
+
+        try
+        {
+            // progress monitor
+            long bytesTotal = file.length();
+            int increment = (int) Math.min(bytesTotal / 20L, Integer.MAX_VALUE);
+            monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
+            input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
+
+            return buildChain(file, null, password).load(input);
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new IOException(MessageFormat.format(Messages.MsgFileNotFound, file.getAbsolutePath()), e);
+        }
+        finally
+        {
+            if (input != null)
+                input.close();
+        }
+    }
+
+    public static void save(final Client client, final File file, String method, char[] password) throws IOException
+    {
+        if (isEncrypted(file) && password == null && client.getSecret() == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
+        OutputStream output = null;
+
+        try
+        {
+            output = new FileOutputStream(file);
+
+            buildChain(file, method, password).save(client, output);
+        }
+        finally
+        {
+            if (output != null)
+                output.close();
+        }
+    }
+
+    private static Interceptor buildChain(File file, String method, char[] password)
+    {
+        Interceptor chain = new XmlSerialization();
+
+        if (isEncrypted(file))
+            chain = new Decryptor(chain, method, password);
+
+        return chain;
+    }
+
+    private static void upgradeModel(Client client)
+    {
+        client.doPostLoadInitialization();
+
+        switch (client.getVersion())
+        {
+            case 1:
+                fixAssetClassTypes(client);
+                addFeedAndExchange(client);
+            case 2:
+                addDecimalPlaces(client);
+            case 3:
+                // do nothing --> added industry classification
+            case 4:
+                for (Security s : client.getSecurities())
+                    s.generateUUID();
+            case 5:
+                // do nothing --> save industry taxonomy in client
+            case 6:
+                // do nothing --> added WKN attribute to security
+            case 7:
+                // new portfolio transaction types:
+                // DELIVERY_INBOUND, DELIVERY_OUTBOUND
+                changePortfolioTransactionTypeToDelivery(client);
+            case 8:
+                // do nothing --> added 'retired' property to securities
+            case 9:
+                // do nothing --> added 'cross entries' to transactions
+            case 10:
+                generateUUIDs(client);
+            case 11:
+                // do nothing --> added 'properties' to client
+            case 12:
+                // added investment plans
+                // added security on chart as benchmark *and* performance
+                fixStoredBenchmarkChartConfigurations(client);
+            case 13:
+                // introduce arbitrary taxonomies
+                addAssetClassesAsTaxonomy(client);
+                addIndustryClassificationAsTaxonomy(client);
+                addAssetAllocationAsTaxonomy(client);
+                fixStoredClassificationChartConfiguration(client);
+                setDeprecatedFieldsToNull(client);
+            case 14:
+                // added shares to track dividends per share
+                assignSharesToDividendTransactions(client);
+            case 15:
+                // do nothing --> added 'isRetired' property to account
+            case 16:
+                // do nothing --> added 'feedURL' property to account
+            case 17:
+                // do nothing --> added notes attribute
+            case 18:
+                // do nothing --> added events (stock split) to securities
+            case 19:
+                // do nothing --> added attribute types
+            case 20:
+                // do nothing --> added note to investment plan
+                client.setVersion(Client.CURRENT_VERSION);
+            case Client.CURRENT_VERSION:
+                break;
+            default:
+                break;
+        }
     }
 
     private static void fixAssetClassTypes(Client client)
@@ -387,6 +621,18 @@ public class ClientFactory
         client.setProperty(key, newValue);
     }
 
+    private static void setDeprecatedFieldsToNull(Client client)
+    {
+        client.setRootCategory(null);
+        client.setIndustryTaxonomy(null);
+
+        for (Security security : client.getSecurities())
+        {
+            security.setIndustryClassification(null);
+            security.setType(null);
+        }
+    }
+
     private static void assignSharesToDividendTransactions(Client client)
     {
         for (Security security : client.getSecurities())
@@ -502,7 +748,8 @@ public class ClientFactory
                     xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
                     xstream.aliasField("i", ConsumerPriceIndex.class, "index");
 
-                    xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }));
+                    xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }, Calendar
+                                    .getInstance().getTimeZone()));
 
                     xstream.alias("buysell", BuySellEntry.class);
                     xstream.alias("account-transfer", AccountTransferEntry.class);
@@ -513,14 +760,6 @@ public class ClientFactory
                     xstream.alias("assignment", Assignment.class);
 
                     xstream.alias("event", SecurityEvent.class);
-
-                    // omitting 'type' will prevent writing the field
-                    // (making it transient prevents reading it as well ->
-                    // compatibility!)
-                    xstream.omitField(Security.class, "type");
-                    xstream.omitField(Security.class, "industryClassification");
-                    xstream.omitField(Client.class, "industryTaxonomyId");
-                    xstream.omitField(Client.class, "rootCategory");
                 }
             }
         }
