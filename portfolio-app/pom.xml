@@ -40,9 +40,9 @@
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository</url>
 		</repository>
 		<repository>
-			<id>eclipse-kepler</id>
+			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4M6-201403061200</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
