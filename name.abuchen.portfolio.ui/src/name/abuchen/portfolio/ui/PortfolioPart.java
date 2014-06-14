@@ -299,7 +299,7 @@ public class PortfolioPart implements LoadClientThread.Callback
 
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog
-        String fileNameProposal = clientFile != null ? clientFile.getName() : Messages.LabelUnnamedXml;
+        String fileNameProposal = clientFile != null ? clientFile.getName() : part.getLabel();
         if (extension != null && !fileNameProposal.endsWith('.' + extension))
         {
             int p = fileNameProposal.lastIndexOf('.');

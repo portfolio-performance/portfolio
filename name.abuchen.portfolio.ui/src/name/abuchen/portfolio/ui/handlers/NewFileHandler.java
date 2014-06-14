@@ -31,7 +31,7 @@ public class NewFileHandler
         if (dialog.open() == Window.OK)
         {
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
-            part.setLabel(Messages.LabelUnsavedFile);
+            part.setLabel(Messages.LabelUnnamedXml);
             part.getTransientData().put(Client.class.getName(), wizard.getClient());
 
             MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);

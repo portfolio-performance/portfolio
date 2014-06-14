@@ -16,7 +16,7 @@ public interface UIConstants
 
     interface Event
     {
-        public interface Log
+        interface Log
         {
             String CREATED = "errorlog/created"; //$NON-NLS-1$
             String CLEARED = "errorlog/cleared"; //$NON-NLS-1$
@@ -30,8 +30,10 @@ public interface UIConstants
 
     interface Parameter
     {
+        String PART = "name.abuchen.portfolio.ui.param.part"; //$NON-NLS-1$
         String FILE = "file"; //$NON-NLS-1$
         String EXTENSION = "name.abuchen.portfolio.ui.param.extension"; //$NON-NLS-1$
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
+        String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
     }
 }
