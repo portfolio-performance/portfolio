@@ -101,7 +101,7 @@ public class AboutDialog extends Dialog
 
     private void addHyperlinks(String aboutText, List<StyleRange> ranges)
     {
-        Pattern pattern = Pattern.compile("http://[^ \n]*"); //$NON-NLS-1$
+        Pattern pattern = Pattern.compile("https?://[^ \n]*"); //$NON-NLS-1$
         Matcher matcher = pattern.matcher(aboutText);
         while (matcher.find())
         {

@@ -57,7 +57,7 @@ public class SaveAsFileHandler
         }
 
         // trigger part to save file
-        ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, encryptionMethod);
+        ((PortfolioPart) part.getObject()).doSaveAs(part, shell, extension, encryptionMethod);
     }
 
     private static class JurisdictionFilesDownloadDialog extends MessageDialog

@@ -88,9 +88,16 @@ public class PortfolioPart implements LoadClientThread.Callback
     @PostConstruct
     public void createComposite(Composite parent, MPart part) throws IOException
     {
+        // is client available? (e.g. via new file wizard)
+        this.client = (Client) part.getTransientData().get(Client.class.getName());
+
+        // is file name available? (e.g. load file, open on startup)
         String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
         if (filename != null)
+        {
             clientFile = new File(filename);
+            loadPreferences();
+        }
 
         if (client != null)
         {
@@ -267,7 +274,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (clientFile == null)
         {
-            doSaveAs(shell, null, null);
+            doSaveAs(part, shell, null, null);
             return;
         }
 
@@ -286,7 +293,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
     }
 
-    public void doSaveAs(Shell shell, String extension, String encryptionMethod)
+    public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod)
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 
@@ -324,9 +331,10 @@ public class PortfolioPart implements LoadClientThread.Callback
 
         try
         {
-            ClientFactory.save(client, localFile, encryptionMethod, password);
-
             clientFile = localFile;
+
+            part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
+            ClientFactory.save(client, clientFile, encryptionMethod, password);
 
             dirty.setDirty(false);
             storePreferences();
@@ -529,7 +537,6 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         try
         {
-            // FIXME - is the digest created identical to IPath.toOSString()
             byte[] digest = MessageDigest.getInstance("MD5").digest(file.getAbsolutePath().getBytes()); //$NON-NLS-1$
 
             StringBuilder filename = new StringBuilder();

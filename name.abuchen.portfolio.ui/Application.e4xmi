@@ -13,6 +13,21 @@
       <children xsi:type="menu:Menu" xmi:id="_-mWZYBfHEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file" label="%menu.file.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_7EZNMBfVEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.newclient" label="%command.newFile.name" mnemonics="%command.newFile.mnemonic" command="_LiZuIBiOEeOR1rNFCzC82A"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="__5e1MBfHEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.open" label="%command.openFile.name" mnemonics="%command.openFile.mnemonic" command="_3CjQwBfHEeOders_POVQHQ"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_Ks4qYPOjEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.menuseparator.3"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_NkTjcPOjEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.menu.file.save" label="%command.save.name" mnemonics="%command.save.mnemonic" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
+        <children xsi:type="menu:Menu" xmi:id="_MdglYPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs" label="%command.saveAs.name">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_Hhy5UPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.xml" label="%command.saveAs.xml" command="_48Q94POhEeOtWc3KvKMOyw">
+            <parameters xmi:id="_cM52cPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.extension" value="xml"/>
+          </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_Qf3AgPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.aes128" label="%command.saveAs.AES128" command="_48Q94POhEeOtWc3KvKMOyw">
+            <parameters xmi:id="_fWgEoPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.extension" value="portfolio"/>
+            <parameters xmi:id="_kJw_UPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.encryptionmethod" value="AES128"/>
+          </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RCt18POhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.aes256" label="%command.saveAs.AES256" command="_48Q94POhEeOtWc3KvKMOyw">
+            <parameters xmi:id="_mxBVcPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.extension" value="portfolio"/>
+            <parameters xmi:id="_pj33kPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.encryptionmethod" value="AES256"/>
+          </children>
+        </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_Bd9XUBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_B_nS4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.consistencychecks" label="%command.consistencyChecks.name" command="_D9tYMBiPEeOR1rNFCzC82A"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_O_UqkBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.1"/>
@@ -54,6 +69,8 @@
   <handlers xmi:id="_HtZEMKSjEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handler.clearerrorlog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.ClearLogHandler" command="_8B-l8KSiEeO6qtqDeqiitg"/>
   <handlers xmi:id="_IUyO8Kz0EeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handler.openerrorlogtext" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.OpenErrorLogFileHandler" command="_h9fugKz0EeO6qtqDeqiitg"/>
   <handlers xmi:id="_pqCZoLdLEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.handler.preferences" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPreferenceDialogHandler" command="_7aSvMLdLEeO0acAVfaNMbA"/>
+  <handlers xmi:id="_EWWbkPOiEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.handler.saveAs" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveAsFileHandler" command="_48Q94POhEeOtWc3KvKMOyw"/>
+  <handlers xmi:id="_tnLNkPOkEeOHHf_SGgPLVA" elementId="name.abuchen.portfolio.ui.handler.save" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveFileHandler" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4BjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -81,6 +98,11 @@
   <commands xmi:id="_8B-l8KSiEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.clearerrorlog" commandName="Eintr&#xe4;ge im Fehlerprotokoll l&#xf6;schen" description=""/>
   <commands xmi:id="_h9fugKz0EeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.openerrorlogtext" commandName="Fehlerlogdatei &#xf6;ffnen"/>
   <commands xmi:id="_7aSvMLdLEeO0acAVfaNMbA" elementId="org.eclipse.ui.window.preferences" commandName="openPreferenceDialog"/>
+  <commands xmi:id="_48Q94POhEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.command.saveAs" commandName="saveAsCommand">
+    <parameters xmi:id="_-VGq0POhEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.param.extension" name="extension" optional="false"/>
+    <parameters xmi:id="_Acnw8POiEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.param.encryptionmethod" name="encryptionmethod"/>
+  </commands>
+  <commands xmi:id="_rzHrcPOjEeOHHf_SGgPLVA" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_D8SDohfFEeOders_POVQHQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
