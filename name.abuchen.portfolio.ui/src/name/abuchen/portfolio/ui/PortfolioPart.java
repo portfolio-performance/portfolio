@@ -19,6 +19,8 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -85,6 +87,9 @@ public class PortfolioPart implements LoadClientThread.Callback
     @Inject
     MDirtyable dirty;
 
+    @Inject
+    IEclipseContext context;
+
     @PostConstruct
     public void createComposite(Composite parent, MPart part) throws IOException
     {
@@ -120,14 +125,20 @@ public class PortfolioPart implements LoadClientThread.Callback
     private void createContainerWithViews(Composite parent)
     {
         container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 1).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 0).applyTo(container);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(new ClientEditor(this));
         Control control = sidebar.createSidebarControl(container);
         GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(control);
 
         book = new PageBook(container, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
+        GridDataFactory.fillDefaults().grab(true, true).span(1, 2).applyTo(book);
+
+        IEclipseContext childContext = context.createChild();
+        childContext.set(Composite.class, container);
+        childContext.set(Client.class, client);
+        ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, childContext);
+        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).applyTo(provider.getControl());
 
         sidebar.selectDefaultView();
 

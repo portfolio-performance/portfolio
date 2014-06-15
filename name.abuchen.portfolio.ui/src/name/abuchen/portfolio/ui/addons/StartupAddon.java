@@ -7,11 +7,13 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
+import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -21,11 +23,18 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 public class StartupAddon
 {
     @PostConstruct
-    public void initLogEntryCache(LogEntryCache cache)
+    public void setupProgressMontior(ProgressMonitorFactory factory)
+    {
+        IJobManager manager = Job.getJobManager();
+        manager.setProgressProvider(factory);
+    }
+
+    @PostConstruct
+    public void setupLogEntryCache(LogEntryCache cache)
     {
         // force creation of log entry cache
     }
-    
+
     @Inject
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) MApplication application)
@@ -43,6 +52,7 @@ public class StartupAddon
                 {
                     try
                     {
+                        monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
                         UpdateHelper updateHelper = new UpdateHelper();
                         updateHelper.runUpdate(monitor, true);
                     }

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,9 +17,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 
-public class UpdateQuotesJob extends Job
+public class UpdateQuotesJob extends AbstractClientJob
 {
     private final List<Security> securities;
     private final boolean includeHistoricQuotes;
@@ -29,9 +29,9 @@ public class UpdateQuotesJob extends Job
         this(client, true, -1);
     }
 
-    public UpdateQuotesJob(List<Security> securities, boolean includeHistoricQuotes, long repeatPeriod)
+    public UpdateQuotesJob(Client client, List<Security> securities, boolean includeHistoricQuotes, long repeatPeriod)
     {
-        super(Messages.JobLabelUpdateQuotes);
+        super(client, Messages.JobLabelUpdateQuotes);
         this.securities = new ArrayList<Security>(securities);
         this.includeHistoricQuotes = includeHistoricQuotes;
         this.repeatPeriod = repeatPeriod;
@@ -39,12 +39,12 @@ public class UpdateQuotesJob extends Job
 
     public UpdateQuotesJob(Client client, boolean includeHistoricQuotes, long repeatPeriod)
     {
-        this(client.getSecurities(), includeHistoricQuotes, repeatPeriod);
+        this(client, client.getSecurities(), includeHistoricQuotes, repeatPeriod);
     }
 
-    public UpdateQuotesJob(Security security)
+    public UpdateQuotesJob(Client client, Security security)
     {
-        this(Arrays.asList(new Security[] { security }), true, -1);
+        this(client, Arrays.asList(new Security[] { security }), true, -1);
     }
 
     @Override
@@ -112,6 +112,7 @@ public class UpdateQuotesJob extends Job
     {
         for (Security security : securities)
         {
+            monitor.subTask(MessageFormat.format("Quotes: {0}", security.getName()));
             try
             {
                 QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());

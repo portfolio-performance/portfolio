@@ -461,7 +461,7 @@ public final class SecuritiesTable implements ModificationListener
 
     public void updateQuotes(Security security)
     {
-        new UpdateQuotesJob(security)
+        new UpdateQuotesJob(getClient(), security)
         {
             @Override
             protected void notifyFinished()
