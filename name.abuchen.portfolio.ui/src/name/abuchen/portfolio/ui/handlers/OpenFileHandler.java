@@ -31,7 +31,8 @@ public class OpenFileHandler
         if (fileSelected != null)
         {
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
-            part.setLabel(fileSelected);
+            part.setLabel(fileSelected.substring(fileSelected.lastIndexOf('/') + 1));
+            part.setTooltip(fileSelected);
             part.getPersistedState().put(UIConstants.Parameter.FILE, fileSelected);
 
             MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);

@@ -21,8 +21,8 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
@@ -207,9 +207,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     }
 
     @Override
-    public void init(ClientEditor clientEditor, Object parameter)
+    public void init(PortfolioPart part, Object parameter)
     {
-        super.init(clientEditor, parameter);
+        super.init(part, parameter);
 
         if (parameter instanceof Watchlist)
             this.watchlist = (Watchlist) parameter;
@@ -282,7 +282,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public void run()
             {
-                securities.getColumnHelper().showSaveMenu(getClientEditor().getSite().getShell());
+                securities.getColumnHelper().showSaveMenu(getActiveShell());
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
@@ -297,7 +297,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public void run()
             {
-                securities.getColumnHelper().showHideShowColumnsMenu(getClientEditor().getSite().getShell());
+                securities.getColumnHelper().showHideShowColumnsMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -655,8 +655,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     if (security == null)
                         return;
 
-                    Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(
-                                    security));
+                    Dialog dialog = new WizardDialog(getActiveShell(), new ImportQuotesWizard(security));
                     if (dialog.open() != Dialog.OK)
                         return;
 

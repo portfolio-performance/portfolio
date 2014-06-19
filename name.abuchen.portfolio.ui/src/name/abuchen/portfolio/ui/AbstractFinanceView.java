@@ -20,13 +20,15 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
 public abstract class AbstractFinanceView
 {
-    private ClientEditor clientEditor;
+    private PortfolioPart part;
 
     private Composite top;
     private Label title;
@@ -44,24 +46,29 @@ public abstract class AbstractFinanceView
     public void notifyModelUpdated()
     {}
 
-    public void init(ClientEditor clientEditor, Object parameter)
+    public void init(PortfolioPart part, Object parameter)
     {
-        this.clientEditor = clientEditor;
+        this.part = part;
     }
 
-    public ClientEditor getClientEditor()
+    public PortfolioPart getPart()
     {
-        return clientEditor;
+        return part;
     }
 
     public Client getClient()
     {
-        return clientEditor.getClient();
+        return part.getClient();
     }
 
     public void markDirty()
     {
-        clientEditor.markDirty();
+        part.markDirty();
+    }
+
+    public Shell getActiveShell()
+    {
+        return Display.getDefault().getActiveShell();
     }
 
     public final void createViewControl(Composite parent)

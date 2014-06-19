@@ -52,7 +52,7 @@ public class ImportWizard extends Wizard
                             status, message, null));
         }
 
-        new ConsistencyChecksJob(null, importer.getClient(), false).schedule();
+        new ConsistencyChecksJob(importer.getClient(), false).schedule();
 
         return true;
     }

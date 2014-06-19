@@ -44,8 +44,7 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new OtherAccountTransactionsDialog(owner.getClientEditor().getSite().getShell(), owner
-                                    .getClient(), account, type);
+                    return new OtherAccountTransactionsDialog(owner.getActiveShell(), owner.getClient(), account, type);
                 }
             });
         }
@@ -56,7 +55,7 @@ public class AccountContextMenu
             @Override
             Dialog createDialog()
             {
-                return new TransferDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(), account);
+                return new TransferDialog(owner.getActiveShell(), owner.getClient(), account);
             }
         });
 
@@ -83,8 +82,8 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new BuySellSecurityDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(),
-                                    portfolio[0], null, PortfolioTransaction.Type.BUY);
+                    return new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(), portfolio[0], null,
+                                    PortfolioTransaction.Type.BUY);
                 }
             });
 
@@ -93,8 +92,8 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new BuySellSecurityDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(),
-                                    portfolio[0], null, PortfolioTransaction.Type.SELL);
+                    return new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(), portfolio[0], null,
+                                    PortfolioTransaction.Type.SELL);
                 }
             });
 
@@ -103,8 +102,7 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new DividendsDialog(owner.getClientEditor().getSite().getShell(), owner.getClient(),
-                                    account, null);
+                    return new DividendsDialog(owner.getActiveShell(), owner.getClient(), account, null);
                 }
             });
         }

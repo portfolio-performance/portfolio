@@ -128,7 +128,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 0).applyTo(container);
 
-        ClientEditorSidebar sidebar = new ClientEditorSidebar(new ClientEditor(this));
+        ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
         Control control = sidebar.createSidebarControl(container);
         GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(control);
 
@@ -257,7 +257,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             }
         });
 
-        new ConsistencyChecksJob(new ClientEditor(this), client, false).schedule(100);
+        new ConsistencyChecksJob(client, false).schedule(100);
         scheduleOnlineUpdateJobs();
     }
 
@@ -349,6 +349,9 @@ public class PortfolioPart implements LoadClientThread.Callback
             ClientFactory.save(client, clientFile, encryptionMethod, password);
 
             dirty.setDirty(false);
+            part.setLabel(clientFile.getName());
+            part.setTooltip(clientFile.getAbsolutePath());
+
             storePreferences();
         }
         catch (IOException e)
@@ -399,7 +402,7 @@ public class PortfolioPart implements LoadClientThread.Callback
                 return;
 
             view = (AbstractFinanceView) clazz.newInstance();
-            view.init(new ClientEditor(this), parameter);
+            view.init(this, parameter);
             view.createViewControl(book);
 
             book.showPage(view.getControl());

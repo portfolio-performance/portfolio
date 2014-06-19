@@ -347,6 +347,11 @@ public class Client
         }
     }
 
+    public void markDirty()
+    {
+        propertyChangeSupport.firePropertyChange("dirty", false, true); //$NON-NLS-1$
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
         propertyChangeSupport.addPropertyChangeListener(listener);

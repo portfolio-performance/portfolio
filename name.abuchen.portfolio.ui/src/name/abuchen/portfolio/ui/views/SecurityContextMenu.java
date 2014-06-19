@@ -41,8 +41,8 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getClientEditor().getSite().getShell(),
-                                owner.getClient(), portfolio, security, PortfolioTransaction.Type.BUY);
+                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(),
+                                portfolio, security, PortfolioTransaction.Type.BUY);
                 if (dialog.open() == BuySellSecurityDialog.OK)
                 {
                     owner.markDirty();
@@ -56,8 +56,8 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getClientEditor().getSite().getShell(),
-                                owner.getClient(), portfolio, security, PortfolioTransaction.Type.SELL);
+                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(),
+                                portfolio, security, PortfolioTransaction.Type.SELL);
                 if (dialog.open() == BuySellSecurityDialog.OK)
                 {
                     owner.markDirty();
@@ -71,8 +71,7 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                DividendsDialog dialog = new DividendsDialog(owner.getClientEditor().getSite().getShell(), owner
-                                .getClient(), null, security);
+                DividendsDialog dialog = new DividendsDialog(owner.getActiveShell(), owner.getClient(), null, security);
                 if (dialog.open() == DividendsDialog.OK)
                 {
                     owner.markDirty();
@@ -87,7 +86,7 @@ public class SecurityContextMenu
             public void run()
             {
                 StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
-                WizardDialog dialog = new WizardDialog(owner.getClientEditor().getSite().getShell(), wizard);
+                WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
                 if (dialog.open() == DividendsDialog.OK)
                 {
                     owner.markDirty();
@@ -104,8 +103,8 @@ public class SecurityContextMenu
                 @Override
                 public void run()
                 {
-                    SecurityTransferDialog dialog = new SecurityTransferDialog(owner.getClientEditor().getSite()
-                                    .getShell(), owner.getClient(), portfolio);
+                    SecurityTransferDialog dialog = new SecurityTransferDialog(owner.getActiveShell(), owner
+                                    .getClient(), portfolio);
                     if (dialog.open() == DividendsDialog.OK)
                     {
                         owner.markDirty();
@@ -123,9 +122,8 @@ public class SecurityContextMenu
                 @Override
                 public void run()
                 {
-                    SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getClientEditor().getSite()
-                                    .getShell(), owner.getClient(), portfolio,
-                                    PortfolioTransaction.Type.DELIVERY_INBOUND);
+                    SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getActiveShell(), owner
+                                    .getClient(), portfolio, PortfolioTransaction.Type.DELIVERY_INBOUND);
                     if (dialog.open() == SecurityDeliveryDialog.OK)
                     {
                         owner.markDirty();
@@ -139,9 +137,8 @@ public class SecurityContextMenu
                 @Override
                 public void run()
                 {
-                    SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getClientEditor().getSite()
-                                    .getShell(), owner.getClient(), portfolio,
-                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                    SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getActiveShell(), owner
+                                    .getClient(), portfolio, PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                     if (dialog.open() == SecurityDeliveryDialog.OK)
                     {
                         owner.markDirty();

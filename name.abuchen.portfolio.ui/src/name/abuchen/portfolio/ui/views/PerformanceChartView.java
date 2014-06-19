@@ -76,7 +76,7 @@ public class PerformanceChartView extends AbstractHistoricView
             @Override
             public void run()
             {
-                picker.showSaveMenu(getClientEditor().getSite().getShell());
+                picker.showSaveMenu(getActiveShell());
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
@@ -88,7 +88,7 @@ public class PerformanceChartView extends AbstractHistoricView
             @Override
             public void run()
             {
-                picker.showMenu(getClientEditor().getSite().getShell());
+                picker.showMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));

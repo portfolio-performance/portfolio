@@ -15,8 +15,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -234,7 +234,7 @@ import org.swtchart.LineStyle;
     private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
 
     private final String identifier;
-    private final ClientEditor clientEditor;
+    private final PortfolioPart part;
     private final Client client;
     private final Mode mode;
 
@@ -254,8 +254,8 @@ import org.swtchart.LineStyle;
         super(parent, SWT.NONE);
 
         this.identifier = view.getClass().getSimpleName() + "-PICKER"; //$NON-NLS-1$
-        this.clientEditor = view.getClientEditor();
-        this.client = clientEditor.getClient();
+        this.part = view.getPart();
+        this.client = view.getClient();
         this.mode = mode;
         this.resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
@@ -446,7 +446,7 @@ import org.swtchart.LineStyle;
         String config = client.getProperty(identifier);
 
         if (config == null || config.trim().length() == 0)
-            config = clientEditor.getPreferenceStore().getString(identifier);
+            config = part.getPreferenceStore().getString(identifier);
 
         if (config != null && config.trim().length() > 0)
             load(config);

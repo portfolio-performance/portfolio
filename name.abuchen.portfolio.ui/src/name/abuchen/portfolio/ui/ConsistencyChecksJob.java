@@ -16,7 +16,6 @@ import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -49,24 +48,21 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public class ConsistencyChecksJob extends Job
+public class ConsistencyChecksJob extends AbstractClientJob
 {
-    private final ClientEditor editor;
-    private final Client client;
     private final boolean reportSuccess;
 
-    public ConsistencyChecksJob(ClientEditor editor, Client client, boolean reportSuccess)
+    public ConsistencyChecksJob(Client client, boolean reportSuccess)
     {
-        super(Messages.JobMsgRunningConsistencyChecks);
-        this.editor = editor;
-        this.client = client;
+        super(client, Messages.JobMsgRunningConsistencyChecks);
         this.reportSuccess = reportSuccess;
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        final List<Issue> issues = Checker.runAll(client);
+        monitor.beginTask(Messages.JobMsgRunningConsistencyChecks, 1);
+        final List<Issue> issues = Checker.runAll(getClient());
 
         if (issues.isEmpty())
         {
@@ -91,7 +87,7 @@ public class ConsistencyChecksJob extends Job
                 public void run()
                 {
                     SelectQuickFixDialog dialog = new SelectQuickFixDialog(Display.getCurrent().getActiveShell(),
-                                    editor, issues);
+                                    getClient(), issues);
                     dialog.open();
                 }
             });
@@ -103,7 +99,7 @@ public class ConsistencyChecksJob extends Job
 
     private static class SelectQuickFixDialog extends TitleAreaDialog
     {
-        private final ClientEditor editor;
+        private final Client client;
         private final List<ReportedIssue> issues;
 
         private Menu contextMenu;
@@ -111,11 +107,11 @@ public class ConsistencyChecksJob extends Job
 
         private ReportedIssue currentIssue;
 
-        public SelectQuickFixDialog(Shell shell, ClientEditor editor, List<Issue> issues)
+        public SelectQuickFixDialog(Shell shell, Client client, List<Issue> issues)
         {
             super(shell);
 
-            this.editor = editor;
+            this.client = client;
             this.issues = new ArrayList<ReportedIssue>();
             for (Issue issue : issues)
                 this.issues.add(new ReportedIssue(issue));
@@ -314,11 +310,8 @@ public class ConsistencyChecksJob extends Job
                                 {
                                     fix.execute();
                                     currentIssue.setFixedMessage(fix.getDoneLabel());
-                                    if (editor != null)
-                                    {
-                                        editor.markDirty();
-                                        editor.notifyModelUpdated();
-                                    }
+                                    if (client != null)
+                                        client.markDirty();
                                     tableViewer.refresh(currentIssue);
                                 }
                             });
@@ -337,7 +330,7 @@ public class ConsistencyChecksJob extends Job
         {
             if (buttonId == IDialogConstants.RETRY_ID)
             {
-                List<Issue> list = Checker.runAll(editor.getClient());
+                List<Issue> list = Checker.runAll(client);
                 issues.clear();
                 for (Issue issue : list)
                     this.issues.add(new ReportedIssue(issue));

@@ -115,7 +115,7 @@ public class StatementOfAssetsViewer
 
     private void loadTaxonomy(Client client)
     {
-        String taxonomyId = owner.getClientEditor().getPreferenceStore().getString(this.getClass().getSimpleName());
+        String taxonomyId = owner.getPart().getPreferenceStore().getString(this.getClass().getSimpleName());
 
         if (taxonomyId != null)
         {
@@ -643,7 +643,7 @@ public class StatementOfAssetsViewer
     private void widgetDisposed()
     {
         if (taxonomy != null)
-            owner.getClientEditor().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
+            owner.getPart().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
 
         if (contextMenu != null)
             contextMenu.dispose();

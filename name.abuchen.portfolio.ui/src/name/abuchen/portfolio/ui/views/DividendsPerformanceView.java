@@ -76,7 +76,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        dropDown = new ReportingPeriodDropDown(toolBar, getClientEditor(), this);
+        dropDown = new ReportingPeriodDropDown(toolBar, getPart(), this);
         addExportButton(toolBar);
         addSaveButton(toolBar);
         addConfigButton(toolBar);
@@ -105,7 +105,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public void run()
             {
-                recordColumns.showSaveMenu(getClientEditor().getSite().getShell());
+                recordColumns.showSaveMenu(getActiveShell());
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
@@ -120,7 +120,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public void run()
             {
-                recordColumns.showHideShowColumnsMenu(getClientEditor().getSite().getShell());
+                recordColumns.showHideShowColumnsMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));

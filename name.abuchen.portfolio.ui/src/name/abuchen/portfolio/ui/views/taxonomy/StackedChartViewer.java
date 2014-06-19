@@ -14,8 +14,8 @@ import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.Aggregation.Period;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.StackedTimelineChart;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
@@ -99,11 +99,11 @@ public class StackedChartViewer extends Page
 
     private List<DateMidnight> dates;
 
-    public StackedChartViewer(ClientEditor editor, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
 
-        Interval interval = editor.loadReportingPeriods().getFirst().toInterval();
+        Interval interval = part.loadReportingPeriods().getFirst().toInterval();
 
         Period weekly = Aggregation.Period.WEEKLY;
 

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.handlers;
 import javax.inject.Named;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.PortfolioPart;
 
@@ -28,6 +27,6 @@ public class RunConsistencyChecksHandler
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
         Client client = portfolioPart.getClient();
 
-        new ConsistencyChecksJob(new ClientEditor(portfolioPart), client, true).schedule();
+        new ConsistencyChecksJob(client, true).schedule();
     }
 }

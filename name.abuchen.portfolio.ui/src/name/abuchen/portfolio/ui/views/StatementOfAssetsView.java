@@ -54,7 +54,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
             @Override
             public void run()
             {
-                assetViewer.showSaveMenu(getClientEditor().getSite().getShell());
+                assetViewer.showSaveMenu(getActiveShell());
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));

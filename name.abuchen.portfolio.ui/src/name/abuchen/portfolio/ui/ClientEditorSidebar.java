@@ -27,6 +27,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 /* package */class ClientEditorSidebar
@@ -60,7 +61,7 @@ import org.eclipse.swt.widgets.Menu;
         }
     }
 
-    private ClientEditor editor;
+    private PortfolioPart editor;
 
     private Menu taxonomyMenu;
 
@@ -69,7 +70,7 @@ import org.eclipse.swt.widgets.Menu;
     private Entry statementOfAssets;
     private Entry taxonomies;
 
-    public ClientEditorSidebar(ClientEditor editor)
+    public ClientEditorSidebar(PortfolioPart editor)
     {
         this.editor = editor;
     }
@@ -193,7 +194,7 @@ import org.eclipse.swt.widgets.Menu;
 
     private String askWatchlistName(String initialValue)
     {
-        InputDialog dlg = new InputDialog(editor.getSite().getShell(), Messages.WatchlistEditDialog,
+        InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.WatchlistEditDialog,
                         Messages.WatchlistEditDialogMsg, initialValue, null);
         if (dlg.open() != InputDialog.OK)
             return null;
@@ -359,7 +360,7 @@ import org.eclipse.swt.widgets.Menu;
 
     private String askTaxonomyName(String initialValue)
     {
-        InputDialog dlg = new InputDialog(editor.getSite().getShell(), Messages.DialogTaxonomyNameTitle,
+        InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.DialogTaxonomyNameTitle,
                         Messages.DialogTaxonomyNamePrompt, initialValue, null);
         if (dlg.open() != InputDialog.OK)
             return null;
