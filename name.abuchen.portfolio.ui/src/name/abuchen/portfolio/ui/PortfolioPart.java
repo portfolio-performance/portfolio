@@ -107,6 +107,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         if (client != null)
         {
             createContainerWithViews(parent);
+            dirty.setDirty(true);
         }
         else if (ClientFactory.isEncrypted(clientFile))
         {

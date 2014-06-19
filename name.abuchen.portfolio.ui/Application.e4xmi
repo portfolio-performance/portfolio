@@ -81,13 +81,17 @@
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4BjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
+    <bindings xmi:id="__2J6oPeCEeO4R-HvWULnnw" elementId="" keySequence="M1+S" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
+    <bindings xmi:id="_LS-jQPeDEeO4R-HvWULnnw" elementId="" keySequence="M1+U" command="_tukxoBiQEeOR1rNFCzC82A"/>
   </bindingTables>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_7d8q4RjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
     <children xmi:id="_7d8q4hjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
-  <descriptors xmi:id="_ksNWIBfIEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.part.portfolio" label="Portfolio Viewer" iconURI="" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.PortfolioPart"/>
+  <descriptors xmi:id="_ksNWIBfIEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.part.portfolio" label="Portfolio Viewer" iconURI="" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.PortfolioPart">
+    <tags>removeOnHide</tags>
+  </descriptors>
   <descriptors xmi:id="_4RiCMKz9EeOjzfbCEdp40A" elementId="name.abuchen.portfolio.ui.part.textviewer" label="Text Viewer" allowMultiple="true" closeable="true" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.TextViewerPart"/>
   <commands xmi:id="_1mco0Bi8EeO8gYEHAOvLsA" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
   <commands xmi:id="_LiZuIBiOEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.newclient" commandName="newClientCommand"/>

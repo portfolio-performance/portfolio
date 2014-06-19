@@ -76,7 +76,8 @@ public class ClientProgressProvider extends ProgressProvider
                 @Override
                 public void run()
                 {
-                    label.setText(text);
+                    if (!label.isDisposed())
+                        label.setText(text);
                 }
             });
         }
