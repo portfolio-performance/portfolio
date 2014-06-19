@@ -44,6 +44,9 @@
 							<id>name.abuchen.portfolio.product</id>
 							<rootFolder>portfolio</rootFolder>
 							<archiveFileName>PortfolioPerformance-${project.version}</archiveFileName>
+							<rootFolders>
+								<macosx>PortfolioPerformance.app</macosx>
+							</rootFolders>
 						</product>
 					</products>
 				</configuration>
