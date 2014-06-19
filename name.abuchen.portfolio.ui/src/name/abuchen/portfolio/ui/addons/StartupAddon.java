@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.addons;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -8,6 +10,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
+import name.abuchen.portfolio.util.IniFileManipulator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,6 +36,26 @@ public class StartupAddon
     public void setupLogEntryCache(LogEntryCache cache)
     {
         // force creation of log entry cache
+    }
+
+    @PostConstruct
+    public void unsetPersistedStateFlage()
+    {
+        // -clearPersistedState is set *after* installing new software, but must
+        // be cleared for the next runs
+
+        try
+        {
+            IniFileManipulator m = new IniFileManipulator();
+            m.load();
+            m.unsetClearPersistedState();
+            if (m.isDirty())
+                m.save();
+        }
+        catch (IOException ignore)
+        {
+            PortfolioPlugin.log(ignore);
+        }
     }
 
     @Inject

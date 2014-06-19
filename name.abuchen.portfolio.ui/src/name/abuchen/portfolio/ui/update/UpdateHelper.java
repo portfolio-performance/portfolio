@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.ui.update;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.IniFileManipulator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -82,6 +84,8 @@ public class UpdateHelper
             if (doUpdate[0])
             {
                 runUpdateOperation(sub.newChild(100));
+                setClearPersistedStateFlag();
+
                 Display.getDefault().asyncExec(new Runnable()
                 {
                     public void run()
@@ -105,6 +109,22 @@ public class UpdateHelper
                     }
                 });
             }
+        }
+    }
+
+    private void setClearPersistedStateFlag()
+    {
+        try
+        {
+            IniFileManipulator m = new IniFileManipulator();
+            m.load();
+            m.setClearPersistedState();
+            if (m.isDirty())
+                m.save();
+        }
+        catch (IOException ignore)
+        {
+            PortfolioPlugin.log(ignore);
         }
     }
 
