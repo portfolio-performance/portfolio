@@ -193,7 +193,7 @@ public class ClientPerformanceSnapshot
                         case TRANSFER_IN:
                         {
                             Long v = valuation.get(t.getSecurity());
-                            valuation.put(t.getSecurity(), v.longValue() - t.getAmount());
+                            valuation.put(t.getSecurity(), v.longValue() - t.getLumpSumPrice());
                             break;
                         }
                         case SELL:
@@ -201,7 +201,7 @@ public class ClientPerformanceSnapshot
                         case TRANSFER_OUT:
                         {
                             Long v = valuation.get(t.getSecurity());
-                            valuation.put(t.getSecurity(), v.longValue() + t.getAmount());
+                            valuation.put(t.getSecurity(), v.longValue() + t.getLumpSumPrice());
                             break;
                         }
                         default:
@@ -330,6 +330,7 @@ public class ClientPerformanceSnapshot
                         case SELL:
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
+                            fees += t.getFees();
                             break;
                         default:
                             throw new UnsupportedOperationException();
