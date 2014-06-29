@@ -31,7 +31,14 @@ public class IniFileManipulator
     private Path getIniFile()
     {
         String eclipseLauncher = System.getProperty("eclipse.launcher"); //$NON-NLS-1$
-        return Paths.get(eclipseLauncher + ".ini"); //$NON-NLS-1$
+
+        Path path = Paths.get(eclipseLauncher);
+
+        String executable = path.getFileName().toString();
+        int p = executable.lastIndexOf('.');
+        String iniFileName = (p > 0 ? executable.substring(0, p) : executable) + ".ini"; //$NON-NLS-1$
+
+        return path.getParent().resolve(iniFileName);
     }
 
     /* for testing */List<String> getLines()
