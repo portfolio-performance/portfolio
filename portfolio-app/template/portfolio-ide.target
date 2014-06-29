@@ -9,23 +9,22 @@
 <unit id="org.eclipse.rcp.source.feature.group" version="4.4.0.v20140606-1445"/>
 <unit id="org.eclipse.equinox.executable" version="3.6.100.v20140603-1326"/>
 <unit id="org.eclipse.platform.feature.group" version="4.4.0.v20140606-1558"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
-<unit id="org.hamcrest.core.source" version="1.1.0.v20090501071000"/>
+<unit id="org.hamcrest.core.source" version="1.3.0.v201303031735"/>
 <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.library" version="1.1.0.v20090501071000"/>
-<unit id="org.hamcrest.library.source" version="1.1.0.v20090501071000"/>
-<unit id="org.mockito" version="1.8.4.v201303031500"/>
-<unit id="org.mockito.source" version="1.8.4.v201303031500"/>
+<unit id="org.hamcrest.text" version="1.1.0.v20090501071000"/>
 <unit id="org.junit" version="4.11.0.v201303080030"/>
+<unit id="org.mockito" version="1.9.5.v201311280930"/>
+<unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
+<unit id="org.hamcrest.text.source" version="1.1.0.v20090501071000"/>
 <unit id="org.junit.source" version="4.11.0.v201303080030"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.3.0.v20131123020001"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.11.1/kepler"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.4.0.v20140623020002"/>
+<repository location="http://download.eclipse.org/technology/babel/update-site/R0.12.0/luna"/>
 </location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
