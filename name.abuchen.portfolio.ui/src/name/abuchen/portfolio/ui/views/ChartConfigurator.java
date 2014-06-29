@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -435,9 +436,15 @@ import org.swtchart.LineStyle;
 
     private void addDefaultDataSeries()
     {
+        EnumSet<ClientDataSeries> set = EnumSet.of(ClientDataSeries.TOTALS, ClientDataSeries.TRANSFERALS);
+
         for (DataSeries series : availableSeries)
         {
-            if (series.getType() == Client.class || series.getType() == ConsumerPriceIndex.class)
+            if (series.getType() == Client.class && set.contains(series.getInstance()))
+            {
+                selectedSeries.add(series);
+            }
+            else if (series.getType() == ConsumerPriceIndex.class)
             {
                 selectedSeries.add(series);
             }
