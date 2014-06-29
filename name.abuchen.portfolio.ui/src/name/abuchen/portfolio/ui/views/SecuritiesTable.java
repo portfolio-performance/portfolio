@@ -466,7 +466,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             protected void notifyFinished()
             {
-                Display.getCurrent().asyncExec(new Runnable()
+                Display.getDefault().asyncExec(new Runnable()
                 {
                     public void run()
                     {
