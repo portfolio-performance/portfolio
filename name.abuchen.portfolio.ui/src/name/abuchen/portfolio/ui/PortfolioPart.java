@@ -94,7 +94,12 @@ public class PortfolioPart implements LoadClientThread.Callback
     public void createComposite(Composite parent, MPart part) throws IOException
     {
         // is client available? (e.g. via new file wizard)
-        this.client = (Client) part.getTransientData().get(Client.class.getName());
+        Client attachedClient = (Client) part.getTransientData().get(Client.class.getName());
+        if (attachedClient != null)
+        {
+            internalSetClient(attachedClient);
+            dirty.setDirty(true);
+        }
 
         // is file name available? (e.g. load file, open on startup)
         String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
@@ -104,10 +109,9 @@ public class PortfolioPart implements LoadClientThread.Callback
             loadPreferences();
         }
 
-        if (client != null)
+        if (attachedClient != null)
         {
             createContainerWithViews(parent);
-            dirty.setDirty(true);
         }
         else if (ClientFactory.isEncrypted(clientFile))
         {
@@ -236,6 +240,20 @@ public class PortfolioPart implements LoadClientThread.Callback
     @Override
     public void setClient(Client client)
     {
+        internalSetClient(client);
+
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        {
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithViews(parent);
+            }
+        });
+    }
+
+    public void internalSetClient(Client client)
+    {
         this.client = client;
         this.dirty.setDirty(false);
 
@@ -245,15 +263,6 @@ public class PortfolioPart implements LoadClientThread.Callback
             public void propertyChange(PropertyChangeEvent evt)
             {
                 markDirty();
-            }
-        });
-
-        Display.getDefault().asyncExec(new BuildContainerRunnable()
-        {
-            @Override
-            public void createContainer(Composite parent)
-            {
-                createContainerWithViews(parent);
             }
         });
 
