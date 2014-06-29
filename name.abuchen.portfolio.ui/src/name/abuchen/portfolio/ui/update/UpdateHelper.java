@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -30,6 +32,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -37,12 +41,59 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class UpdateHelper
 {
+    private class NewVersion
+    {
+        private String version;
+        private String description;
+        private String minimumJavaVersionRequired;
+
+        public NewVersion(String version, String description, String minimumJavaVersionRequired)
+        {
+            this.version = version;
+            this.description = description;
+            this.minimumJavaVersionRequired = minimumJavaVersionRequired;
+        }
+
+        public String getVersion()
+        {
+            return version;
+        }
+
+        public String getDescription()
+        {
+            return description;
+        }
+
+        public boolean requiresNewJavaVersion()
+        {
+            if (minimumJavaVersionRequired == null)
+                return false;
+
+            double current = parseJavaVersion(System.getProperty("java.version")); //$NON-NLS-1$
+            double required = parseJavaVersion(minimumJavaVersionRequired);
+
+            return required > current;
+        }
+
+        private double parseJavaVersion(String version)
+        {
+            int pos = 0;
+            for (int count = 0; pos < version.length() && count < 2; pos++)
+                if (version.charAt(pos) == '.')
+                    count++;
+
+            if (pos < version.length()) // exclude second dot from parsing
+                pos--;
+
+            return Double.parseDouble(version.substring(0, pos));
+        }
+    }
+
     private final IProvisioningAgent agent;
     private UpdateOperation operation;
 
@@ -64,7 +115,7 @@ public class UpdateHelper
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
-        final String[] newVersion = checkForUpdates(sub.newChild(100));
+        final NewVersion newVersion = checkForUpdates(sub.newChild(100));
         if (newVersion != null)
         {
             final boolean[] doUpdate = new boolean[1];
@@ -74,8 +125,8 @@ public class UpdateHelper
                 {
                     Dialog dialog = new ExtendedMessageDialog(Display.getDefault().getActiveShell(),
                                     Messages.LabelUpdatesAvailable, //
-                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion[0]), //
-                                    newVersion[1]);
+                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
+                                    newVersion);
 
                     doUpdate[0] = dialog.open() == 0;
                 }
@@ -128,7 +179,7 @@ public class UpdateHelper
         }
     }
 
-    private String[] checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
+    private NewVersion checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
     {
         loadRepository(agent);
 
@@ -151,12 +202,13 @@ public class UpdateHelper
 
         if (update == null)
         {
-            return new String[] { Messages.LabelUnknownVersion, null };
+            return new NewVersion(Messages.LabelUnknownVersion, null, null);
         }
         else
         {
-            return new String[] { update.replacement.getVersion().toString(),
-                            update.replacement.getProperty("latest.changes.description", null) }; //$NON-NLS-1$
+            return new NewVersion(update.replacement.getVersion().toString(), //
+                            update.replacement.getProperty("latest.changes.description", null), //$NON-NLS-1$
+                            update.replacement.getProperty("latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
         }
     }
 
@@ -216,13 +268,13 @@ public class UpdateHelper
     private static class ExtendedMessageDialog extends MessageDialog
     {
         private Button checkOnUpdate;
-        private String log;
+        private NewVersion newVersion;
 
-        public ExtendedMessageDialog(Shell parentShell, String title, String message, String log)
+        public ExtendedMessageDialog(Shell parentShell, String title, String message, NewVersion newVersion)
         {
             super(parentShell, title, null, message, CONFIRM, new String[] { IDialogConstants.OK_LABEL,
                             IDialogConstants.CANCEL_LABEL }, 0);
-            this.log = log;
+            this.newVersion = newVersion;
         }
 
         @Override
@@ -231,9 +283,7 @@ public class UpdateHelper
             Composite container = new Composite(parent, SWT.NONE);
             GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
-            Text text = new Text(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
-            text.setText(log);
-            GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
+            createText(container);
 
             checkOnUpdate = new Button(container, SWT.CHECK);
             checkOnUpdate.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
@@ -250,7 +300,33 @@ public class UpdateHelper
             });
             GridDataFactory.fillDefaults().grab(true, false);
 
-            return text;
+            return container;
+        }
+
+        private void createText(Composite container)
+        {
+            StyledText text = new StyledText(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
+
+            List<StyleRange> ranges = new ArrayList<StyleRange>();
+
+            StringBuilder buffer = new StringBuilder();
+            if (newVersion.requiresNewJavaVersion())
+            {
+                StyleRange style = new StyleRange();
+                style.start = buffer.length();
+                style.length = Messages.MsgUpdateRequiresLatestJavaVersion.length();
+                style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+                style.fontStyle = SWT.BOLD;
+                ranges.add(style);
+
+                buffer.append(Messages.MsgUpdateRequiresLatestJavaVersion);
+                buffer.append("\n\n"); //$NON-NLS-1$
+            }
+
+            buffer.append(newVersion.getDescription());
+            text.setText(buffer.toString());
+            text.setStyleRanges(ranges.toArray(new StyleRange[0]));
+            GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
         }
     }
 }

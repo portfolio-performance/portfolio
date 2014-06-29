@@ -63,7 +63,7 @@ public class TaxonomyColumn extends Column
     {
         super(taxonomy.getId(), taxonomy.getName(), SWT.LEFT, 120);
 
-        setGroupLabel("Klassifizierungen");
+        setGroupLabel(Messages.ColumnTaxonomy);
         prepareOptions(taxonomy);
 
         this.setLabelProvider(new TaxonomyLabelProvider(taxonomy));

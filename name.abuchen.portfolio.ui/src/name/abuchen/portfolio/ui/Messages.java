@@ -64,6 +64,7 @@ public class Messages extends NLS
     public static String ColumnEntity;
     public static String ColumnExDate;
     public static String ColumnFees;
+    public static String ColumnFees_Description;
     public static String ColumnFix;
     public static String ColumnIndex;
     public static String ColumnInterval;
@@ -341,6 +342,8 @@ public class Messages extends NLS
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
     public static String MsgRestartRequired;
+    public static String MsgUpdateRequiresLatestJavaVersion;
+    public static String MsgUpdateRequiresMacOSXBundle;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;
     public static String NewFileWizardAddAll;

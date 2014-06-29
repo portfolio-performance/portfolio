@@ -351,12 +351,18 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
-        // strip away exchange suffix to search for all available exchanges
+        List<Exchange> answer = new ArrayList<Exchange>();
+
         String symbol = subject.getTickerSymbol();
+
+        // if symbol is null, return empty list
+        if (symbol == null || symbol.trim().length() == 0)
+            return answer;
+
+        // strip away exchange suffix to search for all available exchanges
         int p = symbol.indexOf('.');
         String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
 
-        List<Exchange> answer = new ArrayList<Exchange>();
 
         // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
         String searchUrl = MessageFormat.format(SEARCH_URL, prefix);

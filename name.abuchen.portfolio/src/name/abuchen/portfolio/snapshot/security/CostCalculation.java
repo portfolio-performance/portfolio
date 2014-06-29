@@ -9,6 +9,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 {
     private List<long[]> fifo = new ArrayList<long[]>();
 
+    private long fees;
+
     @Override
     public void visit(DividendInitialTransaction t)
     {
@@ -18,6 +20,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     @Override
     public void visit(PortfolioTransaction t)
     {
+        fees += t.getFees();
+
         switch (t.getType())
         {
             case BUY:
@@ -78,5 +82,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
         for (long[] entry : fifo)
             shares += entry[0];
         return shares;
+    }
+
+    public long getFees()
+    {
+        return fees;
     }
 }

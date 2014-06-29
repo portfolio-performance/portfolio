@@ -218,7 +218,8 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
 
         EnumMap<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(1000 * 9 + (9900 - 10000), result.get(CategoryType.CAPITAL_GAINS).getValuation());
+        assertEquals(1000 * 9 + (9900 - 10000) + 1, result.get(CategoryType.CAPITAL_GAINS).getValuation());
+        assertEquals(1, result.get(CategoryType.FEES).getValuation());
     }
 
 }
