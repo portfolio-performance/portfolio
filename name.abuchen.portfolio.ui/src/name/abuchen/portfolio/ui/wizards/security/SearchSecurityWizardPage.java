@@ -35,7 +35,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
@@ -58,10 +57,7 @@ public class SearchSecurityWizardPage extends WizardPage
     public void createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NULL);
-        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(container);
-
-        Label label = new Label(container, SWT.NULL);
-        label.setText(Messages.ColumnSymbol);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
         final Text searchBox = new Text(container, SWT.BORDER | SWT.SINGLE);
         searchBox.setText(""); //$NON-NLS-1$
@@ -69,7 +65,7 @@ public class SearchSecurityWizardPage extends WizardPage
         GridDataFactory.fillDefaults().grab(true, false).applyTo(searchBox);
 
         final TableViewer resultTable = new TableViewer(container, SWT.FULL_SELECTION);
-        GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(resultTable.getControl());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(resultTable.getControl());
 
         TableColumn column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSymbol);
