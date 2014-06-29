@@ -51,7 +51,7 @@ public class UpdateHandler extends AbstractHandler
                                             e.getCause());
 
             ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                            e.getCause().getMessage(), status);
+                            Messages.MsgErrorUpdating, status);
             return false;
         }
         catch (InterruptedException e)

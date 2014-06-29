@@ -325,6 +325,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidISIN;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningEditor;
+    public static String MsgErrorUpdating;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
     public static String MsgMissingPortfolio;
