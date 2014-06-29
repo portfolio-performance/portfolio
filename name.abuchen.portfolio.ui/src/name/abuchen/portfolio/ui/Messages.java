@@ -63,6 +63,7 @@ public class Messages extends NLS
     public static String ColumnEntity;
     public static String ColumnExDate;
     public static String ColumnFees;
+    public static String ColumnFees_Description;
     public static String ColumnFix;
     public static String ColumnIndex;
     public static String ColumnInterval;

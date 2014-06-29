@@ -64,6 +64,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     private long fifoCost;
 
     /**
+     * fees paid
+     */
+    private long fees;
+
+    /**
      * shares held {@link #calculateFifoCosts()}
      */
     private long sharesHeld;
@@ -137,6 +142,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     public long getFifoCost()
     {
         return fifoCost;
+    }
+
+    public long getFees()
+    {
+        return fees;
     }
 
     public long getSharesHeld()
@@ -244,6 +254,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.fifoCost = cost.getFifoCost();
         this.sharesHeld = cost.getSharesHeld();
         this.fifoCostPerSharesHeld = Math.round(fifoCost * Values.Share.factor() / (double) sharesHeld);
+        this.fees = cost.getFees();
     }
 
     private void calculateDividends()
