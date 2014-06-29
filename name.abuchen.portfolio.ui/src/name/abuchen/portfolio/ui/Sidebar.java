@@ -302,6 +302,10 @@ public final class Sidebar extends Composite
             if (entry != null)
                 select(entry);
         }
+        else
+        {
+            e.doit = false;
+        }
     }
 
     private void keyTraversed(TraverseEvent e)
@@ -422,6 +426,8 @@ public final class Sidebar extends Composite
                 {
                     if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN)
                         Sidebar.this.keyPressed(e);
+                    else
+                        e.doit = false;
                 }
             });
 
