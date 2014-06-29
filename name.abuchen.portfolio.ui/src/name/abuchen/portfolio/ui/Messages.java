@@ -327,6 +327,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidISIN;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningEditor;
+    public static String MsgErrorUpdating;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
     public static String MsgMissingPortfolio;
@@ -343,7 +344,6 @@ public class Messages extends NLS
     public static String MsgPortfolioToMissing;
     public static String MsgRestartRequired;
     public static String MsgUpdateRequiresLatestJavaVersion;
-    public static String MsgUpdateRequiresMacOSXBundle;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;
     public static String NewFileWizardAddAll;

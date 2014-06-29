@@ -54,7 +54,7 @@ public class UpdateHandler
                                             e.getCause());
 
             ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                            e.getCause().getMessage(), status);
+                            Messages.MsgErrorUpdating, status);
         }
         catch (InterruptedException ignore)
         {}

@@ -136,7 +136,6 @@ public class UpdateHelper
             {
                 runUpdateOperation(sub.newChild(100));
                 setClearPersistedStateFlag();
-
                 Display.getDefault().asyncExec(new Runnable()
                 {
                     public void run()
