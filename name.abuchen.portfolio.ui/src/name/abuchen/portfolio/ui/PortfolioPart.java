@@ -406,6 +406,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             view.createViewControl(book);
 
             book.showPage(view.getControl());
+            view.getControl().setFocus();
         }
         catch (ClassNotFoundException e)
         {
