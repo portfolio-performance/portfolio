@@ -56,6 +56,7 @@ public class AboutDialog extends Dialog
         getShell().setText(Messages.LabelAbout);
 
         Label imageLabel = new Label(area, SWT.NONE);
+        imageLabel.setBackground(area.getBackground());
         imageLabel.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO));
 
         text = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
