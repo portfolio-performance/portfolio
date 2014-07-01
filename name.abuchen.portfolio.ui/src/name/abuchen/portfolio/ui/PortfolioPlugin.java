@@ -33,8 +33,15 @@ public class PortfolioPlugin implements BundleActivator
 
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
-    public static final String IMG_LOGO = "pp_128"; //$NON-NLS-1$
-    public static final String IMG_LOGO_SMALL = "pp_48"; //$NON-NLS-1$
+    public static final String IMG_LOGO_16 = "pp_16"; //$NON-NLS-1$
+    public static final String IMG_LOGO_32 = "pp_32"; //$NON-NLS-1$
+    public static final String IMG_LOGO_48 = "pp_48"; //$NON-NLS-1$
+    public static final String IMG_LOGO_128 = "pp_128"; //$NON-NLS-1$
+    public static final String IMG_LOGO_256 = "pp_256"; //$NON-NLS-1$
+    public static final String IMG_LOGO_512 = "pp_512"; //$NON-NLS-1$
+
+    public static final String IMG_LOGO = IMG_LOGO_128;
+    public static final String IMG_LOGO_SMALL = IMG_LOGO_48;
 
     public static final String IMG_SECURITY = "security"; //$NON-NLS-1$
     public static final String IMG_ACCOUNT = "account"; //$NON-NLS-1$
@@ -128,11 +135,12 @@ public class PortfolioPlugin implements BundleActivator
     {
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
-        for (String key : new String[] { IMG_LOGO, IMG_LOGO_SMALL, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY,
-                        IMG_WATCHLIST, IMG_INVESTMENTPLAN, IMG_NOTE, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE,
-                        IMG_FILTER, IMG_VIEW_TABLE, IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING,
-                        IMG_VIEW_STACKEDCHART, IMG_CHECK, IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY,
-                        IMG_UNASSIGNED_CATEGORY, IMG_TEXT, IMG_ERROR, IMG_WARNING, IMG_INFO })
+        for (String key : new String[] { IMG_LOGO_16, IMG_LOGO_32, IMG_LOGO_48, IMG_LOGO_128, IMG_LOGO_256,
+                        IMG_LOGO_512, IMG_ACCOUNT, IMG_PORTFOLIO, IMG_SECURITY, IMG_WATCHLIST, IMG_INVESTMENTPLAN,
+                        IMG_NOTE, IMG_PLUS, IMG_CONFIG, IMG_EXPORT, IMG_SAVE, IMG_FILTER, IMG_VIEW_TABLE,
+                        IMG_VIEW_TREEMAP, IMG_VIEW_PIECHART, IMG_VIEW_REBALANCING, IMG_VIEW_STACKEDCHART, IMG_CHECK,
+                        IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY, IMG_UNASSIGNED_CATEGORY, IMG_TEXT, IMG_ERROR,
+                        IMG_WARNING, IMG_INFO })
         {
             IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
             URL url = FileLocator.find(bundle, path, null);

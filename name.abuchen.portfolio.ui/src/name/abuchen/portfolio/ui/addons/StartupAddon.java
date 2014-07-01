@@ -22,6 +22,8 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.Image;
 
 public class StartupAddon
 {
@@ -90,5 +92,19 @@ public class StartupAddon
             job.setSystem(true);
             job.schedule(500);
         }
+    }
+
+    @PostConstruct
+    public void setMultipleWindowImages()
+    {
+        // setting window images
+        // http://www.eclipse.org/forums/index.php/t/440442/
+            
+        Window.setDefaultImages(new Image[] { PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_512),
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_256),
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_128),
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_48),
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_32),
+                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_16) });
     }
 }
