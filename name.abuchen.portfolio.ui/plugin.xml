@@ -12,6 +12,10 @@
                name="appName"
                value="Portfolio Performance">
          </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.LifeCycleManager">
+         </property>
       </product>
    </extension>
 

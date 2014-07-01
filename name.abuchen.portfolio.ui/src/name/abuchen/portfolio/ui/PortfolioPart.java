@@ -10,6 +10,7 @@ import java.text.MessageFormat;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -288,6 +289,13 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (focus != null && !focus.isDisposed())
             focus.setFocus();
+    }
+
+    @PreDestroy
+    public void destroy(MPart part)
+    {
+        if (clientFile != null)
+            storePreferences();
     }
 
     @Persist

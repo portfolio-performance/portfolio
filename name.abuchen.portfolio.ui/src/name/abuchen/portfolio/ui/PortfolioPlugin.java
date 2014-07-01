@@ -103,7 +103,10 @@ public class PortfolioPlugin implements BundleActivator
 
     @Override
     public void stop(BundleContext context) throws Exception
-    {}
+    {
+        if (preferenceStore != null && preferenceStore.needsSaving())
+            ((ScopedPreferenceStore) preferenceStore).save();
+    }
 
     private void setupProxyAuthenticator()
     {
