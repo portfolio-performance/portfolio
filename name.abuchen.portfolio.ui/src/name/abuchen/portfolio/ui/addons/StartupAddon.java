@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.handlers.CustomSaveHandler;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
@@ -18,10 +19,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 
@@ -92,6 +96,17 @@ public class StartupAddon
             job.setSystem(true);
             job.schedule(500);
         }
+    }
+
+    @Inject
+    @Optional
+    public void registerCustomSaveHandler(
+                    @UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) MApplication application)
+    {
+        MWindow window = application.getSelectedElement();
+        IEclipseContext windowContext = window.getContext();
+
+        windowContext.set(ISaveHandler.class, new CustomSaveHandler());
     }
 
     @PostConstruct
