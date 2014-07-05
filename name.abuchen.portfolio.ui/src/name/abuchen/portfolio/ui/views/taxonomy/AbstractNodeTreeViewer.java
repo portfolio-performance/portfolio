@@ -421,7 +421,8 @@ import org.eclipse.swt.widgets.Shell;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        nodeViewer.refresh();
+        if (!nodeViewer.getTree().isDisposed())
+            nodeViewer.refresh();
     }
 
     @Override
