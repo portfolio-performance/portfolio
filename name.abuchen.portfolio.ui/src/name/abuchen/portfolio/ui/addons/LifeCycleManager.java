@@ -36,6 +36,10 @@ public class LifeCycleManager
         }
 
         if (!toBeRemoved.isEmpty())
+        {
+            if (toBeRemoved.contains(stack.getSelectedElement()))
+                stack.setSelectedElement(null);
             stack.getChildren().removeAll(toBeRemoved);
+        }
     }
 }
