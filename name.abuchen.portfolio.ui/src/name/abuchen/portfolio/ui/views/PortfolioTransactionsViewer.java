@@ -94,7 +94,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnEditingSupport.prepare(tableViewer);
 
-        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "2", tableViewer, layout); //$NON-NLS-1$
+        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "2", //$NON-NLS-1$
+                        owner.getPreferenceStore(), tableViewer, layout);
 
         addColumns();
         support.createColumns();

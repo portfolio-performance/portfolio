@@ -129,6 +129,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         for (Page page : pages)
         {
+            page.setPreferenceStore(getPreferenceStore());
             Control control = page.createControl(container);
             control.setData(page);
         }

@@ -90,7 +90,8 @@ public final class SecuritiesTable implements ModificationListener
 
         ColumnEditingSupport.prepare(securities);
 
-        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
+        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), view.getPreferenceStore(),
+                        securities, layout);
 
         addMasterDataColumns();
         addColumnLatestPrice();

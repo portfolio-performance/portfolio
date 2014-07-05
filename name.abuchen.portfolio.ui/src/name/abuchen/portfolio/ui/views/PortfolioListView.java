@@ -140,7 +140,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         ColumnEditingSupport.prepare(portfolios);
 
         portfolioColumns = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
-                        portfolios, layout);
+                        getPreferenceStore(), portfolios, layout);
 
         Column column = new NameColumn("0", Messages.ColumnPortfolio, SWT.None, 100); //$NON-NLS-1$
         column.getEditingSupport().addListener(this);

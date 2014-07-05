@@ -206,7 +206,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         ColumnEditingSupport.prepare(accounts);
 
-        accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", accounts, layout); //$NON-NLS-1$
+        accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
+                        getPreferenceStore(), accounts, layout);
 
         Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
         column.setLabelProvider(new NameColumnLabelProvider()
@@ -321,7 +322,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         ColumnEditingSupport.prepare(transactions);
 
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
-                        transactions, layout);
+                        getPreferenceStore(), transactions, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()

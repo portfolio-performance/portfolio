@@ -143,7 +143,8 @@ public class StatementOfAssetsViewer
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
 
-        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, assets, layout);
+        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, owner.getPreferenceStore(),
+                        assets, layout);
 
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()

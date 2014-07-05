@@ -137,7 +137,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         container.setLayout(layout);
 
         records = new TableViewer(container, SWT.FULL_SELECTION);
-        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(), records, layout);
+        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(),
+                        getPreferenceStore(), records, layout);
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
 
@@ -444,7 +445,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(DividendsPerformanceView.class.getSimpleName()
-                        + "@bottom3", transactions, layout); //$NON-NLS-1$
+                        + "@bottom3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
 
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);

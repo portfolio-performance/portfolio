@@ -133,7 +133,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
         ColumnEditingSupport.prepare(plans);
 
-        planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", plans, layout); //$NON-NLS-1$
+        planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+                        getPreferenceStore(), plans, layout);
 
         addColumns(planColumns);
 

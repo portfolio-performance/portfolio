@@ -266,7 +266,7 @@ import org.eclipse.swt.widgets.Shell;
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
 
         support = new ShowHideColumnHelper(getClass().getSimpleName() + '#' + getModel().getTaxonomy().getId(),
-                        nodeViewer, layout);
+                        getPreferenceStore(), nodeViewer, layout);
 
         addColumns(support);
 

@@ -11,6 +11,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -54,6 +55,11 @@ public abstract class AbstractFinanceView
     public PortfolioPart getPart()
     {
         return part;
+    }
+
+    public IPreferenceStore getPreferenceStore()
+    {
+        return part.getPreferenceStore();
     }
 
     public Client getClient()

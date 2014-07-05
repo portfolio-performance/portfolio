@@ -97,7 +97,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         ColumnEditingSupport.prepare(indeces);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(ConsumerPriceIndexListView.class.getSimpleName()
-                        + "@bottom", indeces, layout); //$NON-NLS-1$
+                        + "@bottom", getPreferenceStore(), indeces, layout); //$NON-NLS-1$
 
         Column column = new Column(Messages.ColumnYear, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()

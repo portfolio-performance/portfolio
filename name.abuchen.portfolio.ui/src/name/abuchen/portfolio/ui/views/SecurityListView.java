@@ -497,7 +497,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnEditingSupport.prepare(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@prices", //$NON-NLS-1$
-                        prices, layout);
+                        getPreferenceStore(), prices, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -781,8 +781,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
-                        + "@transactions2", //$NON-NLS-1$
-                        transactions, layout);
+                        + "@transactions2", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -946,7 +945,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         events = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events", //$NON-NLS-1$
-                        events, layout);
+                        getPreferenceStore(), events, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
