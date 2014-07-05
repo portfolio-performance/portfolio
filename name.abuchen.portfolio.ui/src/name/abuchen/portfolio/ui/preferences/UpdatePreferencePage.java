@@ -14,7 +14,7 @@ public class UpdatePreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
         
-        setTitle("Aktualisierung");
+        setTitle(Messages.PrefTitle);
         setDescription(Messages.PrefMsgConfigureUpdates);
     }
 

@@ -86,6 +86,7 @@ public class Messages extends NLS
     public static String ColumnLevels;
     public static String ColumnLumpSumPrice;
     public static String ColumnMarketValue;
+    public static String ColumnMessage;
     public static String ColumnMonth;
     public static String ColumnName;
     public static String ColumnNote;
@@ -190,17 +191,21 @@ public class Messages extends NLS
     public static String ImportWizardReviewDescription;
     public static String ImportWizardReviewError;
     public static String ImportWizardReviewTitle;
+    public static String IntroLabelActions;
+    public static String IntroLabelHelp;
+    public static String IntroLabelSamples;
     public static String IntroNewFile;
     public static String IntroNewFileText;
     public static String IntroOpenDaxSample;
     public static String IntroOpenDaxSampleText;
     public static String IntroOpenFile;
     public static String IntroOpenFileText;
+    public static String IntroOpenForum;
+    public static String IntroOpenForumText;
     public static String IntroOpenSample;
     public static String IntroOpenSampleText;
     public static String IntroReadNews;
     public static String IntroReadNewsText;
-    public static String IntroTitle;
     public static String InvestmentPlanIntervalLabel;
     public static String InvestmentPlanMenuCreate;
     public static String InvestmentPlanMenuDelete;
@@ -217,6 +222,7 @@ public class Messages extends NLS
     public static String JobMsgLoadingExchanges;
     public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
+    public static String JobMsgUpdatingQuotesFor;
     public static String LabelAbout;
     public static String JurisdictionFilesDownloadExplanation;
     public static String JurisdictionFilesDownloadMessage;
@@ -230,6 +236,7 @@ public class Messages extends NLS
     public static String LabelCancel;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
+    public static String LabelCopyToClipboard;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelError;
     public static String LabelExchange;
@@ -283,7 +290,6 @@ public class Messages extends NLS
     public static String LabelTransferals;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
-    public static String LabelUnsavedFile;
     public static String LabelUpdatesAvailable;
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
@@ -329,7 +335,7 @@ public class Messages extends NLS
     public static String MsgDialogInputRequired;
     public static String MsgDialogNotAValidISIN;
     public static String MsgErrorExchangeMissing;
-    public static String MsgErrorOpeningEditor;
+    public static String MsgErrorOpeningFile;
     public static String MsgErrorUpdating;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
@@ -369,6 +375,7 @@ public class Messages extends NLS
     public static String PrefCheckOnStartup;
     public static String PrefMsgConfigureUpdates;
     public static String PrefUpdateSite;
+    public static String PrefTitle;
     public static String SaveHandlerMsgSelectFileToSave;
     public static String SaveHandlerPrompt;
     public static String SaveHandlerTitle;
@@ -414,8 +421,6 @@ public class Messages extends NLS
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
     public static String SystemMenuCheckForUpdates;
-    public static String SystemMenuShowErrorLog;
-    public static String SystemMenuWelcome;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
     public static String WatchlistDelete;

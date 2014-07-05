@@ -85,25 +85,25 @@ public class WelcomePart
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(actions);
 
         Label title = new Label(actions, SWT.NONE);
-        title.setText("Portfolio Performance");
+        title.setText(Messages.LabelPortfolioPerformance);
         title.setFont(bigFont);
 
         Label version = new Label(actions, SWT.NONE);
         version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString());
 
-        addSectionLabel(boldFont, actions, "Aktionen");
+        addSectionLabel(boldFont, actions, Messages.IntroLabelActions);
         addLink(actions, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
         addLink(actions, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
 
-        addSectionLabel(boldFont, actions, "Beispiele");
+        addSectionLabel(boldFont, actions, Messages.IntroLabelSamples);
         addLink(actions, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
         addLink(actions, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
 
-        addSectionLabel(boldFont, actions, "Hilfe");
+        addSectionLabel(boldFont, actions, Messages.IntroLabelHelp);
         addLink(actions, "http://buchen.github.com/portfolio/new_and_noteworthy.html", //$NON-NLS-1$
                         Messages.IntroReadNews, Messages.IntroReadNewsText);
         addLink(actions, "http://www.wertpapier-forum.de/topic/38306-portfolio-performance-mein-neues-programm/", //$NON-NLS-1$
-                        "Forum", "Forum für Fragen, Anregungen und Feedback.");
+                        Messages.IntroOpenForum, Messages.IntroOpenForumText);
 
     }
 
@@ -191,7 +191,8 @@ public class WelcomePart
                 }
             }
 
-            ParameterizedCommand pCmd = new ParameterizedCommand(cmd, parameterizations.toArray(new Parameterization[0]));
+            ParameterizedCommand pCmd = new ParameterizedCommand(cmd,
+                            parameterizations.toArray(new Parameterization[0]));
             if (handlerService.canExecute(pCmd))
                 handlerService.executeHandler(pCmd);
         }

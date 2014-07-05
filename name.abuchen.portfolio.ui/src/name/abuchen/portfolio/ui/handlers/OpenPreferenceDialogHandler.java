@@ -19,7 +19,7 @@ public class OpenPreferenceDialogHandler
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
         PreferenceManager pm = new PreferenceManager();
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".updates", new UpdatePreferencePage()));
+        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".updates", new UpdatePreferencePage())); //$NON-NLS-1$
         
         PreferenceDialog dialog = new PreferenceDialog(shell, pm);
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());

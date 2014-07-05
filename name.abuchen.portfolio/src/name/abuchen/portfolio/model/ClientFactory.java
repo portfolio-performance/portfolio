@@ -319,7 +319,7 @@ public class ClientFactory
             long bytesTotalEstimate = input.available();
 
             int increment = (int) Math.min(bytesTotalEstimate / 20L, Integer.MAX_VALUE);
-            monitor.beginTask("Reading sample file", 20);
+            monitor.beginTask(Messages.MsgReadingSampleFile, 20);
             InputStream stream = new ProgressMonitorInputStream(input, increment, monitor);
             return buildChain(null, null, null).load(stream);
         }

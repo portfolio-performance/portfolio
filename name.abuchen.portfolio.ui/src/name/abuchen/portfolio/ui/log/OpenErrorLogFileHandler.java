@@ -34,7 +34,7 @@ public class OpenErrorLogFileHandler
         if (!logfile.exists())
         {
             MessageDialog.openError(shell, Messages.LabelError,
-                            MessageFormat.format("Unable to open file: {0}", logfile.getAbsoluteFile()));
+                            MessageFormat.format(Messages.MsgErrorOpeningFile, logfile.getAbsoluteFile()));
         }
         else
         {

@@ -112,7 +112,7 @@ public class UpdateQuotesJob extends AbstractClientJob
     {
         for (Security security : securities)
         {
-            monitor.subTask(MessageFormat.format("Quotes: {0}", security.getName()));
+            monitor.subTask(MessageFormat.format(Messages.JobMsgUpdatingQuotesFor, security.getName()));
             try
             {
                 QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());

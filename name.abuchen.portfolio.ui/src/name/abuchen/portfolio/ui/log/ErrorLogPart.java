@@ -67,7 +67,7 @@ public class ErrorLogPart
         protected void createButtonsForButtonBar(Composite parent)
         {
             createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-            Button button = createButton(parent, 9999, "Copy to Clipboard", false);
+            Button button = createButton(parent, 9999, Messages.LabelCopyToClipboard, false);
             button.addSelectionListener(new SelectionAdapter()
             {
                 @Override
@@ -168,7 +168,7 @@ public class ErrorLogPart
         });
 
         column = new TreeViewerColumn(logViewer, SWT.NONE);
-        column.getColumn().setText("Message");
+        column.getColumn().setText(Messages.ColumnMessage);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(500));
         column.setLabelProvider(new ColumnLabelProvider()
         {

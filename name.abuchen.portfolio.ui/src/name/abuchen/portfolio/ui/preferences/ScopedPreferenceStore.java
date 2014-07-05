@@ -26,10 +26,10 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.INodeChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.NodeChangeEvent;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
@@ -373,7 +373,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
         {
             if (scopes[i].equals(defaultContext))
             {
-                Assert.isTrue(false, "Do not add the default to the search contexts");
+                Assert.isTrue(false, "Do not add the default to the search contexts"); //$NON-NLS-1$
             }
         }
     }
