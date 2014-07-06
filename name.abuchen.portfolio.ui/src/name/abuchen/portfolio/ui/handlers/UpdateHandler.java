@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -23,7 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 public class UpdateHandler
 {
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, final IWorkbench workbench)
     {
         try
         {
@@ -34,7 +35,7 @@ public class UpdateHandler
                 {
                     try
                     {
-                        UpdateHelper updateHelper = new UpdateHelper();
+                        UpdateHelper updateHelper = new UpdateHelper(workbench);
                         updateHelper.runUpdate(monitor, false);
                     }
                     catch (CoreException e)

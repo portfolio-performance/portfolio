@@ -13,6 +13,8 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
+    public static String BtnLabelRestartLater;
+    public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
     public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesPickerAddBenchmark;

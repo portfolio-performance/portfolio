@@ -24,6 +24,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.window.Window;
@@ -66,7 +67,7 @@ public class StartupAddon
 
     @Inject
     @Optional
-    public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) MApplication application)
+    public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) final IWorkbench workbench)
     {
         boolean autoUpdate = PortfolioPlugin.getDefault().getPreferenceStore()
                         .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);
@@ -82,7 +83,7 @@ public class StartupAddon
                     try
                     {
                         monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper();
+                        UpdateHelper updateHelper = new UpdateHelper(workbench);
                         updateHelper.runUpdate(monitor, true);
                     }
                     catch (CoreException e)
@@ -114,7 +115,7 @@ public class StartupAddon
     {
         // setting window images
         // http://www.eclipse.org/forums/index.php/t/440442/
-            
+
         Window.setDefaultImages(new Image[] { PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_512),
                         PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_256),
                         PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_128),

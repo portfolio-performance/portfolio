@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
@@ -94,12 +95,14 @@ public class UpdateHelper
         }
     }
 
+    private final IWorkbench workbench;
     private final IProvisioningAgent agent;
     private UpdateOperation operation;
 
-    public UpdateHelper() throws CoreException
+    public UpdateHelper(IWorkbench workbench) throws CoreException
     {
-        agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        this.workbench = workbench;
+        this.agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
 
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
 
@@ -136,14 +139,7 @@ public class UpdateHelper
             {
                 runUpdateOperation(sub.newChild(100));
                 setClearPersistedStateFlag();
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                        Messages.MsgRestartRequired);
-                    }
-                });
+                promptForRestart();
             }
         }
         else
@@ -160,6 +156,24 @@ public class UpdateHelper
                 });
             }
         }
+    }
+
+    private void promptForRestart()
+    {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+            public void run()
+            {
+                MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                null, Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
+                                new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
+
+                int returnCode = dialog.open();
+
+                if (returnCode == 0)
+                    workbench.restart();
+            }
+        });
     }
 
     private void setClearPersistedStateFlag()
