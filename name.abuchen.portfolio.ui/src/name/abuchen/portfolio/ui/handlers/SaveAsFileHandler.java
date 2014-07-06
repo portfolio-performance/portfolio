@@ -15,6 +15,7 @@ import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -37,7 +38,8 @@ public class SaveAsFileHandler
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        return null != part && part.getObject() instanceof PortfolioPart;
+        return Platform.OS_LINUX.equals(Platform.getOS())
+                        || (null != part && part.getObject() instanceof PortfolioPart);
     }
 
     @Execute
@@ -46,6 +48,9 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.EXTENSION) String extension,
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
+        if (part == null || !(part.getObject() instanceof PortfolioPart))
+            return;
+
         if (extension == null)
             throw new IllegalArgumentException("Missing file extension parameter"); //$NON-NLS-1$
 
