@@ -580,7 +580,7 @@ import org.swtchart.LineStyle;
                 if (newColor != null)
                 {
                     paintItem.series.setColor(resources.createColor(newColor));
-                    paintItem.layout();
+                    paintItem.redraw();
                     listener.onUpdate();
                     persist();
                 }
