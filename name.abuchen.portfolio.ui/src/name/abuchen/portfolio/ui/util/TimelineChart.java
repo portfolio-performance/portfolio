@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
@@ -15,8 +17,12 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Tracker;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -31,6 +37,159 @@ import org.swtchart.Range;
 
 public class TimelineChart extends Chart
 {
+    private final class ZoomDoubleClickListener implements Listener
+    {
+        @Override
+        public void handleEvent(Event event)
+        {
+            for (IAxis axis : getAxisSet().getXAxes())
+            {
+                double coordinate = axis.getDataCoordinate(event.x);
+                if (event.button == 1)
+                    axis.zoomIn(coordinate);
+                else
+                    axis.zoomOut(coordinate);
+            }
+
+            for (IAxis axis : getAxisSet().getYAxes())
+            {
+                double coordinate = axis.getDataCoordinate(event.y);
+                if (event.button == 1)
+                    axis.zoomIn(coordinate);
+                else
+                    axis.zoomOut(coordinate);
+            }
+            redraw();
+        }
+    }
+
+    private final class ZoomInAreaListener implements Listener
+    {
+        private int x, y;
+        private long mouseDownTime;
+
+        @Override
+        public void handleEvent(Event event)
+        {
+
+            switch (event.type)
+            {
+                case SWT.MouseDown:
+                    if (event.button == 1)
+                    {
+                        x = event.x;
+                        y = event.y;
+                        mouseDownTime = System.currentTimeMillis();
+                    }
+                    break;
+                case SWT.MouseUp:
+                    mouseDownTime = -1;
+                    break;
+                case SWT.MouseMove:
+                    if (mouseDownTime > 0 && mouseDownTime + 100 < System.currentTimeMillis())
+                    {
+                        Tracker tracker = new Tracker(getPlotArea(), SWT.RESIZE);
+                        tracker.setRectangles(new Rectangle[] { new Rectangle(x, y, 0, 0) });
+                        if (tracker.open())
+                        {
+                            Rectangle rectangle = tracker.getRectangles()[0];
+
+                            try
+                            {
+                                for (IAxis axis : getAxisSet().getXAxes())
+                                {
+                                    Range range = new Range(axis.getDataCoordinate(rectangle.x),
+                                                    axis.getDataCoordinate(rectangle.x + rectangle.width));
+                                    axis.setRange(range);
+                                }
+
+                                for (IAxis axis : getAxisSet().getYAxes())
+                                {
+                                    Range range = new Range(axis.getDataCoordinate(rectangle.y),
+                                                    axis.getDataCoordinate(rectangle.y + rectangle.height));
+                                    axis.setRange(range);
+                                }
+                            }
+                            catch (IllegalArgumentException ignore)
+                            {
+                                PortfolioPlugin.log(ignore);
+                            }
+                            redraw();
+                        }
+                        tracker.dispose();
+                        mouseDownTime = -1;
+                    }
+                    break;
+                default:
+            }
+        }
+    }
+
+    private final class MouseWheelListener implements Listener
+    {
+        @Override
+        public void handleEvent(Event event)
+        {
+            for (IAxis axis : getAxisSet().getXAxes())
+            {
+                double coordinate = axis.getDataCoordinate(event.x);
+                if (event.count > 0)
+                    axis.zoomIn(coordinate);
+                else
+                    axis.zoomOut(coordinate);
+            }
+
+            for (IAxis axis : getAxisSet().getYAxes())
+            {
+                double coordinate = axis.getDataCoordinate(event.y);
+                if (event.count > 0)
+                    axis.zoomIn(coordinate);
+                else
+                    axis.zoomOut(coordinate);
+            }
+            redraw();
+
+        }
+    }
+
+    private final class KeyListener implements Listener
+    {
+        @Override
+        public void handleEvent(Event event)
+        {
+            if (event.keyCode == SWT.ARROW_DOWN)
+            {
+                if (event.stateMask == SWT.CTRL)
+                    getAxisSet().zoomOut();
+                else
+                    for (IAxis axis : getAxisSet().getYAxes())
+                        axis.scrollDown();
+                redraw();
+            }
+            else if (event.keyCode == SWT.ARROW_UP)
+            {
+                if (event.stateMask == SWT.CTRL)
+                    getAxisSet().zoomIn();
+                else
+                    for (IAxis axis : getAxisSet().getYAxes())
+                        axis.scrollUp();
+                redraw();
+            }
+            else if (event.keyCode == SWT.ARROW_LEFT)
+            {
+                for (IAxis axis : getAxisSet().getXAxes())
+                    axis.scrollDown();
+                redraw();
+            }
+            else if (event.keyCode == SWT.ARROW_RIGHT)
+            {
+                for (IAxis axis : getAxisSet().getXAxes())
+                    axis.scrollUp();
+                redraw();
+            }
+        }
+    }
+
     private static class MarkerLine
     {
         private Date date;
@@ -96,6 +255,20 @@ public class TimelineChart extends Chart
         });
 
         toolTip = new TimelineChartToolTip(this);
+
+        Listener zoomInDblClick = new ZoomDoubleClickListener();
+        getPlotArea().addListener(SWT.MouseDoubleClick, zoomInDblClick);
+
+        Listener zoomInArea = new ZoomInAreaListener();
+        getPlotArea().addListener(SWT.MouseDown, zoomInArea);
+        getPlotArea().addListener(SWT.MouseUp, zoomInArea);
+        getPlotArea().addListener(SWT.MouseMove, zoomInArea);
+
+        Listener mouseWheel = new MouseWheelListener();
+        getPlotArea().addListener(SWT.MouseWheel, mouseWheel);
+
+        Listener keys = new KeyListener();
+        getPlotArea().addListener(SWT.KeyDown, keys);
     }
 
     public void addMarkerLine(Date date, RGB color, String label)
