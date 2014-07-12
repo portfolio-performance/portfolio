@@ -29,12 +29,14 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
@@ -53,22 +55,78 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     {
         super.addButtons(toolBar);
         addExportButton(toolBar);
+        addConfigButton(toolBar);
     }
 
     private void addExportButton(ToolBar toolBar)
     {
         Action export = new Action()
         {
+            private Menu menu;
+
             @Override
             public void run()
             {
-                new TimelineChartCSVExporter(chart).export(getTitle() + ".csv"); //$NON-NLS-1$
+                if (menu == null)
+                {
+                    menu = createContextMenu(getActiveShell(), new IMenuListener()
+                    {
+                        @Override
+                        public void menuAboutToShow(IMenuManager manager)
+                        {
+                            exportMenuAboutToShow(manager);
+                        }
+                    });
+                }
+                menu.setVisible(true);
             }
         };
         export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
+    }
+
+    private void exportMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new Action(Messages.MenuExportChartData)
+        {
+            @Override
+            public void run()
+            {
+                new TimelineChartCSVExporter(chart).export(getTitle() + ".csv"); //$NON-NLS-1$
+            }
+        });
+        manager.add(new Separator());
+        chart.exportMenuAboutToShow(manager, getTitle());
+    }
+
+    private void addConfigButton(ToolBar toolBar)
+    {
+        Action config = new Action()
+        {
+            private Menu menu;
+
+            @Override
+            public void run()
+            {
+                if (menu == null)
+                {
+                    menu = createContextMenu(getActiveShell(), new IMenuListener()
+                    {
+                        @Override
+                        public void menuAboutToShow(IMenuManager manager)
+                        {
+                            chart.configMenuAboutToShow(manager);
+                        }
+                    });
+                }
+                menu.setVisible(true);
+            }
+        };
+        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setToolTipText(Messages.MenuConfigureChart);
+        new ActionContributionItem(config).fill(toolBar, -1);
     }
 
     @Override

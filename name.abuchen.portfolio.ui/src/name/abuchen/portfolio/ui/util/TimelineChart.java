@@ -7,8 +7,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
@@ -21,6 +24,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tracker;
 import org.swtchart.Chart;
@@ -204,6 +208,8 @@ public class TimelineChart extends Chart
         }
     }
 
+    private static final String[] EXTENSIONS = new String[] { "*.jpeg", "*.jpg", "*.png" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
     private List<MarkerLine> markerLines = new ArrayList<MarkerLine>();
     private TimelineChartToolTip toolTip;
     private final LocalResourceManager resources;
@@ -386,5 +392,66 @@ public class TimelineChart extends Chart
             e.gc.drawLine(x, 0, x, e.height);
             e.gc.drawText(marker.label, textX, e.height - 20 - labelStackY, true);
         }
+    }
+
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new Action(Messages.MenuChartAdjustRange)
+        {
+            @Override
+            public void run()
+            {
+                getAxisSet().adjustRange();
+                redraw();
+            }
+        });
+
+        manager.add(new Action(Messages.MenuChartZoomIn)
+        {
+            @Override
+            public void run()
+            {
+                getAxisSet().zoomIn();
+                redraw();
+            }
+        });
+
+        manager.add(new Action(Messages.MenuChartZoomOut)
+        {
+            @Override
+            public void run()
+            {
+                getAxisSet().zoomOut();
+                redraw();
+            }
+        });
+    }
+
+    public void exportMenuAboutToShow(IMenuManager manager, final String label)
+    {
+        manager.add(new Action(Messages.MenuExportDiagram)
+        {
+            @Override
+            public void run()
+            {
+                FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+                dialog.setFileName(label);
+                dialog.setFilterExtensions(EXTENSIONS);
+
+                String filename = dialog.open();
+                if (filename == null) { return; }
+
+                int format;
+                if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) //$NON-NLS-1$ //$NON-NLS-2$
+                    format = SWT.IMAGE_JPEG;
+                else if (filename.endsWith(".png")) //$NON-NLS-1$
+                    format = SWT.IMAGE_PNG;
+                else
+                    format = SWT.IMAGE_UNDEFINED;
+
+                if (format != SWT.IMAGE_UNDEFINED)
+                    save(filename, format);
+            }
+        });
     }
 }

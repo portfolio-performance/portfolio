@@ -134,14 +134,27 @@ public abstract class AbstractFinanceView
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
     {
+        doCreateContextMenu(control, true, listener);
+    }
+
+    protected final Menu createContextMenu(Control control, IMenuListener listener)
+    {
+        return doCreateContextMenu(control, false, listener);
+    }
+
+    private final Menu doCreateContextMenu(Control control, boolean hook, IMenuListener listener)
+    {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(listener);
 
         Menu contextMenu = menuMgr.createContextMenu(control);
-        control.setMenu(contextMenu);
+        if (hook)
+            control.setMenu(contextMenu);
 
         contextMenus.add(contextMenu);
+
+        return contextMenu;
     }
 
     public void dispose()

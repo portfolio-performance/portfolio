@@ -33,13 +33,16 @@ import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
@@ -85,10 +88,25 @@ public class PerformanceChartView extends AbstractHistoricView
 
         Action config = new Action()
         {
+            private Menu menu;
+
             @Override
             public void run()
             {
-                picker.showMenu(getActiveShell());
+                if (menu == null)
+                {
+                    menu = createContextMenu(getActiveShell(), new IMenuListener()
+                    {
+                        @Override
+                        public void menuAboutToShow(IMenuManager manager)
+                        {
+                            picker.configMenuAboutToShow(manager);
+                            manager.add(new Separator());
+                            chart.configMenuAboutToShow(manager);
+                        }
+                    });
+                }
+                menu.setVisible(true);
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -412,6 +430,9 @@ public class PerformanceChartView extends AbstractHistoricView
                 if (exportTypes.contains(series.getType()))
                     addMenu(manager, series.getInstance(), series.getLabel());
             }
+
+            manager.add(new Separator());
+            chart.exportMenuAboutToShow(manager, getTitle());
         }
 
         private void addMenu(IMenuManager manager, final Object instance, final String label)

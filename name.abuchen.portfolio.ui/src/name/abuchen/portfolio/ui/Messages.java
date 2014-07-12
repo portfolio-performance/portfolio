@@ -301,9 +301,13 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelYes;
     public static String MenuAddAll;
+    public static String MenuChartAdjustRange;
+    public static String MenuChartZoomIn;
+    public static String MenuChartZoomOut;
     public static String MenuConfigureChart;
     public static String MenuExportChartData;
     public static String MenuExportData;
+    public static String MenuExportDiagram;
     public static String MenuOpenSecurityOnSite;
     public static String MenuRemoveAll;
     public static String MenuResetChartSeries;

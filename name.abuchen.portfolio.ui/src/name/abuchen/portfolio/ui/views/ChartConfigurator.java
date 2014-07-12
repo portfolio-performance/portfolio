@@ -518,7 +518,7 @@ import org.swtchart.LineStyle;
         store.dispose();
     }
 
-    private void configMenuAboutToShow(IMenuManager manager)
+    public void configMenuAboutToShow(IMenuManager manager)
     {
         for (final DataSeries series : selectedSeries)
         {
