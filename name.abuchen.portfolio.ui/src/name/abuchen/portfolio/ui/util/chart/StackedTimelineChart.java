@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
 import java.util.List;

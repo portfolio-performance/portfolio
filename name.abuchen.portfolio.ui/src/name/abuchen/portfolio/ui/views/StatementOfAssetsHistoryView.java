@@ -14,8 +14,8 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.TimelineChart;
-import name.abuchen.portfolio.ui.util.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 

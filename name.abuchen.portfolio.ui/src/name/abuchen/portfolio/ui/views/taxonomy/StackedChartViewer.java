@@ -16,7 +16,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.util.StackedTimelineChart;
+import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
