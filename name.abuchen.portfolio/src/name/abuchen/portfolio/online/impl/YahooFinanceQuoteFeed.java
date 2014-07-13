@@ -1,12 +1,18 @@
 package name.abuchen.portfolio.online.impl;
 
+import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_PRICE;
+import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_QUOTE_DATE;
+import static name.abuchen.portfolio.online.impl.YahooHelper.asDate;
+import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
+import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
+import static name.abuchen.portfolio.online.impl.YahooHelper.stripQuotes;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -46,30 +51,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // Source = http://cliffngan.net/a/13
 
     private static final String SEARCH_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback"; //$NON-NLS-1$
-
-    protected static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
-    {
-        protected DecimalFormat initialValue()
-        {
-            return new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
-        }
-    };
-
-    protected static final ThreadLocal<SimpleDateFormat> FMT_TRADE_DATE = new ThreadLocal<SimpleDateFormat>()
-    {
-        protected SimpleDateFormat initialValue()
-        {
-            return new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
-        }
-    };
-
-    protected static final ThreadLocal<SimpleDateFormat> FMT_QUOTE_DATE = new ThreadLocal<SimpleDateFormat>()
-    {
-        protected SimpleDateFormat initialValue()
-        {
-            return new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-        }
-    };
 
     @SuppressWarnings("nls")
     private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/table.csv?ignore=.csv" //
@@ -176,32 +157,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 reader.close();
         }
 
-    }
-
-    private long asPrice(String s) throws ParseException
-    {
-        if ("N/A".equals(s)) //$NON-NLS-1$
-            return -1;
-        return (long) (FMT_PRICE.get().parse(s).doubleValue() * 100);
-    }
-
-    private int asNumber(String s) throws ParseException
-    {
-        if ("N/A".equals(s)) //$NON-NLS-1$
-            return -1;
-        return FMT_PRICE.get().parse(s).intValue();
-    }
-
-    private Date asDate(String s) throws ParseException
-    {
-        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
-            return null;
-        return FMT_TRADE_DATE.get().parse(s);
-    }
-
-    private String stripQuotes(String s)
-    {
-        return s.substring(1, s.length() - 1);
     }
 
     @Override
