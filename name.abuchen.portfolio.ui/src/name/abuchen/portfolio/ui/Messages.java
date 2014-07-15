@@ -138,6 +138,7 @@ public class Messages extends NLS
     public static String CSVImportErrorMissingFields;
     public static String CSVImportErrorsDuringImport;
     public static String CSVImportLabelDelimiter;
+    public static String CSVImportLabelDoubleClickHere;
     public static String CSVImportLabelEditMapping;
     public static String CSVImportLabelEncoding;
     public static String CSVImportLabelExpectedValue;
@@ -145,6 +146,7 @@ public class Messages extends NLS
     public static String CSVImportLabelFileCSV;
     public static String CSVImportLabelFirstLineIsHeader;
     public static String CSVImportLabelFormat;
+    public static String CSVImportLabelMappedToField;
     public static String CSVImportLabelProvidedValue;
     public static String CSVImportLabelSkipLines;
     public static String CSVImportLabelTarget;
