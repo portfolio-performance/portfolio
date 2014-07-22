@@ -214,7 +214,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         transactions.add(t);
 
         if (t instanceof DividendFinalTransaction)
-            marketValue = t.getAmount();
+            marketValue += t.getAmount();
     }
 
     /* package */void calculate(Client client, ReportingPeriod period)
