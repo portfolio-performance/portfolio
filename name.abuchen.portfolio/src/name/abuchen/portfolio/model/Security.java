@@ -234,7 +234,7 @@ public final class Security implements Attributable, InvestmentVehicle
             SecurityPrice last = prices.get(prices.size() - 1);
 
             // if 'last' younger than 'requested'
-            if (last.getTime().getTime() < time.getTime())
+            if (last.getTime().getTime() <= time.getTime())
             {
                 // if 'latest' older than 'last' -> 'latest' (else 'last')
                 if (latest.getTime().getTime() >= last.getTime().getTime())
