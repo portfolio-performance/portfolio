@@ -61,6 +61,7 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     long shares = value(t.getShares(), weight);
                     long amount = value(t.getAmount(), weight);
                     long fees = value(t.getFees(), weight);
+                    long taxes = value(t.getTaxes(), weight);
 
                     switch (t.getType())
                     {
@@ -68,18 +69,18 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                         case TRANSFER_IN:
                         {
                             pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees));
+                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees, taxes));
                             break;
                         }
                         case SELL:
                         case TRANSFER_OUT:
                             pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount, fees));
+                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount, fees, taxes));
                             break;
                         case DELIVERY_INBOUND:
                         case DELIVERY_OUTBOUND:
                             pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(), t
-                                            .getType(), shares, amount, fees));
+                                            .getType(), shares, amount, fees, taxes));
                             break;
                         default:
                             throw new UnsupportedOperationException();

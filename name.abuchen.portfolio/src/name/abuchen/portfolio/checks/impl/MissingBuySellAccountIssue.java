@@ -50,6 +50,7 @@ import name.abuchen.portfolio.model.Values;
             t.setSecurity(transaction.getSecurity());
             t.setShares(transaction.getShares());
             t.setFees(transaction.getFees());
+            t.setTaxes(transaction.getTaxes());
             t.setAmount(transaction.getAmount());
             portfolio.addTransaction(t);
 
@@ -87,6 +88,7 @@ import name.abuchen.portfolio.model.Values;
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());
             entry.setFees(transaction.getFees());
+            entry.setTaxes(transaction.getTaxes());
             entry.setAmount(transaction.getAmount());
             entry.insert();
 

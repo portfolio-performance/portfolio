@@ -195,6 +195,7 @@ public class InvestmentPlan implements Named, Adaptable
                 entry.setDate(transactionDate.toDate());
                 entry.setShares(shares);
                 entry.setFees(fees);
+                entry.setTaxes(0);
                 entry.setAmount(amount);
                 entry.setSecurity(getSecurity());
                 entry.insert();
@@ -204,7 +205,7 @@ public class InvestmentPlan implements Named, Adaptable
             else
             {
                 transaction = new PortfolioTransaction(transactionDate.toDate(), security,
-                                PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees);
+                                PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees, 0);
                 portfolio.addTransaction(transaction);
 
             }

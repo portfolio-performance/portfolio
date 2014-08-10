@@ -118,6 +118,7 @@ public class Messages extends NLS
     public static String ColumnStartDate;
     public static String ColumnSymbol;
     public static String ColumnTargetValue;
+    public static String ColumnTaxes;
     public static String ColumnTaxonomy;
     public static String ColumnTicker;
     public static String ColumnTotal;

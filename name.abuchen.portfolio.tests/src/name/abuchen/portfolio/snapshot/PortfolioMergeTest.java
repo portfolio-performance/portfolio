@@ -48,16 +48,16 @@ public class PortfolioMergeTest
 
         Portfolio portfolioA = new Portfolio();
         portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityA,
-                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0, 0));
         portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 1000000, 12100, 100));
+                        PortfolioTransaction.Type.BUY, 1000000, 12100, 100, 0));
         client.addPortfolio(portfolioA);
 
         Portfolio portfolioB = new Portfolio();
         portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityB,
-                        PortfolioTransaction.Type.BUY, 1000000, 11000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 11000, 0, 0));
         portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0, 0));
         client.addPortfolio(portfolioB);
     }
 

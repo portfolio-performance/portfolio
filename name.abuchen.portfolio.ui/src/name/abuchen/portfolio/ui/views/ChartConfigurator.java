@@ -658,7 +658,7 @@ import org.swtchart.LineStyle;
             return;
 
         Object[] result = dialog.getResult();
-        if (result.length == 0)
+        if (result == null || result.length == 0)
             return;
 
         for (Object object : result)

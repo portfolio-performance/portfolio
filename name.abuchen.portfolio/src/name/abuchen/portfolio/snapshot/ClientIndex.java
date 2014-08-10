@@ -131,16 +131,20 @@ import org.joda.time.Interval;
                                 && t.getDate().getTime() <= interval.getEndMillis())
                 {
                     long transferal = 0;
+                    long tax = 0;
 
                     switch (t.getType())
                     {
                         case DELIVERY_INBOUND:
                             transferal = t.getAmount();
+                            tax = t.getTaxes();
                             break;
                         case DELIVERY_OUTBOUND:
                             transferal = -t.getAmount();
+                            tax = t.getTaxes();
                             break;
                         default:
+                            tax = t.getTaxes();
                             // do nothing
                             break;
                     }
@@ -151,6 +155,11 @@ import org.joda.time.Interval;
                         transferals[ii] += transferal;
                     }
 
+                    if (tax != 0)
+                    {
+                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
+                        taxes[ii] += tax;
+                    }
                 }
             }
         }

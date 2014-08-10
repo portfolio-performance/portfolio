@@ -123,13 +123,15 @@ public class CSVImportDefinitionTest
         PortfolioTransactionDef def = new PortfolioTransactionDef();
 
         def.build(client, portfolio, //
-                        new String[] { "2013-01-01", security.getIsin(), "", "", "1000,00", "10,00", "1,234", "BUY" }, //
+                        new String[] { "2013-01-01", security.getIsin(), "", "", "1000,00", "10,00", "11,00", "1,234",
+                                        "BUY" }, //
                         buildField2Column(def));
 
         PortfolioTransaction t = portfolio.getTransactions().get(portfolio.getTransactions().size() - 1);
         assertThat(t.getSecurity(), is(security));
         assertThat(t.getShares(), is((long) (1.234 * Values.Share.factor())));
         assertThat(t.getFees(), is(10L * Values.Amount.factor()));
+        assertThat(t.getTaxes(), is(11L * Values.Amount.factor()));
         assertThat(t.getAmount(), is(1000L * Values.Amount.factor()));
         assertThat(t.getType(), is(PortfolioTransaction.Type.BUY));
     }

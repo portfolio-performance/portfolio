@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     private List<long[]> fifo = new ArrayList<long[]>();
 
     private long fees;
+    private long taxes;
 
     @Override
     public void visit(DividendInitialTransaction t)
@@ -21,6 +22,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     public void visit(PortfolioTransaction t)
     {
         fees += t.getFees();
+        taxes += t.getTaxes();
 
         switch (t.getType())
         {
@@ -88,4 +90,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     {
         return fees;
     }
+
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
 }

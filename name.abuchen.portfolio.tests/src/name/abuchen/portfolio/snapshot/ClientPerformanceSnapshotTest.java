@@ -108,7 +108,7 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 10, 100, 0));
+                        PortfolioTransaction.Type.BUY, 10, 100, 0, 0));
         client.addPortfolio(portfolio);
 
         Account account = new Account();
@@ -134,7 +134,7 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         client.addPortfolio(portfolio);
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
@@ -158,9 +158,9 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
-                        PortfolioTransaction.Type.BUY, 100000, 9900, 0));
+                        PortfolioTransaction.Type.BUY, 100000, 9900, 0, 0));
         client.addPortfolio(portfolio);
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
@@ -184,9 +184,9 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
-                        PortfolioTransaction.Type.SELL, 100000, 9900, 0));
+                        PortfolioTransaction.Type.SELL, 100000, 9900, 0, 0));
         client.addPortfolio(portfolio);
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
@@ -210,9 +210,9 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0));
+                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
-                        PortfolioTransaction.Type.SELL, 100000, 9900, 1));
+                        PortfolioTransaction.Type.SELL, 100000, 9900, 1, 0));
         client.addPortfolio(portfolio);
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);

@@ -336,6 +336,20 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setVisible(false);
         recordColumns.addColumn(column);
 
+        // taxes paid
+        column = new Column("taxes", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getTaxes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "taxes")); //$NON-NLS-1$
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
         // isin
         column = new IsinColumn();
         column.getEditingSupport().addListener(new MarkDirtyListener(this));

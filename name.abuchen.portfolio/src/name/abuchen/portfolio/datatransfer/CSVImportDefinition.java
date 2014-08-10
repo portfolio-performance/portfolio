@@ -224,6 +224,7 @@ public abstract class CSVImportDefinition
             fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Value));
             fields.add(new AmountField(Messages.CSVColumn_Fees).setOptional(true));
+            fields.add(new AmountField(Messages.CSVColumn_Taxes).setOptional(true));
             fields.add(new AmountField(Messages.CSVColumn_Shares));
             fields.add(new EnumField<PortfolioTransaction.Type>(Messages.CSVColumn_Type,
                             PortfolioTransaction.Type.class).setOptional(true));
@@ -258,6 +259,10 @@ public abstract class CSVImportDefinition
             if (fees == null)
                 fees = Long.valueOf(0);
 
+            Long taxes = convertAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
+            if (taxes == null)
+                taxes = Long.valueOf(0);
+
             String isin = getTextValue(Messages.CSVColumn_ISIN, rawValues, field2column);
             String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
             String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
@@ -281,6 +286,7 @@ public abstract class CSVImportDefinition
             transaction.setSecurity(lookupSecurity(client, isin, tickerSymbol, wkn, true));
             transaction.setShares(Math.abs(shares));
             transaction.setFees(Math.abs(fees));
+            transaction.setTaxes(Math.abs(taxes));
 
             if (type != null)
                 transaction.setType(type);

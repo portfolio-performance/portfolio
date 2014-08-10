@@ -418,6 +418,8 @@ public class ClientFactory
                 // do nothing --> added attribute types
             case 20:
                 // do nothing --> added note to investment plan
+            case 21:
+                // do nothing --> added taxes to portfolio transaction
                 client.setVersion(Client.CURRENT_VERSION);
             case Client.CURRENT_VERSION:
                 break;

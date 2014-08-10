@@ -20,16 +20,18 @@ public class PortfolioTransaction extends Transaction
     private Type type;
     private long amount;
     private long fees;
+    private long taxes;
 
     public PortfolioTransaction()
     {}
 
-    public PortfolioTransaction(Date date, Security security, Type type, long shares, long amount, long fees)
+    public PortfolioTransaction(Date date, Security security, Type type, long shares, long amount, long fees, long taxes)
     {
         super(date, security, shares);
         this.type = type;
         this.amount = amount;
         this.fees = fees;
+        this.taxes = taxes;
     }
 
     public Type getType()
@@ -63,6 +65,16 @@ public class PortfolioTransaction extends Transaction
         this.fees = fees;
     }
 
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
+    public void setTaxes(long taxes)
+    {
+        this.taxes = taxes;
+    }
+
     public long getLumpSumPrice()
     {
         switch (this.type)
@@ -70,11 +82,11 @@ public class PortfolioTransaction extends Transaction
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return amount - fees;
+                return amount - fees - taxes;
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return amount + fees;
+                return amount + fees + taxes;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }

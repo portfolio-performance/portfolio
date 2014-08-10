@@ -53,7 +53,7 @@ public class CrossEntryCheckTest
     public void testMissingSellInAccountIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.BUY, 1, 1, 1));
+                        PortfolioTransaction.Type.BUY, 1, 1, 1, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -68,7 +68,7 @@ public class CrossEntryCheckTest
     public void testMissingBuyInAccountIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.SELL, 1, 1, 1));
+                        PortfolioTransaction.Type.SELL, 1, 1, 1, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -97,7 +97,7 @@ public class CrossEntryCheckTest
     public void testThatMatchingBuySellEntriesAreFixed()
     {
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.SELL, 1, 1, 1));
+                        PortfolioTransaction.Type.SELL, 1, 1, 1, 0));
 
         account.addTransaction(new AccountTransaction(Dates.today(), security, //
                         AccountTransaction.Type.SELL, 1));
@@ -111,7 +111,7 @@ public class CrossEntryCheckTest
     public void testThatAlmostMatchingBuySellEntriesAreNotMatched()
     {
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.SELL, 1, 1, 1));
+                        PortfolioTransaction.Type.SELL, 1, 1, 1, 0));
 
         account.addTransaction(new AccountTransaction(Dates.today(), security, //
                         AccountTransaction.Type.SELL, 2));
@@ -187,7 +187,7 @@ public class CrossEntryCheckTest
     public void testMissingPortfolioTransferOutIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.TRANSFER_IN, 1, 1, 1));
+                        PortfolioTransaction.Type.TRANSFER_IN, 1, 1, 1, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -202,7 +202,7 @@ public class CrossEntryCheckTest
     public void testMissingPortfolioTransferInIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 1, 1));
+                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 1, 1, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -220,14 +220,14 @@ public class CrossEntryCheckTest
         client.addPortfolio(second);
 
         portfolio.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.TRANSFER_IN, 1, 3, 1));
+                        PortfolioTransaction.Type.TRANSFER_IN, 1, 3, 1, 0));
 
         PortfolioTransaction umatched = new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 3, 1);
+                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 3, 1, 0);
         portfolio.addTransaction(umatched);
 
         second.addTransaction(new PortfolioTransaction(Dates.today(), security, //
-                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 3, 1));
+                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 3, 1, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 

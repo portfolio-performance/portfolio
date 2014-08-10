@@ -45,6 +45,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(1);
             entry.setFees(0);
+            entry.setTaxes(0);
             entry.setAmount(transaction.getAmount());
             entry.insert();
 
