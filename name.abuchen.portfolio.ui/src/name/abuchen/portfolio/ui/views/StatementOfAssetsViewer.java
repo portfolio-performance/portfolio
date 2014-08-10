@@ -206,11 +206,6 @@ public class StatementOfAssetsViewer
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
         support.addColumn(column);
 
-        column = new NoteColumn();
-        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setVisible(false);
-        support.addColumn(column);
-
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -365,6 +360,10 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
+        support.addColumn(column);
+
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
         support.addColumn(column);
 
         column = new Column("10", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
