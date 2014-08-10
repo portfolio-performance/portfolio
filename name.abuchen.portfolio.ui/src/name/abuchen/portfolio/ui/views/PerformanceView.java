@@ -42,8 +42,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 public class PerformanceView extends AbstractHistoricView
 {
@@ -164,7 +162,7 @@ public class PerformanceView extends AbstractHistoricView
             {
                 if (element instanceof ClientPerformanceSnapshot.Category)
                 {
-                    return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                    return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
                 }
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
@@ -253,7 +251,7 @@ public class PerformanceView extends AbstractHistoricView
         earnings = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@earnings2", //$NON-NLS-1$
-                        earnings, layout);
+                        getPreferenceStore(), earnings, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -349,7 +347,7 @@ public class PerformanceView extends AbstractHistoricView
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts", //$NON-NLS-1$
-                        earningsByAccount, layout);
+                        getPreferenceStore(), earningsByAccount, layout);
 
         Column column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
         column.setLabelProvider(new ColumnLabelProvider()

@@ -2,36 +2,40 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.inject.Named;
+
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
-public class UpdateHandler extends AbstractHandler
+public class UpdateHandler
 {
-    public Object execute(ExecutionEvent event) throws ExecutionException
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, final IWorkbench workbench)
     {
         try
         {
-            new ProgressMonitorDialog(null).run(true, true, new IRunnableWithProgress()
+            new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress()
             {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
                 {
                     try
                     {
-                        UpdateHelper updateHelper = new UpdateHelper();
+                        UpdateHelper updateHelper = new UpdateHelper(workbench);
                         updateHelper.runUpdate(monitor, false);
                     }
                     catch (CoreException e)
@@ -52,13 +56,8 @@ public class UpdateHandler extends AbstractHandler
 
             ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
                             Messages.MsgErrorUpdating, status);
-            return false;
         }
-        catch (InterruptedException e)
-        {
-            return false;
-        }
-
-        return true;
+        catch (InterruptedException ignore)
+        {}
     }
 }

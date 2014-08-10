@@ -14,8 +14,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
@@ -75,11 +75,11 @@ public class AccountListView extends AbstractListView implements ModificationLis
     }
 
     @Override
-    public void init(ClientEditor clientEditor, Object parameter)
+    public void init(PortfolioPart part, Object parameter)
     {
-        super.init(clientEditor, parameter);
+        super.init(part, parameter);
 
-        isFiltered = getClientEditor().getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+        isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
     }
 
     private void resetInput()
@@ -136,7 +136,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public void run()
             {
                 isFiltered = isChecked();
-                getClientEditor().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
+                getPart().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
                 resetInput();
             }
         };
@@ -206,7 +206,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         ColumnEditingSupport.prepare(accounts);
 
-        accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", accounts, layout); //$NON-NLS-1$
+        accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
+                        getPreferenceStore(), accounts, layout);
 
         Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
         column.setLabelProvider(new NameColumnLabelProvider()
@@ -321,7 +322,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         ColumnEditingSupport.prepare(transactions);
 
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
-                        transactions, layout);
+                        getPreferenceStore(), transactions, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()

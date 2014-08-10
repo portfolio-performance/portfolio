@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 21;
+    /* package */static final int CURRENT_VERSION = 22;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -345,6 +345,11 @@ public class Client
             }
 
         }
+    }
+
+    public void markDirty()
+    {
+        propertyChangeSupport.firePropertyChange("dirty", false, true); //$NON-NLS-1$
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)

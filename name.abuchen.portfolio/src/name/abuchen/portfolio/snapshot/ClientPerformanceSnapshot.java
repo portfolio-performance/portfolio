@@ -331,6 +331,7 @@ public class ClientPerformanceSnapshot
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
                             fees += t.getFees();
+                            taxes += t.getTaxes();
                             break;
                         default:
                             throw new UnsupportedOperationException();

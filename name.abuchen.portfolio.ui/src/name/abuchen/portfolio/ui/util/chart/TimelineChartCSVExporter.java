@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.chart;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.swt.widgets.Control;

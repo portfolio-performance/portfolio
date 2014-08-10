@@ -16,9 +16,10 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
@@ -32,7 +33,6 @@ import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -51,9 +51,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
@@ -186,7 +183,7 @@ import org.swtchart.LineStyle;
             else if (type == Portfolio.class)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
             else if (type == Classification.class)
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
             else
                 return null;
         }
@@ -238,7 +235,7 @@ import org.swtchart.LineStyle;
     private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
 
     private final String identifier;
-    private final ClientEditor clientEditor;
+    private final PortfolioPart part;
     private final Client client;
     private final Mode mode;
 
@@ -258,8 +255,8 @@ import org.swtchart.LineStyle;
         super(parent, SWT.NONE);
 
         this.identifier = view.getClass().getSimpleName() + "-PICKER"; //$NON-NLS-1$
-        this.clientEditor = view.getClientEditor();
-        this.client = clientEditor.getClient();
+        this.part = view.getPart();
+        this.client = view.getClient();
         this.mode = mode;
         this.resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
@@ -456,7 +453,7 @@ import org.swtchart.LineStyle;
         String config = client.getProperty(identifier);
 
         if (config == null || config.trim().length() == 0)
-            config = clientEditor.getPreferenceStore().getString(identifier);
+            config = part.getPreferenceStore().getString(identifier);
 
         if (config != null && config.trim().length() > 0)
             load(config);
@@ -521,7 +518,7 @@ import org.swtchart.LineStyle;
         store.dispose();
     }
 
-    private void configMenuAboutToShow(IMenuManager manager)
+    public void configMenuAboutToShow(IMenuManager manager)
     {
         for (final DataSeries series : selectedSeries)
         {
@@ -583,7 +580,7 @@ import org.swtchart.LineStyle;
                 if (newColor != null)
                 {
                     paintItem.series.setColor(resources.createColor(newColor));
-                    paintItem.layout();
+                    paintItem.redraw();
                     listener.onUpdate();
                     persist();
                 }
@@ -652,17 +649,16 @@ import org.swtchart.LineStyle;
         for (DataSeries s : selectedSeries)
             list.remove(s);
 
-        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new DataSeriesLabelProvider());
-        dialog.setElements(list.toArray());
+        ListSelectionDialog dialog = new ListSelectionDialog(getShell(), new DataSeriesLabelProvider());
         dialog.setTitle(Messages.ChartSeriesPickerTitle);
         dialog.setMessage(Messages.ChartSeriesPickerTitle);
-        dialog.setMultipleSelection(true);
+        dialog.setElements(list);
 
-        if (dialog.open() != Window.OK)
+        if (dialog.open() != ListSelectionDialog.OK)
             return;
 
         Object[] result = dialog.getResult();
-        if (result.length == 0)
+        if (result == null || result.length == 0)
             return;
 
         for (Object object : result)

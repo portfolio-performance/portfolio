@@ -5,8 +5,8 @@ import java.beans.PropertyChangeListener;
 
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
@@ -36,9 +36,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     }
 
     @Override
-    public void init(ClientEditor clientEditor, Object parameter)
+    public void init(PortfolioPart part, Object parameter)
     {
-        super.init(clientEditor, parameter);
+        super.init(part, parameter);
         this.taxonomy = (Taxonomy) parameter;
         this.model = new TaxonomyModel(getClient(), taxonomy);
 
@@ -80,7 +80,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             {
                 StackLayout layout = (StackLayout) container.getLayout();
                 if (layout.topControl != null)
-                    ((Page) layout.topControl.getData()).showConfigMenu(getClientEditor().getSite().getShell());
+                    ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -125,15 +125,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                         new ReBalancingViewer(model, renderer), //
                         new PieChartViewer(model, renderer), //
                         new TreeMapViewer(model, renderer), //
-                        new StackedChartViewer(getClientEditor(), model, renderer) };
+                        new StackedChartViewer(getPart(), model, renderer) };
 
         for (Page page : pages)
         {
+            page.setPreferenceStore(getPreferenceStore());
             Control control = page.createControl(container);
             control.setData(page);
         }
 
-        activateView(getClientEditor().getPreferenceStore().getInt(identifier));
+        activateView(getPart().getPreferenceStore().getInt(identifier));
 
         model.addListener(new TaxonomyModelChangeListener()
         {
@@ -162,7 +163,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             layout.topControl = children[index];
             container.layout();
 
-            getClientEditor().getPreferenceStore().setValue(identifier, index);
+            getPart().getPreferenceStore().setValue(identifier, index);
         }
     }
 }

@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.util;
 import java.util.LinkedList;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 
 import org.eclipse.jface.action.Action;
@@ -26,10 +26,10 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
     // TODO: move reporting periods to kepler e4 application model?
     private LinkedList<ReportingPeriod> periods = new LinkedList<ReportingPeriod>();
 
-    public ReportingPeriodDropDown(ToolBar toolBar, final ClientEditor clientEditor, ReportingPeriodListener listener)
+    public ReportingPeriodDropDown(ToolBar toolBar, final PortfolioPart part, ReportingPeriodListener listener)
     {
         super(toolBar, "x"); //$NON-NLS-1$
-        this.periods = clientEditor.loadReportingPeriods();
+        this.periods = part.loadReportingPeriods();
         this.listener = listener;
 
         getToolItem().setText(periods.getFirst().toString());
@@ -39,7 +39,7 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
             @Override
             public void widgetDisposed(DisposeEvent e)
             {
-                clientEditor.storeReportingPeriods(periods);
+                part.storeReportingPeriods(periods);
             }
         });
     }

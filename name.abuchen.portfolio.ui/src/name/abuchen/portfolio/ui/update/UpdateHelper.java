@@ -1,23 +1,23 @@
 package name.abuchen.portfolio.ui.update;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.IniFileManipulator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
@@ -28,7 +28,6 @@ import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -96,12 +95,14 @@ public class UpdateHelper
         }
     }
 
+    private final IWorkbench workbench;
     private final IProvisioningAgent agent;
     private UpdateOperation operation;
 
-    public UpdateHelper() throws CoreException
+    public UpdateHelper(IWorkbench workbench) throws CoreException
     {
-        agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        this.workbench = workbench;
+        this.agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
 
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
 
@@ -115,125 +116,79 @@ public class UpdateHelper
 
     public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, CoreException
     {
-        try
+        SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
+
+        final NewVersion newVersion = checkForUpdates(sub.newChild(100));
+        if (newVersion != null)
         {
-            SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
-
-            final NewVersion newVersion = checkForUpdates(sub.newChild(100));
-            if (newVersion != null)
+            final boolean[] doUpdate = new boolean[1];
+            Display.getDefault().syncExec(new Runnable()
             {
-                final boolean[] doUpdate = new boolean[1];
-                Display.getDefault().syncExec(new Runnable()
+                public void run()
                 {
-                    public void run()
-                    {
-                        Dialog dialog = new ExtendedMessageDialog(Display.getDefault().getActiveShell(),
-                                        Messages.LabelUpdatesAvailable, //
-                                        MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
-                                        newVersion);
+                    Dialog dialog = new ExtendedMessageDialog(Display.getDefault().getActiveShell(),
+                                    Messages.LabelUpdatesAvailable, //
+                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
+                                    newVersion);
 
-                        doUpdate[0] = dialog.open() == 0;
-                    }
-                });
-
-                if (doUpdate[0])
-                {
-                    runUpdateOperation(sub.newChild(100));
-                    Display.getDefault().asyncExec(new Runnable()
-                    {
-                        public void run()
-                        {
-                            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                            Messages.MsgRestartRequired);
-                        }
-                    });
+                    doUpdate[0] = dialog.open() == 0;
                 }
-            }
-            else
+            });
+
+            if (doUpdate[0])
             {
-                if (!silent)
-                {
-                    Display.getDefault().asyncExec(new Runnable()
-                    {
-                        public void run()
-                        {
-                            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                            Messages.MsgNoUpdatesAvailable);
-                        }
-                    });
-                }
+                runUpdateOperation(sub.newChild(100));
+                setClearPersistedStateFlag();
+                promptForRestart();
             }
-        }
-        catch (CoreException exception)
-        {
-            checkForMacOSXBundleError(silent, exception);
-        }
-    }
-
-    private void checkForMacOSXBundleError(boolean silent, CoreException exception) throws CoreException
-    {
-        // check if this error is the case of attempting to update a
-        // non-bundled version using a bundled repository
-        boolean isMacOSXBundleFailure = false;
-
-        IStatus status = exception.getStatus();
-        if (status != null)
-        {
-            Pattern pattern = Pattern.compile("Missing requirement for filter properties ~= \\$0: " //$NON-NLS-1$
-                            + "toolingname.abuchen.portfolio.product.application [0-9.]* requires " //$NON-NLS-1$
-                            + "'toolingname.abuchen.portfolio.product.executable.cocoa.macosx.x86_64 " //$NON-NLS-1$
-                            + "\\[[0-9.]*\\]' but it could not be found"); //$NON-NLS-1$
-
-            LinkedList<IStatus> stack = new LinkedList<IStatus>();
-            stack.add(status);
-
-            while (!stack.isEmpty())
-            {
-                IStatus element = stack.removeFirst();
-
-                String msg = element.getMessage();
-                if (msg != null && pattern.matcher(msg).matches())
-                {
-                    isMacOSXBundleFailure = true;
-                    break;
-                }
-
-                if (element.getChildren() != null)
-                    for (IStatus child : element.getChildren())
-                        stack.add(child);
-            }
-        }
-
-        if (isMacOSXBundleFailure)
-        {
-            PortfolioPlugin.log(status);
-
-            final MultiStatus enhancedStatus = new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1,
-                            Messages.MsgUpdateRequiresMacOSXBundle, null);
-            enhancedStatus.add(status);
-
-            if (silent)
-            {
-                // if running in silent mode, display this error message
-                // nonetheless because otherwise the user will never know
-                // there is an update available
-
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                                        Messages.MsgErrorUpdating, enhancedStatus);
-                    }
-                });
-            }
-
-            throw new CoreException(enhancedStatus);
         }
         else
         {
-            throw exception;
+            if (!silent)
+            {
+                Display.getDefault().asyncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                        Messages.MsgNoUpdatesAvailable);
+                    }
+                });
+            }
+        }
+    }
+
+    private void promptForRestart()
+    {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+            public void run()
+            {
+                MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                null, Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
+                                new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
+
+                int returnCode = dialog.open();
+
+                if (returnCode == 0)
+                    workbench.restart();
+            }
+        });
+    }
+
+    private void setClearPersistedStateFlag()
+    {
+        try
+        {
+            IniFileManipulator m = new IniFileManipulator();
+            m.load();
+            m.setClearPersistedState();
+            if (m.isDirty())
+                m.save();
+        }
+        catch (IOException ignore)
+        {
+            PortfolioPlugin.log(ignore);
         }
     }
 

@@ -1,39 +1,46 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import javax.inject.Named;
+
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.ClientEditor;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 
-public class UpdateQuotesHandler extends AbstractHandler
+public class UpdateQuotesHandler
 {
-
-    public Object execute(ExecutionEvent event) throws ExecutionException
+    @CanExecute
+    boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        IWorkbenchPage page = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
-        final IEditorPart editor = page.getActiveEditor();
+        return Platform.OS_LINUX.equals(Platform.getOS())
+                        || (null != part && part.getObject() instanceof PortfolioPart);
+    }
 
-        if (!(editor instanceof ClientEditor))
-            return null;
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
+                    @Named("name.abuchen.portfolio.ui.param.target") @Optional String target)
+    {
+        if (part == null || !(part.getObject() instanceof PortfolioPart))
+            return;
 
-        Client client = ((ClientEditor) editor).getClient();
-        boolean isHistoric = "historic".equals(event.getParameter("name.abuchen.portfolio.ui.param.target")); //$NON-NLS-1$ //$NON-NLS-2$
+        final PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
+        Client client = portfolioPart.getClient();
+
+        boolean isHistoric = "historic".equals(target); //$NON-NLS-1$
 
         new UpdateQuotesJob(client, isHistoric, 0)
         {
             @Override
             protected void notifyFinished()
             {
-                ((ClientEditor) editor).notifyModelUpdated();
+                portfolioPart.notifyModelUpdated();
             }
         }.schedule();
-
-        return null;
     }
 }

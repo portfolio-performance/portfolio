@@ -1,19 +1,26 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import java.awt.Desktop;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
+import javax.inject.Named;
+
 import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -25,43 +32,37 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
-import org.eclipse.ui.handlers.HandlerUtil;
 
-public class SaveAsFileHandler extends AbstractHandler
+public class SaveAsFileHandler
 {
-
-    public Object execute(ExecutionEvent event) throws ExecutionException
+    @CanExecute
+    boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        // determine extension
-        String extension = event.getParameter(UIConstants.Parameter.EXTENSION);
+        return Platform.OS_LINUX.equals(Platform.getOS())
+                        || (null != part && part.getObject() instanceof PortfolioPart);
+    }
+
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+                    @Named(UIConstants.Parameter.EXTENSION) String extension,
+                    @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
+    {
+        if (part == null || !(part.getObject() instanceof PortfolioPart))
+            return;
+
         if (extension == null)
             throw new IllegalArgumentException("Missing file extension parameter"); //$NON-NLS-1$
 
         // check whether encryption is supported
-        String encryptionMethod = event.getParameter(UIConstants.Parameter.ENCRYPTION_METHOD);
-
         if ("AES256".equals(encryptionMethod) && !ClientFactory.isKeyLengthSupported(256)) //$NON-NLS-1$
         {
-            Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
             new JurisdictionFilesDownloadDialog(shell).open();
-            return null;
+            return;
         }
 
-        // trigger editor to save file
-        IWorkbenchPage page = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
-        final IEditorPart editor = page.getActiveEditor();
-
-        if (!(editor instanceof ClientEditor))
-            return null;
-
-        ((ClientEditor) editor).doSaveAs(extension, encryptionMethod);
-
-        return null;
+        // trigger part to save file
+        ((PortfolioPart) part.getObject()).doSaveAs(part, shell, extension, encryptionMethod);
     }
 
     private static class JurisdictionFilesDownloadDialog extends MessageDialog
@@ -107,18 +108,24 @@ public class SaveAsFileHandler extends AbstractHandler
                 @Override
                 public void widgetSelected(SelectionEvent event)
                 {
-                    try
+                    if (Desktop.isDesktopSupported())
                     {
-                        final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-                        browser.openURL(new URL(event.text));
-                    }
-                    catch (PartInitException e)
-                    {
-                        PortfolioPlugin.log(e);
-                    }
-                    catch (MalformedURLException e)
-                    {
-                        PortfolioPlugin.log(e);
+                        Desktop desktop = Desktop.getDesktop();
+                        if (desktop.isSupported(Desktop.Action.BROWSE))
+                        {
+                            try
+                            {
+                                desktop.browse(new URI(String.valueOf(event.text)));
+                            }
+                            catch (IOException ignore)
+                            {
+                                PortfolioPlugin.log(ignore);
+                            }
+                            catch (URISyntaxException ignore)
+                            {
+                                PortfolioPlugin.log(ignore);
+                            }
+                        }
                     }
                 }
             });

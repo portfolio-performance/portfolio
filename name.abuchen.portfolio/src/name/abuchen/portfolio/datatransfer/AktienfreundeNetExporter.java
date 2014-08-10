@@ -116,7 +116,7 @@ public class AktienfreundeNetExporter
         printer.print(Values.Amount.format(transaction.getActualPurchasePrice()));
         printer.print(Values.Share.format(transaction.getShares()));
         printer.print(Values.Amount.format(transaction.getFees()));
-        printer.print("");
+        printer.print(Values.Amount.format(transaction.getTaxes()));
         printer.println();
     }
 

@@ -69,6 +69,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     private long fees;
 
     /**
+     * taxes paid
+     */
+    private long taxes;
+
+    /**
      * shares held {@link #calculateFifoCosts()}
      */
     private long sharesHeld;
@@ -149,6 +154,11 @@ public final class SecurityPerformanceRecord implements Adaptable
         return fees;
     }
 
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
     public long getSharesHeld()
     {
         return sharesHeld;
@@ -214,7 +224,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         transactions.add(t);
 
         if (t instanceof DividendFinalTransaction)
-            marketValue = t.getAmount();
+            marketValue += t.getAmount();
     }
 
     /* package */void calculate(Client client, ReportingPeriod period)
@@ -255,6 +265,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.sharesHeld = cost.getSharesHeld();
         this.fifoCostPerSharesHeld = Math.round(fifoCost * Values.Share.factor() / (double) sharesHeld);
         this.fees = cost.getFees();
+        this.taxes = cost.getTaxes();
     }
 
     private void calculateDividends()

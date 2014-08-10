@@ -38,7 +38,7 @@ public class PortfolioBuilder
     public PortfolioBuilder inbound_delivery(Security security, DateMidnight date, long shares, long amount)
     {
         portfolio.addTransaction(new PortfolioTransaction(date.toDate(), security, Type.DELIVERY_INBOUND, shares,
-                        amount, 0));
+                        amount, 0, 0));
         return this;
     }
 

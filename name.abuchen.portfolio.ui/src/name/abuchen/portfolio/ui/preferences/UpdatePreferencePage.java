@@ -6,15 +6,16 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class UpdatePreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage
+public class UpdatePreferencePage extends FieldEditorPreferencePage
 {
 
     public UpdatePreferencePage()
     {
         super(GRID);
+        
+        setTitle(Messages.PrefTitle);
+        setDescription(Messages.PrefMsgConfigureUpdates);
     }
 
     public void createFieldEditors()
@@ -23,12 +24,5 @@ public class UpdatePreferencePage extends FieldEditorPreferencePage implements I
                         Messages.PrefUpdateSite, getFieldEditorParent()));
         addField(new BooleanFieldEditor(PortfolioPlugin.Preferences.AUTO_UPDATE, //
                         Messages.PrefCheckOnStartup, getFieldEditorParent()));
-    }
-
-    @Override
-    public void init(IWorkbench workbench)
-    {
-        setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
-        setDescription(Messages.PrefMsgConfigureUpdates);
     }
 }

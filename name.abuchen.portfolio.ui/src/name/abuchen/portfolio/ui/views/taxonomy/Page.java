@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -10,6 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 {
     private TaxonomyModel model;
     private TaxonomyNodeRenderer renderer;
+    private IPreferenceStore preferenceStore;
 
     protected Page(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -27,6 +29,16 @@ import org.eclipse.swt.widgets.Shell;
     protected final TaxonomyNodeRenderer getRenderer()
     {
         return renderer;
+    }
+
+    public IPreferenceStore getPreferenceStore()
+    {
+        return preferenceStore;
+    }
+
+    public void setPreferenceStore(IPreferenceStore preferenceStore)
+    {
+        this.preferenceStore = preferenceStore;
     }
 
     public void showConfigMenu(Shell shell)

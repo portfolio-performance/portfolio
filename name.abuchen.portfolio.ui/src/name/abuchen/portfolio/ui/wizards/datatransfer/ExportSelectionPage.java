@@ -30,8 +30,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 public class ExportSelectionPage extends AbstractWizardPage
 {
@@ -201,7 +199,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         public Image getImage(Object element)
         {
             if (element instanceof Class)
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
             else if (element instanceof Account)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
             else if (element instanceof Portfolio)

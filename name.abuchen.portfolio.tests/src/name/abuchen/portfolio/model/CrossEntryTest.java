@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.model;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
@@ -41,6 +41,7 @@ public class CrossEntryTest
         entry.setSecurity(security);
         entry.setShares(1 * Values.Share.factor());
         entry.setFees(10);
+        entry.setTaxes(11);
         entry.setAmount(1000 * Values.Amount.factor());
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.insert();
@@ -56,6 +57,9 @@ public class CrossEntryTest
         assertThat(pt.getAmount(), is(pa.getAmount()));
         assertThat(pt.getDate(), is(Dates.today()));
         assertThat(pa.getDate(), is(Dates.today()));
+
+        assertThat(pt.getFees(), is(10L));
+        assertThat(pt.getTaxes(), is(11L));
 
         // check cross entity identification
         assertThat(entry.getCrossEntity(pt), is((Object) account));

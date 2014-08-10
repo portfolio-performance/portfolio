@@ -16,8 +16,6 @@ import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 public class NameColumn extends Column
 {
@@ -44,7 +42,7 @@ public class NameColumn extends Column
             else if (n instanceof InvestmentPlan)
                 return PortfolioPlugin.image(PortfolioPlugin.IMG_INVESTMENTPLAN);
             else if (n instanceof Classification)
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
             else
                 return null;
         }

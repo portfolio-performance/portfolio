@@ -1,52 +1,46 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import name.abuchen.portfolio.ui.ClientEditorInput;
-import name.abuchen.portfolio.ui.Messages;
+import java.nio.file.Paths;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.Path;
+import javax.inject.Named;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.intro.IIntroManager;
 
-public class OpenFileHandler extends AbstractHandler
+public class OpenFileHandler
 {
-
-    public Object execute(ExecutionEvent event) throws ExecutionException
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, MApplication app, EPartService partService,
+                    EModelService modelService)
     {
-        try
+        FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+        dialog.setFilterExtensions(new String[] { "*.xml;*.portfolio" }); //$NON-NLS-1$
+        dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
+        String fileSelected = dialog.open();
+
+        if (fileSelected != null)
         {
-            Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+            MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
+            part.setLabel(Paths.get(fileSelected).getFileName().toString());
+            part.setTooltip(fileSelected);
+            part.getPersistedState().put(UIConstants.Parameter.FILE, fileSelected);
 
-            FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-            dialog.setFilterExtensions(new String[] { "*.xml;*.portfolio" }); //$NON-NLS-1$
-            dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
-            String fileSelected = dialog.open();
+            MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
+            stack.getChildren().add(part);
 
-            if (fileSelected != null)
-            {
-                IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-                IWorkbenchPage page = window.getActivePage();
-                page.openEditor(new ClientEditorInput(new Path(fileSelected)), "name.abuchen.portfolio.ui.editor"); //$NON-NLS-1$
-
-                IIntroManager introManager = PlatformUI.getWorkbench().getIntroManager();
-                if (introManager.getIntro() != null)
-                    introManager.closeIntro(introManager.getIntro());
-            }
-
-            return fileSelected;
-        }
-        catch (PartInitException e)
-        {
-            throw new ExecutionException(Messages.MsgErrorOpeningEditor, e);
+            partService.showPart(part, PartState.ACTIVATE);
         }
     }
 }

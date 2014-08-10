@@ -59,6 +59,11 @@ public class BuySellEntry implements CrossEntry
         this.portfolioTransaction.setFees(fees);
     }
 
+    public void setTaxes(long taxes)
+    {
+        this.portfolioTransaction.setTaxes(taxes);
+    }
+
     public void insert()
     {
         portfolio.addTransaction(portfolioTransaction);

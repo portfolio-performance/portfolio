@@ -13,21 +13,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 
-public class UpdateCPIJob extends Job
+public class UpdateCPIJob extends AbstractClientJob
 {
-    private Client client;
-
     public UpdateCPIJob(Client client)
     {
-        super(Messages.JobLabelUpdateCPI);
-        this.client = client;
+        super(client, Messages.JobLabelUpdateCPI);
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
+        monitor.beginTask(Messages.JobLabelUpdateCPI, 1);
+
         CPIFeed feed = new DestatisCPIFeed();
 
         List<IStatus> errors = new ArrayList<IStatus>();
@@ -35,7 +33,7 @@ public class UpdateCPIJob extends Job
         try
         {
             List<ConsumerPriceIndex> prices = feed.getConsumerPriceIndeces();
-            client.setConsumerPriceIndeces(prices);
+            getClient().setConsumerPriceIndeces(prices);
         }
         catch (IOException e)
         {

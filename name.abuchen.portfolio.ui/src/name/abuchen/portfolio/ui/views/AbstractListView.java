@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Sash;
         Control[] children = sash.getChildren();
         int[] weights = null;
 
-        String config = getClientEditor().getPreferenceStore().getString(identifier);
+        String config = getPart().getPreferenceStore().getString(identifier);
         if (config != null)
         {
             try
@@ -86,7 +86,7 @@ import org.eclipse.swt.widgets.Sash;
                         continue;
                     buf.append(child.getBounds().height).append(',');
                 }
-                getClientEditor().getPreferenceStore().putValue(identifier, buf.toString());
+                getPart().getPreferenceStore().putValue(identifier, buf.toString());
             }
         });
     }

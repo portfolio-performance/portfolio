@@ -39,6 +39,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
         private long shares;
         private long price;
         private long fees;
+        private long taxes;
         private long total;
         private Date date = Dates.today();
 
@@ -67,7 +68,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
 
         private long calculatePrice()
         {
-            return shares == 0 ? 0 : Math.max(0, (total - fees) * Values.Share.factor() / shares);
+            return shares == 0 ? 0 : Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
         }
 
         public Portfolio getPortfolio()
@@ -123,6 +124,17 @@ public class SecurityDeliveryDialog extends AbstractDialog
             firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
         }
 
+        public long getTaxes()
+        {
+            return taxes;
+        }
+
+        public void setTaxes(long taxes)
+        {
+            firePropertyChange("taxes", this.taxes, this.taxes = taxes); //$NON-NLS-1$
+            firePropertyChange("price", this.price, this.price = calculatePrice()); //$NON-NLS-1$
+        }
+
         public Date getDate()
         {
             return date;
@@ -144,6 +156,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
             t.setDate(date);
             t.setSecurity(security);
             t.setFees(fees);
+            t.setTaxes(taxes);
             t.setShares(shares);
             t.setAmount(total);
 
@@ -215,6 +228,9 @@ public class SecurityDeliveryDialog extends AbstractDialog
 
         // fees
         bindings().bindAmountInput(editArea, Messages.ColumnFees, "fees"); //$NON-NLS-1$
+
+        // taxes
+        bindings().bindAmountInput(editArea, Messages.ColumnTaxes, "taxes"); //$NON-NLS-1$
 
         // total
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnTotal, "total"); //$NON-NLS-1$

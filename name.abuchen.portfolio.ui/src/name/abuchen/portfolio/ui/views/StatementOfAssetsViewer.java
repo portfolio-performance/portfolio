@@ -115,7 +115,7 @@ public class StatementOfAssetsViewer
 
     private void loadTaxonomy(Client client)
     {
-        String taxonomyId = owner.getClientEditor().getPreferenceStore().getString(this.getClass().getSimpleName());
+        String taxonomyId = owner.getPart().getPreferenceStore().getString(this.getClass().getSimpleName());
 
         if (taxonomyId != null)
         {
@@ -143,7 +143,8 @@ public class StatementOfAssetsViewer
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
 
-        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, assets, layout);
+        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, owner.getPreferenceStore(),
+                        assets, layout);
 
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
@@ -203,11 +204,6 @@ public class StatementOfAssetsViewer
             }
 
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
-        support.addColumn(column);
-
-        column = new NoteColumn();
-        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
@@ -364,6 +360,10 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
+        support.addColumn(column);
+
+        column = new NoteColumn();
+        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
         support.addColumn(column);
 
         column = new Column("10", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -579,7 +579,7 @@ public class StatementOfAssetsViewer
     {
         this.clientSnapshot = null;
         this.portfolioSnapshot = snapshot;
-        internalSetInput(snapshot.groupByTaxonomy(taxonomy));
+        internalSetInput(snapshot != null ? snapshot.groupByTaxonomy(taxonomy) : null);
     }
 
     private void internalSetInput(GroupByTaxonomy grouping)
@@ -643,7 +643,7 @@ public class StatementOfAssetsViewer
     private void widgetDisposed()
     {
         if (taxonomy != null)
-            owner.getClientEditor().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
+            owner.getPart().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
 
         if (contextMenu != null)
             contextMenu.dispose();

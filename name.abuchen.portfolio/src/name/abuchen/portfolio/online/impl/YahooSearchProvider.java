@@ -1,7 +1,14 @@
 package name.abuchen.portfolio.online.impl;
 
+import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
+import static name.abuchen.portfolio.online.impl.YahooHelper.stripQuotes;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -22,6 +29,7 @@ import org.jsoup.select.Elements;
 public class YahooSearchProvider implements SecuritySearchProvider
 {
     private static final String SEARCH_URL = "https://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
+    private static final String LOOKUP_URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snl1"; //$NON-NLS-1$
 
     private static final ThreadLocal<DecimalFormat> FMT_INDEX = new ThreadLocal<DecimalFormat>()
     {
@@ -50,15 +58,21 @@ public class YahooSearchProvider implements SecuritySearchProvider
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
-        String url = String.format(SEARCH_URL, URLEncoder.encode(query + "*", "UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
+        String url = String.format(SEARCH_URL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
         Document document = Jsoup.connect(url).get();
 
         List<ResultItem> answer = extractFrom(document);
 
         if (answer.isEmpty())
         {
-            ResultItem item = new YahooResultItem();
-            item.setName(String.format(Messages.MsgNoResults, query));
+            ResultItem item = searchCSV(query);
+
+            if (item == null)
+            {
+                item = new YahooResultItem();
+                item.setName(String.format(Messages.MsgNoResults, query));
+            }
+
             answer.add(item);
         }
         else if (answer.size() == 20)
@@ -110,6 +124,48 @@ public class YahooSearchProvider implements SecuritySearchProvider
         }
 
         return answer;
+    }
+
+    /* protected */ResultItem searchCSV(String query) throws IOException
+    {
+        String csv = String.format(LOOKUP_URL, URLEncoder.encode(query.toUpperCase(), StandardCharsets.UTF_8.name()));
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(csv).openStream()));
+
+        String line = reader.readLine();
+
+        if (line != null)
+        {
+            String[] values = line.split(","); //$NON-NLS-1$
+
+            // result must have 3 values -> otherwise error message
+            if (values.length != 3)
+                return null;
+
+            // Yahoo always returns a value if query is a syntactically correct
+            // symbol even if it does not exist -> filter
+            String symbol = stripQuotes(values[0]);
+            String name = stripQuotes(values[1]);
+            if (symbol.equals(name))
+                return null;
+
+            try
+            {
+                ResultItem answer = new ResultItem();
+                answer.setSymbol(symbol);
+                answer.setName(name);
+                answer.setLastTrade(asPrice(values[2]));
+                return answer;
+            }
+            catch (ParseException e)
+            {
+                throw new IOException(e);
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private long parseIndex(String text) throws IOException

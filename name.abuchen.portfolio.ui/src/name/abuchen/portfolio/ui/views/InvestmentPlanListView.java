@@ -43,8 +43,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.ui.PlatformUI;
 
 public class InvestmentPlanListView extends AbstractListView implements ModificationListener
 {
@@ -89,8 +89,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public void run()
             {
-                NewPlanDialog dialog = new NewPlanDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                                .getShell(), getClient());
+                NewPlanDialog dialog = new NewPlanDialog(Display.getCurrent().getActiveShell(), getClient());
                 if (dialog.open() == Dialog.OK)
                 {
                     markDirty();
@@ -134,7 +133,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
         ColumnEditingSupport.prepare(plans);
 
-        planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", plans, layout); //$NON-NLS-1$
+        planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+                        getPreferenceStore(), plans, layout);
 
         addColumns(planColumns);
 

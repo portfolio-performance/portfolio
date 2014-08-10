@@ -50,14 +50,14 @@ import name.abuchen.portfolio.model.Security;
                 {
                     pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
                                     PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
-                                                    .getFees()));
+                                                    .getFees(), t.getTaxes()));
                     break;
                 }
                 case SELL:
                 case TRANSFER_OUT:
                     pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
                                     PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(), t
-                                                    .getFees()));
+                                                    .getFees(), t.getTaxes()));
                     break;
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:

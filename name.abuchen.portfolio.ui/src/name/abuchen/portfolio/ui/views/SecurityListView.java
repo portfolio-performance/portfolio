@@ -21,20 +21,20 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.ClientEditor;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.TimelineChart;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
@@ -207,9 +207,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     }
 
     @Override
-    public void init(ClientEditor clientEditor, Object parameter)
+    public void init(PortfolioPart part, Object parameter)
     {
-        super.init(clientEditor, parameter);
+        super.init(part, parameter);
 
         if (parameter instanceof Watchlist)
             this.watchlist = (Watchlist) parameter;
@@ -282,7 +282,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public void run()
             {
-                securities.getColumnHelper().showSaveMenu(getClientEditor().getSite().getShell());
+                securities.getColumnHelper().showSaveMenu(getActiveShell());
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
@@ -297,7 +297,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public void run()
             {
-                securities.getColumnHelper().showHideShowColumnsMenu(getClientEditor().getSite().getShell());
+                securities.getColumnHelper().showHideShowColumnsMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -497,7 +497,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnEditingSupport.prepare(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@prices", //$NON-NLS-1$
-                        prices, layout);
+                        getPreferenceStore(), prices, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -655,8 +655,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     if (security == null)
                         return;
 
-                    Dialog dialog = new WizardDialog(getClientEditor().getSite().getShell(), new ImportQuotesWizard(
-                                    security));
+                    Dialog dialog = new WizardDialog(getActiveShell(), new ImportQuotesWizard(security));
                     if (dialog.open() != Dialog.OK)
                         return;
 
@@ -782,8 +781,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
-                        + "@transactions2", //$NON-NLS-1$
-                        transactions, layout);
+                        + "@transactions2", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -947,7 +945,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         events = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events", //$NON-NLS-1$
-                        events, layout);
+                        getPreferenceStore(), events, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()

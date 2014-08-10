@@ -177,6 +177,7 @@ public class CrossEntryCheck implements Check
                     entry.setSecurity(match.transaction.getSecurity());
                     entry.setShares(match.transaction.getShares());
                     entry.setFees(match.transaction.getFees());
+                    entry.setTaxes(match.transaction.getTaxes());
                     entry.setAmount(match.transaction.getAmount());
                     entry.insert();
 

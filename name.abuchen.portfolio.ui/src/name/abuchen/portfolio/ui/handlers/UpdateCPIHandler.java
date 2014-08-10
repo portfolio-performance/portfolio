@@ -1,38 +1,37 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import javax.inject.Named;
+
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.ClientEditor;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.UpdateCPIJob;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 
-public class UpdateCPIHandler extends AbstractHandler
+public class UpdateCPIHandler
 {
-
-    public Object execute(ExecutionEvent event) throws ExecutionException
+    @CanExecute
+    boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        IWorkbenchPage page = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
-        final IEditorPart editor = page.getActiveEditor();
+        return null != part && part.getObject() instanceof PortfolioPart;
+    }
 
-        if (!(editor instanceof ClientEditor))
-            return null;
-
-        Client client = ((ClientEditor) editor).getClient();
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part)
+    {
+        final PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
+        Client client = portfolioPart.getClient();
 
         new UpdateCPIJob(client)
         {
             @Override
             protected void notifyFinished()
             {
-                ((ClientEditor) editor).notifyModelUpdated();
+                portfolioPart.notifyModelUpdated();
             }
         }.schedule();
-
-        return null;
     }
 }

@@ -38,7 +38,14 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 {
     private abstract static class Column
     {
-        private DecimalFormat decimalFormat = new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT = new ThreadLocal<DecimalFormat>()
+        {
+            protected DecimalFormat initialValue()
+            {
+                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
+            }
+        };
+
         private final Pattern[] patterns;
 
         protected Column(String[] strings)
@@ -64,7 +71,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         protected long asQuote(Element value) throws ParseException
         {
             String text = value.text();
-            double quote = decimalFormat.parse(text).doubleValue();
+            double quote = DECIMAL_FORMAT.get().parse(text).doubleValue();
             return Math.round(quote * 100);
         }
     }

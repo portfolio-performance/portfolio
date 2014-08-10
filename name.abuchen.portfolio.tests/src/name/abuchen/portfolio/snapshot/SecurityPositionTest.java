@@ -22,9 +22,9 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.BUY, 100 * Values.Share.factor(),
-                        100000, 0));
+                        100000, 0, 0));
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.SELL, 50 * Values.Share.factor(),
-                        50000, 0));
+                        50000, 0, 0));
 
         assertEquals(50 * Values.Share.factor(), position.getShares());
         assertEquals(1000L, position.getFIFOPurchasePrice());
@@ -36,11 +36,11 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.BUY, 25 * Values.Share.factor(),
-                        25000, 0));
+                        25000, 0, 0));
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.BUY, 75 * Values.Share.factor(),
-                        150000, 0));
+                        150000, 0, 0));
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.SELL, 50 * Values.Share.factor(),
-                        100000, 0));
+                        100000, 0, 0));
 
         assertEquals(50 * Values.Share.factor(), position.getShares());
         assertEquals(2000L, position.getFIFOPurchasePrice());
@@ -52,11 +52,11 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.BUY, 75 * Values.Share.factor(),
-                        75000, 0));
+                        75000, 0, 0));
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.BUY, 25 * Values.Share.factor(),
-                        50000, 0));
+                        50000, 0, 0));
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.SELL, 50 * Values.Share.factor(),
-                        100000, 0));
+                        100000, 0, 0));
 
         assertEquals(50 * Values.Share.factor(), position.getShares());
         assertEquals(1500L, position.getFIFOPurchasePrice());
@@ -68,7 +68,7 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.today(), null, Type.SELL, 50 * Values.Share.factor(),
-                        50000, 0));
+                        50000, 0, 0));
 
         assertEquals(-50 * Values.Share.factor(), position.getShares());
         assertEquals(0L, position.getFIFOPurchasePrice());
@@ -80,7 +80,7 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.JANUARY, 1), null, Type.TRANSFER_IN,
-                        50 * Values.Share.factor(), 50000, 0));
+                        50 * Values.Share.factor(), 50000, 0, 0));
 
         position.setPrice(new SecurityPrice(Dates.date(2012, Calendar.DECEMBER, 2), 2000));
 
@@ -97,10 +97,10 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.JANUARY, 1), null, Type.BUY,
-                        50 * Values.Share.factor(), 50000, 0));
+                        50 * Values.Share.factor(), 50000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.setPrice(new SecurityPrice(Dates.date(2012, Calendar.DECEMBER, 2), 2000));
 
@@ -117,13 +117,13 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.JANUARY, 1), null, Type.BUY,
-                        50 * Values.Share.factor(), 50000, 0));
+                        50 * Values.Share.factor(), 50000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_OUT, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_OUT, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.setPrice(new SecurityPrice(Dates.date(2012, Calendar.DECEMBER, 2), 2000));
 
@@ -140,16 +140,16 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.JANUARY, 1), null, Type.BUY,
-                        50 * Values.Share.factor(), 50000, 0));
+                        50 * Values.Share.factor(), 50000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_OUT, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_OUT, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 2), null,
-                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.setPrice(new SecurityPrice(Dates.date(2012, Calendar.DECEMBER, 2), 2000));
 
@@ -166,16 +166,16 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.JANUARY, 1), null, Type.BUY,
-                        50 * Values.Share.factor(), 50000, 0));
+                        50 * Values.Share.factor(), 50000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_OUT, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_OUT, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_IN, 50 * Values.Share.factor(), 55000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 2), null,
-                        Type.TRANSFER_OUT, 25 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_OUT, 25 * Values.Share.factor(), 55000, 0, 0));
 
         position.setPrice(new SecurityPrice(Dates.date(2012, Calendar.DECEMBER, 2), 2000));
 
@@ -192,10 +192,10 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security());
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.JANUARY, 1), null, Type.BUY,
-                        50 * Values.Share.factor(), 50000, 0));
+                        50 * Values.Share.factor(), 50000, 0, 0));
 
         position.addTransaction(new PortfolioTransaction(Dates.date(2012, Calendar.FEBRUARY, 1), null,
-                        Type.TRANSFER_OUT, 25 * Values.Share.factor(), 55000, 0));
+                        Type.TRANSFER_OUT, 25 * Values.Share.factor(), 55000, 0, 0));
 
         position.setPrice(new SecurityPrice(Dates.date(2012, Calendar.DECEMBER, 2), 2000));
 

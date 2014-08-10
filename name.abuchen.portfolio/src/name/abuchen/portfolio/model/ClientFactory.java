@@ -311,6 +311,25 @@ public class ClientFactory
         }
     }
 
+    public static Client load(InputStream input, IProgressMonitor monitor) throws IOException
+    {
+        try
+        {
+            // getting a resource as stream seems to return the total bytes
+            long bytesTotalEstimate = input.available();
+
+            int increment = (int) Math.min(bytesTotalEstimate / 20L, Integer.MAX_VALUE);
+            monitor.beginTask(Messages.MsgReadingSampleFile, 20);
+            InputStream stream = new ProgressMonitorInputStream(input, increment, monitor);
+            return buildChain(null, null, null).load(stream);
+        }
+        finally
+        {
+            if (input != null)
+                input.close();
+        }
+    }
+
     public static void save(final Client client, final File file, String method, char[] password) throws IOException
     {
         if (isEncrypted(file) && password == null && client.getSecret() == null)
@@ -335,7 +354,7 @@ public class ClientFactory
     {
         Interceptor chain = new XmlSerialization();
 
-        if (isEncrypted(file))
+        if (file != null && isEncrypted(file))
             chain = new Decryptor(chain, method, password);
 
         return chain;
@@ -399,6 +418,8 @@ public class ClientFactory
                 // do nothing --> added attribute types
             case 20:
                 // do nothing --> added note to investment plan
+            case 21:
+                // do nothing --> added taxes to portfolio transaction
                 client.setVersion(Client.CURRENT_VERSION);
             case Client.CURRENT_VERSION:
                 break;

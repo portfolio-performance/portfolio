@@ -76,7 +76,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        dropDown = new ReportingPeriodDropDown(toolBar, getClientEditor(), this);
+        dropDown = new ReportingPeriodDropDown(toolBar, getPart(), this);
         addExportButton(toolBar);
         addSaveButton(toolBar);
         addConfigButton(toolBar);
@@ -105,7 +105,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public void run()
             {
-                recordColumns.showSaveMenu(getClientEditor().getSite().getShell());
+                recordColumns.showSaveMenu(getActiveShell());
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
@@ -120,7 +120,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public void run()
             {
-                recordColumns.showHideShowColumnsMenu(getClientEditor().getSite().getShell());
+                recordColumns.showHideShowColumnsMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -137,7 +137,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         container.setLayout(layout);
 
         records = new TableViewer(container, SWT.FULL_SELECTION);
-        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(), records, layout);
+        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(),
+                        getPreferenceStore(), records, layout);
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
 
@@ -335,6 +336,20 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column.setVisible(false);
         recordColumns.addColumn(column);
 
+        // taxes paid
+        column = new Column("taxes", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Amount.format(((SecurityPerformanceRecord) r).getTaxes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "taxes")); //$NON-NLS-1$
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
         // isin
         column = new IsinColumn();
         column.getEditingSupport().addListener(new MarkDirtyListener(this));
@@ -444,7 +459,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(DividendsPerformanceView.class.getSimpleName()
-                        + "@bottom3", transactions, layout); //$NON-NLS-1$
+                        + "@bottom3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
 
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);

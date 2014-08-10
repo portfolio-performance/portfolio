@@ -94,7 +94,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnEditingSupport.prepare(tableViewer);
 
-        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "2", tableViewer, layout); //$NON-NLS-1$
+        support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "3", //$NON-NLS-1$
+                        owner.getPreferenceStore(), tableViewer, layout);
 
         addColumns();
         support.createColumns();
@@ -260,6 +261,19 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(column); //$NON-NLS-1$
         new ValueEditingSupport(PortfolioTransaction.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setLabelProvider(new TransactionLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Amount.format(((PortfolioTransaction) element).getTaxes());
+            }
+        });
+        ColumnViewerSorter.create(PortfolioTransaction.class, "taxes").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(PortfolioTransaction.class, "taxes", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);

@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.ToolBar;
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        dropDown = new ReportingPeriodDropDown(toolBar, getClientEditor(), this);
+        dropDown = new ReportingPeriodDropDown(toolBar, getPart(), this);
     }
 
     protected final ReportingPeriod getReportingPeriod()

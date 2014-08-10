@@ -11,6 +11,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -20,13 +21,15 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
 public abstract class AbstractFinanceView
 {
-    private ClientEditor clientEditor;
+    private PortfolioPart part;
 
     private Composite top;
     private Label title;
@@ -44,24 +47,34 @@ public abstract class AbstractFinanceView
     public void notifyModelUpdated()
     {}
 
-    public void init(ClientEditor clientEditor, Object parameter)
+    public void init(PortfolioPart part, Object parameter)
     {
-        this.clientEditor = clientEditor;
+        this.part = part;
     }
 
-    public ClientEditor getClientEditor()
+    public PortfolioPart getPart()
     {
-        return clientEditor;
+        return part;
+    }
+
+    public IPreferenceStore getPreferenceStore()
+    {
+        return part.getPreferenceStore();
     }
 
     public Client getClient()
     {
-        return clientEditor.getClient();
+        return part.getClient();
     }
 
     public void markDirty()
     {
-        clientEditor.markDirty();
+        part.markDirty();
+    }
+
+    public Shell getActiveShell()
+    {
+        return Display.getDefault().getActiveShell();
     }
 
     public final void createViewControl(Composite parent)
@@ -121,14 +134,27 @@ public abstract class AbstractFinanceView
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
     {
+        doCreateContextMenu(control, true, listener);
+    }
+
+    protected final Menu createContextMenu(Control control, IMenuListener listener)
+    {
+        return doCreateContextMenu(control, false, listener);
+    }
+
+    private final Menu doCreateContextMenu(Control control, boolean hook, IMenuListener listener)
+    {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(listener);
 
         Menu contextMenu = menuMgr.createContextMenu(control);
-        control.setMenu(contextMenu);
+        if (hook)
+            control.setMenu(contextMenu);
 
         contextMenus.add(contextMenu);
+
+        return contextMenu;
     }
 
     public void dispose()

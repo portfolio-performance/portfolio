@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
@@ -426,7 +427,10 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
                 setColumnLabel(tableColumn, column);
             }
 
-            tableViewer.setInput(importer.getRawValues());
+            List<Object> input = new ArrayList<Object>();
+            input.add(importer);
+            input.addAll(importer.getRawValues());
+            tableViewer.setInput(input);
             tableViewer.refresh();
             tableViewer.getTable().pack();
             for (TableColumn column : tableViewer.getTable().getColumns())
@@ -449,7 +453,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
     private void setColumnLabel(TableColumn tableColumn, Column column)
     {
-        tableColumn.setText(column.getField() != null ? column.getLabel() + " -> [" + column.getField().getName() + "]" : column.getLabel()); //$NON-NLS-1$ //$NON-NLS-2$
+        tableColumn.setText(column.getLabel());
         tableColumn.setAlignment(column.getField() instanceof AmountField ? SWT.RIGHT : SWT.LEFT);
     }
 
@@ -535,23 +539,37 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         @Override
         public String getColumnText(Object element, int columnIndex)
         {
-            String[] line = (String[]) element;
+            if (element instanceof CSVImporter)
+            {
+                Column column = importer.getColumns()[columnIndex];
 
-            if (line != null && columnIndex < line.length)
-                return line[columnIndex];
+                if (column.getField() == null)
+                    return Messages.CSVImportLabelDoubleClickHere;
+                else
+                    return MessageFormat.format(Messages.CSVImportLabelMappedToField, column.getField().getName());
+            }
+            else
+            {
+                String[] line = (String[]) element;
 
+                if (line != null && columnIndex < line.length)
+                    return line[columnIndex];
+            }
             return null;
         }
 
         @Override
         public Color getForeground(Object element, int columnIndex)
         {
-            return null;
+            return element instanceof CSVImporter ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
         }
 
         @Override
         public Color getBackground(Object element, int columnIndex)
         {
+            if (element instanceof CSVImporter)
+                return null;
+
             Column column = importer.getColumns()[columnIndex];
             if (column.getField() == null)
                 return null;

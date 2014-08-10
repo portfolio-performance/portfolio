@@ -36,7 +36,7 @@ mvn clean install
 
 ### Setup
 
-To develop, use [Eclipse Kepler](http://eclipse.org/downloads/) plus the Plug-in Development Tools (PDT).
+To develop, use [Eclipse Luna](http://eclipse.org/downloads/) plus the Plug-in Development Tools (PDT).
 
 Clone the git repository.
 

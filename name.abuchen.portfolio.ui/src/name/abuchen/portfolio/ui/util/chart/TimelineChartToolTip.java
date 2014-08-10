@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -66,7 +66,8 @@ public class TimelineChartToolTip implements Listener
                 moveToolTip(event);
                 break;
             case SWT.MouseDown:
-                showToolTip(event);
+                if (event.button == 3 && event.count == 1)
+                    showToolTip(event);
                 break;
         }
     }

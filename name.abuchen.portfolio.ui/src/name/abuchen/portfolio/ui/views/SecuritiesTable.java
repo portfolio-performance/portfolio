@@ -66,7 +66,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 
 public final class SecuritiesTable implements ModificationListener
 {
@@ -91,7 +90,8 @@ public final class SecuritiesTable implements ModificationListener
 
         ColumnEditingSupport.prepare(securities);
 
-        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), securities, layout);
+        support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), view.getPreferenceStore(),
+                        securities, layout);
 
         addMasterDataColumns();
         addColumnLatestPrice();
@@ -462,12 +462,12 @@ public final class SecuritiesTable implements ModificationListener
 
     public void updateQuotes(Security security)
     {
-        new UpdateQuotesJob(security)
+        new UpdateQuotesJob(getClient(), security)
         {
             @Override
             protected void notifyFinished()
             {
-                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
+                Display.getDefault().asyncExec(new Runnable()
                 {
                     public void run()
                     {

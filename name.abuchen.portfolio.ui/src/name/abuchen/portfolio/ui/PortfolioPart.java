@@ -9,15 +9,24 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -35,16 +44,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IPathEditorInput;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.EditorPart;
-import org.eclipse.ui.part.PageBook;
 
-public class ClientEditor extends EditorPart implements LoadClientThread.Callback
+public class PortfolioPart implements LoadClientThread.Callback
 {
     private abstract class BuildContainerRunnable implements Runnable
     {
@@ -71,8 +74,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         public abstract void createContainer(Composite parent);
     }
 
-    private boolean isDirty = false;
-    private IPath clientFile;
+    private File clientFile;
     private Client client;
 
     private PreferenceStore preferences = new PreferenceStore();
@@ -83,152 +85,66 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
 
     private Control focus;
 
-    // //////////////////////////////////////////////////////////////
-    // init
-    // //////////////////////////////////////////////////////////////
+    @Inject
+    MDirtyable dirty;
 
-    @Override
-    public void init(IEditorSite site, IEditorInput input) throws PartInitException
+    @Inject
+    IEclipseContext context;
+
+    @PostConstruct
+    public void createComposite(Composite parent, MPart part) throws IOException
     {
-        setSite(site);
-        setInput(input);
-
-        if (input instanceof ClientEditorInput)
+        // is client available? (e.g. via new file wizard)
+        Client attachedClient = (Client) part.getTransientData().get(Client.class.getName());
+        if (attachedClient != null)
         {
-            clientFile = ((ClientEditorInput) input).getPath();
-            client = ((ClientEditorInput) input).getClient();
-        }
-        else if (input instanceof IPathEditorInput)
-        {
-            clientFile = ((IPathEditorInput) input).getPath();
-            client = null;
-        }
-        else
-        {
-            throw new PartInitException(MessageFormat.format("Unsupported editor input: {0}", input.getClass() //$NON-NLS-1$
-                            .getName()));
+            internalSetClient(attachedClient);
+            dirty.setDirty(true);
         }
 
-        if (client != null)
+        // is file name available? (e.g. load file, open on startup)
+        String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
+        if (filename != null)
         {
-            client = ((ClientEditorInput) input).getClient();
-            setClient(client);
-            isDirty = clientFile == null;
+            clientFile = new File(filename);
+            loadPreferences();
         }
 
-        loadPreferences();
-
-        if (clientFile != null)
-            setPartName(clientFile.lastSegment());
-        else
-            setPartName(Messages.LabelUnsavedFile);
-    }
-
-    @Override
-    public void setClient(Client client)
-    {
-        this.client = client;
-        this.isDirty = false;
-
-        client.addPropertyChangeListener(new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                markDirty();
-            }
-        });
-
-        Display.getDefault().asyncExec(new BuildContainerRunnable()
-        {
-            @Override
-            public void createContainer(Composite parent)
-            {
-                createContainerWithViews(parent);
-            }
-        });
-
-        new ConsistencyChecksJob(this, client, false).schedule(100);
-        scheduleOnlineUpdateJobs();
-    }
-
-    @Override
-    public void setErrorMessage(final String message)
-    {
-        Display.getDefault().asyncExec(new BuildContainerRunnable()
-        {
-            @Override
-            public void createContainer(Composite parent)
-            {
-                createContainerWithMessage(parent, message, false, ClientFactory.isEncrypted(clientFile.toFile()));
-            }
-        });
-    }
-
-    private void scheduleOnlineUpdateJobs()
-    {
-        if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
-        {
-            new UpdateQuotesJob(client, false, 1000 * 60 * 10)
-            {
-                @Override
-                protected void notifyFinished()
-                {
-                    notifyModelUpdated();
-                }
-            }.schedule(500);
-
-            new UpdateQuotesJob(client)
-            {
-                @Override
-                protected void notifyFinished()
-                {
-                    notifyModelUpdated();
-                }
-            }.schedule(1000);
-
-            new UpdateCPIJob(client)
-            {
-                @Override
-                protected void notifyFinished()
-                {
-                    notifyModelUpdated();
-                }
-            }.schedule(700);
-        }
-    }
-
-    @Override
-    public void createPartControl(Composite parent)
-    {
-        if (client != null)
+        if (attachedClient != null)
         {
             createContainerWithViews(parent);
         }
-        else if (ClientFactory.isEncrypted(clientFile.toFile()))
+        else if (ClientFactory.isEncrypted(clientFile))
         {
-            createContainerWithMessage(parent, MessageFormat.format(Messages.MsgOpenFile, getPartName()), false, true);
+            createContainerWithMessage(parent, MessageFormat.format(Messages.MsgOpenFile, clientFile.getName()), false,
+                            true);
         }
         else
         {
             ProgressBar bar = createContainerWithMessage(parent,
-                            MessageFormat.format(Messages.MsgLoadingFile, getPartName()), true, false);
+                            MessageFormat.format(Messages.MsgLoadingFile, clientFile.getName()), true, false);
 
-            new LoadClientThread(new ProgressMonitor(bar), this, clientFile.toFile(), null).start();
+            new LoadClientThread(new ProgressMonitor(bar), this, clientFile, null).start();
         }
     }
 
     private void createContainerWithViews(Composite parent)
     {
         container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 1).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 0).applyTo(container);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
         Control control = sidebar.createSidebarControl(container);
         GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(control);
 
         book = new PageBook(container, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(book);
+        GridDataFactory.fillDefaults().grab(true, true).span(1, 2).applyTo(book);
+
+        IEclipseContext childContext = context.createChild();
+        childContext.set(Composite.class, container);
+        childContext.set(Client.class, client);
+        ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, childContext);
+        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).applyTo(provider.getControl());
 
         sidebar.selectDefaultView();
 
@@ -308,9 +224,11 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
                     @Override
                     public void createContainer(Composite parent)
                     {
-                        ProgressBar bar = createContainerWithMessage(parent,
-                                        MessageFormat.format(Messages.MsgLoadingFile, getPartName()), true, false);
-                        new LoadClientThread(new ProgressMonitor(bar), ClientEditor.this, clientFile.toFile(), password
+                        ProgressBar bar = createContainerWithMessage(
+                                        parent,
+                                        MessageFormat.format(Messages.MsgLoadingFile,
+                                                        PortfolioPart.this.clientFile.getName()), true, false);
+                        new LoadClientThread(new ProgressMonitor(bar), PortfolioPart.this, clientFile, password
                                         .toCharArray()).start();
                     }
                 });
@@ -318,6 +236,175 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         });
 
         return pwd;
+    }
+
+    @Override
+    public void setClient(Client client)
+    {
+        internalSetClient(client);
+
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        {
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithViews(parent);
+            }
+        });
+    }
+
+    public void internalSetClient(Client client)
+    {
+        this.client = client;
+        this.dirty.setDirty(false);
+
+        client.addPropertyChangeListener(new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                markDirty();
+            }
+        });
+
+        new ConsistencyChecksJob(client, false).schedule(100);
+        scheduleOnlineUpdateJobs();
+    }
+
+    @Override
+    public void setErrorMessage(final String message)
+    {
+        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        {
+            @Override
+            public void createContainer(Composite parent)
+            {
+                createContainerWithMessage(parent, message, false, ClientFactory.isEncrypted(clientFile));
+            }
+        });
+    }
+
+    @Focus
+    public void setFocus()
+    {
+        if (focus != null && !focus.isDisposed())
+            focus.setFocus();
+    }
+
+    @PreDestroy
+    public void destroy(MPart part)
+    {
+        if (clientFile != null)
+            storePreferences();
+    }
+
+    @Persist
+    public void save(MPart part, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
+    {
+        if (clientFile == null)
+        {
+            doSaveAs(part, shell, null, null);
+            return;
+        }
+
+        try
+        {
+            part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
+            ClientFactory.save(client, clientFile, null, null);
+            dirty.setDirty(false);
+
+            storePreferences();
+        }
+        catch (IOException e)
+        {
+            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
+                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+        }
+    }
+
+    public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod)
+    {
+        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+
+        // if an extension is given, make sure the file name proposal has the
+        // right extension in the save as dialog
+        String fileNameProposal = clientFile != null ? clientFile.getName() : part.getLabel();
+        if (extension != null && !fileNameProposal.endsWith('.' + extension))
+        {
+            int p = fileNameProposal.lastIndexOf('.');
+            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
+        }
+
+        dialog.setFileName(fileNameProposal);
+        dialog.setFilterPath(clientFile != null ? clientFile.getAbsolutePath() : System.getProperty("user.home")); //$NON-NLS-1$
+
+        String path = dialog.open();
+        if (path == null)
+            return;
+
+        // again make sure the extension is correct as the user might have
+        // changed it in the save dialog
+        if (extension != null && !path.endsWith('.' + extension))
+            path += '.' + extension;
+
+        File localFile = new File(path);
+        char[] password = null;
+
+        if (ClientFactory.isEncrypted(localFile))
+        {
+            PasswordDialog pwdDialog = new PasswordDialog(shell);
+            if (pwdDialog.open() != PasswordDialog.OK)
+                return;
+            password = pwdDialog.getPassword().toCharArray();
+        }
+
+        try
+        {
+            clientFile = localFile;
+
+            part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
+            ClientFactory.save(client, clientFile, encryptionMethod, password);
+
+            dirty.setDirty(false);
+            part.setLabel(clientFile.getName());
+            part.setTooltip(clientFile.getAbsolutePath());
+
+            storePreferences();
+        }
+        catch (IOException e)
+        {
+            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
+                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+        }
+    }
+
+    public Client getClient()
+    {
+        return client;
+    }
+
+    public IPreferenceStore getPreferenceStore()
+    {
+        return preferences;
+    }
+
+    /* package */void markDirty()
+    {
+        dirty.setDirty(true);
+    }
+
+    public void notifyModelUpdated()
+    {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+            public void run()
+            {
+                markDirty();
+
+                if (view != null)
+                    view.notifyModelUpdated();
+            }
+        });
     }
 
     protected void activateView(String target, Object parameter)
@@ -336,6 +423,7 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
             view.createViewControl(book);
 
             book.showPage(view.getControl());
+            view.getControl().setFocus();
         }
         catch (ClassNotFoundException e)
         {
@@ -360,157 +448,36 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         }
     }
 
-    @Override
-    public void setFocus()
+    private void scheduleOnlineUpdateJobs()
     {
-        if (focus != null && !focus.isDisposed())
-            focus.setFocus();
-    }
-
-    public Client getClient()
-    {
-        return client;
-    }
-
-    public IPreferenceStore getPreferenceStore()
-    {
-        return preferences;
-    }
-
-    /* package */void markDirty()
-    {
-        boolean oldIsDirty = isDirty;
-        isDirty = true;
-
-        if (!oldIsDirty)
-            firePropertyChange(PROP_DIRTY);
-    }
-
-    public void notifyModelUpdated()
-    {
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable()
+        if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
-            public void run()
+            new UpdateQuotesJob(client, false, 1000 * 60 * 10)
             {
-                markDirty();
+                @Override
+                protected void notifyFinished()
+                {
+                    notifyModelUpdated();
+                }
+            }.schedule(500);
 
-                if (view != null)
-                    view.notifyModelUpdated();
-            }
-        });
-    }
+            new UpdateQuotesJob(client)
+            {
+                @Override
+                protected void notifyFinished()
+                {
+                    notifyModelUpdated();
+                }
+            }.schedule(1000);
 
-    // //////////////////////////////////////////////////////////////
-    // save functions
-    // //////////////////////////////////////////////////////////////
-
-    @Override
-    public void dispose()
-    {
-        storePreferences();
-        super.dispose();
-    }
-
-    @Override
-    public boolean isDirty()
-    {
-        return isDirty;
-    }
-
-    @Override
-    public boolean isSaveAsAllowed()
-    {
-        return true;
-    }
-
-    @Override
-    public void doSave(IProgressMonitor monitor)
-    {
-        if (clientFile == null)
-        {
-            doSaveAs();
-            return;
-        }
-
-        try
-        {
-            ClientFactory.save(client, clientFile.toFile(), null, null);
-            isDirty = false;
-            firePropertyChange(PROP_DIRTY);
-
-            storePreferences();
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-        }
-    }
-
-    @Override
-    public void doSaveAs()
-    {
-        doSaveAs(null, null);
-    }
-
-    public void doSaveAs(String extension, String encryptionMethod)
-    {
-        FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
-
-        // if an extension is given, make sure the file name proposal has the
-        // right extension in the save as dialog
-        String fileNameProposal = clientFile != null ? clientFile.lastSegment() : Messages.LabelUnnamedXml;
-        if (extension != null && !fileNameProposal.endsWith('.' + extension))
-        {
-            int p = fileNameProposal.lastIndexOf('.');
-            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
-        }
-
-        dialog.setFileName(fileNameProposal);
-        dialog.setFilterPath(clientFile != null ? clientFile.toOSString() : System.getProperty("user.home")); //$NON-NLS-1$
-
-        String path = dialog.open();
-        if (path == null)
-            return;
-
-        // again make sure the extension is correct as the user might have
-        // changed it in the save dialog
-        if (extension != null && !path.endsWith('.' + extension))
-            path += '.' + extension;
-
-        File localFile = new File(path);
-        char[] password = null;
-
-        if (ClientFactory.isEncrypted(localFile))
-        {
-            PasswordDialog pwdDialog = new PasswordDialog(getSite().getShell());
-            if (pwdDialog.open() != PasswordDialog.OK)
-                return;
-            password = pwdDialog.getPassword().toCharArray();
-        }
-
-        try
-        {
-            IEditorInput newInput = new ClientEditorInput(new Path(path));
-
-            ClientFactory.save(client, localFile, encryptionMethod, password);
-
-            clientFile = new Path(path);
-
-            setInput(newInput);
-            setPartName(clientFile.lastSegment());
-
-            isDirty = false;
-            firePropertyChange(PROP_DIRTY);
-
-            storePreferences();
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            ErrorDialog.openError(getSite().getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            new UpdateCPIJob(client)
+            {
+                @Override
+                protected void notifyFinished()
+                {
+                    notifyModelUpdated();
+                }
+            }.schedule(700);
         }
     }
 
@@ -599,11 +566,11 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
         }
     }
 
-    private File getPreferenceStoreFile(IPath file) throws IOException
+    private File getPreferenceStoreFile(File file) throws IOException
     {
         try
         {
-            byte[] digest = MessageDigest.getInstance("MD5").digest(file.toOSString().getBytes()); //$NON-NLS-1$
+            byte[] digest = MessageDigest.getInstance("MD5").digest(file.getAbsolutePath().getBytes()); //$NON-NLS-1$
 
             StringBuilder filename = new StringBuilder();
             filename.append("prf_"); //$NON-NLS-1$
@@ -618,4 +585,5 @@ public class ClientEditor extends EditorPart implements LoadClientThread.Callbac
             throw new IOException(e);
         }
     }
+
 }

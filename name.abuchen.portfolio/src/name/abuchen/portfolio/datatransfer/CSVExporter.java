@@ -92,6 +92,7 @@ public class CSVExporter
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_Fees, //
+                            Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
@@ -104,6 +105,7 @@ public class CSVExporter
                 printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
                 printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
+                printer.print(currencyFormat.format(t.getTaxes() / Values.Amount.divider()));
                 printer.print(Values.Share.format(t.getShares()));
 
                 printSecurityInfo(printer, t);

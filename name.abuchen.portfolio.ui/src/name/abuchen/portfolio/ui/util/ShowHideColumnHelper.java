@@ -22,6 +22,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -245,30 +246,35 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     private List<Column> columns = new ArrayList<Column>();
     private Map<String, Column> id2column = new HashMap<String, Column>();
 
+    private IPreferenceStore preferences;
     private ConfigurationStore store;
 
     private ViewerPolicy policy;
     private Menu contextMenu;
 
-    public ShowHideColumnHelper(String identifier, TreeViewer viewer, TreeColumnLayout layout)
+    public ShowHideColumnHelper(String identifier, IPreferenceStore preferences, TreeViewer viewer,
+                    TreeColumnLayout layout)
     {
-        this(identifier, null, new TreeViewerPolicy(viewer, layout));
+        this(identifier, null, preferences, new TreeViewerPolicy(viewer, layout));
     }
 
-    public ShowHideColumnHelper(String identifier, TableViewer viewer, TableColumnLayout layout)
+    public ShowHideColumnHelper(String identifier, IPreferenceStore preferences, TableViewer viewer,
+                    TableColumnLayout layout)
     {
-        this(identifier, null, viewer, layout);
+        this(identifier, null, preferences, viewer, layout);
     }
 
-    public ShowHideColumnHelper(String identifier, Client client, TableViewer viewer, TableColumnLayout layout)
+    public ShowHideColumnHelper(String identifier, Client client, IPreferenceStore preferences, TableViewer viewer,
+                    TableColumnLayout layout)
     {
-        this(identifier, client, new TableViewerPolicy(viewer, layout));
+        this(identifier, client, preferences, new TableViewerPolicy(viewer, layout));
     }
 
-    private ShowHideColumnHelper(String identifier, Client client, ViewerPolicy policy)
+    private ShowHideColumnHelper(String identifier, Client client, IPreferenceStore preferences, ViewerPolicy policy)
     {
         this.identifier = identifier;
         this.policy = policy;
+        this.preferences = preferences;
 
         if (client != null)
             this.store = new ConfigurationStore(identifier, client, this);
@@ -285,7 +291,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private void widgetDisposed()
     {
-        PortfolioPlugin.getDefault().getPreferenceStore().setValue(identifier, getCurrentConfiguration());
+        this.preferences.setValue(identifier, getCurrentConfiguration());
 
         if (contextMenu != null)
             contextMenu.dispose();
@@ -550,7 +556,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private void createFromColumnConfig()
     {
-        createFromColumnConfig(PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier));
+        String config = this.preferences.getString(identifier);
+
+        // fallback to previous store
+        if (config == null || config.trim().length() == 0)
+            config = PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier);
+        createFromColumnConfig(config);
     }
 
     private void createFromColumnConfig(String config)
