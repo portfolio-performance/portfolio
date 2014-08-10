@@ -580,7 +580,7 @@ public class StatementOfAssetsViewer
     {
         this.clientSnapshot = null;
         this.portfolioSnapshot = snapshot;
-        internalSetInput(snapshot.groupByTaxonomy(taxonomy));
+        internalSetInput(snapshot != null ? snapshot.groupByTaxonomy(taxonomy) : null);
     }
 
     private void internalSetInput(GroupByTaxonomy grouping)
