@@ -171,4 +171,8 @@ public abstract class AbstractFinanceView
         return top;
     }
 
+    public void setFocus()
+    {
+        getControl().setFocus();
+    }
 }

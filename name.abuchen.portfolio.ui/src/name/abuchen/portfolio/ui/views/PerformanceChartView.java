@@ -131,6 +131,12 @@ public class PerformanceChartView extends AbstractHistoricView
     }
 
     @Override
+    public void setFocus()
+    {
+        chart.setFocus();
+    }
+
+    @Override
     public void reportingPeriodUpdated()
     {
         dataCache.clear();
