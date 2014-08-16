@@ -20,6 +20,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
@@ -78,6 +79,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     private Client client;
 
     private PreferenceStore preferences = new PreferenceStore();
+    private Job regularQuoteUpdateJob;
 
     private Composite container;
     private PageBook book;
@@ -296,6 +298,9 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (clientFile != null)
             storePreferences();
+
+        if (regularQuoteUpdateJob != null)
+            regularQuoteUpdateJob.cancel();
     }
 
     @Persist
@@ -401,7 +406,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             {
                 markDirty();
 
-                if (view != null)
+                if (view != null && view.getControl() != null && !view.getControl().isDisposed())
                     view.notifyModelUpdated();
             }
         });
@@ -452,14 +457,15 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
-            new UpdateQuotesJob(client, false, 1000 * 60 * 10)
+            regularQuoteUpdateJob = new UpdateQuotesJob(client, false, 1000 * 60 * 10)
             {
                 @Override
                 protected void notifyFinished()
                 {
                     notifyModelUpdated();
                 }
-            }.schedule(500);
+            };
+            regularQuoteUpdateJob.schedule(500);
 
             new UpdateQuotesJob(client)
             {
