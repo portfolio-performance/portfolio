@@ -54,7 +54,7 @@ public class CheckedListSelectionDialog extends Dialog
 
     public void setElements(Collection<?> elements)
     {
-        this.elements = elements.toArray();
+        this.elements = this.selected = elements.toArray();
     }
 
     public Object[] getResult()
