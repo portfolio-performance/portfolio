@@ -27,31 +27,26 @@ public class MovePlotKeyListener implements Listener
         if (event.keyCode == SWT.ARROW_DOWN)
         {
             if (event.stateMask == SWT.CTRL)
-                chart.getAxisSet().zoomOut();
+                for (IAxis axis : chart.getAxisSet().getYAxes())
+                    axis.zoomOut();
             else
                 for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.scrollDown();
+                    axis.scrollUp(); // 'natural' scroll direction
             chart.redraw();
         }
         else if (event.keyCode == SWT.ARROW_UP)
         {
             if (event.stateMask == SWT.CTRL)
-                chart.getAxisSet().zoomIn();
+                for (IAxis axis : chart.getAxisSet().getYAxes())
+                    axis.zoomIn();
             else
                 for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.scrollUp();
+                    axis.scrollDown(); // 'natural' scroll direction
             chart.redraw();
         }
-        else if (event.keyCode == SWT.ARROW_LEFT)
+        else if (event.character == '0' && event.stateMask == SWT.CTRL)
         {
-            for (IAxis axis : chart.getAxisSet().getXAxes())
-                axis.scrollDown();
-            chart.redraw();
-        }
-        else if (event.keyCode == SWT.ARROW_RIGHT)
-        {
-            for (IAxis axis : chart.getAxisSet().getXAxes())
-                axis.scrollUp();
+            chart.getAxisSet().adjustRange();
             chart.redraw();
         }
     }

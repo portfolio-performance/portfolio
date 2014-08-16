@@ -24,15 +24,6 @@ public class ZoomMouseWheelListener implements Listener
     @Override
     public void handleEvent(Event event)
     {
-        for (IAxis axis : chart.getAxisSet().getXAxes())
-        {
-            double coordinate = axis.getDataCoordinate(event.x);
-            if (event.count > 0)
-                axis.zoomIn(coordinate);
-            else
-                axis.zoomOut(coordinate);
-        }
-
         for (IAxis axis : chart.getAxisSet().getYAxes())
         {
             double coordinate = axis.getDataCoordinate(event.y);
@@ -42,6 +33,5 @@ public class ZoomMouseWheelListener implements Listener
                 axis.zoomOut(coordinate);
         }
         chart.redraw();
-
     }
 }

@@ -11,10 +11,15 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -23,6 +28,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Menu;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -54,8 +60,10 @@ public class TimelineChart extends Chart
     private static final String[] EXTENSIONS = new String[] { "*.jpeg", "*.jpg", "*.png" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     private List<MarkerLine> markerLines = new ArrayList<MarkerLine>();
+
     private TimelineChartToolTip toolTip;
     private final LocalResourceManager resources;
+    private Menu contextMenu;
 
     public TimelineChart(Composite parent)
     {
@@ -105,10 +113,10 @@ public class TimelineChart extends Chart
 
         toolTip = new TimelineChartToolTip(this);
 
-        ZoomDoubleClickListener.attachTo(this);
-        ZoomInAreaListener.attachTo(this);
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
+
+        addContextMenu();
     }
 
     public void addMarkerLine(Date date, RGB color, String label)
@@ -228,9 +236,36 @@ public class TimelineChart extends Chart
         }
     }
 
-    public void configMenuAboutToShow(IMenuManager manager)
+    private void addContextMenu()
     {
-        manager.add(new Action(Messages.MenuChartAdjustRange)
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                configMenuAboutToShow(manager);
+            }
+        });
+
+        contextMenu = menuMgr.createContextMenu(this);
+        this.setMenu(contextMenu);
+
+        this.addDisposeListener(new DisposeListener()
+        {
+            @Override
+            public void widgetDisposed(DisposeEvent e)
+            {
+                if (contextMenu != null && !contextMenu.isDisposed())
+                    contextMenu.dispose();
+            }
+        });
+    }
+
+    private void configMenuAboutToShow(IMenuManager manager)
+    {
+        Action actionAdjustRange = new Action(Messages.MenuChartAdjustRange)
         {
             @Override
             public void run()
@@ -238,27 +273,65 @@ public class TimelineChart extends Chart
                 getAxisSet().adjustRange();
                 redraw();
             }
-        });
+        };
+        actionAdjustRange.setAccelerator(SWT.CTRL | '0');
+        manager.add(actionAdjustRange);
 
-        manager.add(new Action(Messages.MenuChartZoomIn)
+        Action actionZoomIn = new Action(Messages.MenuChartZoomIn)
         {
             @Override
             public void run()
             {
-                getAxisSet().zoomIn();
+                for (IAxis axis : getAxisSet().getYAxes())
+                    axis.zoomIn();
                 redraw();
             }
-        });
+        };
+        actionZoomIn.setAccelerator(SWT.CTRL | SWT.ARROW_UP);
+        manager.add(actionZoomIn);
 
-        manager.add(new Action(Messages.MenuChartZoomOut)
+        Action actionZoomOut = new Action(Messages.MenuChartZoomOut)
         {
             @Override
             public void run()
             {
-                getAxisSet().zoomOut();
+                for (IAxis axis : getAxisSet().getYAxes())
+                    axis.zoomOut();
                 redraw();
             }
-        });
+        };
+        actionZoomOut.setAccelerator(SWT.CTRL | SWT.ARROW_DOWN);
+        manager.add(actionZoomOut);
+
+        Action actionMoveUp = new Action(Messages.MenuChartScrollUp)
+        {
+            @Override
+            public void run()
+            {
+                for (IAxis axis : getAxisSet().getYAxes())
+                    axis.scrollDown(); // 'natural' scroll direction
+                redraw();
+            }
+        };
+        actionMoveUp.setAccelerator(SWT.ARROW_UP);
+        manager.add(actionMoveUp);
+
+        Action actionMoveDown = new Action(Messages.MenuChartScrollDown)
+        {
+            @Override
+            public void run()
+            {
+                for (IAxis axis : getAxisSet().getYAxes())
+                    axis.scrollUp(); // 'natural' scroll direction
+                redraw();
+            }
+        };
+        actionMoveDown.setAccelerator(SWT.ARROW_DOWN);
+        manager.add(actionMoveDown);
+
+        manager.add(new Separator());
+
+        exportMenuAboutToShow(manager, getTitle().getText());
     }
 
     public void exportMenuAboutToShow(IMenuManager manager, final String label)

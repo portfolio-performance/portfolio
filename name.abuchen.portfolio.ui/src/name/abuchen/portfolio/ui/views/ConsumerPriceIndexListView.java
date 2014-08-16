@@ -15,14 +15,14 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.MonthEditingSupport;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -55,7 +55,6 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     {
         super.addButtons(toolBar);
         addExportButton(toolBar);
-        addConfigButton(toolBar);
     }
 
     private void addExportButton(ToolBar toolBar)
@@ -99,34 +98,6 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         });
         manager.add(new Separator());
         chart.exportMenuAboutToShow(manager, getTitle());
-    }
-
-    private void addConfigButton(ToolBar toolBar)
-    {
-        Action config = new Action()
-        {
-            private Menu menu;
-
-            @Override
-            public void run()
-            {
-                if (menu == null)
-                {
-                    menu = createContextMenu(getActiveShell(), new IMenuListener()
-                    {
-                        @Override
-                        public void menuAboutToShow(IMenuManager manager)
-                        {
-                            chart.configMenuAboutToShow(manager);
-                        }
-                    });
-                }
-                menu.setVisible(true);
-            }
-        };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
-        config.setToolTipText(Messages.MenuConfigureChart);
-        new ActionContributionItem(config).fill(toolBar, -1);
     }
 
     @Override

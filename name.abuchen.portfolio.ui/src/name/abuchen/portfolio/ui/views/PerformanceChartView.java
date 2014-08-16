@@ -33,7 +33,6 @@ import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -42,7 +41,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
@@ -88,25 +86,10 @@ public class PerformanceChartView extends AbstractHistoricView
 
         Action config = new Action()
         {
-            private Menu menu;
-
             @Override
             public void run()
             {
-                if (menu == null)
-                {
-                    menu = createContextMenu(getActiveShell(), new IMenuListener()
-                    {
-                        @Override
-                        public void menuAboutToShow(IMenuManager manager)
-                        {
-                            picker.configMenuAboutToShow(manager);
-                            manager.add(new Separator());
-                            chart.configMenuAboutToShow(manager);
-                        }
-                    });
-                }
-                menu.setVisible(true);
+                picker.showMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -121,8 +104,9 @@ public class PerformanceChartView extends AbstractHistoricView
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
         chart = new TimelineChart(composite);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
+        chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.PERFORMANCE);

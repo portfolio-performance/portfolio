@@ -116,25 +116,10 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         Action config = new Action()
         {
-            private Menu menu;
-
             @Override
             public void run()
             {
-                if (menu == null)
-                {
-                    menu = createContextMenu(getActiveShell(), new IMenuListener()
-                    {
-                        @Override
-                        public void menuAboutToShow(IMenuManager manager)
-                        {
-                            picker.configMenuAboutToShow(manager);
-                            manager.add(new Separator());
-                            chart.configMenuAboutToShow(manager);
-                        }
-                    });
-                }
-                menu.setVisible(true);
+                picker.showMenu(getActiveShell());
             }
         };
         config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
@@ -149,6 +134,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
         chart = new TimelineChart(composite);
+        chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.STATEMENT_OF_ASSETS);
