@@ -74,7 +74,12 @@ public class SecurityDetailsViewer
 
         protected String escape(String label)
         {
-            return label.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+            return label != null ? label.replaceAll("&", "&&") : EMPTY_LABEL; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        protected String nonNullString(String label)
+        {
+            return label != null ? label : EMPTY_LABEL;
         }
     }
 
@@ -135,8 +140,8 @@ public class SecurityDetailsViewer
             else
             {
                 valueName.setText(security.getName());
-                valueISIN.setText(security.getIsin());
-                valueTickerSymbol.setText(security.getTickerSymbol());
+                valueISIN.setText(nonNullString(security.getIsin()));
+                valueTickerSymbol.setText(nonNullString(security.getTickerSymbol()));
             }
         }
     }
