@@ -151,9 +151,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
         GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
 
-        // force layout, otherwise range calculation of chart does not work
-        composite.layout();
-        updateChart();
+        setChartSeries();
 
         return composite;
     }
@@ -161,6 +159,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Override
     public void setFocus()
     {
+        chart.getAxisSet().adjustRange();
         chart.setFocus();
     }
 
@@ -176,26 +175,11 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         try
         {
             chart.suspendUpdate(true);
+
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            List<Exception> warnings = new ArrayList<Exception>();
-
-            for (DataSeries item : picker.getSelectedDataSeries())
-            {
-                if (item.getType() == Client.class)
-                    addClient(item, warnings);
-                else if (item.getType() == Security.class)
-                    addSecurity(item, warnings);
-                else if (item.getType() == Portfolio.class)
-                    addPortfolio(item, warnings);
-                else if (item.getType() == Account.class)
-                    addAccount(item, warnings);
-                else if (item.getType() == Classification.class)
-                    addClassification(item, warnings);
-            }
-
-            PortfolioPlugin.log(warnings);
+            setChartSeries();
 
             chart.getAxisSet().adjustRange();
         }
@@ -204,6 +188,27 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             chart.suspendUpdate(false);
         }
         chart.redraw();
+    }
+
+    private void setChartSeries()
+    {
+        List<Exception> warnings = new ArrayList<Exception>();
+
+        for (DataSeries item : picker.getSelectedDataSeries())
+        {
+            if (item.getType() == Client.class)
+                addClient(item, warnings);
+            else if (item.getType() == Security.class)
+                addSecurity(item, warnings);
+            else if (item.getType() == Portfolio.class)
+                addPortfolio(item, warnings);
+            else if (item.getType() == Account.class)
+                addAccount(item, warnings);
+            else if (item.getType() == Classification.class)
+                addClassification(item, warnings);
+        }
+
+        PortfolioPlugin.log(warnings);
     }
 
     private void addClient(DataSeries item, List<Exception> warnings)

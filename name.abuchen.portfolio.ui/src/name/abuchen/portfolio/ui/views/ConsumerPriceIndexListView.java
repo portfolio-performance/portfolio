@@ -101,6 +101,13 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     }
 
     @Override
+    public void setFocus()
+    {
+        chart.getAxisSet().adjustRange();
+        super.setFocus();
+    }
+
+    @Override
     public void notifyModelUpdated()
     {
         indeces.setInput(getClient().getConsumerPriceIndeces());

@@ -123,9 +123,7 @@ public class PerformanceChartView extends AbstractHistoricView
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
         GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
 
-        // force layout, otherwise range calculation of chart does not work
-        composite.layout();
-        updateChart();
+        setChartSeries();
 
         return composite;
     }
@@ -133,6 +131,7 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     public void setFocus()
     {
+        chart.getAxisSet().adjustRange();
         chart.setFocus();
     }
 
@@ -158,25 +157,7 @@ public class PerformanceChartView extends AbstractHistoricView
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            List<Exception> warnings = new ArrayList<Exception>();
-
-            for (DataSeries item : picker.getSelectedDataSeries())
-            {
-                if (item.getType() == Client.class)
-                    addClient(item, (ClientDataSeries) item.getInstance(), warnings);
-                else if (item.getType() == ConsumerPriceIndex.class)
-                    addConsumerPriceIndex(item, warnings);
-                else if (item.getType() == Security.class)
-                    addSecurity(item, (Security) item.getInstance(), warnings);
-                else if (item.getType() == Portfolio.class)
-                    addPortfolio(item, (Portfolio) item.getInstance(), warnings);
-                else if (item.getType() == Account.class)
-                    addAccount(item, (Account) item.getInstance(), warnings);
-                else if (item.getType() == Classification.class)
-                    addClassification(item, (Classification) item.getInstance(), warnings);
-            }
-
-            PortfolioPlugin.log(warnings);
+            setChartSeries();
 
             chart.getAxisSet().adjustRange();
         }
@@ -185,6 +166,29 @@ public class PerformanceChartView extends AbstractHistoricView
             chart.suspendUpdate(false);
         }
         chart.redraw();
+    }
+
+    private void setChartSeries()
+    {
+        List<Exception> warnings = new ArrayList<Exception>();
+
+        for (DataSeries item : picker.getSelectedDataSeries())
+        {
+            if (item.getType() == Client.class)
+                addClient(item, (ClientDataSeries) item.getInstance(), warnings);
+            else if (item.getType() == ConsumerPriceIndex.class)
+                addConsumerPriceIndex(item, warnings);
+            else if (item.getType() == Security.class)
+                addSecurity(item, (Security) item.getInstance(), warnings);
+            else if (item.getType() == Portfolio.class)
+                addPortfolio(item, (Portfolio) item.getInstance(), warnings);
+            else if (item.getType() == Account.class)
+                addAccount(item, (Account) item.getInstance(), warnings);
+            else if (item.getType() == Classification.class)
+                addClassification(item, (Classification) item.getInstance(), warnings);
+        }
+
+        PortfolioPlugin.log(warnings);
     }
 
     private PerformanceIndex getClientIndex(List<Exception> warnings)
