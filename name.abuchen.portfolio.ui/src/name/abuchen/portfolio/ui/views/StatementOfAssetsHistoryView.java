@@ -164,6 +164,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     }
 
     @Override
+    public void notifyModelUpdated()
+    {
+        dataCache.clear();
+        updateChart();
+    }
+
+    @Override
     public void reportingPeriodUpdated()
     {
         dataCache.clear();
