@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -58,7 +57,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
-        String url = String.format(SEARCH_URL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
+        String url = String.format(SEARCH_URL, URLEncoder.encode(query, "UTF-8")); //$NON-NLS-1$
         Document document = Jsoup.connect(url).get();
 
         List<ResultItem> answer = extractFrom(document);
@@ -128,7 +127,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
     /* protected */ResultItem searchCSV(String query) throws IOException
     {
-        String csv = String.format(LOOKUP_URL, URLEncoder.encode(query.toUpperCase(), StandardCharsets.UTF_8.name()));
+        String csv = String.format(LOOKUP_URL, URLEncoder.encode(query.toUpperCase(), "UTF-8")); //$NON-NLS-1$
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(csv).openStream()));
 

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 import name.abuchen.portfolio.model.Security;
 
@@ -38,6 +37,6 @@ public class WebLocation
 
     private String encode(String s) throws IOException
     {
-        return s == null ? "" : URLEncoder.encode(s, StandardCharsets.UTF_8.name()); //$NON-NLS-1$
+        return s == null ? "" : URLEncoder.encode(s, "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

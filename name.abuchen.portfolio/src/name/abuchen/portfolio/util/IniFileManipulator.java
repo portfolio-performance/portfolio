@@ -1,10 +1,8 @@
 package name.abuchen.portfolio.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,17 +26,17 @@ public class IniFileManipulator
         Files.write(getIniFile(), lines, Charset.defaultCharset());
     }
 
-    private Path getIniFile()
+    private File getIniFile()
     {
         String eclipseLauncher = System.getProperty("eclipse.launcher"); //$NON-NLS-1$
 
-        Path path = Paths.get(eclipseLauncher);
+        File path = new File(eclipseLauncher);
 
-        String executable = path.getFileName().toString();
+        String executable = path.getName();
         int p = executable.lastIndexOf('.');
         String iniFileName = (p > 0 ? executable.substring(0, p) : executable) + ".ini"; //$NON-NLS-1$
 
-        return path.getParent().resolve(iniFileName);
+        return new File(path.getParent(), iniFileName);
     }
 
     /* for testing */List<String> getLines()

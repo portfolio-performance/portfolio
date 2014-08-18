@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import java.nio.file.Paths;
+import java.io.File;
 
 import javax.inject.Named;
 
@@ -33,7 +33,7 @@ public class OpenFileHandler
         if (fileSelected != null)
         {
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
-            part.setLabel(Paths.get(fileSelected).getFileName().toString());
+            part.setLabel(new File(fileSelected).getName());
             part.setTooltip(fileSelected);
             part.getPersistedState().put(UIConstants.Parameter.FILE, fileSelected);
 
