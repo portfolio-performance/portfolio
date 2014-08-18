@@ -250,9 +250,9 @@ public class TimelineChart extends Chart
         });
 
         contextMenu = menuMgr.createContextMenu(this);
-        this.setMenu(contextMenu);
+        getPlotArea().setMenu(contextMenu);
 
-        this.addDisposeListener(new DisposeListener()
+        getPlotArea().addDisposeListener(new DisposeListener()
         {
             @Override
             public void widgetDisposed(DisposeEvent e)
