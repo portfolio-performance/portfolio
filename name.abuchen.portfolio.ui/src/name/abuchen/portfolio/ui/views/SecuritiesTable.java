@@ -195,6 +195,25 @@ public final class SecuritiesTable implements ModificationListener
         column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
+        System.out.println("HJI!!" + this.watchlist);
+        // if (this.watchlist != null)
+        // {
+        column = new Column("11", "Target Price", SWT.LEFT, 40);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return "42";
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); // Auf
+                                                                            // das
+                                                                            // Attribut
+                                                                            // umstellen
+        column.setVisible(true);
+        support.addColumn(column);
+        // }
     }
 
     private void addColumnLatestPrice()
