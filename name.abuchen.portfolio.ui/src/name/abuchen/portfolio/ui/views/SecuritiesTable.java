@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.views.columns.WatchlistTargetPriceColumnLabelProvider;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
@@ -201,17 +202,11 @@ public final class SecuritiesTable implements ModificationListener
         // It gets set with the "setInput" method which gets called after this
         if (this.view instanceof SecurityListView)
         {
-            if (((SecurityListView) this.view).getWatchlist() != null)
+            Watchlist temp = ((SecurityListView) this.view).getWatchlist();
+            if (temp != null)
             {
                 column = new Column("11", "Target Price", SWT.LEFT, 40);
-                column.setLabelProvider(new ColumnLabelProvider()
-                {
-                    @Override
-                    public String getText(Object element)
-                    {
-                        return "42";
-                    }
-                });
+                column.setLabelProvider(new WatchlistTargetPriceColumnLabelProvider(temp));
                 column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); // Auf
                                                                                     // das
                                                                                     // Attribut

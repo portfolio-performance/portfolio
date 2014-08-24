@@ -43,6 +43,11 @@ public class Watchlist
 
     public Float getTargetPriceForSecurity(Security security)
     {
+        if (this.targetPrices == null)
+        {
+            // No idea how this can happen, but it does
+            this.targetPrices = new HashMap<Security, Float>();
+        }
         if (this.targetPrices.containsKey(security)) { return this.targetPrices.get(security); }
         return null;
     }
