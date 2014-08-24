@@ -209,13 +209,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     public void init(PortfolioPart part, Object parameter)
     {
-        super.init(part, parameter);
 
+        super.init(part, parameter);
         if (parameter instanceof Watchlist)
         {
             this.watchlist = (Watchlist) parameter;
         }
-
     }
 
     @Override
@@ -361,6 +360,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             securities.setInput(watchlist);
         else
             securities.setInput(getClient().getSecurities());
+    }
+
+    public Watchlist getWatchlist()
+    {
+        return watchlist;
     }
 
     private void onSecurityChanged(Security security)
