@@ -305,10 +305,14 @@ public class Messages extends NLS
     public static String LabelYes;
     public static String MenuAddAll;
     public static String MenuChartAdjustRange;
-    public static String MenuChartScrollDown;
-    public static String MenuChartScrollUp;
-    public static String MenuChartZoomIn;
-    public static String MenuChartZoomOut;
+    public static String MenuChartYScrollDown;
+    public static String MenuChartYScrollUp;
+    public static String MenuChartXScrollDown;
+    public static String MenuChartXScrollUp;
+    public static String MenuChartXZoomIn;
+    public static String MenuChartXZoomOut;
+    public static String MenuChartYZoomIn;
+    public static String MenuChartYZoomOut;
     public static String MenuConfigureChart;
     public static String MenuExportChartData;
     public static String MenuExportData;

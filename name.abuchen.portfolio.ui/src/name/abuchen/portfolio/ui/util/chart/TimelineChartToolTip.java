@@ -66,7 +66,7 @@ public class TimelineChartToolTip implements Listener
                 moveToolTip(event);
                 break;
             case SWT.MouseDown:
-                if (event.button == 1)
+                if (event.button == 1 && event.stateMask != SWT.MOD1)
                     showToolTip(event);
                 break;
         }

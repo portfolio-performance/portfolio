@@ -26,25 +26,45 @@ public class MovePlotKeyListener implements Listener
     {
         if (event.keyCode == SWT.ARROW_DOWN)
         {
-            if (event.stateMask == SWT.CTRL)
+            if (event.stateMask == SWT.MOD1)
                 for (IAxis axis : chart.getAxisSet().getYAxes())
                     axis.zoomOut();
             else
                 for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.scrollUp(); // 'natural' scroll direction
+                    axis.scrollDown();
             chart.redraw();
         }
         else if (event.keyCode == SWT.ARROW_UP)
         {
-            if (event.stateMask == SWT.CTRL)
+            if (event.stateMask == SWT.MOD1)
                 for (IAxis axis : chart.getAxisSet().getYAxes())
                     axis.zoomIn();
             else
                 for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.scrollDown(); // 'natural' scroll direction
+                    axis.scrollUp();
             chart.redraw();
         }
-        else if (event.character == '0' && event.stateMask == SWT.CTRL)
+        if (event.keyCode == SWT.ARROW_RIGHT)
+        {
+            if (event.stateMask == SWT.MOD1)
+                for (IAxis axis : chart.getAxisSet().getXAxes())
+                    axis.zoomOut();
+            else
+                for (IAxis axis : chart.getAxisSet().getXAxes())
+                    axis.scrollUp();
+            chart.redraw();
+        }
+        else if (event.keyCode == SWT.ARROW_LEFT)
+        {
+            if (event.stateMask == SWT.MOD1)
+                for (IAxis axis : chart.getAxisSet().getXAxes())
+                    axis.zoomIn();
+            else
+                for (IAxis axis : chart.getAxisSet().getXAxes())
+                    axis.scrollDown();
+            chart.redraw();
+        }
+        else if (event.character == '0')
         {
             chart.getAxisSet().adjustRange();
             chart.redraw();

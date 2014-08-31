@@ -5,9 +5,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
+import org.swtchart.Range;
 
 public class ZoomMouseWheelListener implements Listener
 {
+    private final static double ZOOM_RATIO = 0.1;
+
     public static void attachTo(Chart chart)
     {
         Listener listener = new ZoomMouseWheelListener(chart);
@@ -27,10 +30,23 @@ public class ZoomMouseWheelListener implements Listener
         for (IAxis axis : chart.getAxisSet().getYAxes())
         {
             double coordinate = axis.getDataCoordinate(event.y);
+            Range range = axis.getRange();
+
+            double lower = 0;
+            double upper = 0;
+
             if (event.count > 0)
-                axis.zoomIn(coordinate);
+            {
+                lower = range.lower + 2 * ZOOM_RATIO * (coordinate - range.lower);
+                upper = range.upper + 2 * ZOOM_RATIO * (coordinate - range.upper);
+            }
             else
-                axis.zoomOut(coordinate);
+            {
+                lower = (range.lower - 2 * ZOOM_RATIO * coordinate) / (1 - 2 * ZOOM_RATIO);
+                upper = (range.upper - 2 * ZOOM_RATIO * coordinate) / (1 - 2 * ZOOM_RATIO);
+            }
+
+            axis.setRange(new Range(lower, upper));
         }
         chart.redraw();
     }

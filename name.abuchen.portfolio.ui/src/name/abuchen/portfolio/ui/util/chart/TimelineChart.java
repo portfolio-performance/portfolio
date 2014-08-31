@@ -115,6 +115,7 @@ public class TimelineChart extends Chart
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
+        ZoomInAreaListener.attachTo(this);
 
         addContextMenu();
     }
@@ -274,10 +275,22 @@ public class TimelineChart extends Chart
                 redraw();
             }
         };
-        actionAdjustRange.setAccelerator(SWT.CTRL | '0');
+        actionAdjustRange.setAccelerator('0');
         manager.add(actionAdjustRange);
 
-        Action actionZoomIn = new Action(Messages.MenuChartZoomIn)
+        manager.add(new Separator());
+        addZoomActions(manager);
+
+        manager.add(new Separator());
+        addMoveActions(manager);
+
+        manager.add(new Separator());
+        exportMenuAboutToShow(manager, getTitle().getText());
+    }
+
+    private void addZoomActions(IMenuManager manager)
+    {
+        Action actionZoomIn = new Action(Messages.MenuChartYZoomIn)
         {
             @Override
             public void run()
@@ -287,10 +300,10 @@ public class TimelineChart extends Chart
                 redraw();
             }
         };
-        actionZoomIn.setAccelerator(SWT.CTRL | SWT.ARROW_UP);
+        actionZoomIn.setAccelerator(SWT.MOD1 | SWT.ARROW_UP);
         manager.add(actionZoomIn);
 
-        Action actionZoomOut = new Action(Messages.MenuChartZoomOut)
+        Action actionZoomOut = new Action(Messages.MenuChartYZoomOut)
         {
             @Override
             public void run()
@@ -300,38 +313,90 @@ public class TimelineChart extends Chart
                 redraw();
             }
         };
-        actionZoomOut.setAccelerator(SWT.CTRL | SWT.ARROW_DOWN);
+        actionZoomOut.setAccelerator(SWT.MOD1 | SWT.ARROW_DOWN);
         manager.add(actionZoomOut);
 
-        Action actionMoveUp = new Action(Messages.MenuChartScrollUp)
+        Action actionYZoomIn = new Action(Messages.MenuChartXZoomOut)
+        {
+            @Override
+            public void run()
+            {
+                for (IAxis axis : getAxisSet().getXAxes())
+                    axis.zoomIn();
+                redraw();
+            }
+        };
+        actionYZoomIn.setAccelerator(SWT.MOD1 | SWT.ARROW_LEFT);
+        manager.add(actionYZoomIn);
+
+        Action actionXZoomOut = new Action(Messages.MenuChartXZoomIn)
+        {
+            @Override
+            public void run()
+            {
+                for (IAxis axis : getAxisSet().getXAxes())
+                    axis.zoomOut();
+                redraw();
+            }
+        };
+        actionXZoomOut.setAccelerator(SWT.MOD1 | SWT.ARROW_RIGHT);
+        manager.add(actionXZoomOut);
+
+    }
+
+    private void addMoveActions(IMenuManager manager)
+    {
+        Action actionMoveUp = new Action(Messages.MenuChartYScrollUp)
         {
             @Override
             public void run()
             {
                 for (IAxis axis : getAxisSet().getYAxes())
-                    axis.scrollDown(); // 'natural' scroll direction
+                    axis.scrollUp();
                 redraw();
             }
         };
         actionMoveUp.setAccelerator(SWT.ARROW_UP);
         manager.add(actionMoveUp);
 
-        Action actionMoveDown = new Action(Messages.MenuChartScrollDown)
+        Action actionMoveDown = new Action(Messages.MenuChartYScrollDown)
         {
             @Override
             public void run()
             {
                 for (IAxis axis : getAxisSet().getYAxes())
-                    axis.scrollUp(); // 'natural' scroll direction
+                    axis.scrollDown();
                 redraw();
             }
         };
         actionMoveDown.setAccelerator(SWT.ARROW_DOWN);
         manager.add(actionMoveDown);
 
-        manager.add(new Separator());
+        Action actionMoveLeft = new Action(Messages.MenuChartXScrollDown)
+        {
+            @Override
+            public void run()
+            {
+                for (IAxis axis : getAxisSet().getXAxes())
+                    axis.scrollDown();
+                redraw();
+            }
+        };
+        actionMoveLeft.setAccelerator(SWT.ARROW_LEFT);
+        manager.add(actionMoveLeft);
 
-        exportMenuAboutToShow(manager, getTitle().getText());
+        Action actionMoveRight = new Action(Messages.MenuChartXScrollUp)
+        {
+            @Override
+            public void run()
+            {
+                for (IAxis axis : getAxisSet().getXAxes())
+                    axis.scrollUp();
+                redraw();
+            }
+        };
+        actionMoveRight.setAccelerator(SWT.ARROW_RIGHT);
+        manager.add(actionMoveRight);
     }
 
     public void exportMenuAboutToShow(IMenuManager manager, final String label)
