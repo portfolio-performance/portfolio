@@ -16,6 +16,10 @@
                name="lifeCycleURI"
                value="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.LifeCycleManager">
          </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
       </product>
    </extension>
 

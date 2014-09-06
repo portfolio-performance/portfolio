@@ -7,10 +7,14 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-nl de_DE</programArgs>
-      <programArgsMac>-os macosx -ws cocoa -arch x86_64</programArgsMac>
-      <vmArgs>-Xms40m -Xmx512m</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <programArgs>-nl de_DE
+      </programArgs>
+      <programArgsMac>-os macosx -ws cocoa -arch x86_64
+      </programArgsMac>
+      <vmArgs>-Xms40m -Xmx512m
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <splash
@@ -32,7 +36,6 @@
    </plugins>
 
    <features>
-      <feature id="name.abuchen.portfolio.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>

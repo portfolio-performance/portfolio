@@ -28,7 +28,6 @@ import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
@@ -36,6 +35,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
@@ -209,10 +209,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     public void init(PortfolioPart part, Object parameter)
     {
-        super.init(part, parameter);
 
+        super.init(part, parameter);
         if (parameter instanceof Watchlist)
+        {
             this.watchlist = (Watchlist) parameter;
+        }
     }
 
     @Override
@@ -358,6 +360,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             securities.setInput(watchlist);
         else
             securities.setInput(getClient().getSecurities());
+    }
+
+    public Watchlist getWatchlist()
+    {
+        return watchlist;
     }
 
     private void onSecurityChanged(Security security)

@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.views.columns.WatchlistTargetPriceColumnLabelProvider;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
@@ -195,6 +196,25 @@ public final class SecuritiesTable implements ModificationListener
         column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
+
+        // The watchlist attribute of SecuritiesTable is not set at this point
+        // in time
+        // It gets set with the "setInput" method which gets called after this
+        if (this.view instanceof SecurityListView)
+        {
+            Watchlist temp = ((SecurityListView) this.view).getWatchlist();
+            if (temp != null)
+            {
+                column = new Column("11", "Target Price", SWT.LEFT, 40);
+                column.setLabelProvider(new WatchlistTargetPriceColumnLabelProvider(temp));
+                column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); // Auf
+                                                                                    // das
+                                                                                    // Attribut
+                                                                                    // umstellen
+                column.setVisible(true);
+                support.addColumn(column);
+            }
+        }
     }
 
     private void addColumnLatestPrice()
