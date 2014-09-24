@@ -20,6 +20,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -186,7 +187,12 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 @Override
                 public String getText(Object element)
                 {
-                    return ((ReportedIssue) element).getEntity().toString();
+                    Object entity = ((ReportedIssue) element).getEntity();
+
+                    if (entity instanceof Client)
+                        return Messages.LabelPortfolioPerformanceFile;
+                    else
+                        return entity.toString();
                 }
 
                 @Override
@@ -197,6 +203,8 @@ public class ConsistencyChecksJob extends AbstractClientJob
                         return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
                     else if (issue.getEntity() instanceof Portfolio)
                         return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    else if (issue.getEntity() instanceof Client)
+                        return PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_16);
                     else
                         return null;
                 }
@@ -303,18 +311,25 @@ public class ConsistencyChecksJob extends AbstractClientJob
                     {
                         for (final QuickFix fix : currentIssue.getAvailableFixes())
                         {
-                            manager.add(new Action(fix.getLabel())
+                            if (fix == QuickFix.SEPARATOR)
                             {
-                                @Override
-                                public void run()
+                                manager.add(new Separator());
+                            }
+                            else
+                            {
+                                manager.add(new Action(fix.getLabel())
                                 {
-                                    fix.execute();
-                                    currentIssue.setFixedMessage(fix.getDoneLabel());
-                                    if (client != null)
-                                        client.markDirty();
-                                    tableViewer.refresh(currentIssue);
-                                }
-                            });
+                                    @Override
+                                    public void run()
+                                    {
+                                        fix.execute();
+                                        currentIssue.setFixedMessage(fix.getDoneLabel());
+                                        if (client != null)
+                                            client.markDirty();
+                                        tableViewer.refresh(currentIssue);
+                                    }
+                                });
+                            }
                         }
                     }
                 });

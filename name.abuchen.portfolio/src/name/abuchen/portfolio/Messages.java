@@ -50,6 +50,8 @@ public class Messages extends NLS
     public static String CSVImportSecurityExists;
     public static String CSVImportMissingField;
     public static String CSVImportMissingOneOfManyFields;
+    public static String FixAssignCurrencyCode;
+    public static String FixAssignCurrencyCodeDone;
     public static String FixAssignExistingAccount;
     public static String FixAssignExistingAccountDone;
     public static String FixConvertToDelivery;
@@ -73,6 +75,7 @@ public class Messages extends NLS
     public static String IssueMissingAccountTransfer;
     public static String IssueMissingBuySellInAccount;
     public static String IssueMissingBuySellInPortfolio;
+    public static String IssueMissingCurrencyCode;
     public static String IssueMissingPortfolioTransfer;
     public static String IssueMissingReferenceAccount;
     public static String LabelAssetAllocation;
