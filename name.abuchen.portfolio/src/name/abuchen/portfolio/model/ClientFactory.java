@@ -420,6 +420,8 @@ public class ClientFactory
                 // do nothing --> added note to investment plan
             case 21:
                 // do nothing --> added taxes to portfolio transaction
+            case 22:
+                // do nothing --> added currency support
                 client.setVersion(Client.CURRENT_VERSION);
             case Client.CURRENT_VERSION:
                 break;

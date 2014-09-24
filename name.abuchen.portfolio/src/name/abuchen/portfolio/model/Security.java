@@ -26,6 +26,8 @@ public final class Security implements Attributable, InvestmentVehicle
     private String uuid;
 
     private String name;
+    private String currencyCode;
+
     private String note;
 
     private String isin;
@@ -85,6 +87,16 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getCurrencyCode()
+    {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.currencyCode = currencyCode;
     }
 
     @Override

@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 22;
+    /* package */static final int CURRENT_VERSION = 23;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -31,7 +31,7 @@ public class Client
     private List<InvestmentPlan> plans;
     private List<Taxonomy> taxonomies;
 
-    private Map<String, String> properties; // old versions!
+    private Map<String, String> properties;
 
     @Deprecated
     private String industryTaxonomyId;

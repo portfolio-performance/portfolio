@@ -23,6 +23,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
 
     private String uuid;
     private String name;
+    private String currencyCode;
     private String note;
     private boolean isRetired = false;
 
@@ -61,6 +62,16 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getCurrencyCode()
+    {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.currencyCode = currencyCode;
     }
 
     @Override
