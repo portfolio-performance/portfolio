@@ -243,6 +243,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
     public static String LabelDefaultReferenceAccountName;
+    public static String LabelDelete;
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelExport;
@@ -378,6 +379,9 @@ public class Messages extends NLS
     public static String NewFileWizardSecurityTitle;
     public static String NewFileWizardTaxonomyDescription;
     public static String NewFileWizardTaxonomyTitle;
+    public static String PDFImportWizardDescription;
+    public static String PDFImportWizardMsgExtracting;
+    public static String PDFImportWizardTitle;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceTabAssetsAtEnd;

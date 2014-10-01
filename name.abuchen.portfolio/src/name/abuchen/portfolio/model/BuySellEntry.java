@@ -12,7 +12,9 @@ public class BuySellEntry implements CrossEntry
     private AccountTransaction accountTransaction;
 
     public BuySellEntry()
-    {}
+    {
+        this(null, null);
+    }
 
     public BuySellEntry(Portfolio portfolio, Account account)
     {
@@ -23,6 +25,16 @@ public class BuySellEntry implements CrossEntry
         this.account = account;
         this.accountTransaction = new AccountTransaction();
         this.accountTransaction.setCrossEntry(this);
+    }
+
+    public void setPortfolio(Portfolio portfolio)
+    {
+        this.portfolio = portfolio;
+    }
+
+    public void setAccount(Account account)
+    {
+        this.account = account;
     }
 
     public void setDate(Date date)
