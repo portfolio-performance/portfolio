@@ -455,6 +455,8 @@ public class StatementOfAssetsViewer
 
         assets.setContentProvider(new StatementOfAssetsContentProvider());
 
+        ViewerHelper.pack(assets);
+
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(assets));

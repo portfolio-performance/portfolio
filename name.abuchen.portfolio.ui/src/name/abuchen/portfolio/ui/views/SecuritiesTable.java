@@ -119,8 +119,7 @@ public final class SecuritiesTable implements ModificationListener
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(securities));
 
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(securities);
+        ViewerHelper.pack(securities);
         securities.refresh();
 
         hookContextMenu();

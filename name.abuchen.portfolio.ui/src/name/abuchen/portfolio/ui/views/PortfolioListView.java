@@ -179,8 +179,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         portfolios.setContentProvider(new SimpleListContentProvider());
         portfolios.setInput(getClient().getPortfolios());
-        if (!portfolioColumns.isUserConfigured())
-            ViewerHelper.pack(portfolios);
+        ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
         {
