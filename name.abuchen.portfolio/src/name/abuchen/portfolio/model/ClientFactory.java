@@ -192,8 +192,18 @@ public class ClientFactory
             }
             finally
             {
-                if (decrypted != null)
-                    decrypted.close();
+                try
+                {
+                    if (decrypted != null)
+                        decrypted.close();
+                }
+                catch (IOException ignore)
+                {
+                    // starting with a later jdk 1.8.0 (for example 1.8.0_25), a
+                    // javax.crypto.BadPaddingException
+                    // "Given final block not properly padded" is thrown if the
+                    // we do not read the complete stream
+                }
             }
         }
 
