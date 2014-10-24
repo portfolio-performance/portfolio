@@ -1,3 +1,3 @@
 language: java
 install: mvn -f ./portfolio-app/pom.xml install -DskipTests=true
-script: mvn -f ./portfolio-app/pom.xml test
+script: mvn -f ./portfolio-app/pom.xml --offline test
