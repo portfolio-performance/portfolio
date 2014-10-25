@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
@@ -179,6 +180,10 @@ public final class SecuritiesTable implements ModificationListener
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
         new StringEditingSupport(Security.class, "wkn").addListener(this).attachTo(column); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new CurrencyColumn();
         column.setVisible(false);
         support.addColumn(column);
 

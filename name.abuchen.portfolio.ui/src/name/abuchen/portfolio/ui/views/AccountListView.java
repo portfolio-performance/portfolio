@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -232,6 +233,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         ColumnViewerSorter.create(Account.class, "currentAmount").attachTo(column); //$NON-NLS-1$
+        accountColumns.addColumn(column);
+
+        column = new CurrencyColumn();
         accountColumns.addColumn(column);
 
         column = new NoteColumn();
