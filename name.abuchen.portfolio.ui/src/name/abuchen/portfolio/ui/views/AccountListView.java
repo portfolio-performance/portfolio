@@ -550,8 +550,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
 
-        if (!transactionsColumns.isUserConfigured())
-            ViewerHelper.pack(transactions);
+        ViewerHelper.pack(transactions);
     }
 
     private Color colorFor(AccountTransaction t)

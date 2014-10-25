@@ -506,8 +506,7 @@ public class StatementOfAssetsViewer
 
     public void pack()
     {
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(assets);
+        ViewerHelper.pack(assets);
     }
 
     public TableViewer getTableViewer()
