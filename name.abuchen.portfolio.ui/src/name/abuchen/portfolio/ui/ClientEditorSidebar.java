@@ -372,5 +372,6 @@ import org.eclipse.swt.widgets.Menu;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction("Währungen", "ExchangeRatesList")); //$NON-NLS-2$
     }
 }

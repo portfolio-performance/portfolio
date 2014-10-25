@@ -423,7 +423,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             if (clazz == null)
                 return;
 
-            view = (AbstractFinanceView) clazz.newInstance();
+            view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, this.context);
             view.init(this, parameter);
             view.createViewControl(book);
 
@@ -431,14 +431,6 @@ public class PortfolioPart implements LoadClientThread.Callback
             view.setFocus();
         }
         catch (ClassNotFoundException e)
-        {
-            throw new RuntimeException(e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new RuntimeException(e);
-        }
-        catch (IllegalAccessException e)
         {
             throw new RuntimeException(e);
         }
