@@ -56,6 +56,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> ExchangeRate = new Values<Long>("0.0000", 10000D, 10000) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Long exchangeRate)
+        {
+            return String.format("%,.4f", exchangeRate / divider()); //$NON-NLS-1$
+        }
+    };
+
     public static final Values<Integer> Index = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
     {
         @Override

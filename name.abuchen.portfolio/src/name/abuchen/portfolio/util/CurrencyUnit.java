@@ -12,7 +12,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.util.currencies"; //$NON-NLS-1$
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-    private static Map<String, CurrencyUnit> CACHE = new HashMap<String, CurrencyUnit>();
+    private static final Map<String, CurrencyUnit> CACHE = new HashMap<String, CurrencyUnit>();
 
     static
     {
@@ -77,5 +77,34 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     public int compareTo(CurrencyUnit other)
     {
         return getCurrencyCode().compareTo(other.getCurrencyCode());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((currencyCode == null) ? 0 : currencyCode.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CurrencyUnit other = (CurrencyUnit) obj;
+        if (currencyCode == null)
+        {
+            if (other.currencyCode != null)
+                return false;
+        }
+        else if (!currencyCode.equals(other.currencyCode))
+            return false;
+        return true;
     }
 }

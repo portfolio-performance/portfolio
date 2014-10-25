@@ -1,10 +1,14 @@
 package name.abuchen.portfolio.ui.addons;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import name.abuchen.portfolio.model.ExchangeRateProvider;
+import name.abuchen.portfolio.model.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.handlers.CustomSaveHandler;
@@ -16,6 +20,7 @@ import name.abuchen.portfolio.util.IniFileManipulator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
@@ -98,6 +103,56 @@ public class StartupAddon
             };
             job.setSystem(true);
             job.schedule(500);
+        }
+    }
+
+    @PostConstruct
+    public void updateExchangeRates(ExchangeRateProviderFactory factory)
+    {
+        for (final ExchangeRateProvider provider : factory.getProviders())
+        {
+            new Job(MessageFormat.format("Updating exchanges rates for {0}", provider.getName()))
+            {
+                @Override
+                protected IStatus run(IProgressMonitor monitor)
+                {
+                    try
+                    {
+                        provider.load(monitor);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+                    }
+
+                    try
+                    {
+                        provider.update(monitor);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+                    }
+
+                    return Status.OK_STATUS;
+                }
+            }.schedule();
+        }
+    }
+
+    @PreDestroy
+    public void storeExchangeRates(ExchangeRateProviderFactory factory)
+    {
+        for (ExchangeRateProvider provider : factory.getProviders())
+        {
+            try
+            {
+                provider.save(new NullProgressMonitor());
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+            }
         }
     }
 
