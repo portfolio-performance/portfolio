@@ -219,6 +219,8 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation.setContentProvider(new PerformanceContentProvider());
 
+        ViewerHelper.pack(calculation);
+
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
@@ -333,6 +335,8 @@ public class PerformanceView extends AbstractHistoricView
 
         earnings.setContentProvider(new SimpleListContentProvider());
 
+        ViewerHelper.pack(earnings);
+
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
@@ -387,6 +391,8 @@ public class PerformanceView extends AbstractHistoricView
         earningsByAccount.getTable().setLinesVisible(true);
 
         earningsByAccount.setContentProvider(new SimpleListContentProvider());
+
+        ViewerHelper.pack(earningsByAccount);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);

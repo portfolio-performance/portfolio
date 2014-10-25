@@ -179,8 +179,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         portfolios.setContentProvider(new SimpleListContentProvider());
         portfolios.setInput(getClient().getPortfolios());
-        if (!portfolioColumns.isUserConfigured())
-            ViewerHelper.pack(portfolios);
+        ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -262,11 +261,11 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         folder.setSelection(0);
 
-        if (!getClient().getPortfolios().isEmpty())
-            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
-
         statementOfAssets.pack();
         transactions.pack();
+
+        if (!getClient().getPortfolios().isEmpty())
+            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
     }
 
 }

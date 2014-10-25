@@ -183,9 +183,10 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
 
         indeces.setContentProvider(new SimpleListContentProvider());
 
+        ViewerHelper.pack(indeces);
+
         indeces.setInput(getClient().getConsumerPriceIndeces());
         indeces.refresh();
-        ViewerHelper.pack(indeces);
 
         hookContextMenu(indeces.getTable(), new IMenuListener()
         {

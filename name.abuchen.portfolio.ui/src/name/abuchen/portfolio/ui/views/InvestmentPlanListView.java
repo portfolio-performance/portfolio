@@ -144,8 +144,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         plans.setContentProvider(ArrayContentProvider.getInstance());
         plans.setInput(getClient().getPlans());
 
-        if (!planColumns.isUserConfigured())
-            ViewerHelper.pack(plans);
+        ViewerHelper.pack(plans);
 
         plans.addSelectionChangedListener(new ISelectionChangedListener()
         {

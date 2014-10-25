@@ -29,6 +29,7 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
+import org.osgi.service.event.Event;
 
 public class StartupAddon
 {
@@ -67,7 +68,8 @@ public class StartupAddon
 
     @Inject
     @Optional
-    public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) final IWorkbench workbench)
+    public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event,
+                    final IWorkbench workbench)
     {
         boolean autoUpdate = PortfolioPlugin.getDefault().getPreferenceStore()
                         .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);

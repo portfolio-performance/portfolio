@@ -357,6 +357,8 @@ public class Messages extends NLS
     public static String MsgMissingPortfolio;
     public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
+    public static String MsgNoFileOpen;
+    public static String MsgNoFileOpenText;
     public static String MsgNoIssuesFound;
     public static String MsgNoProfileFound;
     public static String MsgNoUpdatesAvailable;

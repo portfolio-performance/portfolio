@@ -49,7 +49,10 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart))
+        {
+            MessageDialog.openWarning(shell, Messages.MsgNoFileOpen, Messages.MsgNoFileOpenText);
             return;
+        }
 
         if (extension == null)
             throw new IllegalArgumentException("Missing file extension parameter"); //$NON-NLS-1$

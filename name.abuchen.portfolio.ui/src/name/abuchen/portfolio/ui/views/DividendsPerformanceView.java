@@ -153,6 +153,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         records.setContentProvider(new SimpleListContentProvider());
 
+        ViewerHelper.pack(records);
+
         records.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(records));
@@ -177,7 +179,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         });
 
         reportingPeriodUpdated();
-        ViewerHelper.pack(records);
     }
 
     private void createCommonColumns()
@@ -630,6 +631,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         transactions.getTable().setLinesVisible(true);
 
         transactions.setContentProvider(new SimpleListContentProvider());
+
+        ViewerHelper.pack(transactions);
     }
 
     @Override
