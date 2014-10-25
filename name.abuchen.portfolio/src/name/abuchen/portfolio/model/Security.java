@@ -376,6 +376,8 @@ public final class Security implements Attributable, InvestmentVehicle
         Security answer = new Security();
 
         answer.name = name;
+        answer.currencyCode = currencyCode;
+
         answer.note = note;
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
