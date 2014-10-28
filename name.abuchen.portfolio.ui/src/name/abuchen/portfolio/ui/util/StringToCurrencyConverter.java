@@ -41,7 +41,7 @@ public class StringToCurrencyConverter implements IConverter
         try
         {
             String value = (String) fromObject;
-
+            value = value.trim();
             Matcher m = PATTERN.matcher(String.valueOf(value));
             if (!m.matches())
                 throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, value));
