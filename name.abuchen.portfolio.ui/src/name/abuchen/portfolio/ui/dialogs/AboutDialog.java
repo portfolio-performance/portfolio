@@ -1,9 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +11,7 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
@@ -127,28 +124,11 @@ public class AboutDialog extends Dialog
             int offset = text.getOffsetAtLocation(new Point(event.x, event.y));
             StyleRange style = text.getStyleRangeAtOffset(offset);
             if (style != null && style.data != null)
-            {
-                if (Desktop.isDesktopSupported())
-                {
-                    Desktop desktop = Desktop.getDesktop();
-                    if (desktop.isSupported(Desktop.Action.BROWSE))
-                    {
-                        desktop.browse(new URI(String.valueOf(style.data)));
-                    }
-                }
-            }
+                DesktopAPI.browse(String.valueOf(style.data));
         }
         catch (IllegalArgumentException ignore)
         {
             // no character at position
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-        }
-        catch (URISyntaxException ignore)
-        {
-            PortfolioPlugin.log(ignore);
         }
     }
 }
