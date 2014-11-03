@@ -1,210 +1,214 @@
-package comdirect;
+package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 
-public class Extractor {
+public interface Extractor
+{
+    interface Item
+    {
+        Object getSubject();
 
-	public enum ExtractType {
-		GUTSCHRIFT, WERTPAPIERKAUF
-	}
+        String getTypeInformation();
 
-	public class ExtractResult {
+        Date getDate();
 
-		ExtractType type;
-		Date date;
-		String isin;
-		Map<String, Object> attributes;
+        long getAmount();
 
-		public ExtractResult(ExtractType type, Date date, String isin) {
-			super();
-			this.type = type;
-			this.date = date;
-			this.isin = isin;
-			attributes = new HashMap<String, Object>();
-		}
+        Security getSecurity();
 
-		public void add(String key, Object value) {
-			attributes.put(key, value);
-		}
+        void insert(Client client, Portfolio portfolio, Account account);
+    }
 
-		public String toString() {
-			return "" + type + "(" + isin + ")" + date;
-		}
-	}
+    class TransactionItem implements Item
+    {
+        private Transaction transaction;
 
-	PDFTextStripper stripper;
-	List<ExtractResult> results;
-	DateFormat df;
-	Pattern isinPattern;
-	Matcher isinMatcher;
-	NumberFormat format;
+        public TransactionItem(AccountTransaction transaction)
+        {
+            this.transaction = transaction;
+        }
 
-	public Extractor() {
-		results = new ArrayList<ExtractResult>();
-		df = new SimpleDateFormat("dd.MM.yyyy");
-		isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
-		format = NumberFormat.getInstance(Locale.GERMANY);
-		try {
-			stripper = new PDFTextStripper();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        public TransactionItem(PortfolioTransaction transaction)
+        {
+            this.transaction = transaction;
+        }
 
-	public void extract(Path path) {
-		PDDocument doc;
-		try {
-			doc = PDDocument.load(path.toString());
-			snif(FilenameUtils.getBaseName(path.toString()),
-					stripper.getText(doc));
-			doc.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        @Override
+        public Object getSubject()
+        {
+            return transaction;
+        }
 
-	public List<ExtractResult> getResults() {
-		return results;
-	}
+        @Override
+        public String getTypeInformation()
+        {
+            if (transaction instanceof AccountTransaction)
+                return ((AccountTransaction) transaction).getType().toString();
+            else if (transaction instanceof PortfolioTransaction)
+                return ((PortfolioTransaction) transaction).getType().toString();
+            else
+                throw new UnsupportedOperationException();
+        }
 
-	private void snif(String filename, String text) {
-		if (text.contains("Gutschrift fälliger Wertpapier-Erträge")) {
-			snifErtragsgutschrift(text, filename);
-		} else if (filename.contains("Wertpapierabrechnung_Kauf")) {
-			snifWertpapierabrechnung(text, filename);
-		} else {
-			System.err.println("Could not snif type from text " + filename);
-		}
-	}
+        @Override
+        public Date getDate()
+        {
+            return transaction.getDate();
+        }
 
-	private void snifWertpapierabrechnung(String text, String filename) {
-		int tagPosition = text.indexOf("Geschäftstag");
-		String tagString = text.substring(tagPosition + 20, tagPosition + 30);
-		try {
-			Date tag = df.parse(tagString);
-			isinMatcher = isinPattern.matcher(text);
-			String isin;
-			if (isinMatcher.find()) {
-				isin = isinMatcher.group();
-			} else {
-				throw new RuntimeException("ISIN could not be parsed");
-			}
-			int stueckLinePos = text
-					.indexOf("\n", text.indexOf("Zum Kurs von"));
-			String stText = text.substring(stueckLinePos + 6,
-					stueckLinePos + 11);
-			Number stueck = format.parse(stText);
-			int kursEURPos = text.indexOf("EUR", stueckLinePos);
-			String kursText = text.substring(kursEURPos + 5, kursEURPos + 11);
-			Number kurs = format.parse(kursText);
-			int totalEURPos = text.indexOf("EUR", kursEURPos + 11);
-			String totalText = text.substring(totalEURPos + 18,
-					totalEURPos + 23);
-			Number total = format.parse(totalText);
-			ExtractResult res = new ExtractResult(ExtractType.WERTPAPIERKAUF,
-					tag, isin);
-			res.add("Stueck", stueck);
-			res.add("Kurs", kurs);
-			res.add("Total", total);
-			results.add(res);
-		} catch (ParseException e) {
-			System.err.println(filename);
-			e.printStackTrace();
-		}
-	}
+        @Override
+        public long getAmount()
+        {
+            return transaction.getAmount();
+        }
 
-	private void snifErtragsgutschrift(String text, String filename) {
-		// Thesaurierend? Do nothing!
-		if (text.contains("Ertragsthesaurierung")) {
-			return;
-		}
-		// Datum
-		int perPosition = text.indexOf("per");
-		String datumString = text.substring(perPosition + 4, perPosition + 14);
-		Date d;
-		String eurPart = "";
-		try {
-			d = df.parse(datumString);
-			isinMatcher = isinPattern.matcher(text);
-			String isin;
-			if (isinMatcher.find()) {
-				isin = isinMatcher.group();
-			} else {
-				throw new RuntimeException("ISIN could not be parsed");
-			}
-			// Loop the lines and try to find the EUR value
-			String[] lines = text.split("\r\n|\r|\n");
-			String eurLine = "";
-			boolean snap = false;
-			for (String line : lines) {
-				if (snap) {
-					eurLine = line;
-					break;
-				}
-				if (line.contains("Zu Ihren Gunsten vor Steuern")) {
-					snap = true;
-				}
-			}
-			String[] parts = eurLine.split("EUR");
-			eurPart = parts[parts.length - 1].trim();
+        @Override
+        public Security getSecurity()
+        {
+            return transaction.getSecurity();
+        }
 
-			Number value = format.parse(eurPart);
-			ExtractResult res = new ExtractResult(ExtractType.GUTSCHRIFT, d,
-					isin);
-			res.add("Wert", value);
-			results.add(res);
+        @Override
+        public void insert(Client client, Portfolio portfolio, Account account)
+        {
+            // ensure consistency (in case the user deleted the creation of the
+            // security via the dialog)
+            Security security = transaction.getSecurity();
+            if (security != null && !client.getSecurities().contains(security))
+                client.addSecurity(security);
 
-		} catch (ParseException e) {
-			System.err.println(filename);
-			e.printStackTrace();
-		}
+            if (transaction instanceof AccountTransaction)
+                account.addTransaction((AccountTransaction) transaction);
+            else if (transaction instanceof PortfolioTransaction)
+                portfolio.addTransaction((PortfolioTransaction) transaction);
+            else
+                throw new UnsupportedOperationException();
+        }
+    }
 
-	}
+    class BuySellEntryItem implements Item
+    {
+        private BuySellEntry entry;
 
-	public static void main(String[] args) {
-		Extractor e = new Extractor();
-		try {
-			DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
-					.get("/home/bastian/Google Drive/Comdirect_Postbox/"));
-			for (Path child : stream) {
-				File f = child.toFile();
-				if (f.isDirectory()) {
-				} else {
-					if (!FilenameUtils.getExtension(child.toString()).equals(
-							"pdf")) {
-					} else {
-						e.extract(child);
-					}
-				}
+        public BuySellEntryItem(BuySellEntry entry)
+        {
+            this.entry = entry;
+        }
 
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		for (ExtractResult result : e.getResults()) {
-			System.out.println("Result: " + result);
-		}
-	}
+        @Override
+        public Object getSubject()
+        {
+            return entry;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return entry.getAccountTransaction().getType().toString();
+        }
+
+        @Override
+        public Date getDate()
+        {
+            return entry.getAccountTransaction().getDate();
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return entry.getAccountTransaction().getAmount();
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return entry.getAccountTransaction().getSecurity();
+        }
+
+        @Override
+        public void insert(Client client, Portfolio portfolio, Account account)
+        {
+            entry.setPortfolio(portfolio);
+            entry.setAccount(account);
+            entry.insert();
+        }
+
+    }
+
+    class SecurityItem implements Item
+    {
+        private Security security;
+
+        public SecurityItem(Security security)
+        {
+            this.security = security;
+        }
+
+        @Override
+        public Object getSubject()
+        {
+            return security;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelSecurity;
+        }
+
+        @Override
+        public Date getDate()
+        {
+            return null;
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return 0;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public void insert(Client client, Portfolio portfolio, Account account)
+        {
+            // might have been added via a transaction
+            if (!client.getSecurities().contains(security))
+                client.addSecurity(security);
+        }
+
+    }
+
+    /**
+     * Returns a readable label for the type of documents
+     */
+    String getLabel();
+
+    /**
+     * Returns the filter extension for the file dialog, e.g. "*.pdf"
+     */
+    String getFilterExtension();
+
+    /**
+     * Returns a list of extracted items.
+     */
+    List<Item> extract(List<File> files);
 
 }
