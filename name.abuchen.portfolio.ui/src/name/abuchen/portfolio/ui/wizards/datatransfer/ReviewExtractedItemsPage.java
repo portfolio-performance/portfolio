@@ -57,16 +57,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     private final Client client;
     private final Extractor extractor;
     private List<File> files;
+    private List<Exception> errors;
 
     private List<Extractor.Item> allItems = new ArrayList<Extractor.Item>();
 
-    public ReviewExtractedItemsPage(Client client, Extractor extractor, List<File> files)
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, List<File> files, List<Exception> errors)
     {
         super("reviewitems"); //$NON-NLS-1$
 
         this.client = client;
         this.extractor = extractor;
         this.files = files;
+        this.errors = errors;
 
         setTitle(extractor.getLabel());
         setDescription(Messages.PDFImportWizardDescription);
@@ -298,7 +300,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 {
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
 
-                    final List<Extractor.Item> items = extractor.extract(files);
+                    final List<Extractor.Item> items = extractor.extract(files, errors);
 
                     Display.getDefault().asyncExec(new Runnable()
                     {

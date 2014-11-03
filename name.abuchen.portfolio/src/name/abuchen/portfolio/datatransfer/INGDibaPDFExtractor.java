@@ -38,7 +38,7 @@ public class INGDibaPDFExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<File> files)
+    public List<Item> extract(List<File> files, List<Exception> errors)
     {
         PDFTextStripper stripper;
 
