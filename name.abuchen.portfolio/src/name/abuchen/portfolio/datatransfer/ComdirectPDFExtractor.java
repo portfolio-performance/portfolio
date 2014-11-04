@@ -166,7 +166,11 @@ public class ComdirectPDFExtractor implements Extractor
                 }
                 doc.close();
             }
-            catch (IOException | ParseException e)
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            catch (ParseException e)
             {
                 e.printStackTrace();
             }
