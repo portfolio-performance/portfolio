@@ -67,12 +67,6 @@ public class ComdirectPDFExtractor implements Extractor
                     {
                         continue;
                     }
-                    // Datum
-                    int perPosition = text.indexOf("per");
-                    String datumString = text.substring(perPosition + 4, perPosition + 14);
-                    Date d;
-                    String eurPart = "";
-                    d = df.parse(datumString);
                     isinMatcher = isinPattern.matcher(text);
                     // Has to be used to find the security
                     String isin;
@@ -84,25 +78,9 @@ public class ComdirectPDFExtractor implements Extractor
                     {
                         throw new RuntimeException("ISIN could not be parsed");
                     }
-                    // Loop the lines and try to find the EUR value
-                    String[] lines = text.split("\r\n|\r|\n");
-                    String eurLine = "";
-                    boolean snap = false;
-                    for (String line : lines)
-                    {
-                        if (snap)
-                        {
-                            eurLine = line;
-                            break;
-                        }
-                        if (line.contains("Zu Ihren Gunsten vor Steuern"))
-                        {
-                            snap = true;
-                        }
-                    }
-                    String[] parts = eurLine.split("EUR");
-                    eurPart = parts[parts.length - 1].trim();
-                    Number value = format.parse(eurPart);
+                    int datePos = jumpWord(text, text.indexOf("Valuta"), 13);
+                    Date d = df.parse(getNextWord(text, datePos));
+                    Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1));
                     // Result Transaction
                     AccountTransaction t = new AccountTransaction();
                     t.setType(AccountTransaction.Type.INTEREST);
@@ -116,10 +94,10 @@ public class ComdirectPDFExtractor implements Extractor
                 }
                 else if (filename.contains("Wertpapierabrechnung_Kauf"))
                 {
-                    int tagPosition = text.indexOf("Geschäftstag");
-                    String tagString = text.substring(tagPosition + 20, tagPosition + 30);
                     try
                     {
+                        int tagPosition = text.indexOf("Geschäftstag");
+                        String tagString = getNextWord(text, getNextWhitespace(text, tagPosition));
                         Date tag = df.parse(tagString);
                         isinMatcher = isinPattern.matcher(text);
                         String isin;
@@ -132,27 +110,24 @@ public class ComdirectPDFExtractor implements Extractor
                             throw new RuntimeException("ISIN could not be parsed");
                         }
                         int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von"));
-                        String stText = text.substring(stueckLinePos + 6, stueckLinePos + 11);
-                        Number stueck = format.parse(stText);
-                        int kursEURPos = text.indexOf("EUR", stueckLinePos);
-                        String kursText = text.substring(kursEURPos + 5, kursEURPos + 11);
-                        Number kurs = format.parse(kursText);
-                        int totalEURPos = text.indexOf("EUR", kursEURPos + 11);
-                        String totalText = text.substring(totalEURPos + 18, totalEURPos + 23);
-                        Number total = format.parse(totalText);
+                        Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
+                        // Check for fees
+                        int provPos = -1;
+                        provPos = text.indexOf("Provision", stueckLinePos);
                         BuySellEntry purchase = new BuySellEntry();
+                        if (provPos > 0)
+                        {
+                            Number fee = getNextNumber(text, jumpWord(text, provPos, 3));
+                            purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
+                        }
+                        int totalEURPos = text.indexOf("EUR",
+                                        text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3);
+                        Number total = getNextNumber(text, jumpWord(text, totalEURPos, 1));
                         purchase.setType(PortfolioTransaction.Type.BUY);
                         purchase.setDate(tag);
                         purchase.setSecurity(getSecurityForISIN(isin));
-                        purchase.setShares(stueck.longValue() * Values.Share.factor()); // will
-                                                                                        // this
-                                                                                        // work
-                                                                                        // for
-                                                                                        // decimal
-                                                                                        // shares?
-                        purchase.setAmount(total.longValue() * Values.Amount.factor());
-                        // TODO Fees
-                        // purchase.setFees(100);
+                        purchase.setShares(Math.round(stueck.doubleValue() * Values.Share.factor()));
+                        purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
                         results.add(new BuySellEntryItem(purchase));
                     }
                     catch (ParseException e)
@@ -197,6 +172,63 @@ public class ComdirectPDFExtractor implements Extractor
             if (sec.getIsin().equals(isin)) { return sec; }
         }
         throw new RuntimeException("Parsing PDF only works for Securities with known ISINs.");
+    }
+
+    private String getNextWord(String text, int position)
+    {
+        while (text.charAt(position) == ' ' || text.charAt(position) == ':')
+        {
+            position++;
+        }
+        int start = position;
+        while (text.charAt(position) != ' ')
+        {
+            position++;
+        }
+        int end = position;
+        return text.substring(start, end);
+    }
+
+    private int getNextWhitespace(String text, int position)
+    {
+        while (text.charAt(position) != ' ')
+        {
+            position++;
+        }
+        return position;
+    }
+
+    private int getNextNonWhitespace(String text, int position)
+    {
+        while (text.charAt(position) == ' ')
+        {
+            position++;
+        }
+        return position;
+    }
+
+    private Number getNextNumber(String text, int position)
+    {
+        String word = getNextWord(text, position);
+        try
+        {
+            return format.parse(word);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private int jumpWord(String text, int position, int words)
+    {
+        for (int i = 0; i < words; i++)
+        {
+            position = getNextNonWhitespace(text, position);
+            position = getNextWhitespace(text, position);
+        }
+        return position;
     }
 
 }
