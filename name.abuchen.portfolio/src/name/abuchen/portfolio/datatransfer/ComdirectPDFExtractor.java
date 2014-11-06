@@ -70,13 +70,24 @@ public class ComdirectPDFExtractor implements Extractor
                     isinMatcher = isinPattern.matcher(text);
                     // Has to be used to find the security
                     String isin;
-                    if (isinMatcher.find())
+                    Security security;
+                    isinMatcher.find();
+                    isin = isinMatcher.group();
+                    security = getSecurityForISIN(isin);
+                    if (security == null)
                     {
-                        isin = isinMatcher.group();
-                    }
-                    else
-                    {
-                        throw new RuntimeException("ISIN could not be parsed");
+                        int temp = text.indexOf("Wertpapier-Bezeichnung");
+                        String nameWKNLine = getNextLine(text, temp);
+                        String[] parts = nameWKNLine.substring(14).trim().split(" ");
+                        String wkn = parts[0];
+                        String name = "";
+                        for (int i = 1; i < parts.length; i++)
+                        {
+                            name = name + parts[i] + " ";
+                        }
+                        name = name.trim();
+                        security = new Security(name, isin, null, "MANUAL");
+                        security.setWkn(wkn);
                     }
                     int datePos = jumpWord(text, text.indexOf("Valuta"), 13);
                     Date d = df.parse(getNextWord(text, datePos));
@@ -87,7 +98,7 @@ public class ComdirectPDFExtractor implements Extractor
                     t.setDate(d);
                     t.setAmount(value.longValue()); // 1 euro = 100 cents
                     t.setNote(files.get(0).getName()); // just to test
-                    t.setSecurity(getSecurityForISIN(isin));
+                    t.setSecurity(security);
                     // do not add to client directly -> allow user to
                     // accept/approve
                     results.add(new TransactionItem(t));
@@ -101,13 +112,17 @@ public class ComdirectPDFExtractor implements Extractor
                         Date tag = df.parse(tagString);
                         isinMatcher = isinPattern.matcher(text);
                         String isin;
-                        if (isinMatcher.find())
+                        isinMatcher.find();
+                        isin = isinMatcher.group();
+                        Security security = getSecurityForISIN(isin);
+                        if (security == null)
                         {
-                            isin = isinMatcher.group();
-                        }
-                        else
-                        {
-                            throw new RuntimeException("ISIN could not be parsed");
+                            int temp = text.indexOf("Wertpapier-Bezeichnung");
+                            String nameWKNLine = getNextLine(text, temp);
+                            String wkn = getLastWordInLine(nameWKNLine, 1);
+                            String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
+                            name = name.substring(0, name.length() - wkn.length()).trim();
+                            security = new Security(name, isin, null, "MANUAL");
                         }
                         int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von"));
                         Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
@@ -125,7 +140,7 @@ public class ComdirectPDFExtractor implements Extractor
                         Number total = getNextNumber(text, jumpWord(text, totalEURPos, 1));
                         purchase.setType(PortfolioTransaction.Type.BUY);
                         purchase.setDate(tag);
-                        purchase.setSecurity(getSecurityForISIN(isin));
+                        purchase.setSecurity(security);
                         purchase.setShares(Math.round(stueck.doubleValue() * Values.Share.factor()));
                         purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
                         results.add(new BuySellEntryItem(purchase));
@@ -171,7 +186,7 @@ public class ComdirectPDFExtractor implements Extractor
         {
             if (sec.getIsin().equals(isin)) { return sec; }
         }
-        throw new RuntimeException("Parsing PDF only works for Securities with known ISINs.");
+        return null;
     }
 
     private String getNextWord(String text, int position)
@@ -229,6 +244,32 @@ public class ComdirectPDFExtractor implements Extractor
             position = getNextWhitespace(text, position);
         }
         return position;
+    }
+
+    private String getLastWordInLine(String text, int position)
+    {
+        while (text.charAt(position) != '\n')
+        {
+            position++;
+        }
+        position--;
+        while (text.charAt(position) == ' ')
+        {
+            position--;
+        }
+        String result = "";
+        while (text.charAt(position) != ' ')
+        {
+            result = text.charAt(position) + result;
+            position--;
+        }
+        return result;
+    }
+
+    private String getNextLine(String text, int position)
+    {
+        position = text.indexOf('\n', position);
+        return text.substring(position + 1, text.indexOf('\n', position + 1) + 1);
     }
 
 }
