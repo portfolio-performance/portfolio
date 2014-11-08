@@ -325,6 +325,8 @@ public class Messages extends NLS
     public static String MenuRemoveAll;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
+    public static String MenuSaveChart;
+    public static String MenuSaveColumns;
     public static String MenuShowHideColumns;
     public static String MenuTaxonomyAssignmentRemove;
     public static String MenuTaxonomyClassificationCreate;
