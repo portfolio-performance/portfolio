@@ -62,6 +62,7 @@ public class ComdirectPDFExtractor implements Extractor
                 PDDocument doc = PDDocument.load(f);
                 String text = stripper.getText(doc);
                 String filename = f.toPath().getFileName().toString();
+                // an interest payment is identified by the topic string
                 if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))
                 {
                     // No cashflow, no transaction to be generated
@@ -70,12 +71,15 @@ public class ComdirectPDFExtractor implements Extractor
                         continue;
                     }
                     isinMatcher = isinPattern.matcher(text);
-                    // Has to be used to find the security
+                    // Is to be used to find the security
                     String isin;
                     Security security;
                     isinMatcher.find();
                     isin = isinMatcher.group();
                     security = getSecurityForISIN(isin);
+                    // In case the security is not present, we have to
+                    // a) store it for future searches
+                    // b) Report the creation to the user
                     if (security == null)
                     {
                         int temp = text.indexOf("Wertpapier-Bezeichnung");
@@ -90,6 +94,11 @@ public class ComdirectPDFExtractor implements Extractor
                         name = name.trim();
                         security = new Security(name, isin, null, "MANUAL");
                         security.setWkn(wkn);
+                        // Store
+                        allSecurities.add(security);
+                        // add to result
+                        SecurityItem item = new SecurityItem(security);
+                        results.add(item);
                     }
                     int datePos = jumpWord(text, text.indexOf("Valuta"), 13);
                     Date d = df.parse(getNextWord(text, datePos));
@@ -105,6 +114,9 @@ public class ComdirectPDFExtractor implements Extractor
                     // accept/approve
                     results.add(new TransactionItem(t));
                 }
+                // The buy transaction can be parsed from the name of the file
+                // this requires that the user does not change the name from the
+                // download
                 else if (filename.contains("Wertpapierabrechnung_Kauf"))
                 {
                     try
@@ -125,10 +137,16 @@ public class ComdirectPDFExtractor implements Extractor
                             String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
                             name = name.substring(0, name.length() - wkn.length()).trim();
                             security = new Security(name, isin, null, "MANUAL");
+                            // Store
+                            allSecurities.add(security);
+                            // add to result
+                            SecurityItem item = new SecurityItem(security);
+                            results.add(item);
                         }
                         int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von"));
                         Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
-                        // Check for fees
+                        // Fees need not be present
+                        // In case they are a section is present in the file
                         int provPos = -1;
                         provPos = text.indexOf("Provision", stueckLinePos);
                         BuySellEntry purchase = new BuySellEntry();
