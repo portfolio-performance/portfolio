@@ -40,11 +40,11 @@ public class DesktopAPI
 
             // fall back to Java Desktop
             if (!Desktop.isDesktopSupported())
-                throw new IOException("Java Desktop does not support current platform");
+                throw new IOException(Messages.DesktopAPIPlatformNotSupported);
 
             Desktop desktop = Desktop.getDesktop();
             if (!desktop.isSupported(Desktop.Action.BROWSE))
-                throw new IOException("Java Desktop does not support the browse action");
+                throw new IOException(Messages.DesktopAPIBrowserActionNotSupported);
 
             desktop.browse(target);
         }
@@ -52,13 +52,13 @@ public class DesktopAPI
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                            MessageFormat.format("Error opening browser with URL {0}", uri));
+                            MessageFormat.format(Messages.DesktopAPIErrorOpeningURL, uri));
         }
         catch (URISyntaxException e)
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                            MessageFormat.format("Illegal URL: {0}", uri));
+                            MessageFormat.format(Messages.DesktopAPIIllegalURL, uri));
         }
     }
 

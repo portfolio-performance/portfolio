@@ -156,6 +156,10 @@ public class Messages extends NLS
     public static String CSVImportSeparatorTab;
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
+    public static String DesktopAPIBrowserActionNotSupported;
+    public static String DesktopAPIErrorOpeningURL;
+    public static String DesktopAPIIllegalURL;
+    public static String DesktopAPIPlatformNotSupported;
     public static String DialogConsistencyChecksTitle;
     public static String DialogConssitencyChecksMessage;
     public static String DialogTaxonomyNamePrompt;
