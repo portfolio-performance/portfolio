@@ -252,30 +252,30 @@ public class CSVExporter
             while (cal.getTimeInMillis() <= today.getTime())
             {
                 // check if any quotes exist for that day at all
-                int[] indeces = new int[export.size()];
+                int[] indices = new int[export.size()];
 
                 int ii = 0;
                 for (Security security : export)
                 {
                     SecurityPrice p = new SecurityPrice(cal.getTime(), 0);
-                    indeces[ii] = Collections.binarySearch(security.getPrices(), p);
+                    indices[ii] = Collections.binarySearch(security.getPrices(), p);
                     ii++;
                 }
 
                 boolean hasValues = false;
-                for (ii = 0; ii < indeces.length && !hasValues; ii++)
-                    hasValues = indeces[ii] >= 0;
+                for (ii = 0; ii < indices.length && !hasValues; ii++)
+                    hasValues = indices[ii] >= 0;
 
                 if (hasValues)
                 {
                     printer.print(Values.Date.format(cal.getTime()));
 
-                    for (ii = 0; ii < indeces.length; ii++)
+                    for (ii = 0; ii < indices.length; ii++)
                     {
-                        if (indeces[ii] < 0)
+                        if (indices[ii] < 0)
                             printer.print(""); //$NON-NLS-1$
                         else
-                            printer.print(Values.Quote.format(export.get(ii).getPrices().get(indeces[ii]).getValue()));
+                            printer.print(Values.Quote.format(export.get(ii).getPrices().get(indices[ii]).getValue()));
                     }
 
                     printer.println();

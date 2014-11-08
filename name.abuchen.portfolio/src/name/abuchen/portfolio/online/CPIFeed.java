@@ -7,5 +7,5 @@ import name.abuchen.portfolio.model.ConsumerPriceIndex;
 
 public interface CPIFeed
 {
-    List<ConsumerPriceIndex> getConsumerPriceIndeces() throws IOException;
+    List<ConsumerPriceIndex> getConsumerPriceIndices() throws IOException;
 }

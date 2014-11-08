@@ -24,6 +24,8 @@ public class Client
 
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists;
+
+    // keep typo -> xstream deserialization
     private List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<Account>();
@@ -126,15 +128,36 @@ public class Client
         return watchlists;
     }
 
-    public List<ConsumerPriceIndex> getConsumerPriceIndeces()
+    public List<ConsumerPriceIndex> getConsumerPriceIndices()
     {
         return Collections.unmodifiableList(consumerPriceIndeces);
     }
 
-    public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
+    /**
+     * Sets the consumer price indices.
+     * 
+     * @return true if the indices are modified.
+     */
+    public boolean setConsumerPriceIndices(List<ConsumerPriceIndex> indices)
     {
-        this.consumerPriceIndeces = prices;
-        Collections.sort(this.consumerPriceIndeces, new ConsumerPriceIndex.ByDate());
+        if (indices == null)
+            throw new NullPointerException();
+
+        List<ConsumerPriceIndex> newValues = new ArrayList<ConsumerPriceIndex>(indices);
+        Collections.sort(newValues, new ConsumerPriceIndex.ByDate());
+
+        if (consumerPriceIndeces == null || !consumerPriceIndeces.equals(newValues))
+        {
+            // only assign list if indices have actually changed because UI
+            // elements keep a reference which is not updated if no 'dirty'
+            // event is fired
+            this.consumerPriceIndeces = newValues;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void addConsumerPriceIndex(ConsumerPriceIndex record)

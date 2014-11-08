@@ -226,7 +226,7 @@ public class Messages extends NLS
     public static String JobLabelUpdateStackedLineChart;
     public static String JobLabelUpdating;
     public static String JobMsgCheckingForUpdates;
-    public static String JobMsgErrorUpdatingIndeces;
+    public static String JobMsgErrorUpdatingIndices;
     public static String JobMsgErrorUpdatingQuotes;
     public static String JobMsgLoadingExchanges;
     public static String JobMsgRunningConsistencyChecks;

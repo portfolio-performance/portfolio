@@ -462,14 +462,7 @@ public class PortfolioPart implements LoadClientThread.Callback
 
             new UpdateQuotesJob(client).schedule(1000);
 
-            new UpdateCPIJob(client)
-            {
-                @Override
-                protected void notifyFinished()
-                {
-                    notifyModelUpdated();
-                }
-            }.schedule(700);
+            new UpdateCPIJob(client).schedule(700);
         }
     }
 
