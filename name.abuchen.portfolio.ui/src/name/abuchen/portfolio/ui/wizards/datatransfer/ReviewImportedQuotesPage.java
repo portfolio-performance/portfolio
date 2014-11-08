@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,33 +36,21 @@ public class ReviewImportedQuotesPage extends AbstractWizardPage
     {
         String source = page.getSourceText();
 
-        try
-        {
-            QuoteFeed feed = Factory.getQuoteFeedProvider("GENERIC_HTML_TABLE"); //$NON-NLS-1$
+        QuoteFeed feed = Factory.getQuoteFeedProvider("GENERIC_HTML_TABLE"); //$NON-NLS-1$
 
-            List<Exception> errors = new ArrayList<Exception>();
-            quotes = feed.getHistoricalQuotes(source, errors);
-            PortfolioPlugin.log(errors);
+        List<Exception> errors = new ArrayList<Exception>();
+        quotes = feed.getHistoricalQuotes(source, errors);
+        PortfolioPlugin.log(errors);
 
-            setErrorMessage(null);
-            setPageComplete(!quotes.isEmpty());
+        setErrorMessage(null);
+        setPageComplete(!quotes.isEmpty());
 
-            tableSampleData.setInput(quotes);
-            tableSampleData.refresh(true);
+        tableSampleData.setInput(quotes);
+        tableSampleData.refresh(true);
 
-            // scroll up to top
-            if (!quotes.isEmpty())
-                tableSampleData.getTable().showItem(tableSampleData.getTable().getItem(0));
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            setErrorMessage(MessageFormat.format(Messages.ImportWizardReviewError, e.getMessage()));
-            setPageComplete(false);
-
-            tableSampleData.setInput(null);
-            tableSampleData.refresh();
-        }
+        // scroll up to top
+        if (!quotes.isEmpty())
+            tableSampleData.getTable().showItem(tableSampleData.getTable().getItem(0));
     }
 
     public List<LatestSecurityPrice> getQuotes()

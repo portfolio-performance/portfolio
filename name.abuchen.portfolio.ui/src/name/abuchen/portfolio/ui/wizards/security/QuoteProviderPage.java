@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -474,21 +473,14 @@ public class QuoteProviderPage extends AbstractPage
             monitor.beginTask(Messages.JobMsgLoadingExchanges, provider.size());
             for (QuoteFeed feed : provider)
             {
-                try
-                {
-                    Security s = new Security();
-                    s.setTickerSymbol(model.getTickerSymbol());
+                Security s = new Security();
+                s.setTickerSymbol(model.getTickerSymbol());
 
-                    List<Exception> errors = new ArrayList<Exception>();
-                    cacheExchanges.put(feed, feed.getExchanges(s, errors));
+                List<Exception> errors = new ArrayList<Exception>();
+                cacheExchanges.put(feed, feed.getExchanges(s, errors));
 
-                    PortfolioPlugin.log(errors);
-                }
-                catch (IOException e)
-                {
-                    PortfolioPlugin.log(e);
-                    cacheExchanges.put(feed, new ArrayList<Exchange>());
-                }
+                PortfolioPlugin.log(errors);
+
                 monitor.worked(1);
             }
 

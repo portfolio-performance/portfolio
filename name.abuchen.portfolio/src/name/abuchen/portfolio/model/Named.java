@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 public interface Named
 {
-    public static final class ByName implements Comparator<Named>, Serializable
+    class ByName implements Comparator<Named>, Serializable
     {
         private static final long serialVersionUID = 1L;
 

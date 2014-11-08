@@ -265,7 +265,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             @Override
             public void propertyChange(PropertyChangeEvent evt)
             {
-                markDirty();
+                notifyModelUpdated();
             }
         });
 
@@ -457,24 +457,10 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
-            regularQuoteUpdateJob = new UpdateQuotesJob(client, false, 1000 * 60 * 10)
-            {
-                @Override
-                protected void notifyFinished()
-                {
-                    notifyModelUpdated();
-                }
-            };
+            regularQuoteUpdateJob = new UpdateQuotesJob(client, false, 1000 * 60 * 10);
             regularQuoteUpdateJob.schedule(500);
 
-            new UpdateQuotesJob(client)
-            {
-                @Override
-                protected void notifyFinished()
-                {
-                    notifyModelUpdated();
-                }
-            }.schedule(1000);
+            new UpdateQuotesJob(client).schedule(1000);
 
             new UpdateCPIJob(client)
             {
