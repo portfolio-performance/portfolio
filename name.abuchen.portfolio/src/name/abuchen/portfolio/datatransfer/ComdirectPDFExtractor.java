@@ -47,7 +47,7 @@ public class ComdirectPDFExtractor implements Extractor
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            // PortfolioPlugin.log(e);
         }
     }
 
@@ -61,7 +61,7 @@ public class ComdirectPDFExtractor implements Extractor
             {
                 PDDocument doc = PDDocument.load(f);
                 String text = stripper.getText(doc);
-                String filename = f.toPath().getFileName().toString();
+                String filename = f.getName();
                 // an interest payment is identified by the topic string
                 if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))
                 {
@@ -167,22 +167,22 @@ public class ComdirectPDFExtractor implements Extractor
                     }
                     catch (ParseException e)
                     {
-                        e.printStackTrace();
+                        errors.add(e);
                     }
                 }
                 else
                 {
-                    System.err.println("Could not snif type from text " + filename);
+                    errors.add(new Exception("Could not snif File type from file " + filename));
                 }
                 doc.close();
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                errors.add(e);
             }
             catch (ParseException e)
             {
-                e.printStackTrace();
+                errors.add(e);
             }
         }
         return results;
@@ -251,7 +251,7 @@ public class ComdirectPDFExtractor implements Extractor
         }
         catch (ParseException e)
         {
-            e.printStackTrace();
+            // PortfolioPlugin.log(e);
         }
         return -1;
     }
