@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -116,12 +114,7 @@ public class TransferDialog extends AbstractDialog
     {
         GridDataFactory gdf = GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false);
 
-        // account list
-        List<Account> accounts = new ArrayList<Account>();
-        for (Account a : getModel().getClient().getAccounts())
-            if (!a.isRetired())
-                accounts.add(a);
-        Collections.sort(accounts, new Account.ByName());
+        List<Account> accounts = getModel().getClient().getAccounts();
 
         // account from
         Label label = new Label(editArea, SWT.NONE);

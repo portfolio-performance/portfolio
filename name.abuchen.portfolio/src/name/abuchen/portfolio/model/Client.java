@@ -165,6 +165,20 @@ public class Client
         return Collections.unmodifiableList(accounts);
     }
 
+    /**
+     * Returns a sorted list of active accounts, i.e. accounts that are not
+     * marked as retired.
+     */
+    public List<Account> getActiveAccounts()
+    {
+        List<Account> active = new ArrayList<Account>(accounts.size());
+        for (Account account : accounts)
+            if (!account.isRetired())
+                active.add(account);
+        Collections.sort(active, new Account.ByName());
+        return active;
+    }
+
     public void addPortfolio(Portfolio portfolio)
     {
         portfolios.add(portfolio);

@@ -199,11 +199,8 @@ public class NewPlanDialog extends AbstractDialog
                             }
                         }, getModel().getClient().getPortfolios().toArray());
 
-        List<Account> accounts = new ArrayList<Account>();
-        accounts.add(DELIVERY);
-        for (Account a : getModel().getClient().getAccounts())
-            if (!a.isRetired())
-                accounts.add(a);
+        List<Account> accounts = getModel().getClient().getActiveAccounts();
+        accounts.add(0, DELIVERY);
 
         bindings().bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
                         {
