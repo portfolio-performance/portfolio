@@ -34,7 +34,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 
@@ -154,13 +153,6 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             {
                 Portfolio p = (Portfolio) e;
                 return p.getReferenceAccount() != null ? p.getReferenceAccount().getName() : null;
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((Portfolio) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
         ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(column); //$NON-NLS-1$
