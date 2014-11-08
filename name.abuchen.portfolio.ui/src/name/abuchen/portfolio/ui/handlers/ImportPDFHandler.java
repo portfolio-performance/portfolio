@@ -70,12 +70,13 @@ public class ImportPDFHandler
             return;
 
         List<File> files = new ArrayList<File>();
+        List<Exception> errors = new ArrayList<Exception>();
         for (String file : fileNames)
             files.add(new File(fileDialog.getFilterPath(), file));
 
         // open wizard dialog
 
-        Dialog wizwardDialog = new WizardDialog(shell, new ImportExtractedItemsWizard(client, extractor, files));
+        Dialog wizwardDialog = new WizardDialog(shell, new ImportExtractedItemsWizard(client, extractor, files, errors));
         wizwardDialog.open();
     }
 }

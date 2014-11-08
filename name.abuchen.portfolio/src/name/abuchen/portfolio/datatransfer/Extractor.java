@@ -209,6 +209,6 @@ public interface Extractor
     /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<File> files);
+    List<Item> extract(List<File> files, List<Exception> errors);
 
 }

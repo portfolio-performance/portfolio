@@ -26,18 +26,20 @@ import org.apache.pdfbox.util.PDFTextStripper;
 public class ComdirectPDFExtractor implements Extractor
 {
 
-    PDFTextStripper stripper;
-    DateFormat df;
-    Pattern isinPattern;
-    Matcher isinMatcher;
-    NumberFormat format;
-    List<Security> allSecurities;
+    private PDFTextStripper stripper;
+    private DateFormat df;
+    private Pattern isinPattern;
+    private Matcher isinMatcher;
+    private NumberFormat format;
+    private List<Security> allSecurities;
 
     public ComdirectPDFExtractor(Client client)
     {
+        // Parsing formats rely on german style PDFs
         df = new SimpleDateFormat("dd.MM.yyyy");
-        isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
         format = NumberFormat.getInstance(Locale.GERMANY);
+
+        isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
         allSecurities = new ArrayList<Security>(client.getSecurities());
         try
         {
@@ -50,7 +52,7 @@ public class ComdirectPDFExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<File> files)
+    public List<Item> extract(List<File> files, List<Exception> errors)
     {
         List<Item> results = new ArrayList<Item>();
         for (File f : files)
@@ -62,7 +64,7 @@ public class ComdirectPDFExtractor implements Extractor
                 String filename = f.toPath().getFileName().toString();
                 if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))
                 {
-                    // Thesaurierend? Do nothing!
+                    // No cashflow, no transaction to be generated
                     if (text.contains("Ertragsthesaurierung"))
                     {
                         continue;
