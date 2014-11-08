@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 22;
+    /* package */static final int CURRENT_VERSION = 23;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -194,6 +194,20 @@ public class Client
     public List<Portfolio> getPortfolios()
     {
         return Collections.unmodifiableList(portfolios);
+    }
+
+    /**
+     * Returns a sorted list of active portfolios, i.e. portfolios that are not
+     * marked as retired.
+     */
+    public List<Portfolio> getActivePortfolios()
+    {
+        List<Portfolio> active = new ArrayList<Portfolio>(portfolios.size());
+        for (Portfolio portfolio : portfolios)
+            if (!portfolio.isRetired())
+                active.add(portfolio);
+        Collections.sort(active, new Portfolio.ByName());
+        return active;
     }
 
     @Deprecated

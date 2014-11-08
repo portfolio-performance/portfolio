@@ -41,8 +41,9 @@ public class NewPlanDialog extends AbstractDialog
         {
             super(client);
 
-            if (client.getPortfolios().size() == 1)
-                portfolio = client.getPortfolios().get(0);
+            List<Portfolio> activePortfolios = client.getActivePortfolios();
+            if (activePortfolios.size() == 1)
+                portfolio = activePortfolios.get(0);
 
             if (!client.getSecurities().isEmpty())
                 security = client.getSecurities().get(0);
@@ -197,7 +198,7 @@ public class NewPlanDialog extends AbstractDialog
                                 return value != null ? ValidationStatus.ok() : ValidationStatus
                                                 .error(Messages.MsgMissingPortfolio);
                             }
-                        }, getModel().getClient().getPortfolios().toArray());
+                        }, getModel().getClient().getActivePortfolios().toArray());
 
         List<Account> accounts = getModel().getClient().getActiveAccounts();
         accounts.add(0, DELIVERY);
