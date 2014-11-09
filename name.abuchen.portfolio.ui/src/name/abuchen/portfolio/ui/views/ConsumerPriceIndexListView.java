@@ -42,7 +42,7 @@ import org.swtchart.ISeries;
 
 public class ConsumerPriceIndexListView extends AbstractListView implements ModificationListener
 {
-    private TableViewer indeces;
+    private TableViewer indices;
     private TimelineChart chart;
 
     @Override
@@ -110,7 +110,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     @Override
     public void notifyModelUpdated()
     {
-        indeces.setInput(getClient().getConsumerPriceIndeces());
+        indices.setInput(getClient().getConsumerPriceIndices());
         refreshChart();
     }
 
@@ -128,12 +128,12 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        indeces = new TableViewer(container, SWT.FULL_SELECTION);
+        indices = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(indeces);
+        ColumnEditingSupport.prepare(indices);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(ConsumerPriceIndexListView.class.getSimpleName()
-                        + "@bottom", getPreferenceStore(), indeces, layout); //$NON-NLS-1$
+                        + "@bottom", getPreferenceStore(), indices, layout); //$NON-NLS-1$
 
         Column column = new Column(Messages.ColumnYear, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -178,17 +178,17 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
 
         support.createColumns();
 
-        indeces.getTable().setHeaderVisible(true);
-        indeces.getTable().setLinesVisible(true);
+        indices.getTable().setHeaderVisible(true);
+        indices.getTable().setLinesVisible(true);
 
-        indeces.setContentProvider(new SimpleListContentProvider());
+        indices.setContentProvider(new SimpleListContentProvider());
 
-        ViewerHelper.pack(indeces);
+        ViewerHelper.pack(indices);
 
-        indeces.setInput(getClient().getConsumerPriceIndeces());
-        indeces.refresh();
+        indices.setInput(getClient().getConsumerPriceIndices());
+        indices.refresh();
 
-        hookContextMenu(indeces.getTable(), new IMenuListener()
+        hookContextMenu(indices.getTable(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
             {
@@ -205,7 +205,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             @Override
             public void run()
             {
-                ConsumerPriceIndex index = (ConsumerPriceIndex) ((IStructuredSelection) indeces.getSelection())
+                ConsumerPriceIndex index = (ConsumerPriceIndex) ((IStructuredSelection) indices.getSelection())
                                 .getFirstElement();
 
                 if (index == null)
@@ -214,7 +214,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
                 getClient().removeConsumerPriceIndex(index);
                 markDirty();
 
-                indeces.setInput(getClient().getConsumerPriceIndeces());
+                indices.setInput(getClient().getConsumerPriceIndices());
                 refreshChart();
             }
         });
@@ -231,8 +231,8 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
                 getClient().addConsumerPriceIndex(index);
                 markDirty();
 
-                indeces.setInput(getClient().getConsumerPriceIndeces());
-                indeces.editElement(index, 0);
+                indices.setInput(getClient().getConsumerPriceIndices());
+                indices.editElement(index, 0);
                 refreshChart();
             }
         });
@@ -252,17 +252,17 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         for (ISeries s : chart.getSeriesSet().getSeries())
             chart.getSeriesSet().deleteSeries(s.getId());
 
-        if (getClient().getConsumerPriceIndeces() == null || getClient().getConsumerPriceIndeces().isEmpty())
+        if (getClient().getConsumerPriceIndices() == null || getClient().getConsumerPriceIndices().isEmpty())
             return;
 
-        List<ConsumerPriceIndex> indeces = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndeces());
-        Collections.sort(indeces, new ConsumerPriceIndex.ByDate());
+        List<ConsumerPriceIndex> indices = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndices());
+        Collections.sort(indices, new ConsumerPriceIndex.ByDate());
 
-        Date[] dates = new Date[indeces.size()];
-        double[] cpis = new double[indeces.size()];
+        Date[] dates = new Date[indices.size()];
+        double[] cpis = new double[indices.size()];
 
         int ii = 0;
-        for (ConsumerPriceIndex index : indeces)
+        for (ConsumerPriceIndex index : indices)
         {
             dates[ii] = Dates.date(index.getYear(), index.getMonth(), 1);
             cpis[ii] = (double) index.getIndex() / Values.Index.divider();

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.online.impl;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -25,15 +24,22 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
     {
+        boolean isUpdated = false;
         for (Security security : securities)
-            security.setLatest(null);
+        {
+            boolean isAdded = security.setLatest(null);
+            isUpdated = isUpdated || isAdded;
+        }
+        return isUpdated;
     }
 
     @Override
-    public void updateHistoricalQuotes(Security security, List<Exception> errors) throws IOException
-    {}
+    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    {
+        return false;
+    }
 
     @Override
     public List<Exchange> getExchanges(Security subject, List<Exception> errors)
@@ -48,7 +54,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
     {
         return null;
     }

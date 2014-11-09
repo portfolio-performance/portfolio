@@ -111,7 +111,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
-        save.setToolTipText(Messages.MenuConfigureChart);
+        save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
         Action config = new Action()

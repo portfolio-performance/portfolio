@@ -179,8 +179,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     public void notifyModelUpdated()
     {
-        if (securities != null)
-            setSecurityTableInput();
+        if (securities != null && !securities.getTableViewer().getTable().isDisposed())
+        {
+            securities.getTableViewer().refresh(true);
+            securities.getTableViewer().setSelection(securities.getTableViewer().getSelection());
+        }
     }
 
     @Override

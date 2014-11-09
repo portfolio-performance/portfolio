@@ -461,26 +461,7 @@ public final class SecuritiesTable implements ModificationListener
 
     public void updateQuotes(Security security)
     {
-        new UpdateQuotesJob(getClient(), security)
-        {
-            @Override
-            protected void notifyFinished()
-            {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        markDirty();
-                        if (!securities.getTable().isDisposed())
-                        {
-                            securities.refresh();
-                            securities.setSelection(securities.getSelection());
-                        }
-                    }
-                });
-            }
-
-        }.schedule();
+        new UpdateQuotesJob(getClient(), security).schedule();
     }
 
     public TableViewer getTableViewer()

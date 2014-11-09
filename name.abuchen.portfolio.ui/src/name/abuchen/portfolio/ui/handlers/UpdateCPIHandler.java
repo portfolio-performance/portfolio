@@ -37,13 +37,6 @@ public class UpdateCPIHandler
         final PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
         Client client = portfolioPart.getClient();
 
-        new UpdateCPIJob(client)
-        {
-            @Override
-            protected void notifyFinished()
-            {
-                portfolioPart.notifyModelUpdated();
-            }
-        }.schedule();
+        new UpdateCPIJob(client).schedule();
     }
 }

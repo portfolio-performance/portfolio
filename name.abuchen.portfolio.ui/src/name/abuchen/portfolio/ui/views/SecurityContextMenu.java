@@ -95,7 +95,7 @@ public class SecurityContextMenu
             }
         });
 
-        if (portfolio != null && owner.getClient().getPortfolios().size() > 1)
+        if (portfolio != null && owner.getClient().getActivePortfolios().size() > 1)
         {
             manager.add(new Separator());
             manager.add(new Action(Messages.SecurityMenuTransfer)

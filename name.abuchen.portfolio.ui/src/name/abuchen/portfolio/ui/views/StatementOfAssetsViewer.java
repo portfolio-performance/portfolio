@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
@@ -500,7 +501,8 @@ public class StatementOfAssetsViewer
         }
         else if (element.isSecurity())
         {
-            new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity());
+            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getSource() : null;
+            new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), portfolio);
         }
     }
 

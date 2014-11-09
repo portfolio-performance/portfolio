@@ -430,7 +430,10 @@ public class ClientFactory
                 // do nothing --> added note to investment plan
             case 21:
                 // do nothing --> added taxes to portfolio transaction
+            case 22:
+                // do nothing --> added 'isRetired' property to portfolio
                 client.setVersion(Client.CURRENT_VERSION);
+                break;
             case Client.CURRENT_VERSION:
                 break;
             default:

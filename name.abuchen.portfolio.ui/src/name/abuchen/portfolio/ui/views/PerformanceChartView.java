@@ -23,6 +23,7 @@ import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
@@ -48,6 +49,8 @@ import org.swtchart.ISeries;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
+    private static final String KEY_AGGREGATION_PERIOD = "performance-chart-aggregation-period"; //$NON-NLS-1$
+
     private TimelineChart chart;
     private ChartConfigurator picker;
 
@@ -59,6 +62,25 @@ public class PerformanceChartView extends AbstractHistoricView
     protected String getTitle()
     {
         return Messages.LabelPerformanceChart;
+    }
+
+    @Override
+    public void init(PortfolioPart part, Object parameter)
+    {
+        super.init(part, parameter);
+
+        String key = part.getPreferenceStore().getString(KEY_AGGREGATION_PERIOD);
+        if (key != null && key.length() > 0)
+        {
+            try
+            {
+                aggregationPeriod = Aggregation.Period.valueOf(key);
+            }
+            catch (IllegalArgumentException ignore)
+            {
+                // ignore if key is not a valid aggregation period
+            }
+        }
     }
 
     @Override
@@ -81,7 +103,7 @@ public class PerformanceChartView extends AbstractHistoricView
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
-        save.setToolTipText(Messages.MenuConfigureChart);
+        save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
         Action config = new Action()
@@ -358,35 +380,41 @@ public class PerformanceChartView extends AbstractHistoricView
     {
         private AggregationPeriodDropDown(ToolBar toolBar)
         {
-            super(toolBar, Messages.LabelAggregationDaily);
+            super(toolBar, aggregationPeriod == null ? Messages.LabelAggregationDaily : aggregationPeriod.toString());
         }
 
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(new Action(Messages.LabelAggregationDaily)
+            Action daily = new Action(Messages.LabelAggregationDaily)
             {
                 @Override
                 public void run()
                 {
                     setLabel(Messages.LabelAggregationDaily);
                     aggregationPeriod = null;
+                    getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, ""); //$NON-NLS-1$
                     updateChart();
                 }
-            });
+            };
+            daily.setChecked(aggregationPeriod == null);
+            manager.add(daily);
 
             for (final Aggregation.Period period : Aggregation.Period.values())
             {
-                manager.add(new Action(period.toString())
+                Action action = new Action(period.toString())
                 {
                     @Override
                     public void run()
                     {
                         setLabel(period.toString());
                         aggregationPeriod = period;
+                        getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, period.name());
                         updateChart();
                     }
-                });
+                };
+                action.setChecked(aggregationPeriod == period);
+                manager.add(action);
             }
         }
     }
