@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
@@ -74,7 +75,7 @@ public class ComdirectPDFExtractor implements Extractor
         return results;
     }
 
-    private List<Item> extract(String text, String filename, List<Exception> errors)
+    public List<Item> extract(String text, String filename, List<Exception> errors)
     {
         List<Item> results = new ArrayList<Item>();
         // an interest payment is identified by the topic string
@@ -104,7 +105,7 @@ public class ComdirectPDFExtractor implements Extractor
                     name = name + parts[i] + " ";
                 }
                 name = name.trim();
-                security = new Security(name, isin, null, "MANUAL");
+                security = new Security(name, isin, null, QuoteFeed.MANUAL);
                 security.setWkn(wkn);
                 // Store
                 allSecurities.add(security);
@@ -152,7 +153,7 @@ public class ComdirectPDFExtractor implements Extractor
                     String wkn = getLastWordInLine(nameWKNLine, 1);
                     String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
                     name = name.substring(0, name.length() - wkn.length()).trim();
-                    security = new Security(name, isin, null, "MANUAL");
+                    security = new Security(name, isin, null, QuoteFeed.MANUAL);
                     // Store
                     allSecurities.add(security);
                     // add to result
