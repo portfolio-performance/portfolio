@@ -62,128 +62,133 @@ public class ComdirectPDFExtractor implements Extractor
                 PDDocument doc = PDDocument.load(f);
                 String text = stripper.getText(doc);
                 String filename = f.getName();
-                // an interest payment is identified by the topic string
-                if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))
-                {
-                    // No cashflow, no transaction to be generated
-                    if (text.contains("Ertragsthesaurierung"))
-                    {
-                        continue;
-                    }
-                    isinMatcher = isinPattern.matcher(text);
-                    // Is to be used to find the security
-                    String isin;
-                    Security security;
-                    isinMatcher.find();
-                    isin = isinMatcher.group();
-                    security = getSecurityForISIN(isin);
-                    // In case the security is not present, we have to
-                    // a) store it for future searches
-                    // b) Report the creation to the user
-                    if (security == null)
-                    {
-                        int temp = text.indexOf("Wertpapier-Bezeichnung");
-                        String nameWKNLine = getNextLine(text, temp);
-                        String[] parts = nameWKNLine.substring(14).trim().split(" ");
-                        String wkn = parts[0];
-                        String name = "";
-                        for (int i = 1; i < parts.length; i++)
-                        {
-                            name = name + parts[i] + " ";
-                        }
-                        name = name.trim();
-                        security = new Security(name, isin, null, "MANUAL");
-                        security.setWkn(wkn);
-                        // Store
-                        allSecurities.add(security);
-                        // add to result
-                        SecurityItem item = new SecurityItem(security);
-                        results.add(item);
-                    }
-                    int datePos = jumpWord(text, text.indexOf("Valuta"), 13);
-                    Date d = df.parse(getNextWord(text, datePos));
-                    Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1));
-                    // Result Transaction
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.INTEREST);
-                    t.setDate(d);
-                    t.setAmount(value.longValue()); // 1 euro = 100 cents
-                    t.setNote(files.get(0).getName()); // just to test
-                    t.setSecurity(security);
-                    // do not add to client directly -> allow user to
-                    // accept/approve
-                    results.add(new TransactionItem(t));
-                }
-                // The buy transaction can be parsed from the name of the file
-                // this requires that the user does not change the name from the
-                // download
-                else if (filename.contains("Wertpapierabrechnung_Kauf"))
-                {
-                    try
-                    {
-                        int tagPosition = text.indexOf("Geschäftstag");
-                        String tagString = getNextWord(text, getNextWhitespace(text, tagPosition));
-                        Date tag = df.parse(tagString);
-                        isinMatcher = isinPattern.matcher(text);
-                        String isin;
-                        isinMatcher.find();
-                        isin = isinMatcher.group();
-                        Security security = getSecurityForISIN(isin);
-                        if (security == null)
-                        {
-                            int temp = text.indexOf("Wertpapier-Bezeichnung");
-                            String nameWKNLine = getNextLine(text, temp);
-                            String wkn = getLastWordInLine(nameWKNLine, 1);
-                            String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
-                            name = name.substring(0, name.length() - wkn.length()).trim();
-                            security = new Security(name, isin, null, "MANUAL");
-                            // Store
-                            allSecurities.add(security);
-                            // add to result
-                            SecurityItem item = new SecurityItem(security);
-                            results.add(item);
-                        }
-                        int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von"));
-                        Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
-                        // Fees need not be present
-                        // In case they are a section is present in the file
-                        int provPos = -1;
-                        provPos = text.indexOf("Provision", stueckLinePos);
-                        BuySellEntry purchase = new BuySellEntry();
-                        if (provPos > 0)
-                        {
-                            Number fee = getNextNumber(text, jumpWord(text, provPos, 3));
-                            purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
-                        }
-                        int totalEURPos = text.indexOf("EUR",
-                                        text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3);
-                        Number total = getNextNumber(text, jumpWord(text, totalEURPos, 1));
-                        purchase.setType(PortfolioTransaction.Type.BUY);
-                        purchase.setDate(tag);
-                        purchase.setSecurity(security);
-                        purchase.setShares(Math.round(stueck.doubleValue() * Values.Share.factor()));
-                        purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
-                        results.add(new BuySellEntryItem(purchase));
-                    }
-                    catch (ParseException e)
-                    {
-                        errors.add(e);
-                    }
-                }
-                else
-                {
-                    errors.add(new Exception("Could not snif File type from file " + filename));
-                }
+                results.addAll(extract(text, filename, errors));
                 doc.close();
             }
             catch (IOException e)
             {
                 errors.add(e);
             }
+
+        }
+        return results;
+    }
+
+    private List<Item> extract(String text, String filename, List<Exception> errors)
+    {
+        List<Item> results = new ArrayList<Item>();
+        // an interest payment is identified by the topic string
+        if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))
+        {
+            // No cashflow, no transaction to be generated
+            if (text.contains("Ertragsthesaurierung")) { return results; }
+            isinMatcher = isinPattern.matcher(text);
+            // Is to be used to find the security
+            String isin;
+            Security security;
+            isinMatcher.find();
+            isin = isinMatcher.group();
+            security = getSecurityForISIN(isin);
+            // In case the security is not present, we have to
+            // a) store it for future searches
+            // b) Report the creation to the user
+            if (security == null)
+            {
+                int temp = text.indexOf("Wertpapier-Bezeichnung");
+                String nameWKNLine = getNextLine(text, temp);
+                String[] parts = nameWKNLine.substring(14).trim().split(" ");
+                String wkn = parts[0];
+                String name = "";
+                for (int i = 1; i < parts.length; i++)
+                {
+                    name = name + parts[i] + " ";
+                }
+                name = name.trim();
+                security = new Security(name, isin, null, "MANUAL");
+                security.setWkn(wkn);
+                // Store
+                allSecurities.add(security);
+                // add to result
+                SecurityItem item = new SecurityItem(security);
+                results.add(item);
+            }
+            int datePos = jumpWord(text, text.indexOf("Valuta"), 13);
+            // Result Transaction
+            AccountTransaction t = new AccountTransaction();
+            try
+            {
+                Date d = df.parse(getNextWord(text, datePos));
+                t.setDate(d);
+            }
             catch (ParseException e)
             {
                 errors.add(e);
             }
+            Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1));
+            t.setType(AccountTransaction.Type.INTEREST);
+            t.setAmount(value.longValue()); // 1 euro = 100 cents
+            t.setSecurity(security);
+            results.add(new TransactionItem(t));
+        }
+        // The buy transaction can be parsed from the name of the file
+        // this requires that the user does not change the name from the
+        // download
+        else if (filename.contains("Wertpapierabrechnung_Kauf"))
+        {
+            try
+            {
+                int tagPosition = text.indexOf("Geschäftstag");
+                String tagString = getNextWord(text, getNextWhitespace(text, tagPosition));
+                Date tag = df.parse(tagString);
+                isinMatcher = isinPattern.matcher(text);
+                String isin;
+                isinMatcher.find();
+                isin = isinMatcher.group();
+                Security security = getSecurityForISIN(isin);
+                if (security == null)
+                {
+                    int temp = text.indexOf("Wertpapier-Bezeichnung");
+                    String nameWKNLine = getNextLine(text, temp);
+                    String wkn = getLastWordInLine(nameWKNLine, 1);
+                    String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
+                    name = name.substring(0, name.length() - wkn.length()).trim();
+                    security = new Security(name, isin, null, "MANUAL");
+                    // Store
+                    allSecurities.add(security);
+                    // add to result
+                    SecurityItem item = new SecurityItem(security);
+                    results.add(item);
+                }
+                int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von"));
+                Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
+                // Fees need not be present
+                // In case they are a section is present in the file
+                int provPos = -1;
+                provPos = text.indexOf("Provision", stueckLinePos);
+                BuySellEntry purchase = new BuySellEntry();
+                if (provPos > 0)
+                {
+                    Number fee = getNextNumber(text, jumpWord(text, provPos, 3));
+                    purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
+                }
+                int totalEURPos = text.indexOf("EUR",
+                                text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3);
+                Number total = getNextNumber(text, jumpWord(text, totalEURPos, 1));
+                purchase.setType(PortfolioTransaction.Type.BUY);
+                purchase.setDate(tag);
+                purchase.setSecurity(security);
+                purchase.setShares(Math.round(stueck.doubleValue() * Values.Share.factor()));
+                purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
+                results.add(new BuySellEntryItem(purchase));
+            }
+            catch (ParseException e)
+            {
+                errors.add(e);
+            }
+        }
+        else
+        {
+            errors.add(new Exception("Could not snif File type from file " + filename));
         }
         return results;
     }
