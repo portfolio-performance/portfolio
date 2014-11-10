@@ -32,7 +32,7 @@ Geschäftstag      : 01.01.2000        Ausführungsplatz  : XETRA
                                                                                                                                     
 Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
 Name der Security                                           BASF11                                                     
-Inhaber-Anteile                                                    DE000BASF11                                                     
+Inhaber-Anteile                                                    LU0488316133                                                     
                                                                                                                                     
                                                                                                                                     
 Nennwert                  Zum Kurs von                                                                                              

@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.datatransfer;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Account;
@@ -14,20 +15,41 @@ import name.abuchen.portfolio.model.Portfolio;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
-public class ComdirectPDFImportTest
+public class ComdirectPDFExtractorTest
 {
 
     private String gutschriftText;
     private String kaufText;
 
-    public ComdirectPDFImportTest()
+    public ComdirectPDFExtractorTest()
     {
         try
         {
-            gutschriftText = new Scanner(new File("Gutschrift.txt")).useDelimiter("\\A").next();
-            kaufText = new Scanner(new File("Wertpapierabrechnung_Kauf.txt")).useDelimiter("\\A").next();
+            BufferedReader reader = new BufferedReader(new InputStreamReader((new Temp()).getClass()
+                            .getResourceAsStream("/name/abuchen/portfolio/datatransfer/Gutschrift.txt")));
+            StringBuilder out = new StringBuilder();
+            int c;
+            while ((c = reader.read()) != -1)
+            {
+                out.append((char) c);
+            }
+            gutschriftText = out.toString();
+            reader.close();
+            reader = new BufferedReader(new InputStreamReader((new Temp()).getClass().getResourceAsStream(
+                            "/name/abuchen/portfolio/datatransfer/Wertpapierabrechnung_Kauf.txt")));
+            out = new StringBuilder();
+            while ((c = reader.read()) != -1)
+            {
+                out.append((char) c);
+            }
+            kaufText = out.toString();
+            reader.close();
         }
         catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
