@@ -15,7 +15,7 @@ Gutschrift fälliger Wertpapier-Erträge
 Ertragsgutschrift                                                                  
 Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
 per 01.01.2000                                                               BASF11             Name des Wertpapiers       
-STK              10,000                                                LU0488316133         Bearer Shares (Dt. Zert.) o.N.             
+STK              10,000                                                DE000BASF111         Bearer Shares (Dt. Zert.) o.N.             
                                       Emissionsland: IRLAND                        
 USD 0,20     Ausschüttung pro Stück für Geschäftsjahr     01.01.99 bis 01.01.00  
 zahlbar ab 01.01.2000                                                              
