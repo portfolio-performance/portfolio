@@ -127,7 +127,7 @@ public class ComdirectPDFExtractor implements Extractor
             }
             Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1));
             t.setType(AccountTransaction.Type.INTEREST);
-            t.setAmount(value.longValue()); // 1 euro = 100 cents
+            t.setAmount(Math.round(value.doubleValue() * Values.Amount.factor()));
             t.setSecurity(security);
             results.add(new TransactionItem(t));
         }
