@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 
-public class UpdateCPIJob extends AbstractClientJob
+public final class UpdateCPIJob extends AbstractClientJob
 {
     public UpdateCPIJob(Client client)
     {
@@ -32,25 +32,23 @@ public class UpdateCPIJob extends AbstractClientJob
 
         try
         {
-            List<ConsumerPriceIndex> prices = feed.getConsumerPriceIndeces();
-            getClient().setConsumerPriceIndeces(prices);
+            List<ConsumerPriceIndex> prices = feed.getConsumerPriceIndices();
+            boolean isDirty = getClient().setConsumerPriceIndices(prices);
+
+            if (isDirty)
+                getClient().markDirty();
         }
         catch (IOException e)
         {
             errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
 
-        notifyFinished();
-
         if (!errors.isEmpty())
         {
             PortfolioPlugin.log(new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1, errors.toArray(new IStatus[0]),
-                            Messages.JobMsgErrorUpdatingIndeces, null));
+                            Messages.JobMsgErrorUpdatingIndices, null));
         }
 
         return Status.OK_STATUS;
     }
-
-    protected void notifyFinished()
-    {}
 }

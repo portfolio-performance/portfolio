@@ -193,18 +193,34 @@ public final class Security implements Attributable, InvestmentVehicle
         return Collections.unmodifiableList(prices);
     }
 
-    public void addPrice(SecurityPrice price)
+    /**
+     * Adds security price to historical quotes.
+     * 
+     * @return true if the historical quote was updated.
+     */
+    public boolean addPrice(SecurityPrice price)
     {
         int index = Collections.binarySearch(prices, price);
 
         if (index < 0)
         {
-            prices.add(price);
-            Collections.sort(prices);
+            prices.add(~index, price);
+            return true;
         }
         else
         {
-            prices.set(index, price);
+            SecurityPrice replaced = prices.get(index);
+
+            if (!replaced.equals(price))
+            {
+                // only replace if necessary -> UI might keep reference!
+                prices.set(index, price);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -258,9 +274,23 @@ public final class Security implements Attributable, InvestmentVehicle
         return latest;
     }
 
-    public void setLatest(LatestSecurityPrice latest)
+    /**
+     * Sets the latest security price.
+     * 
+     * @return true if the latest security price was updated.
+     */
+    public boolean setLatest(LatestSecurityPrice latest)
     {
-        this.latest = latest;
+        // only replace if necessary -> UI might keep reference!
+        if ((this.latest != null && !this.latest.equals(latest)) || (this.latest == null && latest != null))
+        {
+            this.latest = latest;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public boolean isRetired()

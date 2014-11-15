@@ -62,12 +62,12 @@ public class AccountContextMenu
         // show security related actions only if
         // (a) a portfolio exists and (b) securities exist
 
-        if (!owner.getClient().getPortfolios().isEmpty() && !owner.getClient().getSecurities().isEmpty())
+        if (!owner.getClient().getActivePortfolios().isEmpty() && !owner.getClient().getSecurities().isEmpty())
         {
             // preselect a portfolio that has the current
             // account as a reference account
             final Portfolio[] portfolio = new Portfolio[1];
-            for (Portfolio p : owner.getClient().getPortfolios())
+            for (Portfolio p : owner.getClient().getActivePortfolios())
             {
                 if (p.getReferenceAccount().equals(account))
                 {

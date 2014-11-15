@@ -26,7 +26,7 @@ import org.joda.time.Interval;
                         .toInterval().getEnd()) : clientIndex.getReportInterval().toInterval();
 
         List<ConsumerPriceIndex> cpiSeries = new ArrayList<ConsumerPriceIndex>(clientIndex.getClient()
-                        .getConsumerPriceIndeces());
+                        .getConsumerPriceIndices());
         Collections.sort(cpiSeries, new ConsumerPriceIndex.ByDate());
 
         List<Date> dates = new ArrayList<Date>();

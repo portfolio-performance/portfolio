@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
@@ -204,6 +205,7 @@ public class StatementOfAssetsViewer
             }
 
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
+        column.setSorter(null);
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
@@ -233,6 +235,7 @@ public class StatementOfAssetsViewer
 
         column = new IsinColumn("3"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+        column.setSorter(null);
         column.setVisible(false);
         support.addColumn(column);
 
@@ -364,6 +367,7 @@ public class StatementOfAssetsViewer
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+        column.setSorter(null);
         support.addColumn(column);
 
         column = new Column("10", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -452,6 +456,8 @@ public class StatementOfAssetsViewer
 
         assets.setContentProvider(new StatementOfAssetsContentProvider());
 
+        ViewerHelper.pack(assets);
+
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(assets));
@@ -478,6 +484,7 @@ public class StatementOfAssetsViewer
         {
             Column column = new TaxonomyColumn(taxonomy);
             column.setVisible(false);
+            column.setSorter(null);
             support.addColumn(column);
         }
     }
@@ -494,14 +501,14 @@ public class StatementOfAssetsViewer
         }
         else if (element.isSecurity())
         {
-            new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity());
+            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getSource() : null;
+            new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), portfolio);
         }
     }
 
     public void pack()
     {
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(assets);
+        ViewerHelper.pack(assets);
     }
 
     public TableViewer getTableViewer()

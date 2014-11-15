@@ -192,8 +192,18 @@ public class ClientFactory
             }
             finally
             {
-                if (decrypted != null)
-                    decrypted.close();
+                try
+                {
+                    if (decrypted != null)
+                        decrypted.close();
+                }
+                catch (IOException ignore)
+                {
+                    // starting with a later jdk 1.8.0 (for example 1.8.0_25), a
+                    // javax.crypto.BadPaddingException
+                    // "Given final block not properly padded" is thrown if the
+                    // we do not read the complete stream
+                }
             }
         }
 
@@ -420,7 +430,10 @@ public class ClientFactory
                 // do nothing --> added note to investment plan
             case 21:
                 // do nothing --> added taxes to portfolio transaction
+            case 22:
+                // do nothing --> added 'isRetired' property to portfolio
                 client.setVersion(Client.CURRENT_VERSION);
+                break;
             case Client.CURRENT_VERSION:
                 break;
             default:

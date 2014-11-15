@@ -84,18 +84,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private void resetInput()
     {
-        if (isFiltered)
-        {
-            List<Account> list = new ArrayList<Account>();
-            for (Account a : getClient().getAccounts())
-                if (!a.isRetired())
-                    list.add(a);
-            accounts.setInput(list);
-        }
-        else
-        {
-            accounts.setInput(getClient().getAccounts());
-        }
+        accounts.setInput(isFiltered ? getClient().getActiveAccounts() : getClient().getAccounts());
     }
 
     @Override
@@ -550,8 +539,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
 
-        if (!transactionsColumns.isUserConfigured())
-            ViewerHelper.pack(transactions);
+        ViewerHelper.pack(transactions);
     }
 
     private Color colorFor(AccountTransaction t)

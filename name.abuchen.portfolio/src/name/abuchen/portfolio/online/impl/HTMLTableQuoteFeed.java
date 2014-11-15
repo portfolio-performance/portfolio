@@ -189,65 +189,71 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public void updateLatestQuotes(List<Security> securities, List<Exception> errors) throws IOException
+    public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
     {
+        boolean isUpdated = false;
+
         for (Security security : securities)
         {
-            try
+            List<LatestSecurityPrice> quotes = getHistoricalQuotes(security, null, errors);
+            int size = quotes.size();
+            if (size > 0)
             {
-                List<LatestSecurityPrice> quotes = getHistoricalQuotes(security, null, errors);
-                int size = quotes.size();
-                if (size > 0)
-                {
-                    Collections.sort(quotes);
+                Collections.sort(quotes);
 
-                    LatestSecurityPrice latest = quotes.get(size - 1);
-                    LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
-                    latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
+                LatestSecurityPrice latest = quotes.get(size - 1);
+                LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
+                latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
 
-                    security.setLatest(latest);
-                }
-            }
-            catch (IOException e)
-            {
-                errors.add(e);
+                boolean isAdded = security.setLatest(latest);
+                isUpdated = isUpdated || isAdded;
             }
         }
+
+        return isUpdated;
     }
 
     @Override
-    public void updateHistoricalQuotes(Security security, List<Exception> errors) throws IOException
+    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
     {
         List<LatestSecurityPrice> quotes = getHistoricalQuotes(security, null, errors);
 
+        boolean isUpdated = false;
         for (LatestSecurityPrice quote : quotes)
-            security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
+        {
+            boolean isAdded = security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
+            isUpdated = isUpdated || isAdded;
+        }
+        
+        return isUpdated;
     }
 
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
-                    throws IOException
     {
         if (security.getFeedURL() == null || security.getFeedURL().length() == 0)
-            throw new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName()));
+        {
+            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
+            return Collections.emptyList();
+        }
 
         return parseFromURL(security.getFeedURL(), errors);
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors) throws IOException
+    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
     {
         return parseFromHTML(response, errors);
     }
 
     @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors) throws IOException
+    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
         return null;
     }
 
     @SuppressWarnings("nls")
-    protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors) throws IOException
+    protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         // without a user agent, some sites serve a mobile/alternative version
         String userAgent = null;
@@ -267,16 +273,22 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
         catch (URISyntaxException e)
         {
-            throw new IOException(e);
+            errors.add(e);
+            return Collections.emptyList();
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
+            return Collections.emptyList();
         }
     }
 
-    protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors) throws IOException
+    protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
     {
         return parse(Jsoup.parse(html), errors);
     }
 
-    private List<LatestSecurityPrice> parse(Document document, List<Exception> errors) throws IOException
+    private List<LatestSecurityPrice> parse(Document document, List<Exception> errors)
     {
         List<LatestSecurityPrice> prices = new ArrayList<LatestSecurityPrice>();
 

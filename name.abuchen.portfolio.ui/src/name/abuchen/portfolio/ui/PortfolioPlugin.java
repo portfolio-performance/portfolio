@@ -187,6 +187,11 @@ public class PortfolioPlugin implements BundleActivator
         log(new Status(Status.ERROR, PLUGIN_ID, t.getMessage(), t));
     }
 
+    public static void log(String message)
+    {
+        log(new Status(Status.ERROR, PLUGIN_ID, message));
+    }
+
     public static void log(List<Exception> errors)
     {
         for (Exception e : errors)

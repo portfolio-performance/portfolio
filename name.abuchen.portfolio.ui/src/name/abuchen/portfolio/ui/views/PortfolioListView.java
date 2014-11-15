@@ -4,6 +4,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.util.Dates;
 
@@ -34,17 +36,22 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
 public class PortfolioListView extends AbstractListView implements ModificationListener
 {
+    private static final String FILTER_INACTIVE_PORTFOLIOS = "filter-retired-portfolios"; //$NON-NLS-1$
+
     private TableViewer portfolios;
     private StatementOfAssetsViewer statementOfAssets;
     private PortfolioTransactionsViewer transactions;
 
     private ShowHideColumnHelper portfolioColumns;
+
+    private boolean isFiltered = false;
 
     @Override
     protected String getTitle()
@@ -53,8 +60,23 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     }
 
     @Override
+    public void init(PortfolioPart part, Object parameter)
+    {
+        super.init(part, parameter);
+
+        isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_PORTFOLIOS);
+    }
+
+    private void setInput()
+    {
+        portfolios.setInput(isFiltered ? getClient().getActivePortfolios() : getClient().getPortfolios());
+    }
+
+    @Override
     public void notifyModelUpdated()
     {
+        // actions from the security context menu (buy, sell, ...) call
+        // #notifyModelUpdated when adding new transactions
         portfolios.setSelection(portfolios.getSelection());
     }
 
@@ -68,6 +90,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     protected void addButtons(ToolBar toolBar)
     {
         addNewPortfolioButton(toolBar);
+        addFilterButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -96,7 +119,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                 getClient().addPortfolio(portfolio);
                 markDirty();
 
-                portfolios.setInput(getClient().getPortfolios());
+                setInput();
                 portfolios.editElement(portfolio, 0);
             }
         };
@@ -104,6 +127,24 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         action.setToolTipText(Messages.PortfolioMenuAdd);
 
         new ActionContributionItem(action).fill(toolBar, -1);
+    }
+
+    private void addFilterButton(ToolBar toolBar)
+    {
+        Action filter = new Action()
+        {
+            @Override
+            public void run()
+            {
+                isFiltered = isChecked();
+                getPart().getPreferenceStore().setValue(FILTER_INACTIVE_PORTFOLIOS, isFiltered);
+                setInput();
+            }
+        };
+        filter.setChecked(isFiltered);
+        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_FILTER));
+        filter.setToolTipText(Messages.PortfolioFilterRetiredPortfolios);
+        new ActionContributionItem(filter).fill(toolBar, -1);
     }
 
     private void addConfigButton(final ToolBar toolBar)
@@ -143,6 +184,15 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                         getPreferenceStore(), portfolios, layout);
 
         Column column = new NameColumn("0", Messages.ColumnPortfolio, SWT.None, 100); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider()
+        {
+            @Override
+            public Color getForeground(Object e)
+            {
+                boolean isRetired = ((Portfolio) e).isRetired();
+                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
+            }
+        });
         column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
 
@@ -154,13 +204,6 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             {
                 Portfolio p = (Portfolio) e;
                 return p.getReferenceAccount() != null ? p.getReferenceAccount().getName() : null;
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((Portfolio) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
             }
         });
         ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(column); //$NON-NLS-1$
@@ -178,9 +221,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         portfolios.getTable().setLinesVisible(true);
 
         portfolios.setContentProvider(new SimpleListContentProvider());
-        portfolios.setInput(getClient().getPortfolios());
-        if (!portfolioColumns.isUserConfigured())
-            ViewerHelper.pack(portfolios);
+        setInput();
+        ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -221,6 +263,20 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
 
         manager.add(new Separator());
+
+        manager.add(new Action(portfolio.isRetired() ? Messages.PortfolioMenuActivate
+                        : Messages.PortfolioMenuDeactivate)
+        {
+            @Override
+            public void run()
+            {
+                portfolio.setRetired(!portfolio.isRetired());
+                markDirty();
+                setInput();
+            }
+
+        });
+
         manager.add(new Action(Messages.PortfolioMenuDelete)
         {
             @Override
@@ -228,8 +284,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             {
                 getClient().removePortfolio(portfolio);
                 markDirty();
-
-                portfolios.setInput(getClient().getPortfolios());
+                setInput();
             }
         });
     }
@@ -262,11 +317,11 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         folder.setSelection(0);
 
-        if (!getClient().getPortfolios().isEmpty())
-            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
-
         statementOfAssets.pack();
         transactions.pack();
+
+        if (!getClient().getActivePortfolios().isEmpty())
+            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
     }
 
 }

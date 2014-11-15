@@ -15,6 +15,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -34,7 +35,10 @@ public class ImportHandler
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart))
+        {
+            MessageDialog.openWarning(shell, Messages.MsgNoFileOpen, Messages.MsgNoFileOpenText);
             return;
+        }
 
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
         Client client = portfolioPart.getClient();
