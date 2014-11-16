@@ -84,18 +84,24 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private boolean doUpdateLatestQuotes(IProgressMonitor monitor, List<IStatus> errors)
     {
-        Map<String, List<Security>> byFeeds = new HashMap<String, List<Security>>();
+        Map<String, List<Security>> feed2securities = new HashMap<String, List<Security>>();
         for (Security s : securities)
         {
-            List<Security> l = byFeeds.get(s.getFeed());
+            // if configured, use feed for latest quotes
+            // otherwise use the default feed used by historical quotes as well
+            String feedId = s.getLatestFeed();
+            if (feedId == null)
+                feedId = s.getFeed();
+
+            List<Security> l = feed2securities.get(feedId);
             if (l == null)
-                byFeeds.put(s.getFeed(), l = new ArrayList<Security>());
+                feed2securities.put(feedId, l = new ArrayList<Security>());
             l.add(s);
         }
 
         boolean isDirty = false;
 
-        for (Map.Entry<String, List<Security>> entry : byFeeds.entrySet())
+        for (Map.Entry<String, List<Security>> entry : feed2securities.entrySet())
         {
             if (monitor.isCanceled())
                 return isDirty;

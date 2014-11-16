@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 23;
+    /* package */static final int CURRENT_VERSION = 24;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -141,7 +141,7 @@ public class Client
     public boolean setConsumerPriceIndices(List<ConsumerPriceIndex> indices)
     {
         if (indices == null)
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
 
         List<ConsumerPriceIndex> newValues = new ArrayList<ConsumerPriceIndex>(indices);
         Collections.sort(newValues, new ConsumerPriceIndex.ByDate());

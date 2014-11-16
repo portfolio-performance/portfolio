@@ -32,9 +32,15 @@ public final class Security implements Attributable, InvestmentVehicle
     private String tickerSymbol;
     private String wkn;
 
+    // feed and feedURL are used to update historical prices
     private String feed;
     private String feedURL;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
+
+    // latestFeed and latestFeedURL are used to update the latest (current)
+    // quote. If null, the values from feed and feedURL are used instead.
+    private String latestFeed;
+    private String latestFeedURL;
     private LatestSecurityPrice latest;
 
     private Attributes attributes;
@@ -269,6 +275,26 @@ public final class Security implements Attributable, InvestmentVehicle
             return prices.get(Math.max(-index - 2, 0));
     }
 
+    public String getLatestFeed()
+    {
+        return latestFeed;
+    }
+
+    public void setLatestFeed(String latestFeed)
+    {
+        this.latestFeed = latestFeed;
+    }
+
+    public String getLatestFeedURL()
+    {
+        return latestFeedURL;
+    }
+
+    public void setLatestFeedURL(String latestFeedURL)
+    {
+        this.latestFeedURL = latestFeedURL;
+    }
+
     public LatestSecurityPrice getLatest()
     {
         return latest;
@@ -402,6 +428,9 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.feed = feed;
         answer.feedURL = feedURL;
         answer.prices = new ArrayList<SecurityPrice>(prices);
+
+        answer.latestFeed = latestFeed;
+        answer.latestFeedURL = latestFeedURL;
         answer.latest = latest;
 
         answer.events = new ArrayList<SecurityEvent>(getEvents());

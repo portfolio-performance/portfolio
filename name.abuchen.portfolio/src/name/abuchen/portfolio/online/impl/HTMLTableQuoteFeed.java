@@ -195,7 +195,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (Security security : securities)
         {
-            List<LatestSecurityPrice> quotes = getHistoricalQuotes(security, null, errors);
+            List<LatestSecurityPrice> quotes = internalGetQuotes(security, security.getLatestFeedURL(), errors);
             int size = quotes.size();
             if (size > 0)
             {
@@ -216,7 +216,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     @Override
     public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
     {
-        List<LatestSecurityPrice> quotes = getHistoricalQuotes(security, null, errors);
+        List<LatestSecurityPrice> quotes = internalGetQuotes(security, security.getFeedURL(), errors);
 
         boolean isUpdated = false;
         for (LatestSecurityPrice quote : quotes)
@@ -231,13 +231,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
     {
-        if (security.getFeedURL() == null || security.getFeedURL().length() == 0)
+        return internalGetQuotes(security, security.getFeedURL(), errors);
+    }
+
+    private List<LatestSecurityPrice> internalGetQuotes(Security security, String feedURL, List<Exception> errors)
+    {
+        if (feedURL == null || feedURL.length() == 0)
         {
             errors.add(new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
             return Collections.emptyList();
         }
 
-        return parseFromURL(security.getFeedURL(), errors);
+        return parseFromURL(feedURL, errors);
     }
 
     @Override

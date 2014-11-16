@@ -432,6 +432,9 @@ public class ClientFactory
                 // do nothing --> added taxes to portfolio transaction
             case 22:
                 // do nothing --> added 'isRetired' property to portfolio
+            case 23:
+                // do nothing --> added 'latestFeed' and 'latestFeedURL'
+                // property to security
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:

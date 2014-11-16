@@ -177,13 +177,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String wkn;
     private String feed;
     private String feedURL;
+    private String latestFeed;
+    private String latestFeedURL;
     private boolean isRetired;
 
     /**
      * Used to pipe the status of a manually validated quote provider into the
      * binding context
      */
-    private String statusQuoteProvider;
+    private String statusHistoricalQuotesProvider;
+    private String statusLatestQuotesProvider;
 
     private List<TaxonomyDesignation> taxonomies = new ArrayList<TaxonomyDesignation>();
     private List<AttributeDesignation> attributes = new ArrayList<AttributeDesignation>();
@@ -201,6 +204,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.wkn = security.getWkn();
         this.feed = security.getFeed();
         this.feedURL = security.getFeedURL();
+        this.latestFeed = security.getLatestFeed();
+        this.latestFeedURL = security.getLatestFeedURL();
         this.isRetired = security.isRetired();
 
         for (Taxonomy taxonomy : client.getTaxonomies())
@@ -287,6 +292,26 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("feedURL", this.feedURL, this.feedURL = feedURL); //$NON-NLS-1$
     }
 
+    public String getLatestFeed()
+    {
+        return latestFeed;
+    }
+
+    public void setLatestFeed(String latestFeed)
+    {
+        firePropertyChange("latestFeed", this.latestFeed, this.latestFeed = latestFeed); //$NON-NLS-1$
+    }
+
+    public String getLatestFeedURL()
+    {
+        return latestFeedURL;
+    }
+
+    public void setLatestFeedURL(String latestFeedURL)
+    {
+        firePropertyChange("latestFeedURL", this.latestFeedURL, this.latestFeedURL = latestFeedURL); //$NON-NLS-1$
+    }
+
     public boolean isRetired()
     {
         return isRetired;
@@ -297,15 +322,26 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$
     }
 
-    public String getStatusQuoteProvider()
+    public String getStatusHistoricalQuotesProvider()
     {
-        return statusQuoteProvider;
+        return statusHistoricalQuotesProvider;
     }
 
-    public void setStatusQuoteProvider(String statusQuoteProvider)
+    public void setStatusHistoricalQuotesProvider(String status)
     {
-        firePropertyChange(
-                        "statusQuoteProvider", this.statusQuoteProvider, this.statusQuoteProvider = statusQuoteProvider); //$NON-NLS-1$
+        firePropertyChange("statusHistoricalQuotesProvider", this.statusHistoricalQuotesProvider, //$NON-NLS-1$
+                        this.statusHistoricalQuotesProvider = status);
+    }
+
+    public String getStatusLatestQuotesProvider()
+    {
+        return statusLatestQuotesProvider;
+    }
+
+    public void setStatusLatestQuotesProvider(String status)
+    {
+        firePropertyChange("statusLatestQuotesProvider", this.statusLatestQuotesProvider, //$NON-NLS-1$
+                        this.statusLatestQuotesProvider = status);
     }
 
     public List<TaxonomyDesignation> getDesignations()
@@ -333,6 +369,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setWkn(wkn);
         security.setFeed(feed);
         security.setFeedURL(feedURL);
+        security.setLatestFeed(latestFeed);
+        security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
 
         for (TaxonomyDesignation designation : taxonomies)

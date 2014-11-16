@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
+import static name.abuchen.portfolio.ui.util.FormLayoutHelper.widestWidget;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
@@ -203,7 +205,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         // form layout
         //
 
-        Label biggest = maxWidth(lblTarget, lblDelimiter, lblEncoding);
+        Control biggest = widestWidget(lblTarget, lblDelimiter, lblEncoding);
 
         FormData data = new FormData();
         data.top = new FormAttachment(cmbTarget, 0, SWT.CENTER);
@@ -318,21 +320,6 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         }
         target.setInput(targets);
         target.setSelection(new StructuredSelection(target.getElementAt(0)));
-    }
-
-    private Label maxWidth(Label... labels)
-    {
-        int width = 0;
-        Label answer = null;
-
-        for (int ii = 0; ii < labels.length; ii++)
-        {
-            int w = labels[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-            if (w >= width)
-                answer = labels[ii];
-        }
-
-        return answer;
     }
 
     @Override

@@ -168,12 +168,14 @@ public class Messages extends NLS
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
     public static String EditWizardAttributesTitle;
+    public static String EditWizardLatestQuoteFeedTitle;
     public static String EditWizardMasterDataLinkNewCategory;
     public static String EditWizardMasterDataMsgClassificationMissing;
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
+    public static String EditWizardOptionSameAsHistoricalQuoteFeed;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
