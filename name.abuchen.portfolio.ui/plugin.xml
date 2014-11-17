@@ -3,23 +3,6 @@
 <plugin>
 
    <extension
-         id="product"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="org.eclipse.e4.ui.workbench.swt.E4Application"
-            name="Portfolio Performance">
-         <property
-               name="appName"
-               value="Portfolio Performance">
-         </property>
-         <property
-               name="lifeCycleURI"
-               value="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.LifeCycleManager">
-         </property>
-      </product>
-   </extension>
-
-   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="name.abuchen.portfolio.ui.preferences.UpdateInitializer">
