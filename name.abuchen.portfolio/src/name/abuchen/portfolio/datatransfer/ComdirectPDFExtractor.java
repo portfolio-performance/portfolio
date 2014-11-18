@@ -34,7 +34,7 @@ public class ComdirectPDFExtractor implements Extractor
     private NumberFormat format;
     private List<Security> allSecurities;
 
-    public ComdirectPDFExtractor(Client client)
+    public ComdirectPDFExtractor(Client client) throws IOException
     {
         // Parsing formats rely on german style PDFs
         df = new SimpleDateFormat("dd.MM.yyyy");
@@ -42,14 +42,7 @@ public class ComdirectPDFExtractor implements Extractor
 
         isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
         allSecurities = new ArrayList<Security>(client.getSecurities());
-        try
-        {
-            stripper = new PDFTextStripper();
-        }
-        catch (IOException e)
-        {
-            // PortfolioPlugin.log(e);
-        }
+        stripper = new PDFTextStripper();
     }
 
     @Override
@@ -58,17 +51,30 @@ public class ComdirectPDFExtractor implements Extractor
         List<Item> results = new ArrayList<Item>();
         for (File f : files)
         {
+            PDDocument doc = null;
             try
             {
-                PDDocument doc = PDDocument.load(f);
+                doc = PDDocument.load(f);
                 String text = stripper.getText(doc);
                 String filename = f.getName();
                 results.addAll(extract(text, filename, errors));
-                doc.close();
             }
             catch (IOException e)
             {
                 errors.add(e);
+            }
+            finally
+            {
+                // FIXME java7 try with syntax
+                if (doc != null)
+                {
+                    try
+                    {
+                        doc.close();
+                    }
+                    catch (IOException ignore)
+                    {}
+                }
             }
 
         }
@@ -203,7 +209,7 @@ public class ComdirectPDFExtractor implements Extractor
     @Override
     public String getFilterExtension()
     {
-        return "*.pdf";
+        return "*.pdf"; //$NON-NLS-1$
     }
 
     private Security getSecurityForISIN(String isin)
@@ -255,11 +261,10 @@ public class ComdirectPDFExtractor implements Extractor
         {
             return format.parse(word);
         }
-        catch (ParseException e)
+        catch (ParseException ignore)
         {
-            // PortfolioPlugin.log(e);
+            return -1;
         }
-        return -1;
     }
 
     private int jumpWord(String text, int position, int words)

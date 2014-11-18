@@ -17,16 +17,14 @@ public class ImportExtractedItemsWizard extends Wizard
     private Client client;
     private Extractor extractor;
     private List<File> files;
-    private List<Exception> errors;
 
     private ReviewExtractedItemsPage page;
 
-    public ImportExtractedItemsWizard(Client client, Extractor extractor, List<File> files, List<Exception> errors)
+    public ImportExtractedItemsWizard(Client client, Extractor extractor, List<File> files)
     {
         this.client = client;
         this.extractor = extractor;
         this.files = files;
-        this.errors = errors;
 
         setWindowTitle(Messages.PDFImportWizardTitle);
         setNeedsProgressMonitor(true);
@@ -35,7 +33,7 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public void addPages()
     {
-        page = new ReviewExtractedItemsPage(client, extractor, files, errors);
+        page = new ReviewExtractedItemsPage(client, extractor, files);
         addPage(page);
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }

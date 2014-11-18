@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -30,7 +31,7 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
-    public void testGutschrift()
+    public void testGutschrift() throws IOException
     {
         Client client = new Client();
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
@@ -61,7 +62,7 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
-    public void testKauf()
+    public void testKauf() throws IOException
     {
         Client client = new Client();
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);

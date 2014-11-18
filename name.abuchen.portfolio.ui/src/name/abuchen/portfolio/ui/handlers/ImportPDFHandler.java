@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ImportPDFHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @Named("name.abuchen.portfolio.ui.param.pdf-type") String type)
+                    @Named("name.abuchen.portfolio.ui.param.pdf-type") String type) throws IOException
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart))
             return;
@@ -70,13 +71,12 @@ public class ImportPDFHandler
             return;
 
         List<File> files = new ArrayList<File>();
-        List<Exception> errors = new ArrayList<Exception>();
         for (String file : fileNames)
             files.add(new File(fileDialog.getFilterPath(), file));
 
         // open wizard dialog
 
-        Dialog wizwardDialog = new WizardDialog(shell, new ImportExtractedItemsWizard(client, extractor, files, errors));
+        Dialog wizwardDialog = new WizardDialog(shell, new ImportExtractedItemsWizard(client, extractor, files));
         wizwardDialog.open();
     }
 }

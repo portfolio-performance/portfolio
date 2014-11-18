@@ -85,4 +85,3 @@ Import-Package: de.engehausen.treemap,
  org.osgi.service.prefs;version="1.1.1",
  org.swtchart
 Require-Bundle: org.eclipse.core.expressions
-Export-Package: name.abuchen.portfolio.ui
