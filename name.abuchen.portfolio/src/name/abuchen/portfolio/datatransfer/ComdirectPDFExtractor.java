@@ -3,10 +3,12 @@ package name.abuchen.portfolio.datatransfer;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -83,6 +85,13 @@ public class ComdirectPDFExtractor implements Extractor
 
     public List<Item> extract(String text, String filename, List<Exception> errors)
     {
+        if (!text.contains("comdirect bank")) //$NON-NLS-1$
+        {
+            errors.add(new UnsupportedOperationException(MessageFormat.format(
+                            "Datei ''{0}'' ist kein unterstütztes Dokument der comdirect bank zu sein", filename)));
+            return Collections.emptyList();
+        }
+
         List<Item> results = new ArrayList<Item>();
         // an interest payment is identified by the topic string
         if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))

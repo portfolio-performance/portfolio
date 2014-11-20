@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.datatransfer;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,4 +96,15 @@ public class ComdirectPDFExtractorTest
         assert (errors.size() == 0);
     }
 
+    @Test
+    public void testThatExceptionIsAddedForNonComdirectDocuments() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract("some document text", "otherfile", errors);
+
+        assertThat(results.isEmpty(), is(true));
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0).getMessage(), containsString("otherfile"));
+    }
 }
