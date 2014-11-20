@@ -4,6 +4,8 @@ A simple tool to calculate the overall performance of an investment portfolio.
 
 See http://buchen.github.com/portfolio/ for more details.
 
+[![Build Status](https://travis-ci.org/buchen/portfolio.svg?branch=master)](https://travis-ci.org/buchen/portfolio)
+
 ## Prerequisites
 
 * [Java 7](http://www.java.com)

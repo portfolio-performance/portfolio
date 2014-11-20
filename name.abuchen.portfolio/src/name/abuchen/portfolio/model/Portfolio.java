@@ -9,6 +9,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
     private String uuid;
     private String name;
     private String note;
+    private boolean isRetired = false;
 
     private Account referenceAccount;
 
@@ -52,6 +53,16 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
     public void setNote(String note)
     {
         this.note = note;
+    }
+
+    public boolean isRetired()
+    {
+        return isRetired;
+    }
+
+    public void setRetired(boolean isRetired)
+    {
+        this.isRetired = isRetired;
     }
 
     public Account getReferenceAccount()

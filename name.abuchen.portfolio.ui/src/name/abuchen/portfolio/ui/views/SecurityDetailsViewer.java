@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.ui.util.FormLayoutHelper.dateWidth;
+import static name.abuchen.portfolio.ui.util.FormLayoutHelper.placeBelow;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +27,6 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -258,34 +259,16 @@ public class SecurityDetailsViewer
             data.top = new FormAttachment(headingQuotes, 5);
             data.left = new FormAttachment(50, 5);
             data.right = new FormAttachment(100);
+            data.width = dateWidth(composite);
             valueLatestPrices.setLayoutData(data);
 
-            GC gc = new GC(composite);
-            Point extentText = gc.stringExtent("YYYY-MM-DD"); //$NON-NLS-1$
-            gc.dispose();
-            below(valueLatestPrices, labelLatestTrade, valueLatestTrade, extentText.x);
-
-            below(valueLatestTrade, labelDaysHigh, valueDaysHigh, SWT.DEFAULT);
-            below(valueDaysHigh, labelDaysLow, valueDaysLow, SWT.DEFAULT);
-            below(valueDaysLow, labelVolume, valueVolume, SWT.DEFAULT);
-            below(valueVolume, labelPreviousClose, valuePreviousClose, SWT.DEFAULT);
+            placeBelow(valueLatestPrices, labelLatestTrade, valueLatestTrade);
+            placeBelow(valueLatestTrade, labelDaysHigh, valueDaysHigh);
+            placeBelow(valueDaysHigh, labelDaysLow, valueDaysLow);
+            placeBelow(valueDaysLow, labelVolume, valueVolume);
+            placeBelow(valueVolume, labelPreviousClose, valuePreviousClose);
 
             return composite;
-        }
-
-        protected void below(Label referenceItem, Label label, Label value, int width)
-        {
-            FormData data;
-            data = new FormData();
-            data.top = new FormAttachment(value, 0, SWT.CENTER);
-            label.setLayoutData(data);
-
-            data = new FormData();
-            data.top = new FormAttachment(referenceItem, 5);
-            data.left = new FormAttachment(referenceItem, 0, SWT.LEFT);
-            data.right = new FormAttachment(100);
-            data.width = width;
-            value.setLayoutData(data);
         }
 
         @Override

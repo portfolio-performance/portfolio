@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 22;
+    /* package */static final int CURRENT_VERSION = 24;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -24,6 +24,8 @@ public class Client
 
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists;
+
+    // keep typo -> xstream deserialization
     private List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<Account>();
@@ -126,15 +128,36 @@ public class Client
         return watchlists;
     }
 
-    public List<ConsumerPriceIndex> getConsumerPriceIndeces()
+    public List<ConsumerPriceIndex> getConsumerPriceIndices()
     {
         return Collections.unmodifiableList(consumerPriceIndeces);
     }
 
-    public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
+    /**
+     * Sets the consumer price indices.
+     * 
+     * @return true if the indices are modified.
+     */
+    public boolean setConsumerPriceIndices(List<ConsumerPriceIndex> indices)
     {
-        this.consumerPriceIndeces = prices;
-        Collections.sort(this.consumerPriceIndeces, new ConsumerPriceIndex.ByDate());
+        if (indices == null)
+            throw new IllegalArgumentException();
+
+        List<ConsumerPriceIndex> newValues = new ArrayList<ConsumerPriceIndex>(indices);
+        Collections.sort(newValues, new ConsumerPriceIndex.ByDate());
+
+        if (consumerPriceIndeces == null || !consumerPriceIndeces.equals(newValues))
+        {
+            // only assign list if indices have actually changed because UI
+            // elements keep a reference which is not updated if no 'dirty'
+            // event is fired
+            this.consumerPriceIndeces = newValues;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void addConsumerPriceIndex(ConsumerPriceIndex record)
@@ -165,6 +188,20 @@ public class Client
         return Collections.unmodifiableList(accounts);
     }
 
+    /**
+     * Returns a sorted list of active accounts, i.e. accounts that are not
+     * marked as retired.
+     */
+    public List<Account> getActiveAccounts()
+    {
+        List<Account> active = new ArrayList<Account>(accounts.size());
+        for (Account account : accounts)
+            if (!account.isRetired())
+                active.add(account);
+        Collections.sort(active, new Account.ByName());
+        return active;
+    }
+
     public void addPortfolio(Portfolio portfolio)
     {
         portfolios.add(portfolio);
@@ -180,6 +217,20 @@ public class Client
     public List<Portfolio> getPortfolios()
     {
         return Collections.unmodifiableList(portfolios);
+    }
+
+    /**
+     * Returns a sorted list of active portfolios, i.e. portfolios that are not
+     * marked as retired.
+     */
+    public List<Portfolio> getActivePortfolios()
+    {
+        List<Portfolio> active = new ArrayList<Portfolio>(portfolios.size());
+        for (Portfolio portfolio : portfolios)
+            if (!portfolio.isRetired())
+                active.add(portfolio);
+        Collections.sort(active, new Portfolio.ByName());
+        return active;
     }
 
     @Deprecated

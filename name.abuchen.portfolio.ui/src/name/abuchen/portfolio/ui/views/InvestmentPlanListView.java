@@ -144,8 +144,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         plans.setContentProvider(ArrayContentProvider.getInstance());
         plans.setInput(getClient().getPlans());
 
-        if (!planColumns.isUserConfigured())
-            ViewerHelper.pack(plans);
+        ViewerHelper.pack(plans);
 
         plans.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -214,7 +213,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
-        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getPortfolios()).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getActivePortfolios()).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAccount, SWT.None, 120);

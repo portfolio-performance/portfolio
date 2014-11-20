@@ -124,8 +124,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
     public void pack()
     {
-        if (!support.isUserConfigured())
-            ViewerHelper.pack(tableViewer);
+        ViewerHelper.pack(tableViewer);
     }
 
     public void setInput(Portfolio portfolio, List<PortfolioTransaction> transactions)

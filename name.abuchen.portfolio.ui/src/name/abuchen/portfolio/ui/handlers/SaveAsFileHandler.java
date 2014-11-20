@@ -1,10 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 import javax.inject.Named;
@@ -12,8 +8,8 @@ import javax.inject.Named;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -49,7 +45,10 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart))
+        {
+            MessageDialog.openWarning(shell, Messages.MsgNoFileOpen, Messages.MsgNoFileOpenText);
             return;
+        }
 
         if (extension == null)
             throw new IllegalArgumentException("Missing file extension parameter"); //$NON-NLS-1$
@@ -108,25 +107,7 @@ public class SaveAsFileHandler
                 @Override
                 public void widgetSelected(SelectionEvent event)
                 {
-                    if (Desktop.isDesktopSupported())
-                    {
-                        Desktop desktop = Desktop.getDesktop();
-                        if (desktop.isSupported(Desktop.Action.BROWSE))
-                        {
-                            try
-                            {
-                                desktop.browse(new URI(String.valueOf(event.text)));
-                            }
-                            catch (IOException ignore)
-                            {
-                                PortfolioPlugin.log(ignore);
-                            }
-                            catch (URISyntaxException ignore)
-                            {
-                                PortfolioPlugin.log(ignore);
-                            }
-                        }
-                    }
+                    DesktopAPI.browse(String.valueOf(event.text));
                 }
             });
 

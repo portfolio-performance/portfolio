@@ -28,7 +28,6 @@ import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
@@ -36,6 +35,8 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
@@ -178,8 +179,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     public void notifyModelUpdated()
     {
-        if (securities != null)
-            setSecurityTableInput();
+        if (securities != null && !securities.getTableViewer().getTable().isDisposed())
+        {
+            securities.getTableViewer().refresh(true);
+            securities.getTableViewer().setSelection(securities.getTableViewer().getSelection());
+        }
     }
 
     @Override
@@ -531,6 +535,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices.getTable().setLinesVisible(true);
 
         prices.setContentProvider(new SimpleListContentProvider(true));
+
+        ViewerHelper.pack(prices);
 
         hookContextMenu(prices.getTable(), new IMenuListener()
         {
@@ -929,6 +935,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         transactions.setContentProvider(new SimpleListContentProvider(true));
 
+        ViewerHelper.pack(transactions);
+
         return container;
     }
 
@@ -986,6 +994,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         events.getTable().setLinesVisible(true);
 
         events.setContentProvider(new SimpleListContentProvider(true));
+
+        ViewerHelper.pack(events);
 
         return container;
     }

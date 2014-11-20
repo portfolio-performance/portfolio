@@ -203,12 +203,6 @@ public class DividendsDialog extends AbstractDialog
         }
 
         // account
-        List<Account> accounts = new ArrayList<Account>();
-        for (Account a : getModel().getClient().getAccounts())
-            if (!a.isRetired())
-                accounts.add(a);
-        Collections.sort(accounts, new Account.ByName());
-
         bindings().bindComboViewer(editArea, Messages.ColumnAccount, "account", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
@@ -224,7 +218,7 @@ public class DividendsDialog extends AbstractDialog
                                 return value != null ? ValidationStatus.ok() : ValidationStatus
                                                 .error(Messages.MsgMissingAccount);
                             }
-                        }, accounts);
+                        }, getModel().getClient().getActiveAccounts());
 
         // amount
         bindings().bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "amount").setFocus(); //$NON-NLS-1$

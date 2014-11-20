@@ -50,8 +50,9 @@ public class SecurityDeliveryDialog extends AbstractDialog
             this.portfolio = portfolio;
             this.type = type;
 
-            if (portfolio == null && !client.getPortfolios().isEmpty())
-                setPortfolio(client.getPortfolios().get(0));
+            List<Portfolio> activePortfolios = client.getActivePortfolios();
+            if (portfolio == null && !activePortfolios.isEmpty())
+                setPortfolio(activePortfolios.get(0));
             if (security == null && !client.getSecurities().isEmpty())
                 setSecurity(client.getSecurities().get(0));
         }
@@ -207,7 +208,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
                             {
                                 return ((Portfolio) element).getName();
                             }
-                        }, getModel().getClient().getPortfolios().toArray());
+                        }, getModel().getClient().getActivePortfolios().toArray());
 
         // shares
         bindings().bindMandatorySharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$

@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.parts;
 
-import java.awt.Desktop;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +9,7 @@ import javax.inject.Inject;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameter;
@@ -157,21 +156,7 @@ public class WelcomePart
         }
         else if (target.startsWith("http")) //$NON-NLS-1$
         {
-            if (Desktop.isDesktopSupported())
-            {
-                Desktop desktop = Desktop.getDesktop();
-                if (desktop.isSupported(Desktop.Action.BROWSE))
-                {
-                    try
-                    {
-                        desktop.browse(new URI(target));
-                    }
-                    catch (Exception e)
-                    {
-                        PortfolioPlugin.log(e);
-                    }
-                }
-            }
+            DesktopAPI.browse(target);
         }
     }
 

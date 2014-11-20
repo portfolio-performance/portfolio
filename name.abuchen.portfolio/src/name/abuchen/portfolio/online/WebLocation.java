@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.online;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import name.abuchen.portfolio.model.Security;
@@ -28,15 +26,23 @@ public class WebLocation
         return pattern;
     }
 
-    public URI constructURL(Security security) throws IOException, URISyntaxException
+    public String constructURL(Security security)
     {
         String url = pattern.replace("{tickerSymbol}", encode(security.getTickerSymbol())); //$NON-NLS-1$
         url = url.replace("{isin}", encode(security.getIsin())); //$NON-NLS-1$
-        return new URI(url);
+        return url;
     }
 
-    private String encode(String s) throws IOException
+    private String encode(String s)
     {
-        return s == null ? "" : URLEncoder.encode(s, "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+        try
+        {
+            return s == null ? "" : URLEncoder.encode(s, "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        catch (UnsupportedEncodingException ignore)
+        {
+            // UTF-8 is always supported
+            return s;
+        }
     }
 }

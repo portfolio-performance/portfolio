@@ -156,6 +156,10 @@ public class Messages extends NLS
     public static String CSVImportSeparatorTab;
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
+    public static String DesktopAPIBrowserActionNotSupported;
+    public static String DesktopAPIErrorOpeningURL;
+    public static String DesktopAPIIllegalURL;
+    public static String DesktopAPIPlatformNotSupported;
     public static String DialogConsistencyChecksTitle;
     public static String DialogConssitencyChecksMessage;
     public static String DialogTaxonomyNamePrompt;
@@ -164,12 +168,14 @@ public class Messages extends NLS
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
     public static String EditWizardAttributesTitle;
+    public static String EditWizardLatestQuoteFeedTitle;
     public static String EditWizardMasterDataLinkNewCategory;
     public static String EditWizardMasterDataMsgClassificationMissing;
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
+    public static String EditWizardOptionSameAsHistoricalQuoteFeed;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
@@ -222,7 +228,7 @@ public class Messages extends NLS
     public static String JobLabelUpdateStackedLineChart;
     public static String JobLabelUpdating;
     public static String JobMsgCheckingForUpdates;
-    public static String JobMsgErrorUpdatingIndeces;
+    public static String JobMsgErrorUpdatingIndices;
     public static String JobMsgErrorUpdatingQuotes;
     public static String JobMsgLoadingExchanges;
     public static String JobMsgRunningConsistencyChecks;
@@ -322,6 +328,8 @@ public class Messages extends NLS
     public static String MenuRemoveAll;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
+    public static String MenuSaveChart;
+    public static String MenuSaveColumns;
     public static String MenuShowHideColumns;
     public static String MenuTaxonomyAssignmentRemove;
     public static String MenuTaxonomyClassificationCreate;
@@ -358,6 +366,8 @@ public class Messages extends NLS
     public static String MsgMissingPortfolio;
     public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
+    public static String MsgNoFileOpen;
+    public static String MsgNoFileOpenText;
     public static String MsgNoIssuesFound;
     public static String MsgNoProfileFound;
     public static String MsgNoUpdatesAvailable;
@@ -389,7 +399,10 @@ public class Messages extends NLS
     public static String PerformanceTabCalculation;
     public static String PerformanceTabEarnings;
     public static String PerformanceTabEarningsByAccount;
+    public static String PortfolioFilterRetiredPortfolios;
+    public static String PortfolioMenuActivate;
     public static String PortfolioMenuAdd;
+    public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PrefCheckOnStartup;
     public static String PrefMsgConfigureUpdates;

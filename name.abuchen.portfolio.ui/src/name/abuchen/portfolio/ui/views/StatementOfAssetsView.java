@@ -58,7 +58,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
-        save.setToolTipText(Messages.MenuConfigureChart);
+        save.setToolTipText(Messages.MenuSaveColumns);
         new ActionContributionItem(save).fill(toolBar, -1);
 
         Action config = new Action()
