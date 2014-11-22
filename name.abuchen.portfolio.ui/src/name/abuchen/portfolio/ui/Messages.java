@@ -323,6 +323,7 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
+    public static String MenuLabelSetAsStartPage;
     public static String MenuOpenSecurityOnSite;
     public static String MenuRemoveAll;
     public static String MenuResetChartSeries;

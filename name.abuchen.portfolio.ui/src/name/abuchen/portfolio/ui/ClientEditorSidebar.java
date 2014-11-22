@@ -61,6 +61,8 @@ import org.eclipse.swt.widgets.Menu;
         }
     }
 
+    private static final String START_PAGE_KEY = "pp-start-page"; //$NON-NLS-1$
+
     private PortfolioPart editor;
 
     private Menu taxonomyMenu;
@@ -69,6 +71,22 @@ import org.eclipse.swt.widgets.Menu;
     private Entry allSecurities;
     private Entry statementOfAssets;
     private Entry taxonomies;
+
+    private Sidebar.MenuListener setAsStartPage = new Sidebar.MenuListener()
+    {
+        @Override
+        public void menuAboutToShow(final Entry entry, IMenuManager manager)
+        {
+            manager.add(new Action(Messages.MenuLabelSetAsStartPage)
+            {
+                @Override
+                public void run()
+                {
+                    editor.getPreferenceStore().setValue(START_PAGE_KEY, entry.getId());
+                }
+            });
+        }
+    };
 
     public ClientEditorSidebar(PortfolioPart editor)
     {
@@ -90,7 +108,18 @@ import org.eclipse.swt.widgets.Menu;
 
     public void selectDefaultView()
     {
-        sidebar.select(statementOfAssets);
+        String defaultView = editor.getPreferenceStore().getString(START_PAGE_KEY);
+
+        if (defaultView == null)
+        {
+            sidebar.select(statementOfAssets);
+        }
+        else
+        {
+            Entry entry = sidebar.selectById(defaultView);
+            if (entry == null)
+                sidebar.select(statementOfAssets);
+        }
     }
 
     private void createGeneralDataSection(final Sidebar sidebar)
@@ -117,6 +146,7 @@ import org.eclipse.swt.widgets.Menu;
 
         allSecurities = new Entry(section, new ActivateViewAction(Messages.LabelAllSecurities, "SecurityList", //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
+        allSecurities.setContextMenu(setAsStartPage);
 
         for (Watchlist watchlist : editor.getClient().getWatchlists())
             createWatchlistEntry(section, watchlist);
@@ -124,14 +154,14 @@ import org.eclipse.swt.widgets.Menu;
 
     private void createWatchlistEntry(Entry section, final Watchlist watchlist)
     {
-        final Entry entry = new Entry(section, watchlist.getName());
+        Entry entry = new Entry(section, watchlist.getName());
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
                         PortfolioPlugin.descriptor(PortfolioPlugin.IMG_WATCHLIST)));
 
-        entry.setContextMenu(new IMenuListener()
+        entry.setContextMenu(new Sidebar.MenuListener()
         {
             @Override
-            public void menuAboutToShow(IMenuManager manager)
+            public void menuAboutToShow(final Entry entry, IMenuManager manager)
             {
                 manager.add(new Action(Messages.WatchlistRename)
                 {
@@ -159,6 +189,10 @@ import org.eclipse.swt.widgets.Menu;
                         allSecurities.select();
                     }
                 });
+
+                manager.add(new Separator());
+
+                setAsStartPage.menuAboutToShow(entry, manager);
             }
         });
 
@@ -206,11 +240,11 @@ import org.eclipse.swt.widgets.Menu;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelClientMasterData);
         new Entry(section, new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT)));
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT))).setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO)));
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO))).setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_INVESTMENTPLAN)));
+                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_INVESTMENTPLAN))).setContextMenu(setAsStartPage);
     }
 
     private void createPerformanceSection(Sidebar sidebar)
@@ -219,14 +253,21 @@ import org.eclipse.swt.widgets.Menu;
 
         statementOfAssets = new Entry(section, new ActivateViewAction(Messages.LabelStatementOfAssets,
                         "StatementOfAssets")); //$NON-NLS-1$
+        statementOfAssets.setContextMenu(setAsStartPage);
+
         new Entry(statementOfAssets,
-                        new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")); //$NON-NLS-1$
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")); //$NON-NLS-1$
+                        new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
+        new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
 
         Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
                         "Performance")); //$NON-NLS-1$
-        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")); //$NON-NLS-1$
-        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")); //$NON-NLS-1$
+        performance.setContextMenu(setAsStartPage);
+        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
+        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
     }
 
     private void createTaxonomyDataSection(final Sidebar sidebar)
@@ -247,12 +288,12 @@ import org.eclipse.swt.widgets.Menu;
 
     private Entry createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
     {
-        final Entry entry = new Entry(section, taxonomy.getName());
+        Entry entry = new Entry(section, taxonomy.getName());
         entry.setAction(new ActivateViewAction(taxonomy.getName(), "taxonomy.Taxonomy", taxonomy, null)); //$NON-NLS-1$
-        entry.setContextMenu(new IMenuListener()
+        entry.setContextMenu(new Sidebar.MenuListener()
         {
             @Override
-            public void menuAboutToShow(IMenuManager manager)
+            public void menuAboutToShow(final Entry entry, IMenuManager manager)
             {
                 manager.add(new Action(Messages.MenuTaxonomyRename)
                 {
@@ -280,6 +321,10 @@ import org.eclipse.swt.widgets.Menu;
                         statementOfAssets.select();
                     }
                 });
+
+                manager.add(new Separator());
+
+                setAsStartPage.menuAboutToShow(entry, manager);
             }
         });
 
@@ -371,6 +416,7 @@ import org.eclipse.swt.widgets.Menu;
     private void createMiscSection(Sidebar sidebar)
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
-        new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")); //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
     }
 }
