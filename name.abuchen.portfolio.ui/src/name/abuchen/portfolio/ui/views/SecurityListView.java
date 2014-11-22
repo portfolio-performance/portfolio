@@ -934,6 +934,34 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         transactions.setContentProvider(new SimpleListContentProvider(true));
 
+        hookContextMenu(transactions.getControl(), new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                Security security = (Security) prices.getData(Security.class.toString());
+                if (security != null)
+                    new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
+
+                manager.add(new Separator());
+
+                manager.add(new Action(Messages.MenuTransactionDelete)
+                {
+                    @Override
+                    public void run()
+                    {
+                        TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions
+                                        .getSelection()).getFirstElement();
+                        if (pair == null)
+                            return;
+
+                        pair.deleteTransaction(getClient());
+                        getClient().markDirty();
+                    }
+                });
+            }
+        });
+
         ViewerHelper.pack(transactions);
 
         return container;
