@@ -71,13 +71,6 @@ public class BuySellEntry implements CrossEntry
     }
 
     @Override
-    public void delete()
-    {
-        portfolio.getTransactions().remove(portfolioTransaction);
-        account.getTransactions().remove(accountTransaction);
-    }
-
-    @Override
     public void updateFrom(Transaction t)
     {
         if (t == accountTransaction)

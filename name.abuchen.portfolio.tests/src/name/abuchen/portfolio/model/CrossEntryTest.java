@@ -78,7 +78,7 @@ public class CrossEntryTest
         assertThat(pt.getDate(), is(pa.getDate()));
 
         // check deletion
-        entry.delete();
+        portfolio.deleteTransaction(pt, client);
         assertThat(portfolio.getTransactions().size(), is(0));
         assertThat(account.getTransactions().size(), is(0));
     }
@@ -126,7 +126,7 @@ public class CrossEntryTest
         assertThat(pA.getDate(), is(pB.getDate()));
 
         // check deletion
-        entry.delete();
+        accountA.deleteTransaction(pA, client);
         assertThat(accountA.getTransactions().size(), is(0));
         assertThat(accountB.getTransactions().size(), is(0));
     }
@@ -181,7 +181,7 @@ public class CrossEntryTest
         assertThat(pA.getDate(), is(pB.getDate()));
 
         // check deletion
-        entry.delete();
+        portfolioA.deleteTransaction(pA, client);
         assertThat(portfolioA.getTransactions().size(), is(0));
         assertThat(portfolioB.getTransactions().size(), is(0));
     }

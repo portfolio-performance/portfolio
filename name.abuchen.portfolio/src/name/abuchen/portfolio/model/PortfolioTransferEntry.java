@@ -56,13 +56,6 @@ public class PortfolioTransferEntry implements CrossEntry
     }
 
     @Override
-    public void delete()
-    {
-        portfolioFrom.getTransactions().remove(transactionFrom);
-        portfolioTo.getTransactions().remove(transactionTo);
-    }
-
-    @Override
     public void updateFrom(Transaction t)
     {
         // fees are not supported for transfers
