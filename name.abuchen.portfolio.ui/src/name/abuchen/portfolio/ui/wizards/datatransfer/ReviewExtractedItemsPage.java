@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Table;
 public class ReviewExtractedItemsPage extends AbstractWizardPage
 {
     private TableViewer tableViewer;
+    private TableViewer errorTableViewer;
     private ComboViewer portfolio;
     private ComboViewer account;
 
@@ -59,6 +60,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     private List<File> files;
 
     private List<Extractor.Item> allItems = new ArrayList<Extractor.Item>();
+    private List<Exception> allErrors = new ArrayList<Exception>();
 
     public ReviewExtractedItemsPage(Client client, Extractor extractor, List<File> files)
     {
@@ -75,6 +77,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     public List<Extractor.Item> getItems()
     {
         return allItems;
+    }
+
+    public List<Exception> getErrors()
+    {
+        return allErrors;
     }
 
     public Portfolio getPortfolio()
@@ -111,6 +118,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         cmbPortfolio.select(0);
 
         Composite compositeTable = new Composite(container, SWT.NONE);
+        Composite errorTable = new Composite(container, SWT.NONE);
 
         //
         // form layout
@@ -139,10 +147,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         data.top = new FormAttachment(cmbPortfolio, 10);
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
-        data.bottom = new FormAttachment(100, 0);
+        data.width = 100;
+        data.height = 200;
+        compositeTable.setLayoutData(data);
+
+        data = new FormData();
+        data.top = new FormAttachment(compositeTable, 10);
+        data.left = new FormAttachment(0, 0);
+        data.right = new FormAttachment(100, 0);
+        // data.bottom = new FormAttachment(100, 0);
         data.width = 100;
         data.height = 100;
-        compositeTable.setLayoutData(data);
+        errorTable.setLayoutData(data);
 
         //
         // table & columns
@@ -160,7 +176,50 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
         addColumns(tableViewer, layout);
 
+        layout = new TableColumnLayout();
+        errorTable.setLayout(layout);
+        errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        errorTableViewer.setContentProvider(new SimpleListContentProvider());
+
+        table = errorTableViewer.getTable();
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+        addColumnsExceptionTable(errorTableViewer, layout);
+
         attachContextMenu(table);
+
+    }
+
+    private void addColumnsExceptionTable(TableViewer viewer, TableColumnLayout layout)
+    {
+        TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText("Problem");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+
+            @Override
+            public String getText(Object element)
+            {
+                Exception ex = (Exception) element;
+                return ex.getClass().getSimpleName();
+            }
+
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText("Message");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+
+            @Override
+            public String getText(Object element)
+            {
+                return ((Exception) element).getMessage();
+            }
+
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(390, true));
     }
 
     private void addColumns(TableViewer viewer, TableColumnLayout layout)
@@ -267,6 +326,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
                         allItems.removeAll(selection.toList());
                         tableViewer.remove(selection.toArray());
+                        errorTableViewer.remove(selection.toArray());
                     }
                 });
             }
@@ -298,10 +358,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 {
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
 
-                    List<Exception> errors = new ArrayList<Exception>();
+                    final List<Exception> errors = new ArrayList<Exception>();
                     final List<Extractor.Item> items = extractor.extract(files, errors);
 
-                    // TODO present errors to user instead of writing to log
+                    // Logging them is not a bad idea if the whole method fails
                     PortfolioPlugin.log(errors);
 
                     Display.getDefault().asyncExec(new Runnable()
@@ -311,6 +371,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                         {
                             allItems.addAll(items);
                             tableViewer.setInput(allItems);
+                            allErrors.addAll(errors);
+                            errorTableViewer.setInput(allErrors);
                         }
                     });
                 }
