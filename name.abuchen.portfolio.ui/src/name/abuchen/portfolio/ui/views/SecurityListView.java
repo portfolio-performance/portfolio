@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -392,9 +393,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         // latest
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        latest.getControl().pack();
-        int width = latest.getControl().getBounds().width;
-        sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
+        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
