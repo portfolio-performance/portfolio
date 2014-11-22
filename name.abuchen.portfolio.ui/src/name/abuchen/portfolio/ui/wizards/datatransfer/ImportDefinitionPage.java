@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import static name.abuchen.portfolio.ui.util.FormLayoutHelper.widestWidget;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

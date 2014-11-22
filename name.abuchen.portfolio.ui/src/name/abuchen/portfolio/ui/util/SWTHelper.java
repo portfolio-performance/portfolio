@@ -1,17 +1,19 @@
 package name.abuchen.portfolio.ui.util;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Drawable;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public final class FormLayoutHelper
+public final class SWTHelper
 {
-    private FormLayoutHelper()
+    private SWTHelper()
     {}
 
     /**

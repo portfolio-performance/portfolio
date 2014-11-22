@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
-import static name.abuchen.portfolio.ui.util.FormLayoutHelper.dateWidth;
-import static name.abuchen.portfolio.ui.util.FormLayoutHelper.placeBelow;
+import static name.abuchen.portfolio.ui.util.SWTHelper.dateWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
