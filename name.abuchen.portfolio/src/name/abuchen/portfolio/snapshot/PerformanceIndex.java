@@ -61,6 +61,12 @@ public class PerformanceIndex
         return PortfolioIndex.calculate(client, portfolio, reportInterval, warnings);
     }
 
+    public static PerformanceIndex forPortfolioPlusAccount(Client client, Portfolio portfolio,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
+    {
+        return PortfolioPlusIndex.calculate(client, portfolio, reportInterval, warnings);
+    }
+
     public static PerformanceIndex forClassification(Client client, Classification classification,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {

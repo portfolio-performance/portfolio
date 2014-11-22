@@ -321,12 +321,15 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
     {
-        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(portfolio);
+        Object cacheKey = item.isPortfolioPlus() ? portfolio.getUUID() : portfolio;
+        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(cacheKey);
 
         if (portfolioIndex == null)
         {
-            portfolioIndex = PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
-            dataCache.put(portfolio, portfolioIndex);
+            portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
+                            .forPortfolioPlusAccount(getClient(), portfolio, getReportingPeriod(), warnings)
+                            : PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
+            dataCache.put(cacheKey, portfolioIndex);
         }
 
         if (aggregationPeriod != null)
@@ -334,7 +337,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         ILineSeries series = chart.addDateSeries(portfolioIndex.getDates(), //
                         portfolioIndex.getAccumulatedPercentage(), //
-                        portfolio.getName());
+                        item.getLabel());
         item.configure(series);
     }
 
@@ -442,24 +445,22 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
             });
 
-            addMenu(manager, Client.class, Messages.PerformanceChartLabelAccumulatedIRR);
-
             Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
-                            Security.class, Portfolio.class, Account.class }));
+                            Client.class, Security.class, Portfolio.class, Account.class }));
 
             for (DataSeries series : picker.getSelectedDataSeries())
             {
                 if (exportTypes.contains(series.getType()))
-                    addMenu(manager, series.getInstance(), series.getLabel());
+                    addMenu(manager, series);
             }
 
             manager.add(new Separator());
             chart.exportMenuAboutToShow(manager, getTitle());
         }
 
-        private void addMenu(IMenuManager manager, final Object instance, final String label)
+        private void addMenu(IMenuManager manager, final DataSeries series)
         {
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, label))
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, series.getLabel()))
             {
                 @Override
                 public void run()
@@ -469,7 +470,8 @@ public class PerformanceChartView extends AbstractHistoricView
                         @Override
                         protected void writeToFile(File file) throws IOException
                         {
-                            PerformanceIndex index = (PerformanceIndex) dataCache.get(instance);
+                            PerformanceIndex index = (PerformanceIndex) dataCache.get(series.isPortfolioPlus() ? ((Portfolio) series
+                                            .getInstance()).getUUID() : series.getInstance());
                             if (aggregationPeriod != null)
                                 index = Aggregation.aggregate(index, aggregationPeriod);
                             index.exportTo(file);
@@ -481,7 +483,7 @@ public class PerformanceChartView extends AbstractHistoricView
                             return ExportDropDown.this.getToolBar();
                         }
                     };
-                    exporter.export(getTitle() + "_" + label + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
+                    exporter.export(getTitle() + "_" + series.getLabel() + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             });
         }
