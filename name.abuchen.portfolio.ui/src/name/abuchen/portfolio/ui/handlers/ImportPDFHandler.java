@@ -10,7 +10,6 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.INGDibaPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
@@ -49,9 +48,7 @@ public class ImportPDFHandler
         // determine extractor class
 
         Extractor extractor = null;
-        if ("ingdiba".equals(type)) //$NON-NLS-1$
-            extractor = new INGDibaPDFExtractor(client);
-        else if ("comdirect".equals(type)) //$NON-NLS-1$
+        if ("comdirect".equals(type)) //$NON-NLS-1$
             extractor = new ComdirectPDFExtractor(client);
         else
             throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
