@@ -259,6 +259,7 @@ public class Messages extends NLS
     public static String LabelInputValidationFailed;
     public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
+    public static String LabelIRR;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNewClassification;
@@ -293,6 +294,7 @@ public class Messages extends NLS
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelDividends;
+    public static String LabelKeyIndicators;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
@@ -301,6 +303,8 @@ public class Messages extends NLS
     public static String LabelTotalSum;
     public static String LabelTransactions;
     public static String LabelTransferals;
+    public static String LabelTTWROR;
+    public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
     public static String LabelUpdatesAvailable;
@@ -401,6 +405,7 @@ public class Messages extends NLS
     public static String PerformanceTabCalculation;
     public static String PerformanceTabEarnings;
     public static String PerformanceTabEarningsByAccount;
+    public static String PerformanceTabOverview;
     public static String PortfolioFilterRetiredPortfolios;
     public static String PortfolioMenuActivate;
     public static String PortfolioMenuAdd;

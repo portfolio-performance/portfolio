@@ -87,7 +87,7 @@ public class ClientPerformanceSnapshot
 
     /* package */enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IZF
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IRR
     }
 
     private Client client;
@@ -95,6 +95,7 @@ public class ClientPerformanceSnapshot
     private ClientSnapshot snapshotEnd;
     private EnumMap<CategoryType, Category> categories;
     private List<Transaction> earnings;
+    private PerformanceIndex performanceIndex;
 
     public ClientPerformanceSnapshot(Client client, Date startDate, Date endDate)
     {
@@ -132,6 +133,16 @@ public class ClientPerformanceSnapshot
         return earnings;
     }
 
+    public PerformanceIndex getPerformanceIndex()
+    {
+        return performanceIndex;
+    }
+
+    public long getPerformanceIRR()
+    {
+        return categories.get(CategoryType.PERFORMANCE_IRR).valuation;
+    }
+
     /* package */EnumMap<CategoryType, Category> getCategoryMap()
     {
         return categories;
@@ -152,13 +163,14 @@ public class ClientPerformanceSnapshot
                         String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), snapshotEnd.getAssets()));
 
         ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        categories.put(CategoryType.PERFORMANCE_IZF,
+        categories.put(CategoryType.PERFORMANCE_IRR,
                         new Category(Messages.ColumnPerformanceIZF, Math.round(yield.getIrr() * Values.Amount.factor())));
 
-        ClientIndex index = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
+        performanceIndex = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
                         snapshotEnd.getTime()), new ArrayList<Exception>());
         categories.put(CategoryType.PERFORMANCE,
-                        new Category(Messages.ColumnPerformance, (int) (index.getAccumulatedPercentage()[index
+                        new Category(Messages.ColumnPerformance,
+                                        (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex
                                         .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100)));
 
         addCapitalGains();

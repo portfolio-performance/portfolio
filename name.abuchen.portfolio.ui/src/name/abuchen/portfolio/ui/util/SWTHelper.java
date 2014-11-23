@@ -28,7 +28,10 @@ public final class SWTHelper
         {
             int w = widgets[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
             if (w >= width)
+            {
                 answer = widgets[ii];
+                width = w;
+            }
         }
 
         return answer;
@@ -47,19 +50,33 @@ public final class SWTHelper
 
     /**
      * Uses FormData objects to place the label and input field below the given
-     * reference item (which is typically another input field).
+     * reference item (which is typically another input field). The label is
+     * placed to the left of the value.
      */
     public static void placeBelow(Control referenceItem, Label label, Control value)
     {
         FormData data = new FormData();
-        data.top = new FormAttachment(value, 0, SWT.CENTER);
-        label.setLayoutData(data);
+
+        if (label != null)
+        {
+            data.top = new FormAttachment(value, 0, SWT.CENTER);
+            label.setLayoutData(data);
+        }
 
         data = new FormData();
         data.top = new FormAttachment(referenceItem, 5);
         data.left = new FormAttachment(referenceItem, 0, SWT.LEFT);
         data.right = new FormAttachment(referenceItem, 0, SWT.RIGHT);
         value.setLayoutData(data);
+    }
+
+    /**
+     * Uses FormData objects to place the label and input field below the given
+     * reference item (which is typically another input field).
+     */
+    public static void placeBelow(Control referenceItem, Control value)
+    {
+        placeBelow(referenceItem, null, value);
     }
 
     /**

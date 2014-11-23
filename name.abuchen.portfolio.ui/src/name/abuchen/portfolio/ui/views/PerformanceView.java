@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
+
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Account;
@@ -8,10 +11,12 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
@@ -23,9 +28,13 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -37,14 +46,160 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 
 public class PerformanceView extends AbstractHistoricView
 {
+    private static class OverviewTab implements DisposeListener
+    {
+        private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
+
+        private Font kpiFont;
+        private Font boldFont;
+
+        private Composite container;
+
+        private Label ttwror;
+        private Label irr;
+        private Label day;
+
+        private Label[] labels;
+        private Label[] values;
+
+        public void setInput(ClientPerformanceSnapshot snapshot)
+        {
+            PerformanceIndex index = snapshot.getPerformanceIndex();
+            day.setText(Values.Percent2.format(index.getDeltaPercentage()[index.getDeltaPercentage().length - 1]));
+            ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[index.getAccumulatedPercentage().length - 1]));
+
+            irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
+
+            int ii = 0;
+            for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
+            {
+                labels[ii].setText(category.getLabel());
+                values[ii].setText(Values.Amount.format(category.getValuation()));
+
+                if (++ii >= labels.length)
+                    break;
+            }
+
+            container.layout(true);
+        }
+
+        public void createTab(CTabFolder folder)
+        {
+            container = new Composite(folder, SWT.NONE);
+            container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            RowLayout layout = new RowLayout();
+            layout.marginHeight = layout.marginWidth = 10;
+            layout.spacing = 40;
+            container.setLayout(layout);
+            container.addDisposeListener(this);
+
+            // create fonts
+            kpiFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.NORMAL)
+                            .increaseHeight(10));
+
+            boldFont = resourceManager.createFont(FontDescriptor.createFrom(
+                            JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
+
+            createIndicators(container);
+            createCalculation(container);
+
+            CTabItem item = new CTabItem(folder, SWT.NONE);
+            item.setText(Messages.PerformanceTabOverview);
+            item.setControl(container);
+        }
+
+        private void createIndicators(Composite container)
+        {
+            Composite composite = new Composite(container, SWT.NONE);
+            composite.setLayout(new FormLayout());
+            composite.setBackground(container.getBackground());
+
+            Label heading = new Label(composite, SWT.NONE);
+            heading.setText(Messages.LabelKeyIndicators);
+            heading.setFont(boldFont);
+            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
+
+            Label labelTtwror = new Label(composite, SWT.NONE);
+            labelTtwror.setText(Messages.LabelTTWROR);
+
+            ttwror = new Label(composite, SWT.NONE);
+            ttwror.setFont(kpiFont);
+
+            Label labelLastDay = new Label(composite, SWT.NONE);
+            labelLastDay.setText(Messages.LabelTTWROROneDay);
+
+            day = new Label(composite, SWT.NONE);
+            day.setFont(kpiFont);
+
+            Label labelIrr = new Label(composite, SWT.NONE);
+            labelIrr.setText(Messages.LabelIRR);
+
+            irr = new Label(composite, SWT.NONE);
+            irr.setFont(kpiFont);
+
+            // form layout
+
+            FormData data = new FormData();
+            data.left = new FormAttachment(0, 5);
+            data.width = widestWidget(heading, labelTtwror, labelIrr, labelLastDay) //
+                            .computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+            heading.setLayoutData(data);
+
+            placeBelow(heading, labelTtwror);
+            placeBelow(labelTtwror, ttwror);
+            placeBelow(ttwror, labelLastDay);
+            placeBelow(labelLastDay, day);
+            placeBelow(day, labelIrr);
+            placeBelow(labelIrr, irr);
+        }
+
+        private void createCalculation(Composite container)
+        {
+            Composite composite = new Composite(container, SWT.NONE);
+            GridLayoutFactory.fillDefaults().numColumns(2).applyTo(composite);
+            composite.setBackground(container.getBackground());
+
+            Label heading = new Label(composite, SWT.NONE);
+            heading.setText(Messages.PerformanceTabCalculation);
+            heading.setFont(boldFont);
+            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
+            GridDataFactory.fillDefaults().span(2, 1).applyTo(heading);
+
+            labels = new Label[7];
+            values = new Label[7];
+
+            for (int ii = 0; ii < labels.length; ii++)
+            {
+                labels[ii] = new Label(composite, SWT.NONE);
+                values[ii] = new Label(composite, SWT.RIGHT);
+                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
+            }
+        }
+
+        @Override
+        public void widgetDisposed(DisposeEvent e)
+        {
+            resourceManager.dispose();
+        }
+    }
+
+    private OverviewTab overview;
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
     private StatementOfAssetsViewer snapshotEnd;
@@ -69,6 +224,8 @@ public class PerformanceView extends AbstractHistoricView
     {
         ReportingPeriod period = getReportingPeriod();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), period);
+
+        overview.setInput(snapshot);
 
         try
         {
@@ -103,6 +260,9 @@ public class PerformanceView extends AbstractHistoricView
     {
         // result tabs
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
+
+        overview = new OverviewTab();
+        overview.createTab(folder);
 
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
