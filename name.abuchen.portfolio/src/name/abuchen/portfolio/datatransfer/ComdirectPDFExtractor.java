@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -39,10 +40,10 @@ public class ComdirectPDFExtractor implements Extractor
     public ComdirectPDFExtractor(Client client) throws IOException
     {
         // Parsing formats rely on german style PDFs
-        df = new SimpleDateFormat("dd.MM.yyyy");
+        df = new SimpleDateFormat("dd.MM.yyyy"); //$NON-NLS-1$
         format = NumberFormat.getInstance(Locale.GERMANY);
 
-        isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
+        isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]"); //$NON-NLS-1$
         allSecurities = new ArrayList<Security>(client.getSecurities());
         stripper = new PDFTextStripper();
     }
@@ -87,17 +88,17 @@ public class ComdirectPDFExtractor implements Extractor
     {
         if (!text.contains("comdirect bank")) //$NON-NLS-1$
         {
-            errors.add(new UnsupportedOperationException(MessageFormat.format(
-                            "Datei ''{0}'' ist kein unterstütztes Dokument der comdirect bank zu sein", filename)));
+            errors.add(new UnsupportedOperationException(MessageFormat.format(Messages.PDFcomdirectMsgFileNotSupported,
+                            filename)));
             return Collections.emptyList();
         }
 
         List<Item> results = new ArrayList<Item>();
         // an interest payment is identified by the topic string
-        if (text.contains("Gutschrift fälliger Wertpapier-Erträge"))
+        if (text.contains("Gutschrift fälliger Wertpapier-Erträge")) //$NON-NLS-1$
         {
             // No cashflow, no transaction to be generated
-            if (text.contains("Ertragsthesaurierung")) { return results; }
+            if (text.contains("Ertragsthesaurierung")) { return results; } //$NON-NLS-1$
             isinMatcher = isinPattern.matcher(text);
             // Is to be used to find the security
             String isin;
@@ -110,14 +111,14 @@ public class ComdirectPDFExtractor implements Extractor
             // b) Report the creation to the user
             if (security == null)
             {
-                int temp = text.indexOf("Wertpapier-Bezeichnung");
+                int temp = text.indexOf("Wertpapier-Bezeichnung"); //$NON-NLS-1$
                 String nameWKNLine = getNextLine(text, temp);
-                String[] parts = nameWKNLine.substring(14).trim().split(" ");
+                String[] parts = nameWKNLine.substring(14).trim().split(" "); //$NON-NLS-1$
                 String wkn = parts[0];
-                String name = "";
+                String name = ""; // FIXME Java8 StringJoiner //$NON-NLS-1$
                 for (int i = 1; i < parts.length; i++)
                 {
-                    name = name + parts[i] + " ";
+                    name = name + parts[i] + " "; //$NON-NLS-1$
                 }
                 name = name.trim();
                 security = new Security(name, isin, null, QuoteFeed.MANUAL);
@@ -128,7 +129,7 @@ public class ComdirectPDFExtractor implements Extractor
                 SecurityItem item = new SecurityItem(security);
                 results.add(item);
             }
-            int datePos = jumpWord(text, text.indexOf("Valuta"), 13);
+            int datePos = jumpWord(text, text.indexOf("Valuta"), 13); //$NON-NLS-1$
             // Result Transaction
             AccountTransaction t = new AccountTransaction();
             try
@@ -140,7 +141,7 @@ public class ComdirectPDFExtractor implements Extractor
             {
                 errors.add(e);
             }
-            Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1));
+            Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1)); //$NON-NLS-1$
             t.setType(AccountTransaction.Type.DIVIDENDS);
             t.setAmount(Math.round(value.doubleValue() * Values.Amount.factor()));
             t.setSecurity(security);
@@ -149,11 +150,11 @@ public class ComdirectPDFExtractor implements Extractor
         // The buy transaction can be parsed from the name of the file
         // this requires that the user does not change the name from the
         // download
-        else if (filename.contains("Wertpapierabrechnung_Kauf"))
+        else if (filename.contains("Wertpapierabrechnung_Kauf")) //$NON-NLS-1$
         {
             try
             {
-                int tagPosition = text.indexOf("Geschäftstag");
+                int tagPosition = text.indexOf("Geschäftstag"); //$NON-NLS-1$
                 String tagString = getNextWord(text, getNextWhitespace(text, tagPosition));
                 Date tag = df.parse(tagString);
                 isinMatcher = isinPattern.matcher(text);
@@ -163,7 +164,7 @@ public class ComdirectPDFExtractor implements Extractor
                 Security security = getSecurityForISIN(isin);
                 if (security == null)
                 {
-                    int temp = text.indexOf("Wertpapier-Bezeichnung");
+                    int temp = text.indexOf("Wertpapier-Bezeichnung"); //$NON-NLS-1$
                     String nameWKNLine = getNextLine(text, temp);
                     String wkn = getLastWordInLine(nameWKNLine, 1);
                     String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
@@ -175,20 +176,20 @@ public class ComdirectPDFExtractor implements Extractor
                     SecurityItem item = new SecurityItem(security);
                     results.add(item);
                 }
-                int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von"));
+                int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von")); //$NON-NLS-1$ //$NON-NLS-2$
                 Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
                 // Fees need not be present
                 // In case they are a section is present in the file
                 int provPos = -1;
-                provPos = text.indexOf("Provision", stueckLinePos);
+                provPos = text.indexOf("Provision", stueckLinePos); //$NON-NLS-1$
                 BuySellEntry purchase = new BuySellEntry();
                 if (provPos > 0)
                 {
                     Number fee = getNextNumber(text, jumpWord(text, provPos, 3));
                     purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
                 }
-                int totalEURPos = text.indexOf("EUR",
-                                text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3);
+                int totalEURPos = text.indexOf("EUR", //$NON-NLS-1$
+                                text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3); //$NON-NLS-1$ //$NON-NLS-2$
                 Number total = getNextNumber(text, jumpWord(text, totalEURPos, 1));
                 purchase.setType(PortfolioTransaction.Type.BUY);
                 purchase.setDate(tag);
@@ -204,7 +205,7 @@ public class ComdirectPDFExtractor implements Extractor
         }
         else
         {
-            errors.add(new Exception("Could not snif File type from file " + filename));
+            errors.add(new Exception(MessageFormat.format(Messages.PDFcomdirectMsgCannotDetermineFileType, filename)));
         }
         return results;
     }
@@ -212,7 +213,7 @@ public class ComdirectPDFExtractor implements Extractor
     @Override
     public String getLabel()
     {
-        return "comdirect";
+        return Messages.PDFcomdirectLabel;
     }
 
     @Override
@@ -297,7 +298,7 @@ public class ComdirectPDFExtractor implements Extractor
         {
             position--;
         }
-        String result = "";
+        String result = ""; //$NON-NLS-1$
         while (text.charAt(position) != ' ')
         {
             result = text.charAt(position) + result;

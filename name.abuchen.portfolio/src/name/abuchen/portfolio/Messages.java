@@ -111,6 +111,9 @@ public class Messages extends NLS
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
+    public static String PDFcomdirectLabel;
+    public static String PDFcomdirectMsgCannotDetermineFileType;
+    public static String PDFcomdirectMsgFileNotSupported;
     public static String QuoteFeedManual;
     static
     {
