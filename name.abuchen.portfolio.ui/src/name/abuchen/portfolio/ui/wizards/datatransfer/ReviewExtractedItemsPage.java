@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,21 +14,24 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.ui.AbstractClientJob;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -60,7 +62,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     private List<File> files;
 
     private List<Extractor.Item> allItems = new ArrayList<Extractor.Item>();
-    private List<Exception> allErrors = new ArrayList<Exception>();
 
     public ReviewExtractedItemsPage(Client client, Extractor extractor, List<File> files)
     {
@@ -77,11 +78,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     public List<Extractor.Item> getItems()
     {
         return allItems;
-    }
-
-    public List<Exception> getErrors()
-    {
-        return allErrors;
     }
 
     public Portfolio getPortfolio()
@@ -147,17 +143,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         data.top = new FormAttachment(cmbPortfolio, 10);
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
-        data.width = 100;
-        data.height = 200;
+        data.bottom = new FormAttachment(70, 0);
         compositeTable.setLayoutData(data);
 
         data = new FormData();
         data.top = new FormAttachment(compositeTable, 10);
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
-        // data.bottom = new FormAttachment(100, 0);
-        data.width = 100;
-        data.height = 100;
+        data.bottom = new FormAttachment(100, 0);
         errorTable.setLayoutData(data);
 
         //
@@ -175,6 +168,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         table.setLinesVisible(true);
 
         addColumns(tableViewer, layout);
+        attachContextMenu(table);
 
         layout = new TableColumnLayout();
         errorTable.setLayout(layout);
@@ -185,41 +179,21 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         addColumnsExceptionTable(errorTableViewer, layout);
-
-        attachContextMenu(table);
-
     }
 
     private void addColumnsExceptionTable(TableViewer viewer, TableColumnLayout layout)
     {
         TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText("Problem");
+        column.getColumn().setText(Messages.ColumnErrorMessages);
         column.setLabelProvider(new ColumnLabelProvider()
         {
-
-            @Override
-            public String getText(Object element)
-            {
-                Exception ex = (Exception) element;
-                return ex.getClass().getSimpleName();
-            }
-
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText("Message");
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-
             @Override
             public String getText(Object element)
             {
                 return ((Exception) element).getMessage();
             }
-
         });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(390, true));
+        layout.setColumnData(column.getColumn(), new ColumnWeightData(100, true));
     }
 
     private void addColumns(TableViewer viewer, TableColumnLayout layout)
@@ -351,10 +325,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     {
         try
         {
-            getContainer().run(true, false, new IRunnableWithProgress()
+            new AbstractClientJob(client, extractor.getLabel())
             {
                 @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+                protected IStatus run(IProgressMonitor monitor)
                 {
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
 
@@ -371,12 +345,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                         {
                             allItems.addAll(items);
                             tableViewer.setInput(allItems);
-                            allErrors.addAll(errors);
-                            errorTableViewer.setInput(allErrors);
+                            errorTableViewer.setInput(errors);
                         }
                     });
+
+                    return Status.OK_STATUS;
                 }
-            });
+            }.schedule();
         }
         catch (Exception e)
         {
