@@ -98,9 +98,10 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     switch (t.getType())
                     {
                         case DIVIDENDS:
+                        case TAX_REFUND:
                             long amount = value(t.getAmount(), weight);
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                            AccountTransaction.Type.DIVIDENDS, amount));
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(), //
+                                            t.getType(), amount));
                             pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
                                             AccountTransaction.Type.REMOVAL, amount));
                             break;
@@ -139,14 +140,23 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                 case SELL:
                 case TRANSFER_IN:
                 case DIVIDENDS:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                     AccountTransaction.Type.DEPOSIT, amount));
                     break;
                 case BUY:
                 case TRANSFER_OUT:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                     AccountTransaction.Type.REMOVAL, amount));
                     break;
+                case TAX_REFUND:
+                    // only if the tax refund is made for a particular security,
+                    // then it is not performance-relevant to the account
+                    if (t.getSecurity() != null)
+                    {
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
+                                        AccountTransaction.Type.DEPOSIT, amount));
+                        break;
+                    }
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:

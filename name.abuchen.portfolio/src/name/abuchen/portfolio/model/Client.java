@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 24;
+    /* package */static final int CURRENT_VERSION = 25;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 

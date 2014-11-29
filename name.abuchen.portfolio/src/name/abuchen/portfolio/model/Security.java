@@ -372,6 +372,7 @@ public final class Security implements Attributable, InvestmentVehicle
                 {
                     case INTEREST:
                     case DIVIDENDS:
+                    case TAX_REFUND:
                         answer.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case FEES:

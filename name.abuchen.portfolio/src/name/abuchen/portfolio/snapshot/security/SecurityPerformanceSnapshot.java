@@ -94,7 +94,9 @@ public class SecurityPerformanceSnapshot
             if (t.getSecurity() == null)
                 continue;
 
-            if (t.getType() != AccountTransaction.Type.DIVIDENDS && t.getType() != AccountTransaction.Type.INTEREST)
+            if (t.getType() != AccountTransaction.Type.DIVIDENDS //
+                            && t.getType() != AccountTransaction.Type.INTEREST //
+                            && t.getType() != AccountTransaction.Type.TAX_REFUND)
                 continue;
 
             if (t.getDate().getTime() <= startDate.getTime())

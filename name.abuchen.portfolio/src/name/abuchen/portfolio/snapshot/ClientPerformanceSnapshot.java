@@ -168,10 +168,9 @@ public class ClientPerformanceSnapshot
 
         performanceIndex = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
                         snapshotEnd.getTime()), new ArrayList<Exception>());
-        categories.put(CategoryType.PERFORMANCE,
-                        new Category(Messages.ColumnPerformance,
-                                        (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex
-                                        .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100)));
+        int ttwror = (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex
+                        .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100);
+        categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, ttwror));
 
         addCapitalGains();
         addEarnings();
@@ -309,6 +308,9 @@ public class ClientPerformanceSnapshot
                             break;
                         case TAXES:
                             taxes += t.getAmount();
+                            break;
+                        case TAX_REFUND:
+                            taxes -= t.getAmount();
                             break;
                         case BUY:
                         case SELL:

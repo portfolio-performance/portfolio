@@ -30,7 +30,7 @@ import name.abuchen.portfolio.model.Security;
         pseudoClient.addPortfolio(pseudoPortfolio);
 
         adaptPortfolioTransactions(portfolio, pseudoClient, pseudoPortfolio);
-        adaptAccountTransactions(portfolio, pseudoAccount);
+        adaptAccountTransactions(portfolio, pseudoClient, pseudoAccount);
 
         return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
     }
@@ -84,7 +84,7 @@ import name.abuchen.portfolio.model.Security;
             pseudoClient.addSecurity(security);
     }
 
-    private static void adaptAccountTransactions(Portfolio portfolio, Account pseudoAccount)
+    private static void adaptAccountTransactions(Portfolio portfolio, Client pseudoClient, Account pseudoAccount)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -100,7 +100,7 @@ import name.abuchen.portfolio.model.Security;
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                         AccountTransaction.Type.REMOVAL, t.getAmount()));
                     }
                     break;
@@ -111,19 +111,30 @@ import name.abuchen.portfolio.model.Security;
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                         AccountTransaction.Type.DEPOSIT, t.getAmount()));
                     }
                     break;
                 case TRANSFER_IN:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                     AccountTransaction.Type.DEPOSIT, t.getAmount()));
                     break;
                 case TRANSFER_OUT:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                     AccountTransaction.Type.REMOVAL, t.getAmount()));
                     break;
                 case DIVIDENDS:
+                case TAX_REFUND:
+                    if (t.getSecurity() == null || pseudoClient.getSecurities().contains(t.getSecurity()))
+                    {
+                        pseudoAccount.addTransaction(t);
+                    }
+                    else
+                    {
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
+                                        AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                    }
+                    break;
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:

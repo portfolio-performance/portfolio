@@ -435,6 +435,8 @@ public class ClientFactory
             case 23:
                 // do nothing --> added 'latestFeed' and 'latestFeedURL'
                 // property to security
+            case 24:
+                // do nothing --> added 'TAX_REFUND' as account transaction
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
