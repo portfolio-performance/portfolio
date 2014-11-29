@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Label;
 
 public final class SWTHelper
 {
+    public static final String EMPTY_LABEL = ""; //$NON-NLS-1$
+
     private SWTHelper()
     {}
 
@@ -77,6 +79,15 @@ public final class SWTHelper
     public static void placeBelow(Control referenceItem, Control value)
     {
         placeBelow(referenceItem, null, value);
+    }
+
+    /**
+     * Sets the label of the given elements to an empty string.
+     */
+    public static void clearLabel(Label... labels)
+    {
+        for (Label label : labels)
+            label.setText(EMPTY_LABEL);
     }
 
     /**

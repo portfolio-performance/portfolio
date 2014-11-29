@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.ui.util.SWTHelper.EMPTY_LABEL;
+import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
 import static name.abuchen.portfolio.ui.util.SWTHelper.dateWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 
@@ -37,8 +39,6 @@ import org.eclipse.swt.widgets.Label;
 
 public class SecurityDetailsViewer
 {
-    private static final String EMPTY_LABEL = ""; //$NON-NLS-1$
-
     private abstract static class SecurityFacet
     {
         private Font boldFont;
@@ -134,9 +134,7 @@ public class SecurityDetailsViewer
         {
             if (security == null)
             {
-                valueName.setText(EMPTY_LABEL);
-                valueISIN.setText(EMPTY_LABEL);
-                valueTickerSymbol.setText(EMPTY_LABEL);
+                clearLabel(valueName, valueISIN, valueTickerSymbol);
             }
             else
             {
@@ -276,12 +274,8 @@ public class SecurityDetailsViewer
         {
             if (security == null || security.getLatest() == null)
             {
-                valueLatestPrices.setText(EMPTY_LABEL);
-                valueLatestTrade.setText(EMPTY_LABEL);
-                valueDaysHigh.setText(EMPTY_LABEL);
-                valueDaysLow.setText(EMPTY_LABEL);
-                valueVolume.setText(EMPTY_LABEL);
-                valuePreviousClose.setText(EMPTY_LABEL);
+                clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume,
+                                valuePreviousClose);
             }
             else
             {

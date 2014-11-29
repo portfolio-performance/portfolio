@@ -143,6 +143,30 @@ public class ClientPerformanceSnapshot
         return categories.get(CategoryType.PERFORMANCE_IRR).valuation;
     }
 
+    public long getAbsoluteDelta()
+    {
+        long delta = 0;
+
+        for (Map.Entry<CategoryType, Category> entry : categories.entrySet())
+        {
+            switch (entry.getKey())
+            {
+                case CAPITAL_GAINS:
+                case EARNINGS:
+                    delta += entry.getValue().getValuation();
+                    break;
+                case FEES:
+                case TAXES:
+                    delta -= entry.getValue().getValuation();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return delta;
+    }
+
     /* package */EnumMap<CategoryType, Category> getCategoryMap()
     {
         return categories;
@@ -168,8 +192,8 @@ public class ClientPerformanceSnapshot
 
         performanceIndex = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
                         snapshotEnd.getTime()), new ArrayList<Exception>());
-        int ttwror = (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex
-                        .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100);
+        int ttwror = (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex.getAccumulatedPercentage().length - 1]
+                        * Values.Amount.factor() * 100);
         categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, ttwror));
 
         addCapitalGains();

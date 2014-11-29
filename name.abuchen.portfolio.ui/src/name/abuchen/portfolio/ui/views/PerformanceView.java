@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
 import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
-import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
 
 import java.text.MessageFormat;
 
@@ -73,7 +73,11 @@ public class PerformanceView extends AbstractHistoricView
 
         private Label ttwror;
         private Label irr;
-        private Label day;
+        private Label absoluteChange;
+        private Label delta;
+
+        private Label ttwrorLastDay;
+        private Label absoluteChangeLastDay;
 
         private Label[] labels;
         private Label[] values;
@@ -81,10 +85,24 @@ public class PerformanceView extends AbstractHistoricView
         public void setInput(ClientPerformanceSnapshot snapshot)
         {
             PerformanceIndex index = snapshot.getPerformanceIndex();
-            day.setText(Values.Percent2.format(index.getDeltaPercentage()[index.getDeltaPercentage().length - 1]));
-            ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[index.getAccumulatedPercentage().length - 1]));
 
-            irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
+            int length = index.getTotals().length;
+
+            if (length > 1)
+            {
+                ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[length - 1]));
+                irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
+                absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
+                delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
+
+                ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
+                absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
+                                - index.getTotals()[length - 2]));
+            }
+            else
+            {
+                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay);
+            }
 
             int ii = 0;
             for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
@@ -135,38 +153,50 @@ public class PerformanceView extends AbstractHistoricView
             heading.setFont(boldFont);
             heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
 
-            Label labelTtwror = new Label(composite, SWT.NONE);
-            labelTtwror.setText(Messages.LabelTTWROR);
+            int[] maxWidth = new int[1];
 
-            ttwror = new Label(composite, SWT.NONE);
-            ttwror.setFont(kpiFont);
+            ttwror = addKPIBelow(Messages.LabelTTWROR, heading, maxWidth);
+            irr = addKPIBelow(Messages.LabelIRR, ttwror, maxWidth);
+            absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
+            delta = addKPIBelow(Messages.LabelAbsoluteDelta, absoluteChange, maxWidth);
 
-            Label labelLastDay = new Label(composite, SWT.NONE);
-            labelLastDay.setText(Messages.LabelTTWROROneDay);
+            Label headingLastDay = new Label(composite, SWT.NONE);
+            headingLastDay.setText(Messages.LabelTTWROROneDay);
+            headingLastDay.setFont(boldFont);
+            headingLastDay.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
 
-            day = new Label(composite, SWT.NONE);
-            day.setFont(kpiFont);
+            ttwrorLastDay = addKPIBelow(Messages.LabelTTWROR, headingLastDay, maxWidth);
+            absoluteChangeLastDay = addKPIBelow(Messages.LabelAbsoluteChange, ttwrorLastDay, maxWidth);
 
-            Label labelIrr = new Label(composite, SWT.NONE);
-            labelIrr.setText(Messages.LabelIRR);
-
-            irr = new Label(composite, SWT.NONE);
-            irr.setFont(kpiFont);
-
-            // form layout
+            // layout
 
             FormData data = new FormData();
             data.left = new FormAttachment(0, 5);
-            data.width = widestWidget(heading, labelTtwror, labelIrr, labelLastDay) //
-                            .computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+            data.width = maxWidth[0];
             heading.setLayoutData(data);
 
-            placeBelow(heading, labelTtwror);
-            placeBelow(labelTtwror, ttwror);
-            placeBelow(ttwror, labelLastDay);
-            placeBelow(labelLastDay, day);
-            placeBelow(day, labelIrr);
-            placeBelow(labelIrr, irr);
+            data = new FormData();
+            data.left = new FormAttachment(0, 5);
+            data.top = new FormAttachment(delta, 20);
+            data.width = maxWidth[0];
+            headingLastDay.setLayoutData(data);
+        }
+
+        private Label addKPIBelow(String label, Control other, int[] maxWidth)
+        {
+            Label lblKpi = new Label(other.getParent(), SWT.NONE);
+            lblKpi.setText(label);
+
+            Label kpi = new Label(other.getParent(), SWT.NONE);
+            kpi.setFont(kpiFont);
+
+            placeBelow(other, lblKpi);
+            placeBelow(lblKpi, kpi);
+
+            int width = lblKpi.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+            maxWidth[0] = Math.max(width, maxWidth[0]);
+
+            return kpi;
         }
 
         private void createCalculation(Composite container)
