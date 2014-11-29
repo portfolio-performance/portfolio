@@ -3,6 +3,7 @@ package name.abuchen.portfolio.util;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
@@ -38,6 +39,11 @@ public class Dates
     public static Date date(int year, int month, int day)
     {
         return cal(year, month, day).getTime();
+    }
+
+    public static Date date(String date)
+    {
+        return new DateMidnight(date).toDate();
     }
 
     public static int daysBetween(Date start, Date end)
