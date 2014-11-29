@@ -10,6 +10,7 @@ public class DividendTransaction extends Transaction
 
     private long amount;
 
+    private long totalShares;
     private long fifoCost;
 
     public DividendTransaction()
@@ -51,9 +52,22 @@ public class DividendTransaction extends Transaction
         this.fifoCost = fifoCost;
     }
 
+    /* package */void setTotalShares(long totalShares)
+    {
+        this.totalShares = totalShares;
+    }
+
     public double getPersonalDividendYield()
     {
-        return fifoCost > 0 ? amount / (double) fifoCost : 0;
+        if (fifoCost <= 0)
+            return 0;
+
+        double cost = fifoCost;
+
+        if (getShares() > 0)
+            cost = fifoCost * (getShares() / (double) totalShares);
+
+        return amount / cost;
     }
 
     static long amountFractionPerShare(long amount, long shares)

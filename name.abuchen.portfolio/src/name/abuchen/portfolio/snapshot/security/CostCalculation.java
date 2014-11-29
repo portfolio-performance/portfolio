@@ -68,6 +68,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     public void visit(DividendTransaction t)
     {
         t.setFifoCost(getFifoCost());
+        t.setTotalShares(getSharesHeld());
     }
 
     public long getFifoCost()
