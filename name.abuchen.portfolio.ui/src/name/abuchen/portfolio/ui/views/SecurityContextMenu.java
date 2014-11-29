@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.ui.views;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
@@ -71,8 +72,24 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                DividendsDialog dialog = new DividendsDialog(owner.getActiveShell(), owner.getClient(), null, security);
-                if (dialog.open() == DividendsDialog.OK)
+                SecurityAccountTransactionDialog dialog = new SecurityAccountTransactionDialog(owner.getActiveShell(),
+                                AccountTransaction.Type.DIVIDENDS, owner.getClient(), null, security);
+                if (dialog.open() == SecurityAccountTransactionDialog.OK)
+                {
+                    owner.markDirty();
+                    owner.notifyModelUpdated();
+                }
+            }
+        });
+
+        manager.add(new Action(AccountTransaction.Type.TAX_REFUND.toString() + "...") //$NON-NLS-1$
+        {
+            @Override
+            public void run()
+            {
+                SecurityAccountTransactionDialog dialog = new SecurityAccountTransactionDialog(owner.getActiveShell(),
+                                AccountTransaction.Type.TAX_REFUND, owner.getClient(), null, security);
+                if (dialog.open() == SecurityAccountTransactionDialog.OK)
                 {
                     owner.markDirty();
                     owner.notifyModelUpdated();
@@ -87,7 +104,7 @@ public class SecurityContextMenu
             {
                 StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
                 WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
-                if (dialog.open() == DividendsDialog.OK)
+                if (dialog.open() == SecurityAccountTransactionDialog.OK)
                 {
                     owner.markDirty();
                     owner.notifyModelUpdated();
@@ -105,7 +122,7 @@ public class SecurityContextMenu
                 {
                     SecurityTransferDialog dialog = new SecurityTransferDialog(owner.getActiveShell(), owner
                                     .getClient(), portfolio);
-                    if (dialog.open() == DividendsDialog.OK)
+                    if (dialog.open() == SecurityAccountTransactionDialog.OK)
                     {
                         owner.markDirty();
                         owner.notifyModelUpdated();

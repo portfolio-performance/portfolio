@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Client;
@@ -20,7 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
@@ -548,7 +549,18 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new DividendsDialog(getShell(), getClient(), null, security);
+                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.DIVIDENDS, getClient(),
+                                null, security);
+            }
+        });
+
+        manager.add(new AbstractDialogAction(AccountTransaction.Type.TAX_REFUND.toString() + "...") //$NON-NLS-1$
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.DIVIDENDS, getClient(),
+                                null, security);
             }
         });
 

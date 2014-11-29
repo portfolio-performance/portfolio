@@ -402,8 +402,17 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
                 return t.getType() == AccountTransaction.Type.BUY //
                                 || t.getType() == AccountTransaction.Type.SELL //
-                                || t.getType() == AccountTransaction.Type.DIVIDENDS;
+                                || t.getType() == AccountTransaction.Type.DIVIDENDS //
+                                || t.getType() == AccountTransaction.Type.TAX_REFUND;
             }
+
+            @Override
+            public boolean canBeNull(Object element)
+            {
+                AccountTransaction t = (AccountTransaction) element;
+                return t.getType() == AccountTransaction.Type.TAX_REFUND;
+            }
+
         }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
