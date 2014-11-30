@@ -559,8 +559,8 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.DIVIDENDS, getClient(),
-                                null, security);
+                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.TAX_REFUND,
+                                getClient(), null, security);
             }
         });
 
