@@ -103,6 +103,9 @@ import org.joda.time.Interval;
                         case TAXES:
                             tax = t.getAmount();
                             break;
+                        case TAX_REFUND:
+                            tax = -t.getAmount();
+                            break;
                         default:
                             // do nothing
                             break;
