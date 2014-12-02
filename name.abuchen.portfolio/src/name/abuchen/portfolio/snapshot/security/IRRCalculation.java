@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Values;
 
@@ -29,6 +30,13 @@ import name.abuchen.portfolio.model.Values;
 
     @Override
     public void visit(DividendTransaction t)
+    {
+        dates.add(t.getDate());
+        values.add(t.getAmount() / Values.Amount.divider());
+    }
+
+    @Override
+    public void visit(AccountTransaction t)
     {
         dates.add(t.getDate());
         values.add(t.getAmount() / Values.Amount.divider());

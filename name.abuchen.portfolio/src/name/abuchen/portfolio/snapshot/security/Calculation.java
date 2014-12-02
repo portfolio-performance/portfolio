@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.security;
 
 import java.util.List;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 
@@ -19,6 +20,9 @@ import name.abuchen.portfolio.model.Transaction;
     public void visit(PortfolioTransaction t)
     {}
 
+    public void visit(AccountTransaction t)
+    {}
+
     public final void visitAll(List<? extends Transaction> transactions)
     {
         for (Transaction t : transactions)
@@ -31,6 +35,8 @@ import name.abuchen.portfolio.model.Transaction;
                 visit((DividendTransaction) t);
             else if (t instanceof PortfolioTransaction)
                 visit((PortfolioTransaction) t);
+            else if (t instanceof AccountTransaction)
+                visit((AccountTransaction) t);
             else
                 throw new UnsupportedOperationException();
         }
