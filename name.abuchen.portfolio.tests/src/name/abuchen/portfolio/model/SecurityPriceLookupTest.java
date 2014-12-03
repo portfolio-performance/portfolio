@@ -28,7 +28,7 @@ public class SecurityPriceLookupTest
     {
         security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-05"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-10-31")).getValue(), is(0L));
+        assertThat(security.getSecurityPrice(Dates.date("2014-10-31")).getValue(), is(1L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(1L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(2L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(3L));
@@ -42,7 +42,7 @@ public class SecurityPriceLookupTest
     {
         security.removePrice(security.getSecurityPrice(Dates.date("2014-11-02")));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-10-31")).getValue(), is(0L));
+        assertThat(security.getSecurityPrice(Dates.date("2014-10-31")).getValue(), is(1L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(1L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(1L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(3L));
@@ -96,7 +96,7 @@ public class SecurityPriceLookupTest
 
         security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-02"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(0L));
+        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(5L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(5L));
         assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(5L));
     }

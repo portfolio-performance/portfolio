@@ -249,13 +249,16 @@ public final class Security implements Attributable, InvestmentVehicle
 
         // use latest quote only
         // * if one exists
-        // * and if the requested time is after the latest quote
-        // * and if there are either no historic quotes or the historic quotes
-        // are older than the latest quote
+        // * and if either no historic quotes exist
+        // * or
+        // ** if the requested time is after the latest quote
+        // ** and the historic quotes are older than the latest quote
 
         if (latest != null //
-                        && requestedTime.getTime() >= latest.getTime().getTime() //
-                        && (lastHistoric == null || latest.getTime().getTime() >= lastHistoric.getTime().getTime()))
+                        && (lastHistoric == null //
+                        || (requestedTime.getTime() >= latest.getTime().getTime() && //
+                        latest.getTime().getTime() >= lastHistoric.getTime().getTime()) //
+                        ))
             return latest;
 
         if (lastHistoric == null)
@@ -271,7 +274,7 @@ public final class Security implements Attributable, InvestmentVehicle
         if (index >= 0)
             return prices.get(index);
         else if (index == -1) // requested is date before first historic quote
-            return new SecurityPrice(requestedTime, 0);
+            return prices.get(0);
         else
             return prices.get(-index - 2);
     }
