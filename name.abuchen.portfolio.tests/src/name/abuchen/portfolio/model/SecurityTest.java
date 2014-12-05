@@ -20,8 +20,8 @@ public class SecurityTest
 {
 
     @Test
-    public void testThatDeepCopyIncludesAllProperties() throws IntrospectionException, IllegalArgumentException,
-                    IllegalAccessException, InvocationTargetException
+    public void testThatDeepCopyIncludesAllProperties() throws IntrospectionException, IllegalAccessException,
+                    InvocationTargetException
     {
         BeanInfo info = Introspector.getBeanInfo(Security.class);
 

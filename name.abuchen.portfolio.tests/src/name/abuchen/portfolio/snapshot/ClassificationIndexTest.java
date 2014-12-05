@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
@@ -76,7 +77,7 @@ public class ClassificationIndexTest
 
         Classification classification = client.getTaxonomies().get(0).getClassificationById("one");
 
-        ArrayList<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<Exception>();
 
         PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
         PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
@@ -100,7 +101,7 @@ public class ClassificationIndexTest
         // remove account assignment
         classification.getAssignments().remove(1);
 
-        ArrayList<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<Exception>();
 
         PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
         PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
@@ -120,7 +121,7 @@ public class ClassificationIndexTest
 
         Classification classification = client.getTaxonomies().get(0).getClassificationById("one");
 
-        ArrayList<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<Exception>();
 
         PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
         PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);

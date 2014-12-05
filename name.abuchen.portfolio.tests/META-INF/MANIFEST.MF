@@ -13,4 +13,5 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.mockito;bundle-version="1.8.4",
  org.apache.pdfbox;bundle-version="1.8.7",
  org.apache.pdfbox.fontbox;bundle-version="1.8.7",
- org.apache.pdfbox.jempbox;bundle-version="1.8.7" 
+ org.apache.pdfbox.jempbox;bundle-version="1.8.7",
+ org.apache.servicemix.bundles.xpp3;bundle-version="1.1.4"
