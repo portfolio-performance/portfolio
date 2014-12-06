@@ -15,7 +15,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>0.21.0</tycho-version>
+		<tycho-version>0.22.0</tycho-version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
@@ -201,6 +201,7 @@
 					<version>${tycho-version}</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
+						<useProjectSettings>true</useProjectSettings>
 					</configuration>
 				</plugin>
 				<plugin>
