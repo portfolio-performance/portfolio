@@ -210,5 +210,11 @@ public interface Extractor
      * Returns a list of extracted items.
      */
     List<Item> extract(List<File> files, List<Exception> errors);
+    
+    /**
+     * Returns a String representation of the input to pass to the developers
+     * as a test case to improve against
+     */
+    String generateDebugInformation(File file);
 
 }
