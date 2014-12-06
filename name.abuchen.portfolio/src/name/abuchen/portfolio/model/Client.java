@@ -324,7 +324,7 @@ public class Client
     {
         for (InvestmentPlan plan : plans)
         {
-            if (plan.getPortfolio().equals(portfolio))
+            if (portfolio.equals(plan.getPortfolio()))
                 removePlan(plan);
         }
     }
@@ -333,7 +333,7 @@ public class Client
     {
         for (InvestmentPlan plan : plans)
         {
-            if (plan.getAccount().equals(account))
+            if (account.equals(plan.getAccount()))
                 removePlan(plan);
         }
     }
@@ -342,7 +342,7 @@ public class Client
     {
         for (InvestmentPlan plan : plans)
         {
-            if (plan.getSecurity().equals(security))
+            if (security.equals(plan.getSecurity()))
                 removePlan(plan);
         }
     }
