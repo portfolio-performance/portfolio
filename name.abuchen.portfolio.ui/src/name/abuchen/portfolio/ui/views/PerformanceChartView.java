@@ -56,7 +56,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private Aggregation.Period aggregationPeriod;
 
-    private Map<Object, Object> dataCache = new HashMap<Object, Object>();
+    private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
 
     @Override
     protected String getTitle()
@@ -215,7 +215,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private PerformanceIndex getClientIndex(List<Exception> warnings)
     {
-        PerformanceIndex index = (PerformanceIndex) dataCache.get(Client.class);
+        PerformanceIndex index = dataCache.get(Client.class);
         if (index == null)
         {
             ReportingPeriod interval = getReportingPeriod();
@@ -253,7 +253,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addConsumerPriceIndex(DataSeries item, List<Exception> warnings)
     {
-        PerformanceIndex cpiIndex = (PerformanceIndex) dataCache.get(ConsumerPriceIndex.class);
+        PerformanceIndex cpiIndex = dataCache.get(ConsumerPriceIndex.class);
 
         if (cpiIndex == null)
         {
@@ -282,7 +282,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addSecurityBenchmark(DataSeries item, Security security, List<Exception> warnings)
     {
-        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
+        PerformanceIndex securityIndex = dataCache.get(security);
 
         if (securityIndex == null)
         {
@@ -302,7 +302,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addSecurityPerformance(DataSeries item, Security security, List<Exception> warnings)
     {
-        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security.getUUID());
+        PerformanceIndex securityIndex = dataCache.get(security.getUUID());
 
         if (securityIndex == null)
         {
@@ -322,7 +322,7 @@ public class PerformanceChartView extends AbstractHistoricView
     private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
     {
         Object cacheKey = item.isPortfolioPlus() ? portfolio.getUUID() : portfolio;
-        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(cacheKey);
+        PerformanceIndex portfolioIndex = dataCache.get(cacheKey);
 
         if (portfolioIndex == null)
         {
@@ -343,7 +343,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addAccount(DataSeries item, Account account, List<Exception> warnings)
     {
-        PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
+        PerformanceIndex accountIndex = dataCache.get(account);
 
         if (accountIndex == null)
         {
@@ -362,7 +362,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addClassification(DataSeries item, Classification classification, List<Exception> warnings)
     {
-        PerformanceIndex index = (PerformanceIndex) dataCache.get(classification);
+        PerformanceIndex index = dataCache.get(classification);
 
         if (index == null)
         {
@@ -470,8 +470,15 @@ public class PerformanceChartView extends AbstractHistoricView
                         @Override
                         protected void writeToFile(File file) throws IOException
                         {
-                            PerformanceIndex index = (PerformanceIndex) dataCache.get(series.isPortfolioPlus() ? ((Portfolio) series
-                                            .getInstance()).getUUID() : series.getInstance());
+                            PerformanceIndex index = null;
+
+                            if (series.getType() == Client.class)
+                                index = dataCache.get(Client.class);
+                            else if (series.isPortfolioPlus())
+                                index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
+                            else
+                                index = dataCache.get(series.getInstance());
+
                             if (aggregationPeriod != null)
                                 index = Aggregation.aggregate(index, aggregationPeriod);
                             index.exportTo(file);
