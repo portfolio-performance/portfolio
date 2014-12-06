@@ -83,6 +83,20 @@ public class ComdirectPDFExtractor implements Extractor
         }
         return results;
     }
+    
+    public String generateDebugInformation(File file){
+        PDDocument doc;
+        try
+        {
+            doc = PDDocument.load(file);
+            return stripper.getText(doc);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return "Es gab einen Fehler beim Erstellen der Information: " + e.toString();
+        }
+    }
 
     public List<Item> extract(String text, String filename, List<Exception> errors)
     {
