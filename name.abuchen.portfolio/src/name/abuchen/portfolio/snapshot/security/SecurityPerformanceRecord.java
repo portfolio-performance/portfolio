@@ -248,9 +248,8 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculatePerformance(Client client, ReportingPeriod period)
     {
-        PerformanceIndex index = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>());
-        double[] performance = index.getAccumulatedPercentage();
-        this.twror = performance.length > 0 ? performance[performance.length - 1] : 0d;
+        this.twror = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>())
+                        .getFinalAccumulatedPercentage();
     }
 
     private void calculateDelta()

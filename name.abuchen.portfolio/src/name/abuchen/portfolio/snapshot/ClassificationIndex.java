@@ -67,20 +67,18 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     {
                         case BUY:
                         case TRANSFER_IN:
+                        case DELIVERY_INBOUND:
                         {
                             pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees, taxes));
+                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount - taxes, fees, 0));
                             break;
                         }
                         case SELL:
                         case TRANSFER_OUT:
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount, fees, taxes));
-                            break;
-                        case DELIVERY_INBOUND:
                         case DELIVERY_OUTBOUND:
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(), t
-                                            .getType(), shares, amount, fees, taxes));
+                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
+                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount + taxes, fees,
+                                            0));
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -98,13 +96,15 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     switch (t.getType())
                     {
                         case DIVIDENDS:
-                        case TAX_REFUND:
                             long amount = value(t.getAmount(), weight);
                             pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(), //
                                             t.getType(), amount));
                             pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
                                             AccountTransaction.Type.REMOVAL, amount));
                             break;
+                        case TAX_REFUND:
+                            // ignore taxes when calculating performance of
+                            // securities
                         case BUY:
                         case TRANSFER_IN:
                         case SELL:
@@ -120,7 +120,6 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                             throw new UnsupportedOperationException();
 
                     }
-
                 }
             }
         }
@@ -149,14 +148,13 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                                     AccountTransaction.Type.REMOVAL, amount));
                     break;
                 case TAX_REFUND:
-                    // only if the tax refund is made for a particular security,
-                    // then it is not performance-relevant to the account
                     if (t.getSecurity() != null)
                     {
                         pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
                                         AccountTransaction.Type.DEPOSIT, amount));
                         break;
                     }
+                    // fall through if tax refund applies to account
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:

@@ -38,8 +38,7 @@ import name.abuchen.portfolio.model.Values;
     @Override
     public void visit(AccountTransaction t)
     {
-        dates.add(t.getDate());
-        values.add(t.getAmount() / Values.Amount.divider());
+        // ignore tax refunds when calculating the irr for a single security
     }
 
     @Override
@@ -51,12 +50,12 @@ import name.abuchen.portfolio.model.Values;
             case BUY:
             case DELIVERY_INBOUND:
             case TRANSFER_IN:
-                values.add(-t.getAmount() / Values.Amount.divider());
+                values.add((-t.getAmount() + t.getTaxes()) / Values.Amount.divider());
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
-                values.add(t.getAmount() / Values.Amount.divider());
+                values.add((t.getAmount() + t.getTaxes()) / Values.Amount.divider());
                 break;
             default:
                 throw new UnsupportedOperationException();

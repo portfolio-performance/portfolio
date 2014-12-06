@@ -1,0 +1,123 @@
+<client>
+  <version>25</version>
+  <securities>
+    <security>
+      <uuid>8efb0529-1538-40ce-8890-5d84751b5130</uuid>
+      <name>Basf SE</name>
+      <isin>DE000BASF111</isin>
+      <tickerSymbol>BAS.DE</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2014-01-01" v="7748"/>
+        <price t="2014-01-02" v="7638"/>
+        <price t="2014-01-03" v="7656"/>
+        <price t="2014-04-30" v="8343"/>
+        <price t="2014-05-01" v="8343"/>
+        <price t="2014-05-02" v="8401"/>
+        <price t="2014-12-05" v="7430"/>
+      </prices>
+      <latest t="2014-12-05" v="7430">
+        <high>7439</high>
+        <low>7309</low>
+        <volume>3131822</volume>
+        <previousClose>7288</previousClose>
+      </latest>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>7c6d057f-30d6-4830-95f1-18de9c0fe494</uuid>
+      <name>Account A</name>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2014-06-01</date>
+          <security reference="../../../../../securities/security"/>
+          <shares>0</shares>
+          <type>TAX_REFUND</type>
+          <amount>500</amount>
+        </account-transaction>
+        <account-transaction>
+          <date>2014-12-05</date>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>813781b6-2050-4758-bf24-9f14d115043e</uuid>
+              <name>Portfolio A</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date>2014-01-02</date>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <shares>10000000</shares>
+                  <type>DELIVERY_INBOUND</type>
+                  <amount>765800</amount>
+                  <fees>1000</fees>
+                  <taxes>1000</taxes>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>10000000</shares>
+                  <type>SELL</type>
+                  <amount>741000</amount>
+                  <fees>1000</fees>
+                  <taxes>1000</taxes>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction[2]"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>SELL</type>
+          <amount>741000</amount>
+        </account-transaction>
+      </transactions>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies>
+    <taxonomy>
+      <id>32ac1de9-b9a7-480a-b464-36abf7984e0a</id>
+      <name>Taxonomy A</name>
+      <root>
+        <id>b19537a6-ec72-4ed7-8d56-9df156e486f1</id>
+        <name>Taxonomy A</name>
+        <color>#eab3a9</color>
+        <children>
+          <classification>
+            <id>a41d1836-9f8e-493c-9304-7434d9bbaa05</id>
+            <name>Category A</name>
+            <color>#91cde2</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <properties/>
+</client>

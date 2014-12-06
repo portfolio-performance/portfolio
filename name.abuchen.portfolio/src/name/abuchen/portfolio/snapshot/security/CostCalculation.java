@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.security;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
 /* package */class CostCalculation extends Calculation
@@ -62,6 +63,13 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    @Override
+    public void visit(AccountTransaction t)
+    {
+        if (t.getType() == AccountTransaction.Type.TAX_REFUND)
+            taxes -= t.getAmount();
     }
 
     @Override

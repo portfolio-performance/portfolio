@@ -115,6 +115,16 @@ public class PerformanceIndex
         return accumulated;
     }
 
+    /**
+     * Returns the final accumulated performance value for this performance
+     * reporting period. It is the last element of the array returned by
+     * {@link #getAccumulatedPercentage}.
+     */
+    public double getFinalAccumulatedPercentage()
+    {
+        return accumulated != null ? accumulated[accumulated.length - 1] : 0;
+    }
+
     public double[] getDeltaPercentage()
     {
         return delta;

@@ -1,6 +1,8 @@
 package scenarios;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.number.IsCloseTo.closeTo;
+import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -16,8 +18,6 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.hamcrest.number.IsCloseTo;
-import org.hamcrest.number.OrderingComparison;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -41,7 +41,7 @@ public class SecurityTestCase
         PortfolioTransaction delivery = client.getPortfolios().get(0).getTransactions().get(0);
 
         assertThat("delivery transaction must be before earliest historical quote", delivery.getDate(),
-                        OrderingComparison.lessThan(security.getPrices().get(0).getTime()));
+                        lessThan(security.getPrices().get(0).getTime()));
 
         ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-04"), Dates.date("2014-12-04"));
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, period);
@@ -49,8 +49,8 @@ public class SecurityTestCase
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
-        assertThat(record.getTrueTimeWeightedRateOfReturn(), IsCloseTo.closeTo(-0.0594, 0.0001));
-        assertThat(record.getIrr(), IsCloseTo.closeTo(-0.0643, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(-0.0594, 0.0001));
+        assertThat(record.getIrr(), closeTo(-0.0643, 0.0001));
 
         // actually, in this simple scenario (no cash transfers involved), the
         // ttwror is easy to calculate:
@@ -58,8 +58,6 @@ public class SecurityTestCase
         double endvalue = delivery.getShares() * security.getSecurityPrice(Dates.date("2014-12-04")).getValue()
                         / Values.Share.divider();
 
-        assertThat(record.getTrueTimeWeightedRateOfReturn(),
-                        IsCloseTo.closeTo((endvalue / delivery.getAmount()) - 1, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo((endvalue / delivery.getAmount()) - 1, 0.0001));
     }
-
 }
