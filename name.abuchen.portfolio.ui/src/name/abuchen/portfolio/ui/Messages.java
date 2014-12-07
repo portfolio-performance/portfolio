@@ -423,13 +423,17 @@ public class Messages extends NLS
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;
     public static String SecurityMenuBuy;
+    public static String SecurityMenuConfigureOnlineUpdate;
+    public static String SecurityMenuCreateManually;
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeletePrice;
     public static String SecurityMenuDeleteSecurity;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
-    public static String SecurityMenuImportQuotes;
+    public static String SecurityMenuImportCSV;
+    public static String SecurityMenuImportHTML;
     public static String SecurityMenuNewSecurity;
+    public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
     public static String SecurityMenuSearchYahoo;
     public static String SecurityMenuSell;

@@ -244,6 +244,13 @@ public class BindingHelper
         return txtValue;
     }
 
+    public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)
+    {
+        Text txtValue = createTextInput(editArea, label);
+        bindMandatoryDecimalInput(label, property, txtValue, Values.Quote);
+        return txtValue;
+    }
+
     public final Control bindMandatorySharesInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);

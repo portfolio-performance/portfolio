@@ -38,7 +38,6 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -550,8 +549,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     private void fillPricesContextMenu(IMenuManager manager)
     {
-        boolean isSecuritySelected = prices.getData(Security.class.toString()) != null;
-        if (isSecuritySelected)
+        Security security = (Security) prices.getData(Security.class.toString());
+        if (security != null)
         {
             manager.add(new Action(Messages.SecurityMenuAddPrice)
             {
@@ -638,37 +637,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             });
         }
 
-        if (isSecuritySelected)
+        if (security != null)
         {
             manager.add(new Separator());
-            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) prices.getData(Security.class.toString());
-                    if (security != null)
-                        securities.updateQuotes(security);
-                }
-            });
-            manager.add(new Action(Messages.SecurityMenuImportQuotes)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) prices.getData(Security.class.toString());
-                    if (security == null)
-                        return;
-
-                    Dialog dialog = new WizardDialog(getActiveShell(), new ImportQuotesWizard(security));
-                    if (dialog.open() != Dialog.OK)
-                        return;
-
-                    markDirty();
-                    securities.refresh(security);
-                    onSecurityChanged(security);
-                }
-            });
+            new QuotesContextMenu(this).menuAboutToShow(manager, security);
         }
     }
 

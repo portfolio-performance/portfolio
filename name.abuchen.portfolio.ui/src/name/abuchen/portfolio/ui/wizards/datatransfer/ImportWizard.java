@@ -20,6 +20,7 @@ import org.eclipse.jface.wizard.Wizard;
 public class ImportWizard extends Wizard
 {
     private CSVImporter importer;
+    private Object target;
 
     public ImportWizard(Client client, File inputFile)
     {
@@ -27,10 +28,15 @@ public class ImportWizard extends Wizard
         this.importer = new CSVImporter(client, inputFile);
     }
 
+    public void setTarget(Object target)
+    {
+        this.target = target;
+    }
+
     @Override
     public void addPages()
     {
-        addPage(new ImportDefinitionPage(importer));
+        addPage(new ImportDefinitionPage(importer, target));
     }
 
     @Override
@@ -56,5 +62,4 @@ public class ImportWizard extends Wizard
 
         return true;
     }
-
 }

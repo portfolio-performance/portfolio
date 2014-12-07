@@ -37,7 +37,6 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -591,24 +590,9 @@ public final class SecuritiesTable implements ModificationListener
                 updateQuotes(security);
             }
         });
-        manager.add(new Separator());
 
-        manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-        {
-            @Override
-            public void run()
-            {
-                updateQuotes(security);
-            }
-        });
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuImportQuotes)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new WizardDialog(getShell(), new ImportQuotesWizard(security));
-            }
-        });
+        manager.add(new Separator());
+        new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
 
         manager.add(new Separator());
         manager.add(new WebLocationMenu(security));
