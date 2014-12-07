@@ -194,6 +194,9 @@ public class EditSecurityDialog extends Dialog
         addPage(new LatestQuoteProviderPage(model, bindings), null);
 
         tabFolder.setSelection(showQuoteConfigurationInitially ? 3 : 0);
+
+        // selection event not fired for initial selection
+        ((AbstractPage) tabFolder.getSelection().getData()).beforePage();
     }
 
     private void addPage(AbstractPage page, Image image)
