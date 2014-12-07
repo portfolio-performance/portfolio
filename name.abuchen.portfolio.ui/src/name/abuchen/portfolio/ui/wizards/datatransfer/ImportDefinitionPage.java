@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import static name.abuchen.portfolio.ui.util.FormLayoutHelper.widestWidget;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -115,14 +115,16 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     private TableViewer tableViewer;
 
     private final CSVImporter importer;
+    private final Object defaultTarget;
 
-    public ImportDefinitionPage(CSVImporter importer)
+    public ImportDefinitionPage(CSVImporter importer, Object defaultTarget)
     {
         super("importdefinition"); //$NON-NLS-1$
         setTitle(Messages.CSVImportWizardTitle);
         setDescription(Messages.CSVImportWizardDescription);
 
         this.importer = importer;
+        this.defaultTarget = defaultTarget;
     }
 
     @Override
@@ -148,6 +150,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
                     return "     " + element.toString(); //$NON-NLS-1$
             }
         });
+        target.getCombo().setEnabled(defaultTarget == null);
         target.addSelectionChangedListener(this);
 
         Label lblDelimiter = new Label(container, SWT.NONE);
@@ -319,7 +322,8 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             targets.addAll(def.getTargets(importer.getClient()));
         }
         target.setInput(targets);
-        target.setSelection(new StructuredSelection(target.getElementAt(0)));
+
+        target.setSelection(new StructuredSelection(defaultTarget != null ? defaultTarget : target.getElementAt(0)));
     }
 
     @Override

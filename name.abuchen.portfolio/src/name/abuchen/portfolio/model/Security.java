@@ -240,39 +240,43 @@ public final class Security implements Attributable, InvestmentVehicle
         prices.clear();
     }
 
-    public SecurityPrice getSecurityPrice(Date time)
+    public SecurityPrice getSecurityPrice(Date requestedTime)
     {
-        if (prices.isEmpty())
-        {
-            if (latest != null)
-                return latest;
-            else
-                return new SecurityPrice(time, 0);
-        }
+        // assumption: prefer historic quote over latest if there are more
+        // up-to-date historic quotes
 
-        // prefer latest quotes
-        if (latest != null)
-        {
-            SecurityPrice last = prices.get(prices.size() - 1);
+        SecurityPrice lastHistoric = prices.isEmpty() ? null : prices.get(prices.size() - 1);
 
-            // if 'last' younger than 'requested'
-            if (last.getTime().getTime() <= time.getTime())
-            {
-                // if 'latest' older than 'last' -> 'latest' (else 'last')
-                if (latest.getTime().getTime() >= last.getTime().getTime())
-                    return latest;
-                else
-                    return last;
-            }
-        }
+        // use latest quote only
+        // * if one exists
+        // * and if either no historic quotes exist
+        // * or
+        // ** if the requested time is after the latest quote
+        // ** and the historic quotes are older than the latest quote
 
-        SecurityPrice p = new SecurityPrice(time, 0);
+        if (latest != null //
+                        && (lastHistoric == null //
+                        || (requestedTime.getTime() >= latest.getTime().getTime() && //
+                        latest.getTime().getTime() >= lastHistoric.getTime().getTime()) //
+                        ))
+            return latest;
+
+        if (lastHistoric == null)
+            return new SecurityPrice(requestedTime, 0);
+
+        // avoid binary search if last historic quote <= requested date
+        if (lastHistoric.getTime().getTime() <= requestedTime.getTime())
+            return lastHistoric;
+
+        SecurityPrice p = new SecurityPrice(requestedTime, 0);
         int index = Collections.binarySearch(prices, p);
 
         if (index >= 0)
             return prices.get(index);
+        else if (index == -1) // requested is date before first historic quote
+            return prices.get(0);
         else
-            return prices.get(Math.max(-index - 2, 0));
+            return prices.get(-index - 2);
     }
 
     public String getLatestFeed()
@@ -372,6 +376,7 @@ public final class Security implements Attributable, InvestmentVehicle
                 {
                     case INTEREST:
                     case DIVIDENDS:
+                    case TAX_REFUND:
                         answer.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case FEES:

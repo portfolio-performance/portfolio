@@ -87,7 +87,7 @@ public class ClientPerformanceSnapshot
 
     /* package */enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IZF
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IRR
     }
 
     private Client client;
@@ -95,6 +95,7 @@ public class ClientPerformanceSnapshot
     private ClientSnapshot snapshotEnd;
     private EnumMap<CategoryType, Category> categories;
     private List<Transaction> earnings;
+    private PerformanceIndex performanceIndex;
 
     public ClientPerformanceSnapshot(Client client, Date startDate, Date endDate)
     {
@@ -132,6 +133,40 @@ public class ClientPerformanceSnapshot
         return earnings;
     }
 
+    public PerformanceIndex getPerformanceIndex()
+    {
+        return performanceIndex;
+    }
+
+    public long getPerformanceIRR()
+    {
+        return categories.get(CategoryType.PERFORMANCE_IRR).valuation;
+    }
+
+    public long getAbsoluteDelta()
+    {
+        long delta = 0;
+
+        for (Map.Entry<CategoryType, Category> entry : categories.entrySet())
+        {
+            switch (entry.getKey())
+            {
+                case CAPITAL_GAINS:
+                case EARNINGS:
+                    delta += entry.getValue().getValuation();
+                    break;
+                case FEES:
+                case TAXES:
+                    delta -= entry.getValue().getValuation();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return delta;
+    }
+
     /* package */EnumMap<CategoryType, Category> getCategoryMap()
     {
         return categories;
@@ -152,14 +187,14 @@ public class ClientPerformanceSnapshot
                         String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), snapshotEnd.getAssets()));
 
         ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        categories.put(CategoryType.PERFORMANCE_IZF,
+        categories.put(CategoryType.PERFORMANCE_IRR,
                         new Category(Messages.ColumnPerformanceIZF, Math.round(yield.getIrr() * Values.Amount.factor())));
 
-        ClientIndex index = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
+        performanceIndex = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
                         snapshotEnd.getTime()), new ArrayList<Exception>());
-        categories.put(CategoryType.PERFORMANCE,
-                        new Category(Messages.ColumnPerformance, (int) (index.getAccumulatedPercentage()[index
-                                        .getAccumulatedPercentage().length - 1] * Values.Amount.factor() * 100)));
+        int ttwror = (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex.getAccumulatedPercentage().length - 1]
+                        * Values.Amount.factor() * 100);
+        categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, ttwror));
 
         addCapitalGains();
         addEarnings();
@@ -297,6 +332,9 @@ public class ClientPerformanceSnapshot
                             break;
                         case TAXES:
                             taxes += t.getAmount();
+                            break;
+                        case TAX_REFUND:
+                            taxes -= t.getAmount();
                             break;
                         case BUY:
                         case SELL:

@@ -26,6 +26,7 @@ public class AccountSnapshot
                     case INTEREST:
                     case SELL:
                     case TRANSFER_IN:
+                    case TAX_REFUND:
                         funds += t.getAmount();
                         break;
                     case FEES:

@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -94,9 +95,7 @@ import de.engehausen.treemap.swt.TreeMap;
         GridDataFactory.fillDefaults().grab(true, false).applyTo(legend);
 
         // layout sash
-        details.getControl().pack();
-        int width = details.getControl().getBounds().width;
-        sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
+        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), details.getControl());
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
         treeMap.setTreeModel(new Model(getModel().getRootNode()));

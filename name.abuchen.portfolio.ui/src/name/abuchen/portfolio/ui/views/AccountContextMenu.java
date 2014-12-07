@@ -9,8 +9,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
 import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
+import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 
 import org.eclipse.jface.action.Action;
@@ -59,6 +59,8 @@ public class AccountContextMenu
             }
         });
 
+        manager.add(new Separator());
+
         // show security related actions only if
         // (a) a portfolio exists and (b) securities exist
 
@@ -76,7 +78,6 @@ public class AccountContextMenu
                 }
             }
 
-            manager.add(new Separator());
             manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
             {
                 @Override
@@ -102,10 +103,21 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new DividendsDialog(owner.getActiveShell(), owner.getClient(), account, null);
+                    return new SecurityAccountTransactionDialog(owner.getActiveShell(),
+                                    AccountTransaction.Type.DIVIDENDS, owner.getClient(), account, null);
                 }
             });
         }
+
+        manager.add(new AbstractDialogAction(AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
+        {
+            @Override
+            Dialog createDialog()
+            {
+                return new SecurityAccountTransactionDialog(owner.getActiveShell(), AccountTransaction.Type.TAX_REFUND,
+                                owner.getClient(), account, null);
+            }
+        });
 
     }
 

@@ -64,6 +64,7 @@ public class Messages extends NLS
     public static String ColumnDividendTotalRateOfReturn;
     public static String ColumnDividendTotalRateOfReturn_Description;
     public static String ColumnEntity;
+    public static String ColumnErrorMessages;
     public static String ColumnExDate;
     public static String ColumnFees;
     public static String ColumnFees_Description;
@@ -238,6 +239,7 @@ public class Messages extends NLS
     public static String JurisdictionFilesDownloadExplanation;
     public static String JurisdictionFilesDownloadMessage;
     public static String JurisdictionFilesDownloadTitle;
+    public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
     public static String LabelAccounts;
     public static String LabelAccumulatedTaxes;
@@ -249,6 +251,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
     public static String LabelDefaultReferenceAccountName;
+    public static String LabelDelete;
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelExport;
@@ -257,6 +260,7 @@ public class Messages extends NLS
     public static String LabelInputValidationFailed;
     public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
+    public static String LabelIRR;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNewClassification;
@@ -291,6 +295,7 @@ public class Messages extends NLS
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelDividends;
+    public static String LabelKeyIndicators;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
@@ -299,6 +304,8 @@ public class Messages extends NLS
     public static String LabelTotalSum;
     public static String LabelTransactions;
     public static String LabelTransferals;
+    public static String LabelTTWROR;
+    public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
     public static String LabelUpdatesAvailable;
@@ -323,6 +330,7 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
+    public static String MenuLabelSetAsStartPage;
     public static String MenuOpenSecurityOnSite;
     public static String MenuRemoveAll;
     public static String MenuResetChartSeries;
@@ -388,6 +396,9 @@ public class Messages extends NLS
     public static String NewFileWizardSecurityTitle;
     public static String NewFileWizardTaxonomyDescription;
     public static String NewFileWizardTaxonomyTitle;
+    public static String PDFImportWizardDescription;
+    public static String PDFImportWizardMsgExtracting;
+    public static String PDFImportWizardTitle;
     public static String PerformanceChartLabelAccumulatedIRR;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceTabAssetsAtEnd;
@@ -395,6 +406,7 @@ public class Messages extends NLS
     public static String PerformanceTabCalculation;
     public static String PerformanceTabEarnings;
     public static String PerformanceTabEarningsByAccount;
+    public static String PerformanceTabOverview;
     public static String PortfolioFilterRetiredPortfolios;
     public static String PortfolioMenuActivate;
     public static String PortfolioMenuAdd;
@@ -411,13 +423,17 @@ public class Messages extends NLS
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;
     public static String SecurityMenuBuy;
+    public static String SecurityMenuConfigureOnlineUpdate;
+    public static String SecurityMenuCreateManually;
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeletePrice;
     public static String SecurityMenuDeleteSecurity;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
-    public static String SecurityMenuImportQuotes;
+    public static String SecurityMenuImportCSV;
+    public static String SecurityMenuImportHTML;
     public static String SecurityMenuNewSecurity;
+    public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
     public static String SecurityMenuSearchYahoo;
     public static String SecurityMenuSell;

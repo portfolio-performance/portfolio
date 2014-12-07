@@ -56,7 +56,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private Aggregation.Period aggregationPeriod;
 
-    private Map<Object, Object> dataCache = new HashMap<Object, Object>();
+    private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
 
     @Override
     protected String getTitle()
@@ -215,7 +215,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private PerformanceIndex getClientIndex(List<Exception> warnings)
     {
-        PerformanceIndex index = (PerformanceIndex) dataCache.get(Client.class);
+        PerformanceIndex index = dataCache.get(Client.class);
         if (index == null)
         {
             ReportingPeriod interval = getReportingPeriod();
@@ -253,7 +253,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addConsumerPriceIndex(DataSeries item, List<Exception> warnings)
     {
-        PerformanceIndex cpiIndex = (PerformanceIndex) dataCache.get(ConsumerPriceIndex.class);
+        PerformanceIndex cpiIndex = dataCache.get(ConsumerPriceIndex.class);
 
         if (cpiIndex == null)
         {
@@ -282,7 +282,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addSecurityBenchmark(DataSeries item, Security security, List<Exception> warnings)
     {
-        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
+        PerformanceIndex securityIndex = dataCache.get(security);
 
         if (securityIndex == null)
         {
@@ -302,7 +302,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addSecurityPerformance(DataSeries item, Security security, List<Exception> warnings)
     {
-        PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security.getUUID());
+        PerformanceIndex securityIndex = dataCache.get(security.getUUID());
 
         if (securityIndex == null)
         {
@@ -321,12 +321,15 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
     {
-        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(portfolio);
+        Object cacheKey = item.isPortfolioPlus() ? portfolio.getUUID() : portfolio;
+        PerformanceIndex portfolioIndex = dataCache.get(cacheKey);
 
         if (portfolioIndex == null)
         {
-            portfolioIndex = PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
-            dataCache.put(portfolio, portfolioIndex);
+            portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
+                            .forPortfolioPlusAccount(getClient(), portfolio, getReportingPeriod(), warnings)
+                            : PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
+            dataCache.put(cacheKey, portfolioIndex);
         }
 
         if (aggregationPeriod != null)
@@ -334,13 +337,13 @@ public class PerformanceChartView extends AbstractHistoricView
 
         ILineSeries series = chart.addDateSeries(portfolioIndex.getDates(), //
                         portfolioIndex.getAccumulatedPercentage(), //
-                        portfolio.getName());
+                        item.getLabel());
         item.configure(series);
     }
 
     private void addAccount(DataSeries item, Account account, List<Exception> warnings)
     {
-        PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
+        PerformanceIndex accountIndex = dataCache.get(account);
 
         if (accountIndex == null)
         {
@@ -359,7 +362,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addClassification(DataSeries item, Classification classification, List<Exception> warnings)
     {
-        PerformanceIndex index = (PerformanceIndex) dataCache.get(classification);
+        PerformanceIndex index = dataCache.get(classification);
 
         if (index == null)
         {
@@ -442,24 +445,22 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
             });
 
-            addMenu(manager, Client.class, Messages.PerformanceChartLabelAccumulatedIRR);
-
             Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
-                            Security.class, Portfolio.class, Account.class }));
+                            Client.class, Security.class, Portfolio.class, Account.class }));
 
             for (DataSeries series : picker.getSelectedDataSeries())
             {
                 if (exportTypes.contains(series.getType()))
-                    addMenu(manager, series.getInstance(), series.getLabel());
+                    addMenu(manager, series);
             }
 
             manager.add(new Separator());
             chart.exportMenuAboutToShow(manager, getTitle());
         }
 
-        private void addMenu(IMenuManager manager, final Object instance, final String label)
+        private void addMenu(IMenuManager manager, final DataSeries series)
         {
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, label))
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, series.getLabel()))
             {
                 @Override
                 public void run()
@@ -469,7 +470,15 @@ public class PerformanceChartView extends AbstractHistoricView
                         @Override
                         protected void writeToFile(File file) throws IOException
                         {
-                            PerformanceIndex index = (PerformanceIndex) dataCache.get(instance);
+                            PerformanceIndex index = null;
+
+                            if (series.getType() == Client.class)
+                                index = dataCache.get(Client.class);
+                            else if (series.isPortfolioPlus())
+                                index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
+                            else
+                                index = dataCache.get(series.getInstance());
+
                             if (aggregationPeriod != null)
                                 index = Aggregation.aggregate(index, aggregationPeriod);
                             index.exportTo(file);
@@ -481,7 +490,7 @@ public class PerformanceChartView extends AbstractHistoricView
                             return ExportDropDown.this.getToolBar();
                         }
                     };
-                    exporter.export(getTitle() + "_" + label + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
+                    exporter.export(getTitle() + "_" + series.getLabel() + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             });
         }

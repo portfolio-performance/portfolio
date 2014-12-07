@@ -75,6 +75,12 @@ public class StackedChartViewer extends Page
 
         public void book(int index, long l)
         {
+            // stacked charts cannot handle negative values.
+            // Therefore we ignore them here, which in turn means that the other
+            // data series will stack up to over 100% in the chart
+            if (l < 0)
+                return;
+
             hasValues = true;
             values[index] += l;
         }

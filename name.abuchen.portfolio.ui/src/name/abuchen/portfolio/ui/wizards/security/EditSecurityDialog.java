@@ -44,6 +44,8 @@ public class EditSecurityDialog extends Dialog
     private final EditSecurityModel model;
     private final BindingHelper bindings;
 
+    private boolean showQuoteConfigurationInitially = false;
+
     public EditSecurityDialog(Shell parentShell, Client client, Security security)
     {
         super(parentShell);
@@ -64,6 +66,11 @@ public class EditSecurityDialog extends Dialog
                     button.setEnabled(isOK);
             }
         };
+    }
+
+    public void setShowQuoteConfigurationInitially(boolean showQuoteConfigurationInitially)
+    {
+        this.showQuoteConfigurationInitially = showQuoteConfigurationInitially;
     }
 
     @Override
@@ -186,7 +193,10 @@ public class EditSecurityDialog extends Dialog
         addPage(new HistoricalQuoteProviderPage(model, bindings), null);
         addPage(new LatestQuoteProviderPage(model, bindings), null);
 
-        tabFolder.setSelection(0);
+        tabFolder.setSelection(showQuoteConfigurationInitially ? 3 : 0);
+
+        // selection event not fired for initial selection
+        ((AbstractPage) tabFolder.getSelection().getData()).beforePage();
     }
 
     private void addPage(AbstractPage page, Image image)

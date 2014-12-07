@@ -48,10 +48,13 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class DividendsDialog extends AbstractDialog
+public class SecurityAccountTransactionDialog extends AbstractDialog
 {
     static final class Model extends BindingHelper.Model
     {
+        private static final Security EMPTY_SECURITY = new Security("", "", "", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+        private final AccountTransaction.Type type;
         private Security security;
         private Account account;
         private long shares;
@@ -60,13 +63,15 @@ public class DividendsDialog extends AbstractDialog
 
         private ClientSnapshot snapshot;
 
-        public Model(Client client, Account account, Security security)
+        public Model(AccountTransaction.Type type, Client client, Account account, Security security)
         {
             super(client);
 
+            this.type = type;
             this.security = security;
 
-            if (security == null && !client.getSecurities().isEmpty())
+            // preselect a security only if it is about dividends
+            if (type == AccountTransaction.Type.DIVIDENDS && security == null && !client.getSecurities().isEmpty())
                 setSecurity(client.getSecurities().get(0));
 
             // set account if given by context
@@ -82,6 +87,9 @@ public class DividendsDialog extends AbstractDialog
 
         private void updateShares()
         {
+            if (type != AccountTransaction.Type.DIVIDENDS)
+                return;
+
             if (security == null)
                 return;
 
@@ -92,6 +100,11 @@ public class DividendsDialog extends AbstractDialog
 
             long newValue = p != null ? p.getShares() : 0;
             firePropertyChange("shares", this.shares, this.shares = newValue); //$NON-NLS-1$
+        }
+
+        public AccountTransaction.Type getType()
+        {
+            return type;
         }
 
         public Security getSecurity()
@@ -153,7 +166,10 @@ public class DividendsDialog extends AbstractDialog
 
         public void applyChanges()
         {
-            if (security == null)
+            if (EMPTY_SECURITY.equals(security))
+                security = null;
+
+            if (security == null && type == AccountTransaction.Type.DIVIDENDS)
                 throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
 
             AccountTransaction ta = new AccountTransaction();
@@ -161,7 +177,7 @@ public class DividendsDialog extends AbstractDialog
             ta.setShares(shares);
             ta.setDate(date);
             ta.setSecurity(security);
-            ta.setType(AccountTransaction.Type.DIVIDENDS);
+            ta.setType(type);
             account.addTransaction(ta);
         }
     }
@@ -170,15 +186,18 @@ public class DividendsDialog extends AbstractDialog
 
     private boolean allowSelectionOfSecurity = false;
 
-    public DividendsDialog(Shell parentShell, Client client, Account account, Security security)
+    public SecurityAccountTransactionDialog(Shell parentShell, AccountTransaction.Type type, Client client,
+                    Account account, Security security)
     {
-        super(parentShell, Messages.SecurityMenuDividends, new Model(client, account, security));
+        super(parentShell, type.toString(), new Model(type, client, account, security));
         this.allowSelectionOfSecurity = security == null;
     }
 
     @Override
     protected void createFormElements(Composite editArea)
     {
+        boolean isTaxRefund = ((Model) getModel()).getType() == AccountTransaction.Type.TAX_REFUND;
+
         // security selection
         if (!allowSelectionOfSecurity)
         {
@@ -187,17 +206,22 @@ public class DividendsDialog extends AbstractDialog
         else
         {
             List<Security> securities = new ArrayList<Security>();
+
             for (Security s : getModel().getClient().getSecurities())
                 if (!s.isRetired())
                     securities.add(s);
             Collections.sort(securities, new Security.ByName());
+
+            // a tax refund does not necessarily relate to a security
+            if (isTaxRefund)
+                securities.add(0, Model.EMPTY_SECURITY);
 
             bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                             {
                                 @Override
                                 public String getText(Object element)
                                 {
-                                    return ((Security) element).getName();
+                                    return element == null ? "" : ((Security) element).getName(); //$NON-NLS-1$
                                 }
                             }, securities.toArray());
         }
@@ -226,7 +250,8 @@ public class DividendsDialog extends AbstractDialog
         // date
         bindings().bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
 
-        addSharesInput(editArea);
+        if (!isTaxRefund)
+            addSharesInput(editArea);
     }
 
     private void addSharesInput(Composite editArea)
@@ -272,7 +297,7 @@ public class DividendsDialog extends AbstractDialog
             @Override
             public void widgetDisposed(DisposeEvent e)
             {
-                DividendsDialog.this.widgetDisposed();
+                SecurityAccountTransactionDialog.this.widgetDisposed();
             }
         });
     }

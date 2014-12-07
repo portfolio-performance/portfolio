@@ -53,6 +53,12 @@ public abstract class ColumnEditingSupport
         return true;
     }
 
+    /**
+     * Called before the editor for the given element is made visible
+     */
+    public void prepareEditor(Object element)
+    {}
+
     public abstract Object getValue(Object element) throws Exception;
 
     public abstract void setValue(Object element, Object value) throws Exception;

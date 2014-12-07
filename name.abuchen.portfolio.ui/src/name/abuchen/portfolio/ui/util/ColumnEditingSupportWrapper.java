@@ -23,12 +23,14 @@ public class ColumnEditingSupportWrapper extends EditingSupport
         super(viewer);
         this.viewer = viewer;
         this.proxy = proxy;
-        this.editor = proxy.createEditor((Composite) viewer.getControl());
     }
 
     @Override
     protected CellEditor getCellEditor(Object element)
     {
+        if (editor == null)
+            editor = proxy.createEditor((Composite) viewer.getControl());
+        proxy.prepareEditor(element);
         return editor;
     }
 

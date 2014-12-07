@@ -94,23 +94,28 @@ public class SecurityPerformanceSnapshot
             if (t.getSecurity() == null)
                 continue;
 
-            if (t.getType() != AccountTransaction.Type.DIVIDENDS && t.getType() != AccountTransaction.Type.INTEREST)
-                continue;
-
             if (t.getDate().getTime() <= startDate.getTime())
                 continue;
 
             if (t.getDate().getTime() > endDate.getTime())
                 continue;
 
-            DividendTransaction dt = new DividendTransaction();
-            dt.setDate(t.getDate());
-            dt.setSecurity(t.getSecurity());
-            dt.setAccount(account);
-            dt.setAmount(t.getAmount());
-            dt.setShares(t.getShares());
-            dt.setNote(t.getNote());
-            records.get(t.getSecurity()).addTransaction(dt);
+            if (t.getType() == AccountTransaction.Type.DIVIDENDS //
+                            || t.getType() == AccountTransaction.Type.INTEREST)
+            {
+                DividendTransaction dt = new DividendTransaction();
+                dt.setDate(t.getDate());
+                dt.setSecurity(t.getSecurity());
+                dt.setAccount(account);
+                dt.setAmount(t.getAmount());
+                dt.setShares(t.getShares());
+                dt.setNote(t.getNote());
+                records.get(t.getSecurity()).addTransaction(dt);
+            }
+            else if (t.getType() == AccountTransaction.Type.TAX_REFUND)
+            {
+                records.get(t.getSecurity()).addTransaction(t);
+            }
         }
     }
 

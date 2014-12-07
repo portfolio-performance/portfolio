@@ -69,6 +69,7 @@ import org.swtchart.LineStyle;
         private String label;
         private boolean isLineChart = true;
         private boolean isBenchmark = false;
+        private boolean isPortfolioPlus = false;
 
         private Color color;
         private RGB rgb;
@@ -154,6 +155,16 @@ import org.swtchart.LineStyle;
             this.isBenchmark = isBenchmark;
         }
 
+        public boolean isPortfolioPlus()
+        {
+            return isPortfolioPlus;
+        }
+
+        public void setPortfolioPlus(boolean isPortfolioPlus)
+        {
+            this.isPortfolioPlus = isPortfolioPlus;
+        }
+
         public boolean isShowArea()
         {
             return showArea;
@@ -191,6 +202,8 @@ import org.swtchart.LineStyle;
         public String getUUID()
         {
             String prefix = isBenchmark() ? "[b]" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+            if (isPortfolioPlus())
+                prefix += "[+]"; //$NON-NLS-1$
 
             if (type == Security.class)
                 return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
@@ -338,68 +351,77 @@ import org.swtchart.LineStyle;
     private void buildAvailableDataSeries()
     {
         ColorWheel wheel = new ColorWheel(this, 30);
-        int index = 0;
 
         switch (mode)
         {
             case STATEMENT_OF_ASSETS:
-            {
-                availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
-                                colorFor(Colors.TOTALS)));
-
-                DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS,
-                                Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
-                series.setLineChart(false);
-                availableSeries.add(series);
-
-                series = new DataSeries(Client.class, ClientDataSeries.INVESTED_CAPITAL, Messages.LabelInvestedCapital,
-                                Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
-                series.setShowArea(true);
-                availableSeries.add(series);
-
-                series = new DataSeries(Client.class, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
-                                Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
-                availableSeries.add(series);
-
-                series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes, Display
-                                .getDefault().getSystemColor(SWT.COLOR_RED));
-                availableSeries.add(series);
-
+                buildStatementOfAssetsDataSeries();
                 break;
-            }
             case PERFORMANCE:
-            {
-                // accumulated performance
-                availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS,
-                                Messages.PerformanceChartLabelAccumulatedIRR, colorFor(Colors.TOTALS)));
-
-                // daily change - must be TRANSFERALS for historical reasons as
-                // it was stored this way in the XML file
-                DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS,
-                                Messages.LabelAggregationDaily, Display.getDefault()
-                                                .getSystemColor(SWT.COLOR_DARK_GRAY));
-                series.setLineChart(false);
-                availableSeries.add(series);
-
-                // consumer price index
-                series = new DataSeries(ConsumerPriceIndex.class, null, Messages.LabelConsumerPriceIndex,
-                                colorFor(Colors.CPI));
-                series.setBenchmark(true);
-                series.setLineStyle(LineStyle.DASHDOTDOT);
-                availableSeries.add(series);
-
-                // securities as benchmark
-                for (Security security : client.getSecurities())
-                {
-                    series = new DataSeries(Security.class, security, security.getName(), //
-                                    wheel.getSegment(index++).getColor());
-                    series.setBenchmark(true);
-                    availableSeries.add(series);
-                }
-
+                buildPerformanceDataSeries(wheel);
                 break;
-            }
         }
+
+        buildCommonDataSeries(wheel);
+    }
+
+    private void buildStatementOfAssetsDataSeries()
+    {
+        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
+                        colorFor(Colors.TOTALS)));
+
+        DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS, Messages.LabelTransferals,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.INVESTED_CAPITAL, Messages.LabelInvestedCapital, Display
+                        .getDefault().getSystemColor(SWT.COLOR_GRAY));
+        series.setShowArea(true);
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta, Display
+                        .getDefault().getSystemColor(SWT.COLOR_GRAY));
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes, Display
+                        .getDefault().getSystemColor(SWT.COLOR_RED));
+        availableSeries.add(series);
+    }
+
+    private void buildPerformanceDataSeries(ColorWheel wheel)
+    {
+        // accumulated performance
+        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS,
+                        Messages.PerformanceChartLabelAccumulatedIRR, colorFor(Colors.TOTALS)));
+
+        // daily change - must be TRANSFERALS for historical reasons as
+        // it was stored this way in the XML file
+        DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS, Messages.LabelAggregationDaily,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        // consumer price index
+        series = new DataSeries(ConsumerPriceIndex.class, null, Messages.LabelConsumerPriceIndex, colorFor(Colors.CPI));
+        series.setBenchmark(true);
+        series.setLineStyle(LineStyle.DASHDOTDOT);
+        availableSeries.add(series);
+
+        // securities as benchmark
+        int index = 0;
+        for (Security security : client.getSecurities())
+        {
+            series = new DataSeries(Security.class, security, security.getName(), //
+                            wheel.getSegment(index++).getColor());
+            series.setBenchmark(true);
+            availableSeries.add(series);
+        }
+    }
+
+    private void buildCommonDataSeries(ColorWheel wheel)
+    {
+        int index = client.getSecurities().size();
 
         for (Security security : client.getSecurities())
             availableSeries.add(new DataSeries(Security.class, security, security.getName(), wheel.getSegment(index++)
@@ -408,6 +430,15 @@ import org.swtchart.LineStyle;
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(Portfolio.class, portfolio, portfolio.getName(), wheel.getSegment(
                             index++).getColor()));
+
+        // portfolio + reference account
+        for (Portfolio portfolio : client.getPortfolios())
+        {
+            DataSeries series = new DataSeries(Portfolio.class, portfolio, portfolio.getName() + " + " //$NON-NLS-1$
+                            + portfolio.getReferenceAccount().getName(), wheel.getSegment(index++).getColor());
+            series.setPortfolioPlus(true);
+            availableSeries.add(series);
+        }
 
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getSegment(index++)
@@ -427,7 +458,6 @@ import org.swtchart.LineStyle;
                                     colorFor(Colors.toRGB(classification.getColor()))));
                 }
             });
-
         }
     }
 

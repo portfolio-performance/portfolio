@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 24;
+    /* package */static final int CURRENT_VERSION = 25;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -177,7 +177,7 @@ public class Client
 
     public void removeAccount(Account account)
     {
-        deleteCrossEntries(account.getTransactions());
+        deleteTransactions(account);
         deleteInvestmentPlans(account);
         deleteTaxonomyAssignments(account);
         accounts.remove(account);
@@ -209,7 +209,7 @@ public class Client
 
     public void removePortfolio(Portfolio portfolio)
     {
-        deleteCrossEntries(portfolio.getTransactions());
+        deleteTransactions(portfolio);
         deleteInvestmentPlans(portfolio);
         portfolios.remove(portfolio);
     }
@@ -309,21 +309,22 @@ public class Client
         this.secret = secret;
     }
 
-    private void deleteCrossEntries(List<? extends Transaction> transactions)
+    /**
+     * Delete all transactions including cross entries and transactions created
+     * by an investment plan.
+     */
+    private <T extends Transaction> void deleteTransactions(TransactionOwner<T> owner)
     {
-        // crossEntry.delete modifies list
-        for (Transaction t : new ArrayList<Transaction>(transactions))
-        {
-            if (t.getCrossEntry() != null)
-                t.getCrossEntry().delete();
-        }
+        // use a copy because #removeTransaction modifies the list
+        for (T t : new ArrayList<T>(owner.getTransactions()))
+            owner.deleteTransaction(t, this);
     }
 
     private void deleteInvestmentPlans(Portfolio portfolio)
     {
         for (InvestmentPlan plan : plans)
         {
-            if (plan.getPortfolio().equals(portfolio))
+            if (portfolio.equals(plan.getPortfolio()))
                 removePlan(plan);
         }
     }
@@ -332,7 +333,7 @@ public class Client
     {
         for (InvestmentPlan plan : plans)
         {
-            if (plan.getAccount().equals(account))
+            if (account.equals(plan.getAccount()))
                 removePlan(plan);
         }
     }
@@ -341,7 +342,7 @@ public class Client
     {
         for (InvestmentPlan plan : plans)
         {
-            if (plan.getSecurity().equals(security))
+            if (security.equals(plan.getSecurity()))
                 removePlan(plan);
         }
     }
@@ -371,10 +372,7 @@ public class Client
                 if (t.getSecurity() == null || !security.equals(t.getSecurity()))
                     continue;
 
-                if (t.getCrossEntry() != null)
-                    t.getCrossEntry().delete();
-                else
-                    account.getTransactions().remove(t);
+                account.deleteTransaction(t, this);
             }
 
         }
@@ -389,10 +387,7 @@ public class Client
                 if (!security.equals(t.getSecurity()))
                     continue;
 
-                if (t.getCrossEntry() != null)
-                    t.getCrossEntry().delete();
-                else
-                    portfolio.getTransactions().remove(t);
+                portfolio.deleteTransaction(t, this);
             }
 
         }

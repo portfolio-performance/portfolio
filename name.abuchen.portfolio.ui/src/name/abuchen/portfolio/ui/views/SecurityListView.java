@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -37,7 +38,6 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -392,9 +392,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         // latest
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        latest.getControl().pack();
-        int width = latest.getControl().getBounds().width;
-        sash.setWeights(new int[] { parent.getParent().getParent().getBounds().width - width, width });
+        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -551,8 +549,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     private void fillPricesContextMenu(IMenuManager manager)
     {
-        boolean isSecuritySelected = prices.getData(Security.class.toString()) != null;
-        if (isSecuritySelected)
+        Security security = (Security) prices.getData(Security.class.toString());
+        if (security != null)
         {
             manager.add(new Action(Messages.SecurityMenuAddPrice)
             {
@@ -639,37 +637,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             });
         }
 
-        if (isSecuritySelected)
+        if (security != null)
         {
             manager.add(new Separator());
-            manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) prices.getData(Security.class.toString());
-                    if (security != null)
-                        securities.updateQuotes(security);
-                }
-            });
-            manager.add(new Action(Messages.SecurityMenuImportQuotes)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) prices.getData(Security.class.toString());
-                    if (security == null)
-                        return;
-
-                    Dialog dialog = new WizardDialog(getActiveShell(), new ImportQuotesWizard(security));
-                    if (dialog.open() != Dialog.OK)
-                        return;
-
-                    markDirty();
-                    securities.refresh(security);
-                    onSecurityChanged(security);
-                }
-            });
+            new QuotesContextMenu(this).menuAboutToShow(manager, security);
         }
     }
 
@@ -934,6 +905,34 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         transactions.getTable().setLinesVisible(true);
 
         transactions.setContentProvider(new SimpleListContentProvider(true));
+
+        hookContextMenu(transactions.getControl(), new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                Security security = (Security) prices.getData(Security.class.toString());
+                if (security != null)
+                    new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
+
+                manager.add(new Separator());
+
+                manager.add(new Action(Messages.MenuTransactionDelete)
+                {
+                    @Override
+                    public void run()
+                    {
+                        TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions
+                                        .getSelection()).getFirstElement();
+                        if (pair == null)
+                            return;
+
+                        pair.deleteTransaction(getClient());
+                        getClient().markDirty();
+                    }
+                });
+            }
+        });
 
         ViewerHelper.pack(transactions);
 

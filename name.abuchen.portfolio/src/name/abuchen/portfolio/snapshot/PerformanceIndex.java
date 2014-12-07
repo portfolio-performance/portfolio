@@ -61,6 +61,12 @@ public class PerformanceIndex
         return PortfolioIndex.calculate(client, portfolio, reportInterval, warnings);
     }
 
+    public static PerformanceIndex forPortfolioPlusAccount(Client client, Portfolio portfolio,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
+    {
+        return PortfolioPlusIndex.calculate(client, portfolio, reportInterval, warnings);
+    }
+
     public static PerformanceIndex forClassification(Client client, Classification classification,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
@@ -107,6 +113,16 @@ public class PerformanceIndex
     public double[] getAccumulatedPercentage()
     {
         return accumulated;
+    }
+
+    /**
+     * Returns the final accumulated performance value for this performance
+     * reporting period. It is the last element of the array returned by
+     * {@link #getAccumulatedPercentage}.
+     */
+    public double getFinalAccumulatedPercentage()
+    {
+        return accumulated != null ? accumulated[accumulated.length - 1] : 0;
     }
 
     public double[] getDeltaPercentage()

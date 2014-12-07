@@ -413,7 +413,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             // select exchange if other provider supports same exchange id
             // (yahoo close vs. yahoo adjusted close)
             boolean exchangeSelected = false;
-            if (exchanges != null || previousExchangeId != null)
+            if (exchanges != null && previousExchangeId != null)
             {
                 for (Exchange e : exchanges)
                 {

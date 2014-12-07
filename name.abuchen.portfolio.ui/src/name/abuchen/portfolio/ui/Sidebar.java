@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DropTarget;
@@ -42,20 +43,21 @@ public final class Sidebar extends Composite
 {
     public static final class Entry
     {
+        private String id;
         private Sidebar bar;
-
         private Item item;
-
         private Action action;
 
         public Entry(Sidebar sidebar, String label)
         {
+            id = label;
             bar = sidebar;
             item = bar.createItem(bar.entries.size(), this, label, 0);
         }
 
         public Entry(Entry parent, String label)
         {
+            this.id = parent.getId() + label;
             this.bar = parent.bar;
 
             int index = this.bar.entries.indexOf(parent) + 1;
@@ -72,6 +74,11 @@ public final class Sidebar extends Composite
             setAction(action);
         }
 
+        public String getId()
+        {
+            return id;
+        }
+
         public void setAction(Action action)
         {
             this.action = action;
@@ -80,7 +87,7 @@ public final class Sidebar extends Composite
                 item.setImage(action.getImageDescriptor().createImage(true));
         }
 
-        public void setContextMenu(IMenuListener listener)
+        public void setContextMenu(MenuListener listener)
         {
             item.addContextMenu(listener);
         }
@@ -186,6 +193,11 @@ public final class Sidebar extends Composite
         }
     }
 
+    public interface MenuListener
+    {
+        void menuAboutToShow(Entry entry, IMenuManager manager);
+    }
+
     private static final int STEP = 15;
 
     private Color backgroundColor;
@@ -223,6 +235,20 @@ public final class Sidebar extends Composite
             selection.item.redraw();
 
         entry.action.run();
+    }
+
+    public Entry selectById(String id)
+    {
+        for (Entry entry : entries)
+        {
+            if (id.equals(entry.getId()))
+            {
+                select(entry);
+                return entry;
+            }
+        }
+
+        return null;
     }
 
     //
@@ -462,14 +488,21 @@ public final class Sidebar extends Composite
             });
         }
 
-        public void addContextMenu(IMenuListener listener)
+        public void addContextMenu(final MenuListener listener)
         {
             if (contextMenu != null)
                 contextMenu.dispose();
 
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(listener);
+            menuMgr.addMenuListener(new IMenuListener()
+            {
+                @Override
+                public void menuAboutToShow(IMenuManager manager)
+                {
+                    listener.menuAboutToShow(Item.this.entry, manager);
+                }
+            });
 
             contextMenu = menuMgr.createContextMenu(this);
             setMenu(contextMenu);

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Values;
 
@@ -35,6 +36,12 @@ import name.abuchen.portfolio.model.Values;
     }
 
     @Override
+    public void visit(AccountTransaction t)
+    {
+        // ignore tax refunds when calculating the irr for a single security
+    }
+
+    @Override
     public void visit(PortfolioTransaction t)
     {
         dates.add(t.getDate());
@@ -43,12 +50,12 @@ import name.abuchen.portfolio.model.Values;
             case BUY:
             case DELIVERY_INBOUND:
             case TRANSFER_IN:
-                values.add(-t.getAmount() / Values.Amount.divider());
+                values.add((-t.getAmount() + t.getTaxes()) / Values.Amount.divider());
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
-                values.add(t.getAmount() / Values.Amount.divider());
+                values.add((t.getAmount() + t.getTaxes()) / Values.Amount.divider());
                 break;
             default:
                 throw new UnsupportedOperationException();

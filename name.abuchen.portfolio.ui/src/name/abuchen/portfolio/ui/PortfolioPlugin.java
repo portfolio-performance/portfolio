@@ -33,48 +33,48 @@ public class PortfolioPlugin implements BundleActivator
 
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
-    public static final String IMG_LOGO_16 = "pp_16"; //$NON-NLS-1$
-    public static final String IMG_LOGO_32 = "pp_32"; //$NON-NLS-1$
-    public static final String IMG_LOGO_48 = "pp_48"; //$NON-NLS-1$
-    public static final String IMG_LOGO_128 = "pp_128"; //$NON-NLS-1$
-    public static final String IMG_LOGO_256 = "pp_256"; //$NON-NLS-1$
-    public static final String IMG_LOGO_512 = "pp_512"; //$NON-NLS-1$
+    public static final String IMG_LOGO_16 = "pp_16.gif"; //$NON-NLS-1$
+    public static final String IMG_LOGO_32 = "pp_32.gif"; //$NON-NLS-1$
+    public static final String IMG_LOGO_48 = "pp_48.gif"; //$NON-NLS-1$
+    public static final String IMG_LOGO_128 = "pp_128.gif"; //$NON-NLS-1$
+    public static final String IMG_LOGO_256 = "pp_256.gif"; //$NON-NLS-1$
+    public static final String IMG_LOGO_512 = "pp_512.gif"; //$NON-NLS-1$
 
     public static final String IMG_LOGO = IMG_LOGO_128;
     public static final String IMG_LOGO_SMALL = IMG_LOGO_48;
 
-    public static final String IMG_SECURITY = "security"; //$NON-NLS-1$
-    public static final String IMG_ACCOUNT = "account"; //$NON-NLS-1$
-    public static final String IMG_PORTFOLIO = "portfolio"; //$NON-NLS-1$
-    public static final String IMG_WATCHLIST = "watchlist"; //$NON-NLS-1$
-    public static final String IMG_INVESTMENTPLAN = "investmentplan"; //$NON-NLS-1$
-    public static final String IMG_NOTE = "note"; //$NON-NLS-1$
+    public static final String IMG_SECURITY = "security.gif"; //$NON-NLS-1$
+    public static final String IMG_ACCOUNT = "account.gif"; //$NON-NLS-1$
+    public static final String IMG_PORTFOLIO = "portfolio.gif"; //$NON-NLS-1$
+    public static final String IMG_WATCHLIST = "watchlist.gif"; //$NON-NLS-1$
+    public static final String IMG_INVESTMENTPLAN = "investmentplan.gif"; //$NON-NLS-1$
+    public static final String IMG_NOTE = "note.gif"; //$NON-NLS-1$
 
-    public static final String IMG_PLUS = "plus"; //$NON-NLS-1$
-    public static final String IMG_CONFIG = "config"; //$NON-NLS-1$
-    public static final String IMG_EXPORT = "export"; //$NON-NLS-1$
-    public static final String IMG_SAVE = "save"; //$NON-NLS-1$
-    public static final String IMG_FILTER = "filter"; //$NON-NLS-1$
+    public static final String IMG_PLUS = "plus.png"; //$NON-NLS-1$
+    public static final String IMG_CONFIG = "config.png"; //$NON-NLS-1$
+    public static final String IMG_EXPORT = "export.png"; //$NON-NLS-1$
+    public static final String IMG_SAVE = "save.png"; //$NON-NLS-1$
+    public static final String IMG_FILTER = "filter.png"; //$NON-NLS-1$
 
-    public static final String IMG_VIEW_TABLE = "view_table"; //$NON-NLS-1$
-    public static final String IMG_VIEW_TREEMAP = "view_treemap"; //$NON-NLS-1$
-    public static final String IMG_VIEW_PIECHART = "view_piechart"; //$NON-NLS-1$
-    public static final String IMG_VIEW_REBALANCING = "view_rebalancing"; //$NON-NLS-1$
-    public static final String IMG_VIEW_STACKEDCHART = "view_stackedchart"; //$NON-NLS-1$
+    public static final String IMG_VIEW_TABLE = "view_table.png"; //$NON-NLS-1$
+    public static final String IMG_VIEW_TREEMAP = "view_treemap.png"; //$NON-NLS-1$
+    public static final String IMG_VIEW_PIECHART = "view_piechart.png"; //$NON-NLS-1$
+    public static final String IMG_VIEW_REBALANCING = "view_rebalancing.png"; //$NON-NLS-1$
+    public static final String IMG_VIEW_STACKEDCHART = "view_stackedchart.png"; //$NON-NLS-1$
 
-    public static final String IMG_CHECK = "check"; //$NON-NLS-1$
-    public static final String IMG_QUICKFIX = "quickfix"; //$NON-NLS-1$
-    public static final String IMG_ADD = "add"; //$NON-NLS-1$
-    public static final String IMG_REMOVE = "remove"; //$NON-NLS-1$
+    public static final String IMG_CHECK = "check.gif"; //$NON-NLS-1$
+    public static final String IMG_QUICKFIX = "quickfix.gif"; //$NON-NLS-1$
+    public static final String IMG_ADD = "add.gif"; //$NON-NLS-1$
+    public static final String IMG_REMOVE = "remove.gif"; //$NON-NLS-1$
 
-    public static final String IMG_CATEGORY = "category"; //$NON-NLS-1$
-    public static final String IMG_UNASSIGNED_CATEGORY = "unassigned"; //$NON-NLS-1$
+    public static final String IMG_CATEGORY = "category.gif"; //$NON-NLS-1$
+    public static final String IMG_UNASSIGNED_CATEGORY = "unassigned.gif"; //$NON-NLS-1$
 
-    public static final String IMG_TEXT = "text"; //$NON-NLS-1$
+    public static final String IMG_TEXT = "text.gif"; //$NON-NLS-1$
 
-    public static final String IMG_ERROR = "error"; //$NON-NLS-1$
-    public static final String IMG_WARNING = "warning"; //$NON-NLS-1$
-    public static final String IMG_INFO = "info"; //$NON-NLS-1$
+    public static final String IMG_ERROR = "error.gif"; //$NON-NLS-1$
+    public static final String IMG_WARNING = "warning.gif"; //$NON-NLS-1$
+    public static final String IMG_INFO = "info.gif"; //$NON-NLS-1$
 
     private static PortfolioPlugin instance;
 
@@ -145,7 +145,7 @@ public class PortfolioPlugin implements BundleActivator
                         IMG_QUICKFIX, IMG_ADD, IMG_REMOVE, IMG_CATEGORY, IMG_UNASSIGNED_CATEGORY, IMG_TEXT, IMG_ERROR,
                         IMG_WARNING, IMG_INFO })
         {
-            IPath path = new Path("icons/" + key + ".gif"); //$NON-NLS-1$ //$NON-NLS-2$
+            IPath path = new Path("icons/" + key); //$NON-NLS-1$
             URL url = FileLocator.find(bundle, path, null);
             ImageDescriptor desc = ImageDescriptor.createFromURL(url);
             registry.put(key, desc);

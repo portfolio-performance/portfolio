@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Client;
@@ -20,7 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.DividendsDialog;
+import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
@@ -36,7 +37,6 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -548,7 +548,18 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new DividendsDialog(getShell(), getClient(), null, security);
+                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.DIVIDENDS, getClient(),
+                                null, security);
+            }
+        });
+
+        manager.add(new AbstractDialogAction(AccountTransaction.Type.TAX_REFUND.toString() + "...") //$NON-NLS-1$
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.TAX_REFUND,
+                                getClient(), null, security);
             }
         });
 
@@ -579,24 +590,9 @@ public final class SecuritiesTable implements ModificationListener
                 updateQuotes(security);
             }
         });
-        manager.add(new Separator());
 
-        manager.add(new Action(Messages.SecurityMenuUpdateQuotes)
-        {
-            @Override
-            public void run()
-            {
-                updateQuotes(security);
-            }
-        });
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuImportQuotes)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new WizardDialog(getShell(), new ImportQuotesWizard(security));
-            }
-        });
+        manager.add(new Separator());
+        new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
 
         manager.add(new Separator());
         manager.add(new WebLocationMenu(security));

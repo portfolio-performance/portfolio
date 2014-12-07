@@ -58,7 +58,7 @@ public class YahooFinanceQuoteFeedTest
             }
         };
 
-        ArrayList<Security> securities = new ArrayList<Security>();
+        List<Security> securities = new ArrayList<Security>();
         securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID));
         securities.add(new Security("Adidas", "DE000A1EWWW0", "ADS.DE", YahooFinanceQuoteFeed.ID));
         securities.add(new Security("Daimler AG", "DE0007100000", "BAYN.DE", YahooFinanceQuoteFeed.ID));
@@ -102,7 +102,7 @@ public class YahooFinanceQuoteFeedTest
         Security daimler = new Security("Daimler AG", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID);
         Security adidas = new Security("Adidas", "DE000A1EWWW0", "ADS.DE", YahooFinanceQuoteFeed.ID);
 
-        ArrayList<Security> securities = new ArrayList<Security>();
+        List<Security> securities = new ArrayList<Security>();
         securities.add(daimler);
         securities.add(adidas);
 
