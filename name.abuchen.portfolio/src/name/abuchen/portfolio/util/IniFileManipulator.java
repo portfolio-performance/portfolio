@@ -26,6 +26,7 @@ public class IniFileManipulator
     public void save() throws IOException
     {
         Files.write(getIniFile(), lines, Charset.defaultCharset());
+        isDirty = false;
     }
 
     private Path getIniFile()
@@ -52,6 +53,18 @@ public class IniFileManipulator
         this.isDirty = false;
     }
 
+    public String getLanguage()
+    {
+        for (int ii = 0; ii < lines.size(); ii++)
+        {
+            String line = lines.get(ii);
+            if (line.trim().equals(NL) && ii + 1 < lines.size())
+                return lines.get(ii + 1);
+        }
+
+        return null;
+    }
+
     public void setLanguage(String locale)
     {
         for (int ii = 0; ii < lines.size(); ii++)
@@ -76,6 +89,26 @@ public class IniFileManipulator
         lines.add(NL);
         lines.add(locale);
         isDirty = true;
+    }
+
+    public void clearLanguage()
+    {
+        Iterator<String> iterator = lines.iterator();
+        while (iterator.hasNext())
+        {
+            String line = iterator.next();
+            if (line.trim().equals(NL))
+            {
+                iterator.remove();
+                if (iterator.hasNext())
+                {
+                    iterator.next();
+                    iterator.remove();
+                }
+                isDirty = true;
+                return;
+            }
+        }
     }
 
     public void setClearPersistedState()

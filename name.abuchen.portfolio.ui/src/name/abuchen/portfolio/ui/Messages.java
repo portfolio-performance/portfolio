@@ -261,6 +261,8 @@ public class Messages extends NLS
     public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
     public static String LabelIRR;
+    public static String LabelLanguage;
+    public static String LabelLanguageAutomatic;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNewClassification;
@@ -367,6 +369,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidISIN;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningFile;
+    public static String MsgErrorSavingIniFile;
     public static String MsgErrorUpdating;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
@@ -414,8 +417,10 @@ public class Messages extends NLS
     public static String PortfolioMenuDelete;
     public static String PrefCheckOnStartup;
     public static String PrefMsgConfigureUpdates;
+    public static String PrefMsgLanguageConfig;
     public static String PrefUpdateSite;
     public static String PrefTitle;
+    public static String PrefTitleLanguage;
     public static String SaveHandlerMsgSelectFileToSave;
     public static String SaveHandlerPrompt;
     public static String SaveHandlerTitle;

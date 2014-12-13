@@ -137,8 +137,19 @@ public class UpdateHelper
 
             if (doUpdate[0])
             {
+                // update operation must
+                // * remember the current local setting (as it will be reset by
+                // the update operation to the default configuration)
+                // * update the bundles using p2
+                // * set the -clearPersistedState flag so that (possible)
+                // changes to the Application.e4xmi are applied
+                // * update the locale setting to what the user previously
+                // selected
+                // * prompt for restart
+
+                String currentLocale = getCurrentLocaleSetting();
                 runUpdateOperation(sub.newChild(100));
-                setClearPersistedStateFlag();
+                updateIniFile(currentLocale);
                 promptForRestart();
             }
         }
@@ -176,13 +187,34 @@ public class UpdateHelper
         });
     }
 
-    private void setClearPersistedStateFlag()
+    private String getCurrentLocaleSetting()
+    {
+        try
+        {
+            IniFileManipulator m = new IniFileManipulator();
+            m.load();
+            return m.getLanguage();
+        }
+        catch (IOException ignore)
+        {
+            PortfolioPlugin.log(ignore);
+            return null;
+        }
+    }
+
+    private void updateIniFile(String locale)
     {
         try
         {
             IniFileManipulator m = new IniFileManipulator();
             m.load();
             m.setClearPersistedState();
+
+            if (locale == null)
+                m.clearLanguage();
+            else
+                m.setLanguage(locale);
+
             if (m.isDirty())
                 m.save();
         }
