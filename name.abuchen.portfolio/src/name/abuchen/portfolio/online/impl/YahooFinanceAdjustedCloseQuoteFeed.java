@@ -9,12 +9,10 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
 {
-    public static final String ID = "YAHOO-ADJUSTEDCLOSE"; //$NON-NLS-1$
-
     @Override
     public String getId()
     {
-        return ID;
+        return "YAHOO-ADJUSTEDCLOSE"; //$NON-NLS-1$
     }
 
     @Override

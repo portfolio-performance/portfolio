@@ -96,7 +96,7 @@ public class ErrorLogPart
         }
     }
 
-    public class LogEntryContentProvider implements ITreeContentProvider
+    public static class LogEntryContentProvider implements ITreeContentProvider
     {
         private List<?> entries;
 
