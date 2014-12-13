@@ -39,7 +39,7 @@ public class SecurityPosition
         this.security = null;
         this.price = price;
         this.shares = shares;
-        this.transactions = null;
+        this.transactions = new ArrayList<PortfolioTransaction>();
     }
 
     public SecurityPosition(Security security, SecurityPrice price, List<PortfolioTransaction> transactions)
