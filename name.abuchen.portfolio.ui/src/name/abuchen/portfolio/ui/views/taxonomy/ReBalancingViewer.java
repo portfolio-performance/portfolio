@@ -195,7 +195,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) getNodeViewer().getSelection())
                         .getFirstElement();
 
-        if (node != null && node.isClassification() && getModel().hasWeightError(node))
+        if (node == null || node.isUnassignedCategory())
+            return;
+
+        if (node.isClassification() && getModel().hasWeightError(node))
         {
             manager.appendToGroup(MENU_GROUP_CUSTOM_ACTIONS, new Action(Messages.MenuTaxonomyWeightFix)
             {
