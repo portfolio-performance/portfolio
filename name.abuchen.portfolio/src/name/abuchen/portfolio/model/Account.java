@@ -83,23 +83,6 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     }
 
     @Override
-    public void deleteTransaction(AccountTransaction transaction, Client client)
-    {
-        // FIXME Use Java 8 default methods
-        if (transaction.getCrossEntry() != null)
-        {
-            Transaction other = transaction.getCrossEntry().getCrossTransaction(transaction);
-            @SuppressWarnings("unchecked")
-            TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) transaction.getCrossEntry()
-                            .getEntity(other);
-
-            owner.shallowDeleteTransaction(other, client);
-        }
-
-        shallowDeleteTransaction(transaction, client);
-    }
-
-    @Override
     public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
     {
         this.transactions.remove(transaction);
