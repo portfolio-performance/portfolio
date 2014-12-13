@@ -41,13 +41,6 @@ public class UpdateQuotesHandler
 
         boolean isHistoric = "historic".equals(target); //$NON-NLS-1$
 
-        new UpdateQuotesJob(client, isHistoric, 0)
-        {
-            @Override
-            protected void notifyFinished()
-            {
-                portfolioPart.notifyModelUpdated();
-            }
-        }.schedule();
+        new UpdateQuotesJob(client, isHistoric, 0).schedule();
     }
 }

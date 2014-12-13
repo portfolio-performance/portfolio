@@ -29,7 +29,7 @@ import org.htmlparser.util.ParserException;
 public class DestatisCPIFeed implements CPIFeed
 {
     @Override
-    public List<ConsumerPriceIndex> getConsumerPriceIndeces() throws IOException
+    public List<ConsumerPriceIndex> getConsumerPriceIndices() throws IOException
     {
         try
         {

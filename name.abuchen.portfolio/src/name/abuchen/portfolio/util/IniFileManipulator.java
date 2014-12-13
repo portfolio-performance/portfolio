@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,19 +26,20 @@ public class IniFileManipulator
     public void save() throws IOException
     {
         Files.write(getIniFile(), lines, Charset.defaultCharset());
+        isDirty = false;
     }
 
-    private File getIniFile()
+    private Path getIniFile()
     {
         String eclipseLauncher = System.getProperty("eclipse.launcher"); //$NON-NLS-1$
 
-        File path = new File(eclipseLauncher);
+        Path path = Paths.get(eclipseLauncher);
 
-        String executable = path.getName();
+        String executable = path.getFileName().toString();
         int p = executable.lastIndexOf('.');
         String iniFileName = (p > 0 ? executable.substring(0, p) : executable) + ".ini"; //$NON-NLS-1$
 
-        return new File(path.getParent(), iniFileName);
+        return path.getParent().resolve(iniFileName);
     }
 
     /* for testing */List<String> getLines()
@@ -48,6 +51,18 @@ public class IniFileManipulator
     {
         this.lines = new ArrayList<String>(lines);
         this.isDirty = false;
+    }
+
+    public String getLanguage()
+    {
+        for (int ii = 0; ii < lines.size(); ii++)
+        {
+            String line = lines.get(ii);
+            if (line.trim().equals(NL) && ii + 1 < lines.size())
+                return lines.get(ii + 1);
+        }
+
+        return null;
     }
 
     public void setLanguage(String locale)
@@ -74,6 +89,26 @@ public class IniFileManipulator
         lines.add(NL);
         lines.add(locale);
         isDirty = true;
+    }
+
+    public void clearLanguage()
+    {
+        Iterator<String> iterator = lines.iterator();
+        while (iterator.hasNext())
+        {
+            String line = iterator.next();
+            if (line.trim().equals(NL))
+            {
+                iterator.remove();
+                if (iterator.hasNext())
+                {
+                    iterator.next();
+                    iterator.remove();
+                }
+                isDirty = true;
+                return;
+            }
+        }
     }
 
     public void setClearPersistedState()

@@ -1,5 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.ui.util.SWTHelper.EMPTY_LABEL;
+import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
+import static name.abuchen.portfolio.ui.util.SWTHelper.dateWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +29,6 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -36,8 +39,6 @@ import org.eclipse.swt.widgets.Label;
 
 public class SecurityDetailsViewer
 {
-    private static final String EMPTY_LABEL = ""; //$NON-NLS-1$
-
     private abstract static class SecurityFacet
     {
         private Font boldFont;
@@ -133,9 +134,7 @@ public class SecurityDetailsViewer
         {
             if (security == null)
             {
-                valueName.setText(EMPTY_LABEL);
-                valueISIN.setText(EMPTY_LABEL);
-                valueTickerSymbol.setText(EMPTY_LABEL);
+                clearLabel(valueName, valueISIN, valueTickerSymbol);
             }
             else
             {
@@ -258,34 +257,16 @@ public class SecurityDetailsViewer
             data.top = new FormAttachment(headingQuotes, 5);
             data.left = new FormAttachment(50, 5);
             data.right = new FormAttachment(100);
+            data.width = dateWidth(composite);
             valueLatestPrices.setLayoutData(data);
 
-            GC gc = new GC(composite);
-            Point extentText = gc.stringExtent("YYYY-MM-DD"); //$NON-NLS-1$
-            gc.dispose();
-            below(valueLatestPrices, labelLatestTrade, valueLatestTrade, extentText.x);
-
-            below(valueLatestTrade, labelDaysHigh, valueDaysHigh, SWT.DEFAULT);
-            below(valueDaysHigh, labelDaysLow, valueDaysLow, SWT.DEFAULT);
-            below(valueDaysLow, labelVolume, valueVolume, SWT.DEFAULT);
-            below(valueVolume, labelPreviousClose, valuePreviousClose, SWT.DEFAULT);
+            placeBelow(valueLatestPrices, labelLatestTrade, valueLatestTrade);
+            placeBelow(valueLatestTrade, labelDaysHigh, valueDaysHigh);
+            placeBelow(valueDaysHigh, labelDaysLow, valueDaysLow);
+            placeBelow(valueDaysLow, labelVolume, valueVolume);
+            placeBelow(valueVolume, labelPreviousClose, valuePreviousClose);
 
             return composite;
-        }
-
-        protected void below(Label referenceItem, Label label, Label value, int width)
-        {
-            FormData data;
-            data = new FormData();
-            data.top = new FormAttachment(value, 0, SWT.CENTER);
-            label.setLayoutData(data);
-
-            data = new FormData();
-            data.top = new FormAttachment(referenceItem, 5);
-            data.left = new FormAttachment(referenceItem, 0, SWT.LEFT);
-            data.right = new FormAttachment(100);
-            data.width = width;
-            value.setLayoutData(data);
         }
 
         @Override
@@ -293,12 +274,8 @@ public class SecurityDetailsViewer
         {
             if (security == null || security.getLatest() == null)
             {
-                valueLatestPrices.setText(EMPTY_LABEL);
-                valueLatestTrade.setText(EMPTY_LABEL);
-                valueDaysHigh.setText(EMPTY_LABEL);
-                valueDaysLow.setText(EMPTY_LABEL);
-                valueVolume.setText(EMPTY_LABEL);
-                valuePreviousClose.setText(EMPTY_LABEL);
+                clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume,
+                                valuePreviousClose);
             }
             else
             {

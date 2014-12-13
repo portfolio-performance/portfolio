@@ -1,15 +1,10 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.awt.Desktop;
-import java.awt.Desktop.Action;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.swt.SWT;
@@ -74,25 +69,7 @@ public class ImportSourcePage extends AbstractWizardPage
             @Override
             public void widgetSelected(SelectionEvent event)
             {
-                try
-                {
-                    if (Desktop.isDesktopSupported())
-                    {
-                        Desktop desktop = Desktop.getDesktop();
-                        if (desktop != null && desktop.isSupported(Action.BROWSE))
-                        {
-                            desktop.browse(new URI(event.text));
-                        }
-                    }
-                }
-                catch (IOException e)
-                {
-                    PortfolioPlugin.log(e);
-                }
-                catch (URISyntaxException e)
-                {
-                    PortfolioPlugin.log(e);
-                }
+                DesktopAPI.browse(event.text);
             }
         });
 

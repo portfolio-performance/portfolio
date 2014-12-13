@@ -95,6 +95,9 @@ public class TimelineChartToolTip implements Listener
     {
         focus = getFocusObjectAt(event);
 
+        if (focus == null) // nothing to show
+            return;
+
         if (tip != null && !tip.isDisposed())
             tip.dispose();
 
@@ -171,7 +174,11 @@ public class TimelineChartToolTip implements Listener
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        ISeries timeSeries = chart.getSeriesSet().getSeries()[0];
+        ISeries[] allSeries = chart.getSeriesSet().getSeries();
+        if (allSeries.length == 0)
+            return null;
+
+        ISeries timeSeries = allSeries[0];
         int line = Arrays.binarySearch(timeSeries.getXDateSeries(), cal.getTime());
 
         if (line >= 0)

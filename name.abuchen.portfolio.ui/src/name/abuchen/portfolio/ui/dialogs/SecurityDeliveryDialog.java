@@ -50,8 +50,9 @@ public class SecurityDeliveryDialog extends AbstractDialog
             this.portfolio = portfolio;
             this.type = type;
 
-            if (portfolio == null && !client.getPortfolios().isEmpty())
-                setPortfolio(client.getPortfolios().get(0));
+            List<Portfolio> activePortfolios = client.getActivePortfolios();
+            if (portfolio == null && !activePortfolios.isEmpty())
+                setPortfolio(activePortfolios.get(0));
             if (security == null && !client.getSecurities().isEmpty())
                 setSecurity(client.getSecurities().get(0));
         }
@@ -68,7 +69,18 @@ public class SecurityDeliveryDialog extends AbstractDialog
 
         private long calculatePrice()
         {
-            return shares == 0 ? 0 : Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+            if (shares == 0)
+                return 0;
+
+            switch (type)
+            {
+                case DELIVERY_INBOUND:
+                    return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+                case DELIVERY_OUTBOUND:
+                    return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         public Portfolio getPortfolio()
@@ -207,7 +219,7 @@ public class SecurityDeliveryDialog extends AbstractDialog
                             {
                                 return ((Portfolio) element).getName();
                             }
-                        }, getModel().getClient().getPortfolios().toArray());
+                        }, getModel().getClient().getActivePortfolios().toArray());
 
         // shares
         bindings().bindMandatorySharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$

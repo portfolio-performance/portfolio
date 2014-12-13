@@ -34,9 +34,15 @@ public final class Security implements Attributable, InvestmentVehicle
     private String tickerSymbol;
     private String wkn;
 
+    // feed and feedURL are used to update historical prices
     private String feed;
     private String feedURL;
     private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
+
+    // latestFeed and latestFeedURL are used to update the latest (current)
+    // quote. If null, the values from feed and feedURL are used instead.
+    private String latestFeed;
+    private String latestFeedURL;
     private LatestSecurityPrice latest;
 
     private Attributes attributes;
@@ -205,18 +211,34 @@ public final class Security implements Attributable, InvestmentVehicle
         return Collections.unmodifiableList(prices);
     }
 
-    public void addPrice(SecurityPrice price)
+    /**
+     * Adds security price to historical quotes.
+     * 
+     * @return true if the historical quote was updated.
+     */
+    public boolean addPrice(SecurityPrice price)
     {
         int index = Collections.binarySearch(prices, price);
 
         if (index < 0)
         {
-            prices.add(price);
-            Collections.sort(prices);
+            prices.add(~index, price);
+            return true;
         }
         else
         {
-            prices.set(index, price);
+            SecurityPrice replaced = prices.get(index);
+
+            if (!replaced.equals(price))
+            {
+                // only replace if necessary -> UI might keep reference!
+                prices.set(index, price);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -230,39 +252,63 @@ public final class Security implements Attributable, InvestmentVehicle
         prices.clear();
     }
 
-    public SecurityPrice getSecurityPrice(Date time)
+    public SecurityPrice getSecurityPrice(Date requestedTime)
     {
-        if (prices.isEmpty())
-        {
-            if (latest != null)
-                return latest;
-            else
-                return new SecurityPrice(time, 0);
-        }
+        // assumption: prefer historic quote over latest if there are more
+        // up-to-date historic quotes
 
-        // prefer latest quotes
-        if (latest != null)
-        {
-            SecurityPrice last = prices.get(prices.size() - 1);
+        SecurityPrice lastHistoric = prices.isEmpty() ? null : prices.get(prices.size() - 1);
 
-            // if 'last' younger than 'requested'
-            if (last.getTime().getTime() <= time.getTime())
-            {
-                // if 'latest' older than 'last' -> 'latest' (else 'last')
-                if (latest.getTime().getTime() >= last.getTime().getTime())
-                    return latest;
-                else
-                    return last;
-            }
-        }
+        // use latest quote only
+        // * if one exists
+        // * and if either no historic quotes exist
+        // * or
+        // ** if the requested time is after the latest quote
+        // ** and the historic quotes are older than the latest quote
 
-        SecurityPrice p = new SecurityPrice(time, 0);
+        if (latest != null //
+                        && (lastHistoric == null //
+                        || (requestedTime.getTime() >= latest.getTime().getTime() && //
+                        latest.getTime().getTime() >= lastHistoric.getTime().getTime()) //
+                        ))
+            return latest;
+
+        if (lastHistoric == null)
+            return new SecurityPrice(requestedTime, 0);
+
+        // avoid binary search if last historic quote <= requested date
+        if (lastHistoric.getTime().getTime() <= requestedTime.getTime())
+            return lastHistoric;
+
+        SecurityPrice p = new SecurityPrice(requestedTime, 0);
         int index = Collections.binarySearch(prices, p);
 
         if (index >= 0)
             return prices.get(index);
+        else if (index == -1) // requested is date before first historic quote
+            return prices.get(0);
         else
-            return prices.get(Math.max(-index - 2, 0));
+            return prices.get(-index - 2);
+    }
+
+    public String getLatestFeed()
+    {
+        return latestFeed;
+    }
+
+    public void setLatestFeed(String latestFeed)
+    {
+        this.latestFeed = latestFeed;
+    }
+
+    public String getLatestFeedURL()
+    {
+        return latestFeedURL;
+    }
+
+    public void setLatestFeedURL(String latestFeedURL)
+    {
+        this.latestFeedURL = latestFeedURL;
     }
 
     public LatestSecurityPrice getLatest()
@@ -270,9 +316,23 @@ public final class Security implements Attributable, InvestmentVehicle
         return latest;
     }
 
-    public void setLatest(LatestSecurityPrice latest)
+    /**
+     * Sets the latest security price.
+     * 
+     * @return true if the latest security price was updated.
+     */
+    public boolean setLatest(LatestSecurityPrice latest)
     {
-        this.latest = latest;
+        // only replace if necessary -> UI might keep reference!
+        if ((this.latest != null && !this.latest.equals(latest)) || (this.latest == null && latest != null))
+        {
+            this.latest = latest;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public boolean isRetired()
@@ -328,6 +388,7 @@ public final class Security implements Attributable, InvestmentVehicle
                 {
                     case INTEREST:
                     case DIVIDENDS:
+                    case TAX_REFUND:
                         answer.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case FEES:
@@ -386,6 +447,9 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.feed = feed;
         answer.feedURL = feedURL;
         answer.prices = new ArrayList<SecurityPrice>(prices);
+
+        answer.latestFeed = latestFeed;
+        answer.latestFeedURL = latestFeedURL;
         answer.latest = latest;
 
         answer.events = new ArrayList<SecurityEvent>(getEvents());

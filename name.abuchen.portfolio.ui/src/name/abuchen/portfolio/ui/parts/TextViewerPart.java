@@ -1,15 +1,15 @@
 package name.abuchen.portfolio.ui.parts;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.util.Files;
 
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -32,7 +32,7 @@ public class TextViewerPart
 
         try
         {
-            byte[] encoded = Files.readAllBytes(new File(filename));
+            byte[] encoded = Files.readAllBytes(Paths.get(filename));
             String content = Charset.defaultCharset().decode(ByteBuffer.wrap(encoded)).toString();
             text.setText(content);
         }

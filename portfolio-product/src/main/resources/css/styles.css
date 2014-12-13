@@ -1,0 +1,68 @@
+body {
+font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+background: #E5E5E5;
+font-size: small;
+}
+
+#content {
+background: white;
+border: 1px solid;
+-webkit-box-shadow: rgba(0,0,0,0.3) 0 1px 3px;
+-moz-box-shadow: rgba(0,0,0,0.3) 0 1px 3px;
+box-shadow: rgba(0,0,0,0.3) 0 1px 3px;
+border-color: #E5E5E5 #DBDBDB #D2D2D2;
+border-top-color: #E5E5E5;
+border-right-color: #DBDBDB;
+border-bottom-color: #D2D2D2;
+border-left-color: #DBDBDB;
+}
+
+img {
+border: 0px;
+}
+
+#content {
+width: 780px;
+margin: 0 auto 18px;
+padding: 10px 50px 32px;
+}
+
+h3, h2, h1 {
+clear: both;
+}
+
+.section {
+clear: both;
+margin-bottom: 10px;
+}
+
+.screenshot {
+width: 340px;
+float: left;
+margin-bottom: 10px;
+}
+
+.news {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0px;
+border-bottom: thin solid grey;
+margin-bottom: 100px;
+}
+
+.news tr {
+}
+
+.news td {
+vertical-align: top;
+border-top: thin solid grey;
+}
+
+.title {
+width: 20%;
+font-weight: bold;
+}
+
+.content {
+width: 80%;
+}

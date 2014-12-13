@@ -69,12 +69,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     public List<QuickFix> getAvailableFixes()
     {
         List<QuickFix> answer = new ArrayList<QuickFix>();
-
-        answer.add(new DeleteTransactionFix(account, transaction));
-
-        for (final Portfolio portfolio : client.getPortfolios())
-            answer.add(new CreateBuySellEntryFix(portfolio));
-
+        answer.add(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
+        client.getPortfolios().stream().forEach(p -> answer.add(new CreateBuySellEntryFix(p)));
         return answer;
     }
 }

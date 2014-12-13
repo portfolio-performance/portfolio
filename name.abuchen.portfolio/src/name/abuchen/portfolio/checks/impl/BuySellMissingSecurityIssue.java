@@ -27,7 +27,7 @@ import name.abuchen.portfolio.model.Client;
     public List<QuickFix> getAvailableFixes()
     {
         List<QuickFix> answer = new ArrayList<QuickFix>();
-        answer.add(new DeleteTransactionFix(account, transaction));
+        answer.add(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
         return answer;
     }
 }

@@ -21,17 +21,18 @@ public class DestatisCPIFeedTest
     @Test
     public void testParsingHtml() throws IOException, ParserException
     {
-        String html = new Scanner(getClass().getResourceAsStream("response_destatis.txt"), "UTF-8") //
-                        .useDelimiter("\\A").next();
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("response_destatis.txt"), "UTF-8"))
+        {
+            String html = scanner.useDelimiter("\\A").next();
+            Lexer lexer = new Lexer(html);
+            List<ConsumerPriceIndex> prices = new DestatisCPIFeed.Visitor().visit(lexer);
 
-        Lexer lexer = new Lexer(html);
-        List<ConsumerPriceIndex> prices = new DestatisCPIFeed.Visitor().visit(lexer);
+            assertThat(prices.size(), equalTo(19 /* years in file */* 12 + 6));
 
-        assertThat(prices.size(), equalTo(19 /* years in file */* 12 + 6));
-
-        ConsumerPriceIndex p = prices.get(5);
-        assertThat(p.getYear(), equalTo(2012));
-        assertThat(p.getMonth(), equalTo(Calendar.JANUARY));
-        assertThat(p.getIndex(), equalTo(11150));
+            ConsumerPriceIndex p = prices.get(5);
+            assertThat(p.getYear(), equalTo(2012));
+            assertThat(p.getMonth(), equalTo(Calendar.JANUARY));
+            assertThat(p.getIndex(), equalTo(11150));
+        }
     }
 }

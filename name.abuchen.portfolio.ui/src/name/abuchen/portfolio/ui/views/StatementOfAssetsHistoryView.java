@@ -111,7 +111,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             }
         };
         save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
-        save.setToolTipText(Messages.MenuConfigureChart);
+        save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
         Action config = new Action()
@@ -281,16 +281,20 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private void addPortfolio(DataSeries item, List<Exception> warnings)
     {
         Portfolio portfolio = (Portfolio) item.getInstance();
-        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(portfolio);
+
+        Object cacheKey = item.isPortfolioPlus() ? portfolio.getUUID() : portfolio;
+        PerformanceIndex portfolioIndex = (PerformanceIndex) dataCache.get(cacheKey);
         if (portfolioIndex == null)
         {
-            portfolioIndex = PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
-            dataCache.put(portfolio, portfolioIndex);
+            portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
+                            .forPortfolioPlusAccount(getClient(), portfolio, getReportingPeriod(), warnings)
+                            : PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
+            dataCache.put(cacheKey, portfolioIndex);
         }
 
         ILineSeries series = chart.addDateSeries(portfolioIndex.getDates(), //
                         toDouble(portfolioIndex.getTotals(), Values.Amount.divider()), //
-                        portfolio.getName());
+                        item.getLabel());
         item.configure(series);
     }
 

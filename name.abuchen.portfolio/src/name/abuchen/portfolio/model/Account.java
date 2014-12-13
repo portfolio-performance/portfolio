@@ -1,26 +1,11 @@
 package name.abuchen.portfolio.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle
 {
-    public static final class ByName implements Comparator<Account>, Serializable
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public int compare(Account a1, Account a2)
-        {
-            if (a1 == null)
-                return a2 == null ? 0 : -1;
-            return a1.name.compareTo(a2.name);
-        }
-    }
-
     private String uuid;
     private String name;
     private String currencyCode;
@@ -108,12 +93,15 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
         this.transactions.add(transaction);
     }
 
+    @Override
+    public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
+    {
+        this.transactions.remove(transaction);
+    }
+
     public long getCurrentAmount()
     {
-        long amount = 0;
-
-        for (AccountTransaction t : transactions)
-        {
+        return transactions.stream().mapToLong(t -> {
             switch (t.getType())
             {
                 case DEPOSIT:
@@ -121,21 +109,18 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                 case INTEREST:
                 case SELL:
                 case TRANSFER_IN:
-                    amount += t.getAmount();
-                    break;
+                case TAX_REFUND:
+                    return t.getAmount();
                 case FEES:
                 case TAXES:
                 case REMOVAL:
                 case BUY:
                 case TRANSFER_OUT:
-                    amount -= t.getAmount();
-                    break;
+                    return -t.getAmount();
                 default:
-                    throw new RuntimeException("Unknown Account Transaction type: " + t.getType()); //$NON-NLS-1$
+                    throw new UnsupportedOperationException();
             }
-        }
-
-        return amount;
+        }).sum();
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -79,7 +79,7 @@ public class ClientFactory
         {
             try
             {
-                Client client = (Client) xstream().fromXML(new InputStreamReader(input, Charset.forName("UTF-8"))); //$NON-NLS-1$
+                Client client = (Client) xstream().fromXML(new InputStreamReader(input, StandardCharsets.UTF_8));
 
                 if (client.getVersion() > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
@@ -98,7 +98,7 @@ public class ClientFactory
         @Override
         void save(Client client, OutputStream output) throws IOException
         {
-            Writer writer = new OutputStreamWriter(output, Charset.forName("UTF-8")); //$NON-NLS-1$
+            Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
             xstream().toXML(client, writer);
 
@@ -431,8 +431,16 @@ public class ClientFactory
             case 21:
                 // do nothing --> added taxes to portfolio transaction
             case 22:
+                // do nothing --> added 'isRetired' property to portfolio
+            case 23:
+                // do nothing --> added 'latestFeed' and 'latestFeedURL'
+                // property to security
+            case 24:
+                // do nothing --> added 'TAX_REFUND' as account transaction
+            case 25:
                 // do nothing --> added currency support
                 client.setVersion(Client.CURRENT_VERSION);
+                break;
             case Client.CURRENT_VERSION:
                 break;
             default:

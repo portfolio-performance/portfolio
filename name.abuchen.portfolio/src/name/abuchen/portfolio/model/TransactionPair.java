@@ -37,4 +37,13 @@ public class TransactionPair<T extends Transaction>
     {
         return transaction;
     }
+
+    /**
+     * Deletes the transaction from the transaction owner, e.g. the portfolio or
+     * account.
+     */
+    public void deleteTransaction(Client client)
+    {
+        owner.deleteTransaction(transaction, client);
+    }
 }

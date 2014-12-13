@@ -540,13 +540,13 @@ import org.eclipse.swt.widgets.Shell;
                         onTaxnomyNodeEdited(getModel().getRootNode());
                     }
                 });
+            }
 
-                Security security = node.getBackingSecurity();
-                if (security != null)
-                {
-                    manager.add(new Separator());
-                    manager.add(new WebLocationMenu(security));
-                }
+            Security security = node.getBackingSecurity();
+            if (security != null)
+            {
+                manager.add(new Separator());
+                manager.add(new WebLocationMenu(security));
             }
         }
     }

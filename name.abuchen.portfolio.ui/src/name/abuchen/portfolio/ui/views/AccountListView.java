@@ -9,7 +9,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -85,18 +84,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private void resetInput()
     {
-        if (isFiltered)
-        {
-            List<Account> list = new ArrayList<Account>();
-            for (Account a : getClient().getAccounts())
-                if (!a.isRetired())
-                    list.add(a);
-            accounts.setInput(list);
-        }
-        else
-        {
-            accounts.setInput(getClient().getAccounts());
-        }
+        accounts.setInput(isFiltered ? getClient().getActiveAccounts() : getClient().getAccounts());
     }
 
     @Override
@@ -418,8 +406,17 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
                 return t.getType() == AccountTransaction.Type.BUY //
                                 || t.getType() == AccountTransaction.Type.SELL //
-                                || t.getType() == AccountTransaction.Type.DIVIDENDS;
+                                || t.getType() == AccountTransaction.Type.DIVIDENDS //
+                                || t.getType() == AccountTransaction.Type.TAX_REFUND;
             }
+
+            @Override
+            public boolean canBeNull(Object element)
+            {
+                AccountTransaction t = (AccountTransaction) element;
+                return t.getType() == AccountTransaction.Type.TAX_REFUND;
+            }
+
         }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
@@ -589,22 +586,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                     if (transaction == null || account == null)
                         return;
 
-                    if (transaction.getCrossEntry() != null)
-                    {
-                        transaction.getCrossEntry().delete();
-
-                        // possibly remove from investment plan
-                        Transaction t = transaction.getCrossEntry().getCrossTransaction(transaction);
-                        if (t instanceof PortfolioTransaction)
-                        {
-                            for (InvestmentPlan plan : getClient().getPlans())
-                                plan.removeTransaction((PortfolioTransaction) t);
-                        }
-                    }
-                    else
-                    {
-                        account.getTransactions().remove(transaction);
-                    }
+                    account.deleteTransaction(transaction, getClient());
                     markDirty();
 
                     accounts.refresh();

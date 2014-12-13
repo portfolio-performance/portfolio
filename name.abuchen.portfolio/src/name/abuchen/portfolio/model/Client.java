@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -16,7 +17,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 23;
+    /* package */static final int CURRENT_VERSION = 26;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -24,6 +25,8 @@ public class Client
 
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists;
+
+    // keep typo -> xstream deserialization
     private List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<Account>();
@@ -126,15 +129,36 @@ public class Client
         return watchlists;
     }
 
-    public List<ConsumerPriceIndex> getConsumerPriceIndeces()
+    public List<ConsumerPriceIndex> getConsumerPriceIndices()
     {
         return Collections.unmodifiableList(consumerPriceIndeces);
     }
 
-    public void setConsumerPriceIndeces(List<ConsumerPriceIndex> prices)
+    /**
+     * Sets the consumer price indices.
+     * 
+     * @return true if the indices are modified.
+     */
+    public boolean setConsumerPriceIndices(List<ConsumerPriceIndex> indices)
     {
-        this.consumerPriceIndeces = prices;
-        Collections.sort(this.consumerPriceIndeces, new ConsumerPriceIndex.ByDate());
+        if (indices == null)
+            throw new IllegalArgumentException();
+
+        List<ConsumerPriceIndex> newValues = new ArrayList<ConsumerPriceIndex>(indices);
+        Collections.sort(newValues, new ConsumerPriceIndex.ByDate());
+
+        if (consumerPriceIndeces == null || !consumerPriceIndeces.equals(newValues))
+        {
+            // only assign list if indices have actually changed because UI
+            // elements keep a reference which is not updated if no 'dirty'
+            // event is fired
+            this.consumerPriceIndeces = newValues;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void addConsumerPriceIndex(ConsumerPriceIndex record)
@@ -154,7 +178,7 @@ public class Client
 
     public void removeAccount(Account account)
     {
-        deleteCrossEntries(account.getTransactions());
+        deleteTransactions(account);
         deleteInvestmentPlans(account);
         deleteTaxonomyAssignments(account);
         accounts.remove(account);
@@ -165,6 +189,18 @@ public class Client
         return Collections.unmodifiableList(accounts);
     }
 
+    /**
+     * Returns a sorted list of active accounts, i.e. accounts that are not
+     * marked as retired.
+     */
+    public List<Account> getActiveAccounts()
+    {
+        return accounts.stream() //
+                        .filter(a -> !a.isRetired()) //
+                        .sorted(new Account.ByName()) //
+                        .collect(Collectors.toList());
+    }
+
     public void addPortfolio(Portfolio portfolio)
     {
         portfolios.add(portfolio);
@@ -172,7 +208,7 @@ public class Client
 
     public void removePortfolio(Portfolio portfolio)
     {
-        deleteCrossEntries(portfolio.getTransactions());
+        deleteTransactions(portfolio);
         deleteInvestmentPlans(portfolio);
         portfolios.remove(portfolio);
     }
@@ -180,6 +216,18 @@ public class Client
     public List<Portfolio> getPortfolios()
     {
         return Collections.unmodifiableList(portfolios);
+    }
+
+    /**
+     * Returns a sorted list of active portfolios, i.e. portfolios that are not
+     * marked as retired.
+     */
+    public List<Portfolio> getActivePortfolios()
+    {
+        return portfolios.stream() //
+                        .filter(p -> !p.isRetired()) //
+                        .sorted(new Portfolio.ByName()) //
+                        .collect(Collectors.toList());
     }
 
     @Deprecated
@@ -223,12 +271,9 @@ public class Client
 
     public Taxonomy getTaxonomy(String id)
     {
-        for (Taxonomy t : taxonomies)
-        {
-            if (id.equals(t.getId()))
-                return t;
-        }
-        return null;
+        return taxonomies.stream() //
+                        .filter(t -> id.equals(t.getId())) //
+                        .findAny().orElse(null);
     }
 
     public void setProperty(String key, String value)
@@ -258,39 +303,40 @@ public class Client
         this.secret = secret;
     }
 
-    private void deleteCrossEntries(List<? extends Transaction> transactions)
+    /**
+     * Delete all transactions including cross entries and transactions created
+     * by an investment plan.
+     */
+    private <T extends Transaction> void deleteTransactions(TransactionOwner<T> owner)
     {
-        // crossEntry.delete modifies list
-        for (Transaction t : new ArrayList<Transaction>(transactions))
-        {
-            if (t.getCrossEntry() != null)
-                t.getCrossEntry().delete();
-        }
+        // use a copy because #removeTransaction modifies the list
+        for (T t : new ArrayList<T>(owner.getTransactions()))
+            owner.deleteTransaction(t, this);
     }
 
     private void deleteInvestmentPlans(Portfolio portfolio)
     {
-        for (InvestmentPlan plan : plans)
+        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
         {
-            if (plan.getPortfolio().equals(portfolio))
+            if (portfolio.equals(plan.getPortfolio()))
                 removePlan(plan);
         }
     }
 
     private void deleteInvestmentPlans(Account account)
     {
-        for (InvestmentPlan plan : plans)
+        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
         {
-            if (plan.getAccount().equals(account))
+            if (account.equals(plan.getAccount()))
                 removePlan(plan);
         }
     }
 
     private void deleteInvestmentPlans(Security security)
     {
-        for (InvestmentPlan plan : plans)
+        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
         {
-            if (plan.getSecurity().equals(security))
+            if (security.equals(plan.getSecurity()))
                 removePlan(plan);
         }
     }
@@ -320,10 +366,7 @@ public class Client
                 if (t.getSecurity() == null || !security.equals(t.getSecurity()))
                     continue;
 
-                if (t.getCrossEntry() != null)
-                    t.getCrossEntry().delete();
-                else
-                    account.getTransactions().remove(t);
+                account.deleteTransaction(t, this);
             }
 
         }
@@ -338,10 +381,7 @@ public class Client
                 if (!security.equals(t.getSecurity()))
                     continue;
 
-                if (t.getCrossEntry() != null)
-                    t.getCrossEntry().delete();
-                else
-                    portfolio.getTransactions().remove(t);
+                portfolio.deleteTransaction(t, this);
             }
 
         }

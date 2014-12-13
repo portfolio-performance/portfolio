@@ -3,6 +3,8 @@ package name.abuchen.portfolio.model;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import org.joda.time.DateMidnight;
+
 public class PortfolioTransaction extends Transaction
 {
     public enum Type
@@ -32,6 +34,12 @@ public class PortfolioTransaction extends Transaction
         this.amount = amount;
         this.fees = fees;
         this.taxes = taxes;
+    }
+
+    public PortfolioTransaction(String date, Security security, Type type, long shares, long amount, long fees,
+                    long taxes)
+    {
+        this(new DateMidnight(date).toDate(), security, type, shares, amount, fees, taxes);
     }
 
     public Type getType()

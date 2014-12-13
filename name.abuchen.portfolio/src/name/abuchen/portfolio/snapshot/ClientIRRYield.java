@@ -131,6 +131,7 @@ public class ClientIRRYield
                         case TAXES:
                         case DIVIDENDS:
                         case INTEREST:
+                        case TAX_REFUND:
                             break;
                         default:
                             throw new UnsupportedOperationException();

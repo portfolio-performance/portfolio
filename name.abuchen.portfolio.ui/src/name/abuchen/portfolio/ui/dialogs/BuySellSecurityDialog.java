@@ -63,7 +63,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                 for (PortfolioSnapshot p : snapshot.getPortfolios())
                 {
                     SecurityPosition position = p.getPositionsBySecurity().get(security);
-                    if (position != null && p.getSource().equals(portfolio))
+                    if (position != null && (portfolio == null || p.getSource().equals(portfolio)))
                     {
                         setShares(position.getShares());
                         setPortfolio(p.getSource());
@@ -76,8 +76,9 @@ public class BuySellSecurityDialog extends AbstractDialog
             {
                 // set portfolio only if exactly one exists
                 // (otherwise force user to choose)
-                if (portfolio == null && client.getPortfolios().size() == 1)
-                    setPortfolio(client.getPortfolios().get(0));
+                List<Portfolio> activePortfolios = client.getActivePortfolios();
+                if (portfolio == null && activePortfolios.size() == 1)
+                    setPortfolio(activePortfolios.get(0));
                 if (security == null && !client.getSecurities().isEmpty())
                     setSecurity(client.getSecurities().get(0));
             }
@@ -91,22 +92,17 @@ public class BuySellSecurityDialog extends AbstractDialog
         private long calculatePrice()
         {
             if (shares == 0)
-            {
                 return 0;
-            }
-            else
-            {
-                switch (type)
-                {
-                    case BUY:
-                        return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
-                    case SELL:
-                        return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
-                    default:
-                        throw new RuntimeException("Unsupported transaction type for dialog " + type); //$NON-NLS-1$
-                }
-            }
 
+            switch (type)
+            {
+                case BUY:
+                    return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+                case SELL:
+                    return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         public Portfolio getPortfolio()
@@ -264,7 +260,7 @@ public class BuySellSecurityDialog extends AbstractDialog
                                 return value != null ? ValidationStatus.ok() : ValidationStatus
                                                 .error(Messages.MsgMissingPortfolio);
                             }
-                        }, getModel().getClient().getPortfolios().toArray());
+                        }, getModel().getClient().getActivePortfolios().toArray());
 
         // shares
         bindings().bindMandatorySharesInput(editArea, Messages.ColumnShares, "shares").setFocus(); //$NON-NLS-1$

@@ -111,9 +111,8 @@ public class ClientSnapshot
 
         for (AccountSnapshot a : accounts)
         {
-            SecurityPosition sp = new SecurityPosition(null);
-            sp.setShares(Values.Share.factor());
-            sp.setPrice(new SecurityPrice(getTime(), a.getFunds()));
+            SecurityPosition sp = new SecurityPosition(new SecurityPrice(getTime(), a.getFunds()),
+                            Values.Share.factor());
             answer.put(a.getAccount(), new AssetPosition(a.getAccount(), sp, assets));
         }
         return answer;

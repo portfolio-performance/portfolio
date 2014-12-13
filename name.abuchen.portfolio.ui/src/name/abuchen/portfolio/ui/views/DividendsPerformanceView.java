@@ -575,6 +575,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                     return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
                 else if (t instanceof DividendFinalTransaction)
                     return Values.Amount.format(((DividendFinalTransaction) t).getAmount());
+                else if (t instanceof AccountTransaction)
+                    return Values.Amount.format(((AccountTransaction) t).getAmount());
                 else
                     return null;
             }

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -11,14 +12,16 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
+import name.abuchen.portfolio.util.Dates;
+
 import org.junit.Test;
 
 public class SecurityTest
 {
 
     @Test
-    public void testThatDeepCopyIncludesAllProperties() throws IntrospectionException, IllegalArgumentException,
-                    IllegalAccessException, InvocationTargetException
+    public void testThatDeepCopyIncludesAllProperties() throws IntrospectionException, IllegalAccessException,
+                    InvocationTargetException
     {
         BeanInfo info = Introspector.getBeanInfo(Security.class);
 
@@ -60,5 +63,25 @@ public class SecurityTest
 
             assertThat(targetValue, equalTo(sourceValue));
         }
+    }
+
+    @Test
+    public void testSetLatest()
+    {
+        Security security = new Security();
+        assertThat(security.setLatest(null), is(false));
+
+        LatestSecurityPrice latest = new LatestSecurityPrice(Dates.today(), 1);
+        assertThat(security.setLatest(latest), is(true));
+        assertThat(security.setLatest(latest), is(false));
+        assertThat(security.setLatest(null), is(true));
+        assertThat(security.setLatest(null), is(false));
+
+        LatestSecurityPrice second = new LatestSecurityPrice(Dates.today(), 2);
+        assertThat(security.setLatest(latest), is(true));
+        assertThat(security.setLatest(second), is(true));
+
+        LatestSecurityPrice same = new LatestSecurityPrice(Dates.today(), 2);
+        assertThat(security.setLatest(same), is(false));
     }
 }

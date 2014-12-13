@@ -39,7 +39,7 @@ public class DividendsAndInterestCheck implements Check
         {
             List<QuickFix> answer = new ArrayList<QuickFix>();
             answer.add(new ConvertFix(transaction, target));
-            answer.add(new DeleteTransactionFix(account, transaction));
+            answer.add(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
             return answer;
         }
     }

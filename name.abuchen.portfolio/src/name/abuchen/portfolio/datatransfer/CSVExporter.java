@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -41,9 +41,7 @@ public class CSVExporter
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
@@ -67,10 +65,6 @@ public class CSVExporter
                 printer.println();
             }
         }
-        finally
-        {
-            writer.close();
-        }
     }
 
     public void exportAccountTransactions(File directory, List<Account> accounts) throws IOException
@@ -81,9 +75,7 @@ public class CSVExporter
 
     public void exportPortfolioTransactions(File file, Portfolio portfolio) throws IOException
     {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
@@ -112,10 +104,6 @@ public class CSVExporter
 
                 printer.println();
             }
-        }
-        finally
-        {
-            writer.close();
         }
     }
 
@@ -146,9 +134,7 @@ public class CSVExporter
 
     public void exportSecurityMasterData(File file, List<Security> securities) throws IOException
     {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
@@ -169,17 +155,11 @@ public class CSVExporter
                 printer.println();
             }
         }
-        finally
-        {
-            writer.close();
-        }
     }
 
     public void exportSecurityPrices(File file, Security security) throws IOException
     {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
@@ -192,10 +172,6 @@ public class CSVExporter
                 printer.print(currencyFormat.format(p.getValue() / Values.Quote.divider()));
                 printer.println();
             }
-        }
-        finally
-        {
-            writer.close();
         }
     }
 
@@ -226,9 +202,7 @@ public class CSVExporter
             }
         }
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
@@ -252,30 +226,30 @@ public class CSVExporter
             while (cal.getTimeInMillis() <= today.getTime())
             {
                 // check if any quotes exist for that day at all
-                int[] indeces = new int[export.size()];
+                int[] indices = new int[export.size()];
 
                 int ii = 0;
                 for (Security security : export)
                 {
                     SecurityPrice p = new SecurityPrice(cal.getTime(), 0);
-                    indeces[ii] = Collections.binarySearch(security.getPrices(), p);
+                    indices[ii] = Collections.binarySearch(security.getPrices(), p);
                     ii++;
                 }
 
                 boolean hasValues = false;
-                for (ii = 0; ii < indeces.length && !hasValues; ii++)
-                    hasValues = indeces[ii] >= 0;
+                for (ii = 0; ii < indices.length && !hasValues; ii++)
+                    hasValues = indices[ii] >= 0;
 
                 if (hasValues)
                 {
                     printer.print(Values.Date.format(cal.getTime()));
 
-                    for (ii = 0; ii < indeces.length; ii++)
+                    for (ii = 0; ii < indices.length; ii++)
                     {
-                        if (indeces[ii] < 0)
+                        if (indices[ii] < 0)
                             printer.print(""); //$NON-NLS-1$
                         else
-                            printer.print(Values.Quote.format(export.get(ii).getPrices().get(indeces[ii]).getValue()));
+                            printer.print(Values.Quote.format(export.get(ii).getPrices().get(indices[ii]).getValue()));
                     }
 
                     printer.println();
@@ -284,10 +258,6 @@ public class CSVExporter
                 cal.add(Calendar.DATE, 1);
             }
 
-        }
-        finally
-        {
-            writer.close();
         }
     }
 

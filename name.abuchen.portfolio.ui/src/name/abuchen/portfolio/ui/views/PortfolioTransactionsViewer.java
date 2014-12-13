@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -380,24 +379,11 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 @Override
                 public void run()
                 {
-                    doDeleteTransaction(portfolio, transaction);
+                    portfolio.deleteTransaction(transaction, owner.getClient());
+                    owner.markDirty();
+                    owner.notifyModelUpdated();
                 }
             });
         }
-    }
-
-    private void doDeleteTransaction(final Portfolio portfolio, final PortfolioTransaction transaction)
-    {
-        if (transaction.getCrossEntry() != null)
-            transaction.getCrossEntry().delete();
-        else
-            portfolio.getTransactions().remove(transaction);
-
-        // possibly remove from investment plan
-        for (InvestmentPlan plan : owner.getClient().getPlans())
-            plan.removeTransaction(transaction);
-
-        owner.markDirty();
-        owner.notifyModelUpdated();
     }
 }

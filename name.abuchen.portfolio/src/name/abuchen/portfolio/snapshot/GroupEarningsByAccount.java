@@ -56,6 +56,7 @@ public class GroupEarningsByAccount
                         case REMOVAL:
                         case FEES:
                         case TAXES:
+                        case TAX_REFUND:
                         case BUY:
                         case SELL:
                         case TRANSFER_IN:

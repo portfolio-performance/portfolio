@@ -52,7 +52,7 @@ public class SecurityTransferDialog extends AbstractDialog
             super(client);
             this.portfolioFrom = portfolioFrom;
 
-            for (Portfolio p : client.getPortfolios())
+            for (Portfolio p : client.getActivePortfolios())
             {
                 if (!p.equals(portfolioFrom))
                 {
@@ -165,7 +165,7 @@ public class SecurityTransferDialog extends AbstractDialog
         label.setText(Messages.ColumnPortfolioFrom);
         ComboViewer comboFrom = new ComboViewer(editArea, SWT.READ_ONLY);
         comboFrom.setContentProvider(ArrayContentProvider.getInstance());
-        comboFrom.setInput(getModel().getClient().getPortfolios().toArray());
+        comboFrom.setInput(getModel().getClient().getActivePortfolios().toArray());
         gdf.applyTo(comboFrom.getControl());
         final IViewerObservableValue observableFrom = ViewersObservables.observeSingleSelection(comboFrom);
 
@@ -174,7 +174,7 @@ public class SecurityTransferDialog extends AbstractDialog
         label.setText(Messages.ColumnPortfolioTo);
         ComboViewer comboTo = new ComboViewer(editArea, SWT.READ_ONLY);
         comboTo.setContentProvider(ArrayContentProvider.getInstance());
-        comboTo.setInput(getModel().getClient().getPortfolios().toArray());
+        comboTo.setInput(getModel().getClient().getActivePortfolios().toArray());
         gdf.applyTo(comboTo.getControl());
         final IViewerObservableValue observableTo = ViewersObservables.observeSingleSelection(comboTo);
 

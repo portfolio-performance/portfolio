@@ -124,46 +124,48 @@ import org.eclipse.swt.widgets.Display;
         final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) getNodeViewer().getSelection())
                         .getFirstElement();
 
-        if (node != null && node.isClassification())
+        if (node == null || node.isUnassignedCategory())
+            return;
+
+        if (!node.isClassification())
+            return;
+
+        MenuManager color = new MenuManager(Messages.ColumnColor);
+
+        if (!node.isRoot())
         {
-            MenuManager color = new MenuManager(Messages.ColumnColor);
-
-            if (!node.isRoot())
-            {
-                color.add(new Action(Messages.MenuTaxonomyColorEdit)
-                {
-                    @Override
-                    public void run()
-                    {
-                        doEditColor(node);
-                    }
-                });
-            }
-
-            color.add(new Action(Messages.MenuTaxonomyColorRandomPalette)
+            color.add(new Action(Messages.MenuTaxonomyColorEdit)
             {
                 @Override
                 public void run()
                 {
-                    doAutoAssignColors(node);
+                    doEditColor(node);
                 }
             });
-
-            if (!node.isRoot())
-            {
-                color.add(new Action(Messages.MenuTaxonomyColorCascadeToChildren)
-                {
-                    @Override
-                    public void run()
-                    {
-                        doCascadeColorsDown(node);
-                    }
-                });
-            }
-
-            manager.appendToGroup(MENU_GROUP_DEFAULT_ACTIONS, color);
         }
 
+        color.add(new Action(Messages.MenuTaxonomyColorRandomPalette)
+        {
+            @Override
+            public void run()
+            {
+                doAutoAssignColors(node);
+            }
+        });
+
+        if (!node.isRoot())
+        {
+            color.add(new Action(Messages.MenuTaxonomyColorCascadeToChildren)
+            {
+                @Override
+                public void run()
+                {
+                    doCascadeColorsDown(node);
+                }
+            });
+        }
+
+        manager.appendToGroup(MENU_GROUP_DEFAULT_ACTIONS, color);
     }
 
     private void doEditColor(TaxonomyNode node)

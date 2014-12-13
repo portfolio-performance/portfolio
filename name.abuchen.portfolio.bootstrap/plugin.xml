@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.e4.ui.workbench.swt.E4Application"
+            name="Portfolio Performance">
+         <property
+               name="appName"
+               value="Portfolio Performance">
+         </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://name.abuchen.portfolio.bootstrap/name.abuchen.portfolio.bootstrap.LifeCycleManager">
+         </property>
+      </product>
+   </extension>
+</plugin>

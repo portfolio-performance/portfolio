@@ -9,6 +9,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
     private String uuid;
     private String name;
     private String note;
+    private boolean isRetired = false;
 
     private Account referenceAccount;
 
@@ -54,6 +55,16 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
         this.note = note;
     }
 
+    public boolean isRetired()
+    {
+        return isRetired;
+    }
+
+    public void setRetired(boolean isRetired)
+    {
+        this.isRetired = isRetired;
+    }
+
     public Account getReferenceAccount()
     {
         return referenceAccount;
@@ -74,6 +85,14 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
     public void addTransaction(PortfolioTransaction transaction)
     {
         this.transactions.add(transaction);
+    }
+
+    @Override
+    public void shallowDeleteTransaction(PortfolioTransaction transaction, Client client)
+    {
+        this.transactions.remove(transaction);
+
+        client.getPlans().stream().forEach(plan -> plan.removeTransaction(transaction));
     }
 
     public void addAllTransaction(List<PortfolioTransaction> transactions)

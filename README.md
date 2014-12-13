@@ -8,7 +8,7 @@ See http://buchen.github.com/portfolio/ for more details.
 
 ## Prerequisites
 
-* [Java 7](http://www.java.com)
+* [Java 8](http://www.java.com)
 * [Maven](http://maven.apache.org)
 * [Eclipse](http://www.eclipse.org)
 
@@ -18,12 +18,12 @@ See http://buchen.github.com/portfolio/ for more details.
 
 *Mac OS X / Linux*
 ```
-export MAVEN_OPTS="-Xmx1g -XX:MaxPermSize=500m"
+export MAVEN_OPTS="-Xmx1g"
 ```
 
 *Windows*
 ```
-set MAVEN_OPTS="-Xmx1g -XX:MaxPermSize=500m"
+set MAVEN_OPTS="-Xmx1g"
 ```
 
 ### Build

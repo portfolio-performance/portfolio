@@ -233,7 +233,7 @@ public abstract class CSVImportDefinition
         @Override
         public List<?> getTargets(Client client)
         {
-            return client.getPortfolios();
+            return client.getActivePortfolios();
         }
 
         @Override

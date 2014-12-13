@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 
-public class UpdateQuotesJob extends AbstractClientJob
+public final class UpdateQuotesJob extends AbstractClientJob
 {
     private final List<Security> securities;
     private final boolean includeHistoricQuotes;
@@ -54,12 +53,20 @@ public class UpdateQuotesJob extends AbstractClientJob
 
         List<IStatus> errors = new ArrayList<IStatus>();
 
-        doUpdateLatestQuotes(monitor, errors);
+        // update latest quotes
+        boolean isDirty = doUpdateLatestQuotes(monitor, errors);
 
+        // update historical quotes
         if (includeHistoricQuotes)
-            doUpdateHistoricalQuotes(monitor, errors);
+        {
+            boolean isHistoricalDirty = doUpdateHistoricalQuotes(monitor, errors);
+            isDirty = isDirty || isHistoricalDirty;
+        }
 
-        notifyFinished();
+        if (isDirty)
+        {
+            getClient().markDirty();
+        }
 
         if (!errors.isEmpty())
         {
@@ -68,71 +75,79 @@ public class UpdateQuotesJob extends AbstractClientJob
         }
 
         if (repeatPeriod > 0)
+        {
             schedule(repeatPeriod);
+        }
 
         return Status.OK_STATUS;
     }
 
-    private void doUpdateLatestQuotes(IProgressMonitor monitor, List<IStatus> errors)
+    private boolean doUpdateLatestQuotes(IProgressMonitor monitor, List<IStatus> errors)
     {
-        Map<String, List<Security>> byFeeds = new HashMap<String, List<Security>>();
+        Map<String, List<Security>> feed2securities = new HashMap<String, List<Security>>();
         for (Security s : securities)
         {
-            List<Security> l = byFeeds.get(s.getFeed());
+            // if configured, use feed for latest quotes
+            // otherwise use the default feed used by historical quotes as well
+            String feedId = s.getLatestFeed();
+            if (feedId == null)
+                feedId = s.getFeed();
+
+            List<Security> l = feed2securities.get(feedId);
             if (l == null)
-                byFeeds.put(s.getFeed(), l = new ArrayList<Security>());
+                feed2securities.put(feedId, l = new ArrayList<Security>());
             l.add(s);
         }
 
-        for (Map.Entry<String, List<Security>> entry : byFeeds.entrySet())
+        boolean isDirty = false;
+
+        for (Map.Entry<String, List<Security>> entry : feed2securities.entrySet())
         {
             if (monitor.isCanceled())
-                return;
+                return isDirty;
 
-            try
+            QuoteFeed feed = Factory.getQuoteFeedProvider(entry.getKey());
+            if (feed != null)
             {
-                QuoteFeed feed = Factory.getQuoteFeedProvider(entry.getKey());
-                if (feed != null)
-                {
-                    ArrayList<Exception> exceptions = new ArrayList<Exception>();
-                    feed.updateLatestQuotes(entry.getValue(), exceptions);
+                ArrayList<Exception> exceptions = new ArrayList<Exception>();
+                boolean isUpdated = feed.updateLatestQuotes(entry.getValue(), exceptions);
+                isDirty = isDirty || isUpdated;
 
-                    if (!exceptions.isEmpty())
-                        addToErrors(feed.getName(), exceptions, errors);
-                }
-            }
-            catch (IOException e)
-            {
-                errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                if (!exceptions.isEmpty())
+                    addToErrors(feed.getName(), exceptions, errors);
             }
         }
+
+        return isDirty;
     }
 
-    private void doUpdateHistoricalQuotes(IProgressMonitor monitor, List<IStatus> errors)
+    private boolean doUpdateHistoricalQuotes(IProgressMonitor monitor, List<IStatus> errors)
     {
+        boolean isDirty = false;
+
         for (Security security : securities)
         {
-            monitor.subTask(MessageFormat.format(Messages.JobMsgUpdatingQuotesFor, security.getName()));
-            try
-            {
-                QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-                if (feed != null)
-                {
-                    ArrayList<Exception> exceptions = new ArrayList<Exception>();
-                    feed.updateHistoricalQuotes(security, exceptions);
+            if (monitor.isCanceled())
+                return isDirty;
 
-                    if (!exceptions.isEmpty())
-                        addToErrors(security.getName(), exceptions, errors);
-                }
-            }
-            catch (IOException e)
+            monitor.subTask(MessageFormat.format(Messages.JobMsgUpdatingQuotesFor, security.getName()));
+
+            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+            if (feed != null)
             {
-                errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, security.getName() + ": " //$NON-NLS-1$
-                                + e.getMessage(), e));
+                ArrayList<Exception> exceptions = new ArrayList<Exception>();
+                boolean isUpdated = feed.updateHistoricalQuotes(security, exceptions);
+
+                isDirty = isDirty || isUpdated;
+
+                if (!exceptions.isEmpty())
+                    addToErrors(security.getName(), exceptions, errors);
             }
 
             monitor.worked(1);
         }
+
+        return isDirty;
     }
 
     private void addToErrors(String label, List<Exception> exceptions, List<IStatus> errors)
@@ -142,7 +157,4 @@ public class UpdateQuotesJob extends AbstractClientJob
             status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(), exception));
         errors.add(status);
     }
-
-    protected void notifyFinished()
-    {}
 }

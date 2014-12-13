@@ -8,7 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -58,7 +58,7 @@ public class YahooFinanceQuoteFeedTest
             }
         };
 
-        ArrayList<Security> securities = new ArrayList<Security>();
+        List<Security> securities = new ArrayList<Security>();
         securities.add(new Security("Daimler AG", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID));
         securities.add(new Security("Adidas", "DE000A1EWWW0", "ADS.DE", YahooFinanceQuoteFeed.ID));
         securities.add(new Security("Daimler AG", "DE0007100000", "BAYN.DE", YahooFinanceQuoteFeed.ID));
@@ -95,14 +95,14 @@ public class YahooFinanceQuoteFeedTest
             protected InputStream openStream(String url) throws IOException
             {
                 return new ByteArrayInputStream("\"ADS.DE\",49.20,\"9/1/2011\",N/A,N/A,48.66,N/A" //
-                                .getBytes(Charset.forName("UTF-8")));
+                                .getBytes(StandardCharsets.UTF_8));
             }
         };
 
         Security daimler = new Security("Daimler AG", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID);
         Security adidas = new Security("Adidas", "DE000A1EWWW0", "ADS.DE", YahooFinanceQuoteFeed.ID);
 
-        ArrayList<Security> securities = new ArrayList<Security>();
+        List<Security> securities = new ArrayList<Security>();
         securities.add(daimler);
         securities.add(adidas);
 
@@ -191,7 +191,7 @@ public class YahooFinanceQuoteFeedTest
                                                 + "{\"symbol\":\"BAS.MU\",\"name\": \"BASF N\",\"exch\": \"MUN\",\"type\": \"S\",\"exchDisp\":\"Munich\",\"typeDisp\":\"Equity\"},"
                                                 + "{\"symbol\":\"BAS.BR\",\"name\": \"BASILIX\",\"exch\": \"BRU\",\"type\": \"S\",\"exchDisp\":\"Brussels Stock Exchange \",\"typeDisp\":\"Equity\"},"
                                                 + "{\"symbol\":\"BAS.BE\",\"name\": \"BASF N\",\"exch\": \"BER\",\"type\": \"S\",\"exchDisp\":\"Berlin\",\"typeDisp\":\"Equity\"}]}})")
-                                                .getBytes(Charset.forName("UTF-8")));
+                                                .getBytes(StandardCharsets.UTF_8));
             }
         };
 

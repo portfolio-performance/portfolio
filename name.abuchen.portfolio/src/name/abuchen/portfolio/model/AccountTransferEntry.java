@@ -44,13 +44,6 @@ public class AccountTransferEntry implements CrossEntry
     }
 
     @Override
-    public void delete()
-    {
-        accountFrom.getTransactions().remove(transactionFrom);
-        accountTo.getTransactions().remove(transactionTo);
-    }
-
-    @Override
     public void updateFrom(Transaction t)
     {
         if (t == transactionFrom)

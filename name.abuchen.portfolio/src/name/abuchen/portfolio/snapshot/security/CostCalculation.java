@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.security;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
 /* package */class CostCalculation extends Calculation
@@ -65,9 +66,17 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     }
 
     @Override
+    public void visit(AccountTransaction t)
+    {
+        if (t.getType() == AccountTransaction.Type.TAX_REFUND)
+            taxes -= t.getAmount();
+    }
+
+    @Override
     public void visit(DividendTransaction t)
     {
         t.setFifoCost(getFifoCost());
+        t.setTotalShares(getSharesHeld());
     }
 
     public long getFifoCost()

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Portfolio Performance Bootstrap
+Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
+Bundle-Version: 0.15.2.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.eclipse.e4.ui.model.application,
+ org.eclipse.e4.ui.model.application.ui,
+ org.eclipse.e4.ui.model.application.ui.basic,
+ org.eclipse.e4.ui.workbench.lifecycle,
+ org.eclipse.e4.ui.workbench.modeling,
+ org.eclipse.jface.dialogs,
+ org.eclipse.osgi.util;version="1.1.0",
+ org.eclipse.swt.widgets

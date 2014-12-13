@@ -74,36 +74,41 @@ import name.abuchen.portfolio.model.Security;
 
     private static void collectDividends(Portfolio portfolio, Client pseudoClient, Account pseudoAccount)
     {
-        if (portfolio.getReferenceAccount() != null)
+        if (portfolio.getReferenceAccount() == null)
+            return;
+
+        for (AccountTransaction t : portfolio.getReferenceAccount().getTransactions())
         {
-            for (AccountTransaction t : portfolio.getReferenceAccount().getTransactions())
+            if (t.getSecurity() == null)
+                continue;
+
+            if (!pseudoClient.getSecurities().contains(t.getSecurity()))
+                continue;
+
+            switch (t.getType())
             {
-                if (t.getSecurity() != null && pseudoClient.getSecurities().contains(t.getSecurity()))
-                {
-                    switch (t.getType())
-                    {
-                        case DIVIDENDS:
-                            pseudoAccount.addTransaction(t);
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                            AccountTransaction.Type.REMOVAL, t.getAmount()));
-                            break;
-                        case BUY:
-                        case TRANSFER_IN:
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DEPOSIT:
-                        case REMOVAL:
-                        case INTEREST:
-                        case TAXES:
-                        case FEES:
-                            // do nothing
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
+                case TAX_REFUND:
+                    // security must be non-null -> tax refund is relevant for
+                    // performance of security
+                case DIVIDENDS:
+                    pseudoAccount.addTransaction(t);
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
+                                    AccountTransaction.Type.REMOVAL, t.getAmount()));
+                    break;
+                case BUY:
+                case TRANSFER_IN:
+                case SELL:
+                case TRANSFER_OUT:
+                case DEPOSIT:
+                case REMOVAL:
+                case INTEREST:
+                case TAXES:
+                case FEES:
+                    // do nothing
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
 
-                    }
-
-                }
             }
         }
     }

@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,9 +42,7 @@ public class AktienfreundeNetExporter
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy"); //$NON-NLS-1$
 
         // write to file
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(CSVExporter.STRATEGY);
@@ -83,10 +81,6 @@ public class AktienfreundeNetExporter
 
                 }
             }
-        }
-        finally
-        {
-            writer.close();
         }
     }
 

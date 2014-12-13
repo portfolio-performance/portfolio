@@ -1,13 +1,8 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.WebLocation;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -52,25 +47,7 @@ public class WebLocationMenu extends MenuManager
                 @Override
                 public void run()
                 {
-                    try
-                    {
-                        if (Desktop.isDesktopSupported())
-                        {
-                            Desktop desktop = Desktop.getDesktop();
-                            if (desktop.isSupported(Desktop.Action.BROWSE))
-                            {
-                                desktop.browse(loc.constructURL(security));
-                            }
-                        }
-                    }
-                    catch (IOException e)
-                    {
-                        PortfolioPlugin.log(e);
-                    }
-                    catch (URISyntaxException e)
-                    {
-                        PortfolioPlugin.log(e);
-                    }
+                    DesktopAPI.browse(loc.constructURL(security));
                 }
             });
         }

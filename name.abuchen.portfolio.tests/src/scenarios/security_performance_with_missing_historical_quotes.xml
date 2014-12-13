@@ -1,0 +1,55 @@
+<client>
+  <version>25</version>
+  <securities>
+    <security>
+      <uuid>d00b585f-3a3e-40a3-8bdd-f66a535adf34</uuid>
+      <name>Basf SE</name>
+      <isin>DE000BASF111</isin>
+      <tickerSymbol>BAS.DE</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2014-12-03" v="7365"/>
+      </prices>
+      <latest t="2014-12-04" v="7288">
+        <high>7458</high>
+        <low>7259</low>
+        <volume>3439108</volume>
+        <previousClose>7365</previousClose>
+      </latest>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>10ff35e4-8552-4aea-8cc6-345040324bbe</uuid>
+      <name>Account A</name>
+      <isRetired>false</isRetired>
+      <transactions/>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio>
+      <uuid>c10c08cc-b070-44ae-bfa1-5abcfff74ec9</uuid>
+      <name>Portfolio A</name>
+      <isRetired>false</isRetired>
+      <referenceAccount reference="../../../accounts/account"/>
+      <transactions>
+        <portfolio-transaction>
+          <date>2014-01-02</date>
+          <security reference="../../../../../securities/security"/>
+          <shares>10000000</shares>
+          <type>DELIVERY_INBOUND</type>
+          <amount>774800</amount>
+          <fees>0</fees>
+          <taxes>0</taxes>
+        </portfolio-transaction>
+      </transactions>
+    </portfolio>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <properties/>
+</client>
