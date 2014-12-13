@@ -207,4 +207,9 @@ public class PortfolioPlugin implements BundleActivator
     {
         return getDefault().getImageRegistry().get(key);
     }
+
+    public static boolean isDevelopmentMode()
+    {
+        return System.getProperty("osgi.dev") != null; //$NON-NLS-1$
+    }
 }

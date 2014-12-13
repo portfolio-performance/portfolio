@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.IniFileManipulator;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -79,7 +80,8 @@ public class LanguagePreferencePage extends PreferencePage
         }
         catch (IOException e)
         {
-            // ignore
+            if (!PortfolioPlugin.isDevelopmentMode())
+                PortfolioPlugin.log(e);
         }
     }
 
