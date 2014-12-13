@@ -128,7 +128,7 @@ import name.abuchen.portfolio.model.Values;
             answer.add(new CreateBuySellEntryFix(account));
         }
 
-        answer.add(new DeleteTransactionFix(portfolio, transaction));
+        answer.add(new DeleteTransactionFix<PortfolioTransaction>(client, portfolio, transaction));
 
         return answer;
     }

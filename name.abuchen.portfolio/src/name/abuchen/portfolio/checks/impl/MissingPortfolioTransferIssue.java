@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.checks.impl;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.checks.QuickFix;

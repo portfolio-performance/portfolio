@@ -2,18 +2,20 @@ package name.abuchen.portfolio.checks.impl;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.checks.QuickFix;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 
-/* package */class DeleteTransactionFix implements QuickFix
+/* package */class DeleteTransactionFix<T extends Transaction> implements QuickFix
 {
-    private Object entity;
-    private Transaction transaction;
+    private Client client;
+    private TransactionOwner<T> owner;
+    private T transaction;
 
-    public DeleteTransactionFix(Object entity, Transaction transaction)
+    public DeleteTransactionFix(Client client, TransactionOwner<T> owner, T transaction)
     {
-        this.entity = entity;
+        this.client = client;
+        this.owner = owner;
         this.transaction = transaction;
     }
 
@@ -32,9 +34,6 @@ import name.abuchen.portfolio.model.Transaction;
     @Override
     public void execute()
     {
-        if (entity instanceof Account)
-            ((Account) entity).getTransactions().remove(transaction);
-        else
-            ((Portfolio) entity).getTransactions().remove(transaction);
+        owner.deleteTransaction(transaction, client);
     }
 }
