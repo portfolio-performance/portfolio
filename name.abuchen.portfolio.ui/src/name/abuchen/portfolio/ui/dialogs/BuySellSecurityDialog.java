@@ -92,22 +92,17 @@ public class BuySellSecurityDialog extends AbstractDialog
         private long calculatePrice()
         {
             if (shares == 0)
-            {
                 return 0;
-            }
-            else
-            {
-                switch (type)
-                {
-                    case BUY:
-                        return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
-                    case SELL:
-                        return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
-                    default:
-                        throw new RuntimeException("Unsupported transaction type for dialog " + type); //$NON-NLS-1$
-                }
-            }
 
+            switch (type)
+            {
+                case BUY:
+                    return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+                case SELL:
+                    return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         public Portfolio getPortfolio()

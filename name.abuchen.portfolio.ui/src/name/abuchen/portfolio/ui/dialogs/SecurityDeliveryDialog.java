@@ -69,7 +69,18 @@ public class SecurityDeliveryDialog extends AbstractDialog
 
         private long calculatePrice()
         {
-            return shares == 0 ? 0 : Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+            if (shares == 0)
+                return 0;
+
+            switch (type)
+            {
+                case DELIVERY_INBOUND:
+                    return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+                case DELIVERY_OUTBOUND:
+                    return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         public Portfolio getPortfolio()
