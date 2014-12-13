@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +10,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -23,15 +21,12 @@ public class SecurityPerformanceSnapshot
     {
         Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
 
-        Date startDate = period.getStartDate();
-        Date endDate = period.getEndDate();
-
         for (Account account : client.getAccounts())
-            extractSecurityRelatedAccountTransactions(account, startDate, endDate, transactions);
+            extractSecurityRelatedAccountTransactions(account, period, transactions);
         for (Portfolio portfolio : client.getPortfolios())
         {
-            extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
-            addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
+            extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
+            addPseudoValuationTansactions(portfolio, period, transactions);
         }
 
         return doCreateSnapshot(client, transactions, period);
@@ -42,13 +37,10 @@ public class SecurityPerformanceSnapshot
         // FIXME create pseudo client --> transferals must add up
         Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
 
-        Date startDate = period.getStartDate();
-        Date endDate = period.getEndDate();
-
         if (portfolio.getReferenceAccount() != null)
-            extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), startDate, endDate, transactions);
-        extractSecurityRelatedPortfolioTransactions(portfolio, startDate, endDate, transactions);
-        addPseudoValuationTansactions(portfolio, startDate, endDate, transactions);
+            extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), period, transactions);
+        extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
+        addPseudoValuationTansactions(portfolio, period, transactions);
 
         return doCreateSnapshot(client, transactions, period);
     }
@@ -86,7 +78,7 @@ public class SecurityPerformanceSnapshot
         return new SecurityPerformanceSnapshot(list);
     }
 
-    private static void extractSecurityRelatedAccountTransactions(Account account, Date startDate, Date endDate,
+    private static void extractSecurityRelatedAccountTransactions(Account account, ReportingPeriod period,
                     Map<Security, SecurityPerformanceRecord> records)
     {
         for (AccountTransaction t : account.getTransactions())
@@ -94,10 +86,7 @@ public class SecurityPerformanceSnapshot
             if (t.getSecurity() == null)
                 continue;
 
-            if (t.getDate().getTime() <= startDate.getTime())
-                continue;
-
-            if (t.getDate().getTime() > endDate.getTime())
+            if (!period.containsTransaction().test(t))
                 continue;
 
             if (t.getType() == AccountTransaction.Type.DIVIDENDS //
@@ -119,44 +108,29 @@ public class SecurityPerformanceSnapshot
         }
     }
 
-    private static void extractSecurityRelatedPortfolioTransactions(Portfolio portfolio, Date startDate, Date endDate,
+    private static void extractSecurityRelatedPortfolioTransactions(Portfolio portfolio, ReportingPeriod period,
                     Map<Security, SecurityPerformanceRecord> records)
     {
-        for (PortfolioTransaction t : portfolio.getTransactions())
-        {
-            if (t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime())
-            {
-                switch (t.getType())
-                {
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                    case BUY:
-                    case SELL:
-                    case DELIVERY_INBOUND:
-                    case DELIVERY_OUTBOUND:
-                        records.get(t.getSecurity()).addTransaction(t);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
-
-        }
+        portfolio.getTransactions().stream() //
+                        .filter(period.containsTransaction()) //
+                        .forEach(t -> records.get(t.getSecurity()).addTransaction(t));
     }
 
-    private static void addPseudoValuationTansactions(Portfolio portfolio, Date startDate, Date endDate,
+    private static void addPseudoValuationTansactions(Portfolio portfolio, ReportingPeriod period,
                     Map<Security, SecurityPerformanceRecord> records)
     {
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, startDate);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, period.getStartDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
-            records.get(position.getSecurity()).addTransaction(new DividendInitialTransaction(position, startDate));
+            records.get(position.getSecurity()).addTransaction(
+                            new DividendInitialTransaction(position, period.getStartDate()));
         }
 
-        snapshot = PortfolioSnapshot.create(portfolio, endDate);
+        snapshot = PortfolioSnapshot.create(portfolio, period.getEndDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
-            records.get(position.getSecurity()).addTransaction(new DividendFinalTransaction(position, endDate));
+            records.get(position.getSecurity()).addTransaction(
+                            new DividendFinalTransaction(position, period.getEndDate()));
         }
     }
 

@@ -6,8 +6,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
@@ -46,6 +48,11 @@ public abstract class ReportingPeriod
     public final Date getEndDate()
     {
         return endDate;
+    }
+
+    public final Predicate<Transaction> containsTransaction()
+    {
+        return t -> t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime();
     }
 
     public final Interval toInterval()
