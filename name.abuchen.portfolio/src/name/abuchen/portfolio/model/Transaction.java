@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateMidnight;
+
 public abstract class Transaction
 {
     public static final class ByDate implements Comparator<Transaction>, Serializable
@@ -45,6 +47,11 @@ public abstract class Transaction
     public Date getDate()
     {
         return date;
+    }
+
+    public DateMidnight getDateMidnight()
+    {
+        return new DateMidnight(date);
     }
 
     public void setDate(Date date)

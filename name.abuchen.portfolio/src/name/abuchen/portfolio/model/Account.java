@@ -107,10 +107,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
 
     public long getCurrentAmount()
     {
-        long amount = 0;
-
-        for (AccountTransaction t : transactions)
-        {
+        return transactions.stream().mapToLong(t -> {
             switch (t.getType())
             {
                 case DEPOSIT:
@@ -119,21 +116,17 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                 case SELL:
                 case TRANSFER_IN:
                 case TAX_REFUND:
-                    amount += t.getAmount();
-                    break;
+                    return t.getAmount();
                 case FEES:
                 case TAXES:
                 case REMOVAL:
                 case BUY:
                 case TRANSFER_OUT:
-                    amount -= t.getAmount();
-                    break;
+                    return -t.getAmount();
                 default:
-                    throw new RuntimeException("Unknown Account Transaction type: " + t.getType()); //$NON-NLS-1$
+                    throw new UnsupportedOperationException();
             }
-        }
-
-        return amount;
+        }).sum();
     }
 
     @Override

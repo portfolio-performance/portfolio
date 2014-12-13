@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -115,12 +116,10 @@ public class ComdirectPDFExtractor implements Extractor
                 String nameWKNLine = getNextLine(text, temp);
                 String[] parts = nameWKNLine.substring(14).trim().split(" "); //$NON-NLS-1$
                 String wkn = parts[0];
-                String name = ""; // FIXME Java8 StringJoiner //$NON-NLS-1$
+                StringJoiner j = new StringJoiner(" "); //$NON-NLS-1$
                 for (int i = 1; i < parts.length; i++)
-                {
-                    name = name + parts[i] + " "; //$NON-NLS-1$
-                }
-                name = name.trim();
+                    j.add(parts[i]);
+                String name = j.toString();
                 security = new Security(name, isin, null, QuoteFeed.MANUAL);
                 security.setWkn(wkn);
                 // Store

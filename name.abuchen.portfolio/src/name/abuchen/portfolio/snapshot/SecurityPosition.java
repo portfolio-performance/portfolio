@@ -15,20 +15,53 @@ import name.abuchen.portfolio.model.Values;
 
 public class SecurityPosition
 {
-    private Security security;
-    private SecurityPrice price;
-    private long shares;
-
-    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
+    private final Security security;
+    private final SecurityPrice price;
+    private final long shares;
+    private final List<PortfolioTransaction> transactions;
 
     private transient boolean isDirty = true;
     private transient long marketValue;
     private transient long purchasePrice;
     private transient long purchaseValue;
 
-    public SecurityPosition(Security security)
+    private SecurityPosition(Security security, SecurityPrice price, long shares,
+                    List<PortfolioTransaction> transactions)
     {
         this.security = security;
+        this.price = price;
+        this.shares = shares;
+        this.transactions = transactions;
+    }
+
+    public SecurityPosition(SecurityPrice price, long shares)
+    {
+        this.security = null;
+        this.price = price;
+        this.shares = shares;
+        this.transactions = null;
+    }
+
+    public SecurityPosition(Security security, SecurityPrice price, List<PortfolioTransaction> transactions)
+    {
+        this.security = security;
+        this.price = price;
+        this.shares = transactions.stream().mapToLong(t -> {
+            switch (t.getType())
+            {
+                case BUY:
+                case TRANSFER_IN:
+                case DELIVERY_INBOUND:
+                    return t.getShares();
+                case SELL:
+                case TRANSFER_OUT:
+                case DELIVERY_OUTBOUND:
+                    return -t.getShares();
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }).sum();
+        this.transactions = new ArrayList<PortfolioTransaction>(transactions);
     }
 
     public Security getSecurity()
@@ -41,43 +74,9 @@ public class SecurityPosition
         return price;
     }
 
-    public void setPrice(SecurityPrice price)
-    {
-        this.price = price;
-        this.isDirty = true;
-    }
-
     public long getShares()
     {
         return shares;
-    }
-
-    public void setShares(long shares)
-    {
-        this.shares = shares;
-        this.isDirty = true;
-    }
-
-    public void addTransaction(PortfolioTransaction t)
-    {
-        transactions.add(t);
-        this.isDirty = true;
-
-        switch (t.getType())
-        {
-            case BUY:
-            case TRANSFER_IN:
-            case DELIVERY_INBOUND:
-                shares += t.getShares();
-                break;
-            case SELL:
-            case TRANSFER_OUT:
-            case DELIVERY_OUTBOUND:
-                shares -= t.getShares();
-                break;
-            default:
-                throw new RuntimeException();
-        }
     }
 
     public long calculateValue()
@@ -219,19 +218,16 @@ public class SecurityPosition
         if (!p1.getSecurity().equals(p2.getSecurity()))
             throw new UnsupportedOperationException();
 
-        SecurityPosition answer = new SecurityPosition(p1.getSecurity());
-        answer.price = p1.price;
-        answer.shares = p1.shares + p2.shares;
-        answer.transactions.addAll(p1.transactions);
-        answer.transactions.addAll(p2.transactions);
-        return answer;
+        List<PortfolioTransaction> allTransactions = new ArrayList<PortfolioTransaction>();
+        allTransactions.addAll(p1.transactions);
+        allTransactions.addAll(p2.transactions);
+
+        return new SecurityPosition(p1.getSecurity(), p1.price, p1.shares + p2.shares, allTransactions);
     }
 
     public static SecurityPosition split(SecurityPosition position, int weight)
     {
-        SecurityPosition answer = new SecurityPosition(position.getSecurity());
-        answer.price = position.price;
-        answer.shares = Math.round(position.shares * weight / (double) Classification.ONE_HUNDRED_PERCENT);
+        List<PortfolioTransaction> splitTransactions = new ArrayList<PortfolioTransaction>(position.transactions.size());
 
         for (PortfolioTransaction t : position.transactions)
         {
@@ -245,10 +241,11 @@ public class SecurityPosition
             t2.setTaxes(Math.round(t.getTaxes() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
 
-            answer.transactions.add(t2);
+            splitTransactions.add(t2);
         }
 
-        return answer;
+        return new SecurityPosition(position.security, position.price, Math.round(position.shares * weight
+                        / (double) Classification.ONE_HUNDRED_PERCENT), splitTransactions);
     }
 
 }

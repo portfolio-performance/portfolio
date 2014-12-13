@@ -224,7 +224,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             boolean isAdded = security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
             isUpdated = isUpdated || isAdded;
         }
-        
+
         return isUpdated;
     }
 
@@ -276,12 +276,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             String escapedUrl = new URI(url).toASCIIString();
             return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).get(), errors);
         }
-        catch (URISyntaxException e)
-        {
-            errors.add(e);
-            return Collections.emptyList();
-        }
-        catch (IOException e)
+        catch (URISyntaxException | IOException e)
         {
             errors.add(e);
             return Collections.emptyList();
