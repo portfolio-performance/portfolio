@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -59,9 +59,7 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")); //$NON-NLS-1$
-
-        try
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
@@ -95,10 +93,6 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
 
                 printer.println();
             }
-        }
-        finally
-        {
-            writer.close();
         }
     }
 

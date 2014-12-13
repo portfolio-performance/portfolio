@@ -27,11 +27,15 @@ public class ComdirectPDFExtractorTest
 
     public ComdirectPDFExtractorTest()
     {
-        gutschriftText = new Scanner(getClass().getResourceAsStream("Gutschrift.txt"), "UTF-8").useDelimiter("\\A")
-                        .next();
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Gutschrift.txt"), "UTF-8"))
+        {
+            gutschriftText = scanner.useDelimiter("\\A").next();
+        }
 
-        kaufText = new Scanner(getClass().getResourceAsStream("Wertpapierabrechnung_Kauf.txt"), "UTF-8").useDelimiter(
-                        "\\A").next();
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Wertpapierabrechnung_Kauf.txt"), "UTF-8");)
+        {
+            kaufText = scanner.useDelimiter("\\A").next();
+        }
     }
 
     @Test

@@ -55,10 +55,8 @@ public class ComdirectPDFExtractor implements Extractor
         List<Item> results = new ArrayList<Item>();
         for (File f : files)
         {
-            PDDocument doc = null;
-            try
+            try (PDDocument doc = PDDocument.load(f))
             {
-                doc = PDDocument.load(f);
                 String text = stripper.getText(doc);
                 String filename = f.getName();
                 results.addAll(extract(text, filename, errors));
@@ -67,20 +65,6 @@ public class ComdirectPDFExtractor implements Extractor
             {
                 errors.add(e);
             }
-            finally
-            {
-                // FIXME java7 try with syntax
-                if (doc != null)
-                {
-                    try
-                    {
-                        doc.close();
-                    }
-                    catch (IOException ignore)
-                    {}
-                }
-            }
-
         }
         return results;
     }

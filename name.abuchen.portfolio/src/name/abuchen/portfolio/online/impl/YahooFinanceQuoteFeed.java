@@ -93,12 +93,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
 
-        BufferedReader reader = null;
         String line = null;
-
-        try
+        try (BufferedReader reader = openReader(url, errors))
         {
-            reader = openReader(url, errors);
             if (reader == null)
                 return false;
 
@@ -147,29 +144,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             for (Security s : requested.values())
                 errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, s.getTickerSymbol())));
         }
-        catch (NumberFormatException e)
-        {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
-        }
-        catch (ParseException e)
+        catch (NumberFormatException | ParseException e)
         {
             errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (IOException e)
         {
             errors.add(e);
-        }
-        finally
-        {
-            if (reader != null)
-            {
-                try
-                {
-                    reader.close();
-                }
-                catch (IOException ignore)
-                {}
-            }
         }
 
         return isUpdated;
@@ -247,12 +228,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         List<T> answer = new ArrayList<T>();
 
-        BufferedReader reader = null;
         String line = null;
-
-        try
+        try (BufferedReader reader = openReader(wknUrl, errors))
         {
-            reader = openReader(wknUrl, errors);
             if (reader == null)
                 return answer;
 
@@ -278,37 +256,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 answer.add(price);
             }
         }
-        catch (NumberFormatException e)
+        catch (NumberFormatException | ParseException e)
         {
             errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
-        catch (ParseException e)
-        {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
-        }
-        catch (InstantiationException e)
+        catch (InstantiationException | IllegalAccessException | IOException e)
         {
             errors.add(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            errors.add(e);
-        }
-        catch (IOException e)
-        {
-            errors.add(e);
-        }
-        finally
-        {
-            if (reader != null)
-            {
-                try
-                {
-                    reader.close();
-                }
-                catch (IOException ignore)
-                {}
-            }
         }
 
         return answer;
@@ -358,10 +312,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
         String searchUrl = MessageFormat.format(SEARCH_URL, prefix);
 
-        Scanner scanner = null;
-        try
+        try (Scanner scanner = new Scanner(openStream(searchUrl)))
         {
-            scanner = new Scanner(openStream(searchUrl));
             String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 
             // strip away java script call back method
@@ -386,11 +338,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         catch (IOException e)
         {
             errors.add(e);
-        }
-        finally
-        {
-            if (scanner != null)
-                scanner.close();
         }
 
         if (answer.isEmpty())
