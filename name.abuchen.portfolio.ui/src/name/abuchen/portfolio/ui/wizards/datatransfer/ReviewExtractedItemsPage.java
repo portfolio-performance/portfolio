@@ -43,6 +43,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -115,6 +116,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
+        Button debugInformationButton = new Button(container, SWT.PUSH);
 
         //
         // form layout
@@ -152,6 +154,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         data.right = new FormAttachment(100, 0);
         data.bottom = new FormAttachment(100, 0);
         errorTable.setLayoutData(data);
+        
+        data = new FormData();
+        data.top = new FormAttachment(errorTable, 10);
+        data.left = new FormAttachment(0,0);
+        
+        debugInformationButton.setLayoutData(data);
+        debugInformationButton.setText("Extraktionsproblem melden");
 
         //
         // table & columns

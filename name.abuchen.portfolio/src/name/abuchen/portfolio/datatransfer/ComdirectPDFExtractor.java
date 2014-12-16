@@ -143,7 +143,13 @@ public class ComdirectPDFExtractor implements Extractor
                 SecurityItem item = new SecurityItem(security);
                 results.add(item);
             }
-            int datePos = jumpWord(text, text.indexOf("Valuta"), 13); //$NON-NLS-1$
+            //The representation in the File changes with the way the account is given
+            //The difference is whether or not the account is named by the IBAN
+            int dateWorkOffset = 9;
+            if (text.contains("Verrechnung über Konto (IBAN)")) {
+                dateWorkOffset = 13;
+            }
+            int datePos = jumpWord(text, text.indexOf("Valuta"), dateWorkOffset); //$NON-NLS-1$
             // Result Transaction
             AccountTransaction t = new AccountTransaction();
             try
@@ -153,6 +159,7 @@ public class ComdirectPDFExtractor implements Extractor
             }
             catch (ParseException e)
             {
+                e.printStackTrace();
                 errors.add(e);
             }
             Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1)); //$NON-NLS-1$
