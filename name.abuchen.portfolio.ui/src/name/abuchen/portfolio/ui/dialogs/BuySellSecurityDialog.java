@@ -97,9 +97,9 @@ public class BuySellSecurityDialog extends AbstractDialog
             switch (type)
             {
                 case BUY:
-                    return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+                    return Math.max(0, Math.round((total - fees - taxes) * Values.Share.factor() / (double) shares));
                 case SELL:
-                    return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
+                    return Math.max(0, Math.round((total + fees + taxes) * Values.Share.factor() / (double) shares));
                 default:
                     throw new IllegalArgumentException();
             }
