@@ -157,7 +157,7 @@ public class ComdirectPDFExtractor implements Extractor
         // The buy transaction can be parsed from the name of the file
         // this requires that the user does not change the name from the
         // download
-        else if (filename.contains("Wertpapierabrechnung_Kauf")) //$NON-NLS-1$
+        else if (text.contains("Wertpapierkauf")) //$NON-NLS-1$
         {
             try
             {
