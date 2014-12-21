@@ -11,7 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-/* package */class PieChartViewer extends Page
+/* package */class PieChartViewer extends AbstractChartPage
 {
     private PieChart pieChart;
 
@@ -36,6 +36,9 @@ import org.eclipse.swt.widgets.Control;
 
         for (TaxonomyNode child : getModel().getRootNode().getChildren())
         {
+            if (getModel().isUnassignedCategoryInChartsExcluded() && child.isUnassignedCategory())
+                continue;
+
             slices.add(new PieChart.Slice(child.getActual(), //
                             child.getName(), //
                             getRenderer().getColorFor(child)));
@@ -57,6 +60,12 @@ import org.eclipse.swt.widgets.Control;
 
     @Override
     public void nodeChange(TaxonomyNode node)
+    {
+        updatePieSlices();
+    }
+
+    @Override
+    public void onConfigChanged()
     {
         updatePieSlices();
     }

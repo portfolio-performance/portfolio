@@ -5,12 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -31,6 +28,8 @@ import org.joda.time.Interval;
         totals = new long[size];
         delta = new double[size];
         accumulated = new double[size];
+        transferals = new long[size];
+        taxes = new long[size];
 
         collectTransferalsAndTaxes(size, interval);
 
@@ -78,93 +77,63 @@ import org.joda.time.Interval;
         }
     }
 
+    private void addValue(long[] array, long value, Interval interval, DateMidnight time)
+    {
+        if (value == 0)
+            return;
+
+        int ii = Days.daysBetween(interval.getStart(), time).getDays();
+        array[ii] += value;
+    }
+
     private void collectTransferalsAndTaxes(int size, Interval interval)
     {
-        this.transferals = new long[size];
-        this.taxes = new long[size];
+        getClient().getAccounts()
+                        .stream()
+                        .flatMap(a -> a.getTransactions().stream())
+                        .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
+                                        && t.getDate().getTime() <= interval.getEndMillis()) //
+                        .forEach(t -> {
+                            switch (t.getType())
+                            {
+                                case DEPOSIT:
+                                    addValue(transferals, t.getAmount(), interval, t.getDateMidnight());
+                                    break;
+                                case REMOVAL:
+                                    addValue(transferals, -t.getAmount(), interval, t.getDateMidnight());
+                                    break;
+                                case TAXES:
+                                    addValue(taxes, t.getAmount(), interval, t.getDateMidnight());
+                                    break;
+                                case TAX_REFUND:
+                                    addValue(taxes, -t.getAmount(), interval, t.getDateMidnight());
+                                    break;
+                                default:
+                                    // do nothing
+                                    break;
+                            }
+                        });
 
-        for (Account a : getClient().getAccounts())
-        {
-            for (AccountTransaction t : a.getTransactions())
-            {
-                if (t.getDate().getTime() >= interval.getStartMillis()
-                                && t.getDate().getTime() <= interval.getEndMillis())
-                {
-                    long transferal = 0;
-                    long tax = 0;
-                    switch (t.getType())
-                    {
-                        case DEPOSIT:
-                            transferal = t.getAmount();
-                            break;
-                        case REMOVAL:
-                            transferal = -t.getAmount();
-                            break;
-                        case TAXES:
-                            tax = t.getAmount();
-                            break;
-                        case TAX_REFUND:
-                            tax = -t.getAmount();
-                            break;
-                        default:
-                            // do nothing
-                            break;
-                    }
-
-                    if (transferal != 0)
-                    {
-                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
-                        transferals[ii] += transferal;
-                    }
-
-                    if (tax != 0)
-                    {
-                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
-                        taxes[ii] += tax;
-                    }
-                }
-            }
-        }
-
-        for (Portfolio p : getClient().getPortfolios())
-        {
-            for (PortfolioTransaction t : p.getTransactions())
-            {
-                if (t.getDate().getTime() >= interval.getStartMillis()
-                                && t.getDate().getTime() <= interval.getEndMillis())
-                {
-                    long transferal = 0;
-                    long tax = 0;
-
-                    switch (t.getType())
-                    {
-                        case DELIVERY_INBOUND:
-                            transferal = t.getAmount();
-                            tax = t.getTaxes();
-                            break;
-                        case DELIVERY_OUTBOUND:
-                            transferal = -t.getAmount();
-                            tax = t.getTaxes();
-                            break;
-                        default:
-                            tax = t.getTaxes();
-                            // do nothing
-                            break;
-                    }
-
-                    if (transferal != 0)
-                    {
-                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
-                        transferals[ii] += transferal;
-                    }
-
-                    if (tax != 0)
-                    {
-                        int ii = Days.daysBetween(interval.getStart(), new DateTime(t.getDate().getTime())).getDays();
-                        taxes[ii] += tax;
-                    }
-                }
-            }
-        }
+        getClient().getPortfolios()
+                        .stream()
+                        .flatMap(p -> p.getTransactions().stream())
+                        .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
+                                        && t.getDate().getTime() <= interval.getEndMillis()) //
+                        .forEach(t -> {
+                            switch (t.getType())
+                            {
+                                case DELIVERY_INBOUND:
+                                    addValue(transferals, t.getAmount(), interval, t.getDateMidnight());
+                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
+                                    break;
+                                case DELIVERY_OUTBOUND:
+                                    addValue(transferals, -t.getAmount(), interval, t.getDateMidnight());
+                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
+                                    break;
+                                default:
+                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
+                                    break;
+                            }
+                        });
     }
 }

@@ -22,7 +22,10 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
-    private String identifier;
+    /** preference key: store last active view as index */
+    private String identifierView;
+    /** preference key: include unassigned category in charts */
+    private String identifierUnassigned;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
@@ -40,9 +43,12 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         super.init(part, parameter);
         this.taxonomy = (Taxonomy) parameter;
-        this.model = new TaxonomyModel(getClient(), taxonomy);
 
-        this.identifier = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
+        this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
+        this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
+
+        this.model = new TaxonomyModel(getClient(), taxonomy);
+        this.model.setExcludeUnassignedCategoryInCharts(part.getPreferenceStore().getBoolean(identifierUnassigned));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -56,7 +62,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void dispose()
     {
+        getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
         taxonomy.removePropertyChangeListener(this);
+
+        Control[] children = container.getChildren();
+        for (Control control : children)
+        {
+            Page page = (Page) control.getData();
+            page.dispose();
+        }
+
         super.dispose();
     }
 
@@ -134,7 +149,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             control.setData(page);
         }
 
-        activateView(getPart().getPreferenceStore().getInt(identifier));
+        activateView(getPart().getPreferenceStore().getInt(identifierView));
 
         model.addListener(new TaxonomyModelChangeListener()
         {
@@ -163,7 +178,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             layout.topControl = children[index];
             container.layout();
 
-            getPart().getPreferenceStore().setValue(identifier, index);
+            getPart().getPreferenceStore().setValue(identifierView, index);
         }
     }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
@@ -161,7 +162,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     @Override
     public void beforePage()
     {
-        if (!areEqual(tickerSymbol, model.getTickerSymbol()))
+        if (!Objects.equals(tickerSymbol, model.getTickerSymbol()))
         {
             this.tickerSymbol = model.getTickerSymbol();
 
@@ -181,14 +182,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                     showSampleQuotes(feed, null, getFeedURL());
             }
         }
-    }
-
-    private boolean areEqual(String s1, String s2)
-    {
-        // FIXME Use Java 7 Objects#equals
-        if (s1 != null)
-            return s1.equals(s2);
-        return s2 == null ? true : false;
     }
 
     @Override

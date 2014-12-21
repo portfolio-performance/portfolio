@@ -49,6 +49,9 @@ public class StartupAddon
     @PostConstruct
     public void unsetPersistedStateFlage()
     {
+        if (PortfolioPlugin.isDevelopmentMode())
+            return;
+
         // -clearPersistedState is set *after* installing new software, but must
         // be cleared for the next runs
 

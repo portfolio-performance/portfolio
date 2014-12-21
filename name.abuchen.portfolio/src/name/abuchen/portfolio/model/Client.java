@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -194,12 +195,10 @@ public class Client
      */
     public List<Account> getActiveAccounts()
     {
-        List<Account> active = new ArrayList<Account>(accounts.size());
-        for (Account account : accounts)
-            if (!account.isRetired())
-                active.add(account);
-        Collections.sort(active, new Account.ByName());
-        return active;
+        return accounts.stream() //
+                        .filter(a -> !a.isRetired()) //
+                        .sorted(new Account.ByName()) //
+                        .collect(Collectors.toList());
     }
 
     public void addPortfolio(Portfolio portfolio)
@@ -225,12 +224,10 @@ public class Client
      */
     public List<Portfolio> getActivePortfolios()
     {
-        List<Portfolio> active = new ArrayList<Portfolio>(portfolios.size());
-        for (Portfolio portfolio : portfolios)
-            if (!portfolio.isRetired())
-                active.add(portfolio);
-        Collections.sort(active, new Portfolio.ByName());
-        return active;
+        return portfolios.stream() //
+                        .filter(p -> !p.isRetired()) //
+                        .sorted(new Portfolio.ByName()) //
+                        .collect(Collectors.toList());
     }
 
     @Deprecated
@@ -274,12 +271,9 @@ public class Client
 
     public Taxonomy getTaxonomy(String id)
     {
-        for (Taxonomy t : taxonomies)
-        {
-            if (id.equals(t.getId()))
-                return t;
-        }
-        return null;
+        return taxonomies.stream() //
+                        .filter(t -> id.equals(t.getId())) //
+                        .findAny().orElse(null);
     }
 
     public void setProperty(String key, String value)
@@ -322,7 +316,7 @@ public class Client
 
     private void deleteInvestmentPlans(Portfolio portfolio)
     {
-        for (InvestmentPlan plan : plans)
+        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
         {
             if (portfolio.equals(plan.getPortfolio()))
                 removePlan(plan);
@@ -331,7 +325,7 @@ public class Client
 
     private void deleteInvestmentPlans(Account account)
     {
-        for (InvestmentPlan plan : plans)
+        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
         {
             if (account.equals(plan.getAccount()))
                 removePlan(plan);
@@ -340,7 +334,7 @@ public class Client
 
     private void deleteInvestmentPlans(Security security)
     {
-        for (InvestmentPlan plan : plans)
+        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
         {
             if (security.equals(plan.getSecurity()))
                 removePlan(plan);

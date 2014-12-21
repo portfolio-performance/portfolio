@@ -83,23 +83,6 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     }
 
     @Override
-    public void deleteTransaction(AccountTransaction transaction, Client client)
-    {
-        // FIXME Use Java 8 default methods
-        if (transaction.getCrossEntry() != null)
-        {
-            Transaction other = transaction.getCrossEntry().getCrossTransaction(transaction);
-            @SuppressWarnings("unchecked")
-            TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) transaction.getCrossEntry()
-                            .getEntity(other);
-
-            owner.shallowDeleteTransaction(other, client);
-        }
-
-        shallowDeleteTransaction(transaction, client);
-    }
-
-    @Override
     public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
     {
         this.transactions.remove(transaction);
@@ -107,10 +90,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
 
     public long getCurrentAmount()
     {
-        long amount = 0;
-
-        for (AccountTransaction t : transactions)
-        {
+        return transactions.stream().mapToLong(t -> {
             switch (t.getType())
             {
                 case DEPOSIT:
@@ -119,21 +99,17 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                 case SELL:
                 case TRANSFER_IN:
                 case TAX_REFUND:
-                    amount += t.getAmount();
-                    break;
+                    return t.getAmount();
                 case FEES:
                 case TAXES:
                 case REMOVAL:
                 case BUY:
                 case TRANSFER_OUT:
-                    amount -= t.getAmount();
-                    break;
+                    return -t.getAmount();
                 default:
-                    throw new RuntimeException("Unknown Account Transaction type: " + t.getType()); //$NON-NLS-1$
+                    throw new UnsupportedOperationException();
             }
-        }
-
-        return amount;
+        }).sum();
     }
 
     @Override

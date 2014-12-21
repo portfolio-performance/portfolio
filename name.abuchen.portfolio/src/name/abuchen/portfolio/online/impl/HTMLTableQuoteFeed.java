@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -224,7 +225,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             boolean isAdded = security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
             isUpdated = isUpdated || isAdded;
         }
-        
+
         return isUpdated;
     }
 
@@ -276,12 +277,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             String escapedUrl = new URI(url).toASCIIString();
             return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).get(), errors);
         }
-        catch (URISyntaxException e)
-        {
-            errors.add(e);
-            return Collections.emptyList();
-        }
-        catch (IOException e)
+        catch (URISyntaxException | IOException e)
         {
             errors.add(e);
             return Collections.emptyList();
@@ -463,17 +459,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
         else
         {
-            Scanner scanner = null;
-            try
+            try (Scanner scanner = new Scanner(new File(source), StandardCharsets.UTF_8.name()))
             {
-                scanner = new Scanner(new File(source), "UTF-8");
                 String html = scanner.useDelimiter("\\A").next();
                 prices = new HTMLTableQuoteFeed().parseFromHTML(html, errors);
-            }
-            finally
-            {
-                if (scanner != null)
-                    scanner.close();
             }
         }
 

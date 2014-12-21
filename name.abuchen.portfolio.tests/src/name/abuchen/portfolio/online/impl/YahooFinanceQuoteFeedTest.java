@@ -8,7 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -95,7 +95,7 @@ public class YahooFinanceQuoteFeedTest
             protected InputStream openStream(String url) throws IOException
             {
                 return new ByteArrayInputStream("\"ADS.DE\",49.20,\"9/1/2011\",N/A,N/A,48.66,N/A" //
-                                .getBytes(Charset.forName("UTF-8")));
+                                .getBytes(StandardCharsets.UTF_8));
             }
         };
 
@@ -191,7 +191,7 @@ public class YahooFinanceQuoteFeedTest
                                                 + "{\"symbol\":\"BAS.MU\",\"name\": \"BASF N\",\"exch\": \"MUN\",\"type\": \"S\",\"exchDisp\":\"Munich\",\"typeDisp\":\"Equity\"},"
                                                 + "{\"symbol\":\"BAS.BR\",\"name\": \"BASILIX\",\"exch\": \"BRU\",\"type\": \"S\",\"exchDisp\":\"Brussels Stock Exchange \",\"typeDisp\":\"Equity\"},"
                                                 + "{\"symbol\":\"BAS.BE\",\"name\": \"BASF N\",\"exch\": \"BER\",\"type\": \"S\",\"exchDisp\":\"Berlin\",\"typeDisp\":\"Equity\"}]}})")
-                                                .getBytes(Charset.forName("UTF-8")));
+                                                .getBytes(StandardCharsets.UTF_8));
             }
         };
 

@@ -3,15 +3,13 @@ package name.abuchen.portfolio.snapshot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 
 public class PortfolioSnapshot
@@ -22,39 +20,15 @@ public class PortfolioSnapshot
 
     public static PortfolioSnapshot create(Portfolio portfolio, Date time)
     {
-        Map<Security, SecurityPosition> positions = new HashMap<Security, SecurityPosition>();
+        List<SecurityPosition> positions = portfolio.getTransactions().stream() //
+                        .filter(t -> t.getDate().getTime() <= time.getTime()) //
+                        .collect(Collectors.groupingBy(t -> t.getSecurity())) //
+                        .entrySet().stream() //
+                        .map(e -> new SecurityPosition(e.getKey(), e.getKey().getSecurityPrice(time), e.getValue())) //
+                        .filter(p -> p.getShares() != 0) //
+                        .collect(Collectors.toList());
 
-        for (PortfolioTransaction t : portfolio.getTransactions())
-        {
-            if (t.getDate().getTime() <= time.getTime())
-            {
-                SecurityPosition position = positions.get(t.getSecurity());
-                if (position == null)
-                {
-                    position = new SecurityPosition(t.getSecurity());
-                    positions.put(t.getSecurity(), position);
-                }
-                position.addTransaction(t);
-            }
-        }
-
-        ArrayList<SecurityPosition> collection = new ArrayList<SecurityPosition>(positions.values());
-        for (Iterator<SecurityPosition> iter = collection.iterator(); iter.hasNext();)
-        {
-            SecurityPosition p = iter.next();
-
-            if (p.getShares() == 0)
-            {
-                iter.remove();
-            }
-            else
-            {
-                SecurityPrice price = p.getSecurity().getSecurityPrice(time);
-                p.setPrice(price);
-            }
-        }
-
-        return new PortfolioSnapshot(portfolio, time, collection);
+        return new PortfolioSnapshot(portfolio, time, positions);
     }
 
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots)
@@ -116,19 +90,12 @@ public class PortfolioSnapshot
 
     public Map<Security, SecurityPosition> getPositionsBySecurity()
     {
-        Map<Security, SecurityPosition> map = new HashMap<Security, SecurityPosition>();
-        for (SecurityPosition p : positions)
-            map.put(p.getSecurity(), p);
-        return map;
+        return positions.stream().collect(Collectors.toMap(SecurityPosition::getSecurity, p -> p));
     }
 
     public long getValue()
     {
-        long value = 0;
-        for (SecurityPosition p : positions)
-            value += p.calculateValue();
-
-        return value;
+        return positions.stream().mapToLong(p -> p.calculateValue()).sum();
     }
 
     public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)

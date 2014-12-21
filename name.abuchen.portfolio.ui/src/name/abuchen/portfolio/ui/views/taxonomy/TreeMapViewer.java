@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -30,7 +31,7 @@ import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
 
-/* package */class TreeMapViewer extends Page
+/* package */class TreeMapViewer extends AbstractChartPage
 {
     private TreeMap<TaxonomyNode> treeMap;
     private TreeMapLegend legend;
@@ -51,7 +52,13 @@ import de.engehausen.treemap.swt.TreeMap;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        treeMap.setTreeModel(new Model(getModel().getRootNode()));
+        onConfigChanged();
+    }
+
+    @Override
+    public void onConfigChanged()
+    {
+        treeMap.setTreeModel(new Model(getModel()));
         legend.setRootItem(getModel().getRootNode());
     }
 
@@ -98,7 +105,7 @@ import de.engehausen.treemap.swt.TreeMap;
         SWTHelper.setSashWeights(sash, parent.getParent().getParent(), details.getControl());
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
-        treeMap.setTreeModel(new Model(getModel().getRootNode()));
+        treeMap.setTreeModel(new Model(getModel()));
         legend.setRootItem(getModel().getRootNode());
 
         return sash;
@@ -106,17 +113,26 @@ import de.engehausen.treemap.swt.TreeMap;
 
     private static class Model implements IWeightedTreeModel<TaxonomyNode>
     {
-        private TaxonomyNode root;
+        private TaxonomyModel model;
 
-        public Model(TaxonomyNode root)
+        public Model(TaxonomyModel model)
         {
-            this.root = root;
+            this.model = model;
         }
 
         @Override
         public Iterator<TaxonomyNode> getChildren(TaxonomyNode item)
         {
-            return item.getChildren().iterator();
+            if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
+            {
+                return item.getChildren().stream() //
+                                .filter(n -> !n.isUnassignedCategory())//
+                                .collect(Collectors.toList()).iterator();
+            }
+            else
+            {
+                return item.getChildren().iterator();
+            }
         }
 
         @Override
@@ -128,7 +144,7 @@ import de.engehausen.treemap.swt.TreeMap;
         @Override
         public TaxonomyNode getRoot()
         {
-            return root;
+            return model.getRootNode();
         }
 
         @Override
@@ -140,7 +156,10 @@ import de.engehausen.treemap.swt.TreeMap;
         @Override
         public long getWeight(TaxonomyNode item)
         {
-            return item.getActual();
+            if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
+                return item.getActual() - model.getUnassignedNode().getActual();
+            else
+                return item.getActual();
         }
     }
 
@@ -173,9 +192,13 @@ import de.engehausen.treemap.swt.TreeMap;
             this.colorProvider.drawRectangle(model.getRoot().getNode(), item, event.gc, r);
 
             String label = item.getName();
+
+            double total = this.model.getRootNode().getActual();
+            if (this.model.isUnassignedCategoryInChartsExcluded())
+                total -= this.model.getUnassignedNode().getActual();
+
             String info = String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format((double) item.getActual()
-                                            / (double) this.model.getRootNode().getActual()));
+                            Values.Percent.format(item.getActual() / total));
 
             event.gc.setForeground(Colors.getTextColor(event.gc.getBackground()));
 

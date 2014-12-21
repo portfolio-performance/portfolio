@@ -91,6 +91,7 @@ public class ClientPerformanceSnapshot
     }
 
     private Client client;
+    private ReportingPeriod period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
     private EnumMap<CategoryType, Category> categories;
@@ -99,18 +100,19 @@ public class ClientPerformanceSnapshot
 
     public ClientPerformanceSnapshot(Client client, Date startDate, Date endDate)
     {
-        this.client = client;
-        this.snapshotStart = ClientSnapshot.create(client, startDate);
-        this.snapshotEnd = ClientSnapshot.create(client, endDate);
-        this.categories = new EnumMap<CategoryType, Category>(CategoryType.class);
-        this.earnings = new ArrayList<Transaction>();
-
-        calculate();
+        this(client, new ReportingPeriod.FromXtoY(startDate, endDate));
     }
 
     public ClientPerformanceSnapshot(Client client, ReportingPeriod period)
     {
-        this(client, period.getStartDate(), period.getEndDate());
+        this.client = client;
+        this.period = period;
+        this.snapshotStart = ClientSnapshot.create(client, period.getStartDate());
+        this.snapshotEnd = ClientSnapshot.create(client, period.getEndDate());
+        this.categories = new EnumMap<CategoryType, Category>(CategoryType.class);
+        this.earnings = new ArrayList<Transaction>();
+
+        calculate();
     }
 
     public ClientSnapshot getStartClientSnapshot()
@@ -202,9 +204,6 @@ public class ClientPerformanceSnapshot
 
     private void addCapitalGains()
     {
-        long startDate = snapshotStart.getTime().getTime();
-        long endDate = snapshotEnd.getTime().getTime();
-
         Map<Security, Long> valuation = new HashMap<Security, Long>();
         for (Security s : client.getSecurities())
             valuation.put(s, Long.valueOf(0));
@@ -219,31 +218,30 @@ public class ClientPerformanceSnapshot
 
             for (PortfolioTransaction t : portfolio.getSource().getTransactions())
             {
-                if (t.getDate().getTime() > startDate && t.getDate().getTime() <= endDate)
-                {
-                    switch (t.getType())
-                    {
-                        case BUY:
-                        case DELIVERY_INBOUND:
-                        case TRANSFER_IN:
-                        {
-                            Long v = valuation.get(t.getSecurity());
-                            valuation.put(t.getSecurity(), v.longValue() - t.getLumpSumPrice());
-                            break;
-                        }
-                        case SELL:
-                        case DELIVERY_OUTBOUND:
-                        case TRANSFER_OUT:
-                        {
-                            Long v = valuation.get(t.getSecurity());
-                            valuation.put(t.getSecurity(), v.longValue() + t.getLumpSumPrice());
-                            break;
-                        }
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
+                if (!period.containsTransaction().test(t))
+                    continue;
 
+                switch (t.getType())
+                {
+                    case BUY:
+                    case DELIVERY_INBOUND:
+                    case TRANSFER_IN:
+                    {
+                        Long v = valuation.get(t.getSecurity());
+                        valuation.put(t.getSecurity(), v.longValue() - t.getLumpSumPrice());
+                        break;
+                    }
+                    case SELL:
+                    case DELIVERY_OUTBOUND:
+                    case TRANSFER_OUT:
+                    {
+                        Long v = valuation.get(t.getSecurity());
+                        valuation.put(t.getSecurity(), v.longValue() + t.getLumpSumPrice());
+                        break;
+                    }
+                    default:
+                        throw new UnsupportedOperationException();
+                }
             }
         }
 
@@ -286,9 +284,6 @@ public class ClientPerformanceSnapshot
 
     private void addEarnings()
     {
-        long startDate = snapshotStart.getTime().getTime();
-        long endDate = snapshotEnd.getTime().getTime();
-
         long earnings = 0;
         long otherEarnings = 0;
         long fees = 0;
@@ -302,51 +297,50 @@ public class ClientPerformanceSnapshot
         {
             for (AccountTransaction t : account.getTransactions())
             {
-                if (t.getDate().getTime() > startDate && t.getDate().getTime() <= endDate)
-                {
-                    switch (t.getType())
-                    {
-                        case DIVIDENDS:
-                        case INTEREST:
-                            this.earnings.add(t);
-                            earnings += t.getAmount();
-                            if (t.getSecurity() != null)
-                            {
-                                Long v = earningsBySecurity.get(t.getSecurity());
-                                v = v == null ? t.getAmount() : v + t.getAmount();
-                                earningsBySecurity.put(t.getSecurity(), v);
-                            }
-                            else
-                            {
-                                otherEarnings += t.getAmount();
-                            }
-                            break;
-                        case DEPOSIT:
-                            deposits += t.getAmount();
-                            break;
-                        case REMOVAL:
-                            removals += t.getAmount();
-                            break;
-                        case FEES:
-                            fees += t.getAmount();
-                            break;
-                        case TAXES:
-                            taxes += t.getAmount();
-                            break;
-                        case TAX_REFUND:
-                            taxes -= t.getAmount();
-                            break;
-                        case BUY:
-                        case SELL:
-                        case TRANSFER_IN:
-                        case TRANSFER_OUT:
-                            // no operation
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
+                if (!period.containsTransaction().test(t))
+                    continue;
 
+                switch (t.getType())
+                {
+                    case DIVIDENDS:
+                    case INTEREST:
+                        this.earnings.add(t);
+                        earnings += t.getAmount();
+                        if (t.getSecurity() != null)
+                        {
+                            Long v = earningsBySecurity.get(t.getSecurity());
+                            v = v == null ? t.getAmount() : v + t.getAmount();
+                            earningsBySecurity.put(t.getSecurity(), v);
+                        }
+                        else
+                        {
+                            otherEarnings += t.getAmount();
+                        }
+                        break;
+                    case DEPOSIT:
+                        deposits += t.getAmount();
+                        break;
+                    case REMOVAL:
+                        removals += t.getAmount();
+                        break;
+                    case FEES:
+                        fees += t.getAmount();
+                        break;
+                    case TAXES:
+                        taxes += t.getAmount();
+                        break;
+                    case TAX_REFUND:
+                        taxes -= t.getAmount();
+                        break;
+                    case BUY:
+                    case SELL:
+                    case TRANSFER_IN:
+                    case TRANSFER_OUT:
+                        // no operation
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
             }
         }
 
@@ -354,28 +348,27 @@ public class ClientPerformanceSnapshot
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
-                if (t.getDate().getTime() > startDate && t.getDate().getTime() <= endDate)
-                {
-                    switch (t.getType())
-                    {
-                        case DELIVERY_INBOUND:
-                            deposits += t.getAmount();
-                            break;
-                        case DELIVERY_OUTBOUND:
-                            removals += t.getAmount();
-                            break;
-                        case BUY:
-                        case SELL:
-                        case TRANSFER_IN:
-                        case TRANSFER_OUT:
-                            fees += t.getFees();
-                            taxes += t.getTaxes();
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
+                if (!period.containsTransaction().test(t))
+                    continue;
 
+                switch (t.getType())
+                {
+                    case DELIVERY_INBOUND:
+                        deposits += t.getAmount();
+                        break;
+                    case DELIVERY_OUTBOUND:
+                        removals += t.getAmount();
+                        break;
+                    case BUY:
+                    case SELL:
+                    case TRANSFER_IN:
+                    case TRANSFER_OUT:
+                        fees += t.getFees();
+                        taxes += t.getTaxes();
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
             }
         }
 

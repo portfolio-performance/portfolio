@@ -51,9 +51,8 @@ public final class GroupByTaxonomy
             if (a.getFunds() == 0)
                 continue;
 
-            SecurityPosition sp = new SecurityPosition(null);
-            sp.setShares(Values.Share.factor());
-            sp.setPrice(new SecurityPrice(snapshot.getTime(), a.getFunds()));
+            SecurityPosition sp = new SecurityPosition(new SecurityPrice(snapshot.getTime(), a.getFunds()),
+                            Values.Share.factor());
             vehicle2position.put(a.getAccount(), new Item(sp));
         }
 

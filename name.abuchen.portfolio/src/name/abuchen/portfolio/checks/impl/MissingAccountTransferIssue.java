@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.checks.impl;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.checks.QuickFix;
@@ -80,16 +80,11 @@ import name.abuchen.portfolio.model.Client;
     @Override
     public List<QuickFix> getAvailableFixes()
     {
-        List<QuickFix> answer = new ArrayList<QuickFix>();
-
-        for (Account a : client.getAccounts())
-        {
-            if (a.equals(account))
-                continue;
-            answer.add(new CreateTransferFix(a));
-        }
-        answer.add(new DeleteTransactionFix(account, transaction));
-
+        List<QuickFix> answer = client.getAccounts().stream() //
+                        .filter(a -> !a.equals(account)) //
+                        .map(a -> new CreateTransferFix(a)) //
+                        .collect(Collectors.toList());
+        answer.add(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
         return answer;
     }
 

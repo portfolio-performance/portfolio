@@ -25,17 +25,23 @@ public class ComdirectPDFExtractorTest
     private String gutschriftText;
     private String kaufText;
     private String gutschrift2;
-    
+
     public ComdirectPDFExtractorTest()
     {
-        gutschriftText = new Scanner(getClass().getResourceAsStream("Gutschrift.txt"), "UTF-8").useDelimiter("\\A")
-                        .next();
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Gutschrift.txt"), "UTF-8"))
+        {
+            gutschriftText = scanner.useDelimiter("\\A").next();
+        }
 
-        kaufText = new Scanner(getClass().getResourceAsStream("Wertpapierabrechnung_Kauf.txt"), "UTF-8").useDelimiter(
-                        "\\A").next();
-        
-        gutschrift2 = new Scanner(getClass().getResourceAsStream("Gutschrift2.txt"), "UTF-8").useDelimiter(
-                        "\\A").next();
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Wertpapierabrechnung_Kauf.txt"), "UTF-8");)
+        {
+            kaufText = scanner.useDelimiter("\\A").next();
+        }
+
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Gutschrift2.txt"), "UTF-8");)
+        {
+            gutschrift2 = scanner.useDelimiter("\\A").next();
+        }
     }
 
     @Test
@@ -80,12 +86,12 @@ public class ComdirectPDFExtractorTest
             }
         }
         security = secItem.getSecurity();
-        assert(accItem.getSecurity().equals(security));
-        assert(accItem.getAmount() == 1.11);
-        assert(security.getName().equals("Bank-Global-Rent"));
-        assert(security.getIsin().equals("AT0000123456"));
+        assert (accItem.getSecurity().equals(security));
+        assert (accItem.getAmount() == 1.11);
+        assert (security.getName().equals("Bank-Global-Rent"));
+        assert (security.getIsin().equals("AT0000123456"));
         assert (results.size() == 2);
-        assert(errors.size() == 0);
+        assert (errors.size() == 0);
     }
 
     @Test

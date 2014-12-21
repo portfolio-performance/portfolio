@@ -4,7 +4,7 @@ Bundle-Name: Portfolio Performance Tests
 Bundle-SymbolicName: name.abuchen.portfolio.tests
 Bundle-Version: 0.15.3.qualifier
 Fragment-Host: name.abuchen.portfolio
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: Andreas Buchen
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.hamcrest.core;bundle-version="1.3.0",

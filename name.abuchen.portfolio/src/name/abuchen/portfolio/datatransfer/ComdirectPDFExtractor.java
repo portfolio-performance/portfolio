@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,10 +55,8 @@ public class ComdirectPDFExtractor implements Extractor
         List<Item> results = new ArrayList<Item>();
         for (File f : files)
         {
-            PDDocument doc = null;
-            try
+            try (PDDocument doc = PDDocument.load(f))
             {
-                doc = PDDocument.load(f);
                 String text = stripper.getText(doc);
                 String filename = f.getName();
                 results.addAll(extract(text, filename, errors));
@@ -66,20 +65,6 @@ public class ComdirectPDFExtractor implements Extractor
             {
                 errors.add(e);
             }
-            finally
-            {
-                // FIXME java7 try with syntax
-                if (doc != null)
-                {
-                    try
-                    {
-                        doc.close();
-                    }
-                    catch (IOException ignore)
-                    {}
-                }
-            }
-
         }
         return results;
     }
@@ -115,12 +100,10 @@ public class ComdirectPDFExtractor implements Extractor
                 String nameWKNLine = getNextLine(text, temp);
                 String[] parts = nameWKNLine.substring(14).trim().split(" "); //$NON-NLS-1$
                 String wkn = parts[0];
-                String name = ""; // FIXME Java8 StringJoiner //$NON-NLS-1$
+                StringJoiner j = new StringJoiner(" "); //$NON-NLS-1$
                 for (int i = 1; i < parts.length; i++)
-                {
-                    name = name + parts[i] + " "; //$NON-NLS-1$
-                }
-                name = name.trim();
+                    j.add(parts[i]);
+                String name = j.toString();
                 security = new Security(name, isin, null, QuoteFeed.MANUAL);
                 security.setWkn(wkn);
                 // Store
@@ -132,7 +115,7 @@ public class ComdirectPDFExtractor implements Extractor
             //The representation in the File changes with the way the account is given
             //The difference is whether or not the account is named by the IBAN
             int dateWorkOffset = 9;
-            if (text.contains("Verrechnung über Konto (IBAN)")) {
+            if (text.contains("Verrechnung über Konto (IBAN)")) { //$NON-NLS-1$
                 dateWorkOffset = 13;
             }
             int datePos = jumpWord(text, text.indexOf("Valuta"), dateWorkOffset); //$NON-NLS-1$

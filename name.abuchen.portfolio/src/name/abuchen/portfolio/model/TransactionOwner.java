@@ -25,7 +25,20 @@ public interface TransactionOwner<T extends Transaction>
      * {@link Account}). Deleting a transactions also removes a possible cross
      * entry and removing the transaction from an {@link InvestmentPlan}.
      */
-    void deleteTransaction(T transaction, Client client);
+    default void deleteTransaction(T transaction, Client client)
+    {
+        if (transaction.getCrossEntry() != null)
+        {
+            Transaction other = transaction.getCrossEntry().getCrossTransaction(transaction);
+            @SuppressWarnings("unchecked")
+            TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) transaction.getCrossEntry()
+                            .getEntity(other);
+
+            owner.shallowDeleteTransaction(other, client);
+        }
+
+        shallowDeleteTransaction(transaction, client);
+    }
 
     /**
      * Deletes the transaction from the transaction owner, and only from the
