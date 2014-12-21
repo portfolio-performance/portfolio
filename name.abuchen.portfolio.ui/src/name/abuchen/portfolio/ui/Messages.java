@@ -256,6 +256,7 @@ public class Messages extends NLS
     public static String LabelExchange;
     public static String LabelExport;
     public static String LabelFullClassification;
+    public static String LabelIncludeUnassignedCategoryInCharts;
     public static String LabelInfo;
     public static String LabelInputValidationFailed;
     public static String LabelInvestedCapital;

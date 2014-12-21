@@ -44,6 +44,8 @@ public final class TaxonomyModel
     private TaxonomyNode unassignedNode;
     private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<InvestmentVehicle, Assignment>();
 
+    private boolean excludeUnassignedCategoryInCharts = false;
+
     private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
 
     /* package */TaxonomyModel(Client client, Taxonomy taxonomy)
@@ -216,6 +218,16 @@ public final class TaxonomyModel
                 }
             }
         });
+    }
+
+    public boolean isUnassignedCategoryInChartsExcluded()
+    {
+        return excludeUnassignedCategoryInCharts;
+    }
+
+    public void setExcludeUnassignedCategoryInCharts(boolean excludeUnassignedCategoryInCharts)
+    {
+        this.excludeUnassignedCategoryInCharts = excludeUnassignedCategoryInCharts;
     }
 
     public Taxonomy getTaxonomy()

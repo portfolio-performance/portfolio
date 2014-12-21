@@ -50,4 +50,6 @@ import org.eclipse.swt.widgets.Shell;
 
     public abstract void afterPage();
 
+    public void dispose()
+    {}
 }
