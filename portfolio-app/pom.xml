@@ -16,8 +16,8 @@
 
 	<properties>
 		<tycho-version>0.22.0</tycho-version>
+		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
 	</properties>
 
