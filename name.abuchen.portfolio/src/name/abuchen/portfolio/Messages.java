@@ -114,6 +114,10 @@ public class Messages extends NLS
     public static String PDFcomdirectLabel;
     public static String PDFcomdirectMsgCannotDetermineFileType;
     public static String PDFcomdirectMsgFileNotSupported;
+    public static String PDFdbLabel;
+    public static String PDFdbMsgCannotDetermineFileType;
+    public static String PDFdbMsgCannotFindSecurity;
+    public static String PDFdbMsgFileNotSupported;
     public static String QuoteFeedManual;
     static
     {

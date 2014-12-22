@@ -9,6 +9,7 @@ import java.util.List;
 import javax.inject.Named;
 
 import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -50,6 +51,8 @@ public class ImportPDFHandler
         Extractor extractor = null;
         if ("comdirect".equals(type)) //$NON-NLS-1$
             extractor = new ComdirectPDFExtractor(client);
+        else if ("db".equals(type)) //$NON-NLS-1$
+            extractor = new DeutscheBankPDFExctractor(client);
         else
             throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
 
