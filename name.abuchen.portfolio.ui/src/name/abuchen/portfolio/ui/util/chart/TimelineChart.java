@@ -1,7 +1,12 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -191,21 +196,49 @@ public class TimelineChart extends Chart
     {
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
-        Date upper = new Date((long) range.upper);
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date((long) range.lower));
-        cal.add(Calendar.YEAR, 1);
-        cal.set(Calendar.MONTH, Calendar.JANUARY);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
+        ZoneId zoneId = ZoneId.systemDefault();
+        LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
+        LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
 
-        while (cal.getTimeInMillis() < upper.getTime())
+        LocalDate cursor = start.plusMonths(1).withDayOfMonth(1);
+        Period period = null;
+        DateTimeFormatter format = null;
+
+        long days = ChronoUnit.DAYS.between(start, end);
+        if (days < 250)
         {
-            int y = xAxis.getPixelCoordinate((double) cal.getTimeInMillis());
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(String.valueOf(cal.get(Calendar.YEAR)), y + 5, 5);
+            period = Period.ofMonths(1);
+            format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
+        }
+        else if (days < 800)
+        {
+            period = Period.ofMonths(3);
+            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
+            cursor = cursor.plusMonths((cursor.getMonthValue() - 1) % 3);
+        }
+        else if (days < 1200)
+        {
+            period = Period.ofMonths(6);
+            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
+            cursor = cursor.plusMonths((cursor.getMonthValue() - 1) % 6);
+        }
+        else
+        {
+            period = Period.ofYears(days > 5000 ? 2 : 1);
+            format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
-            cal.add(Calendar.YEAR, 1);
+            if (cursor.getMonthValue() > 1)
+                cursor = cursor.plusYears(1).withDayOfYear(1);
+        }
+
+        while (cursor.isBefore(end))
+        {
+            int y = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
+            e.gc.drawLine(y, 0, y, e.height);
+            e.gc.drawText(format.format(cursor), y + 5, 5);
+
+            cursor = cursor.plus(period);
         }
     }
 
