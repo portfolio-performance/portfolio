@@ -38,37 +38,48 @@ public class StringToCurrencyConverter implements IConverter
     @Override
     public Object convert(Object fromObject)
     {
+        String value = (String) fromObject;
+        value = value.trim();
+
         try
         {
-            String value = (String) fromObject;
-            value = value.trim();
-            Matcher m = PATTERN.matcher(String.valueOf(value));
-            if (!m.matches())
-                throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, value));
+            long result = 0;
+            for (String part : value.split("\\+")) //$NON-NLS-1$
+                result += convertToLong(part);
 
-            String strBefore = m.group(1);
-            Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
-
-            String strAfter = m.group(3);
-            int after = 0;
-            if (strAfter != null && strAfter.length() > 0)
-            {
-                after = Integer.parseInt(strAfter);
-
-                int length = (int) Math.log10(factor);
-                for (int ii = strAfter.length(); ii > length; ii--)
-                    after /= 10;
-                for (int ii = strAfter.length(); ii < length; ii++)
-                    after *= 10;
-            }
-
-            long resultValue = before.longValue() * (int) factor + after;
-            return Long.valueOf(resultValue);
+            return Long.valueOf(result);
         }
         catch (ParseException e)
         {
             throw new IllegalArgumentException(e);
         }
+
+    }
+
+    private long convertToLong(String part) throws ParseException
+    {
+        Matcher m = PATTERN.matcher(String.valueOf(part));
+        if (!m.matches())
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, part));
+
+        String strBefore = m.group(1);
+        Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
+
+        String strAfter = m.group(3);
+        int after = 0;
+        if (strAfter != null && strAfter.length() > 0)
+        {
+            after = Integer.parseInt(strAfter);
+
+            int length = (int) Math.log10(factor);
+            for (int ii = strAfter.length(); ii > length; ii--)
+                after /= 10;
+            for (int ii = strAfter.length(); ii < length; ii++)
+                after *= 10;
+        }
+
+        long resultValue = before.longValue() * (int) factor + after;
+        return resultValue;
     }
 
 }
