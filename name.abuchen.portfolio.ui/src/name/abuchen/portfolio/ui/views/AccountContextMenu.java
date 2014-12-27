@@ -8,10 +8,10 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.TransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;

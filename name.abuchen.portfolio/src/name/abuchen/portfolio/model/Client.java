@@ -103,6 +103,18 @@ public class Client
         return Collections.unmodifiableList(securities);
     }
 
+    /**
+     * Returns a sorted list of active securities, i.e. securities that are not
+     * marked as retired.
+     */
+    public List<Security> getActiveSecurities()
+    {
+        return securities.stream() //
+                        .filter(s -> !s.isRetired()) //
+                        .sorted(new Security.ByName()) //
+                        .collect(Collectors.toList());
+    }
+
     public void addSecurity(Security security)
     {
         securities.add(security);

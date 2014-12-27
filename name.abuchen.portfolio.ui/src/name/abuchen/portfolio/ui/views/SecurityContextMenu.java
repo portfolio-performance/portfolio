@@ -6,10 +6,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
@@ -42,8 +42,8 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(),
-                                portfolio, security, PortfolioTransaction.Type.BUY);
+                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner
+                                .getClient(), portfolio, security, PortfolioTransaction.Type.BUY);
                 if (dialog.open() == BuySellSecurityDialog.OK)
                 {
                     owner.markDirty();
@@ -57,8 +57,8 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(),
-                                portfolio, security, PortfolioTransaction.Type.SELL);
+                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner
+                                .getClient(), portfolio, security, PortfolioTransaction.Type.SELL);
                 if (dialog.open() == BuySellSecurityDialog.OK)
                 {
                     owner.markDirty();

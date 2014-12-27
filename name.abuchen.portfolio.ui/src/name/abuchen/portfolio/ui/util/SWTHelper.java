@@ -51,6 +51,18 @@ public final class SWTHelper
     }
 
     /**
+     * Returns the width needed to display the sample string. Used when
+     * layouting dialogs.
+     */
+    public static int stringWidth(Drawable drawable, String sample)
+    {
+        GC gc = new GC(drawable);
+        Point extentText = gc.stringExtent(sample);
+        gc.dispose();
+        return extentText.x;
+    }
+
+    /**
      * Uses FormData objects to place the label and input field below the given
      * reference item (which is typically another input field). The label is
      * placed to the left of the value.

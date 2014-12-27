@@ -20,8 +20,8 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
@@ -535,7 +535,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new BuySellSecurityDialog(getShell(), getClient(), security, PortfolioTransaction.Type.BUY);
+                return new BuySellSecurityDialog(getShell(), getClient(), null, security, PortfolioTransaction.Type.BUY);
             }
         });
 
@@ -544,7 +544,8 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new BuySellSecurityDialog(getShell(), getClient(), security, PortfolioTransaction.Type.SELL);
+                return new BuySellSecurityDialog(getShell(), getClient(), null, security,
+                                PortfolioTransaction.Type.SELL);
             }
         });
 

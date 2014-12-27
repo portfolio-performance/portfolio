@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
@@ -568,10 +569,33 @@ public class AccountListView extends AbstractListView implements ModificationLis
         if (account == null)
             return;
 
+        AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions.getSelection())
+                        .getFirstElement();
+
+        if (transaction != null && transaction.getCrossEntry() instanceof BuySellEntry)
+        {
+            manager.add(new Action(Messages.MenuEditTransaction)
+            {
+                @Override
+                public void run()
+                {
+                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(Display.getDefault().getActiveShell(),
+                                    getClient(), (BuySellEntry) transaction.getCrossEntry());
+
+                    if (dialog.open() == BuySellSecurityDialog.OK)
+                    {
+                        markDirty();
+                        notifyModelUpdated();
+                    }
+                }
+            });
+
+            manager.add(new Separator());
+        }
+
         accountMenu.menuAboutToShow(manager, account);
 
-        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
-        if (hasTransactionSelected)
+        if (transaction != null)
         {
             manager.add(new Separator());
             manager.add(new Action(Messages.AccountMenuDeleteTransaction)

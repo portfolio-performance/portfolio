@@ -42,11 +42,13 @@ public class Messages extends NLS
     public static String ColumnAmount;
     public static String ColumnBalance;
     public static String ColumnColor;
+    public static String ColumnCreditNote;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
     public static String ColumnDate;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
+    public static String ColumnDebitNote;
     public static String ColumnDelta;
     public static String ColumnDelta_Description;
     public static String ColumnDeltaPercent;
@@ -65,6 +67,7 @@ public class Messages extends NLS
     public static String ColumnDividendTotalRateOfReturn_Description;
     public static String ColumnEntity;
     public static String ColumnErrorMessages;
+    public static String ColumnExchangeRate;
     public static String ColumnExDate;
     public static String ColumnFees;
     public static String ColumnFees_Description;
@@ -117,6 +120,7 @@ public class Messages extends NLS
     public static String ColumnSharesOwned;
     public static String ColumnSource;
     public static String ColumnStartDate;
+    public static String ColumnSubTotal;
     public static String ColumnSymbol;
     public static String ColumnTargetValue;
     public static String ColumnTaxes;
@@ -329,6 +333,7 @@ public class Messages extends NLS
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
     public static String MenuConfigureChart;
+    public static String MenuEditTransaction;
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
@@ -371,6 +376,9 @@ public class Messages extends NLS
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorUpdating;
+    public static String MsgIncorrectConvertedSubTotal;
+    public static String MsgIncorrectSubTotal;
+    public static String MsgIncorrectTotal;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
     public static String MsgMissingPortfolio;

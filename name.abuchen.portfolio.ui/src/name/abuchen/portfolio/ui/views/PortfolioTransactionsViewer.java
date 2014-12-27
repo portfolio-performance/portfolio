@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -14,6 +15,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -363,6 +365,27 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
         final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
                         .getSelection()).getFirstElement();
+
+        if (transaction != null && transaction.getCrossEntry() instanceof BuySellEntry)
+        {
+            manager.add(new Action(Messages.MenuEditTransaction)
+            {
+                @Override
+                public void run()
+                {
+                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(Display.getDefault()
+                                    .getActiveShell(), owner.getClient(), (BuySellEntry) transaction.getCrossEntry());
+
+                    if (dialog.open() == BuySellSecurityDialog.OK)
+                    {
+                        owner.markDirty();
+                        owner.notifyModelUpdated();
+                    }
+                }
+            });
+
+            manager.add(new Separator());
+        }
 
         if (fullContextMenu && transaction != null)
             new SecurityContextMenu(owner).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
