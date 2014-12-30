@@ -497,7 +497,7 @@ public class StatementOfAssetsViewer
 
         if (element.isAccount())
         {
-            new AccountContextMenu(view).menuAboutToShow(manager, element.getAccount());
+            new AccountContextMenu(view).menuAboutToShow(manager, element.getAccount(), null);
         }
         else if (element.isSecurity())
         {

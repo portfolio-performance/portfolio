@@ -22,6 +22,7 @@ import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -142,10 +143,10 @@ public class PortfolioPart implements LoadClientThread.Callback
         book = new PageBook(container, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).span(1, 2).applyTo(book);
 
-        IEclipseContext childContext = context.createChild();
-        childContext.set(Composite.class, container);
-        childContext.set(Client.class, client);
-        ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, childContext);
+        IEclipseContext staticContext = EclipseContextFactory.create();
+        staticContext.set(Composite.class, container);
+        ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, context,
+                        staticContext);
         GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).applyTo(provider.getControl());
 
         sidebar.selectDefaultView();
@@ -259,6 +260,8 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         this.client = client;
         this.dirty.setDirty(false);
+
+        this.context.set(Client.class, client);
 
         client.addPropertyChangeListener(new PropertyChangeListener()
         {
@@ -561,6 +564,14 @@ public class PortfolioPart implements LoadClientThread.Callback
         {
             throw new IOException(e);
         }
+    }
+
+    public <T> T make(Class<T> type, Object... parameters)
+    {
+        IEclipseContext c2 = EclipseContextFactory.create();
+        for (Object param : parameters)
+            c2.set(param.getClass().getName(), param);
+        return ContextInjectionFactory.make(type, this.context, c2);
     }
 
 }

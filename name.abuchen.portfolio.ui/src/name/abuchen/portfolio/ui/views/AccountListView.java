@@ -273,7 +273,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         if (account == null)
             return;
 
-        accountMenu.menuAboutToShow(manager, account);
+        accountMenu.menuAboutToShow(manager, account, null);
         manager.add(new Separator());
 
         manager.add(new Action(account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate)
@@ -579,8 +579,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 @Override
                 public void run()
                 {
-                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(Display.getDefault().getActiveShell(),
-                                    getClient(), (BuySellEntry) transaction.getCrossEntry());
+                    BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+                    BuySellSecurityDialog dialog = getPart().make(BuySellSecurityDialog.class,
+                                    entry.getPortfolioTransaction().getType());
+                    dialog.setBuySellEntry(entry);
 
                     if (dialog.open() == BuySellSecurityDialog.OK)
                     {
@@ -593,7 +595,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             manager.add(new Separator());
         }
 
-        accountMenu.menuAboutToShow(manager, account);
+        accountMenu.menuAboutToShow(manager, account, transaction.getSecurity());
 
         if (transaction != null)
         {

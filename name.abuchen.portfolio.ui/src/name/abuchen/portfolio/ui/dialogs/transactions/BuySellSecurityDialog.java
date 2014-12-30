@@ -7,9 +7,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
@@ -29,6 +34,7 @@ import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -116,28 +122,22 @@ public class BuySellSecurityDialog extends TitleAreaDialog
 
     private Client client;
     private BuySellModel model;
-    private DataBindingContext context;
+    private DataBindingContext context = new DataBindingContext();
     private ModelStatusListener status = new ModelStatusListener();
 
-    public BuySellSecurityDialog(Shell parentShell, Client client, BuySellEntry entry)
+    @Inject
+    public BuySellSecurityDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
+                    PortfolioTransaction.Type type)
     {
         super(parentShell);
 
         this.client = client;
-        this.model = new BuySellModel(client, entry);
-        this.context = new DataBindingContext();
-
-        setShellStyle(getShellStyle() | SWT.RESIZE);
+        this.model = new BuySellModel(client, type);
     }
 
-    public BuySellSecurityDialog(Shell parentShell, Client client, Portfolio portfolio, Security security, Type type)
+    @PostConstruct
+    public void registerListeners()
     {
-        super(parentShell);
-
-        this.client = client;
-        this.model = new BuySellModel(client, portfolio, security, type);
-        this.context = new DataBindingContext();
-
         this.context.addValidationStatusProvider(new MultiValidator()
         {
             IObservableValue observable = BeansObservables.observeValue(model, Properties.calculationStatus.name());
@@ -148,8 +148,6 @@ public class BuySellSecurityDialog extends TitleAreaDialog
                 return (IStatus) observable.getValue();
             }
         });
-
-        setShellStyle(getShellStyle() | SWT.RESIZE);
     }
 
     @Override
@@ -160,7 +158,15 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         setTitle(model.getType().toString());
         setMessage(""); //$NON-NLS-1$
 
+        setShellStyle(getShellStyle() | SWT.RESIZE);
+
         status.setStatus(AggregateValidationStatus.getStatusMaxSeverity(context.getValidationStatusProviders()));
+    }
+
+    @Override
+    protected int getShellStyle()
+    {
+        return super.getShellStyle() | SWT.RESIZE;
     }
 
     @Override
@@ -339,5 +345,20 @@ public class BuySellSecurityDialog extends TitleAreaDialog
     {
         model.applyChanges();
         super.okPressed();
+    }
+
+    public void setPortfolio(Portfolio portfolio)
+    {
+        model.setPortfolio(portfolio);
+    }
+
+    public void setSecurity(Security security)
+    {
+        model.setSecurity(security);
+    }
+
+    public void setBuySellEntry(BuySellEntry entry)
+    {
+        model.setBuySellEntry(entry);
     }
 }

@@ -373,8 +373,10 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 @Override
                 public void run()
                 {
-                    BuySellSecurityDialog dialog = new BuySellSecurityDialog(Display.getDefault()
-                                    .getActiveShell(), owner.getClient(), (BuySellEntry) transaction.getCrossEntry());
+                    BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+                    BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
+                                    entry.getPortfolioTransaction().getType());
+                    dialog.setBuySellEntry(entry);
 
                     if (dialog.open() == BuySellSecurityDialog.OK)
                     {

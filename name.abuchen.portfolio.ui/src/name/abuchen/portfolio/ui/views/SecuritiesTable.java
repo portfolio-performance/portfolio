@@ -535,7 +535,10 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new BuySellSecurityDialog(getShell(), getClient(), null, security, PortfolioTransaction.Type.BUY);
+                BuySellSecurityDialog dialog = view.getPart().make(BuySellSecurityDialog.class,
+                                PortfolioTransaction.Type.BUY);
+                dialog.setSecurity(security);
+                return dialog;
             }
         });
 
@@ -544,8 +547,10 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                return new BuySellSecurityDialog(getShell(), getClient(), null, security,
+                BuySellSecurityDialog dialog = view.getPart().make(BuySellSecurityDialog.class,
                                 PortfolioTransaction.Type.SELL);
+                dialog.setSecurity(security);
+                return dialog;
             }
         });
 

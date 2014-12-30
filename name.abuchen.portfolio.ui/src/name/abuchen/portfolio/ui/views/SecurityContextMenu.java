@@ -42,8 +42,13 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner
-                                .getClient(), portfolio, security, PortfolioTransaction.Type.BUY);
+                BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
+                                PortfolioTransaction.Type.BUY);
+                if (portfolio != null)
+                    dialog.setPortfolio(portfolio);
+                if (security != null)
+                    dialog.setSecurity(security);
+
                 if (dialog.open() == BuySellSecurityDialog.OK)
                 {
                     owner.markDirty();
@@ -57,8 +62,13 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner
-                                .getClient(), portfolio, security, PortfolioTransaction.Type.SELL);
+                BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
+                                PortfolioTransaction.Type.SELL);
+                if (portfolio != null)
+                    dialog.setPortfolio(portfolio);
+                if (security != null)
+                    dialog.setSecurity(security);
+
                 if (dialog.open() == BuySellSecurityDialog.OK)
                 {
                     owner.markDirty();

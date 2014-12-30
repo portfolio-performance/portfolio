@@ -6,6 +6,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
@@ -27,7 +28,7 @@ public class AccountContextMenu
         this.owner = owner;
     }
 
-    public void menuAboutToShow(IMenuManager manager, final Account account)
+    public void menuAboutToShow(IMenuManager manager, final Account account, final Security security)
     {
         if (account == null)
             return;
@@ -83,8 +84,14 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(), portfolio[0], null,
+                    BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
                                     PortfolioTransaction.Type.BUY);
+                    if (portfolio[0] != null)
+                        dialog.setPortfolio(portfolio[0]);
+                    if (security != null)
+                        dialog.setSecurity(security);
+
+                    return dialog;
                 }
             });
 
@@ -93,8 +100,13 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    return new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(), portfolio[0], null,
+                    BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
                                     PortfolioTransaction.Type.SELL);
+                    if (portfolio[0] != null)
+                        dialog.setPortfolio(portfolio[0]);
+                    if (security != null)
+                        dialog.setSecurity(security);
+                    return dialog;
                 }
             });
 

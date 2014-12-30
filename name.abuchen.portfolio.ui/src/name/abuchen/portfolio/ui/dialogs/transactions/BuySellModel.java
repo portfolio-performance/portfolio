@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
@@ -30,10 +29,10 @@ import org.eclipse.core.runtime.IStatus;
     }
 
     private final Client client;
-    private final PortfolioTransaction.Type type;
 
     private BuySellEntry source;
 
+    private PortfolioTransaction.Type type;
     private Portfolio portfolio;
     private Security security;
     private Date date = Dates.today();
@@ -48,52 +47,24 @@ import org.eclipse.core.runtime.IStatus;
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public BuySellModel(Client client, Portfolio portfolio, Security security, Type type)
+    public BuySellModel(Client client, Type type)
     {
         this.client = client;
-        this.portfolio = portfolio;
-        this.security = security;
         this.type = type;
 
-        if (type == PortfolioTransaction.Type.SELL && security != null)
-        {
-            ClientSnapshot snapshot = ClientSnapshot.create(client, Dates.today());
-            for (PortfolioSnapshot p : snapshot.getPortfolios())
-            {
-                SecurityPosition position = p.getPositionsBySecurity().get(security);
-                if (position != null && (portfolio == null || p.getSource().equals(portfolio)))
-                {
-                    setPortfolio(p.getSource());
-                    setShares(position.getShares());
-                    setTotal(position.calculateValue());
-                    break;
-                }
-            }
-        }
-        else
-        {
-            // set portfolio only if exactly one exists
-            // (otherwise force user to choose)
-            List<Portfolio> activePortfolios = client.getActivePortfolios();
-            if (portfolio == null && activePortfolios.size() == 1)
-                setPortfolio(activePortfolios.get(0));
+        // set portfolio only if exactly one exists
+        // (otherwise force user to choose)
+        List<Portfolio> activePortfolios = client.getActivePortfolios();
+        if (activePortfolios.size() == 1)
+            setPortfolio(activePortfolios.get(0));
 
-            if (security == null)
-            {
-                List<Security> activeSecurities = client.getActiveSecurities();
-                if (!activeSecurities.isEmpty())
-                    setSecurity(activeSecurities.get(0));
-            }
-            else
-            {
-                setQuote(security.getSecurityPrice(date).getValue());
-            }
-        }
+        List<Security> activeSecurities = client.getActiveSecurities();
+        if (!activeSecurities.isEmpty())
+            setSecurity(activeSecurities.get(0));
     }
 
-    public BuySellModel(Client client, BuySellEntry entry)
+    public void setBuySellEntry(BuySellEntry entry)
     {
-        this.client = client;
         this.type = entry.getPortfolioTransaction().getType();
 
         this.source = entry;
@@ -223,14 +194,20 @@ import org.eclipse.core.runtime.IStatus;
     {
         if (type == PortfolioTransaction.Type.SELL)
         {
-            PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, date);
-            SecurityPosition position = snapshot.getPositionsBySecurity().get(security);
-            if (position != null)
+            boolean hasPosition = false;
+            if (portfolio != null)
             {
-                setShares(position.getShares());
-                setTotal(position.calculateValue());
+                PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, date);
+                SecurityPosition position = snapshot.getPositionsBySecurity().get(security);
+                if (position != null)
+                {
+                    setShares(position.getShares());
+                    setTotal(position.calculateValue());
+                    hasPosition = true;
+                }
             }
-            else
+
+            if (!hasPosition)
             {
                 setShares(0);
                 setQuote(security.getSecurityPrice(date).getValue());
