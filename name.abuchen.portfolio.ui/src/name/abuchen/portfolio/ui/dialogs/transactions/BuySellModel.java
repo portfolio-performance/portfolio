@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.IStatus;
     public enum Properties
     {
         portfolio, security, accountName, date, shares, quote, lumpSum, exchangeRate, convertedLumpSum, //
-        fees, taxes, total, exchangeRateCurrencies, accountCurrencyCode, securityCurrencyCode, calculationStatus;
+        fees, taxes, total, note, exchangeRateCurrencies, accountCurrencyCode, securityCurrencyCode, calculationStatus;
     }
 
     private final Client client;
@@ -47,6 +47,7 @@ import org.eclipse.core.runtime.IStatus;
     private long fees;
     private long taxes;
     private long total;
+    private String note;
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
@@ -71,6 +72,7 @@ import org.eclipse.core.runtime.IStatus;
         this.total = entry.getPortfolioTransaction().getAmount();
         this.taxes = entry.getPortfolioTransaction().getTaxes();
         this.fees = entry.getPortfolioTransaction().getFees();
+        this.note = entry.getPortfolioTransaction().getNote();
 
         this.exchangeRate = 1 * Values.ExchangeRate.factor();
         this.convertedLumpSum = calcLumpSum(total, fees, taxes);
@@ -114,6 +116,7 @@ import org.eclipse.core.runtime.IStatus;
         entry.setTaxes(taxes);
         entry.setAmount(total);
         entry.setType(type);
+        entry.setNote(note);
 
         // FIXME store (and load) forex information in transaction
     }
@@ -409,6 +412,16 @@ import org.eclipse.core.runtime.IStatus;
     public void triggerTotal(long total)
     {
         firePropertyChange(Properties.total.name(), this.total, this.total = total);
+    }
+
+    public String getNote()
+    {
+        return note;
+    }
+
+    public void setNote(String note)
+    {
+        firePropertyChange(Properties.note.name(), this.note, this.note = note);
     }
 
     public String getSecurityCurrencyCode()

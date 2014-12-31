@@ -76,6 +76,12 @@ public class BuySellEntry implements CrossEntry
         this.portfolioTransaction.setTaxes(taxes);
     }
 
+    public void setNote(String note)
+    {
+        this.portfolioTransaction.setNote(note);
+        this.accountTransaction.setNote(note);
+    }
+
     public void insert()
     {
         portfolio.addTransaction(portfolioTransaction);

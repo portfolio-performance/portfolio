@@ -12,7 +12,7 @@ public class FormDataFactory
     {
         FormDataFactory factory = new FormDataFactory(reference);
 
-        factory.withLabel(label);
+        factory.label(label);
         FormData data = factory.from(reference);
         data.left = new FormAttachment(label, 5);
 
@@ -47,16 +47,15 @@ public class FormDataFactory
         return new FormDataFactory(control);
     }
 
-    public FormDataFactory withLabel(Label label)
+    public FormDataFactory label(Label label)
     {
         FormData data = from(label);
         data.top = new FormAttachment(reference, 0, SWT.CENTER);
         data.right = new FormAttachment(reference, -5);
-
         return this;
     }
 
-    public FormDataFactory withSuffix(Label label)
+    public FormDataFactory suffix(Label label)
     {
         FormData data = from(label);
         data.top = new FormAttachment(reference, 0, SWT.CENTER);
@@ -69,6 +68,20 @@ public class FormDataFactory
     {
         FormData data = from(reference);
         data.width = width;
+        return this;
+    }
+
+    public FormDataFactory left(Control control)
+    {
+        FormData data = from(reference);
+        data.left = new FormAttachment(control, 0, SWT.LEFT);
+        return this;
+    }
+
+    public FormDataFactory right(Control control)
+    {
+        FormData data = from(reference);
+        data.right = new FormAttachment(control, 0, SWT.RIGHT);
         return this;
     }
 

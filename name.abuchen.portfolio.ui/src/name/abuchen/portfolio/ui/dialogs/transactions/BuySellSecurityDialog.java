@@ -290,34 +290,43 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         total.bindValue(Properties.total.name(), label, Values.Amount, true);
         total.bindCurrency(Properties.accountCurrencyCode.name());
 
+        // note
+        Label lblNote = new Label(editArea, SWT.LEFT);
+        lblNote.setText(Messages.ColumnNote);
+        Text valueNote = new Text(editArea, SWT.BORDER);
+        context.bindValue(SWTObservables.observeText(valueNote, SWT.Modify),
+                        BeansObservables.observeValue(model, Properties.note.name()));
+
         //
         // form layout
         //
 
         int width = stringWidth(total.value, "12345678,00"); //$NON-NLS-1$
 
-        startingWith(valueSecurity.getControl(), lblSecurity).withSuffix(curSecurity)
-                        .thenBelow(valuePortfolio.getControl()).withLabel(lblPortfolio).withSuffix(referencePortfolio)
+        startingWith(valueSecurity.getControl(), lblSecurity).suffix(curSecurity)
+                        .thenBelow(valuePortfolio.getControl()).label(lblPortfolio).suffix(referencePortfolio)
                         .thenBelow(valueDate)
-                        .withLabel(lblDate)
+                        .label(lblDate)
                         // shares - quote - lump sum
-                        .thenBelow(shares.value).width(width).withLabel(shares.label).thenRight(quote.label)
+                        .thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(width).thenRight(quote.currency).width(width)
                         .thenRight(lumpSum.label).thenRight(lumpSum.value).width(width).thenRight(lumpSum.currency);
 
-        startingWith(quote.value).thenBelow(exchangeRate.value).width(width).withLabel(exchangeRate.label)
+        startingWith(quote.value).thenBelow(exchangeRate.value).width(width).label(exchangeRate.label)
                         .thenRight(exchangeRate.currency).width(width);
 
         startingWith(lumpSum.value)
                         // converted lump sum
-                        .thenBelow(convertedLumpSum.value).width(width).withLabel(convertedLumpSum.label)
-                        .withSuffix(convertedLumpSum.currency)
+                        .thenBelow(convertedLumpSum.value).width(width).label(convertedLumpSum.label)
+                        .suffix(convertedLumpSum.currency)
                         // fees
-                        .thenBelow(fees.value).width(width).withLabel(fees.label).withSuffix(fees.currency)
+                        .thenBelow(fees.value).width(width).label(fees.label).suffix(fees.currency)
                         // taxes
-                        .thenBelow(taxes.value).width(width).withLabel(taxes.label).withSuffix(taxes.currency)
+                        .thenBelow(taxes.value).width(width).label(taxes.label).suffix(taxes.currency)
                         // total
-                        .thenBelow(total.value).width(width).withLabel(total.label).withSuffix(total.currency);
+                        .thenBelow(total.value).width(width).label(total.label).suffix(total.currency)
+                        // note
+                        .thenBelow(valueNote).left(valueSecurity.getControl()).right(total.value).label(lblNote);
 
         //
         // hide / show exchange rate if necessary
