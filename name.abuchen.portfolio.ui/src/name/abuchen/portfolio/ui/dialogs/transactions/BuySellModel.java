@@ -127,20 +127,28 @@ import org.eclipse.core.runtime.IStatus;
      * Check whether calculation works out. The separate validation is needed
      * because the model does prevent negative values in methods
      * {@link #calcLumpSum(long, long, long)} and
-     * {@link #calcTotal(long, long, long)}.
+     * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
+     * quote (2 digits currently) and the exchange rate (4 digits), the lump sum
+     * and converted lump sum are checked against a range.
      */
     private IStatus calculateStatus()
     {
-        long ls = Math.round(shares * quote * Values.Amount.factor()
+        // check whether lump sum is in range
+        long lower = Math.round(shares * (quote - 1) * Values.Amount.factor()
                         / (Values.Share.divider() * Values.Quote.divider()));
-        if (ls != lumpSum)
+        long upper = Math.round(shares * (quote + 1) * Values.Amount.factor()
+                        / (Values.Share.divider() * Values.Quote.divider()));
+        if (lumpSum < lower || lumpSum > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
-        long cls = Math.round(ls * exchangeRate / Values.ExchangeRate.divider());
-        if (cls != convertedLumpSum)
+        // check whether converted lump sum is in range
+        upper = Math.round(lumpSum * (exchangeRate + 1) / Values.ExchangeRate.divider());
+        lower = Math.round(lumpSum * (exchangeRate - 1) / Values.ExchangeRate.divider());
+        if (convertedLumpSum < lower || convertedLumpSum > upper)
             return ValidationStatus.error(Messages.MsgIncorrectConvertedSubTotal);
 
-        long t = calcTotal(cls, fees, taxes);
+        // check total
+        long t = calcTotal(convertedLumpSum, fees, taxes);
         if (t != total)
             return ValidationStatus.error(Messages.MsgIncorrectTotal);
 
