@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.util.Date;
-import java.util.List;
 
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ExchangeRate;
+import name.abuchen.portfolio.model.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.model.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -29,6 +31,7 @@ import org.eclipse.core.runtime.IStatus;
     }
 
     private final Client client;
+    private ExchangeRateProviderFactory factory;
 
     private BuySellEntry source;
 
@@ -51,16 +54,6 @@ import org.eclipse.core.runtime.IStatus;
     {
         this.client = client;
         this.type = type;
-
-        // set portfolio only if exactly one exists
-        // (otherwise force user to choose)
-        List<Portfolio> activePortfolios = client.getActivePortfolios();
-        if (activePortfolios.size() == 1)
-            setPortfolio(activePortfolios.get(0));
-
-        List<Security> activeSecurities = client.getActiveSecurities();
-        if (!activeSecurities.isEmpty())
-            setSecurity(activeSecurities.get(0));
     }
 
     public void setBuySellEntry(BuySellEntry entry)
@@ -222,9 +215,15 @@ import org.eclipse.core.runtime.IStatus;
         {
             setExchangeRate(1 * Values.ExchangeRate.factor());
         }
-        else
+        else if (!getAccountCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
         {
-            // FIXME set current exchange rate
+            ExchangeRateTimeSeries series = factory.getTimeSeries(getSecurityCurrencyCode(), getAccountCurrencyCode());
+
+            if (series != null)
+                setExchangeRate(series.lookupRate(date)
+                                .orElse(new ExchangeRate(date, 1 * Values.ExchangeRate.factor())).getValue());
+            else
+                setExchangeRate(1 * Values.ExchangeRate.factor());
         }
 
     }
@@ -453,5 +452,10 @@ import org.eclipse.core.runtime.IStatus;
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    public void setExchangeRateProviderFactory(ExchangeRateProviderFactory factory)
+    {
+        this.factory = factory;
     }
 }

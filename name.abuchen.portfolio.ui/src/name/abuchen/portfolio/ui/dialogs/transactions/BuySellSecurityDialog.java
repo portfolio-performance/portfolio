@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.stringWidth;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -135,9 +137,25 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         this.model = new BuySellModel(client, type);
     }
 
+    @Inject
+    public void setExchangeRateProviderFactory(ExchangeRateProviderFactory factory)
+    {
+        this.model.setExchangeRateProviderFactory(factory);
+    }
+
     @PostConstruct
     public void registerListeners()
     {
+        // set portfolio only if exactly one exists
+        // (otherwise force user to choose)
+        List<Portfolio> activePortfolios = client.getActivePortfolios();
+        if (activePortfolios.size() == 1)
+            model.setPortfolio(activePortfolios.get(0));
+
+        List<Security> activeSecurities = client.getActiveSecurities();
+        if (!activeSecurities.isEmpty())
+            model.setSecurity(activeSecurities.get(0));
+
         this.context.addValidationStatusProvider(new MultiValidator()
         {
             IObservableValue observable = BeansObservables.observeValue(model, Properties.calculationStatus.name());

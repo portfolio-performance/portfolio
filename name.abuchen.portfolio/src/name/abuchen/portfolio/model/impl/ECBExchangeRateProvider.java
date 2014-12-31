@@ -34,13 +34,21 @@ import com.thoughtworks.xstream.converters.basic.DateConverter;
  */
 public class ECBExchangeRateProvider implements ExchangeRateProvider
 {
-    public static final String BASE_CURRENCY = "EUR"; //$NON-NLS-1$
+    public static final String EUR = "EUR"; //$NON-NLS-1$
 
     private static final String FILE_STORAGE = "ecb_exchange_rates.xml"; //$NON-NLS-1$
     private static final String FILE_SUMMARY = "ecb_exchange_rates_summary.xml"; //$NON-NLS-1$
 
     private volatile XStream xstream;
     private ECBData data = new ECBData();
+
+    public ECBExchangeRateProvider()
+    {}
+
+    /* testing */ECBExchangeRateProvider(ECBData data)
+    {
+        this.data = data;
+    }
 
     @Override
     public String getName()
@@ -63,9 +71,9 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
             ECBData summary = new ECBData();
             for (Map.Entry<String, ExchangeRate> entry : loaded.entrySet())
             {
-                ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, BASE_CURRENCY, entry.getKey());
+                ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, EUR, entry.getKey());
                 s.addRate(entry.getValue());
-                summary.getSeries().add(s);
+                summary.addSeries(s);
             }
             data = summary;
         }
@@ -76,8 +84,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         if (file.exists())
         {
             ECBData loaded = (ECBData) xstream().fromXML(file);
-            for (ExchangeRateTimeSeriesImpl s : loaded.getSeries())
-                s.setProvider(this);
+            loaded.doPostLoadProcessing(this);
             data = loaded;
         }
         monitor.worked(1);
@@ -103,7 +110,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 
         Map<String, ExchangeRate> summary = new HashMap<String, ExchangeRate>();
         for (ExchangeRateTimeSeriesImpl s : data.getSeries())
-            summary.put(s.getTermCurrency(), s.getLatest());
+            s.getLatest().ifPresent(rate -> summary.put(s.getTermCurrency(), rate));
         write(summary, file);
 
         // write the full history data
@@ -115,6 +122,32 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
         return new ArrayList<ExchangeRateTimeSeries>(data.getSeries());
+    }
+
+    @Override
+    public ExchangeRateTimeSeries getTimeSeries(String baseCurrency, String termCurrency)
+    {
+        if (EUR.equals(baseCurrency))
+        {
+            return data.getCurrencyMap().get(termCurrency);
+        }
+        else if (EUR.equals(termCurrency))
+        {
+            ExchangeRateTimeSeriesImpl series = data.getCurrencyMap().get(baseCurrency);
+            return series != null ? new InverseExchangeRateTimeSeries(series) : null;
+        }
+        else
+        {
+            Map<String, ExchangeRateTimeSeriesImpl> map = data.getCurrencyMap();
+
+            ExchangeRateTimeSeriesImpl base = map.get(baseCurrency);
+            ExchangeRateTimeSeriesImpl term = map.get(termCurrency);
+
+            if (base != null && term != null)
+                return new ChainedExchangeRateTimeSeries(new InverseExchangeRateTimeSeries(base), term);
+            else
+                return null;
+        }
     }
 
     private File getStorageFile(String name)

@@ -36,4 +36,17 @@ public class ExchangeRateProviderFactory
             series.addAll(p.getAvailableTimeSeries());
         return series;
     }
+
+    public ExchangeRateTimeSeries getTimeSeries(String baseCurrency, String termCurrency)
+    {
+        // TODO pick exchange rate with best quality of service
+        for (ExchangeRateProvider p : providers)
+        {
+            ExchangeRateTimeSeries s = p.getTimeSeries(baseCurrency, termCurrency);
+            if (s != null)
+                return s;
+        }
+
+        return null;
+    }
 }

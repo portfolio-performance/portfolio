@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.model;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface ExchangeRateTimeSeries
 {
@@ -11,4 +13,6 @@ public interface ExchangeRateTimeSeries
     ExchangeRateProvider getProvider();
 
     List<ExchangeRate> getRates();
+
+    Optional<ExchangeRate> lookupRate(Date requestedTime);
 }

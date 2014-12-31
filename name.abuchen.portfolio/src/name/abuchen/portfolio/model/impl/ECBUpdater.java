@@ -153,10 +153,10 @@ import name.abuchen.portfolio.util.Dates;
                 {
                     series = new ExchangeRateTimeSeriesImpl();
                     series.setProvider(provider);
-                    series.setBaseCurrency(ECBExchangeRateProvider.BASE_CURRENCY);
+                    series.setBaseCurrency(ECBExchangeRateProvider.EUR);
                     series.setTermCurrency(termCurrency);
                     currency2series.put(termCurrency, series);
-                    data.getSeries().add(series);
+                    data.addSeries(series);
                 }
 
                 String rateValue = reader.getAttributeValue(null, "rate"); //$NON-NLS-1$

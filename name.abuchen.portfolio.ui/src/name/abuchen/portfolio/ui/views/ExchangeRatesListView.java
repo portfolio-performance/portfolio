@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -123,6 +124,7 @@ public class ExchangeRatesListView extends AbstractListView
     protected void createBottomTable(Composite parent)
     {
         chart = new TimelineChart(parent);
+        chart.getToolTip().setValueFormat(new DecimalFormat("0.0000")); //$NON-NLS-1$
         refreshChart(null);
     }
 

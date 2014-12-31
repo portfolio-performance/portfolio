@@ -2,7 +2,9 @@ package name.abuchen.portfolio.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.ExchangeRate;
 import name.abuchen.portfolio.model.ExchangeRateProvider;
@@ -85,9 +87,26 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
             rates.set(index, rate);
     }
 
-    public ExchangeRate getLatest()
+    public Optional<ExchangeRate> getLatest()
     {
-        return rates.isEmpty() ? null : rates.get(rates.size() - 1);
+        return rates.isEmpty() ? Optional.empty() : Optional.of(rates.get(rates.size() - 1));
+    }
+
+    @Override
+    public Optional<ExchangeRate> lookupRate(Date requestedTime)
+    {
+        if (rates.isEmpty())
+            return Optional.empty();
+
+        ExchangeRate r = new ExchangeRate(requestedTime, 0);
+        int index = Collections.binarySearch(rates, r);
+
+        if (index >= 0)
+            return Optional.of(rates.get(index));
+        else if (index == -1) // requested is date before first rate
+            return Optional.of(rates.get(0));
+        else
+            return Optional.of(rates.get(-index - 2));
     }
 
 }
