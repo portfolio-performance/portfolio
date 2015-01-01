@@ -19,7 +19,7 @@ public class DividendFinalTransaction extends Transaction
     @Override
     public long getAmount()
     {
-        return position.calculateValue();
+        return position.calculateValue().getAmount(); // FIXME c
     }
 
     public SecurityPosition getPosition()

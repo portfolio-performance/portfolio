@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 public class AssetPosition
 {
@@ -16,41 +18,43 @@ public class AssetPosition
         }
     }
 
-    private final InvestmentVehicle investmentVehicle;
     private final SecurityPosition position;
-    private final long valuation;
-    private final long totalAssets;
+    private final CurrencyConverter converter;
+    private final Money totalAssets;
+    private final Money valuation;
 
-    /* package */AssetPosition(InvestmentVehicle investmentVehicle, SecurityPosition position, long totalAssets)
+
+    /* package */AssetPosition(SecurityPosition position, CurrencyConverter converter, Money totalAssets)
     {
         this.position = position;
-        this.investmentVehicle = investmentVehicle;
+        this.converter = converter;
         this.totalAssets = totalAssets;
         this.valuation = position.calculateValue();
     }
 
-    public long getValuation()
+    public Money getValuation()
     {
-        return this.valuation;
+        return converter.convert(valuation);
     }
 
     public double getShare()
     {
-        return (double) getValuation() / (double) this.totalAssets;
+        return Math.round((double) getValuation().getAmount() / (double) this.totalAssets.getAmount());
     }
 
-    public long getFIFOPurchaseValue()
+    public Money getFIFOPurchaseValue()
     {
-        return position.getFIFOPurchaseValue();
+        return converter.convert(position.getFIFOPurchaseValue());
     }
 
-    public long getProfitLoss()
+    public Money getProfitLoss()
     {
-        return position.getProfitLoss();
+        return converter.convert(position.getProfitLoss());
     }
 
     public String getDescription()
     {
+        InvestmentVehicle investmentVehicle = position.getInvestmentVehicle();
         return investmentVehicle != null ? investmentVehicle.getName() : position.getSecurity().getName();
     }
 
@@ -66,6 +70,6 @@ public class AssetPosition
 
     public InvestmentVehicle getInvestmentVehicle()
     {
-        return investmentVehicle;
+        return position.getInvestmentVehicle();
     }
 }

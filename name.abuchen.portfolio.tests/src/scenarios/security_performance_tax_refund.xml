@@ -4,6 +4,7 @@
     <security>
       <uuid>8efb0529-1538-40ce-8890-5d84751b5130</uuid>
       <name>Basf SE</name>
+      <currencyCode>EUR</currencyCode>
       <isin>DE000BASF111</isin>
       <tickerSymbol>BAS.DE</tickerSymbol>
       <feed>YAHOO</feed>
@@ -32,6 +33,7 @@
     <account>
       <uuid>7c6d057f-30d6-4830-95f1-18de9c0fe494</uuid>
       <name>Account A</name>
+      <currencyCode>EUR</currencyCode>
       <isRetired>false</isRetired>
       <transactions>
         <account-transaction>

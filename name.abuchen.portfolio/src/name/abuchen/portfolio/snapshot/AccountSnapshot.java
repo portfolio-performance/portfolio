@@ -4,6 +4,9 @@ import java.util.Date;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.Money;
 
 public class AccountSnapshot
 {
@@ -11,7 +14,14 @@ public class AccountSnapshot
     // factory methods
     // //////////////////////////////////////////////////////////////
 
+    @Deprecated
     public static AccountSnapshot create(Account account, Date time)
+    {
+        CurrencyConverter converter = new CurrencyConverterImpl(null, account.getCurrencyCode(), time);
+        return create(account, converter, time);
+    }
+
+    public static AccountSnapshot create(Account account, CurrencyConverter converter, Date time)
     {
         long funds = 0;
 
@@ -42,21 +52,21 @@ public class AccountSnapshot
             }
         }
 
-        return new AccountSnapshot(account, time, funds);
+        return new AccountSnapshot(account, converter, Money.of(account.getCurrencyCode(), funds));
     }
 
     // //////////////////////////////////////////////////////////////
     // instance impl
     // //////////////////////////////////////////////////////////////
 
-    private Account account;
-    private Date time;
-    private long funds;
+    private final Account account;
+    private final CurrencyConverter converter;
+    private final Money funds;
 
-    private AccountSnapshot(Account account, Date time, long funds)
+    private AccountSnapshot(Account account, CurrencyConverter converter, Money funds)
     {
         this.account = account;
-        this.time = time;
+        this.converter = converter;
         this.funds = funds;
     }
 
@@ -67,10 +77,15 @@ public class AccountSnapshot
 
     public Date getTime()
     {
-        return time;
+        return converter.getTime();
     }
 
-    public long getFunds()
+    public Money getFunds()
+    {
+        return converter.convert(funds);
+    }
+
+    public Money getUnconvertedFunds()
     {
         return funds;
     }

@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import name.abuchen.portfolio.snapshot.AccountSnapshot;
+import javax.inject.Inject;
+
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.PieChart;
@@ -21,6 +24,9 @@ public class HoldingsPieChartView extends AbstractFinanceView
 {
     private PieChart canvas;
 
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     @Override
     protected String getTitle()
     {
@@ -32,15 +38,12 @@ public class HoldingsPieChartView extends AbstractFinanceView
     {
         canvas = new PieChart(parent, SWT.NONE);
 
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency(), Dates.today());
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, Dates.today());
 
-        List<PieChart.Slice> slices = new ArrayList<PieChart.Slice>();
-
-        for (AccountSnapshot a : snapshot.getAccounts())
-            slices.add(new PieChart.Slice(a.getFunds(), a.getAccount().getName(), null));
-
-        for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
-            slices.add(new PieChart.Slice(position.calculateValue(), position.getSecurity().getName(), null));
+        List<PieChart.Slice> slices = snapshot.getPositionsByVehicle().values().stream()
+                        .map(p -> new PieChart.Slice(p.getValuation().getAmount(), p.getInvestmentVehicle().getName()))
+                        .collect(Collectors.toList());
 
         Collections.sort(slices, new Slice.ByValue());
 

@@ -37,6 +37,11 @@ public class PieChart extends Composite implements Listener
             this.color = color;
         }
 
+        public Slice(long value, String label)
+        {
+            this(value, label, null);
+        }
+
         public long getValue()
         {
             return value;

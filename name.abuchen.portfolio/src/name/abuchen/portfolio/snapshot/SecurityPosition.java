@@ -4,18 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Money;
 
 public class SecurityPosition
 {
-    private final Security security;
+    private final InvestmentVehicle investment;
     private final SecurityPrice price;
     private final long shares;
     private final List<PortfolioTransaction> transactions;
@@ -25,26 +28,32 @@ public class SecurityPosition
     private transient long purchasePrice;
     private transient long purchaseValue;
 
-    private SecurityPosition(Security security, SecurityPrice price, long shares,
+    private SecurityPosition(InvestmentVehicle investment, SecurityPrice price, long shares,
                     List<PortfolioTransaction> transactions)
     {
-        this.security = security;
+        this.investment = investment;
         this.price = price;
         this.shares = shares;
         this.transactions = transactions;
     }
 
-    public SecurityPosition(SecurityPrice price, long shares)
+    public SecurityPosition(AccountSnapshot snapshot)
     {
-        this.security = null;
-        this.price = price;
-        this.shares = shares;
+        Objects.requireNonNull(snapshot);
+        Objects.requireNonNull(snapshot.getAccount());
+
+        this.investment = snapshot.getAccount();
+        this.price = new SecurityPrice(snapshot.getTime(), snapshot.getUnconvertedFunds().getAmount());
+        this.shares = Values.Share.factor();
         this.transactions = new ArrayList<PortfolioTransaction>();
     }
 
     public SecurityPosition(Security security, SecurityPrice price, List<PortfolioTransaction> transactions)
     {
-        this.security = security;
+        Objects.requireNonNull(security);
+        Objects.requireNonNull(price);
+
+        this.investment = security;
         this.price = price;
         this.shares = transactions.stream().mapToLong(t -> {
             switch (t.getType())
@@ -66,7 +75,12 @@ public class SecurityPosition
 
     public Security getSecurity()
     {
-        return security;
+        return investment instanceof Security ? (Security) investment : null;
+    }
+
+    public InvestmentVehicle getInvestmentVehicle()
+    {
+        return investment;
     }
 
     public SecurityPrice getPrice()
@@ -79,28 +93,28 @@ public class SecurityPosition
         return shares;
     }
 
-    public long calculateValue()
+    public Money calculateValue()
     {
         calculate();
-        return marketValue;
+        return Money.of(investment.getCurrencyCode(), marketValue);
     }
 
-    public long getFIFOPurchasePrice()
+    public Money getFIFOPurchasePrice()
     {
         calculate();
-        return purchasePrice;
+        return Money.of(investment.getCurrencyCode(), purchasePrice);
     }
 
-    public long getFIFOPurchaseValue()
+    public Money getFIFOPurchaseValue()
     {
         calculate();
-        return purchaseValue;
+        return Money.of(investment.getCurrencyCode(), purchaseValue);
     }
 
-    public long getProfitLoss()
+    public Money getProfitLoss()
     {
         calculate();
-        return security != null ? marketValue - purchaseValue : 0;
+        return Money.of(investment.getCurrencyCode(), investment instanceof Security ? marketValue - purchaseValue : 0);
     }
 
     private void calculate()
@@ -244,8 +258,7 @@ public class SecurityPosition
             splitTransactions.add(t2);
         }
 
-        return new SecurityPosition(position.security, position.price, Math.round(position.shares * weight
+        return new SecurityPosition(position.investment, position.price, Math.round(position.shares * weight
                         / (double) Classification.ONE_HUNDRED_PERCENT), splitTransactions);
     }
-
 }

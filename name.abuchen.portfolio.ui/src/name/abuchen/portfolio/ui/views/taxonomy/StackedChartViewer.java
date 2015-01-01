@@ -48,7 +48,7 @@ public class StackedChartViewer extends Page
 
         public void book(int index, AssetPosition pos)
         {
-            long value = pos.getValuation();
+            long value = pos.getValuation().getAmount(); // FIXME c
 
             for (int ii = 0; ii < weights.size(); ii++)
                 series.get(ii).book(index, value * weights.get(ii) / Classification.ONE_HUNDRED_PERCENT);

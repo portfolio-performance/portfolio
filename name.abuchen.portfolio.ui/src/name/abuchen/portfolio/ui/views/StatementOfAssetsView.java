@@ -3,7 +3,12 @@ package name.abuchen.portfolio.ui.views;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
@@ -24,6 +29,9 @@ public class StatementOfAssetsView extends AbstractFinanceView
 {
     private StatementOfAssetsViewer assetViewer;
 
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     @Override
     protected String getTitle()
     {
@@ -33,7 +41,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency(), Dates.today());
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, Dates.today());
 
         assetViewer.setInput(snapshot);
     }

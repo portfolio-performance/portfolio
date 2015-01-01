@@ -231,7 +231,7 @@ import org.eclipse.core.runtime.IStatus;
                 if (position != null)
                 {
                     setShares(position.getShares());
-                    setTotal(position.calculateValue());
+                    setTotal(position.calculateValue().getAmount());
                     hasPosition = true;
                 }
             }

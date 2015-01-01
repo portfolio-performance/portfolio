@@ -213,7 +213,8 @@ public class ClientPerformanceSnapshot
             for (Map.Entry<Security, SecurityPosition> entry : portfolio.getPositionsBySecurity().entrySet())
             {
                 Long v = valuation.get(entry.getKey());
-                valuation.put(entry.getKey(), v.longValue() - entry.getValue().calculateValue());
+                // FIXME c
+                valuation.put(entry.getKey(), v.longValue() - entry.getValue().calculateValue().getAmount());
             }
 
             for (PortfolioTransaction t : portfolio.getSource().getTransactions())
@@ -250,7 +251,8 @@ public class ClientPerformanceSnapshot
             for (Map.Entry<Security, SecurityPosition> entry : portfolio.getPositionsBySecurity().entrySet())
             {
                 Long v = valuation.get(entry.getKey());
-                valuation.put(entry.getKey(), v.longValue() + entry.getValue().calculateValue());
+                // FIXME c
+                valuation.put(entry.getKey(), v.longValue() + entry.getValue().calculateValue().getAmount());
             }
         }
 

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.client;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
@@ -78,6 +79,7 @@ public class NewAccountPage extends AbstractWizardPage
                 {
                     Account currentAccount = new Account();
                     currentAccount.setName(acnName);
+                    currentAccount.setCurrencyCode(CurrencyUnit.EUR);
                     client.addAccount(currentAccount);
                     tViewer.refresh();
 

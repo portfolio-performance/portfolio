@@ -171,7 +171,7 @@ public final class TaxonomyModel
                 PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
                 SecurityPosition p = portfolio.getPositionsBySecurity().get(assignment.getInvestmentVehicle());
                 if (p != null)
-                    actual += Math.round(p.calculateValue() * assignment.getWeight()
+                    actual += Math.round(p.calculateValue().getAmount() * assignment.getWeight()
                                     / (double) Classification.ONE_HUNDRED_PERCENT);
             }
             else if (assignment.getInvestmentVehicle() instanceof Account)
@@ -180,7 +180,8 @@ public final class TaxonomyModel
                 {
                     if (s.getAccount().equals(assignment.getInvestmentVehicle()))
                     {
-                        actual += Math.round(s.getFunds() * assignment.getWeight()
+                        actual += Math.round(s.getFunds().getAmount() * assignment.getWeight() // FIXME
+                                                                                               // c
                                         / (double) Classification.ONE_HUNDRED_PERCENT);
                         break;
                     }

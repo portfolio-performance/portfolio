@@ -37,12 +37,6 @@ public class CurrencyConverterImpl implements CurrencyConverter
         if (targetCurrencyCode.equals(amount.getCurrencyCode()))
             return amount;
 
-        if (factory == null) // FIXME c
-        {
-            System.err.println("no exchange rate provider factory available!");
-            return Money.of(targetCurrencyCode, amount.getAmount());
-        }
-
         ExchangeRateTimeSeries series = factory.getTimeSeries(amount.getCurrencyCode(), targetCurrencyCode);
         if (series == null)
             throw new MonetaryException(MessageFormat.format("Unable to convert from {0} to {1}",

@@ -595,7 +595,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             manager.add(new Separator());
         }
 
-        accountMenu.menuAboutToShow(manager, account, transaction.getSecurity());
+        accountMenu.menuAboutToShow(manager, account, transaction != null ? transaction.getSecurity() : null);
 
         if (transaction != null)
         {

@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.snapshot;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +12,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;
@@ -70,16 +73,16 @@ public class PortfolioMergeTest
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
 
         SecurityPosition positionA = jointPortfolio.getPositionsBySecurity().get(securityA);
-        assertEquals(1000000, positionA.getShares());
-        assertEquals(10000, positionA.calculateValue());
+        assertThat(positionA.getShares(), is(1000000L));
+        assertThat(positionA.calculateValue(), is(Money.of(CurrencyUnit.EUR, 100_00)));
 
         SecurityPosition positionB = jointPortfolio.getPositionsBySecurity().get(securityB);
-        assertEquals(1000000, positionB.getShares());
-        assertEquals(11000, positionB.calculateValue());
+        assertThat(positionB.getShares(), is(1000000L));
+        assertThat(positionB.calculateValue(), is(Money.of(CurrencyUnit.EUR, 110_00)));
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertEquals(2000000, positionX.getShares());
-        assertEquals(24000, positionX.calculateValue());
+        assertThat(positionX.getShares(), is(2000000L));
+        assertThat(positionX.calculateValue(), is(Money.of(CurrencyUnit.EUR, 240_00)));
     }
 
     @Test
@@ -91,13 +94,14 @@ public class PortfolioMergeTest
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertEquals(2000000, positionX.getShares());
-        assertEquals(24000, positionX.calculateValue());
+
+        assertThat(positionX.getShares(), is(2000000L));
+        assertThat(positionX.calculateValue(), is(Money.of(CurrencyUnit.EUR, 240_00)));
         // calculate purchase price w/o costs
-        assertEquals(1100, positionX.getFIFOPurchasePrice());
+        assertThat(positionX.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 11_00)));
         // calculate purchase value w/ costs
-        assertEquals(22100, positionX.getFIFOPurchaseValue());
-        assertEquals(1900, positionX.getProfitLoss());
+        assertThat(positionX.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 221_00)));
+        assertThat(positionX.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 19_00)));
     }
 
 }

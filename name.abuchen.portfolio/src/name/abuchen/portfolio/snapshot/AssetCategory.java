@@ -4,44 +4,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.MutableMoney;
 
 public class AssetCategory
 {
     private final Classification classification;
+    private final CurrencyConverter converter;
     private final List<AssetPosition> positions = new ArrayList<AssetPosition>();
-    private final long totalAssets;
-    private long valuation = 0;
+    private final Money totalAssets;
+    private final MutableMoney valuation;
 
-    /* package */AssetCategory(Classification classification, long totalAssets)
+    /* package */AssetCategory(Classification classification, CurrencyConverter converter, Money totalAssets)
     {
         this.classification = classification;
+        this.converter = converter;
         this.totalAssets = totalAssets;
+        this.valuation = MutableMoney.of(converter.getTermCurrency());
     }
 
-    public long getValuation()
+    public Money getValuation()
     {
-        return this.valuation;
+        return this.valuation.toMoney();
     }
 
     public double getShare()
     {
-        return (double) this.valuation / (double) this.totalAssets;
+        return Math.round((double) this.valuation.getAmount() / (double) this.totalAssets.getAmount());
     }
 
-    public long getFIFOPurchaseValue()
+    public Money getFIFOPurchaseValue()
     {
-        long purchaseValue = 0;
-        for (AssetPosition p : positions)
-            purchaseValue += p.getFIFOPurchaseValue();
-        return purchaseValue;
+        return positions.stream().map(AssetPosition::getFIFOPurchaseValue)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
-    public long getProfitLoss()
+    public Money getProfitLoss()
     {
-        long profitLoss = 0;
-        for (AssetPosition p : positions)
-            profitLoss += p.getProfitLoss();
-        return profitLoss;
+        return positions.stream().map(AssetPosition::getProfitLoss)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
     public Classification getClassification()
@@ -57,6 +60,6 @@ public class AssetCategory
     public void addPosition(AssetPosition p)
     {
         this.positions.add(p);
-        this.valuation += p.getValuation();
+        this.valuation.add(converter.convert(p.getValuation()));
     }
 }

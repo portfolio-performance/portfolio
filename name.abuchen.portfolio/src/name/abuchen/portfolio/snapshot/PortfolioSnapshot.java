@@ -11,6 +11,11 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 
 public class PortfolioSnapshot
 {
@@ -18,7 +23,14 @@ public class PortfolioSnapshot
     // factory methods
     // //////////////////////////////////////////////////////////////
 
+    @Deprecated
     public static PortfolioSnapshot create(Portfolio portfolio, Date time)
+    {
+        CurrencyConverter converter = new CurrencyConverterImpl(null, CurrencyUnit.EUR, time);
+        return create(portfolio, converter, time);
+    }
+
+    public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, Date time)
     {
         List<SecurityPosition> positions = portfolio.getTransactions().stream() //
                         .filter(t -> t.getDate().getTime() <= time.getTime()) //
@@ -28,7 +40,7 @@ public class PortfolioSnapshot
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
 
-        return new PortfolioSnapshot(portfolio, time, positions);
+        return new PortfolioSnapshot(portfolio, converter, positions);
     }
 
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots)
@@ -53,7 +65,7 @@ public class PortfolioSnapshot
             }
         }
 
-        return new PortfolioSnapshot(portfolio, snapshots.get(0).getTime(), new ArrayList<SecurityPosition>(
+        return new PortfolioSnapshot(portfolio, snapshots.get(0).converter, new ArrayList<SecurityPosition>(
                         securities.values()));
     }
 
@@ -61,15 +73,14 @@ public class PortfolioSnapshot
     // instance impl
     // //////////////////////////////////////////////////////////////
 
-    private Portfolio portfolio;
-    private Date time;
+    private final Portfolio portfolio;
+    private final CurrencyConverter converter;
+    private final List<SecurityPosition> positions;
 
-    private List<SecurityPosition> positions = new ArrayList<SecurityPosition>();
-
-    private PortfolioSnapshot(Portfolio source, Date time, List<SecurityPosition> positions)
+    private PortfolioSnapshot(Portfolio source, CurrencyConverter converter, List<SecurityPosition> positions)
     {
         this.portfolio = source;
-        this.time = time;
+        this.converter = converter;
         this.positions = positions;
     }
 
@@ -78,9 +89,14 @@ public class PortfolioSnapshot
         return portfolio;
     }
 
+    /* package */CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
     public Date getTime()
     {
-        return time;
+        return converter.getTime();
     }
 
     public List<SecurityPosition> getPositions()
@@ -93,9 +109,12 @@ public class PortfolioSnapshot
         return positions.stream().collect(Collectors.toMap(SecurityPosition::getSecurity, p -> p));
     }
 
-    public long getValue()
+    public Money getValue()
     {
-        return positions.stream().mapToLong(p -> p.calculateValue()).sum();
+        return positions.stream() //
+                        .map(SecurityPosition::calculateValue) //
+                        .map(money -> converter.convert(money)) //
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
     public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)

@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
@@ -246,8 +247,12 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                return element.isSecurity() ? Values.Quote.format(element.getSecurityPosition().getPrice().getValue())
-                                : null;
+                if (!element.isSecurity())
+                    return null;
+
+                Money money = Money.of(element.getSecurity().getCurrencyCode(), element.getSecurityPosition()
+                                .getPrice().getValue());
+                return Values.Money.format(money, client.getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -259,7 +264,7 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                return Values.Amount.format(element.getValuation());
+                return Values.Money.format(element.getValuation(), client.getBaseCurrency());
             }
 
             @Override
@@ -302,8 +307,8 @@ public class StatementOfAssetsViewer
                 Element element = (Element) e;
                 if (element.isSecurity())
                 {
-                    long purchasePrice = element.getSecurityPosition().getFIFOPurchasePrice();
-                    return purchasePrice == 0 ? null : Values.Amount.format(purchasePrice);
+                    Money purchasePrice = element.getSecurityPosition().getFIFOPurchasePrice();
+                    return Values.Money.formatNonZero(purchasePrice, client.getBaseCurrency());
                 }
                 return null;
             }
@@ -318,8 +323,8 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                long purchaseValue = element.getFIFOPurchaseValue();
-                return purchaseValue == 0 ? null : Values.Amount.format(purchaseValue);
+                Money purchaseValue = element.getFIFOPurchaseValue();
+                return Values.Money.formatNonZero(purchaseValue, client.getBaseCurrency());
             }
 
             @Override
@@ -338,22 +343,17 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                long profitLoss = element.getProfitLoss();
-                return profitLoss == 0 ? null : Values.Amount.format(profitLoss);
+                Money profitLoss = element.getProfitLoss();
+                return Values.Money.formatNonZero(profitLoss, client.getBaseCurrency());
             }
 
             @Override
             public Color getForeground(Object e)
             {
                 Element element = (Element) e;
-                long profitLoss = element.getProfitLoss();
-
-                if (profitLoss < 0)
-                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                else if (profitLoss > 0)
-                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                else
-                    return null;
+                Money profitLoss = element.getProfitLoss();
+                return Display.getCurrent().getSystemColor(
+                                profitLoss.isNegative() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
             }
 
             @Override
@@ -734,7 +734,7 @@ public class StatementOfAssetsViewer
             return isAccount() ? (Account) position.getInvestmentVehicle() : null;
         }
 
-        public Long getValuation()
+        public Money getValuation()
         {
             if (position != null)
                 return position.getValuation();
@@ -744,7 +744,7 @@ public class StatementOfAssetsViewer
                 return groupByTaxonomy.getValuation();
         }
 
-        public long getFIFOPurchaseValue()
+        public Money getFIFOPurchaseValue()
         {
             if (position != null)
                 return position.getFIFOPurchaseValue();
@@ -754,7 +754,7 @@ public class StatementOfAssetsViewer
                 return groupByTaxonomy.getFIFOPurchaseValue();
         }
 
-        public long getProfitLoss()
+        public Money getProfitLoss()
         {
             if (position != null)
                 return position.getProfitLoss();
