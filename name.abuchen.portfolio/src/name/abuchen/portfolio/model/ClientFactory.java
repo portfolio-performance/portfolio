@@ -801,6 +801,7 @@ public class ClientFactory
                     xstream.alias("assignment", Assignment.class);
 
                     xstream.alias("event", SecurityEvent.class);
+                    xstream.alias("forex", ForexData.class);
                 }
             }
         }

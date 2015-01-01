@@ -24,6 +24,7 @@ public abstract class Transaction
     private Date date;
     private Security security;
     private CrossEntry crossEntry;
+    private ForexData forex;
 
     private long shares;
 
@@ -77,6 +78,16 @@ public abstract class Transaction
     /* package */void setCrossEntry(CrossEntry crossEntry)
     {
         this.crossEntry = crossEntry;
+    }
+
+    public ForexData getForex()
+    {
+        return forex;
+    }
+
+    public void setForex(ForexData forex)
+    {
+        this.forex = forex;
     }
 
     public long getShares()

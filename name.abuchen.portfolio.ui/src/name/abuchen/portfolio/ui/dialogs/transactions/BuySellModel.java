@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ExchangeRate;
 import name.abuchen.portfolio.model.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.model.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -74,11 +75,22 @@ import org.eclipse.core.runtime.IStatus;
         this.fees = entry.getPortfolioTransaction().getFees();
         this.note = entry.getPortfolioTransaction().getNote();
 
-        this.exchangeRate = 1 * Values.ExchangeRate.factor();
         this.convertedLumpSum = calcLumpSum(total, fees, taxes);
-        this.lumpSum = convertedLumpSum;
 
-        this.quote = entry.getPortfolioTransaction().getActualPurchasePrice();
+        ForexData forex = entry.getPortfolioTransaction().getForex();
+        if (forex != null && forex.getBaseCurrency().equals(getSecurityCurrencyCode())
+                        && forex.getTermCurrency().equals(getAccountCurrencyCode()))
+        {
+            this.exchangeRate = forex.getExchangeRate();
+            this.lumpSum = forex.getBaseAmount();
+            this.quote = Math.round(this.lumpSum * Values.Share.factor() / this.shares);
+        }
+        else
+        {
+            this.exchangeRate = 1 * Values.ExchangeRate.factor();
+            this.lumpSum = convertedLumpSum;
+            this.quote = entry.getPortfolioTransaction().getActualPurchasePrice();
+        }
     }
 
     public void applyChanges()
@@ -118,7 +130,20 @@ import org.eclipse.core.runtime.IStatus;
         entry.setType(type);
         entry.setNote(note);
 
-        // FIXME store (and load) forex information in transaction
+        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
+        {
+            entry.setForex(null);
+        }
+        else
+        {
+            ForexData forex = new ForexData();
+            forex.setBaseCurrency(getSecurityCurrencyCode());
+            forex.setTermCurrency(getAccountCurrencyCode());
+            forex.setExchangeRate(getExchangeRate());
+            forex.setBaseAmount(lumpSum);
+            entry.setForex(forex);
+        }
+
     }
 
     public IStatus getCalculationStatus()

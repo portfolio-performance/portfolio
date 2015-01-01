@@ -82,6 +82,12 @@ public class BuySellEntry implements CrossEntry
         this.accountTransaction.setNote(note);
     }
 
+    public void setForex(ForexData forex)
+    {
+        portfolioTransaction.setForex(forex);
+        accountTransaction.setForex(forex);
+    }
+
     public void insert()
     {
         portfolio.addTransaction(portfolioTransaction);
