@@ -1,10 +1,15 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.Collections;
+import java.util.List;
+
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.util.CurrencyUnit;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -36,6 +41,30 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
+        new AbstractDropDown(toolBar, getClient().getBaseCurrency())
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
+                Collections.sort(available);
+                for (final CurrencyUnit unit : available)
+                {
+                    Action action = new Action(unit.getLabel())
+                    {
+                        @Override
+                        public void run()
+                        {
+                            setLabel(unit.getCurrencyCode());
+                            getClient().setBaseCurrency(unit.getCurrencyCode());
+                        }
+                    };
+                    action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
+                    manager.add(action);
+                }
+            }
+        };
+
         Action export = new Action()
         {
             @Override

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -7,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import name.abuchen.portfolio.Messages;
 
 public final class CurrencyUnit implements Comparable<CurrencyUnit>
 {
@@ -20,6 +23,9 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         while (codes.hasMoreElements())
         {
             String currencyCode = codes.nextElement();
+            if (currencyCode.indexOf('.') >= 0)
+                continue;
+
             String displayName = BUNDLE.getString(currencyCode);
 
             // currency symbol
@@ -71,6 +77,11 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     public String getCurrencySymbol()
     {
         return currencySymbol;
+    }
+
+    public String getLabel()
+    {
+        return MessageFormat.format(Messages.FixAssignCurrencyCode, currencyCode, displayName);
     }
 
     @Override

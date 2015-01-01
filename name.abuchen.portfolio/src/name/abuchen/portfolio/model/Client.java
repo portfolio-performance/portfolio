@@ -23,6 +23,8 @@ public class Client
 
     private int version = CURRENT_VERSION;
 
+    private String baseCurrency = "EUR"; //$NON-NLS-1$
+
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists;
 
@@ -81,6 +83,16 @@ public class Client
     public void setVersion(int version)
     {
         this.version = version;
+    }
+
+    public String getBaseCurrency()
+    {
+        return baseCurrency;
+    }
+
+    public void setBaseCurrency(String baseCurrency)
+    {
+        propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$
     }
 
     public List<InvestmentPlan> getPlans()

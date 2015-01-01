@@ -438,7 +438,8 @@ public class ClientFactory
             case 24:
                 // do nothing --> added 'TAX_REFUND' as account transaction
             case 25:
-                // do nothing --> added currency support
+                // added currency support
+                client.setBaseCurrency("EUR"); //$NON-NLS-1$
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:

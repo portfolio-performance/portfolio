@@ -38,7 +38,7 @@ public class MissingCurrencyCheck implements Check
         @Override
         public String getLabel()
         {
-            return MessageFormat.format(Messages.FixAssignCurrencyCode, currency.getCurrencyCode(), currency.getDisplayName());
+            return currency.getLabel();
         }
 
         @Override
