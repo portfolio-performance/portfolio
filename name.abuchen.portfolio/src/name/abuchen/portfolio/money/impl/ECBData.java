@@ -1,11 +1,11 @@
-package name.abuchen.portfolio.model.impl;
+package name.abuchen.portfolio.money.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.model.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 /**
  * Holds the {@link ExchangeRateTimeSeries} time series that are managed by

@@ -14,7 +14,7 @@ import name.abuchen.portfolio.checks.QuickFix;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.util.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 /**
  * Checks if there is at least one account or security without a currency.

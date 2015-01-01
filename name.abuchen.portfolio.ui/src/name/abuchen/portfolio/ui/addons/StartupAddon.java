@@ -7,8 +7,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.ExchangeRateProvider;
-import name.abuchen.portfolio.model.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.handlers.CustomSaveHandler;

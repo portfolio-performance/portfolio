@@ -1,13 +1,13 @@
-package name.abuchen.portfolio.model.impl;
+package name.abuchen.portfolio.money.impl;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import name.abuchen.portfolio.model.ExchangeRate;
-import name.abuchen.portfolio.model.ExchangeRateProvider;
-import name.abuchen.portfolio.model.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 public class InverseExchangeRateTimeSeries implements ExchangeRateTimeSeries
 {

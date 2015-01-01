@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.model.impl;
+package name.abuchen.portfolio.money.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,9 +21,9 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import name.abuchen.portfolio.model.ExchangeRate;
-import name.abuchen.portfolio.model.ExchangeRateProvider;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.util.Dates;
 
 /**

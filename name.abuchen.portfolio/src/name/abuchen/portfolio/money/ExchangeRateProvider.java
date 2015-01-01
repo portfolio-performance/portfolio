@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.model;
+package name.abuchen.portfolio.money;
 
 import java.io.IOException;
 import java.util.List;

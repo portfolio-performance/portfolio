@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.model;
+package name.abuchen.portfolio.money;
 
 import java.io.Serializable;
 import java.util.Comparator;

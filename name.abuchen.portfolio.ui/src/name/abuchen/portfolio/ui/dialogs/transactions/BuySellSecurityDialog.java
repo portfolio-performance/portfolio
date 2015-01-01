@@ -14,12 +14,12 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.BuySellModel.Properties;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;

@@ -3,13 +3,13 @@ package name.abuchen.portfolio.ui.views;
 import java.util.Collections;
 import java.util.List;
 
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.util.CurrencyUnit;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;

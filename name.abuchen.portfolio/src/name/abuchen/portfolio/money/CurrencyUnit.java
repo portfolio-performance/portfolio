@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.util;
+package name.abuchen.portfolio.money;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import name.abuchen.portfolio.Messages;
 
 public final class CurrencyUnit implements Comparable<CurrencyUnit>
 {
-    private static final String BUNDLE_NAME = "name.abuchen.portfolio.util.currencies"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "name.abuchen.portfolio.money.currencies"; //$NON-NLS-1$
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
     private static final Map<String, CurrencyUnit> CACHE = new HashMap<String, CurrencyUnit>();
 

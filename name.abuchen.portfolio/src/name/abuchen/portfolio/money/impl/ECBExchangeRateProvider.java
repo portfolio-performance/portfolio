@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.model.impl;
+package name.abuchen.portfolio.money.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.model.ExchangeRate;
-import name.abuchen.portfolio.model.ExchangeRateProvider;
-import name.abuchen.portfolio.model.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.framework.Bundle;

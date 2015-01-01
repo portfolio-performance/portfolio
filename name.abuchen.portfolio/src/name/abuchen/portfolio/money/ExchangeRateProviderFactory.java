@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.model;
+package name.abuchen.portfolio.money;
 
 import java.util.ArrayList;
 import java.util.Collections;
