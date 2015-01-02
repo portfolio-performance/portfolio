@@ -24,7 +24,7 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.4.0.v20140623020002"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.12.0/luna"/>
+<repository location="http://archive.eclipse.org/technology/babel/update-site/R0.12.0/luna"/>
 </location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
