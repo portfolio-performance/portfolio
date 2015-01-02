@@ -48,7 +48,7 @@
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.12.0/luna</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.12.0/luna</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
