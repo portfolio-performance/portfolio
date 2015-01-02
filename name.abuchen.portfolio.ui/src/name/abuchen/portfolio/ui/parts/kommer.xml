@@ -20264,7 +20264,7 @@
   </securities>
   <watchlists>
     <watchlist>
-      <name>Indices</name>
+      <name>Indizes</name>
       <securities>
         <security reference="../../../../securities/security[18]"/>
         <security reference="../../../../securities/security[19]"/>
@@ -20272,7 +20272,7 @@
       </securities>
     </watchlist>
     <watchlist>
-      <name>Asia</name>
+      <name>Asien</name>
       <securities>
         <security reference="../../../../securities/security[9]"/>
         <security reference="../../../../securities/security[13]"/>
