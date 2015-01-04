@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class Classification implements Named

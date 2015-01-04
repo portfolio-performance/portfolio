@@ -4,8 +4,6 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import name.abuchen.portfolio.model.Values;
-
 public class CurrencyConverterImpl implements CurrencyConverter
 {
     private ExchangeRateProviderFactory factory;

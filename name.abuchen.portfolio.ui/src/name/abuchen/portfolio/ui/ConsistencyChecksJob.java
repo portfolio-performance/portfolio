@@ -10,7 +10,7 @@ import name.abuchen.portfolio.checks.QuickFix;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 
 import org.eclipse.core.runtime.IProgressMonitor;

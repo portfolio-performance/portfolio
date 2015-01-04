@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.swt.SWT;

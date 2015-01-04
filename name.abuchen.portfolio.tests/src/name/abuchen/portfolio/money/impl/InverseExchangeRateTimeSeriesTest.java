@@ -2,8 +2,8 @@ package name.abuchen.portfolio.money.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.money.impl.ExchangeRateTimeSeriesImpl;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 import name.abuchen.portfolio.util.Dates;

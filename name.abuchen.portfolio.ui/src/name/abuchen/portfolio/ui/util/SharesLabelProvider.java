@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;

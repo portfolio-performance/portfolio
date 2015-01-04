@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
+import name.abuchen.portfolio.money.Values;
+
 public class SecurityPrice implements Comparable<SecurityPrice>
 {
     public static final class ByDate implements Comparator<SecurityPrice>, Serializable

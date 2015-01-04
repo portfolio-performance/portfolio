@@ -7,6 +7,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import name.abuchen.portfolio.money.Values;
+
 public final class TaxonomyTemplate
 {
     /* package */static final String INDUSTRY_GICS = "industry-gics"; //$NON-NLS-1$

@@ -18,7 +18,7 @@ import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.hamcrest.number.IsCloseTo;

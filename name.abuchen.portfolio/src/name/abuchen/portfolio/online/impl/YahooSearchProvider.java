@@ -18,7 +18,7 @@ import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 
 import org.jsoup.Jsoup;

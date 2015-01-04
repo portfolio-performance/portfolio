@@ -2,7 +2,7 @@ package name.abuchen.portfolio.snapshot.security;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 public class DividendTransaction extends Transaction
 {

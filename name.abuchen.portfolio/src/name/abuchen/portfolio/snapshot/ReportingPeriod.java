@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.joda.time.Interval;

@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.Iterator;
 
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;

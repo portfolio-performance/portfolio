@@ -7,10 +7,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;

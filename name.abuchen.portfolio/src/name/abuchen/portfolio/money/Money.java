@@ -2,8 +2,6 @@ package name.abuchen.portfolio.money;
 
 import java.util.Objects;
 
-import name.abuchen.portfolio.model.Values;
-
 public final class Money
 {
     private final String currencyCode;

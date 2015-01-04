@@ -1,9 +1,7 @@
-package name.abuchen.portfolio.model;
+package name.abuchen.portfolio.money;
 
 import java.text.DecimalFormat;
 import java.util.Date;
-
-import name.abuchen.portfolio.money.Money;
 
 public abstract class Values<E>
 {

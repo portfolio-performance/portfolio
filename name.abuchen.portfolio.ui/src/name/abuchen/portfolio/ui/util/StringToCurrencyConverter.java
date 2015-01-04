@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.core.databinding.conversion.IConverter;

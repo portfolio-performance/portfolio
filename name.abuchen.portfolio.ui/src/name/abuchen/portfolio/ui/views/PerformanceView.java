@@ -8,7 +8,7 @@ import java.text.MessageFormat;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;

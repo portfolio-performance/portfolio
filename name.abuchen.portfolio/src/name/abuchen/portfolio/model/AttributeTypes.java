@@ -8,6 +8,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
 import name.abuchen.portfolio.model.AttributeType.LongConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
+import name.abuchen.portfolio.money.Values;
 
 public final class AttributeTypes
 {

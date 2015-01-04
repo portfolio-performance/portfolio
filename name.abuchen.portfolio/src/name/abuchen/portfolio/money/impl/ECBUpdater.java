@@ -21,9 +21,9 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 /**

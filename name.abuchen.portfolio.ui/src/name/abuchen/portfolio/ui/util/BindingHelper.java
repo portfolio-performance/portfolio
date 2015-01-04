@@ -5,7 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.Isin;
 

@@ -8,10 +8,10 @@ import java.util.Date;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.MonetaryException;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;

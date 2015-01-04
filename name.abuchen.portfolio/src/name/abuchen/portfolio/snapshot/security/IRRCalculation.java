@@ -7,7 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class IRRCalculation extends Calculation
 {

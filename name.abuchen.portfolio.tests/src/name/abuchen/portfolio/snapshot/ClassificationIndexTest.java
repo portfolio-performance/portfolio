@@ -16,7 +16,7 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 import org.joda.time.DateMidnight;
 import org.junit.Test;

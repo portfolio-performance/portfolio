@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class MissingPortfolioTransferIssue extends AbstractPortfolioIssue
 {

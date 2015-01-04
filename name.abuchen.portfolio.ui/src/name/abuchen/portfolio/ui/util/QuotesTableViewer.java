@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
 import org.eclipse.jface.layout.TableColumnLayout;

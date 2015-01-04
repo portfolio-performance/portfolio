@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;

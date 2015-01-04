@@ -3,6 +3,8 @@ package name.abuchen.portfolio.model;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import name.abuchen.portfolio.money.Values;
+
 import org.joda.time.DateMidnight;
 
 public class PortfolioTransaction extends Transaction
