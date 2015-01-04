@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import name.abuchen.portfolio.money.CurrencyUnit;
+
 public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle
 {
     private String uuid;
     private String name;
-    private String currencyCode;
+    private String currencyCode = CurrencyUnit.EUR;
     private String note;
     private boolean isRetired = false;
 

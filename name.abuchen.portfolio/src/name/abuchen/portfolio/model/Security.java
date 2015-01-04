@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import name.abuchen.portfolio.money.CurrencyUnit;
+
 public final class Security implements Attributable, InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
@@ -26,7 +28,7 @@ public final class Security implements Attributable, InvestmentVehicle
     private String uuid;
 
     private String name;
-    private String currencyCode;
+    private String currencyCode = CurrencyUnit.EUR;
 
     private String note;
 

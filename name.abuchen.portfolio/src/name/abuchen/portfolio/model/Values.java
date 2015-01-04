@@ -3,8 +3,37 @@ package name.abuchen.portfolio.model;
 import java.text.DecimalFormat;
 import java.util.Date;
 
+import name.abuchen.portfolio.money.Money;
+
 public abstract class Values<E>
 {
+    public static final class MoneyValues extends Values<Money>
+    {
+        private MoneyValues()
+        {
+            super("#,##0.00", 100D, 100); //$NON-NLS-1$
+        }
+
+        @Override
+        public String format(Money amount)
+        {
+            return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
+        }
+
+        public String format(Money amount, String skipCurrencyCode)
+        {
+            if (skipCurrencyCode.equals(amount.getCurrencyCode()))
+                return String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
+            else
+                return format(amount);
+        }
+
+        public String formatNonZero(Money amount, String skipCurrencyCode)
+        {
+            return amount.isZero() ? null : format(amount, skipCurrencyCode);
+        }
+    }
+
     public static final Values<Long> Amount = new Values<Long>("#,##0.00", 100D, 100) //$NON-NLS-1$
     {
         @Override
@@ -13,6 +42,8 @@ public abstract class Values<E>
             return String.format("%,.2f", amount / divider()); //$NON-NLS-1$
         }
     };
+
+    public static final MoneyValues Money = new MoneyValues();
 
     public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 100000D, 100000) //$NON-NLS-1$
     {

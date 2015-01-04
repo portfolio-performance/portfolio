@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
@@ -23,7 +24,7 @@ public class Client
 
     private int version = CURRENT_VERSION;
 
-    private String baseCurrency = "EUR"; //$NON-NLS-1$
+    private String baseCurrency = CurrencyUnit.EUR;
 
     private List<Security> securities = new ArrayList<Security>();
     private List<Watchlist> watchlists;
