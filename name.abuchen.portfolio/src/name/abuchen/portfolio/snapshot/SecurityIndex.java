@@ -6,15 +6,16 @@ import java.util.List;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.Days;
 
 /* package */class SecurityIndex extends PerformanceIndex
 {
-    /* package */SecurityIndex(Client client, ReportingPeriod reportInterval)
+    /* package */SecurityIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
-        super(client, reportInterval);
+        super(client, converter, reportInterval);
     }
 
     /* package */void calculate(PerformanceIndex clientIndex, Security security)

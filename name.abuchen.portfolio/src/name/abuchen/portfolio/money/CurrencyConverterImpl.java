@@ -10,15 +10,13 @@ public class CurrencyConverterImpl implements CurrencyConverter
 {
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;
-    private final Date time;
 
-    private final Map<String, ExchangeRate> cache = new HashMap<String, ExchangeRate>();
+    private final Map<String, ExchangeRateTimeSeries> cache = new HashMap<String, ExchangeRateTimeSeries>();
 
-    public CurrencyConverterImpl(ExchangeRateProviderFactory factory, String termCurrency, Date time)
+    public CurrencyConverterImpl(ExchangeRateProviderFactory factory, String termCurrency)
     {
         this.factory = factory;
         this.termCurrency = termCurrency;
-        this.time = time;
     }
 
     @Override
@@ -28,50 +26,40 @@ public class CurrencyConverterImpl implements CurrencyConverter
     }
 
     @Override
-    public Date getTime()
-    {
-        return time;
-    }
-
-    @Override
-    public Money convert(Money amount)
+    public Money convert(Date date, Money amount)
     {
         if (termCurrency.equals(amount.getCurrencyCode()))
             return amount;
 
-        ExchangeRate rate = cache.computeIfAbsent(amount.getCurrencyCode(), currency -> lookupRate(currency));
+        ExchangeRate rate = getRate(date, amount.getCurrencyCode());
 
         return Money.of(termCurrency,
                         Math.round((amount.getAmount() * rate.getValue()) / Values.ExchangeRate.divider()));
     }
 
     @Override
-    public ExchangeRate getRate(String currencyCode)
+    public ExchangeRate getRate(Date date, String currencyCode)
     {
         if (termCurrency.equals(currencyCode))
-            return new ExchangeRate(time, Values.ExchangeRate.factor());
+            return new ExchangeRate(date, Values.ExchangeRate.factor());
 
-        return cache.computeIfAbsent(currencyCode, currency -> lookupRate(currency));
+        ExchangeRateTimeSeries series = cache.computeIfAbsent(currencyCode, code -> lookupSeries(code));
+
+        Optional<ExchangeRate> rate = series.lookupRate(date);
+        if (!rate.isPresent())
+            throw new MonetaryException(MessageFormat.format("No rate available to convert from {0} to {1}",
+                            currencyCode, termCurrency));
+
+        return rate.get();
     }
 
-    @Override
-    public CurrencyConverter with(Date time)
-    {
-        return this.time.equals(time) ? this : new CurrencyConverterImpl(factory, termCurrency, time);
-    }
-
-    private ExchangeRate lookupRate(String currencyCode)
+    private ExchangeRateTimeSeries lookupSeries(String currencyCode)
     {
         ExchangeRateTimeSeries series = factory.getTimeSeries(currencyCode, termCurrency);
         if (series == null)
             throw new MonetaryException(MessageFormat.format("Unable to convert from {0} to {1}", currencyCode,
                             termCurrency));
 
-        Optional<ExchangeRate> rate = series.lookupRate(time);
-        if (!rate.isPresent())
-            throw new MonetaryException(MessageFormat.format("No rate availble to convert from {0} to {1}",
-                            currencyCode, termCurrency));
-
-        return rate.get();
+        return series;
     }
 }

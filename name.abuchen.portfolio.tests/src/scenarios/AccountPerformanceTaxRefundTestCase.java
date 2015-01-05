@@ -9,11 +9,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Dates;
@@ -46,7 +48,8 @@ public class AccountPerformanceTaxRefundTestCase
         double ttwror = (endValue / startValue) - 1;
         
         List<Exception> warnings = new ArrayList<Exception>();
-        PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, account, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
         assertThat(accountPerformance.getFinalAccumulatedPercentage(), closeTo(ttwror, 0.0001));
 
@@ -55,7 +58,7 @@ public class AccountPerformanceTaxRefundTestCase
         AccountTransaction tax_refund = account.getTransactions().get(2);
         tax_refund.setSecurity(new Security());
 
-        accountPerformance = PerformanceIndex.forAccount(client, account, period, warnings);
+        accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
         assertThat(accountPerformance.getFinalAccumulatedPercentage(), lessThan(ttwror));
     }

@@ -34,7 +34,7 @@ public class PortfolioSnapshotTest
                         .addTo(client);
 
         Date date = new DateTime("2010-01-31").toDate();
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
 
         assertTrue(snapshot.getPositions().isEmpty());
     }

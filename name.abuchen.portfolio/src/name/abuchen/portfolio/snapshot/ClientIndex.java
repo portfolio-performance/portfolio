@@ -6,6 +6,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -14,9 +15,9 @@ import org.joda.time.Interval;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
-    /* package */ClientIndex(Client client, ReportingPeriod reportInterval)
+    /* package */ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
-        super(client, reportInterval);
+        super(client, converter, reportInterval);
     }
 
     /* package */void calculate(List<Exception> warnings)
@@ -37,7 +38,7 @@ import org.joda.time.Interval;
         dates[0] = interval.getStart().toDate();
         delta[0] = 0;
         accumulated[0] = 0;
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), dates[0]);
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
         long valuation = totals[0] = snapshot.getAssets();
 
         // calculate series
@@ -47,7 +48,7 @@ import org.joda.time.Interval;
         {
             dates[index] = date.toDate();
 
-            snapshot = ClientSnapshot.create(getClient(), dates[index]);
+            snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
             long thisValuation = totals[index] = snapshot.getAssets();
             long thisDelta = thisValuation - transferals[index] - valuation;
 

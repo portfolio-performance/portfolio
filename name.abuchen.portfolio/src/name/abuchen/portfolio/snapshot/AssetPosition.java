@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.Comparator;
+import java.util.Date;
 
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
@@ -20,20 +21,22 @@ public class AssetPosition
 
     private final SecurityPosition position;
     private final CurrencyConverter converter;
+    private final Date date;
     private final Money totalAssets;
     private final Money valuation;
 
-    /* package */AssetPosition(SecurityPosition position, CurrencyConverter converter, Money totalAssets)
+    /* package */AssetPosition(SecurityPosition position, CurrencyConverter converter, Date date, Money totalAssets)
     {
         this.position = position;
         this.converter = converter;
+        this.date = date;
         this.totalAssets = totalAssets;
         this.valuation = position.calculateValue();
     }
 
     public Money getValuation()
     {
-        return converter.convert(valuation);
+        return converter.convert(date, valuation);
     }
 
     public double getShare()
@@ -43,12 +46,12 @@ public class AssetPosition
 
     public Money getFIFOPurchaseValue()
     {
-        return converter.convert(position.getFIFOPurchaseValue());
+        return converter.convert(date, position.getFIFOPurchaseValue());
     }
 
     public Money getProfitLoss()
     {
-        return converter.convert(position.getProfitLoss());
+        return converter.convert(date, position.getProfitLoss());
     }
 
     public String getDescription()

@@ -61,7 +61,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Date date = Dates.date("2010-01-01");
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -99,7 +99,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -135,7 +135,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -167,7 +167,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -202,7 +202,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);

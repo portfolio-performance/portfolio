@@ -132,7 +132,8 @@ public class Aggregation
             }
         }
 
-        PerformanceIndex answer = new PerformanceIndex(index.getClient(), index.getReportInterval());
+        PerformanceIndex answer = new PerformanceIndex(index.getClient(), index.getCurrencyConverter(),
+                        index.getReportInterval());
         answer.dates = cDates.toArray(new Date[0]);
         answer.accumulated = asArrayD(cAccumulated);
         answer.delta = asArrayD(cDelta);

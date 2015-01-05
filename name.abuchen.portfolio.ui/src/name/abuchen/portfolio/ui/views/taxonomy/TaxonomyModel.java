@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import javax.inject.Inject;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
@@ -15,6 +18,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
@@ -46,10 +52,15 @@ public final class TaxonomyModel
 
     private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
 
-    /* package */TaxonomyModel(Client client, Taxonomy taxonomy)
+    @Inject
+    /* package */TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(taxonomy);
+
         this.taxonomy = taxonomy;
-        this.snapshot = ClientSnapshot.create(client, Dates.today());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        this.snapshot = ClientSnapshot.create(client, converter, Dates.today());
 
         Classification root = taxonomy.getRoot();
         rootNode = new ClassificationNode(null, root);

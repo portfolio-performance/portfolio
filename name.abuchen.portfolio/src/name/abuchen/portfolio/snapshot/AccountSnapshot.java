@@ -17,17 +17,17 @@ public class AccountSnapshot
     @Deprecated
     public static AccountSnapshot create(Account account, Date time)
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(null, account.getCurrencyCode(), time);
+        CurrencyConverter converter = new CurrencyConverterImpl(null, account.getCurrencyCode());
         return create(account, converter, time);
     }
 
-    public static AccountSnapshot create(Account account, CurrencyConverter converter, Date time)
+    public static AccountSnapshot create(Account account, CurrencyConverter converter, Date date)
     {
         long funds = 0;
 
         for (AccountTransaction t : account.getTransactions())
         {
-            if (t.getDate().getTime() <= time.getTime())
+            if (t.getDate().getTime() <= date.getTime())
             {
                 switch (t.getType())
                 {
@@ -52,7 +52,7 @@ public class AccountSnapshot
             }
         }
 
-        return new AccountSnapshot(account, converter, Money.of(account.getCurrencyCode(), funds));
+        return new AccountSnapshot(account, date, converter, Money.of(account.getCurrencyCode(), funds));
     }
 
     // //////////////////////////////////////////////////////////////
@@ -60,12 +60,14 @@ public class AccountSnapshot
     // //////////////////////////////////////////////////////////////
 
     private final Account account;
+    private final Date date;
     private final CurrencyConverter converter;
     private final Money funds;
 
-    private AccountSnapshot(Account account, CurrencyConverter converter, Money funds)
+    private AccountSnapshot(Account account, Date date, CurrencyConverter converter, Money funds)
     {
         this.account = account;
+        this.date = date;
         this.converter = converter;
         this.funds = funds;
     }
@@ -77,12 +79,12 @@ public class AccountSnapshot
 
     public Date getTime()
     {
-        return converter.getTime();
+        return date;
     }
 
     public Money getFunds()
     {
-        return converter.convert(funds);
+        return converter.convert(date, funds);
     }
 
     public Money getUnconvertedFunds()

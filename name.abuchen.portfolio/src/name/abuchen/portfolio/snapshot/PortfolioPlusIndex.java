@@ -10,14 +10,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */final class PortfolioPlusIndex
 {
     private PortfolioPlusIndex()
     {}
 
-    /* package */static PerformanceIndex calculate(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    /* package */static PerformanceIndex calculate(Client client, CurrencyConverter converter, Portfolio portfolio,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new Client();
 
@@ -32,7 +33,7 @@ import name.abuchen.portfolio.model.Security;
         adaptPortfolioTransactions(portfolio, pseudoClient, pseudoPortfolio);
         adaptAccountTransactions(portfolio, pseudoClient, pseudoAccount);
 
-        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     private static void adaptPortfolioTransactions(Portfolio portfolio, Client pseudoClient, Portfolio pseudoPortfolio)

@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -37,10 +42,18 @@ import org.swtchart.ISeries;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
+    private CurrencyConverter converter;
+
     private TimelineChart chart;
     private ChartConfigurator picker;
 
     private Map<Object, Object> dataCache = new HashMap<Object, Object>();
+
+    @PostConstruct
+    private void setupCurrencyConverter(ExchangeRateProviderFactory factory)
+    {
+        converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+    }
 
     @Override
     protected String getTitle()
@@ -223,7 +236,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex clientIndex = (PerformanceIndex) dataCache.get(Client.class);
         if (clientIndex == null)
         {
-            clientIndex = PerformanceIndex.forClient(getClient(), getReportingPeriod(), warnings);
+            clientIndex = PerformanceIndex.forClient(getClient(), converter, getReportingPeriod(), warnings);
             dataCache.put(Client.class, clientIndex);
         }
 
@@ -268,7 +281,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
         if (securityIndex == null)
         {
-            securityIndex = PerformanceIndex.forInvestment(getClient(), security, getReportingPeriod(), warnings);
+            securityIndex = PerformanceIndex.forInvestment(getClient(), converter, security, getReportingPeriod(),
+                            warnings);
             dataCache.put(security, securityIndex);
         }
 
@@ -287,8 +301,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         if (portfolioIndex == null)
         {
             portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
-                            .forPortfolioPlusAccount(getClient(), portfolio, getReportingPeriod(), warnings)
-                            : PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
+                            .forPortfolioPlusAccount(getClient(), converter, portfolio, getReportingPeriod(), warnings)
+                            : PerformanceIndex.forPortfolio(getClient(), converter, portfolio, getReportingPeriod(),
+                                            warnings);
             dataCache.put(cacheKey, portfolioIndex);
         }
 
@@ -304,7 +319,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
         if (accountIndex == null)
         {
-            accountIndex = PerformanceIndex.forAccount(getClient(), account, getReportingPeriod(), warnings);
+            accountIndex = PerformanceIndex.forAccount(getClient(), converter, account, getReportingPeriod(), warnings);
             dataCache.put(account, accountIndex);
         }
 
@@ -320,7 +335,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex index = (PerformanceIndex) dataCache.get(classification);
         if (index == null)
         {
-            index = PerformanceIndex.forClassification(getClient(), classification, getReportingPeriod(), warnings);
+            index = PerformanceIndex.forClassification(getClient(), converter, classification, getReportingPeriod(),
+                            warnings);
             dataCache.put(classification, index);
         }
 

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Calendar;
 import java.util.Date;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -67,7 +68,7 @@ public class PortfolioMergeTest
     @Test
     public void testMergingPortfolioSnapshots()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, referenceDate);
+        ClientSnapshot snapshot = ClientSnapshot.create(client, new TestCurrencyConverter(), referenceDate);
         assertNotNull(snapshot);
 
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
@@ -88,7 +89,7 @@ public class PortfolioMergeTest
     @Test
     public void testThatTransactionsAreMergedOnSecurityPosition()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, referenceDate);
+        ClientSnapshot snapshot = ClientSnapshot.create(client, new TestCurrencyConverter(), referenceDate);
         assertNotNull(snapshot);
 
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();

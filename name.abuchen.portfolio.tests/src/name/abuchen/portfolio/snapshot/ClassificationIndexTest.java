@@ -11,11 +11,13 @@ import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 
 import org.joda.time.DateMidnight;
@@ -79,8 +81,10 @@ public class ClassificationIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
+                        period, warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -103,8 +107,10 @@ public class ClassificationIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
+                        period, warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -123,8 +129,10 @@ public class ClassificationIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
+                        period, warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 

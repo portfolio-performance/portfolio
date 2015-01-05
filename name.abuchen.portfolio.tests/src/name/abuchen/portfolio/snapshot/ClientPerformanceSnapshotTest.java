@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.util.Dates;
@@ -38,7 +40,8 @@ public class ClientPerformanceSnapshotTest
                         AccountTransaction.Type.INTEREST, 5000));
         client.addAccount(account);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
         assertNotNull(snapshot);
 
         assertNotNull(snapshot.getStartClientSnapshot());
@@ -69,7 +72,8 @@ public class ClientPerformanceSnapshotTest
                         AccountTransaction.Type.INTEREST, 5000));
         client.addAccount(account);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(105000, result.get(CategoryType.INITIAL_VALUE).getValuation());
@@ -89,7 +93,8 @@ public class ClientPerformanceSnapshotTest
                         AccountTransaction.Type.INTEREST, 5000));
         client.addAccount(account);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
@@ -116,7 +121,8 @@ public class ClientPerformanceSnapshotTest
                         AccountTransaction.Type.INTEREST, 5000));
         client.addAccount(account);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
@@ -137,7 +143,8 @@ public class ClientPerformanceSnapshotTest
                         PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         client.addPortfolio(portfolio);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
@@ -163,7 +170,8 @@ public class ClientPerformanceSnapshotTest
                         PortfolioTransaction.Type.BUY, 100000, 9900, 0, 0));
         client.addPortfolio(portfolio);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
@@ -189,7 +197,8 @@ public class ClientPerformanceSnapshotTest
                         PortfolioTransaction.Type.SELL, 100000, 9900, 0, 0));
         client.addPortfolio(portfolio);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
@@ -215,7 +224,8 @@ public class ClientPerformanceSnapshotTest
                         PortfolioTransaction.Type.SELL, 100000, 9900, 1, 0));
         client.addPortfolio(portfolio);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, startDate, endDate);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
         assertEquals(1000 * 9 + (9900 - 10000) + 1, result.get(CategoryType.CAPITAL_GAINS).getValuation());

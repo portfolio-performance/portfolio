@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -227,14 +228,14 @@ public final class SecurityPerformanceRecord implements Adaptable
             marketValue += t.getAmount();
     }
 
-    /* package */void calculate(Client client, ReportingPeriod period)
+    /* package */void calculate(Client client, CurrencyConverter converter, ReportingPeriod period)
     {
         Collections.sort(transactions, new TransactionComparator());
 
         if (!transactions.isEmpty())
         {
             calculateIRR();
-            calculatePerformance(client, period);
+            calculatePerformance(client, converter, period);
             calculateDelta();
             calculateFifoCosts();
             calculateDividends();
@@ -246,9 +247,9 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.irr = Calculation.perform(IRRCalculation.class, transactions).getIRR();
     }
 
-    private void calculatePerformance(Client client, ReportingPeriod period)
+    private void calculatePerformance(Client client, CurrencyConverter converter, ReportingPeriod period)
     {
-        this.twror = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>())
+        this.twror = PerformanceIndex.forInvestment(client, converter, security, period, new ArrayList<Exception>())
                         .getFinalAccumulatedPercentage();
     }
 

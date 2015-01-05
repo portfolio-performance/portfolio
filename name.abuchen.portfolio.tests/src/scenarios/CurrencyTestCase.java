@@ -49,7 +49,7 @@ public class CurrencyTestCase
     public void testSnapshots()
     {
         Date requestedTime = Dates.date("2015-01-31");
-        TestCurrencyConverter converter = new TestCurrencyConverter(requestedTime);
+        TestCurrencyConverter converter = new TestCurrencyConverter();
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, requestedTime);
 
         AccountSnapshot accountEURsnapshot = lookupAccountSnapshot(snapshot, accountEUR);
@@ -73,8 +73,8 @@ public class CurrencyTestCase
 
         Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(requestedTime)
                         .getValue());
-        Money equityUSDvaluation = converter.convert(Money.of("USD", 10 * securityUSD.getSecurityPrice(requestedTime)
-                        .getValue()));
+        Money equityUSDvaluation = converter.convert(requestedTime,
+                        Money.of("USD", 10 * securityUSD.getSecurityPrice(requestedTime).getValue()));
         Money equityValuation = Money.of(CurrencyUnit.EUR,
                         equityEURvaluation.getAmount() + equityUSDvaluation.getAmount());
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -14,9 +15,9 @@ import org.joda.time.Interval;
 
 /* package */class CPIIndex extends PerformanceIndex
 {
-    /* package */CPIIndex(Client client, ReportingPeriod reportInterval)
+    /* package */CPIIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
-        super(client, reportInterval);
+        super(client, converter, reportInterval);
     }
 
     /* package */void calculate(PerformanceIndex clientIndex)

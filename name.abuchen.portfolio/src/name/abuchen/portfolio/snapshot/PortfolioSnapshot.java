@@ -26,21 +26,21 @@ public class PortfolioSnapshot
     @Deprecated
     public static PortfolioSnapshot create(Portfolio portfolio, Date time)
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(null, CurrencyUnit.EUR, time);
+        CurrencyConverter converter = new CurrencyConverterImpl(null, CurrencyUnit.EUR);
         return create(portfolio, converter, time);
     }
 
-    public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, Date time)
+    public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, Date date)
     {
         List<SecurityPosition> positions = portfolio.getTransactions().stream() //
-                        .filter(t -> t.getDate().getTime() <= time.getTime()) //
+                        .filter(t -> t.getDate().getTime() <= date.getTime()) //
                         .collect(Collectors.groupingBy(t -> t.getSecurity())) //
                         .entrySet().stream() //
-                        .map(e -> new SecurityPosition(e.getKey(), e.getKey().getSecurityPrice(time), e.getValue())) //
+                        .map(e -> new SecurityPosition(e.getKey(), e.getKey().getSecurityPrice(date), e.getValue())) //
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
 
-        return new PortfolioSnapshot(portfolio, converter, positions);
+        return new PortfolioSnapshot(portfolio, converter, date, positions);
     }
 
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots)
@@ -65,8 +65,8 @@ public class PortfolioSnapshot
             }
         }
 
-        return new PortfolioSnapshot(portfolio, snapshots.get(0).converter, new ArrayList<SecurityPosition>(
-                        securities.values()));
+        return new PortfolioSnapshot(portfolio, snapshots.get(0).getCurrencyConverter(), snapshots.get(0).getTime(),
+                        new ArrayList<SecurityPosition>(securities.values()));
     }
 
     // //////////////////////////////////////////////////////////////
@@ -75,12 +75,14 @@ public class PortfolioSnapshot
 
     private final Portfolio portfolio;
     private final CurrencyConverter converter;
+    private final Date date;
     private final List<SecurityPosition> positions;
 
-    private PortfolioSnapshot(Portfolio source, CurrencyConverter converter, List<SecurityPosition> positions)
+    private PortfolioSnapshot(Portfolio source, CurrencyConverter converter, Date date, List<SecurityPosition> positions)
     {
         this.portfolio = source;
         this.converter = converter;
+        this.date = date;
         this.positions = positions;
     }
 
@@ -96,7 +98,7 @@ public class PortfolioSnapshot
 
     public Date getTime()
     {
-        return converter.getTime();
+        return date;
     }
 
     public List<SecurityPosition> getPositions()
@@ -113,7 +115,7 @@ public class PortfolioSnapshot
     {
         return positions.stream() //
                         .map(SecurityPosition::calculateValue) //
-                        .map(money -> converter.convert(money)) //
+                        .map(money -> converter.convert(date, money)) //
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 

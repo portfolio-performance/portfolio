@@ -40,7 +40,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         super.init(part, parameter);
         this.taxonomy = (Taxonomy) parameter;
-        this.model = new TaxonomyModel(getClient(), taxonomy);
+        this.model = getPart().make(TaxonomyModel.class, taxonomy);
 
         this.identifier = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
 

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -20,6 +21,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -49,7 +51,8 @@ public class SecurityPerformanceTaxRefundTestCase
         Portfolio portfolio = client.getPortfolios().get(0);
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
         ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-06"), Dates.date("2014-12-06"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, period);
+        TestCurrencyConverter converter = new TestCurrencyConverter();
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
@@ -90,8 +93,8 @@ public class SecurityPerformanceTaxRefundTestCase
 
         // ensure the performance of the account is zero
         List<Exception> warnings = new ArrayList<Exception>();
-        PerformanceIndex accountIndex = PerformanceIndex.forAccount(client, client.getAccounts().get(0), period,
-                        warnings);
+        PerformanceIndex accountIndex = PerformanceIndex.forAccount(client, converter, client.getAccounts().get(0),
+                        period, warnings);
         assertThat(warnings, empty());
         assertThat(accountIndex.getFinalAccumulatedPercentage(), is(0d));
     }
@@ -112,7 +115,8 @@ public class SecurityPerformanceTaxRefundTestCase
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
         PortfolioTransaction sell = portfolio.getTransactions().get(1);
         ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-06"), Dates.date("2014-12-06"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, period);
+        TestCurrencyConverter converter = new TestCurrencyConverter();
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
@@ -155,8 +159,9 @@ public class SecurityPerformanceTaxRefundTestCase
                         .getClassificationById("a41d1836-9f8e-493c-9304-7434d9bbaa05");
 
         List<Exception> warnings = new ArrayList<Exception>();
-        PerformanceIndex classificationPerformance = PerformanceIndex.forClassification(client, classification, period,
-                        warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex classificationPerformance = PerformanceIndex.forClassification(client, converter,
+                        classification, period, warnings);
         assertThat(warnings, empty());
         assertThat(classificationPerformance.getFinalAccumulatedPercentage(), is(ttwror));
     }
@@ -165,13 +170,14 @@ public class SecurityPerformanceTaxRefundTestCase
     {
         // the performance of the client must include taxes though -> worse
         List<Exception> warnings = new ArrayList<Exception>();
-        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, period, warnings);
         assertThat(warnings, empty());
         assertThat(clientIndex.getFinalAccumulatedPercentage(), lessThan(ttwror));
 
         // the performance of portfolio + account must be identical to the
         // performance of the client
-        PerformanceIndex portfolioPlusPerformance = PerformanceIndex.forPortfolioPlusAccount(client, client
+        PerformanceIndex portfolioPlusPerformance = PerformanceIndex.forPortfolioPlusAccount(client, converter, client
                         .getPortfolios().get(0), period, warnings);
         assertThat(warnings, empty());
         assertThat(portfolioPlusPerformance.getFinalAccumulatedPercentage(),
@@ -182,7 +188,8 @@ public class SecurityPerformanceTaxRefundTestCase
     private void assertThatTTWROROfPortfolioIsLessThan(Client client, PerformanceIndex clientIndex, double ttwror)
     {
         List<Exception> warnings = new ArrayList<Exception>();
-        PerformanceIndex portfolioPerformance = PerformanceIndex.forPortfolio(client, client.getPortfolios().get(0),
+        PerformanceIndex portfolioPerformance = PerformanceIndex.forPortfolio(client,
+                        clientIndex.getCurrencyConverter(), client.getPortfolios().get(0),
                         clientIndex.getReportInterval(), warnings);
         assertThat(warnings, empty());
         assertThat(portfolioPerformance.getFinalAccumulatedPercentage(),

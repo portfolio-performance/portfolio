@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -44,7 +45,8 @@ public class SecurityTestCase
                         lessThan(security.getPrices().get(0).getTime()));
 
         ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-04"), Dates.date("2014-12-04"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, period);
+        TestCurrencyConverter converter = new TestCurrencyConverter();
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
 
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 

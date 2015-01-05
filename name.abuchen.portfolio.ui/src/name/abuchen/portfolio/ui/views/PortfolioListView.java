@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
@@ -241,8 +242,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                 {
                     transactions.setInput(portfolio, portfolio.getTransactions());
                     transactions.refresh();
-                    CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, portfolio
-                                    .getReferenceAccount().getCurrencyCode(), Dates.today());
+                    CurrencyConverter converter = new CurrencyConverterImpl(factory, portfolio.getReferenceAccount()
+                                    .getCurrencyCode());
                     statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, Dates.today()));
                 }
                 else

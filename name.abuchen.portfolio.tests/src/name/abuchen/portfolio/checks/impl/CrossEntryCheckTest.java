@@ -258,7 +258,7 @@ public class CrossEntryCheckTest
 
         applyFixes(client, issues);
 
-        ClientSnapshot.create(client, new TestCurrencyConverter(Dates.today()), Dates.today());
+        ClientSnapshot.create(client, new TestCurrencyConverter(), Dates.today());
     }
 
     private void applyFixes(Client client, List<Issue> issues)

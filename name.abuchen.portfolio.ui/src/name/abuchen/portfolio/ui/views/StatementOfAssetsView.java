@@ -41,7 +41,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency(), Dates.today());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, Dates.today());
 
         assetViewer.setInput(snapshot);

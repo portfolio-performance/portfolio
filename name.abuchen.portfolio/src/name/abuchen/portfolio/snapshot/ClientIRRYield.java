@@ -22,8 +22,8 @@ public class ClientIRRYield
 
     public static ClientIRRYield create(Client client, CurrencyConverter converter, Date start, Date end)
     {
-        ClientSnapshot snapshotStart = ClientSnapshot.create(client, converter.with(start), start);
-        ClientSnapshot snapshotEnd = ClientSnapshot.create(client, converter.with(end), end);
+        ClientSnapshot snapshotStart = ClientSnapshot.create(client, converter, start);
+        ClientSnapshot snapshotEnd = ClientSnapshot.create(client, converter, end);
 
         return create(client, snapshotStart, snapshotEnd);
     }

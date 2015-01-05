@@ -13,12 +13,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -51,12 +56,20 @@ public class PerformanceChartView extends AbstractHistoricView
 {
     private static final String KEY_AGGREGATION_PERIOD = "performance-chart-aggregation-period"; //$NON-NLS-1$
 
+    private CurrencyConverter converter;
+
     private TimelineChart chart;
     private ChartConfigurator picker;
 
     private Aggregation.Period aggregationPeriod;
 
     private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
+
+    @PostConstruct
+    private void setupCurrencyConverter(ExchangeRateProviderFactory factory)
+    {
+        converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+    }
 
     @Override
     protected String getTitle()
@@ -219,7 +232,7 @@ public class PerformanceChartView extends AbstractHistoricView
         if (index == null)
         {
             ReportingPeriod interval = getReportingPeriod();
-            index = PerformanceIndex.forClient(getClient(), interval, warnings);
+            index = PerformanceIndex.forClient(getClient(), converter, interval, warnings);
             dataCache.put(Client.class, index);
         }
         return index;
@@ -306,7 +319,8 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (securityIndex == null)
         {
-            securityIndex = PerformanceIndex.forInvestment(getClient(), security, getReportingPeriod(), warnings);
+            securityIndex = PerformanceIndex.forInvestment(getClient(), converter, security, getReportingPeriod(),
+                            warnings);
             dataCache.put(security.getUUID(), securityIndex);
         }
 
@@ -327,8 +341,9 @@ public class PerformanceChartView extends AbstractHistoricView
         if (portfolioIndex == null)
         {
             portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
-                            .forPortfolioPlusAccount(getClient(), portfolio, getReportingPeriod(), warnings)
-                            : PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
+                            .forPortfolioPlusAccount(getClient(), converter, portfolio, getReportingPeriod(), warnings)
+                            : PerformanceIndex.forPortfolio(getClient(), converter, portfolio, getReportingPeriod(),
+                                            warnings);
             dataCache.put(cacheKey, portfolioIndex);
         }
 
@@ -347,7 +362,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (accountIndex == null)
         {
-            accountIndex = PerformanceIndex.forAccount(getClient(), account, getReportingPeriod(), warnings);
+            accountIndex = PerformanceIndex.forAccount(getClient(), converter, account, getReportingPeriod(), warnings);
             dataCache.put(account, accountIndex);
         }
 
@@ -366,7 +381,8 @@ public class PerformanceChartView extends AbstractHistoricView
 
         if (index == null)
         {
-            index = PerformanceIndex.forClassification(getClient(), classification, getReportingPeriod(), warnings);
+            index = PerformanceIndex.forClassification(getClient(), converter, classification, getReportingPeriod(),
+                            warnings);
             dataCache.put(classification, index);
         }
 

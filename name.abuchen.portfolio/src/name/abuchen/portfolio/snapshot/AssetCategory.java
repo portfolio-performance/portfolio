@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Classification;
@@ -13,14 +14,16 @@ public class AssetCategory
 {
     private final Classification classification;
     private final CurrencyConverter converter;
+    private final Date date;
     private final List<AssetPosition> positions = new ArrayList<AssetPosition>();
     private final Money totalAssets;
     private final MutableMoney valuation;
 
-    /* package */AssetCategory(Classification classification, CurrencyConverter converter, Money totalAssets)
+    /* package */AssetCategory(Classification classification, CurrencyConverter converter, Date date, Money totalAssets)
     {
         this.classification = classification;
         this.converter = converter;
+        this.date = date;
         this.totalAssets = totalAssets;
         this.valuation = MutableMoney.of(converter.getTermCurrency());
     }
@@ -60,6 +63,6 @@ public class AssetCategory
     public void addPosition(AssetPosition p)
     {
         this.positions.add(p);
-        this.valuation.add(converter.convert(p.getValuation()));
+        this.valuation.add(converter.convert(date, p.getValuation()));
     }
 }

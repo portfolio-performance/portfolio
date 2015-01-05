@@ -12,13 +12,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class TestCurrencyConverter implements CurrencyConverter
 {
-    private final Date time;
-
-    public TestCurrencyConverter(Date time)
-    {
-        this.time = time;
-    }
-
     @Override
     public String getTermCurrency()
     {
@@ -26,13 +19,7 @@ public class TestCurrencyConverter implements CurrencyConverter
     }
 
     @Override
-    public Date getTime()
-    {
-        return time;
-    }
-
-    @Override
-    public Money convert(Money amount)
+    public Money convert(Date date, Money amount)
     {
         if (CurrencyUnit.EUR.equals(amount.getCurrencyCode()))
             return amount;
@@ -44,22 +31,16 @@ public class TestCurrencyConverter implements CurrencyConverter
     }
 
     @Override
-    public ExchangeRate getRate(String currencyCode)
+    public ExchangeRate getRate(Date date, String currencyCode)
     {
         switch (currencyCode)
         {
             case CurrencyUnit.EUR:
-                return new ExchangeRate(time, Values.ExchangeRate.factor());
+                return new ExchangeRate(date, Values.ExchangeRate.factor());
             case "USD":
-                return new ExchangeRate(time, 8332);
+                return new ExchangeRate(date, 8332);
             default:
                 return null;
         }
-    }
-
-    @Override
-    public CurrencyConverter with(Date time)
-    {
-        return new TestCurrencyConverter(time);
     }
 }

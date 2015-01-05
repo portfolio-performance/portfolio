@@ -10,8 +10,10 @@ import java.util.List;
 
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 
 import org.hamcrest.number.IsCloseTo;
@@ -46,7 +48,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
@@ -90,7 +93,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
@@ -147,7 +151,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts
@@ -194,7 +199,8 @@ public class SecurityIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, reportInterval, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
 
         // asserts

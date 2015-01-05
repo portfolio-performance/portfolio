@@ -6,11 +6,7 @@ public interface CurrencyConverter
 {
     String getTermCurrency();
 
-    Date getTime();
+    Money convert(Date date, Money amount);
 
-    Money convert(Money amount);
-
-    ExchangeRate getRate(String currencyCode);
-
-    CurrencyConverter with(Date time);
+    ExchangeRate getRate(Date date, String currencyCode);
 }

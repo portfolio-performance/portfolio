@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 
 public class ClientPerformanceSnapshot
@@ -90,25 +91,27 @@ public class ClientPerformanceSnapshot
         INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IRR
     }
 
-    private Client client;
-    private ReportingPeriod period;
+    private final Client client;
+    private final CurrencyConverter converter;
+    private final ReportingPeriod period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
     private EnumMap<CategoryType, Category> categories;
     private List<Transaction> earnings;
     private PerformanceIndex performanceIndex;
 
-    public ClientPerformanceSnapshot(Client client, Date startDate, Date endDate)
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Date startDate, Date endDate)
     {
-        this(client, new ReportingPeriod.FromXtoY(startDate, endDate));
+        this(client, converter, new ReportingPeriod.FromXtoY(startDate, endDate));
     }
 
-    public ClientPerformanceSnapshot(Client client, ReportingPeriod period)
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, ReportingPeriod period)
     {
         this.client = client;
+        this.converter = converter;
         this.period = period;
-        this.snapshotStart = ClientSnapshot.create(client, period.getStartDate());
-        this.snapshotEnd = ClientSnapshot.create(client, period.getEndDate());
+        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStartDate());
+        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEndDate());
         this.categories = new EnumMap<CategoryType, Category>(CategoryType.class);
         this.earnings = new ArrayList<Transaction>();
 
@@ -192,8 +195,9 @@ public class ClientPerformanceSnapshot
         categories.put(CategoryType.PERFORMANCE_IRR,
                         new Category(Messages.ColumnPerformanceIZF, Math.round(yield.getIrr() * Values.Amount.factor())));
 
-        performanceIndex = PerformanceIndex.forClient(client, new ReportingPeriod.FromXtoY(snapshotStart.getTime(),
-                        snapshotEnd.getTime()), new ArrayList<Exception>());
+        performanceIndex = PerformanceIndex.forClient(client, converter,
+                        new ReportingPeriod.FromXtoY(snapshotStart.getTime(), snapshotEnd.getTime()),
+                        new ArrayList<Exception>());
         int ttwror = (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex.getAccumulatedPercentage().length - 1]
                         * Values.Amount.factor() * 100);
         categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, ttwror));

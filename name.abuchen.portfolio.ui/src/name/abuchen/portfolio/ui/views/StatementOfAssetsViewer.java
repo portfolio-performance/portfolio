@@ -523,7 +523,7 @@ public class StatementOfAssetsViewer
 
                 String baseCurrency = element.getPosition().getInvestmentVehicle().getCurrencyCode();
                 CurrencyConverter converter = getCurrencyConverter();
-                return Values.ExchangeRate.format(converter.getRate(baseCurrency).getValue());
+                return Values.ExchangeRate.format(converter.getRate(getDate(), baseCurrency).getValue());
             }
         });
         column.setVisible(false);
@@ -711,6 +711,16 @@ public class StatementOfAssetsViewer
             return null;
     }
 
+    private Date getDate()
+    {
+        if (clientSnapshot != null)
+            return clientSnapshot.getTime();
+        else if (portfolioSnapshot != null)
+            return portfolioSnapshot.getTime();
+        else
+            return null;
+    }
+
     private void calculatePerformance(Element element, Integer option)
     {
         // already calculated?
@@ -732,9 +742,14 @@ public class StatementOfAssetsViewer
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(cal.getTime(), endDate);
         if (clientSnapshot != null)
-            sps = SecurityPerformanceSnapshot.create(client, period);
+        {
+            sps = SecurityPerformanceSnapshot.create(client, clientSnapshot.getCurrencyConverter(), period);
+        }
         else
-            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getSource(), period);
+        {
+            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getCurrencyConverter(),
+                            portfolioSnapshot.getSource(), period);
+        }
 
         StatementOfAssetsContentProvider contentProvider = (StatementOfAssetsContentProvider) assets
                         .getContentProvider();

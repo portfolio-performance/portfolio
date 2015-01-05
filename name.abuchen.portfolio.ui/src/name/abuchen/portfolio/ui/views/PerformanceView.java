@@ -5,9 +5,14 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 
 import java.text.MessageFormat;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
@@ -229,6 +234,9 @@ public class PerformanceView extends AbstractHistoricView
         }
     }
 
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     private OverviewTab overview;
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -253,7 +261,8 @@ public class PerformanceView extends AbstractHistoricView
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), period);
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), converter, period);
 
         overview.setInput(snapshot);
 

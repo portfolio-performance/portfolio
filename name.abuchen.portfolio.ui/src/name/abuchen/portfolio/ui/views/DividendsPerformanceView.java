@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views;
 import java.util.Collections;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
@@ -10,6 +12,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
@@ -61,6 +66,9 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class DividendsPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     private ShowHideColumnHelper recordColumns;
 
     private TableViewer records;
@@ -647,7 +655,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = dropDown.getPeriods().getFirst();
-        records.setInput(SecurityPerformanceSnapshot.create(getClient(), period).getRecords());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        records.setInput(SecurityPerformanceSnapshot.create(getClient(), converter, period).getRecords());
         records.refresh();
     }
 

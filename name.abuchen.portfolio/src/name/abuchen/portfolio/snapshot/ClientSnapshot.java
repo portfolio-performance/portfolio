@@ -22,24 +22,25 @@ public class ClientSnapshot
     // factory methods
     // //////////////////////////////////////////////////////////////
 
+    @Deprecated
     public static ClientSnapshot create(Client client, Date time)
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(null, client.getBaseCurrency(), time);
+        CurrencyConverter converter = new CurrencyConverterImpl(null, client.getBaseCurrency());
         return create(client, converter, time);
     }
 
-    public static ClientSnapshot create(Client client, CurrencyConverter converter, Date time)
+    public static ClientSnapshot create(Client client, CurrencyConverter converter, Date date)
     {
-        ClientSnapshot snapshot = new ClientSnapshot(client, converter);
+        ClientSnapshot snapshot = new ClientSnapshot(client, converter, date);
 
         for (Account account : client.getAccounts())
-            snapshot.accounts.add(AccountSnapshot.create(account, converter, time));
+            snapshot.accounts.add(AccountSnapshot.create(account, converter, date));
 
         for (Portfolio portfolio : client.getPortfolios())
-            snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, time));
+            snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, date));
 
         if (snapshot.portfolios.isEmpty())
-            snapshot.jointPortfolio = PortfolioSnapshot.create(new Portfolio(), converter, time);
+            snapshot.jointPortfolio = PortfolioSnapshot.create(new Portfolio(), converter, date);
         else if (snapshot.portfolios.size() == 1)
             snapshot.jointPortfolio = snapshot.portfolios.get(0);
         else
@@ -54,15 +55,17 @@ public class ClientSnapshot
 
     private final Client client;
     private final CurrencyConverter converter;
+    private final Date date;
 
     private List<AccountSnapshot> accounts = new ArrayList<AccountSnapshot>();
     private List<PortfolioSnapshot> portfolios = new ArrayList<PortfolioSnapshot>();
     private PortfolioSnapshot jointPortfolio = null;
 
-    private ClientSnapshot(Client client, CurrencyConverter converter)
+    private ClientSnapshot(Client client, CurrencyConverter converter, Date date)
     {
         this.client = client;
         this.converter = converter;
+        this.date = date;
     }
 
     public Client getClient()
@@ -82,7 +85,7 @@ public class ClientSnapshot
 
     public Date getTime()
     {
-        return converter.getTime();
+        return date;
     }
 
     public List<AccountSnapshot> getAccounts()
@@ -131,10 +134,10 @@ public class ClientSnapshot
         Money assets = getMonetaryAssets();
 
         for (SecurityPosition p : jointPortfolio.getPositions())
-            answer.put(p.getSecurity(), new AssetPosition(p, converter, assets));
+            answer.put(p.getSecurity(), new AssetPosition(p, converter, date, assets));
 
         for (AccountSnapshot account : accounts)
-            answer.put(account.getAccount(), new AssetPosition(new SecurityPosition(account), converter, assets));
+            answer.put(account.getAccount(), new AssetPosition(new SecurityPosition(account), converter, date, assets));
 
         return answer;
     }

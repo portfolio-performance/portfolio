@@ -11,6 +11,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
@@ -226,7 +229,11 @@ import org.eclipse.core.runtime.IStatus;
             boolean hasPosition = false;
             if (portfolio != null)
             {
-                PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, date);
+                // since the security position has always the currency of the
+                // investment vehicle, actually no conversion is needed. Hence
+                // we can use an arbitrary converter.
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, CurrencyUnit.EUR);
+                PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, date);
                 SecurityPosition position = snapshot.getPositionsBySecurity().get(security);
                 if (position != null)
                 {

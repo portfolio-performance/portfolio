@@ -12,14 +12,15 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */final class ClassificationIndex
 {
     private ClassificationIndex()
     {}
 
-    /* package */static PerformanceIndex calculate(final Client client, Classification classification,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+    /* package */static PerformanceIndex calculate(final Client client, CurrencyConverter converter,
+                    Classification classification, ReportingPeriod reportInterval, List<Exception> warnings)
     {
         final Client pseudoClient = new Client();
 
@@ -37,7 +38,7 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
             }
         });
 
-        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     private static void addSecurity(Client pseudoClient, Client client, Security security, int weight)

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,19 +33,21 @@ public final class GroupByTaxonomy
 
     private final Taxonomy taxonomy;
     private final CurrencyConverter converter;
+    private final Date date;
     private final Money valuation;
     private final List<AssetCategory> categories = new ArrayList<AssetCategory>();
 
-    private GroupByTaxonomy(Taxonomy taxonomy, CurrencyConverter converter, Money valuation)
+    private GroupByTaxonomy(Taxonomy taxonomy, CurrencyConverter converter, Date date, Money valuation)
     {
         this.taxonomy = taxonomy;
         this.converter = converter;
+        this.date = date;
         this.valuation = valuation;
     }
 
     /* package */GroupByTaxonomy(Taxonomy taxonomy, ClientSnapshot snapshot)
     {
-        this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getMonetaryAssets());
+        this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getMonetaryAssets());
 
         Map<InvestmentVehicle, Item> vehicle2position = new HashMap<InvestmentVehicle, Item>();
 
@@ -69,7 +72,7 @@ public final class GroupByTaxonomy
 
     /* package */public GroupByTaxonomy(Taxonomy taxonomy, PortfolioSnapshot snapshot)
     {
-        this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getValue());
+        this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getValue());
 
         Map<InvestmentVehicle, Item> vehicle2position = new HashMap<InvestmentVehicle, Item>();
 
@@ -137,7 +140,7 @@ public final class GroupByTaxonomy
 
             if (!vehicle2item.isEmpty())
             {
-                AssetCategory category = new AssetCategory(classification, converter, valuation);
+                AssetCategory category = new AssetCategory(classification, converter, date, valuation);
                 categories.add(category);
 
                 for (Entry<InvestmentVehicle, Item> entry : vehicle2item.entrySet())
@@ -147,7 +150,7 @@ public final class GroupByTaxonomy
                     if (item.weight != Classification.ONE_HUNDRED_PERCENT)
                         position = SecurityPosition.split(position, item.weight);
 
-                    category.addPosition(new AssetPosition(position, converter, getValuation()));
+                    category.addPosition(new AssetPosition(position, converter, date, getValuation()));
                 }
 
                 // sort positions by name
@@ -174,7 +177,7 @@ public final class GroupByTaxonomy
     {
         Classification classification = new Classification(null, Classification.UNASSIGNED_ID,
                         Messages.LabelWithoutClassification);
-        AssetCategory unassigned = new AssetCategory(classification, converter, getValuation());
+        AssetCategory unassigned = new AssetCategory(classification, converter, date, getValuation());
 
         for (Entry<InvestmentVehicle, Item> entry : vehicle2position.entrySet())
         {
@@ -186,7 +189,7 @@ public final class GroupByTaxonomy
                 if (item.weight != 0)
                     position = SecurityPosition.split(position, Classification.ONE_HUNDRED_PERCENT - item.weight);
 
-                unassigned.addPosition(new AssetPosition(position, converter, getValuation()));
+                unassigned.addPosition(new AssetPosition(position, converter, date, getValuation()));
             }
         }
 
