@@ -32,7 +32,7 @@ public class AssetCategory
 
     public double getShare()
     {
-        return Math.round((double) this.valuation.getAmount() / (double) this.totalAssets.getAmount());
+        return (double) this.valuation.getAmount() / (double) this.totalAssets.getAmount();
     }
 
     public Money getFIFOPurchaseValue()

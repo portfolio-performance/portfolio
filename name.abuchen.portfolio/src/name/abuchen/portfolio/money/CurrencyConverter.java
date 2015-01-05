@@ -9,4 +9,8 @@ public interface CurrencyConverter
     Date getTime();
 
     Money convert(Money amount);
+
+    ExchangeRate getRate(String currencyCode);
+
+    CurrencyConverter with(Date time);
 }

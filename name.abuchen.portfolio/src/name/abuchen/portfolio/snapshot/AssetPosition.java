@@ -23,7 +23,6 @@ public class AssetPosition
     private final Money totalAssets;
     private final Money valuation;
 
-
     /* package */AssetPosition(SecurityPosition position, CurrencyConverter converter, Money totalAssets)
     {
         this.position = position;
@@ -39,7 +38,7 @@ public class AssetPosition
 
     public double getShare()
     {
-        return Math.round((double) getValuation().getAmount() / (double) this.totalAssets.getAmount());
+        return (double) getValuation().getAmount() / (double) this.totalAssets.getAmount();
     }
 
     public Money getFIFOPurchaseValue()

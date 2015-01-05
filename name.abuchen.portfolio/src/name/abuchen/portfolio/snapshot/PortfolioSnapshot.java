@@ -89,7 +89,7 @@ public class PortfolioSnapshot
         return portfolio;
     }
 
-    /* package */CurrencyConverter getCurrencyConverter()
+    public CurrencyConverter getCurrencyConverter()
     {
         return converter;
     }

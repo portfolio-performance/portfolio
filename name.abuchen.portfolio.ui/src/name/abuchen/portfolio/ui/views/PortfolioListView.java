@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -44,6 +48,9 @@ import org.eclipse.swt.widgets.ToolBar;
 public class PortfolioListView extends AbstractListView implements ModificationListener
 {
     private static final String FILTER_INACTIVE_PORTFOLIOS = "filter-retired-portfolios"; //$NON-NLS-1$
+
+    @Inject
+    private ExchangeRateProviderFactory factory;
 
     private TableViewer portfolios;
     private StatementOfAssetsViewer statementOfAssets;
@@ -234,7 +241,9 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                 {
                     transactions.setInput(portfolio, portfolio.getTransactions());
                     transactions.refresh();
-                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, Dates.today()));
+                    CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, portfolio
+                                    .getReferenceAccount().getCurrencyCode(), Dates.today());
+                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, Dates.today()));
                 }
                 else
                 {

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.checks.QuickFix;
 import name.abuchen.portfolio.model.Account;
@@ -257,7 +258,7 @@ public class CrossEntryCheckTest
 
         applyFixes(client, issues);
 
-        ClientSnapshot.create(client, Dates.today());
+        ClientSnapshot.create(client, new TestCurrencyConverter(Dates.today()), Dates.today());
     }
 
     private void applyFixes(Client client, List<Issue> issues)

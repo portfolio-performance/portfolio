@@ -6,11 +6,13 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.Dates;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -57,7 +60,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(d, "2010-01-01", 1000000, 12000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        Date date = Dates.date("2010-01-01");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -94,7 +98,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        Date date = new DateTime("2010-01-01").toDate();
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -129,7 +134,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        Date date = new DateTime("2010-01-01").toDate();
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -160,7 +166,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        Date date = new DateTime("2010-01-01").toDate();
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -194,7 +201,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        Date date = new DateTime("2010-01-01").toDate();
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(date), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);

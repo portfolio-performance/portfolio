@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
@@ -448,6 +449,7 @@ public class StatementOfAssetsViewer
 
         addTaxonomyColumns();
         addAttributeColumns();
+        addCurrencyColumns();
 
         support.createColumns();
 
@@ -487,6 +489,102 @@ public class StatementOfAssetsViewer
             column.setSorter(null);
             support.addColumn(column);
         }
+    }
+
+    private void addCurrencyColumns()
+    {
+        Column column = new Column("baseCurrency", "Währung", SWT.LEFT, 80); //$NON-NLS-1$
+        column.setGroupLabel("Devisen");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return element.getPosition().getInvestmentVehicle().getCurrencyCode();
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("exchangeRate", "Devisenkurs", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel("Devisen");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                String baseCurrency = element.getPosition().getInvestmentVehicle().getCurrencyCode();
+                CurrencyConverter converter = getCurrencyConverter();
+                return Values.ExchangeRate.format(converter.getRate(baseCurrency).getValue());
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("marketValueBaseCurrency", "Marktwert**", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription("Marktwert in Basiswährung");
+        column.setGroupLabel("Devisen");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return Values.Money.format(element.getPosition().getPosition().calculateValue(),
+                                client.getBaseCurrency());
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("purchaseValueBaseCurrency", "Einstandswert**", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription("Einstandswert in Basiswährung");
+        column.setGroupLabel("Devisen");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return Values.Money.formatNonZero(element.getPosition().getPosition().getFIFOPurchaseValue(),
+                                client.getBaseCurrency());
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("profitLossBaseCurrency", "Gewinn / Verlust**", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription("Gewinn / Verlust in Basiswährung");
+        column.setGroupLabel("Devisen");
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return Values.Money.formatNonZero(element.getPosition().getPosition().getProfitLoss(),
+                                client.getBaseCurrency());
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
@@ -603,6 +701,16 @@ public class StatementOfAssetsViewer
         }
     }
 
+    private CurrencyConverter getCurrencyConverter()
+    {
+        if (clientSnapshot != null)
+            return clientSnapshot.getCurrencyConverter();
+        else if (portfolioSnapshot != null)
+            return portfolioSnapshot.getCurrencyConverter();
+        else
+            return null;
+    }
+
     private void calculatePerformance(Element element, Integer option)
     {
         // already calculated?
@@ -697,6 +805,11 @@ public class StatementOfAssetsViewer
         public boolean isCategory()
         {
             return category != null;
+        }
+
+        public boolean isPosition()
+        {
+            return position != null;
         }
 
         public boolean isSecurity()

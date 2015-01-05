@@ -2909,6 +2909,78 @@
           <type>DEPOSIT</type>
           <amount>100000</amount>
         </account-transaction>
+        <account-transaction>
+          <date>2015-01-01</date>
+          <security reference="../../../../../securities/security[2]"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>759c7ed2-4752-40ed-865d-4cb9c68ca3f1</uuid>
+              <name>Portfolio EUR</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>1000000</shares>
+                  <type>BUY</type>
+                  <amount>71880</amount>
+                  <fees>1000</fees>
+                  <taxes>1000</taxes>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2015-01-01</date>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <forex>
+                        <baseCurrency>USD</baseCurrency>
+                        <termCurrency>EUR</termCurrency>
+                        <exchangeRate>8237</exchangeRate>
+                        <baseAmount>55190</baseAmount>
+                      </forex>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                      <amount>45460</amount>
+                    </accountTransaction>
+                  </crossEntry>
+                  <forex reference="../crossEntry/accountTransaction/forex"/>
+                  <shares>500000</shares>
+                  <type>BUY</type>
+                  <amount>45460</amount>
+                  <fees>0</fees>
+                  <taxes>0</taxes>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+          <amount>71880</amount>
+        </account-transaction>
+        <account-transaction>
+          <date>2015-01-01</date>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+          <amount>71880</amount>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+        <account-transaction>
+          <date>2015-01-01</date>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+          <amount>45460</amount>
+        </account-transaction>
       </transactions>
     </account>
     <account>
@@ -2923,24 +2995,84 @@
           <type>DEPOSIT</type>
           <amount>100000</amount>
         </account-transaction>
+        <account-transaction>
+          <date>2015-01-01</date>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>345b1fd2-e095-4082-b8e0-4d80619763b4</uuid>
+              <name>Portfolio USD</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>500000</shares>
+                  <type>BUY</type>
+                  <amount>57190</amount>
+                  <fees>1000</fees>
+                  <taxes>1000</taxes>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2015-01-01</date>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <security reference="../../../../../../../../../../../securities/security[2]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <forex>
+                        <baseCurrency>EUR</baseCurrency>
+                        <termCurrency>USD</termCurrency>
+                        <exchangeRate>12141</exchangeRate>
+                        <baseAmount>69880</baseAmount>
+                      </forex>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                      <amount>84841</amount>
+                    </accountTransaction>
+                  </crossEntry>
+                  <forex reference="../crossEntry/accountTransaction/forex"/>
+                  <shares>1000000</shares>
+                  <type>BUY</type>
+                  <amount>84841</amount>
+                  <fees>0</fees>
+                  <taxes>0</taxes>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+          <amount>57190</amount>
+        </account-transaction>
+        <account-transaction>
+          <date>2015-01-01</date>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+          <amount>57190</amount>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+        <account-transaction>
+          <date>2015-01-01</date>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+          <amount>84841</amount>
+        </account-transaction>
       </transactions>
     </account>
   </accounts>
   <portfolios>
-    <portfolio>
-      <uuid>759c7ed2-4752-40ed-865d-4cb9c68ca3f1</uuid>
-      <name>Portfolio EUR</name>
-      <isRetired>false</isRetired>
-      <referenceAccount reference="../../../accounts/account"/>
-      <transactions/>
-    </portfolio>
-    <portfolio>
-      <uuid>345b1fd2-e095-4082-b8e0-4d80619763b4</uuid>
-      <name>Portfolio USD</name>
-      <isRetired>false</isRetired>
-      <referenceAccount reference="../../../accounts/account[2]"/>
-      <transactions/>
-    </portfolio>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account[2]/transactions/account-transaction[2]/crossEntry/portfolio"/>
   </portfolios>
   <plans/>
   <taxonomies>

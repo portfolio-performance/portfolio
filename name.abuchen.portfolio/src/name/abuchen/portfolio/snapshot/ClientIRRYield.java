@@ -14,15 +14,16 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 
 public class ClientIRRYield
 {
 
-    public static ClientIRRYield create(Client client, Date start, Date end)
+    public static ClientIRRYield create(Client client, CurrencyConverter converter, Date start, Date end)
     {
-        ClientSnapshot snapshotStart = ClientSnapshot.create(client, start);
-        ClientSnapshot snapshotEnd = ClientSnapshot.create(client, end);
+        ClientSnapshot snapshotStart = ClientSnapshot.create(client, converter.with(start), start);
+        ClientSnapshot snapshotEnd = ClientSnapshot.create(client, converter.with(end), end);
 
         return create(client, snapshotStart, snapshotEnd);
     }

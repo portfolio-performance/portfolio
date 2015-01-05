@@ -75,7 +75,7 @@ public class ClientSnapshot
         return converter.getTermCurrency();
     }
 
-    /* package */CurrencyConverter getCurrencyConverter()
+    public CurrencyConverter getCurrencyConverter()
     {
         return converter;
     }
