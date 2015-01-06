@@ -112,6 +112,7 @@ public class ClientPerformanceSnapshotTest
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
                         PortfolioTransaction.Type.BUY, 10, 100, 0, 0));
         client.addPortfolio(portfolio);
@@ -139,6 +140,7 @@ public class ClientPerformanceSnapshotTest
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
                         PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         client.addPortfolio(portfolio);
@@ -164,6 +166,7 @@ public class ClientPerformanceSnapshotTest
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
                         PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
@@ -191,6 +194,7 @@ public class ClientPerformanceSnapshotTest
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
                         PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
@@ -218,6 +222,7 @@ public class ClientPerformanceSnapshotTest
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
                         PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,

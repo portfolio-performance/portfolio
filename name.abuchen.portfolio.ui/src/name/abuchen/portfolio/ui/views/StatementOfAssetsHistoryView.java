@@ -50,9 +50,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private Map<Object, Object> dataCache = new HashMap<Object, Object>();
 
     @PostConstruct
-    private void setupCurrencyConverter(ExchangeRateProviderFactory factory)
+    private void setupCurrencyConverter(Client client, ExchangeRateProviderFactory factory)
     {
-        converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
 
     @Override

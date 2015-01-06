@@ -17,6 +17,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -225,7 +226,7 @@ public class ClientIndexTest
                         .generatePrices(startPrice, startDate, endDate) //
                         .addTo(client);
 
-        PortfolioBuilder portfolio = new PortfolioBuilder();
+        PortfolioBuilder portfolio = new PortfolioBuilder(new Account());
 
         // add some buy transactions
         DateMidnight date = startDate;

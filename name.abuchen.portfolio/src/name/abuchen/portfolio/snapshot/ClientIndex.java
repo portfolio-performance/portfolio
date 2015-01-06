@@ -5,8 +5,11 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -39,7 +42,7 @@ import org.joda.time.Interval;
         delta[0] = 0;
         accumulated[0] = 0;
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
-        long valuation = totals[0] = snapshot.getAssets();
+        long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
 
         // calculate series
         int index = 1;
@@ -49,7 +52,7 @@ import org.joda.time.Interval;
             dates[index] = date.toDate();
 
             snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
-            long thisValuation = totals[index] = snapshot.getAssets();
+            long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
             long thisDelta = thisValuation - transferals[index] - valuation;
 
             if (valuation == 0)
@@ -78,63 +81,81 @@ import org.joda.time.Interval;
         }
     }
 
-    private void addValue(long[] array, long value, Interval interval, DateMidnight time)
+    private void addValue(long[] array, String currencyCode, long value, Interval interval, DateMidnight time)
     {
         if (value == 0)
             return;
 
         int ii = Days.daysBetween(interval.getStart(), time).getDays();
+
+        if (!currencyCode.equals(getCurrencyConverter().getTermCurrency()))
+            value = getCurrencyConverter().convert(time.toDate(), Money.of(currencyCode, value)).getAmount();
+
         array[ii] += value;
     }
 
     private void collectTransferalsAndTaxes(int size, Interval interval)
     {
-        getClient().getAccounts()
-                        .stream()
-                        .flatMap(a -> a.getTransactions().stream())
-                        .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
-                                        && t.getDate().getTime() <= interval.getEndMillis()) //
-                        .forEach(t -> {
-                            switch (t.getType())
-                            {
-                                case DEPOSIT:
-                                    addValue(transferals, t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case REMOVAL:
-                                    addValue(transferals, -t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case TAXES:
-                                    addValue(taxes, t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case TAX_REFUND:
-                                    addValue(taxes, -t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                default:
-                                    // do nothing
-                                    break;
-                            }
-                        });
+        for (Account account : getClient().getAccounts())
+        {
+            String currencyCode = account.getCurrencyCode();
+            account.getTransactions()
+                            .stream()
+                            .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
+                                            && t.getDate().getTime() <= interval.getEndMillis()) //
+                            .forEach(t -> {
+                                switch (t.getType())
+                                {
+                                    case DEPOSIT:
+                                        addValue(transferals, currencyCode, t.getAmount(), interval,
+                                                        t.getDateMidnight());
+                                        break;
+                                    case REMOVAL:
+                                        addValue(transferals, currencyCode, -t.getAmount(), interval,
+                                                        t.getDateMidnight());
+                                        break;
+                                    case TAXES:
+                                        addValue(taxes, currencyCode, t.getAmount(), interval, t.getDateMidnight());
+                                        break;
+                                    case TAX_REFUND:
+                                        addValue(taxes, currencyCode, -t.getAmount(), interval, t.getDateMidnight());
+                                        break;
+                                    default:
+                                        // do nothing
+                                        break;
+                                }
+                            });
 
-        getClient().getPortfolios()
-                        .stream()
-                        .flatMap(p -> p.getTransactions().stream())
-                        .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
-                                        && t.getDate().getTime() <= interval.getEndMillis()) //
-                        .forEach(t -> {
-                            switch (t.getType())
-                            {
-                                case DELIVERY_INBOUND:
-                                    addValue(transferals, t.getAmount(), interval, t.getDateMidnight());
-                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
-                                    break;
-                                case DELIVERY_OUTBOUND:
-                                    addValue(transferals, -t.getAmount(), interval, t.getDateMidnight());
-                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
-                                    break;
-                                default:
-                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
-                                    break;
-                            }
-                        });
+        }
+
+        for (Portfolio portfolio : getClient().getPortfolios())
+        {
+            String currencyCode = portfolio.getReferenceAccount().getCurrencyCode();
+
+            portfolio.getTransactions()
+                            .stream()
+                            .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
+                                            && t.getDate().getTime() <= interval.getEndMillis()) //
+                            .forEach(t -> {
+                                switch (t.getType())
+                                {
+                                    case DELIVERY_INBOUND:
+                                        addValue(transferals, currencyCode, t.getAmount(), interval,
+                                                        t.getDateMidnight());
+                                        addValue(taxes, currencyCode, t.getTaxes(), interval, t.getDateMidnight());
+                                        break;
+                                    case DELIVERY_OUTBOUND:
+                                        addValue(transferals, currencyCode, -t.getAmount(), interval,
+                                                        t.getDateMidnight());
+                                        addValue(taxes, currencyCode, t.getTaxes(), interval, t.getDateMidnight());
+                                        break;
+                                    default:
+                                        addValue(taxes, currencyCode, t.getTaxes(), interval, t.getDateMidnight());
+                                        break;
+                                }
+                            });
+
+        }
+
     }
 }

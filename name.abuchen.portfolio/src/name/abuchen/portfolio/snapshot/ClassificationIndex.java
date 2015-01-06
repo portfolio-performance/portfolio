@@ -129,6 +129,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     private static void addAccount(Client pseudoClient, Account account, int weight)
     {
         Account pseudoAccount = new Account();
+        pseudoAccount.setCurrencyCode(account.getCurrencyCode());
         pseudoAccount.setName(account.getName());
         pseudoClient.addAccount(pseudoAccount);
 
