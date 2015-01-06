@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -43,25 +45,46 @@ public class PortfolioSnapshot
         return new PortfolioSnapshot(portfolio, converter, date, positions);
     }
 
-    public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots)
+    public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots, CurrencyConverter converter)
     {
         if (snapshots.isEmpty())
             throw new RuntimeException("Error: PortfolioSnapshots to be merged must not be empty"); //$NON-NLS-1$
 
-        Portfolio portfolio = new Portfolio();
+        Portfolio portfolio = new Portfolio()
+        {
+            @Override
+            public List<PortfolioTransaction> getTransactions()
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void addTransaction(PortfolioTransaction transaction)
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void addAllTransaction(List<PortfolioTransaction> transactions)
+            {
+                throw new UnsupportedOperationException();
+            }
+        };
         portfolio.setName(Messages.LabelJointPortfolio);
+        Account referenceAccount = new Account(Messages.LabelJointPortfolio);
+        referenceAccount.setCurrencyCode(converter.getTermCurrency());
+        portfolio.setReferenceAccount(referenceAccount);
 
         Map<Security, SecurityPosition> securities = new HashMap<Security, SecurityPosition>();
-        for (PortfolioSnapshot s : snapshots)
+        for (PortfolioSnapshot snapshot : snapshots)
         {
-            portfolio.addAllTransaction(s.getSource().getTransactions());
-            for (SecurityPosition p : s.getPositions())
+            for (SecurityPosition position : snapshot.getPositions())
             {
-                SecurityPosition pos = securities.get(p.getSecurity());
-                if (pos == null)
-                    securities.put(p.getSecurity(), p);
+                SecurityPosition existing = securities.get(position.getSecurity());
+                if (existing == null)
+                    securities.put(position.getSecurity(), position);
                 else
-                    securities.put(p.getSecurity(), SecurityPosition.merge(pos, p));
+                    securities.put(position.getSecurity(), SecurityPosition.merge(existing, position));
             }
         }
 

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -39,13 +40,6 @@ public class ClientSnapshot
         for (Portfolio portfolio : client.getPortfolios())
             snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, date));
 
-        if (snapshot.portfolios.isEmpty())
-            snapshot.jointPortfolio = PortfolioSnapshot.create(new Portfolio(), converter, date);
-        else if (snapshot.portfolios.size() == 1)
-            snapshot.jointPortfolio = snapshot.portfolios.get(0);
-        else
-            snapshot.jointPortfolio = PortfolioSnapshot.merge(snapshot.portfolios);
-
         return snapshot;
     }
 
@@ -59,7 +53,6 @@ public class ClientSnapshot
 
     private List<AccountSnapshot> accounts = new ArrayList<AccountSnapshot>();
     private List<PortfolioSnapshot> portfolios = new ArrayList<PortfolioSnapshot>();
-    private PortfolioSnapshot jointPortfolio = null;
 
     private ClientSnapshot(Client client, CurrencyConverter converter, Date date)
     {
@@ -100,7 +93,22 @@ public class ClientSnapshot
 
     public PortfolioSnapshot getJointPortfolio()
     {
-        return jointPortfolio;
+        // create joint portfolio lazily - quite expensive and not often used
+        if (portfolios.isEmpty())
+        {
+            Portfolio portfolio = new Portfolio();
+            portfolio.setName(Messages.LabelJointPortfolio);
+            portfolio.setReferenceAccount(new Account(Messages.LabelJointPortfolio));
+            return PortfolioSnapshot.create(portfolio, converter, date);
+        }
+        else if (portfolios.size() == 1)
+        {
+            return portfolios.get(0);
+        }
+        else
+        {
+            return PortfolioSnapshot.merge(portfolios, converter);
+        }
     }
 
     public Money getMonetaryAssets()
@@ -133,7 +141,7 @@ public class ClientSnapshot
 
         Money assets = getMonetaryAssets();
 
-        for (SecurityPosition p : jointPortfolio.getPositions())
+        for (SecurityPosition p : getJointPortfolio().getPositions())
             answer.put(p.getSecurity(), new AssetPosition(p, converter, date, assets));
 
         for (AccountSnapshot account : accounts)
