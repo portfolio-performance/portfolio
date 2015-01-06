@@ -31,6 +31,9 @@ public class CurrencyConverterImpl implements CurrencyConverter
         if (termCurrency.equals(amount.getCurrencyCode()))
             return amount;
 
+        if (amount.isZero())
+            return Money.of(termCurrency, 0);
+
         ExchangeRate rate = getRate(date, amount.getCurrencyCode());
 
         return Money.of(termCurrency,
