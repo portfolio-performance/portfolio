@@ -1,6 +1,9 @@
 package name.abuchen.portfolio;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -12,20 +15,40 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class TestCurrencyConverter implements CurrencyConverter
 {
+    private final String termCurrency;
+    private final Map<String, Long> rates;
+
+    public TestCurrencyConverter()
+    {
+        this(CurrencyUnit.EUR, Arrays.asList(Money.of("USD", 8332)).stream()
+                        .collect(Collectors.toMap(m -> m.getCurrencyCode(), m -> m.getAmount())));
+    }
+
+    public TestCurrencyConverter(String currencyCode, Map<String, Long> rates)
+    {
+        this.termCurrency = currencyCode;
+        this.rates = rates;
+    }
+
     @Override
     public String getTermCurrency()
     {
-        return CurrencyUnit.EUR;
+        return termCurrency;
     }
 
     @Override
     public Money convert(Date date, Money amount)
     {
-        if (CurrencyUnit.EUR.equals(amount.getCurrencyCode()))
+        if (termCurrency.equals(amount.getCurrencyCode()))
             return amount;
 
-        if ("USD".equals(amount.getCurrencyCode()))
-            return Money.of(CurrencyUnit.EUR, Math.round((amount.getAmount() * 8332) / Values.ExchangeRate.divider()));
+        if (amount.isZero())
+            return Money.of(termCurrency, 0);
+
+        Long value = rates.get(amount.getCurrencyCode());
+
+        if (value != null)
+            return Money.of(termCurrency, Math.round((amount.getAmount() * value) / Values.ExchangeRate.divider()));
 
         throw new MonetaryException();
     }
@@ -33,14 +56,27 @@ public class TestCurrencyConverter implements CurrencyConverter
     @Override
     public ExchangeRate getRate(Date date, String currencyCode)
     {
-        switch (currencyCode)
-        {
-            case CurrencyUnit.EUR:
-                return new ExchangeRate(date, Values.ExchangeRate.factor());
-            case "USD":
-                return new ExchangeRate(date, 8332);
-            default:
-                return null;
-        }
+        if (termCurrency.equals(currencyCode))
+            return new ExchangeRate(date, Values.ExchangeRate.factor());
+
+        Long value = rates.get(currencyCode);
+
+        return value != null ? new ExchangeRate(date, value) : null;
+    }
+
+    @Override
+    public CurrencyConverter with(String currencyCode)
+    {
+        if (currencyCode.equals(termCurrency))
+            return this;
+
+        if (currencyCode.equals(CurrencyUnit.EUR))
+            return new TestCurrencyConverter();
+
+        if (currencyCode.equals("USD"))
+            return new TestCurrencyConverter("USD", Arrays.asList(Money.of("EUR", 1_2141)).stream()
+                            .collect(Collectors.toMap(m -> m.getCurrencyCode(), m -> m.getAmount())));
+
+        return null;
     }
 }

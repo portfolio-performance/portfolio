@@ -65,4 +65,13 @@ public class CurrencyConverterImpl implements CurrencyConverter
 
         return series;
     }
+
+    @Override
+    public CurrencyConverter with(String currencyCode)
+    {
+        if (currencyCode.equals(termCurrency))
+            return this;
+
+        return new CurrencyConverterImpl(factory, currencyCode);
+    }
 }
