@@ -41,6 +41,7 @@ import javax.crypto.spec.SecretKeySpec;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
@@ -440,7 +441,7 @@ public class ClientFactory
                 // do nothing --> added 'TAX_REFUND' as account transaction
             case 25:
                 // added currency support
-                client.setBaseCurrency("EUR"); //$NON-NLS-1$
+                addDefaultCurrency(client);
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -751,6 +752,18 @@ public class ClientFactory
                 }
             }
         }
+    }
+
+    private static void addDefaultCurrency(Client client)
+    {
+        client.setBaseCurrency(CurrencyUnit.EUR);
+        client.getAccounts().stream().forEach(a -> a.setCurrencyCode(CurrencyUnit.EUR));
+        client.getSecurities().stream().forEach(s -> s.setCurrencyCode(CurrencyUnit.EUR));
+
+        client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
+                        .forEach(t -> t.setCurrencyCode(CurrencyUnit.EUR));
+        client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .forEach(t -> t.setCurrencyCode(CurrencyUnit.EUR));
     }
 
     @SuppressWarnings("nls")
