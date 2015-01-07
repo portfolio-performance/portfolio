@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import name.abuchen.portfolio.money.Money;
+
 import org.joda.time.DateMidnight;
 
 public abstract class Transaction
@@ -22,27 +24,31 @@ public abstract class Transaction
     }
 
     private Date date;
+    private String currencyCode;
+    private long amount;
+
     private Security security;
     private CrossEntry crossEntry;
     private ForexData forex;
-
     private long shares;
-
     private String note;
 
     public Transaction()
     {}
 
-    public Transaction(Date date, Security security)
+    public Transaction(Date date, String currencyCode, long amount)
     {
-        this(date, security, 0);
+        this(date, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(Date date, Security security, long shares)
+    public Transaction(Date date, String currencyCode, long amount, Security security, long shares, String note)
     {
         this.date = date;
+        this.currencyCode = currencyCode;
+        this.amount = amount;
         this.security = security;
         this.shares = shares;
+        this.note = note;
     }
 
     public Date getDate()
@@ -58,6 +64,37 @@ public abstract class Transaction
     public void setDate(Date date)
     {
         this.date = date;
+    }
+
+    public String getCurrencyCode()
+    {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.currencyCode = currencyCode;
+    }
+
+    public long getAmount()
+    {
+        return amount;
+    }
+
+    public void setAmount(long amount)
+    {
+        this.amount = amount;
+    }
+
+    public Money getMonetaryAmount()
+    {
+        return Money.of(currencyCode, amount);
+    }
+
+    public void setMonetaryAmount(Money value)
+    {
+        this.currencyCode = value.getCurrencyCode();
+        this.amount = value.getAmount();
     }
 
     public Security getSecurity()
@@ -109,8 +146,6 @@ public abstract class Transaction
     {
         this.note = note;
     }
-
-    public abstract long getAmount();
 
     public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
     {

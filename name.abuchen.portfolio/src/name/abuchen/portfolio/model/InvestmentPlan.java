@@ -192,6 +192,7 @@ public class InvestmentPlan implements Named, Adaptable
             PortfolioTransaction transaction = null;
             if (account != null)
             {
+                // FIXME currency
                 BuySellEntry entry = new BuySellEntry(portfolio, account);
                 entry.setType(PortfolioTransaction.Type.BUY);
                 entry.setDate(transactionDate.toDate());
@@ -206,8 +207,9 @@ public class InvestmentPlan implements Named, Adaptable
             }
             else
             {
-                transaction = new PortfolioTransaction(transactionDate.toDate(), security,
-                                PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount, fees, 0);
+                transaction = new PortfolioTransaction(transactionDate.toDate(), portfolio.getReferenceAccount()
+                                .getCurrencyCode(), amount, security, shares,
+                                PortfolioTransaction.Type.DELIVERY_INBOUND, fees, 0);
                 portfolio.addTransaction(transaction);
 
             }

@@ -51,17 +51,17 @@ public class PortfolioMergeTest
         client.addSecurity(securityX);
 
         Portfolio portfolioA = new Portfolio();
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityA,
-                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0, 0));
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 1000000, 12100, 100, 0));
+        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        100_00, securityA, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        121_00, securityX, 1000000, PortfolioTransaction.Type.BUY, 100, 0));
         client.addPortfolio(portfolioA);
 
         Portfolio portfolioB = new Portfolio();
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityB,
-                        PortfolioTransaction.Type.BUY, 1000000, 11000, 0, 0));
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, 1000000, 10000, 0, 0));
+        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        110_00, securityB, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        100_00, securityX, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolioB);
     }
 

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 import org.joda.time.DateMidnight;
@@ -22,26 +23,25 @@ public class PortfolioTransaction extends Transaction
     }
 
     private Type type;
-    private long amount;
     private long fees;
     private long taxes;
 
     public PortfolioTransaction()
     {}
 
-    public PortfolioTransaction(Date date, Security security, Type type, long shares, long amount, long fees, long taxes)
+    public PortfolioTransaction(Date date, String currencyCode, long amount, Security security, long shares, Type type,
+                    long fees, long taxes)
     {
-        super(date, security, shares);
+        super(date, currencyCode, amount, security, shares, null);
         this.type = type;
-        this.amount = amount;
         this.fees = fees;
         this.taxes = taxes;
     }
 
-    public PortfolioTransaction(String date, Security security, Type type, long shares, long amount, long fees,
-                    long taxes)
+    public PortfolioTransaction(String date, String currencyCode, long amount, Security security, long shares,
+                    Type type, long fees, long taxes)
     {
-        this(new DateMidnight(date).toDate(), security, type, shares, amount, fees, taxes);
+        this(new DateMidnight(date).toDate(), currencyCode, amount, security, shares, type, fees, taxes);
     }
 
     public Type getType()
@@ -52,17 +52,6 @@ public class PortfolioTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
-    }
-
-    @Override
-    public long getAmount()
-    {
-        return amount;
-    }
-
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
     }
 
     public long getFees()
@@ -92,14 +81,19 @@ public class PortfolioTransaction extends Transaction
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return amount - fees - taxes;
+                return getAmount() - fees - taxes;
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return amount + fees + taxes;
+                return getAmount() + fees + taxes;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }
+    }
+
+    public Money getLumpSum()
+    {
+        return Money.of(getCurrencyCode(), getLumpSumPrice());
     }
 
     /**
@@ -111,5 +105,10 @@ public class PortfolioTransaction extends Transaction
             return 0;
 
         return getLumpSumPrice() * Values.Share.factor() / getShares();
+    }
+
+    public Money getPricePerShare()
+    {
+        return Money.of(getCurrencyCode(), getActualPurchasePrice());
     }
 }

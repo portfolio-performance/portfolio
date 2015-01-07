@@ -249,6 +249,7 @@ public class SecurityPosition
             t2.setDate(t.getDate());
             t2.setSecurity(t.getSecurity());
             t2.setType(t.getType());
+            t2.setCurrencyCode(t.getCurrencyCode());
 
             t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setFees(Math.round(t.getFees() * weight / (double) Classification.ONE_HUNDRED_PERCENT));

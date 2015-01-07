@@ -34,11 +34,15 @@ public class PortfolioSnapshot
 
     public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, Date date)
     {
-        List<SecurityPosition> positions = portfolio.getTransactions().stream() //
-                        .filter(t -> t.getDate().getTime() <= date.getTime()) //
-                        .collect(Collectors.groupingBy(t -> t.getSecurity())) //
-                        .entrySet().stream() //
-                        .map(e -> new SecurityPosition(e.getKey(), e.getKey().getSecurityPrice(date), e.getValue())) //
+        List<SecurityPosition> positions = portfolio
+                        .getTransactions()
+                        .stream()
+                        .filter(t -> t.getDate().getTime() <= date.getTime())
+                        .collect(Collectors.groupingBy(t -> t.getSecurity()))
+                        .entrySet()
+                        .stream()
+                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date), e
+                                        .getValue())) //
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
 

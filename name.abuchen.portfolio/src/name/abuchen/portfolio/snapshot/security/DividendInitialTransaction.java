@@ -12,14 +12,9 @@ public class DividendInitialTransaction extends Transaction
     public DividendInitialTransaction(SecurityPosition position, Date time)
     {
         this.position = position;
-        this.setSecurity(position.getSecurity());
         this.setDate(time);
-    }
-
-    @Override
-    public long getAmount()
-    {
-        return position.calculateValue().getAmount(); // FIXME c
+        this.setSecurity(position.getSecurity());
+        this.setMonetaryAmount(position.calculateValue());
     }
 
     public SecurityPosition getPosition()

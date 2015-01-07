@@ -98,6 +98,7 @@ public class SecurityPerformanceSnapshot
                 dt.setDate(t.getDate());
                 dt.setSecurity(t.getSecurity());
                 dt.setAccount(account);
+                dt.setCurrencyCode(t.getCurrencyCode());
                 dt.setAmount(t.getAmount());
                 dt.setShares(t.getShares());
                 dt.setNote(t.getNote());

@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 import org.joda.time.DateMidnight;
 
@@ -71,7 +72,8 @@ public class AccountBuilder
 
     public AccountBuilder dividend(String date, long amount, Security security)
     {
-        AccountTransaction t = new AccountTransaction(new DateMidnight(date).toDate(), security, Type.DIVIDENDS, amount);
+        AccountTransaction t = new AccountTransaction(new DateMidnight(date).toDate(), CurrencyUnit.EUR, amount,
+                        security, Type.DIVIDENDS);
         account.addTransaction(t);
         return this;
     }
@@ -83,7 +85,7 @@ public class AccountBuilder
 
     private AccountBuilder transaction(Type type, DateMidnight date, long amount)
     {
-        AccountTransaction t = new AccountTransaction(date.toDate(), null, type, amount);
+        AccountTransaction t = new AccountTransaction(date.toDate(), CurrencyUnit.EUR, amount, null, type);
         account.addTransaction(t);
         return this;
     }

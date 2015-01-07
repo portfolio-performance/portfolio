@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.util.Dates;
@@ -34,10 +35,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.JANUARY, 1), null,
-                        AccountTransaction.Type.DEPOSIT, 100000));
-        account.addTransaction(new AccountTransaction(Dates.date(2011, Calendar.JUNE, 1), null,
-                        AccountTransaction.Type.INTEREST, 5000));
+        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
+                        null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(Dates.date(2011, Calendar.JUNE, 1), CurrencyUnit.EUR, 50_00,
+                        null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -66,10 +67,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.JANUARY, 1), null,
-                        AccountTransaction.Type.DEPOSIT, 100000));
-        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.DECEMBER, 31), null,
-                        AccountTransaction.Type.INTEREST, 5000));
+        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
+                        null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.DECEMBER, 31), CurrencyUnit.EUR, 50_00,
+                        null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -87,10 +88,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.JANUARY, 1), null,
-                        AccountTransaction.Type.DEPOSIT, 100000));
-        account.addTransaction(new AccountTransaction(Dates.date(2011, Calendar.DECEMBER, 31), null,
-                        AccountTransaction.Type.INTEREST, 5000));
+        account.addTransaction(new AccountTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
+                        null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(Dates.date(2011, Calendar.DECEMBER, 31), CurrencyUnit.EUR, 50_00,
+                        null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -113,13 +114,13 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 10, 100, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        1_00, security, 10, PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(Dates.date(2011, Calendar.JANUARY, 31), security,
-                        AccountTransaction.Type.INTEREST, 5000));
+        account.addTransaction(new AccountTransaction(Dates.date(2011, Calendar.JANUARY, 31), CurrencyUnit.EUR, 50_00,
+                        security, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -141,8 +142,8 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        1_00, security, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -167,10 +168,10 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
-                        PortfolioTransaction.Type.BUY, 100000, 9900, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        1_00, security, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), CurrencyUnit.EUR,
+                        99_00, security, 100000, PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -195,10 +196,10 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
-                        PortfolioTransaction.Type.SELL, 100000, 9900, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        1_00, security, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), CurrencyUnit.EUR,
+                        99_00, security, 100000, PortfolioTransaction.Type.SELL, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -223,10 +224,10 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), security,
-                        PortfolioTransaction.Type.BUY, 1000000, 100, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), security,
-                        PortfolioTransaction.Type.SELL, 100000, 9900, 1, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+                        1_00, security, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(Dates.date(2011, Calendar.JANUARY, 15), CurrencyUnit.EUR,
+                        99_00, security, 100000, PortfolioTransaction.Type.SELL, 1, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();

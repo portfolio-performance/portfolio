@@ -45,6 +45,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         Account pseudoAccount = new Account();
         pseudoAccount.setName(""); //$NON-NLS-1$
+        pseudoAccount.setCurrencyCode(security.getCurrencyCode());
         pseudoClient.addAccount(pseudoAccount);
 
         Portfolio pseudoPortfolio = new Portfolio();
@@ -70,16 +71,17 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                         case TRANSFER_IN:
                         case DELIVERY_INBOUND:
                         {
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount - taxes, fees, 0));
+                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), security
+                                            .getCurrencyCode(), amount - taxes, t.getSecurity(), shares,
+                                            PortfolioTransaction.Type.DELIVERY_INBOUND, fees, 0));
                             break;
                         }
                         case SELL:
                         case TRANSFER_OUT:
                         case DELIVERY_OUTBOUND:
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount + taxes, fees,
-                                            0));
+                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), security
+                                            .getCurrencyCode(), amount + taxes, t.getSecurity(), shares,
+                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, fees, 0));
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -98,10 +100,10 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     {
                         case DIVIDENDS:
                             long amount = value(t.getAmount(), weight);
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(), //
-                                            t.getType(), amount));
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                            AccountTransaction.Type.REMOVAL, amount));
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), a.getCurrencyCode(),
+                                            amount, t.getSecurity(), t.getType()));
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), a.getCurrencyCode(),
+                                            amount, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                             break;
                         case TAX_REFUND:
                             // ignore taxes when calculating performance of
@@ -141,19 +143,19 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                 case SELL:
                 case TRANSFER_IN:
                 case DIVIDENDS:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.DEPOSIT, amount));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), account.getCurrencyCode(), amount,
+                                    null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case BUY:
                 case TRANSFER_OUT:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.REMOVAL, amount));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), account.getCurrencyCode(), amount,
+                                    null, AccountTransaction.Type.REMOVAL));
                     break;
                 case TAX_REFUND:
                     if (t.getSecurity() != null)
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.DEPOSIT, amount));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), account.getCurrencyCode(),
+                                        amount, null, AccountTransaction.Type.DEPOSIT));
                         break;
                     }
                     // fall through if tax refund applies to account
@@ -163,7 +165,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                 case TAXES:
                 case FEES:
                     if (weight != Classification.ONE_HUNDRED_PERCENT)
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null, t.getType(), amount));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), account.getCurrencyCode(),
+                                        amount, null, t.getType()));
                     else
                         pseudoAccount.addTransaction(t);
                     break;

@@ -54,9 +54,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                     else
                     {
-                        pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                        PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
-                                                        .getFees(), t.getTaxes()));
+                        pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), t.getSecurity(), t.getShares(),
+                                        PortfolioTransaction.Type.DELIVERY_INBOUND, t.getFees(), t.getTaxes()));
                     }
                     break;
                 case SELL:
@@ -67,9 +67,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                     else
                     {
-                        pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                        PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(), t
-                                                        .getFees(), t.getTaxes()));
+                        pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), t.getSecurity(), t.getShares(),
+                                        PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getFees(), t.getTaxes()));
                     }
                     break;
                 case DELIVERY_INBOUND:
@@ -101,8 +101,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.REMOVAL, t.getAmount()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), null, AccountTransaction.Type.REMOVAL));
                     }
                     break;
                 case SELL:
@@ -112,17 +112,17 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     }
                     break;
                 case TRANSFER_IN:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case TRANSFER_OUT:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.REMOVAL, t.getAmount()));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:
                 case TAX_REFUND:
@@ -132,8 +132,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     }
                     break;
                 case DEPOSIT:

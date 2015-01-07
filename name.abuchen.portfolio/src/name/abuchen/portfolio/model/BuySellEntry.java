@@ -66,6 +66,12 @@ public class BuySellEntry implements CrossEntry
         this.accountTransaction.setAmount(amount);
     }
 
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.portfolioTransaction.setCurrencyCode(currencyCode);
+        this.accountTransaction.setCurrencyCode(currencyCode);
+    }
+
     public void setFees(long fees)
     {
         this.portfolioTransaction.setFees(fees);

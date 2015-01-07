@@ -49,16 +49,16 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                 case BUY:
                 case TRANSFER_IN:
                 {
-                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                    PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
-                                                    .getFees(), t.getTaxes()));
+                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(), t
+                                    .getAmount(), t.getSecurity(), t.getShares(),
+                                    PortfolioTransaction.Type.DELIVERY_INBOUND, t.getFees(), t.getTaxes()));
                     break;
                 }
                 case SELL:
                 case TRANSFER_OUT:
-                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(), t
-                                                    .getFees(), t.getTaxes()));
+                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(), t
+                                    .getAmount(), t.getSecurity(), t.getShares(),
+                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getFees(), t.getTaxes()));
                     break;
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
@@ -93,8 +93,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     // performance of security
                 case DIVIDENDS:
                     pseudoAccount.addTransaction(t);
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.REMOVAL, t.getAmount()));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case BUY:
                 case TRANSFER_IN:

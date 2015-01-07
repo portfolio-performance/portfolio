@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -37,8 +38,8 @@ public class PortfolioBuilder
 
     public PortfolioBuilder inbound_delivery(Security security, DateMidnight date, long shares, long amount)
     {
-        portfolio.addTransaction(new PortfolioTransaction(date.toDate(), security, Type.DELIVERY_INBOUND, shares,
-                        amount, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(date.toDate(), CurrencyUnit.EUR, amount, security, shares,
+                        Type.DELIVERY_INBOUND, 0, 0));
         return this;
     }
 
@@ -73,6 +74,7 @@ public class PortfolioBuilder
         entry.setDate(new DateTime(date).toDate());
         entry.setSecurity(security);
         entry.setShares(shares);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(amount);
 
         entry.insert();

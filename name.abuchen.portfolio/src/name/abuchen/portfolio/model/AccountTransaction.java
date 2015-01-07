@@ -19,16 +19,13 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
-    private long amount;
-
     public AccountTransaction()
     {}
 
-    public AccountTransaction(Date date, Security security, Type type, long amount)
+    public AccountTransaction(Date date, String currencyCode, long amount, Security security, Type type)
     {
-        super(date, security);
+        super(date, currencyCode, amount, security, 0, null);
         this.type = type;
-        this.amount = amount;
     }
 
     public Type getType()
@@ -39,16 +36,5 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
-    }
-
-    @Override
-    public long getAmount()
-    {
-        return amount;
-    }
-
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
     }
 }
