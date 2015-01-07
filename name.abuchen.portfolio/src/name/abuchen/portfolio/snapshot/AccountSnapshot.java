@@ -82,6 +82,11 @@ public class AccountSnapshot
         return date;
     }
 
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
     public Money getFunds()
     {
         return converter.convert(date, funds);

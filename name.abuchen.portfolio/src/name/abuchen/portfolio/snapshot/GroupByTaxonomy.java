@@ -197,6 +197,11 @@ public final class GroupByTaxonomy
             categories.add(unassigned);
     }
 
+    public Date getDate()
+    {
+        return date;
+    }
+
     public Money getValuation()
     {
         return valuation;

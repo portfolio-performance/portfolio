@@ -27,6 +27,8 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public class CurrencyTestCase
 {
+    private static TestCurrencyConverter converter = new TestCurrencyConverter();
+
     private static Client client;
     private static Security securityEUR;
     private static Security securityUSD;
@@ -46,10 +48,10 @@ public class CurrencyTestCase
     }
 
     @Test
-    public void testSnapshots()
+    public void testClientSnapshot()
     {
         Date requestedTime = Dates.date("2015-01-31");
-        TestCurrencyConverter converter = new TestCurrencyConverter();
+
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, requestedTime);
 
         AccountSnapshot accountEURsnapshot = lookupAccountSnapshot(snapshot, accountEUR);
@@ -62,6 +64,12 @@ public class CurrencyTestCase
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(client.getTaxonomy("30314ba9-949f-4bf4-944e-6a30802f5190"));
 
+        testAssetCategories(grouping);
+        testUSDAssetPosition(grouping);
+    }
+
+    private void testAssetCategories(GroupByTaxonomy grouping)
+    {
         AssetCategory cash = getAssetCategoryByName(grouping, "Barvermögen");
         assertThat(cash.getValuation(), is(Money.of(CurrencyUnit.EUR, 1833_20)));
 
@@ -71,10 +79,10 @@ public class CurrencyTestCase
         AssetPosition positionUSD = getAssetPositionByName(grouping, accountUSD.getName());
         assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, 833_20)));
 
-        Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(requestedTime)
+        Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(grouping.getDate())
                         .getValue());
-        Money equityUSDvaluation = converter.convert(requestedTime,
-                        Money.of("USD", 10 * securityUSD.getSecurityPrice(requestedTime).getValue()));
+        Money equityUSDvaluation = converter.convert(grouping.getDate(),
+                        Money.of("USD", 10 * securityUSD.getSecurityPrice(grouping.getDate()).getValue()));
         Money equityValuation = Money.of(CurrencyUnit.EUR,
                         equityEURvaluation.getAmount() + equityUSDvaluation.getAmount());
 
@@ -89,6 +97,23 @@ public class CurrencyTestCase
         assertThat(equityUSD.getFIFOPurchaseValue().getCurrencyCode(), is(CurrencyUnit.EUR));
 
         assertThat(grouping.getValuation(), is(Money.of(CurrencyUnit.EUR, 1833_20 + equityValuation.getAmount())));
+    }
+
+    private void testUSDAssetPosition(GroupByTaxonomy grouping)
+    {
+        AssetPosition equityUSD = getAssetPositionByName(grouping, securityUSD.getName());
+
+        assertThat(equityUSD.getPosition().getShares(), is(10_00000L));
+        // purchase value must be sum of both purchases:
+        // the one in EUR account and the one in USD account
+        assertThat(equityUSD.getPosition().getFIFOPurchaseValue(),
+                        is(Money.of("USD", Math.round(454_60 * 1.2141) + 571_90)));
+
+        // price per share is the total purchase price minus 20 USD fees and
+        // taxes divided by the number of shares
+        Money pricePerShare = equityUSD.getPosition().getFIFOPurchaseValue() //
+                        .substract(Money.of("USD", 20_00)).divide(10);
+        assertThat(equityUSD.getPosition().getFIFOPurchasePrice(), is(pricePerShare));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

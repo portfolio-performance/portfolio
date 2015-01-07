@@ -13,12 +13,14 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 public class SecurityPosition
 {
     private final InvestmentVehicle investment;
+    private final CurrencyConverter converter;
     private final SecurityPrice price;
     private final long shares;
     private final List<PortfolioTransaction> transactions;
@@ -28,10 +30,11 @@ public class SecurityPosition
     private transient long purchasePrice;
     private transient long purchaseValue;
 
-    private SecurityPosition(InvestmentVehicle investment, SecurityPrice price, long shares,
-                    List<PortfolioTransaction> transactions)
+    private SecurityPosition(InvestmentVehicle investment, CurrencyConverter converter, SecurityPrice price,
+                    long shares, List<PortfolioTransaction> transactions)
     {
         this.investment = investment;
+        this.converter = converter;
         this.price = price;
         this.shares = shares;
         this.transactions = transactions;
@@ -43,17 +46,21 @@ public class SecurityPosition
         Objects.requireNonNull(snapshot.getAccount());
 
         this.investment = snapshot.getAccount();
+        this.converter = snapshot.getCurrencyConverter().with(investment.getCurrencyCode());
         this.price = new SecurityPrice(snapshot.getTime(), snapshot.getUnconvertedFunds().getAmount());
         this.shares = Values.Share.factor();
         this.transactions = new ArrayList<PortfolioTransaction>();
     }
 
-    public SecurityPosition(Security security, SecurityPrice price, List<PortfolioTransaction> transactions)
+    public SecurityPosition(Security security, CurrencyConverter converter, SecurityPrice price,
+                    List<PortfolioTransaction> transactions)
     {
         Objects.requireNonNull(security);
+        Objects.requireNonNull(converter);
         Objects.requireNonNull(price);
 
         this.investment = security;
+        this.converter = converter.with(investment.getCurrencyCode());
         this.price = price;
         this.shares = transactions.stream().mapToLong(t -> {
             switch (t.getType())
@@ -196,8 +203,8 @@ public class SecurityPosition
         }
 
         long sharesBought = 0;
-        long value = 0;
-        long investment = 0;
+        long grossInvestment = 0;
+        long netInvestment = 0;
         for (PortfolioTransaction t : input)
         {
             if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
@@ -216,15 +223,30 @@ public class SecurityPosition
 
                 if (bought > 0)
                 {
+                    long grossAmount;
+                    long netAmount;
+
+                    if (t.getCurrencyCode().equals(this.investment.getCurrencyCode()))
+                    {
+                        grossAmount = t.getAmount();
+                        netAmount = t.getLumpSumPrice();
+                    }
+                    else
+                    {
+                        grossAmount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                        netAmount = converter.convert(t.getDate(), t.getLumpSum()).getAmount();
+                    }
+
                     sharesBought += bought;
-                    value += (bought * t.getActualPurchasePrice()) / Values.Share.factor();
-                    investment += bought * t.getAmount() / t.getShares();
+                    grossInvestment += grossAmount * bought / (double) t.getShares();
+                    netInvestment += netAmount * bought / (double) t.getShares();
                 }
             }
         }
 
-        this.purchasePrice = sharesBought > 0 ? (value * Values.Share.factor()) / sharesBought : 0;
-        this.purchaseValue = investment;
+        this.purchasePrice = sharesBought > 0 ? Math.round((netInvestment * Values.Share.factor())
+                        / (double) sharesBought) : 0;
+        this.purchaseValue = grossInvestment;
     }
 
     public static SecurityPosition merge(SecurityPosition p1, SecurityPosition p2)
@@ -236,7 +258,7 @@ public class SecurityPosition
         allTransactions.addAll(p1.transactions);
         allTransactions.addAll(p2.transactions);
 
-        return new SecurityPosition(p1.getSecurity(), p1.price, p1.shares + p2.shares, allTransactions);
+        return new SecurityPosition(p1.getSecurity(), p1.converter, p1.price, p1.shares + p2.shares, allTransactions);
     }
 
     public static SecurityPosition split(SecurityPosition position, int weight)
@@ -259,7 +281,7 @@ public class SecurityPosition
             splitTransactions.add(t2);
         }
 
-        return new SecurityPosition(position.investment, position.price, Math.round(position.shares * weight
-                        / (double) Classification.ONE_HUNDRED_PERCENT), splitTransactions);
+        return new SecurityPosition(position.investment, position.converter, position.price, Math.round(position.shares
+                        * weight / (double) Classification.ONE_HUNDRED_PERCENT), splitTransactions);
     }
 }

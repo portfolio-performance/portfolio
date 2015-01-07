@@ -45,6 +45,27 @@ public final class Money
         return amount < 0L;
     }
 
+    public Money add(Money monetaryAmount)
+    {
+        if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+
+        return Money.of(currencyCode, amount + monetaryAmount.getAmount());
+    }
+
+    public Money substract(Money monetaryAmount)
+    {
+        if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+
+        return Money.of(currencyCode, amount - monetaryAmount.getAmount());
+    }
+
+    public Money divide(long divisor)
+    {
+        return Money.of(currencyCode, Math.round(amount / (double) divisor));
+    }
+
     @Override
     public int hashCode()
     {

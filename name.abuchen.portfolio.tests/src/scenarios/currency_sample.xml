@@ -1268,12 +1268,13 @@
         <price t="2014-12-30" v="11252"/>
         <price t="2014-12-31" v="11038"/>
         <price t="2015-01-02" v="10933"/>
+        <price t="2015-01-05" v="10625"/>
       </prices>
-      <latest t="2015-01-02" v="10933">
-        <high>11144</high>
-        <low>10735</low>
-        <volume>53204624</volume>
-        <previousClose>11038</previousClose>
+      <latest t="2015-01-05" v="10625">
+        <high>10865</high>
+        <low>10541</low>
+        <volume>64289916</volume>
+        <previousClose>10933</previousClose>
       </latest>
       <attributes>
         <map/>
@@ -2905,12 +2906,15 @@
       <transactions>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
-          <amount>100000</amount>
         </account-transaction>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>71880</amount>
           <security reference="../../../../../securities/security[2]"/>
           <crossEntry class="buysell">
             <portfolio>
@@ -2921,16 +2925,19 @@
               <transactions>
                 <portfolio-transaction>
                   <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>71880</amount>
                   <security reference="../../../../../../../../../securities/security[2]"/>
                   <crossEntry class="buysell" reference="../../../.."/>
                   <shares>1000000</shares>
                   <type>BUY</type>
-                  <amount>71880</amount>
                   <fees>1000</fees>
                   <taxes>1000</taxes>
                 </portfolio-transaction>
                 <portfolio-transaction>
                   <date>2015-01-01</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>45460</amount>
                   <security reference="../../../../../../../../../securities/security"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
@@ -2938,6 +2945,8 @@
                     <account reference="../../../../../../../.."/>
                     <accountTransaction>
                       <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>45460</amount>
                       <security reference="../../../../../../../../../../../securities/security"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <forex>
@@ -2948,13 +2957,11 @@
                       </forex>
                       <shares>0</shares>
                       <type>BUY</type>
-                      <amount>45460</amount>
                     </accountTransaction>
                   </crossEntry>
                   <forex reference="../crossEntry/accountTransaction/forex"/>
                   <shares>500000</shares>
                   <type>BUY</type>
-                  <amount>45460</amount>
                   <fees>0</fees>
                   <taxes>0</taxes>
                 </portfolio-transaction>
@@ -2966,20 +2973,21 @@
           </crossEntry>
           <shares>0</shares>
           <type>BUY</type>
-          <amount>71880</amount>
         </account-transaction>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>71880</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
-          <amount>71880</amount>
         </account-transaction>
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>45460</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
-          <amount>45460</amount>
         </account-transaction>
       </transactions>
     </account>
@@ -2991,12 +2999,15 @@
       <transactions>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>USD</currencyCode>
+          <amount>100000</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
-          <amount>100000</amount>
         </account-transaction>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>USD</currencyCode>
+          <amount>57190</amount>
           <security reference="../../../../../securities/security"/>
           <crossEntry class="buysell">
             <portfolio>
@@ -3007,16 +3018,19 @@
               <transactions>
                 <portfolio-transaction>
                   <date reference="../../../../../date"/>
+                  <currencyCode>USD</currencyCode>
+                  <amount>57190</amount>
                   <security reference="../../../../../../../../../securities/security"/>
                   <crossEntry class="buysell" reference="../../../.."/>
                   <shares>500000</shares>
                   <type>BUY</type>
-                  <amount>57190</amount>
                   <fees>1000</fees>
                   <taxes>1000</taxes>
                 </portfolio-transaction>
                 <portfolio-transaction>
                   <date>2015-01-01</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>84841</amount>
                   <security reference="../../../../../../../../../securities/security[2]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
@@ -3024,6 +3038,8 @@
                     <account reference="../../../../../../../.."/>
                     <accountTransaction>
                       <date reference="../../../date"/>
+                      <currencyCode>USD</currencyCode>
+                      <amount>84841</amount>
                       <security reference="../../../../../../../../../../../securities/security[2]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <forex>
@@ -3034,13 +3050,11 @@
                       </forex>
                       <shares>0</shares>
                       <type>BUY</type>
-                      <amount>84841</amount>
                     </accountTransaction>
                   </crossEntry>
                   <forex reference="../crossEntry/accountTransaction/forex"/>
                   <shares>1000000</shares>
                   <type>BUY</type>
-                  <amount>84841</amount>
                   <fees>0</fees>
                   <taxes>0</taxes>
                 </portfolio-transaction>
@@ -3052,20 +3066,21 @@
           </crossEntry>
           <shares>0</shares>
           <type>BUY</type>
-          <amount>57190</amount>
         </account-transaction>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>USD</currencyCode>
+          <amount>57190</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
-          <amount>57190</amount>
         </account-transaction>
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
         <account-transaction>
           <date>2015-01-01</date>
+          <currencyCode>USD</currencyCode>
+          <amount>84841</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
-          <amount>84841</amount>
         </account-transaction>
       </transactions>
     </account>
@@ -3168,5 +3183,10 @@
       </root>
     </taxonomy>
   </taxonomies>
-  <properties/>
+  <properties>
+    <entry>
+      <string>StatementOfAssetsHistoryView-PICKER</string>
+      <string>Client-totals;#0;SOLID;false,Client-transferals;#808080;SOLID;false,Account7ba2f169-977e-4694-891f-6c9b4f593d86;#e28b79;SOLID;false,Securityd7aa722d-5242-4270-8fec-a79c7a44008b;#ca79e2;SOLID;false</string>
+    </entry>
+  </properties>
 </client>
