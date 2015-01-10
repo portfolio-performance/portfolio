@@ -20264,7 +20264,7 @@
   </securities>
   <watchlists>
     <watchlist>
-      <name>Indices</name>
+      <name>Indizes</name>
       <securities>
         <security reference="../../../../securities/security[18]"/>
         <security reference="../../../../securities/security[19]"/>

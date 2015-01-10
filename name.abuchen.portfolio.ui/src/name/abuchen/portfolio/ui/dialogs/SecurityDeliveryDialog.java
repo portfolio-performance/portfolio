@@ -75,9 +75,9 @@ public class SecurityDeliveryDialog extends AbstractDialog
             switch (type)
             {
                 case DELIVERY_INBOUND:
-                    return Math.max(0, (total - fees - taxes) * Values.Share.factor() / shares);
+                    return Math.max(0, Math.round((total - fees - taxes) * Values.Share.factor() / (double) shares));
                 case DELIVERY_OUTBOUND:
-                    return Math.max(0, (total + fees + taxes) * Values.Share.factor() / shares);
+                    return Math.max(0, Math.round((total + fees + taxes) * Values.Share.factor() / (double) shares));
                 default:
                     throw new IllegalArgumentException();
             }

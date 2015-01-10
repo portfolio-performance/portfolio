@@ -94,7 +94,11 @@ import de.engehausen.treemap.swt.TreeMap;
             }
         });
         for (TaxonomyNode child : children)
+        {
+            if (model.isUnassignedCategoryInChartsExcluded() && child.isUnassignedCategory())
+                continue;
             new LegendItem(this, child);
+        }
 
         pack();
         getParent().layout();

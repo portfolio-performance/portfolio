@@ -24,6 +24,7 @@ public class ComdirectPDFExtractorTest
 
     private String gutschriftText;
     private String kaufText;
+    private String gutschrift2;
 
     public ComdirectPDFExtractorTest()
     {
@@ -35,6 +36,11 @@ public class ComdirectPDFExtractorTest
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Wertpapierabrechnung_Kauf.txt"), "UTF-8");)
         {
             kaufText = scanner.useDelimiter("\\A").next();
+        }
+
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream("Gutschrift2.txt"), "UTF-8");)
+        {
+            gutschrift2 = scanner.useDelimiter("\\A").next();
         }
     }
 
@@ -66,6 +72,25 @@ public class ComdirectPDFExtractorTest
         assert (accItem.getSecurity().equals(security));
         assert (results.size() == 2);
         // Should complete without error
+        assert (errors.size() == 0);
+        results = extractor.extract(gutschrift2, "Gutschrift2", errors);
+        for (Item it : results)
+        {
+            if (it instanceof SecurityItem)
+            {
+                secItem = (SecurityItem) it;
+            }
+            if (it instanceof AccountTransaction)
+            {
+                accItem = (AccountTransaction) it;
+            }
+        }
+        security = secItem.getSecurity();
+        assert (accItem.getSecurity().equals(security));
+        assert (accItem.getAmount() == 1.11);
+        assert (security.getName().equals("Bank-Global-Rent"));
+        assert (security.getIsin().equals("AT0000123456"));
+        assert (results.size() == 2);
         assert (errors.size() == 0);
     }
 

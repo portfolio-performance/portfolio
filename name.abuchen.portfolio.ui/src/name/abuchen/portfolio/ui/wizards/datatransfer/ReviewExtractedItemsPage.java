@@ -262,6 +262,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 if (element instanceof Extractor.BuySellEntryItem)
                     return Values.Share.format(((BuySellEntry) ((Extractor.Item) element).getSubject())
                                     .getPortfolioTransaction().getShares());
+                else if (((Extractor.Item) element).getSubject() instanceof AccountTransaction)
+                    return Values.Share.formatNonZero(((AccountTransaction) ((Extractor.Item) element).getSubject())
+                                    .getShares());
                 else
                     return null;
             }

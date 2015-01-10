@@ -2,11 +2,10 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -33,7 +32,7 @@ import org.joda.time.Interval;
 import org.swtchart.ISeries;
 import org.swtchart.Range;
 
-public class StackedChartViewer extends Page
+public class StackedChartViewer extends AbstractChartPage
 {
     private static class VehicleBuilder
     {
@@ -56,7 +55,7 @@ public class StackedChartViewer extends Page
 
     }
 
-    private static class SeriesBuilder
+    private static class SeriesBuilder implements Comparable<SeriesBuilder>
     {
         private TaxonomyNode node;
         private long[] values;
@@ -96,6 +95,14 @@ public class StackedChartViewer extends Page
                     answer[ii] = values[ii] / (double) totals[ii];
             }
             return answer;
+        }
+
+        @Override
+        public int compareTo(SeriesBuilder other)
+        {
+            long l1 = values[values.length - 1];
+            long l2 = other.values[other.values.length - 1];
+            return Long.compare(l1, l2);
         }
     }
 
@@ -145,6 +152,12 @@ public class StackedChartViewer extends Page
 
     @Override
     public void nodeChange(TaxonomyNode node)
+    {
+        onConfigChanged();
+    }
+
+    @Override
+    public void onConfigChanged()
     {
         isDirty = true;
 
@@ -232,54 +245,57 @@ public class StackedChartViewer extends Page
             index++;
         }
 
-        final List<SeriesBuilder> series = new ArrayList<SeriesBuilder>();
-        for (SeriesBuilder s : node2series.values())
+        // if the unassigned category is excluded, reduce the total values
+        if (getModel().isUnassignedCategoryInChartsExcluded())
         {
-            if (s.hasValues())
-                series.add(s);
+            SeriesBuilder unassigned = node2series.get(getModel().getUnassignedNode());
+            for (int ii = 0; ii < totals.length; ii++)
+                totals[ii] -= unassigned.values[ii];
         }
 
-        Collections.sort(series, new Comparator<SeriesBuilder>()
-        {
-            @Override
-            public int compare(SeriesBuilder o1, SeriesBuilder o2)
-            {
-                long l1 = o1.values[o1.values.length - 1];
-                long l2 = o2.values[o2.values.length - 1];
-                return l1 > l2 ? -1 : l1 < l2 ? 1 : 0;
-            }
-        });
+        final List<SeriesBuilder> series = node2series
+                        .values()
+                        .stream()
+                        .filter(s -> s.hasValues())
+                        .filter(s -> !getModel().isUnassignedCategoryInChartsExcluded()
+                                        || !s.node.isUnassignedCategory()) //
+                        .sorted() //
+                        .collect(Collectors.toList());
 
         Display.getDefault().asyncExec(new Runnable()
         {
             @Override
             public void run()
             {
-                try
-                {
-                    chart.suspendUpdate(true);
-                    for (ISeries s : chart.getSeriesSet().getSeries())
-                        chart.getSeriesSet().deleteSeries(s.getId());
-
-                    for (SeriesBuilder serie : series)
-                    {
-                        chart.addSeries(serie.node.getClassification().getPathName(false), //
-                                        serie.getValues(totals), //
-                                        getRenderer().getColorFor(serie.node));
-                    }
-
-                    chart.getAxisSet().adjustRange();
-                    chart.getAxisSet().getYAxis(0).setRange(new Range(-0.01, 1.01));
-                }
-                finally
-                {
-                    chart.suspendUpdate(false);
-                    chart.redraw();
-                }
-
-                isDirty = false;
+                rebuildChartSeries(totals, series);
             }
         });
     }
 
+    private void rebuildChartSeries(long[] totals, List<SeriesBuilder> series)
+    {
+        try
+        {
+            chart.suspendUpdate(true);
+            for (ISeries s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
+
+            for (SeriesBuilder serie : series)
+            {
+                chart.addSeries(serie.node.getClassification().getPathName(false), //
+                                serie.getValues(totals), //
+                                getRenderer().getColorFor(serie.node));
+            }
+
+            chart.getAxisSet().adjustRange();
+            chart.getAxisSet().getYAxis(0).setRange(new Range(-0.01, 1.01));
+        }
+        finally
+        {
+            chart.suspendUpdate(false);
+            chart.redraw();
+        }
+
+        isDirty = false;
+    }
 }
