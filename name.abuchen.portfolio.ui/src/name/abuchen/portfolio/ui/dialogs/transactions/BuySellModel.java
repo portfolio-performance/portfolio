@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -46,7 +48,7 @@ import org.eclipse.core.runtime.IStatus;
     private long shares;
     private long quote;
     private long lumpSum;
-    private long exchangeRate = 1 * Values.ExchangeRate.factor();
+    private BigDecimal exchangeRate = BigDecimal.ONE;
     private long convertedLumpSum;
     private long fees;
     private long taxes;
@@ -90,7 +92,7 @@ import org.eclipse.core.runtime.IStatus;
         }
         else
         {
-            this.exchangeRate = 1 * Values.ExchangeRate.factor();
+            this.exchangeRate = BigDecimal.ONE;
             this.lumpSum = convertedLumpSum;
             this.quote = entry.getPortfolioTransaction().getActualPurchasePrice();
         }
@@ -173,8 +175,8 @@ import org.eclipse.core.runtime.IStatus;
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
         // check whether converted lump sum is in range
-        upper = Math.round(lumpSum * (exchangeRate + 1) / Values.ExchangeRate.divider());
-        lower = Math.round(lumpSum * (exchangeRate - 1) / Values.ExchangeRate.divider());
+        upper = Math.round(lumpSum * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
+        lower = Math.round(lumpSum * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
         if (convertedLumpSum < lower || convertedLumpSum > upper)
             return ValidationStatus.error(Messages.MsgIncorrectConvertedSubTotal);
 
@@ -256,17 +258,16 @@ import org.eclipse.core.runtime.IStatus;
 
         if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
         {
-            setExchangeRate(1 * Values.ExchangeRate.factor());
+            setExchangeRate(BigDecimal.ONE);
         }
         else if (!getAccountCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = factory.getTimeSeries(getSecurityCurrencyCode(), getAccountCurrencyCode());
 
             if (series != null)
-                setExchangeRate(series.lookupRate(date)
-                                .orElse(new ExchangeRate(date, 1 * Values.ExchangeRate.factor())).getValue());
+                setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
             else
-                setExchangeRate(1 * Values.ExchangeRate.factor());
+                setExchangeRate(BigDecimal.ONE);
         }
 
     }
@@ -343,19 +344,19 @@ import org.eclipse.core.runtime.IStatus;
     public void triggerLumpSum(long lumpSum)
     {
         firePropertyChange(Properties.lumpSum.name(), this.lumpSum, this.lumpSum = lumpSum);
-        triggerConvertedLumpSum(Math.round(exchangeRate * lumpSum / Values.ExchangeRate.divider()));
+        triggerConvertedLumpSum(Math.round(exchangeRate.doubleValue() * lumpSum));
     }
 
-    public long getExchangeRate()
+    public BigDecimal getExchangeRate()
     {
         return exchangeRate;
     }
 
-    public void setExchangeRate(long exchangeRate)
+    public void setExchangeRate(BigDecimal exchangeRate)
     {
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = exchangeRate);
 
-        triggerConvertedLumpSum(Math.round(exchangeRate * lumpSum / Values.ExchangeRate.divider()));
+        triggerConvertedLumpSum(Math.round(exchangeRate.doubleValue() * lumpSum));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -372,7 +373,8 @@ import org.eclipse.core.runtime.IStatus;
 
         if (lumpSum != 0)
         {
-            long newExchangeRate = Math.round(convertedLumpSum * Values.ExchangeRate.factor() / (double) lumpSum);
+            BigDecimal newExchangeRate = BigDecimal.valueOf(convertedLumpSum).divide(BigDecimal.valueOf(lumpSum), 10,
+                            RoundingMode.HALF_UP);
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
         }
 
@@ -430,8 +432,7 @@ import org.eclipse.core.runtime.IStatus;
         firePropertyChange(
                         Properties.lumpSum.name(),
                         this.lumpSum,
-                        this.lumpSum = Math.round(convertedLumpSum * Values.ExchangeRate.divider()
-                                        / (double) exchangeRate));
+                        this.lumpSum = Math.round(convertedLumpSum / exchangeRate.doubleValue()));
 
         if (shares != 0)
             firePropertyChange(Properties.quote.name(), this.quote,

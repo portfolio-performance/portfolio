@@ -3,6 +3,7 @@ package name.abuchen.portfolio.money.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +24,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 /**
@@ -160,10 +160,9 @@ import name.abuchen.portfolio.util.Dates;
                 }
 
                 String rateValue = reader.getAttributeValue(null, "rate"); //$NON-NLS-1$
-                Number rateNumber = rateFormat.parse(rateValue);
+                BigDecimal rateNumber = new BigDecimal(rateValue);
 
-                ExchangeRate rate = new ExchangeRate(currentDate, Math.round(rateNumber.doubleValue()
-                                * Values.ExchangeRate.factor()));
+                ExchangeRate rate = new ExchangeRate(currentDate, rateNumber);
 
                 series.addRate(rate);
             }

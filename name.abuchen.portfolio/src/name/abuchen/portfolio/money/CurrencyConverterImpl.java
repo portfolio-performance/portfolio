@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,16 +36,15 @@ public class CurrencyConverterImpl implements CurrencyConverter
             return Money.of(termCurrency, 0);
 
         ExchangeRate rate = getRate(date, amount.getCurrencyCode());
-
-        return Money.of(termCurrency,
-                        Math.round((amount.getAmount() * rate.getValue()) / Values.ExchangeRate.divider()));
+        BigDecimal converted = rate.getValue().multiply(BigDecimal.valueOf(amount.getAmount()));
+        return Money.of(termCurrency, Math.round(converted.doubleValue()));
     }
 
     @Override
     public ExchangeRate getRate(Date date, String currencyCode)
     {
         if (termCurrency.equals(currencyCode))
-            return new ExchangeRate(date, Values.ExchangeRate.factor());
+            return new ExchangeRate(date, BigDecimal.ONE);
 
         ExchangeRateTimeSeries series = cache.computeIfAbsent(currencyCode, code -> lookupSeries(code));
 

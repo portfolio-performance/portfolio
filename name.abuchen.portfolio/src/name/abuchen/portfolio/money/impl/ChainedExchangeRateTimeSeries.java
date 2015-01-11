@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -7,7 +8,6 @@ import java.util.Optional;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
-import name.abuchen.portfolio.money.Values;
 
 public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
 {
@@ -48,7 +48,7 @@ public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
     @Override
     public Optional<ExchangeRate> lookupRate(Date requestedTime)
     {
-        long value = Values.ExchangeRate.factor();
+        BigDecimal value = BigDecimal.ONE;
 
         for (int ii = 0; ii < series.length; ii++)
         {
@@ -56,7 +56,7 @@ public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
             if (!answer.isPresent())
                 return answer;
 
-            value = /* Math.round( */value * answer.get().getValue() / Values.ExchangeRate.factor()/* ) */;
+            value = value.multiply(answer.get().getValue());
         }
 
         return Optional.of(new ExchangeRate(requestedTime, value));

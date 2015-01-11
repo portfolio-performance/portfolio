@@ -2952,7 +2952,7 @@
                       <forex>
                         <baseCurrency>USD</baseCurrency>
                         <termCurrency>EUR</termCurrency>
-                        <exchangeRate>8237</exchangeRate>
+                        <exchangeRate>0.8237</exchangeRate>
                         <baseAmount>55190</baseAmount>
                       </forex>
                       <shares>0</shares>
@@ -3045,7 +3045,7 @@
                       <forex>
                         <baseCurrency>EUR</baseCurrency>
                         <termCurrency>USD</termCurrency>
-                        <exchangeRate>12141</exchangeRate>
+                        <exchangeRate>1.2141</exchangeRate>
                         <baseAmount>69880</baseAmount>
                       </forex>
                       <shares>0</shares>

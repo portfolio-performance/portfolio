@@ -1,33 +1,41 @@
 package name.abuchen.portfolio;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.MonetaryException;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.money.impl.ExchangeRateTimeSeriesImpl;
+import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
+import name.abuchen.portfolio.util.Dates;
 
 @SuppressWarnings("nls")
 public class TestCurrencyConverter implements CurrencyConverter
 {
+    private static ExchangeRateTimeSeriesImpl EUR_USD = null;
+
+    static
+    {
+        EUR_USD = new ExchangeRateTimeSeriesImpl(null, CurrencyUnit.EUR, "USD");
+        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-01"), BigDecimal.valueOf(1.2141).setScale(10)));
+    }
+
     private final String termCurrency;
-    private final Map<String, Long> rates;
+    private final ExchangeRateTimeSeries series;
 
     public TestCurrencyConverter()
     {
-        this(CurrencyUnit.EUR, Arrays.asList(Money.of("USD", 8332)).stream()
-                        .collect(Collectors.toMap(m -> m.getCurrencyCode(), m -> m.getAmount())));
+        this(CurrencyUnit.EUR, new InverseExchangeRateTimeSeries(EUR_USD));
     }
 
-    public TestCurrencyConverter(String currencyCode, Map<String, Long> rates)
+    public TestCurrencyConverter(String currencyCode, ExchangeRateTimeSeries series)
     {
         this.termCurrency = currencyCode;
-        this.rates = rates;
+        this.series = series;
     }
 
     @Override
@@ -45,23 +53,24 @@ public class TestCurrencyConverter implements CurrencyConverter
         if (amount.isZero())
             return Money.of(termCurrency, 0);
 
-        Long value = rates.get(amount.getCurrencyCode());
+        if (!amount.getCurrencyCode().equals(series.getBaseCurrency()))
+            throw new MonetaryException();
 
-        if (value != null)
-            return Money.of(termCurrency, Math.round((amount.getAmount() * value) / Values.ExchangeRate.divider()));
-
-        throw new MonetaryException();
+        ExchangeRate rate = getRate(date, amount.getCurrencyCode());
+        BigDecimal converted = rate.getValue().multiply(BigDecimal.valueOf(amount.getAmount()));
+        return Money.of(termCurrency, Math.round(converted.doubleValue()));
     }
 
     @Override
     public ExchangeRate getRate(Date date, String currencyCode)
     {
         if (termCurrency.equals(currencyCode))
-            return new ExchangeRate(date, Values.ExchangeRate.factor());
+            return new ExchangeRate(date, BigDecimal.ONE);
 
-        Long value = rates.get(currencyCode);
+        if (!currencyCode.equals(series.getBaseCurrency()))
+            throw new MonetaryException();
 
-        return value != null ? new ExchangeRate(date, value) : null;
+        return series.lookupRate(date).get();
     }
 
     @Override
@@ -74,8 +83,7 @@ public class TestCurrencyConverter implements CurrencyConverter
             return new TestCurrencyConverter();
 
         if (currencyCode.equals("USD"))
-            return new TestCurrencyConverter("USD", Arrays.asList(Money.of("EUR", 1_2141)).stream()
-                            .collect(Collectors.toMap(m -> m.getCurrencyCode(), m -> m.getAmount())));
+            return new TestCurrencyConverter("USD", EUR_USD);
 
         return null;
     }

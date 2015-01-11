@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.model;
 
+import java.math.BigDecimal;
+
 public class ForexData
 {
     private String baseCurrency;
     private String termCurrency;
-    private long exchangeRate;
+    private BigDecimal exchangeRate;
     private long baseAmount;
 
     public String getBaseCurrency()
@@ -27,12 +29,12 @@ public class ForexData
         this.termCurrency = termCurrency;
     }
 
-    public long getExchangeRate()
+    public BigDecimal getExchangeRate()
     {
         return exchangeRate;
     }
 
-    public void setExchangeRate(long exchangeRate)
+    public void setExchangeRate(BigDecimal exchangeRate)
     {
         this.exchangeRate = exchangeRate;
     }

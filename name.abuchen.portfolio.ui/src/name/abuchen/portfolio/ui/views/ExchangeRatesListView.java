@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
@@ -148,7 +147,7 @@ public class ExchangeRatesListView extends AbstractListView
         for (ExchangeRate rate : rates)
         {
             dates[ii] = rate.getTime();
-            values[ii] = (double) rate.getValue() / Values.ExchangeRate.divider();
+            values[ii] = rate.getValue().doubleValue();
             ii++;
         }
 

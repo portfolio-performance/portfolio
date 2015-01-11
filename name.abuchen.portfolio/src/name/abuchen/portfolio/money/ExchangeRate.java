@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.money;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 public class ExchangeRate implements Comparable<ExchangeRate>
 {
@@ -18,15 +20,17 @@ public class ExchangeRate implements Comparable<ExchangeRate>
     }
 
     private Date time;
-    private long value;
+    private BigDecimal value;
 
     public ExchangeRate()
     {
         // empty constructor needed for xstream
     }
 
-    public ExchangeRate(Date time, long value)
+    public ExchangeRate(Date time, BigDecimal value)
     {
+        Objects.requireNonNull(time);
+        Objects.requireNonNull(value);
         this.time = time;
         this.value = value;
     }
@@ -38,16 +42,18 @@ public class ExchangeRate implements Comparable<ExchangeRate>
 
     public void setTime(Date time)
     {
+        Objects.requireNonNull(time);
         this.time = time;
     }
 
-    public long getValue()
+    public BigDecimal getValue()
     {
         return value;
     }
 
-    public void setValue(long value)
+    public void setValue(BigDecimal value)
     {
+        Objects.requireNonNull(value);
         this.value = value;
     }
 
@@ -60,11 +66,7 @@ public class ExchangeRate implements Comparable<ExchangeRate>
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((time == null) ? 0 : time.hashCode());
-        result = prime * result + (int) (value ^ (value >>> 32));
-        return result;
+        return Objects.hash(time, value);
     }
 
     @Override
@@ -76,16 +78,16 @@ public class ExchangeRate implements Comparable<ExchangeRate>
             return false;
         if (getClass() != obj.getClass())
             return false;
+
         ExchangeRate other = (ExchangeRate) obj;
-        if (time == null)
-        {
-            if (other.time != null)
-                return false;
-        }
-        else if (!time.equals(other.time))
+        if (!time.equals(other.time))
             return false;
-        if (value != other.value)
-            return false;
-        return true;
+        return value.equals(other.value);
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%tF %,.10f", time, value); //$NON-NLS-1$
     }
 }

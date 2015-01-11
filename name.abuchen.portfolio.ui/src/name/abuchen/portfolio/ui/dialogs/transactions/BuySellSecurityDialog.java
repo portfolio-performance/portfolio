@@ -31,6 +31,8 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
@@ -51,6 +53,9 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
 
 public class BuySellSecurityDialog extends TitleAreaDialog
 {
@@ -94,6 +99,17 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         public void bindCurrency(String property)
         {
             context.bindValue(SWTObservables.observeText(currency), BeansObservables.observeValue(model, property));
+        }
+
+        public void bindExchangeRate(String property, String description)
+        {
+            NumberFormat format = new DecimalFormat("#,##0.0000");
+
+            context.bindValue(
+                            SWTObservables.observeText(value, SWT.Modify), //
+                            BeansObservables.observeValue(model, property), //
+                            new UpdateValueStrategy().setConverter(StringToNumberConverter.toBigDecimal()),
+                            new UpdateValueStrategy().setConverter(NumberToStringConverter.fromBigDecimal(format)));
         }
 
         public void setVisible(boolean visible)
@@ -270,7 +286,7 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         lumpSum.bindCurrency(Properties.securityCurrencyCode.name());
 
         final Input exchangeRate = new Input(editArea, "x " + Messages.ColumnExchangeRate); //$NON-NLS-1$
-        exchangeRate.bindValue(Properties.exchangeRate.name(), Messages.ColumnExchangeRate, Values.ExchangeRate, true);
+        exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
         exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
 
         final Input convertedLumpSum = new Input(editArea, "="); //$NON-NLS-1$

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
@@ -85,12 +86,12 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> ExchangeRate = new Values<Long>("0.0000", 10000D, 10000) //$NON-NLS-1$
+    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("0.0000", 1D, 1) //$NON-NLS-1$
     {
         @Override
-        public String format(Long exchangeRate)
+        public String format(BigDecimal exchangeRate)
         {
-            return String.format("%,.4f", exchangeRate / divider()); //$NON-NLS-1$
+            return String.format("%,.4f", exchangeRate); //$NON-NLS-1$
         }
     };
 

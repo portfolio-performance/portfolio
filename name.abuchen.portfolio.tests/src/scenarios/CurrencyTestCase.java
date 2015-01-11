@@ -59,7 +59,7 @@ public class CurrencyTestCase
         assertThat(accountEURsnapshot.getUnconvertedFunds(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
 
         AccountSnapshot accountUSDsnapshot = lookupAccountSnapshot(snapshot, accountUSD);
-        assertThat(accountUSDsnapshot.getFunds(), is(Money.of(CurrencyUnit.EUR, 833_20)));
+        assertThat(accountUSDsnapshot.getFunds(), is(Money.of(CurrencyUnit.EUR, 823_66)));
         assertThat(accountUSDsnapshot.getUnconvertedFunds(), is(Money.of("USD", 1000_00)));
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(client.getTaxonomy("30314ba9-949f-4bf4-944e-6a30802f5190"));
@@ -71,13 +71,14 @@ public class CurrencyTestCase
     private void testAssetCategories(GroupByTaxonomy grouping)
     {
         AssetCategory cash = getAssetCategoryByName(grouping, "Barvermögen");
-        assertThat(cash.getValuation(), is(Money.of(CurrencyUnit.EUR, 1833_20)));
+        Money cashValuation = Money.of(CurrencyUnit.EUR, 1823_66);
+        assertThat(cash.getValuation(), is(cashValuation));
 
         AssetPosition positionEUR = getAssetPositionByName(grouping, accountEUR.getName());
         assertThat(positionEUR.getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
 
         AssetPosition positionUSD = getAssetPositionByName(grouping, accountUSD.getName());
-        assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, 833_20)));
+        assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, 823_66)));
 
         Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(grouping.getDate())
                         .getValue());
@@ -94,9 +95,8 @@ public class CurrencyTestCase
 
         AssetPosition equityUSD = getAssetPositionByName(grouping, securityUSD.getName());
         assertThat(equityUSD.getValuation(), is(equityUSDvaluation));
-        assertThat(equityUSD.getFIFOPurchaseValue().getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        assertThat(grouping.getValuation(), is(Money.of(CurrencyUnit.EUR, 1833_20 + equityValuation.getAmount())));
+        assertThat(grouping.getValuation(), is(cashValuation.add(equityValuation)));
     }
 
     private void testUSDAssetPosition(GroupByTaxonomy grouping)

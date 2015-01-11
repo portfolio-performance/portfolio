@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -77,7 +78,7 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
         this.termCurrency = termCurrency;
     }
 
-    /* package */void addRate(ExchangeRate rate)
+    public void addRate(ExchangeRate rate)
     {
         int index = Collections.binarySearch(rates, rate);
 
@@ -98,7 +99,7 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
         if (rates.isEmpty())
             return Optional.empty();
 
-        ExchangeRate r = new ExchangeRate(requestedTime, 0);
+        ExchangeRate r = new ExchangeRate(requestedTime, BigDecimal.ZERO);
         int index = Collections.binarySearch(rates, r);
 
         if (index >= 0)
