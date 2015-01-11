@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification;
@@ -222,6 +223,11 @@ public final class GroupByTaxonomy
     public List<AssetCategory> asList()
     {
         return categories;
+    }
+
+    public Stream<AssetCategory> getCategories()
+    {
+        return categories.stream();
     }
 
     /* package */AssetCategory byClassification(Classification classification)

@@ -54,6 +54,9 @@ public class ClientSnapshot
     private List<AccountSnapshot> accounts = new ArrayList<AccountSnapshot>();
     private List<PortfolioSnapshot> portfolios = new ArrayList<PortfolioSnapshot>();
 
+    private PortfolioSnapshot jointPortfolio;
+    private Money assets;
+
     private ClientSnapshot(Client client, CurrencyConverter converter, Date date)
     {
         this.client = client;
@@ -93,35 +96,45 @@ public class ClientSnapshot
 
     public PortfolioSnapshot getJointPortfolio()
     {
-        // create joint portfolio lazily - quite expensive and not often used
-        if (portfolios.isEmpty())
+        if (this.jointPortfolio == null)
         {
-            Portfolio portfolio = new Portfolio();
-            portfolio.setName(Messages.LabelJointPortfolio);
-            portfolio.setReferenceAccount(new Account(Messages.LabelJointPortfolio));
-            return PortfolioSnapshot.create(portfolio, converter, date);
+            if (portfolios.isEmpty())
+            {
+                Portfolio portfolio = new Portfolio();
+                portfolio.setName(Messages.LabelJointPortfolio);
+                portfolio.setReferenceAccount(new Account(Messages.LabelJointPortfolio));
+                this.jointPortfolio = PortfolioSnapshot.create(portfolio, converter, date);
+            }
+            else if (portfolios.size() == 1)
+            {
+                this.jointPortfolio = portfolios.get(0);
+            }
+            else
+            {
+                this.jointPortfolio = PortfolioSnapshot.merge(portfolios, converter);
+            }
         }
-        else if (portfolios.size() == 1)
-        {
-            return portfolios.get(0);
-        }
-        else
-        {
-            return PortfolioSnapshot.merge(portfolios, converter);
-        }
+
+        return this.jointPortfolio;
     }
 
     public Money getMonetaryAssets()
     {
-        MutableMoney assets = MutableMoney.of(getCurrencyCode());
+        if (this.assets == null)
+        {
+            MutableMoney sum = MutableMoney.of(getCurrencyCode());
 
-        for (AccountSnapshot account : accounts)
-            assets.add(account.getFunds());
+            for (AccountSnapshot account : accounts)
+                sum.add(account.getFunds());
 
-        for (PortfolioSnapshot portfolio : portfolios)
-            assets.add(portfolio.getValue());
+            // use joint portfolio to reduce rounding errors if a security is
+            // split across multiple portfolio
+            sum.add(getJointPortfolio().getValue());
 
-        return assets.toMoney();
+            this.assets = sum.toMoney();
+        }
+
+        return this.assets;
     }
 
     @Deprecated
@@ -139,13 +152,14 @@ public class ClientSnapshot
     {
         Map<InvestmentVehicle, AssetPosition> answer = new HashMap<InvestmentVehicle, AssetPosition>();
 
-        Money assets = getMonetaryAssets();
+        Money monetaryAssets = getMonetaryAssets();
 
         for (SecurityPosition p : getJointPortfolio().getPositions())
-            answer.put(p.getSecurity(), new AssetPosition(p, converter, date, assets));
+            answer.put(p.getSecurity(), new AssetPosition(p, converter, date, monetaryAssets));
 
         for (AccountSnapshot account : accounts)
-            answer.put(account.getAccount(), new AssetPosition(new SecurityPosition(account), converter, date, assets));
+            answer.put(account.getAccount(), new AssetPosition(new SecurityPosition(account), converter, date,
+                            monetaryAssets));
 
         return answer;
     }

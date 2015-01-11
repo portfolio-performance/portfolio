@@ -66,6 +66,11 @@ public final class Money
         return Money.of(currencyCode, Math.round(amount / (double) divisor));
     }
 
+    public Money multiply(long multiplicand)
+    {
+        return Money.of(currencyCode, amount * multiplicand);
+    }
+
     @Override
     public int hashCode()
     {

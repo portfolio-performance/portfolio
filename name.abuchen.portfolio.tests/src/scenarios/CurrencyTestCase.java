@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -64,8 +65,17 @@ public class CurrencyTestCase
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(client.getTaxonomy("30314ba9-949f-4bf4-944e-6a30802f5190"));
 
+        testTotals(snapshot, grouping);
         testAssetCategories(grouping);
         testUSDAssetPosition(grouping);
+    }
+
+    private void testTotals(ClientSnapshot snapshot, GroupByTaxonomy grouping)
+    {
+        assertThat(snapshot.getMonetaryAssets(), is(grouping.getValuation()));
+
+        assertThat(grouping.getCategories().map(c -> c.getValuation()).collect(MoneyCollectors.sum(CurrencyUnit.EUR)),
+                        is(grouping.getValuation()));
     }
 
     private void testAssetCategories(GroupByTaxonomy grouping)
