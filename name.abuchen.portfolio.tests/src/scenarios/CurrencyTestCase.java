@@ -114,6 +114,13 @@ public class CurrencyTestCase
         Money pricePerShare = equityUSD.getPosition().getFIFOPurchaseValue() //
                         .substract(Money.of("USD", 20_00)).divide(10);
         assertThat(equityUSD.getPosition().getFIFOPurchasePrice(), is(pricePerShare));
+
+        // profit loss w/o rounding differences
+        assertThat(equityUSD.getProfitLoss(), is(equityUSD.getValuation().substract(equityUSD.getFIFOPurchaseValue())));
+        assertThat(equityUSD.getPosition().getProfitLoss(),
+                        is(equityUSD.getPosition().calculateValue()
+                                        .substract(equityUSD.getPosition().getFIFOPurchaseValue())));
+
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

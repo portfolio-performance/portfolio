@@ -51,13 +51,19 @@ public class AssetPosition
 
     public Money getProfitLoss()
     {
-        return converter.convert(date, position.getProfitLoss());
+        // calculate profit/loss on the converted values to avoid rounding
+        // differences that can happen when converting the profit/loss value
+        // from the base currency
+
+        if (position.getInvestmentVehicle() instanceof Security)
+            return getValuation().substract(getFIFOPurchaseValue());
+        else
+            return Money.of(converter.getTermCurrency(), 0);
     }
 
     public String getDescription()
     {
-        InvestmentVehicle investmentVehicle = position.getInvestmentVehicle();
-        return investmentVehicle != null ? investmentVehicle.getName() : position.getSecurity().getName();
+        return position.getInvestmentVehicle().getName();
     }
 
     public Security getSecurity()
