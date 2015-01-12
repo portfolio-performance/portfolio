@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -18,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -260,17 +259,13 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         this.client = client;
         this.dirty.setDirty(false);
-
         this.context.set(Client.class, client);
 
-        client.addPropertyChangeListener(new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                notifyModelUpdated();
-            }
-        });
+        client.addPropertyChangeListener(event -> notifyModelUpdated());
+
+        if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
+            Display.getDefault().asyncExec(
+                            () -> new ClientMigrationDialog(Display.getDefault().getActiveShell(), client).open());
 
         new ConsistencyChecksJob(client, false).schedule(100);
         scheduleOnlineUpdateJobs();

@@ -50,7 +50,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        new AbstractDropDown(toolBar, getClient().getBaseCurrency())
+        AbstractDropDown dropdown = new AbstractDropDown(toolBar, getClient().getBaseCurrency())
         {
             @Override
             public void menuAboutToShow(IMenuManager manager)
@@ -73,6 +73,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 }
             }
         };
+        getClient().addPropertyChangeListener("baseCurrency", e -> dropdown.setLabel(e.getNewValue().toString())); //$NON-NLS-1$
 
         Action export = new Action()
         {

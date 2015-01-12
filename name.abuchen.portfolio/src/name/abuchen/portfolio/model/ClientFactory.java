@@ -376,6 +376,8 @@ public class ClientFactory
     {
         client.doPostLoadInitialization();
 
+        client.setFileVersionAfterRead(client.getVersion());
+
         switch (client.getVersion())
         {
             case 1:
@@ -440,8 +442,9 @@ public class ClientFactory
             case 24:
                 // do nothing --> added 'TAX_REFUND' as account transaction
             case 25:
-                // added currency support
-                addDefaultCurrency(client);
+                // added currency support --> designate a default currency (user
+                // will get a dialog to change)
+                setAllCurrencies(client, CurrencyUnit.EUR);
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -754,16 +757,16 @@ public class ClientFactory
         }
     }
 
-    private static void addDefaultCurrency(Client client)
+    public static void setAllCurrencies(Client client, String currencyCode)
     {
-        client.setBaseCurrency(CurrencyUnit.EUR);
-        client.getAccounts().stream().forEach(a -> a.setCurrencyCode(CurrencyUnit.EUR));
-        client.getSecurities().stream().forEach(s -> s.setCurrencyCode(CurrencyUnit.EUR));
+        client.setBaseCurrency(currencyCode);
+        client.getAccounts().stream().forEach(a -> a.setCurrencyCode(currencyCode));
+        client.getSecurities().stream().forEach(s -> s.setCurrencyCode(currencyCode));
 
         client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
-                        .forEach(t -> t.setCurrencyCode(CurrencyUnit.EUR));
+                        .forEach(t -> t.setCurrencyCode(currencyCode));
         client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
-                        .forEach(t -> t.setCurrencyCode(CurrencyUnit.EUR));
+                        .forEach(t -> t.setCurrencyCode(currencyCode));
     }
 
     @SuppressWarnings("nls")

@@ -20,9 +20,21 @@ public class Client
     /* package */static final int MAJOR_VERSION = 1;
     /* package */static final int CURRENT_VERSION = 26;
 
+    public static final int VERSION_WITH_CURRENCY_SUPPORT = 26;
+
     private transient PropertyChangeSupport propertyChangeSupport;
 
+    /**
+     * The (minor) version of the file format. If it is lower than the current
+     * version, then {@link ClientFactory#upgradeModel} will upgrade the model
+     * and set the version number to the current version.
+     */
     private int version = CURRENT_VERSION;
+
+    /**
+     * The (minor) version of the file format as it has been read from file.
+     */
+    private transient int fileVersionAfterRead = CURRENT_VERSION;
 
     private String baseCurrency = CurrencyUnit.EUR;
 
@@ -76,14 +88,24 @@ public class Client
             taxonomies = new ArrayList<Taxonomy>();
     }
 
-    public int getVersion()
+    /* package */int getVersion()
     {
         return version;
     }
 
-    public void setVersion(int version)
+    /* package */void setVersion(int version)
     {
         this.version = version;
+    }
+
+    public int getFileVersionAfterRead()
+    {
+        return fileVersionAfterRead;
+    }
+
+    /* package */void setFileVersionAfterRead(int fileVersionAfterRead)
+    {
+        this.fileVersionAfterRead = fileVersionAfterRead;
     }
 
     public String getBaseCurrency()

@@ -87,6 +87,12 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     }
 
     @Override
+    public String toString()
+    {
+        return getLabel();
+    }
+
+    @Override
     public int compareTo(CurrencyUnit other)
     {
         return getCurrencyCode().compareTo(other.getCurrencyCode());
