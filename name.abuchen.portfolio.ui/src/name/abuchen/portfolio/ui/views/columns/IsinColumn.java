@@ -28,7 +28,7 @@ public class IsinColumn extends Column
         public Object getValue(Object element)
         {
             Security s = Adaptor.adapt(Security.class, element);
-            return s.getIsin();
+            return s.getIsin() != null ? s.getIsin() : ""; //$NON-NLS-1$
         }
 
         @Override

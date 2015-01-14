@@ -31,6 +31,7 @@ import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
+import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -105,6 +106,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             {
                 Account account = new Account();
                 account.setName(Messages.LabelNoName);
+                account.setCurrencyCode(getClient().getBaseCurrency());
 
                 getClient().addAccount(account);
                 markDirty();
@@ -225,6 +227,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accountColumns.addColumn(column);
 
         column = new CurrencyColumn();
+        column.setEditingSupport(new CurrencyEditingSupport()
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                return ((Account) element).getTransactions().isEmpty();
+            }
+        });
         accountColumns.addColumn(column);
 
         column = new NoteColumn();

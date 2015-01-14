@@ -34,6 +34,7 @@ public class SearchYahooWizard extends Wizard
 
         Security security = new Security();
         security.setName(item.getName());
+        security.setCurrencyCode(client.getBaseCurrency());
         security.setTickerSymbol(item.getSymbol());
         security.setIsin(item.getIsin());
         security.setFeed(YahooFinanceQuoteFeed.ID);

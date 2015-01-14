@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -97,11 +98,13 @@ public final class Security implements Attributable, InvestmentVehicle
         this.name = name;
     }
 
+    @Override
     public String getCurrencyCode()
     {
         return currencyCode;
     }
 
+    @Override
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
@@ -381,57 +384,46 @@ public final class Security implements Attributable, InvestmentVehicle
 
         for (Account account : client.getAccounts())
         {
-            for (AccountTransaction t : account.getTransactions())
-            {
-                if (t.getSecurity() == null || !t.getSecurity().equals(this))
-                    continue;
-
-                switch (t.getType())
-                {
-                    case INTEREST:
-                    case DIVIDENDS:
-                    case TAX_REFUND:
-                        answer.add(new TransactionPair<AccountTransaction>(account, t));
-                        break;
-                    case FEES:
-                    case TAXES:
-                    case DEPOSIT:
-                    case REMOVAL:
-                    case BUY:
-                    case SELL:
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
+            account.getTransactions().stream()
+                            //
+                            .filter(t -> this.equals(t.getSecurity()))
+                            .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
+                            .forEach(p -> answer.add(p));
         }
 
         for (Portfolio portfolio : client.getPortfolios())
         {
-            for (PortfolioTransaction t : portfolio.getTransactions())
-            {
-                if (!t.getSecurity().equals(this))
-                    continue;
-
-                switch (t.getType())
-                {
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                    case BUY:
-                    case SELL:
-                    case DELIVERY_INBOUND:
-                    case DELIVERY_OUTBOUND:
-                        answer.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
+            portfolio.getTransactions().stream()
+                            //
+                            .filter(t -> this.equals(t.getSecurity()))
+                            .map(t -> new TransactionPair<PortfolioTransaction>(portfolio, t)) //
+                            .forEach(p -> answer.add(p));
         }
 
         return answer;
+    }
+
+    public boolean hasTransactions(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+        {
+            Optional<PortfolioTransaction> transaction = portfolio.getTransactions().stream()
+                            .filter(t -> this.equals(t.getSecurity())).findAny();
+
+            if (transaction.isPresent())
+                return true;
+        }
+
+        for (Account account : client.getAccounts())
+        {
+            Optional<AccountTransaction> transaction = account.getTransactions().stream()
+                            .filter(t -> this.equals(t.getSecurity())).findAny();
+
+            if (transaction.isPresent())
+                return true;
+        }
+
+        return false;
     }
 
     public Security deepCopy()

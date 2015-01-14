@@ -3,8 +3,10 @@ package name.abuchen.portfolio.ui.util;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.Isin;
@@ -26,6 +28,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -41,6 +44,48 @@ import org.eclipse.swt.widgets.Text;
 
 public class BindingHelper
 {
+    private static final class StringToCurrencyUnitConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return CurrencyUnit.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return CurrencyUnit.getInstance((String)fromObject);
+        }
+    }
+
+    private static final class CurrencyUnitToStringConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return CurrencyUnit.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return ((CurrencyUnit) fromObject).getCurrencyCode();
+        }
+    }
+
     public abstract static class Model
     {
         private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -212,6 +257,27 @@ public class BindingHelper
 
         context.bindValue(ViewersObservables.observeSingleSelection(combo), //
                         BeansObservables.observeValue(model, property), strategy, null);
+        return combo;
+    }
+
+    public final ComboViewer bindCurrencyCodeCombo(Composite editArea, String label, String property)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
+        combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new LabelProvider());
+        combo.setInput(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+
+        UpdateValueStrategy targetToModel = new UpdateValueStrategy();
+        targetToModel.setConverter(new CurrencyUnitToStringConverter());
+        
+        UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
+        modelToTarget.setConverter(new StringToCurrencyUnitConverter());
+
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), //
+                        BeansObservables.observeValue(model, property),  targetToModel, modelToTarget);
         return combo;
     }
 

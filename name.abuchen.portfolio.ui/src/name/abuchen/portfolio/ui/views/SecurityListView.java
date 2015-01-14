@@ -104,6 +104,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 public void run()
                 {
                     Security newSecurity = new Security();
+                    newSecurity.setCurrencyCode(getClient().getBaseCurrency());
                     newSecurity.setFeed(QuoteFeed.MANUAL);
                     openEditDialog(newSecurity);
                 }

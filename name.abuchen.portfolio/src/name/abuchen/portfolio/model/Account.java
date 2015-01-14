@@ -51,11 +51,13 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
         this.name = name;
     }
 
+    @Override
     public String getCurrencyCode()
     {
         return currencyCode;
     }
 
+    @Override
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;

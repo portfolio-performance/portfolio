@@ -8,13 +8,10 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
@@ -130,7 +127,6 @@ import name.abuchen.portfolio.util.Dates;
 
         // date and value format used by ECB
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-        DecimalFormat rateFormat = new DecimalFormat("0.####", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
 
         Date currentDate = null;
 

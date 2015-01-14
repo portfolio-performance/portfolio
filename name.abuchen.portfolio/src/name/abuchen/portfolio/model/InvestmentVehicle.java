@@ -5,4 +5,6 @@ public interface InvestmentVehicle extends Named
     String getUUID();
 
     String getCurrencyCode();
+
+    void setCurrencyCode(String currencyCode);
 }

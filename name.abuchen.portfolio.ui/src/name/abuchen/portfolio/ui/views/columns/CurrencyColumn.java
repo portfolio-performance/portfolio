@@ -1,16 +1,20 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.util.stream.Collectors;
+
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ListEditingSupport;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 
 public class CurrencyColumn extends Column
 {
-    public static class CurrencyColumnLabelProvider extends ColumnLabelProvider
+    private static class CurrencyColumnLabelProvider extends ColumnLabelProvider
     {
         @Override
         public String getText(Object e)
@@ -18,6 +22,17 @@ public class CurrencyColumn extends Column
             InvestmentVehicle n = Adaptor.adapt(InvestmentVehicle.class, e);
             return n != null ? n.getCurrencyCode() : null;
         }
+    }
+
+    public static class CurrencyEditingSupport extends ListEditingSupport
+    {
+        public CurrencyEditingSupport()
+        {
+            super(InvestmentVehicle.class, "currencyCode", //$NON-NLS-1$
+                            CurrencyUnit.getAvailableCurrencyUnits().stream() //
+                                            .map(u -> u.getCurrencyCode()).sorted().collect(Collectors.toList()));
+        }
+
     }
 
     public CurrencyColumn()

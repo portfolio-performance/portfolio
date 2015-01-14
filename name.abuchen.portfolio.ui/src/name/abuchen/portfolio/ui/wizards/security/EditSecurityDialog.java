@@ -187,7 +187,7 @@ public class EditSecurityDialog extends Dialog
             }
         });
 
-        addPage(new SecurityMasterDataPage(bindings), PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY));
+        addPage(new SecurityMasterDataPage(model, bindings), PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY));
         addPage(new AttributesPage(model, bindings), null);
         addPage(new SecurityTaxonomyPage(model, bindings), null);
         addPage(new HistoricalQuoteProviderPage(model, bindings), null);
@@ -232,8 +232,9 @@ public class EditSecurityDialog extends Dialog
                         security.getTickerSymbol()) : security.getTickerSymbol() != null;
         boolean feedURLChanged = model.getFeedURL() != null ? !model.getFeedURL().equals(security.getFeedURL())
                         : security.getFeedURL() != null;
+        boolean currencyChanged = !model.getCurrencyCode().equals(security.getCurrencyCode());
 
-        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged;
+        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
 
