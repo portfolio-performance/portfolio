@@ -28,7 +28,7 @@ public class SecurityMasterDataPage extends AbstractPage
         setControl(container);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
-        ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, "Währung", "currencyCode"); //$NON-NLS-2$
+        ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode"); //$NON-NLS-1$
         if (model.getSecurity().hasTransactions(model.getClient()))
             currencyCode.getCombo().setEnabled(false);
 

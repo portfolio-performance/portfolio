@@ -493,7 +493,7 @@ public class StatementOfAssetsViewer
 
     private void addCurrencyColumns()
     {
-        Column column = new Column("baseCurrency", "Währung", SWT.LEFT, 80); //$NON-NLS-1$
+        Column column = new Column("baseCurrency", Messages.ColumnCurrency, SWT.LEFT, 80); //$NON-NLS-1$
         column.setGroupLabel("Devisen");
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -529,7 +529,8 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("marketValueBaseCurrency", "Marktwert**", SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("marketValueBaseCurrency", //$NON-NLS-1$
+                        Messages.ColumnMarketValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription("Marktwert in Basiswährung");
         column.setGroupLabel("Devisen");
         column.setLabelProvider(new ColumnLabelProvider()
@@ -548,7 +549,8 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("purchaseValueBaseCurrency", "Einstandswert**", SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("purchaseValueBaseCurrency", //$NON-NLS-1$
+                        Messages.ColumnPurchaseValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription("Einstandswert in Basiswährung");
         column.setGroupLabel("Devisen");
         column.setLabelProvider(new ColumnLabelProvider()
@@ -567,7 +569,8 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("profitLossBaseCurrency", "Gewinn / Verlust**", SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("profitLossBaseCurrency", //$NON-NLS-1$
+                        Messages.ColumnProfitLoss + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription("Gewinn / Verlust in Basiswährung");
         column.setGroupLabel("Devisen");
         column.setLabelProvider(new ColumnLabelProvider()

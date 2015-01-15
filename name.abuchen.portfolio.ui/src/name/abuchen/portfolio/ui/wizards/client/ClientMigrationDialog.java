@@ -6,6 +6,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -74,7 +75,7 @@ public class ClientMigrationDialog extends WizardDialog
             editArea.setLayout(new FormLayout());
 
             Label label = new Label(editArea, SWT.NONE);
-            label.setText("Währung");
+            label.setText(Messages.ColumnCurrency);
 
             List<CurrencyUnit> currencies = CurrencyUnit.getAvailableCurrencyUnits();
             Collections.sort(currencies);

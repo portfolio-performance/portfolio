@@ -103,7 +103,7 @@ public class BuySellSecurityDialog extends TitleAreaDialog
 
         public void bindExchangeRate(String property, String description)
         {
-            NumberFormat format = new DecimalFormat("#,##0.0000");
+            NumberFormat format = new DecimalFormat("#,##0.0000"); //$NON-NLS-1$
 
             context.bindValue(
                             SWTObservables.observeText(value, SWT.Modify), //

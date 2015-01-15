@@ -13,6 +13,7 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
+    public static String BaseCurrencyCue;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
@@ -43,6 +44,7 @@ public class Messages extends NLS
     public static String ColumnBalance;
     public static String ColumnColor;
     public static String ColumnCreditNote;
+    public static String ColumnCurrency;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
     public static String ColumnDate;
