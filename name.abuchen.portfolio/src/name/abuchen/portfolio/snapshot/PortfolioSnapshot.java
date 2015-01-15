@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -57,19 +58,13 @@ public class PortfolioSnapshot
         Portfolio portfolio = new Portfolio()
         {
             @Override
-            public List<PortfolioTransaction> getTransactions()
+            public void shallowDeleteTransaction(PortfolioTransaction transaction, Client client)
             {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public void addTransaction(PortfolioTransaction transaction)
-            {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void addAllTransaction(List<PortfolioTransaction> transactions)
+            public void deleteTransaction(PortfolioTransaction transaction, Client client)
             {
                 throw new UnsupportedOperationException();
             }
@@ -82,6 +77,8 @@ public class PortfolioSnapshot
         Map<Security, SecurityPosition> securities = new HashMap<Security, SecurityPosition>();
         for (PortfolioSnapshot snapshot : snapshots)
         {
+            portfolio.addAllTransaction(snapshot.getSource().getTransactions());
+
             for (SecurityPosition position : snapshot.getPositions())
             {
                 SecurityPosition existing = securities.get(position.getSecurity());

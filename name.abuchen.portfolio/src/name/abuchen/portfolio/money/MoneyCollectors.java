@@ -34,7 +34,7 @@ public class MoneyCollectors
         @Override
         public BinaryOperator<MutableMoney> combiner()
         {
-            return (left, right) -> left.addAll(right);
+            return (left, right) -> left.add(right);
         }
 
         @Override

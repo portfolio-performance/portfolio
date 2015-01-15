@@ -59,6 +59,11 @@ public class PortfolioTransaction extends Transaction
         return fees;
     }
 
+    public Money getMonetaryFees()
+    {
+        return Money.of(getCurrencyCode(), fees);
+    }
+
     public void setFees(long fees)
     {
         this.fees = fees;
@@ -67,6 +72,11 @@ public class PortfolioTransaction extends Transaction
     public long getTaxes()
     {
         return taxes;
+    }
+
+    public Money getMonetaryTaxes()
+    {
+        return Money.of(getCurrencyCode(), taxes);
     }
 
     public void setTaxes(long taxes)

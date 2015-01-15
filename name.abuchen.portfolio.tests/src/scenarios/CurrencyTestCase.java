@@ -17,8 +17,11 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -131,6 +134,25 @@ public class CurrencyTestCase
                         is(equityUSD.getPosition().calculateValue()
                                         .substract(equityUSD.getPosition().getFIFOPurchaseValue())));
 
+    }
+
+    @Test
+    public void testClientPerformanceSnapshot()
+    {
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2015-01-02"), Dates.date("2015-01-14"));
+        ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter, period);
+
+        // calculating the totals is tested with #testClientSnapshot
+        assertThat(performance.getCategoryByType(CategoryType.INITIAL_VALUE).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 4131_99)));
+        assertThat(performance.getCategoryByType(CategoryType.FINAL_VALUE).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 4187_94)));
+
+        assertThat(performance.getCategoryByType(CategoryType.CAPITAL_GAINS).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 4187_94 - 4131_99 - 18_90)));
+
+        // FIXME - currency changes of 18_90 shall show up in performance
+        // calculation explicitly
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

@@ -21,7 +21,10 @@ public class TestCurrencyConverter implements CurrencyConverter
     static
     {
         EUR_USD = new ExchangeRateTimeSeriesImpl(null, CurrencyUnit.EUR, "USD");
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-01"), BigDecimal.valueOf(1.2141).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(Dates.date("2014-12-31"), BigDecimal.valueOf(1.2141).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-02"), BigDecimal.valueOf(1.2043).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-14"), BigDecimal.valueOf(1.1775).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-31"), BigDecimal.valueOf(1.2141).setScale(10)));
     }
 
     private final String termCurrency;

@@ -1,13 +1,12 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
@@ -18,30 +17,32 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.MutableMoney;
 
 public class ClientPerformanceSnapshot
 {
     public static class Position
     {
-        private long valuation;
+        private Money valuation;
         private String label;
         private Security security;
 
-        public Position(Security security, long valuation)
+        public Position(Security security, Money valuation)
         {
             this.label = security.getName();
             this.valuation = valuation;
             this.security = security;
         }
 
-        public Position(String label, long valuation)
+        public Position(String label, Money valuation)
         {
             this.label = label;
             this.valuation = valuation;
         }
 
-        public long getValuation()
+        public Money getValuation()
         {
             return valuation;
         }
@@ -62,15 +63,15 @@ public class ClientPerformanceSnapshot
         private List<Position> positions = new ArrayList<Position>();
 
         private String label;
-        private long valuation;
+        private Money valuation;
 
-        public Category(String label, long valuation)
+        public Category(String label, Money valuation)
         {
             this.label = label;
             this.valuation = valuation;
         }
 
-        public long getValuation()
+        public Money getValuation()
         {
             return valuation;
         }
@@ -86,9 +87,9 @@ public class ClientPerformanceSnapshot
         }
     }
 
-    /* package */enum CategoryType
+    public enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE, PERFORMANCE, PERFORMANCE_IRR
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE
     }
 
     private final Client client;
@@ -98,6 +99,7 @@ public class ClientPerformanceSnapshot
     private ClientSnapshot snapshotEnd;
     private EnumMap<CategoryType, Category> categories;
     private List<Transaction> earnings;
+    private double irr;
     private PerformanceIndex performanceIndex;
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Date startDate, Date endDate)
@@ -133,6 +135,11 @@ public class ClientPerformanceSnapshot
         return new ArrayList<Category>(categories.values());
     }
 
+    public Category getCategoryByType(CategoryType type)
+    {
+        return categories.get(type);
+    }
+
     public List<Transaction> getEarnings()
     {
         return earnings;
@@ -143,14 +150,14 @@ public class ClientPerformanceSnapshot
         return performanceIndex;
     }
 
-    public long getPerformanceIRR()
+    public double getPerformanceIRR()
     {
-        return categories.get(CategoryType.PERFORMANCE_IRR).valuation;
+        return irr;
     }
 
-    public long getAbsoluteDelta()
+    public Money getAbsoluteDelta()
     {
-        long delta = 0;
+        MutableMoney delta = MutableMoney.of(converter.getTermCurrency());
 
         for (Map.Entry<CategoryType, Category> entry : categories.entrySet())
         {
@@ -158,18 +165,18 @@ public class ClientPerformanceSnapshot
             {
                 case CAPITAL_GAINS:
                 case EARNINGS:
-                    delta += entry.getValue().getValuation();
+                    delta.add(entry.getValue().getValuation());
                     break;
                 case FEES:
                 case TAXES:
-                    delta -= entry.getValue().getValuation();
+                    delta.substract(entry.getValue().getValuation());
                     break;
                 default:
                     break;
             }
         }
 
-        return delta;
+        return delta.toMoney();
     }
 
     /* package */EnumMap<CategoryType, Category> getCategoryMap()
@@ -179,28 +186,28 @@ public class ClientPerformanceSnapshot
 
     private void calculate()
     {
-        categories.put(CategoryType.INITIAL_VALUE, new Category( //
-                        String.format(Messages.ColumnInitialValue, snapshotStart.getTime()), snapshotStart.getAssets()));
+        categories.put(CategoryType.INITIAL_VALUE,
+                        new Category(String.format(Messages.ColumnInitialValue, snapshotStart.getTime()), //
+                                        snapshotStart.getMonetaryAssets()));
 
-        categories.put(CategoryType.CAPITAL_GAINS, new Category(Messages.ColumnCapitalGains, 0));
-        categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, 0));
-        categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, 0));
-        categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, 0));
-        categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, 0));
+        Money zero = Money.of(converter.getTermCurrency(), 0);
 
-        categories.put(CategoryType.FINAL_VALUE, new Category( //
-                        String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), snapshotEnd.getAssets()));
+        categories.put(CategoryType.CAPITAL_GAINS, new Category(Messages.ColumnCapitalGains, zero));
+        categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, zero));
+        categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, zero));
+        categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, zero));
+        categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, zero));
+
+        categories.put(CategoryType.FINAL_VALUE,
+                        new Category(String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), //
+                                        snapshotEnd.getMonetaryAssets()));
 
         ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        categories.put(CategoryType.PERFORMANCE_IRR,
-                        new Category(Messages.ColumnPerformanceIZF, Math.round(yield.getIrr() * Values.Amount.factor())));
+        irr = yield.getIrr();
 
         performanceIndex = PerformanceIndex.forClient(client, converter,
                         new ReportingPeriod.FromXtoY(snapshotStart.getTime(), snapshotEnd.getTime()),
                         new ArrayList<Exception>());
-        int ttwror = (int) (performanceIndex.getAccumulatedPercentage()[performanceIndex.getAccumulatedPercentage().length - 1]
-                        * Values.Amount.factor() * 100);
-        categories.put(CategoryType.PERFORMANCE, new Category(Messages.ColumnPerformance, ttwror));
 
         addCapitalGains();
         addEarnings();
@@ -208,96 +215,71 @@ public class ClientPerformanceSnapshot
 
     private void addCapitalGains()
     {
-        Map<Security, Long> valuation = new HashMap<Security, Long>();
+        Map<Security, MutableMoney> valuation = new HashMap<Security, MutableMoney>();
         for (Security s : client.getSecurities())
-            valuation.put(s, Long.valueOf(0));
+            valuation.put(s, MutableMoney.of(converter.getTermCurrency()));
 
-        for (PortfolioSnapshot portfolio : snapshotStart.getPortfolios())
+        snapshotStart.getJointPortfolio()
+                        .getPositions()
+                        .stream()
+                        .forEach(p -> valuation.get(p.getInvestmentVehicle()).substract(
+                                        converter.convert(snapshotStart.getTime(), p.calculateValue())));
+
+        for (PortfolioTransaction t : snapshotStart.getJointPortfolio().getSource().getTransactions())
         {
-            for (Map.Entry<Security, SecurityPosition> entry : portfolio.getPositionsBySecurity().entrySet())
-            {
-                Long v = valuation.get(entry.getKey());
-                // FIXME c
-                valuation.put(entry.getKey(), v.longValue() - entry.getValue().calculateValue().getAmount());
-            }
-
-            for (PortfolioTransaction t : portfolio.getSource().getTransactions())
-            {
-                if (!period.containsTransaction().test(t))
-                    continue;
-
-                switch (t.getType())
-                {
-                    case BUY:
-                    case DELIVERY_INBOUND:
-                    case TRANSFER_IN:
-                    {
-                        Long v = valuation.get(t.getSecurity());
-                        valuation.put(t.getSecurity(), v.longValue() - t.getLumpSumPrice());
-                        break;
-                    }
-                    case SELL:
-                    case DELIVERY_OUTBOUND:
-                    case TRANSFER_OUT:
-                    {
-                        Long v = valuation.get(t.getSecurity());
-                        valuation.put(t.getSecurity(), v.longValue() + t.getLumpSumPrice());
-                        break;
-                    }
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
-        }
-
-        for (PortfolioSnapshot portfolio : snapshotEnd.getPortfolios())
-        {
-            for (Map.Entry<Security, SecurityPosition> entry : portfolio.getPositionsBySecurity().entrySet())
-            {
-                Long v = valuation.get(entry.getKey());
-                // FIXME c
-                valuation.put(entry.getKey(), v.longValue() + entry.getValue().calculateValue().getAmount());
-            }
-        }
-
-        long valueGained = 0;
-        for (Long v : valuation.values())
-            valueGained += v.longValue();
-
-        categories.get(CategoryType.CAPITAL_GAINS).valuation = valueGained;
-
-        for (Security security : sortedSecurities())
-        {
-            Long value = valuation.get(security);
-            if (value == null || value == 0)
+            if (!period.containsTransaction().test(t))
                 continue;
-            categories.get(CategoryType.CAPITAL_GAINS).positions.add(new Position(security, value));
-        }
-    }
 
-    private List<Security> sortedSecurities()
-    {
-        List<Security> securities = new ArrayList<Security>(client.getSecurities());
-        Collections.sort(securities, new Comparator<Security>()
-        {
-            public int compare(Security o1, Security o2)
+            switch (t.getType())
             {
-                return o1.getName().compareTo(o2.getName());
+                case BUY:
+                case DELIVERY_INBOUND:
+                case TRANSFER_IN:
+                    valuation.get(t.getSecurity()).substract(converter.convert(t.getDate(), t.getLumpSum()));
+                    break;
+                case SELL:
+                case DELIVERY_OUTBOUND:
+                case TRANSFER_OUT:
+                    valuation.get(t.getSecurity()).add(converter.convert(t.getDate(), t.getLumpSum()));
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
             }
-        });
-        return securities;
+        }
+
+        snapshotEnd.getJointPortfolio()
+                        .getPositions()
+                        .stream()
+                        .forEach(p -> valuation.get(p.getInvestmentVehicle()).add(
+                                        converter.convert(snapshotEnd.getTime(), p.calculateValue())));
+
+        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
+
+        // add securities w/ capital gains to the positions
+        capitalGains.positions = valuation.entrySet()
+                        .stream()
+                        //
+                        .filter(entry -> !entry.getValue().isZero())
+                        .map(entry -> new Position(entry.getKey(), entry.getValue().toMoney()))
+                        .sorted((p1, p2) -> p1.getLabel().compareTo(p2.getLabel())) //
+                        .collect(Collectors.toList());
+
+        // total capital gains -> sum it up
+        capitalGains.valuation = capitalGains.positions.stream() //
+                        .map(p -> p.getValuation()) //
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
     private void addEarnings()
     {
-        long earnings = 0;
-        long otherEarnings = 0;
-        long fees = 0;
-        long taxes = 0;
-        long deposits = 0;
-        long removals = 0;
+        MutableMoney earnings = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney otherEarnings = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney fees = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney taxes = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney deposits = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney removals = MutableMoney.of(converter.getTermCurrency());
 
-        Map<Security, Long> earningsBySecurity = new HashMap<Security, Long>();
+        Map<Security, MutableMoney> earningsBySecurity = new HashMap<Security, MutableMoney>();
 
         for (Account account : client.getAccounts())
         {
@@ -311,32 +293,32 @@ public class ClientPerformanceSnapshot
                     case DIVIDENDS:
                     case INTEREST:
                         this.earnings.add(t);
-                        earnings += t.getAmount();
+                        earnings.add(t.getMonetaryAmount());
                         if (t.getSecurity() != null)
                         {
-                            Long v = earningsBySecurity.get(t.getSecurity());
-                            v = v == null ? t.getAmount() : v + t.getAmount();
-                            earningsBySecurity.put(t.getSecurity(), v);
+                            earningsBySecurity.computeIfAbsent(t.getSecurity(),
+                                            k -> MutableMoney.of(converter.getTermCurrency())) //
+                                            .add(t.getMonetaryAmount());
                         }
                         else
                         {
-                            otherEarnings += t.getAmount();
+                            otherEarnings.add(t.getMonetaryAmount());
                         }
                         break;
                     case DEPOSIT:
-                        deposits += t.getAmount();
+                        deposits.add(t.getMonetaryAmount());
                         break;
                     case REMOVAL:
-                        removals += t.getAmount();
+                        removals.add(t.getMonetaryAmount());
                         break;
                     case FEES:
-                        fees += t.getAmount();
+                        fees.add(t.getMonetaryAmount());
                         break;
                     case TAXES:
-                        taxes += t.getAmount();
+                        taxes.add(t.getMonetaryAmount());
                         break;
                     case TAX_REFUND:
-                        taxes -= t.getAmount();
+                        taxes.substract(t.getMonetaryAmount());
                         break;
                     case BUY:
                     case SELL:
@@ -360,17 +342,17 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
-                        deposits += t.getAmount();
+                        deposits.add(t.getMonetaryAmount());
                         break;
                     case DELIVERY_OUTBOUND:
-                        removals += t.getAmount();
+                        removals.add(t.getMonetaryAmount());
                         break;
                     case BUY:
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
-                        fees += t.getFees();
-                        taxes += t.getTaxes();
+                        fees.add(t.getMonetaryFees());
+                        taxes.add(t.getMonetaryTaxes());
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -378,23 +360,25 @@ public class ClientPerformanceSnapshot
             }
         }
 
-        categories.get(CategoryType.EARNINGS).valuation = earnings;
-        for (Security security : sortedSecurities())
-        {
-            Long value = earningsBySecurity.get(security);
-            if (value == null || value == 0)
-                continue;
-            categories.get(CategoryType.EARNINGS).positions.add(new Position(security, value));
-        }
-        if (otherEarnings > 0)
-            categories.get(CategoryType.EARNINGS).positions.add(new Position(Messages.LabelInterest, otherEarnings));
+        Category earningsCategory = categories.get(CategoryType.EARNINGS);
+        earningsCategory.valuation = earnings.toMoney();
+        earningsCategory.positions = earningsBySecurity.entrySet()
+                        .stream()
+                        //
+                        .filter(entry -> !entry.getValue().isZero())
+                        .map(entry -> new Position(entry.getKey(), entry.getValue().toMoney()))
+                        .sorted((p1, p2) -> p1.getLabel().compareTo(p2.getLabel())) //
+                        .collect(Collectors.toList());
 
-        categories.get(CategoryType.FEES).valuation = fees;
+        if (!otherEarnings.isZero())
+            earningsCategory.positions.add(new Position(Messages.LabelInterest, otherEarnings.toMoney()));
 
-        categories.get(CategoryType.TAXES).valuation = taxes;
+        categories.get(CategoryType.FEES).valuation = fees.toMoney();
 
-        categories.get(CategoryType.TRANSFERS).valuation = deposits - removals;
-        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits));
-        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals));
+        categories.get(CategoryType.TAXES).valuation = taxes.toMoney();
+
+        categories.get(CategoryType.TRANSFERS).valuation = deposits.substract(removals).toMoney();
+        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits.toMoney()));
+        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals.toMoney()));
     }
 }

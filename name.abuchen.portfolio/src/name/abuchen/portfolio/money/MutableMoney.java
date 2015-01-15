@@ -30,28 +30,47 @@ public final class MutableMoney
         return currencyCode;
     }
 
-    public void add(Money money)
+    public boolean isZero()
+    {
+        return this.amount == 0;
+    }
+
+    public MutableMoney add(Money money)
     {
         if (!this.currencyCode.equals(money.getCurrencyCode()))
             throw new MonetaryException();
 
         this.amount += money.getAmount();
+
+        return this;
     }
 
-    public void substract(Money money)
+    public MutableMoney substract(Money money)
     {
         if (!currencyCode.equals(money.getCurrencyCode()))
             throw new MonetaryException();
 
         this.amount -= money.getAmount();
+
+        return this;
     }
 
-    public MutableMoney addAll(MutableMoney other)
+    public MutableMoney add(MutableMoney money)
     {
-        if (!this.currencyCode.equals(other.currencyCode))
+        if (!this.currencyCode.equals(money.currencyCode))
             throw new MonetaryException();
 
-        this.amount += other.amount;
+        this.amount += money.amount;
+
+        return this;
+    }
+
+    public MutableMoney substract(MutableMoney money)
+    {
+        if (!currencyCode.equals(money.getCurrencyCode()))
+            throw new MonetaryException();
+
+        this.amount -= money.amount;
 
         return this;
     }
@@ -59,5 +78,11 @@ public final class MutableMoney
     public Money toMoney()
     {
         return Money.of(currencyCode, amount);
+    }
+
+    @Override
+    public String toString()
+    {
+        return Values.Money.format(this.toMoney());
     }
 }

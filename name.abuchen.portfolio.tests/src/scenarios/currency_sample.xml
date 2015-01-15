@@ -1269,12 +1269,19 @@
         <price t="2014-12-31" v="11038"/>
         <price t="2015-01-02" v="10933"/>
         <price t="2015-01-05" v="10625"/>
+        <price t="2015-01-06" v="10626"/>
+        <price t="2015-01-07" v="10775"/>
+        <price t="2015-01-08" v="11189"/>
+        <price t="2015-01-09" v="11201"/>
+        <price t="2015-01-12" v="10925"/>
+        <price t="2015-01-13" v="11022"/>
+        <price t="2015-01-14" v="10980"/>
       </prices>
-      <latest t="2015-01-05" v="10625">
-        <high>10865</high>
-        <low>10541</low>
-        <volume>64289916</volume>
-        <previousClose>10933</previousClose>
+      <latest t="2015-01-15" v="10740">
+        <high>11006</high>
+        <low>10666</low>
+        <volume>38339196</volume>
+        <previousClose>10980</previousClose>
       </latest>
       <attributes>
         <map/>
@@ -2593,12 +2600,20 @@
         <price t="2014-12-31" v="6988"/>
         <price t="2015-01-01" v="6988"/>
         <price t="2015-01-02" v="6969"/>
+        <price t="2015-01-05" v="6670"/>
+        <price t="2015-01-06" v="6669"/>
+        <price t="2015-01-07" v="6713"/>
+        <price t="2015-01-08" v="6987"/>
+        <price t="2015-01-09" v="6812"/>
+        <price t="2015-01-12" v="6881"/>
+        <price t="2015-01-13" v="7103"/>
+        <price t="2015-01-14" v="7031"/>
       </prices>
-      <latest t="2015-01-02" v="6969">
-        <high>7069</high>
-        <low>6880</low>
-        <volume>2260387</volume>
-        <previousClose>6988</previousClose>
+      <latest t="2015-01-15" v="7195">
+        <high>7259</high>
+        <low>6913</low>
+        <volume>5448252</volume>
+        <previousClose>7031</previousClose>
       </latest>
       <attributes>
         <map/>

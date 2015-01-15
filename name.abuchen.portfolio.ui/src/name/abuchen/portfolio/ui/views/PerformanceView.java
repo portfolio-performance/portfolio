@@ -96,9 +96,9 @@ public class PerformanceView extends AbstractHistoricView
             if (length > 1)
             {
                 ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[length - 1]));
-                irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
+                irr.setText(Values.Percent2.format(snapshot.getPerformanceIRR()));
                 absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
-                delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
+                delta.setText(Values.Money.format(snapshot.getAbsoluteDelta()));
 
                 ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
                 absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
@@ -113,7 +113,7 @@ public class PerformanceView extends AbstractHistoricView
             for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
             {
                 labels[ii].setText(category.getLabel());
-                values[ii].setText(Values.Amount.format(category.getValuation()));
+                values[ii].setText(Values.Money.format(category.getValuation()));
 
                 if (++ii >= labels.length)
                     break;
@@ -392,12 +392,12 @@ public class PerformanceView extends AbstractHistoricView
                 if (element instanceof ClientPerformanceSnapshot.Category)
                 {
                     ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
-                    return Values.Amount.format(cat.getValuation());
+                    return Values.Money.format(cat.getValuation());
                 }
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-                    return Values.Amount.format(pos.getValuation());
+                    return Values.Money.format(pos.getValuation());
                 }
                 return null;
             }

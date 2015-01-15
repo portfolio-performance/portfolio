@@ -66,9 +66,9 @@ public class PerformanceChartView extends AbstractHistoricView
     private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
 
     @PostConstruct
-    private void setupCurrencyConverter(ExchangeRateProviderFactory factory)
+    private void setupCurrencyConverter(ExchangeRateProviderFactory factory, Client client)
     {
-        converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
 
     @Override

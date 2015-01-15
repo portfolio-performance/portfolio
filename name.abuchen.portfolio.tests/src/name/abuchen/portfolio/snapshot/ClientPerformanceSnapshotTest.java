@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.snapshot;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.util.Dates;
@@ -53,12 +56,12 @@ public class ClientPerformanceSnapshotTest
 
         List<Category> categories = snapshot.getCategories();
         assertNotNull(categories);
-        assertEquals(9, categories.size());
+        assertEquals(7, categories.size());
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
-        assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
-        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).getValuation());
+        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
+        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
     }
 
     @Test
@@ -77,9 +80,9 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(105000, result.get(CategoryType.INITIAL_VALUE).getValuation());
-        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
-        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).getValuation());
+        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
     }
 
     @Test
@@ -98,10 +101,10 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
-        assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
-        assertEquals(0, result.get(CategoryType.CAPITAL_GAINS).getValuation());
-        assertEquals(105000, result.get(CategoryType.FINAL_VALUE).getValuation());
+        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
+        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
     }
 
     @Test
@@ -127,7 +130,8 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(5000, result.get(CategoryType.EARNINGS).getValuation());
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getPositions().size(), is(1));
     }
 
     @Test
@@ -150,10 +154,10 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
-        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
-        assertEquals(10000, result.get(CategoryType.CAPITAL_GAINS).getValuation());
-        assertEquals(110000, result.get(CategoryType.FINAL_VALUE).getValuation());
+        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1100_00)));
     }
 
     @Test
@@ -178,10 +182,11 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
-        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
-        assertEquals(10000 + (11000 - 9900), result.get(CategoryType.CAPITAL_GAINS).getValuation());
-        assertEquals(121000, result.get(CategoryType.FINAL_VALUE).getValuation());
+        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 100_00 + (110_00 - 99_00))));
+        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1210_00)));
     }
 
     @Test
@@ -206,10 +211,11 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(100000, result.get(CategoryType.INITIAL_VALUE).getValuation());
-        assertEquals(0, result.get(CategoryType.EARNINGS).getValuation());
-        assertEquals(1000 * 9 + (9900 - 10000), result.get(CategoryType.CAPITAL_GAINS).getValuation());
-        assertEquals(11000 * 9, result.get(CategoryType.FINAL_VALUE).getValuation());
+        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 10_00 * 9 + (99_00 - 100_00))));
+        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 110_00 * 9)));
     }
 
     @Test
@@ -234,8 +240,9 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertEquals(1000 * 9 + (9900 - 10000) + 1, result.get(CategoryType.CAPITAL_GAINS).getValuation());
-        assertEquals(1, result.get(CategoryType.FEES).getValuation());
+        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 1000 * 9 + (9900 - 10000) + 1)));
+        assertThat(result.get(CategoryType.FEES).getValuation(), is(Money.of(CurrencyUnit.EUR, 1)));
     }
 
 }
