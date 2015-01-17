@@ -95,8 +95,8 @@ public class CurrencyTestCase
 
         Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(grouping.getDate())
                         .getValue());
-        Money equityUSDvaluation = converter.convert(grouping.getDate(),
-                        Money.of("USD", 10 * securityUSD.getSecurityPrice(grouping.getDate()).getValue()));
+        Money equityUSDvaluation = Money.of("USD", 10 * securityUSD.getSecurityPrice(grouping.getDate()).getValue())
+                        .with(converter.at(grouping.getDate()));
         Money equityValuation = Money.of(CurrencyUnit.EUR,
                         equityEURvaluation.getAmount() + equityUSDvaluation.getAmount());
 

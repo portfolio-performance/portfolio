@@ -233,8 +233,8 @@ public class SecurityPosition
                     }
                     else
                     {
-                        grossAmount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
-                        netAmount = converter.convert(t.getDate(), t.getLumpSum()).getAmount();
+                        grossAmount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
+                        netAmount = t.getLumpSum().with(converter.at(t.getDate())).getAmount();
                     }
 
                     sharesBought += bought;

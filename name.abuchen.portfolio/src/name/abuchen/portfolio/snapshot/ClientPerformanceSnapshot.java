@@ -202,8 +202,7 @@ public class ClientPerformanceSnapshot
                         new Category(String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), //
                                         snapshotEnd.getMonetaryAssets()));
 
-        ClientIRRYield yield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
-        irr = yield.getIrr();
+        irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
 
         performanceIndex = PerformanceIndex.forClient(client, converter,
                         new ReportingPeriod.FromXtoY(snapshotStart.getTime(), snapshotEnd.getTime()),
@@ -223,7 +222,7 @@ public class ClientPerformanceSnapshot
                         .getPositions()
                         .stream()
                         .forEach(p -> valuation.get(p.getInvestmentVehicle()).substract(
-                                        converter.convert(snapshotStart.getTime(), p.calculateValue())));
+                                        p.calculateValue().with(converter.at(snapshotStart.getTime()))));
 
         for (PortfolioTransaction t : snapshotStart.getJointPortfolio().getSource().getTransactions())
         {
@@ -235,12 +234,12 @@ public class ClientPerformanceSnapshot
                 case BUY:
                 case DELIVERY_INBOUND:
                 case TRANSFER_IN:
-                    valuation.get(t.getSecurity()).substract(converter.convert(t.getDate(), t.getLumpSum()));
+                    valuation.get(t.getSecurity()).substract(t.getLumpSum().with(converter.at(t.getDate())));
                     break;
                 case SELL:
                 case DELIVERY_OUTBOUND:
                 case TRANSFER_OUT:
-                    valuation.get(t.getSecurity()).add(converter.convert(t.getDate(), t.getLumpSum()));
+                    valuation.get(t.getSecurity()).add(t.getLumpSum().with(converter.at(t.getDate())));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -251,7 +250,7 @@ public class ClientPerformanceSnapshot
                         .getPositions()
                         .stream()
                         .forEach(p -> valuation.get(p.getInvestmentVehicle()).add(
-                                        converter.convert(snapshotEnd.getTime(), p.calculateValue())));
+                                        p.calculateValue().with(converter.at(snapshotEnd.getTime()))));
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
 

@@ -89,7 +89,7 @@ public class AccountSnapshot
 
     public Money getFunds()
     {
-        return converter.convert(date, funds);
+        return funds.with(converter.at(date));
     }
 
     public Money getUnconvertedFunds()

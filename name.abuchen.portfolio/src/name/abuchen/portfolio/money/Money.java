@@ -71,6 +71,11 @@ public final class Money
         return Money.of(currencyCode, amount * multiplicand);
     }
 
+    public Money with(MonetaryOperator operator)
+    {
+        return operator.apply(this);
+    }
+
     @Override
     public int hashCode()
     {

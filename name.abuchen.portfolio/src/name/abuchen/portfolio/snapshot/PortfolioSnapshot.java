@@ -139,7 +139,7 @@ public class PortfolioSnapshot
     {
         return positions.stream() //
                         .map(SecurityPosition::calculateValue) //
-                        .map(money -> converter.convert(date, money)) //
+                        .map(money -> money.with(converter.at(date))) //
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 

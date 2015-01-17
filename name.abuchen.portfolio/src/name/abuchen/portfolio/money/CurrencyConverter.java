@@ -8,6 +8,11 @@ public interface CurrencyConverter
 
     Money convert(Date date, Money amount);
 
+    default MonetaryOperator at(Date date)
+    {
+        return m -> convert(date, m);
+    }
+
     ExchangeRate getRate(Date date, String currencyCode);
 
     CurrencyConverter with(String currencyCode);
