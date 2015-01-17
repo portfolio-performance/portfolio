@@ -20,8 +20,14 @@ public class AccountBuilder
 
     public AccountBuilder()
     {
+        this(CurrencyUnit.EUR);
+    }
+
+    public AccountBuilder(String currencyCode)
+    {
         this.account = new Account();
         this.account.setName(UUID.randomUUID().toString());
+        this.account.setCurrencyCode(currencyCode);
     }
 
     public Account addTo(Client client)
@@ -72,8 +78,8 @@ public class AccountBuilder
 
     public AccountBuilder dividend(String date, long amount, Security security)
     {
-        AccountTransaction t = new AccountTransaction(new DateMidnight(date).toDate(), CurrencyUnit.EUR, amount,
-                        security, Type.DIVIDENDS);
+        AccountTransaction t = new AccountTransaction(new DateMidnight(date).toDate(), account.getCurrencyCode(),
+                        amount, security, Type.DIVIDENDS);
         account.addTransaction(t);
         return this;
     }
@@ -85,7 +91,7 @@ public class AccountBuilder
 
     private AccountBuilder transaction(Type type, DateMidnight date, long amount)
     {
-        AccountTransaction t = new AccountTransaction(date.toDate(), CurrencyUnit.EUR, amount, null, type);
+        AccountTransaction t = new AccountTransaction(date.toDate(), account.getCurrencyCode(), amount, null, type);
         account.addTransaction(t);
         return this;
     }

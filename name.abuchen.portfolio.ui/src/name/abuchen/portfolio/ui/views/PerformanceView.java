@@ -98,7 +98,7 @@ public class PerformanceView extends AbstractHistoricView
                 ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[length - 1]));
                 irr.setText(Values.Percent2.format(snapshot.getPerformanceIRR()));
                 absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
-                delta.setText(Values.Money.format(snapshot.getAbsoluteDelta()));
+                delta.setText(Values.Money.format(snapshot.getAbsoluteDelta(), index.getClient().getBaseCurrency()));
 
                 ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
                 absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
@@ -113,7 +113,7 @@ public class PerformanceView extends AbstractHistoricView
             for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
             {
                 labels[ii].setText(category.getLabel());
-                values[ii].setText(Values.Money.format(category.getValuation()));
+                values[ii].setText(Values.Money.format(category.getValuation(), index.getClient().getBaseCurrency()));
 
                 if (++ii >= labels.length)
                     break;
@@ -216,8 +216,8 @@ public class PerformanceView extends AbstractHistoricView
             heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
             GridDataFactory.fillDefaults().span(2, 1).applyTo(heading);
 
-            labels = new Label[7];
-            values = new Label[7];
+            labels = new Label[ClientPerformanceSnapshot.CategoryType.values().length];
+            values = new Label[labels.length];
 
             for (int ii = 0; ii < labels.length; ii++)
             {

@@ -143,16 +143,18 @@ public class CurrencyTestCase
         ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter, period);
 
         // calculating the totals is tested with #testClientSnapshot
-        assertThat(performance.getCategoryByType(CategoryType.INITIAL_VALUE).getValuation(),
-                        is(Money.of(CurrencyUnit.EUR, 4131_99)));
-        assertThat(performance.getCategoryByType(CategoryType.FINAL_VALUE).getValuation(),
-                        is(Money.of(CurrencyUnit.EUR, 4187_94)));
+        assertThat(performance.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 4131_99)));
+        assertThat(performance.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 4187_94)));
 
-        assertThat(performance.getCategoryByType(CategoryType.CAPITAL_GAINS).getValuation(),
-                        is(Money.of(CurrencyUnit.EUR, 4187_94 - 4131_99 - 18_90)));
+        assertThat(performance.getAbsoluteDelta(),
+                        is(performance.getValue(CategoryType.FINAL_VALUE)
+                                        .substract(performance.getValue(CategoryType.TRANSFERS))
+                                        .substract(performance.getValue(CategoryType.INITIAL_VALUE))));
 
-        // FIXME - currency changes of 18_90 shall show up in performance
-        // calculation explicitly
+        assertThat(performance.getValue(CategoryType.CAPITAL_GAINS).add(
+                        performance.getValue(CategoryType.CURRENCY_GAINS)),
+                        is(performance.getValue(CategoryType.FINAL_VALUE).substract(
+                                        performance.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

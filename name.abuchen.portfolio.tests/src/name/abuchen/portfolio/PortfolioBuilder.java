@@ -53,15 +53,20 @@ public class PortfolioBuilder
 
     public PortfolioBuilder buy(Security security, String date, long shares, int amount)
     {
-        return buysell(Type.BUY, security, date, shares, amount);
+        return buysell(Type.BUY, security, date, shares, amount, 0);
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, int amount)
     {
-        return buysell(Type.SELL, security, date, shares, amount);
+        return buysell(Type.SELL, security, date, shares, amount, 0);
     }
 
-    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, int amount)
+    public PortfolioBuilder sell(Security security, String date, long shares, int amount, int fees)
+    {
+        return buysell(Type.SELL, security, date, shares, amount, fees);
+    }
+
+    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, int amount, int fees)
     {
         if (portfolio.getReferenceAccount() == null)
         {
@@ -76,10 +81,10 @@ public class PortfolioBuilder
         entry.setShares(shares);
         entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(amount);
+        entry.setFees(fees);
 
         entry.insert();
 
         return this;
     }
-
 }

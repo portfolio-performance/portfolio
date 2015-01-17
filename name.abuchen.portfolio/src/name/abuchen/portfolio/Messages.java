@@ -12,6 +12,7 @@ public class Messages extends NLS
     public static String AttributesVendorColumn;
     public static String AttributesVendorName;
     public static String ColumnCapitalGains;
+    public static String ColumnCurrencyGains;
     public static String ColumnEarnings;
     public static String ColumnFinalValue;
     public static String ColumnInitialValue;

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class ClientPerformanceSnapshot
 
     public enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, TRANSFERS, FINAL_VALUE
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, CURRENCY_GAINS, TRANSFERS, FINAL_VALUE
     }
 
     private final Client client;
@@ -140,6 +141,11 @@ public class ClientPerformanceSnapshot
         return categories.get(type);
     }
 
+    public Money getValue(CategoryType categoryType)
+    {
+        return categories.get(categoryType).getValuation();
+    }
+
     public List<Transaction> getEarnings()
     {
         return earnings;
@@ -165,6 +171,7 @@ public class ClientPerformanceSnapshot
             {
                 case CAPITAL_GAINS:
                 case EARNINGS:
+                case CURRENCY_GAINS:
                     delta.add(entry.getValue().getValuation());
                     break;
                 case FEES:
@@ -196,6 +203,7 @@ public class ClientPerformanceSnapshot
         categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, zero));
         categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, zero));
         categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, zero));
+        categories.put(CategoryType.CURRENCY_GAINS, new Category(Messages.ColumnCurrencyGains, zero));
         categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, zero));
 
         categories.put(CategoryType.FINAL_VALUE,
@@ -210,6 +218,7 @@ public class ClientPerformanceSnapshot
 
         addCapitalGains();
         addEarnings();
+        addCurrencyGains();
     }
 
     private void addCapitalGains()
@@ -292,32 +301,32 @@ public class ClientPerformanceSnapshot
                     case DIVIDENDS:
                     case INTEREST:
                         this.earnings.add(t);
-                        earnings.add(t.getMonetaryAmount());
+                        earnings.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         if (t.getSecurity() != null)
                         {
                             earningsBySecurity.computeIfAbsent(t.getSecurity(),
                                             k -> MutableMoney.of(converter.getTermCurrency())) //
-                                            .add(t.getMonetaryAmount());
+                                            .add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         }
                         else
                         {
-                            otherEarnings.add(t.getMonetaryAmount());
+                            otherEarnings.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         }
                         break;
                     case DEPOSIT:
-                        deposits.add(t.getMonetaryAmount());
+                        deposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case REMOVAL:
-                        removals.add(t.getMonetaryAmount());
+                        removals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case FEES:
-                        fees.add(t.getMonetaryAmount());
+                        fees.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case TAXES:
-                        taxes.add(t.getMonetaryAmount());
+                        taxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case TAX_REFUND:
-                        taxes.substract(t.getMonetaryAmount());
+                        taxes.substract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case BUY:
                     case SELL:
@@ -341,17 +350,17 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
-                        deposits.add(t.getMonetaryAmount());
+                        deposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case DELIVERY_OUTBOUND:
-                        removals.add(t.getMonetaryAmount());
+                        removals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case BUY:
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
-                        fees.add(t.getMonetaryFees());
-                        taxes.add(t.getMonetaryTaxes());
+                        fees.add(t.getMonetaryFees().with(converter.at(t.getDate())));
+                        taxes.add(t.getMonetaryTaxes().with(converter.at(t.getDate())));
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -379,5 +388,68 @@ public class ClientPerformanceSnapshot
         categories.get(CategoryType.TRANSFERS).valuation = deposits.substract(removals).toMoney();
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits.toMoney()));
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals.toMoney()));
+    }
+
+    private void addCurrencyGains()
+    {
+        Map<String, MutableMoney> currency2money = new HashMap<String, MutableMoney>();
+
+        for (AccountSnapshot snapshot : snapshotStart.getAccounts())
+        {
+            if (converter.getTermCurrency().equals(snapshot.getAccount().getCurrencyCode()))
+                continue;
+
+            MutableMoney value = currency2money.computeIfAbsent(snapshot.getAccount().getCurrencyCode(),
+                            c -> MutableMoney.of(converter.getTermCurrency()));
+
+            // subtract initial values
+            value.substract(snapshot.getFunds());
+
+            // add and subtract transactions
+            for (AccountTransaction t : snapshot.getAccount().getTransactions())
+            {
+                if (!period.containsTransaction().test(t))
+                    continue;
+
+                switch (t.getType())
+                {
+                    case DIVIDENDS:
+                    case INTEREST:
+                    case DEPOSIT:
+                    case TAX_REFUND:
+                    case TRANSFER_IN:
+                    case SELL:
+                        value.substract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        break;
+                    case REMOVAL:
+                    case FEES:
+                    case TAXES:
+                    case BUY:
+                    case TRANSFER_OUT:
+                        value.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+            }
+        }
+
+        // add final values (if in foreign currency)
+        for (AccountSnapshot snapshot : snapshotEnd.getAccounts())
+        {
+            if (converter.getTermCurrency().equals(snapshot.getAccount().getCurrencyCode()))
+                continue;
+
+            currency2money.computeIfAbsent(snapshot.getAccount().getCurrencyCode(),
+                            c -> MutableMoney.of(converter.getTermCurrency())) //
+                            .add(snapshot.getFunds());
+        }
+
+        Category currencyGains = categories.get(CategoryType.CURRENCY_GAINS);
+        currency2money.forEach((currency, money) -> {
+            currencyGains.valuation = currencyGains.valuation.add(money.toMoney());
+            currencyGains.positions.add(new Position(currency, money.toMoney()));
+        });
+        Collections.sort(currencyGains.positions, (p1, p2) -> p1.getLabel().compareTo(p2.getLabel()));
     }
 }
