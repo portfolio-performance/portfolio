@@ -69,8 +69,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -95,8 +95,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -122,8 +122,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -154,8 +154,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -185,8 +185,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -219,8 +219,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -254,8 +254,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -287,8 +287,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
     @Test
@@ -315,8 +315,8 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(snapshot.getValue(CategoryType.TRANSFERS))
-                                        .substract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
 }

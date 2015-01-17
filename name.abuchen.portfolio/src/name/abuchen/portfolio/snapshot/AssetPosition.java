@@ -56,7 +56,7 @@ public class AssetPosition
         // from the base currency
 
         if (position.getInvestmentVehicle() instanceof Security)
-            return getValuation().substract(getFIFOPurchaseValue());
+            return getValuation().subtract(getFIFOPurchaseValue());
         else
             return Money.of(converter.getTermCurrency(), 0);
     }

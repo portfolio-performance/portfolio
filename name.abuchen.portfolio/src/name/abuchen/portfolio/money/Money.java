@@ -53,7 +53,7 @@ public final class Money
         return Money.of(currencyCode, amount + monetaryAmount.getAmount());
     }
 
-    public Money substract(Money monetaryAmount)
+    public Money subtract(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
             throw new MonetaryException();

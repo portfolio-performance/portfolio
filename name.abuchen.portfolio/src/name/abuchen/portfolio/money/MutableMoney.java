@@ -45,7 +45,7 @@ public final class MutableMoney
         return this;
     }
 
-    public MutableMoney substract(Money money)
+    public MutableMoney subtract(Money money)
     {
         if (!currencyCode.equals(money.getCurrencyCode()))
             throw new MonetaryException();
@@ -65,7 +65,7 @@ public final class MutableMoney
         return this;
     }
 
-    public MutableMoney substract(MutableMoney money)
+    public MutableMoney subtract(MutableMoney money)
     {
         if (!currencyCode.equals(money.getCurrencyCode()))
             throw new MonetaryException();

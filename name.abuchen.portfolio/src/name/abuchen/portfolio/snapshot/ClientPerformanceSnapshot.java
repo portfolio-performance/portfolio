@@ -176,7 +176,7 @@ public class ClientPerformanceSnapshot
                     break;
                 case FEES:
                 case TAXES:
-                    delta.substract(entry.getValue().getValuation());
+                    delta.subtract(entry.getValue().getValuation());
                     break;
                 default:
                     break;
@@ -230,7 +230,7 @@ public class ClientPerformanceSnapshot
         snapshotStart.getJointPortfolio()
                         .getPositions()
                         .stream()
-                        .forEach(p -> valuation.get(p.getInvestmentVehicle()).substract(
+                        .forEach(p -> valuation.get(p.getInvestmentVehicle()).subtract(
                                         p.calculateValue().with(converter.at(snapshotStart.getTime()))));
 
         for (PortfolioTransaction t : snapshotStart.getJointPortfolio().getSource().getTransactions())
@@ -243,7 +243,7 @@ public class ClientPerformanceSnapshot
                 case BUY:
                 case DELIVERY_INBOUND:
                 case TRANSFER_IN:
-                    valuation.get(t.getSecurity()).substract(t.getLumpSum().with(converter.at(t.getDate())));
+                    valuation.get(t.getSecurity()).subtract(t.getLumpSum().with(converter.at(t.getDate())));
                     break;
                 case SELL:
                 case DELIVERY_OUTBOUND:
@@ -326,7 +326,7 @@ public class ClientPerformanceSnapshot
                         taxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case TAX_REFUND:
-                        taxes.substract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        taxes.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case BUY:
                     case SELL:
@@ -385,7 +385,7 @@ public class ClientPerformanceSnapshot
 
         categories.get(CategoryType.TAXES).valuation = taxes.toMoney();
 
-        categories.get(CategoryType.TRANSFERS).valuation = deposits.substract(removals).toMoney();
+        categories.get(CategoryType.TRANSFERS).valuation = deposits.subtract(removals).toMoney();
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits.toMoney()));
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals.toMoney()));
     }
@@ -403,7 +403,7 @@ public class ClientPerformanceSnapshot
                             c -> MutableMoney.of(converter.getTermCurrency()));
 
             // subtract initial values
-            value.substract(snapshot.getFunds());
+            value.subtract(snapshot.getFunds());
 
             // add and subtract transactions
             for (AccountTransaction t : snapshot.getAccount().getTransactions())
@@ -419,7 +419,7 @@ public class ClientPerformanceSnapshot
                     case TAX_REFUND:
                     case TRANSFER_IN:
                     case SELL:
-                        value.substract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        value.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case REMOVAL:
                     case FEES:

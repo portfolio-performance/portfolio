@@ -125,14 +125,14 @@ public class CurrencyTestCase
         // price per share is the total purchase price minus 20 USD fees and
         // taxes divided by the number of shares
         Money pricePerShare = equityUSD.getPosition().getFIFOPurchaseValue() //
-                        .substract(Money.of("USD", 20_00)).divide(10);
+                        .subtract(Money.of("USD", 20_00)).divide(10);
         assertThat(equityUSD.getPosition().getFIFOPurchasePrice(), is(pricePerShare));
 
         // profit loss w/o rounding differences
-        assertThat(equityUSD.getProfitLoss(), is(equityUSD.getValuation().substract(equityUSD.getFIFOPurchaseValue())));
+        assertThat(equityUSD.getProfitLoss(), is(equityUSD.getValuation().subtract(equityUSD.getFIFOPurchaseValue())));
         assertThat(equityUSD.getPosition().getProfitLoss(),
                         is(equityUSD.getPosition().calculateValue()
-                                        .substract(equityUSD.getPosition().getFIFOPurchaseValue())));
+                                        .subtract(equityUSD.getPosition().getFIFOPurchaseValue())));
 
     }
 
@@ -148,12 +148,12 @@ public class CurrencyTestCase
 
         assertThat(performance.getAbsoluteDelta(),
                         is(performance.getValue(CategoryType.FINAL_VALUE)
-                                        .substract(performance.getValue(CategoryType.TRANSFERS))
-                                        .substract(performance.getValue(CategoryType.INITIAL_VALUE))));
+                                        .subtract(performance.getValue(CategoryType.TRANSFERS))
+                                        .subtract(performance.getValue(CategoryType.INITIAL_VALUE))));
 
         assertThat(performance.getValue(CategoryType.CAPITAL_GAINS).add(
                         performance.getValue(CategoryType.CURRENCY_GAINS)),
-                        is(performance.getValue(CategoryType.FINAL_VALUE).substract(
+                        is(performance.getValue(CategoryType.FINAL_VALUE).subtract(
                                         performance.getValue(CategoryType.INITIAL_VALUE))));
     }
 
