@@ -54,7 +54,7 @@ public class CurrencyTestCase
     @Test
     public void testClientSnapshot()
     {
-        Date requestedTime = Dates.date("2015-01-31");
+        Date requestedTime = Dates.date("2015-01-16");
 
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, requestedTime);
 
@@ -63,7 +63,7 @@ public class CurrencyTestCase
         assertThat(accountEURsnapshot.getUnconvertedFunds(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
 
         AccountSnapshot accountUSDsnapshot = lookupAccountSnapshot(snapshot, accountUSD);
-        assertThat(accountUSDsnapshot.getFunds(), is(Money.of(CurrencyUnit.EUR, 823_66)));
+        assertThat(accountUSDsnapshot.getFunds(), is(Money.of(CurrencyUnit.EUR, Math.round(1000_00 * (1 / 1.1588)))));
         assertThat(accountUSDsnapshot.getUnconvertedFunds(), is(Money.of("USD", 1000_00)));
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(client.getTaxonomy("30314ba9-949f-4bf4-944e-6a30802f5190"));
@@ -84,14 +84,14 @@ public class CurrencyTestCase
     private void testAssetCategories(GroupByTaxonomy grouping)
     {
         AssetCategory cash = getAssetCategoryByName(grouping, "Barvermögen");
-        Money cashValuation = Money.of(CurrencyUnit.EUR, 1823_66);
+        Money cashValuation = Money.of(CurrencyUnit.EUR, 1000_00 + Math.round(1000_00 * (1 / 1.1588)));
         assertThat(cash.getValuation(), is(cashValuation));
 
         AssetPosition positionEUR = getAssetPositionByName(grouping, accountEUR.getName());
         assertThat(positionEUR.getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
 
         AssetPosition positionUSD = getAssetPositionByName(grouping, accountUSD.getName());
-        assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, 823_66)));
+        assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, Math.round(1000_00 * (1 / 1.1588)))));
 
         Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(grouping.getDate())
                         .getValue());

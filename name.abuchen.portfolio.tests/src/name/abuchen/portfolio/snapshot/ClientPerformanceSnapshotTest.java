@@ -311,7 +311,7 @@ public class ClientPerformanceSnapshotTest
                         is(Money.of(CurrencyUnit.EUR, Math.round(1000_00 * (1 / 1.2043)))));
 
         assertThat(snapshot.getValue(CategoryType.FINAL_VALUE),
-                        is(Money.of(CurrencyUnit.EUR, Math.round(680_00 * (1 / 1.1775)))));
+                        is(Money.of(CurrencyUnit.EUR, Math.round(680_00 * (1 / 1.1708)))));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
