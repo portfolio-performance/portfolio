@@ -20264,7 +20264,7 @@
   </securities>
   <watchlists>
     <watchlist>
-      <name>Indizes</name>
+      <name>${Kommer_WatchlistIndices}</name>
       <securities>
         <security reference="../../../../securities/security[18]"/>
         <security reference="../../../../securities/security[19]"/>
@@ -20272,7 +20272,7 @@
       </securities>
     </watchlist>
     <watchlist>
-      <name>Asien</name>
+      <name>${Kommer_WatchlistAsia}</name>
       <securities>
         <security reference="../../../../securities/security[9]"/>
         <security reference="../../../../securities/security[13]"/>
@@ -20523,7 +20523,7 @@
   </consumerPriceIndeces>
   <accounts>
     <account>
-      <name>Wertpapierkonto</name>
+      <name>${Kommer_SecuritiesAccount}</name>
       <transactions>
         <account-transaction>
           <date>2009-03-16</date>
@@ -20809,7 +20809,7 @@
       </transactions>
     </account>
     <account>
-      <name>Tagesgeld</name>
+      <name>${Kommer_CallDepositMoneyAccount}</name>
       <transactions>
         <account-transaction>
           <date>2011-12-01</date>
@@ -21057,22 +21057,22 @@
     <children>
       <category>
         <parent reference="../../.."/>
-        <name>Risikobehafteter Portfolioteil (Weltportfolio)</name>
+        <name>${Kommer_RiskBasedPart}</name>
         <percentage>40</percentage>
         <children>
           <category>
             <parent reference="../../.."/>
-            <name>Aktien entwickelte Märkte</name>
+            <name>${Kommer_AssetsDevMarkets}</name>
             <percentage>55</percentage>
             <children>
               <category>
                 <parent reference="../../.."/>
-                <name>Aktien Large Caps Value</name>
+                <name>${Kommer_AssetsLargeCapValue}</name>
                 <percentage>50</percentage>
                 <children>
                   <category>
                     <parent reference="../../.."/>
-                    <name>USA / Nordamerika</name>
+                    <name>${Kommer_USANorthAm}</name>
                     <percentage>40</percentage>
                     <children/>
                     <elements>
@@ -21081,7 +21081,7 @@
                   </category>
                   <category>
                     <parent reference="../../.."/>
-                    <name>Westeuropa</name>
+                    <name>${Kommer_WesternEurope}</name>
                     <percentage>44</percentage>
                     <children/>
                     <elements>
@@ -21091,7 +21091,7 @@
                   </category>
                   <category>
                     <parent reference="../../.."/>
-                    <name>Japan / Australien</name>
+                    <name>${Kommer_JapanAustralia}</name>
                     <percentage>16</percentage>
                     <children/>
                     <elements>
@@ -21103,12 +21103,12 @@
               </category>
               <category>
                 <parent reference="../../.."/>
-                <name>Aktien Small Caps</name>
+                <name>${Kommer_AssetsSmallCap}</name>
                 <percentage>50</percentage>
                 <children>
                   <category>
                     <parent reference="../../.."/>
-                    <name>USA / Nordamerika</name>
+                    <name>${Kommer_USANorthAm}</name>
                     <percentage>40</percentage>
                     <children/>
                     <elements>
@@ -21117,7 +21117,7 @@
                   </category>
                   <category>
                     <parent reference="../../.."/>
-                    <name>Westeuropa</name>
+                    <name>${Kommer_WesternEurope}</name>
                     <percentage>44</percentage>
                     <children/>
                     <elements>
@@ -21128,7 +21128,7 @@
                   </category>
                   <category>
                     <parent reference="../../.."/>
-                    <name>Japan / Australien</name>
+                    <name>${Kommer_JapanAustralia}</name>
                     <percentage>16</percentage>
                     <children/>
                     <elements>
@@ -21144,7 +21144,7 @@
           </category>
           <category>
             <parent reference="../../.."/>
-            <name>Aktien Schwellenländer</name>
+            <name>${Kommer_AssetsEmergingMarkets}</name>
             <percentage>25</percentage>
             <children/>
             <elements>
@@ -21154,7 +21154,7 @@
           </category>
           <category>
             <parent reference="../../.."/>
-            <name>Immobilien weltweit</name>
+            <name>${Kommer_RealAssetsWorldwide}</name>
             <percentage>10</percentage>
             <children/>
             <elements>
@@ -21163,7 +21163,7 @@
           </category>
           <category>
             <parent reference="../../.."/>
-            <name>Commodities/Rohstoffe</name>
+            <name>${Kommer_Commodities}</name>
             <percentage>10</percentage>
             <children/>
             <elements>
@@ -21175,7 +21175,7 @@
       </category>
       <category>
         <parent reference="../../.."/>
-        <name>Risikofreier Portfolioteil</name>
+        <name>${Kommer_RiskFreePart}</name>
         <percentage>60</percentage>
         <children/>
         <elements>

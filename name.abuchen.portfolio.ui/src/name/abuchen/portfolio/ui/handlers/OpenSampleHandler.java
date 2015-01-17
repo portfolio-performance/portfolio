@@ -2,7 +2,14 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,6 +18,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.parts.SampleMessages;
+import name.abuchen.portfolio.ui.util.ReplaceFilterInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -38,7 +47,6 @@ public class OpenSampleHandler
                     final EPartService partService, final EModelService modelService,
                     @Named(UIConstants.Parameter.SAMPLE_FILE) final String sampleFile)
     {
-
         try
         {
             IRunnableWithProgress loadResourceOperation = new IRunnableWithProgress()
@@ -48,7 +56,7 @@ public class OpenSampleHandler
                 {
                     try
                     {
-                        InputStream inputStream = this.getClass().getResourceAsStream(sampleFile);
+                        InputStream inputStream = new ReplaceFilterInputStream(this.getClass().getResourceAsStream(sampleFile), buildNlsReplaceMap());
                         final Client client = ClientFactory.load(inputStream, monitor);
 
                         sync.asyncExec(new Runnable()
@@ -84,5 +92,46 @@ public class OpenSampleHandler
         {
             PortfolioPlugin.log(e);
         }
+    }
+    
+    private static Map<byte[], byte[]> buildNlsReplaceMap()
+    {
+        Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
+        List<Field> fields = getAllNlsMessageFields();
+        try 
+        {
+            for(Field f : fields)
+            {
+                String sval = (String) f.get(null);
+                String skey = "${" + f.getName() + "}";
+                map.put(skey.getBytes("UTF-8"), sval.getBytes("UTF-8"));
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+           throw new RuntimeException(e.getMessage(), e);
+        }
+        return map;
+    }
+
+    private static List<Field> getAllNlsMessageFields()
+    {
+        List<Field> fields = new ArrayList<>();
+        for(Field f : SampleMessages.class.getFields())
+        {
+            if(Modifier.isPublic(f.getModifiers()) && Modifier.isStatic(f.getModifiers()) && f.getType().equals(String.class))
+            {
+                fields.add(f);
+            }
+        }
+        return fields;
     }
 }

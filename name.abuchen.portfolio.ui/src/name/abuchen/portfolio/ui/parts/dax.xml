@@ -8286,7 +8286,7 @@
         <children>
           <classification>
             <id>CASH</id>
-            <name>Barvermögen</name>
+            <name>${Dax_Cash}</name>
             <color>#c437c2</color>
             <parent reference="../../.."/>
             <children/>
@@ -8302,7 +8302,7 @@
           </classification>
           <classification>
             <id>EQUITY</id>
-            <name>Eigenkapital</name>
+            <name>${Dax_Equity}</name>
             <color>#5757ff</color>
             <parent reference="../../.."/>
             <children/>
@@ -8468,7 +8468,7 @@
           </classification>
           <classification>
             <id>DEBT</id>
-            <name>Fremdkapital</name>
+            <name>${Dax_Debt}</name>
             <color>#dca122</color>
             <parent reference="../../.."/>
             <children/>
@@ -8478,7 +8478,7 @@
           </classification>
           <classification>
             <id>REAL_ESTATE</id>
-            <name>Immobilien</name>
+            <name>${Dax_RealEstate}</name>
             <color>#fd6a0e</color>
             <parent reference="../../.."/>
             <children/>
@@ -8488,7 +8488,7 @@
           </classification>
           <classification>
             <id>COMMODITY</id>
-            <name>Rohstoffe</name>
+            <name>${Dax_Commodity}</name>
             <color>#579f57</color>
             <parent reference="../../.."/>
             <children/>
@@ -8504,13 +8504,13 @@
     </taxonomy>
     <taxonomy>
       <id>industries</id>
-      <name>Branchen (GICS)</name>
+      <name>${Dax_Industries}</name>
       <dimensions class="java.util.Arrays$ArrayList">
         <a class="string-array">
-          <string>Sektor</string>
-          <string>Industriegruppe</string>
-          <string>Industriezweig</string>
-          <string>Branche</string>
+          <string>${Dax_IndustriesSector}</string>
+          <string>${Dax_IndustriesGroup}</string>
+          <string>${Dax_IndustriesDomain}</string>
+          <string>${Dax_Branch}</string>
         </a>
       </dimensions>
       <root>
