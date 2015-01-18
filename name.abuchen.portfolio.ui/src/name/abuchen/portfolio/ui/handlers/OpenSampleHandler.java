@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -14,7 +15,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.parts.SampleMessages;
 import name.abuchen.portfolio.util.ReplaceFilterInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,6 +35,8 @@ public class OpenSampleHandler
 {
     @Inject
     private UISynchronize sync;
+    
+    private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.ui.parts.samplemessages");
 
     @Execute
     public void execute(
@@ -93,10 +95,10 @@ public class OpenSampleHandler
     private static Map<byte[], byte[]> buildNlsReplaceMap()
     {
         Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
-        for(SampleMessages sampleMessage : SampleMessages.values())
+        for(String key : RESOURCES.keySet())
         {
-            String sval = sampleMessage.toString();
-            String skey = "${" + sampleMessage.name() + "}";
+            String sval = RESOURCES.getString(key);
+            String skey = "${" + key + "}";
             try
             {
                 map.put(skey.getBytes("UTF-8"), sval.getBytes("UTF-8"));
