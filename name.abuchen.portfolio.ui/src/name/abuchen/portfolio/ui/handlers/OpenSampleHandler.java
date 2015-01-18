@@ -19,7 +19,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.parts.SampleMessages;
-import name.abuchen.portfolio.ui.util.ReplaceFilterInputStream;
+import name.abuchen.portfolio.util.ReplaceFilterInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;

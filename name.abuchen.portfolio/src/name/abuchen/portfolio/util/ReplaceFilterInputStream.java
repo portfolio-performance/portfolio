@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.util;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
