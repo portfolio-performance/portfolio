@@ -97,41 +97,20 @@ public class OpenSampleHandler
     private static Map<byte[], byte[]> buildNlsReplaceMap()
     {
         Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
-        List<Field> fields = getAllNlsMessageFields();
-        try 
+        for(SampleMessages sampleMessage : SampleMessages.values())
         {
-            for(Field f : fields)
+            String sval = sampleMessage.toString();
+            String skey = "${" + sampleMessage.name() + "}";
+            try
             {
-                String sval = (String) f.get(null);
-                String skey = "${" + f.getName() + "}";
                 map.put(skey.getBytes("UTF-8"), sval.getBytes("UTF-8"));
             }
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-        catch (UnsupportedEncodingException e)
-        {
-           throw new RuntimeException(e.getMessage(), e);
+            catch (UnsupportedEncodingException e)
+            {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
         return map;
     }
 
-    private static List<Field> getAllNlsMessageFields()
-    {
-        List<Field> fields = new ArrayList<>();
-        for(Field f : SampleMessages.class.getFields())
-        {
-            if(Modifier.isPublic(f.getModifiers()) && Modifier.isStatic(f.getModifiers()) && f.getType().equals(String.class))
-            {
-                fields.add(f);
-            }
-        }
-        return fields;
-    }
 }

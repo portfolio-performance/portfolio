@@ -1,42 +1,39 @@
 package name.abuchen.portfolio.ui.parts;
 
-import org.eclipse.osgi.util.NLS;
+import java.util.ResourceBundle;
 
-public class SampleMessages extends NLS {
+public enum SampleMessages {
     
-    private static final String BUNDLE_NAME = "name.abuchen.portfolio.ui.parts.samplemessages"; //$NON-NLS-1$
-
-    public static String Kommer_RiskFreePart;
-    public static String Kommer_RiskBasedPart;
-    public static String Kommer_Commodities;
-    public static String Kommer_RealAssetsWorldwide;
-    public static String Kommer_AssetsEmergingMarkets;
-    public static String Kommer_AssetsSmallCap;
-    public static String Kommer_AssetsDevMarkets;
-    public static String Kommer_AssetsLargeCapValue;
-    public static String Kommer_JapanAustralia;
-    public static String Kommer_WesternEurope;
-    public static String Kommer_USANorthAm;
-    public static String Kommer_WatchlistIndices;
-    public static String Kommer_WatchlistAsia;
-    public static String Kommer_CallDepositMoneyAccount;
-    public static String Kommer_SecuritiesAccount;
-    public static String Dax_Equity;
-    public static String Dax_Cash;
-    public static String Dax_Debt;
-    public static String Dax_RealEstate;
-    public static String Dax_Commodity;
-    public static String Dax_Industries;
-    public static String Dax_IndustriesSector;
-    public static String Dax_IndustriesGroup;
-    public static String Dax_IndustriesDomain;
-    public static String Dax_Branch;
+    Kommer_RiskFreePart,
+    Kommer_RiskBasedPart,
+    Kommer_Commodities,
+    Kommer_RealAssetsWorldwide,
+    Kommer_AssetsEmergingMarkets,
+    Kommer_AssetsSmallCap,
+    Kommer_AssetsDevMarkets,
+    Kommer_AssetsLargeCapValue,
+    Kommer_JapanAustralia,
+    Kommer_WesternEurope,
+    Kommer_USANorthAm,
+    Kommer_WatchlistIndices,
+    Kommer_WatchlistAsia,
+    Kommer_CallDepositMoneyAccount,
+    Kommer_SecuritiesAccount,
+    Dax_Equity,
+    Dax_Cash,
+    Dax_Debt,
+    Dax_RealEstate,
+    Dax_Commodity,
+    Dax_Industries,
+    Dax_IndustriesSector,
+    Dax_IndustriesGroup,
+    Dax_IndustriesDomain,
+    Dax_Branch;
     
-    static {
-        // initialize resource bundle
-        NLS.initializeMessages(BUNDLE_NAME, SampleMessages.class);
-    }
-
-    private SampleMessages() {
+    private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.ui.parts.samplemessages");
+    
+    public String toString() 
+    {
+        return RESOURCES.getString(name());
     }
 } 
