@@ -2,10 +2,11 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.Charset;
+
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
@@ -15,7 +16,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.util.ReplaceFilterInputStream;
+import name.abuchen.portfolio.util.com.jenkov.io.ITokenResolver;
+import name.abuchen.portfolio.util.com.jenkov.io.TokenReplacingReader;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -54,8 +56,10 @@ public class OpenSampleHandler
                 {
                     try
                     {
-                        InputStream inputStream = new ReplaceFilterInputStream(this.getClass().getResourceAsStream(sampleFile), buildNlsReplaceMap());
-                        final Client client = ClientFactory.load(inputStream, monitor);
+                        InputStream inputStream = ClientFactory.enrichInputStreamWithMonitor(this.getClass().getResourceAsStream(sampleFile), monitor);
+                        Reader replacingReader = new TokenReplacingReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")), buildResourcesTokenResolver());
+                        
+                        final Client client = ClientFactory.load(replacingReader);
 
                         sync.asyncExec(new Runnable()
                         {
@@ -92,23 +96,16 @@ public class OpenSampleHandler
         }
     }
     
-    private static Map<byte[], byte[]> buildNlsReplaceMap()
+    private static ITokenResolver buildResourcesTokenResolver()
     {
-        Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
-        for(String key : RESOURCES.keySet())
+        return new ITokenResolver()
         {
-            String sval = RESOURCES.getString(key);
-            String skey = "${" + key + "}";
-            try
+            @Override
+            public String resolveToken(String tokenName)
             {
-                map.put(skey.getBytes("UTF-8"), sval.getBytes("UTF-8"));
+                return RESOURCES.getString(tokenName);
             }
-            catch (UnsupportedEncodingException e)
-            {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-        }
-        return map;
+        };
     }
 
 }

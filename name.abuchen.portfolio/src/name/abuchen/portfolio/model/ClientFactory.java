@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -63,7 +64,9 @@ public class ClientFactory
         }
 
         abstract Client load(InputStream input) throws IOException;
-
+        
+        abstract Client load(Reader reader) throws IOException;
+        
         abstract void save(Client client, OutputStream output) throws IOException;
     }
 
@@ -73,13 +76,13 @@ public class ClientFactory
         {
             super(null);
         }
-
+        
         @Override
-        public Client load(InputStream input) throws IOException
+        public Client load(Reader reader) throws IOException
         {
             try
             {
-                Client client = (Client) xstream().fromXML(new InputStreamReader(input, StandardCharsets.UTF_8));
+                Client client = (Client) xstream().fromXML(reader);
 
                 if (client.getVersion() > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
@@ -93,6 +96,12 @@ public class ClientFactory
             {
                 throw new IOException(MessageFormat.format(Messages.MsgXMLFormatInvalid, e.getMessage()), e);
             }
+        }
+
+        @Override
+        public Client load(InputStream input) throws IOException
+        {
+            return load(new InputStreamReader(input, StandardCharsets.UTF_8));
         }
 
         @Override
@@ -130,6 +139,12 @@ public class ClientFactory
             super(next);
             this.password = password;
             this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
+        }
+        
+        @Override
+        public Client load(Reader reader) throws IOException
+        {
+            throw new UnsupportedOperationException("Decryptor does not support Reader");  //$NON-NLS-1$
         }
 
         @Override
@@ -320,17 +335,38 @@ public class ClientFactory
                 input.close();
         }
     }
+    
+    public static InputStream enrichInputStreamWithMonitor(InputStream input, IProgressMonitor monitor) throws IOException
+    {
+        // getting a resource as stream seems to return the total bytes
+        long bytesTotalEstimate = input.available();
+        
+        int increment = (int) Math.min(bytesTotalEstimate / 20L, Integer.MAX_VALUE);
+        monitor.beginTask(Messages.MsgReadingSampleFile, 20);
+        InputStream stream = new ProgressMonitorInputStream(input, increment, monitor);
+        //
+        return stream;
+    }
+    
+    public static Client load(Reader reader) throws IOException
+    {
+        try
+        {
+            return buildChain(null, null, null).load(reader);
+        }
+        finally
+        {
+            if (reader != null)
+                reader.close();
+        }
+    }
 
     public static Client load(InputStream input, IProgressMonitor monitor) throws IOException
     {
         try
         {
-            // getting a resource as stream seems to return the total bytes
-            long bytesTotalEstimate = input.available();
-
-            int increment = (int) Math.min(bytesTotalEstimate / 20L, Integer.MAX_VALUE);
-            monitor.beginTask(Messages.MsgReadingSampleFile, 20);
-            InputStream stream = new ProgressMonitorInputStream(input, increment, monitor);
+            InputStream stream = enrichInputStreamWithMonitor(input, monitor);
+            //
             return buildChain(null, null, null).load(stream);
         }
         finally
