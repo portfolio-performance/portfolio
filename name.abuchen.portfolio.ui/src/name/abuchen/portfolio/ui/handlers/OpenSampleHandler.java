@@ -2,7 +2,12 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
+
+import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,6 +16,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.util.com.jenkov.io.ITokenResolver;
+import name.abuchen.portfolio.util.com.jenkov.io.TokenReplacingReader;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -30,6 +37,8 @@ public class OpenSampleHandler
 {
     @Inject
     private UISynchronize sync;
+    
+    private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.ui.parts.samplemessages");
 
     @Execute
     public void execute(
@@ -38,7 +47,6 @@ public class OpenSampleHandler
                     final EPartService partService, final EModelService modelService,
                     @Named(UIConstants.Parameter.SAMPLE_FILE) final String sampleFile)
     {
-
         try
         {
             IRunnableWithProgress loadResourceOperation = new IRunnableWithProgress()
@@ -48,8 +56,10 @@ public class OpenSampleHandler
                 {
                     try
                     {
-                        InputStream inputStream = this.getClass().getResourceAsStream(sampleFile);
-                        final Client client = ClientFactory.load(inputStream, monitor);
+                        InputStream inputStream = ClientFactory.enrichInputStreamWithMonitor(this.getClass().getResourceAsStream(sampleFile), monitor);
+                        Reader replacingReader = new TokenReplacingReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")), buildResourcesTokenResolver());
+                        
+                        final Client client = ClientFactory.load(replacingReader);
 
                         sync.asyncExec(new Runnable()
                         {
@@ -85,4 +95,17 @@ public class OpenSampleHandler
             PortfolioPlugin.log(e);
         }
     }
+    
+    private static ITokenResolver buildResourcesTokenResolver()
+    {
+        return new ITokenResolver()
+        {
+            @Override
+            public String resolveToken(String tokenName)
+            {
+                return RESOURCES.getString(tokenName);
+            }
+        };
+    }
+
 }
