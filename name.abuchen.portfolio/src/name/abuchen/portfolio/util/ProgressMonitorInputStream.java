@@ -25,6 +25,16 @@ public class ProgressMonitorInputStream extends FilterInputStream
         this.monitor = monitor;
     }
 
+    /**
+     * Constructs a ProgressMonitorInputStream by using
+     * {@link java.io.InputStream#available()} to determine the total length of
+     * the stream.
+     */
+    public ProgressMonitorInputStream(InputStream in, IProgressMonitor monitor) throws IOException
+    {
+        this(in, (int) Math.min(in.available() / 20L, Integer.MAX_VALUE), monitor);
+    }
+
     public void close() throws IOException
     {
         try

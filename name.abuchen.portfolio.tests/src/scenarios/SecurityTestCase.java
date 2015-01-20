@@ -17,7 +17,6 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -34,8 +33,7 @@ public class SecurityTestCase
     public void testSecurityPerformanceWithMissingHistoricalQuotes() throws IOException
     {
         Client client = ClientFactory.load(SecurityTestCase.class
-                        .getResourceAsStream("security_performance_with_missing_historical_quotes.xml"),
-                        new NullProgressMonitor());
+                        .getResourceAsStream("security_performance_with_missing_historical_quotes.xml"));
 
         Security security = client.getSecurities().get(0);
         PortfolioTransaction delivery = client.getPortfolios().get(0).getTransactions().get(0);

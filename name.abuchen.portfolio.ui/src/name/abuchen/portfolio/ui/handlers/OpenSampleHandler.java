@@ -2,15 +2,29 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.TokenReplacingReader;
+import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -31,6 +45,9 @@ public class OpenSampleHandler
     @Inject
     private UISynchronize sync;
 
+    private static final ResourceBundle RESOURCES = ResourceBundle
+                    .getBundle("name.abuchen.portfolio.ui.parts.samplemessages"); //$NON-NLS-1$
+
     @Execute
     public void execute(
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, //
@@ -38,7 +55,6 @@ public class OpenSampleHandler
                     final EPartService partService, final EModelService modelService,
                     @Named(UIConstants.Parameter.SAMPLE_FILE) final String sampleFile)
     {
-
         try
         {
             IRunnableWithProgress loadResourceOperation = new IRunnableWithProgress()
@@ -46,10 +62,15 @@ public class OpenSampleHandler
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
                 {
-                    try
+                    try (InputStream in = this.getClass().getResourceAsStream(sampleFile))
                     {
-                        InputStream inputStream = this.getClass().getResourceAsStream(sampleFile);
-                        final Client client = ClientFactory.load(inputStream, monitor);
+                        InputStream inputStream = new ProgressMonitorInputStream(in, monitor);
+                        Reader replacingReader = new TokenReplacingReader(new InputStreamReader(inputStream,
+                                        StandardCharsets.UTF_8), buildResourcesTokenResolver());
+
+                        final Client client = ClientFactory.load(replacingReader);
+
+                        fixTaxonomyLabels(client);
 
                         sync.asyncExec(new Runnable()
                         {
@@ -76,13 +97,64 @@ public class OpenSampleHandler
             };
             new ProgressMonitorDialog(shell).run(true, true, loadResourceOperation);
         }
-        catch (InvocationTargetException e)
+        catch (InvocationTargetException | InterruptedException e)
         {
             PortfolioPlugin.log(e);
         }
-        catch (InterruptedException e)
+    }
+
+    protected void fixTaxonomyLabels(Client client)
+    {
+        for (Taxonomy taxonomy : client.getTaxonomies())
         {
-            PortfolioPlugin.log(e);
+            TaxonomyTemplate template = TaxonomyTemplate.byId(taxonomy.getId());
+
+            if (template != null)
+                applyTaxonomyLabels(template, taxonomy);
         }
+    }
+
+    private void applyTaxonomyLabels(TaxonomyTemplate template, Taxonomy taxonomy)
+    {
+        Taxonomy original = template.buildOriginal();
+
+        taxonomy.setName(original.getName());
+        taxonomy.setDimensions(original.getDimensions());
+
+        Map<String, Classification> translated = original.getAllClassifications() //
+                        .stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+
+        taxonomy.foreach(new Visitor()
+        {
+            @Override
+            public void visit(Classification classification)
+            {
+                Classification t = translated.get(classification.getId());
+                if (t != null)
+                {
+                    classification.setName(t.getName());
+                    classification.setNote(t.getNote());
+                }
+            }
+        });
+    }
+
+    private static ITokenResolver buildResourcesTokenResolver()
+    {
+        return new ITokenResolver()
+        {
+            @Override
+            public String resolveToken(String tokenName)
+            {
+                try
+                {
+                    return RESOURCES.getString(tokenName);
+                }
+                catch (MissingResourceException e)
+                {
+                    return tokenName;
+                }
+            }
+        };
     }
 }

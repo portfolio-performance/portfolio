@@ -27,7 +27,6 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -41,9 +40,8 @@ public class SecurityPerformanceTaxRefundTestCase
     @Test
     public void testSecurityPerformanceTaxRefund() throws IOException
     {
-        Client client = ClientFactory.load(
-                        SecurityTestCase.class.getResourceAsStream("security_performance_tax_refund.xml"),
-                        new NullProgressMonitor());
+        Client client = ClientFactory.load(SecurityTestCase.class
+                        .getResourceAsStream("security_performance_tax_refund.xml"));
 
         Security security = client.getSecurities().get(0);
         Portfolio portfolio = client.getPortfolios().get(0);
@@ -104,9 +102,8 @@ public class SecurityPerformanceTaxRefundTestCase
     @Test
     public void testSecurityPerformanceTaxRefundAllSold() throws IOException
     {
-        Client client = ClientFactory.load(
-                        SecurityTestCase.class.getResourceAsStream("security_performance_tax_refund_all_sold.xml"),
-                        new NullProgressMonitor());
+        Client client = ClientFactory.load(SecurityTestCase.class
+                        .getResourceAsStream("security_performance_tax_refund_all_sold.xml"));
 
         Portfolio portfolio = client.getPortfolios().get(0);
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);

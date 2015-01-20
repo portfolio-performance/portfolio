@@ -78,6 +78,15 @@ public final class TaxonomyTemplate
     }
 
     /**
+     * Builds a taxonomy based on the template including the original UUIDs. Use
+     * only for translation purposes.
+     */
+    public Taxonomy buildOriginal()
+    {
+        return buildFromTemplate();
+    }
+
+    /**
      * Builds a taxonomy with exactly the identifier specified in the template.
      * Needed to convert legacy (hard-coded) taxonomies such as asset classes
      * and industry classifications to new style taxonomies.
