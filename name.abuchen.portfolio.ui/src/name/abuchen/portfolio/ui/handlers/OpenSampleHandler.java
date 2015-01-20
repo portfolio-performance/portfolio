@@ -6,14 +6,20 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
@@ -64,6 +70,8 @@ public class OpenSampleHandler
 
                         final Client client = ClientFactory.load(replacingReader);
 
+                        fixTaxonomyLabels(client);
+
                         sync.asyncExec(new Runnable()
                         {
                             @Override
@@ -95,6 +103,42 @@ public class OpenSampleHandler
         }
     }
 
+    protected void fixTaxonomyLabels(Client client)
+    {
+        for (Taxonomy taxonomy : client.getTaxonomies())
+        {
+            TaxonomyTemplate template = TaxonomyTemplate.byId(taxonomy.getId());
+
+            if (template != null)
+                applyTaxonomyLabels(template, taxonomy);
+        }
+    }
+
+    private void applyTaxonomyLabels(TaxonomyTemplate template, Taxonomy taxonomy)
+    {
+        Taxonomy original = template.buildOriginal();
+
+        taxonomy.setName(original.getName());
+        taxonomy.setDimensions(original.getDimensions());
+
+        Map<String, Classification> translated = original.getAllClassifications() //
+                        .stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+
+        taxonomy.foreach(new Visitor()
+        {
+            @Override
+            public void visit(Classification classification)
+            {
+                Classification t = translated.get(classification.getId());
+                if (t != null)
+                {
+                    classification.setName(t.getName());
+                    classification.setNote(t.getNote());
+                }
+            }
+        });
+    }
+
     private static ITokenResolver buildResourcesTokenResolver()
     {
         return new ITokenResolver()
@@ -113,5 +157,4 @@ public class OpenSampleHandler
             }
         };
     }
-
 }

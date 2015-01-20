@@ -7588,7 +7588,7 @@
   <accounts>
     <account>
       <uuid>d18cef06-ebb6-4e14-8cad-fe7410d2e6b6</uuid>
-      <name>Konto 1</name>
+      <name>${Dax_Account1}</name>
       <isRetired>false</isRetired>
       <transactions>
         <account-transaction>
@@ -7603,7 +7603,7 @@
           <crossEntry class="buysell">
             <portfolio>
               <uuid>c8676f98-3337-4c64-a6c2-0974788790bb</uuid>
-              <name>Portfolio 1</name>
+              <name>${Dax_Portfolio1}</name>
               <referenceAccount reference="../../../../.."/>
               <transactions>
                 <portfolio-transaction>
@@ -8286,7 +8286,7 @@
         <children>
           <classification>
             <id>CASH</id>
-            <name>${Dax_Cash}</name>
+            <name>Barvermögen</name>
             <color>#c437c2</color>
             <parent reference="../../.."/>
             <children/>
@@ -8302,7 +8302,7 @@
           </classification>
           <classification>
             <id>EQUITY</id>
-            <name>${Dax_Equity}</name>
+            <name>Eigenkapital</name>
             <color>#5757ff</color>
             <parent reference="../../.."/>
             <children/>
@@ -8468,7 +8468,7 @@
           </classification>
           <classification>
             <id>DEBT</id>
-            <name>${Dax_Debt}</name>
+            <name>Fremdkapital</name>
             <color>#dca122</color>
             <parent reference="../../.."/>
             <children/>
@@ -8478,7 +8478,7 @@
           </classification>
           <classification>
             <id>REAL_ESTATE</id>
-            <name>${Dax_RealEstate}</name>
+            <name>Immobilien</name>
             <color>#fd6a0e</color>
             <parent reference="../../.."/>
             <children/>
@@ -8488,7 +8488,7 @@
           </classification>
           <classification>
             <id>COMMODITY</id>
-            <name>${Dax_Commodity}</name>
+            <name>Rohstoffe</name>
             <color>#579f57</color>
             <parent reference="../../.."/>
             <children/>
@@ -8503,14 +8503,14 @@
       </root>
     </taxonomy>
     <taxonomy>
-      <id>industries</id>
-      <name>${Dax_Industries}</name>
+      <id>industry-gics</id>
+      <name>Branchen (GICS)</name>
       <dimensions class="java.util.Arrays$ArrayList">
         <a class="string-array">
-          <string>${Dax_IndustriesSector}</string>
-          <string>${Dax_IndustriesGroup}</string>
-          <string>${Dax_IndustriesDomain}</string>
-          <string>${Dax_Branch}</string>
+          <string>Sektor</string>
+          <string>Industriegruppe</string>
+          <string>Industriezweig</string>
+          <string>Branche</string>
         </a>
       </dimensions>
       <root>
