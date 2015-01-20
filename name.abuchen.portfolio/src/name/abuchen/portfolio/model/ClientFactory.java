@@ -54,35 +54,13 @@ import com.thoughtworks.xstream.converters.basic.DateConverter;
 @SuppressWarnings("deprecation")
 public class ClientFactory
 {
-    private abstract static class Interceptor
+    private static class XmlSerialization
     {
-        protected Interceptor next;
-
-        public Interceptor(Interceptor next)
-        {
-            this.next = next;
-        }
-
-        abstract Client load(InputStream input) throws IOException;
-        
-        abstract Client load(Reader reader) throws IOException;
-        
-        abstract void save(Client client, OutputStream output) throws IOException;
-    }
-
-    private static class XmlSerialization extends Interceptor
-    {
-        public XmlSerialization()
-        {
-            super(null);
-        }
-        
-        @Override
-        public Client load(Reader reader) throws IOException
+        public Client load(Reader input) throws IOException
         {
             try
             {
-                Client client = (Client) xstream().fromXML(reader);
+                Client client = (Client) xstream().fromXML(input);
 
                 if (client.getVersion() > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
@@ -98,13 +76,6 @@ public class ClientFactory
             }
         }
 
-        @Override
-        public Client load(InputStream input) throws IOException
-        {
-            return load(new InputStreamReader(input, StandardCharsets.UTF_8));
-        }
-
-        @Override
         void save(Client client, OutputStream output) throws IOException
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
@@ -115,7 +86,29 @@ public class ClientFactory
         }
     }
 
-    private static class Decryptor extends Interceptor
+    private interface ClientPersister
+    {
+        Client load(InputStream input) throws IOException;
+
+        void save(Client client, OutputStream output) throws IOException;
+    }
+
+    private static class PlainWriter implements ClientPersister
+    {
+        @Override
+        public Client load(InputStream input) throws IOException
+        {
+            return new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public void save(Client client, OutputStream output) throws IOException
+        {
+            new XmlSerialization().save(client, output);
+        }
+    }
+
+    private static class Decryptor implements ClientPersister
     {
         private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
 
@@ -134,17 +127,10 @@ public class ClientFactory
         private char[] password;
         private int keyLength;
 
-        public Decryptor(Interceptor next, String method, char[] password)
+        public Decryptor(String method, char[] password)
         {
-            super(next);
             this.password = password;
             this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
-        }
-        
-        @Override
-        public Client load(Reader reader) throws IOException
-        {
-            throw new UnsupportedOperationException("Decryptor does not support Reader");  //$NON-NLS-1$
         }
 
         @Override
@@ -194,7 +180,7 @@ public class ClientFactory
                 ZipInputStream zipin = new ZipInputStream(decrypted);
                 zipin.getNextEntry();
 
-                Client client = next.load(zipin);
+                Client client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
 
                 // save secret key for next save
                 client.setSecret(secret);
@@ -223,7 +209,7 @@ public class ClientFactory
         }
 
         @Override
-        void save(Client client, final OutputStream output) throws IOException
+        public void save(Client client, final OutputStream output) throws IOException
         {
             try
             {
@@ -267,7 +253,7 @@ public class ClientFactory
                 ZipOutputStream zipout = new ZipOutputStream(encrpyted);
                 zipout.putNextEntry(new ZipEntry("data.xml")); //$NON-NLS-1$
 
-                next.save(client, zipout);
+                new XmlSerialization().save(client, zipout);
 
                 zipout.closeEntry();
                 zipout.flush();
@@ -323,7 +309,7 @@ public class ClientFactory
             monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
             input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
 
-            return buildChain(file, null, password).load(input);
+            return buildPersister(file, null, password).load(input);
         }
         catch (FileNotFoundException e)
         {
@@ -335,45 +321,23 @@ public class ClientFactory
                 input.close();
         }
     }
-    
-    public static InputStream enrichInputStreamWithMonitor(InputStream input, IProgressMonitor monitor) throws IOException
-    {
-        // getting a resource as stream seems to return the total bytes
-        long bytesTotalEstimate = input.available();
-        
-        int increment = (int) Math.min(bytesTotalEstimate / 20L, Integer.MAX_VALUE);
-        monitor.beginTask(Messages.MsgReadingSampleFile, 20);
-        InputStream stream = new ProgressMonitorInputStream(input, increment, monitor);
-        //
-        return stream;
-    }
-    
-    public static Client load(Reader reader) throws IOException
-    {
-        try
-        {
-            return buildChain(null, null, null).load(reader);
-        }
-        finally
-        {
-            if (reader != null)
-                reader.close();
-        }
-    }
 
-    public static Client load(InputStream input, IProgressMonitor monitor) throws IOException
+    public static Client load(Reader input) throws IOException
     {
         try
         {
-            InputStream stream = enrichInputStreamWithMonitor(input, monitor);
-            //
-            return buildChain(null, null, null).load(stream);
+            return new XmlSerialization().load(input);
         }
         finally
         {
             if (input != null)
                 input.close();
         }
+    }
+
+    public static Client load(InputStream input) throws IOException
+    {
+        return load(new InputStreamReader(input, StandardCharsets.UTF_8));
     }
 
     public static void save(final Client client, final File file, String method, char[] password) throws IOException
@@ -387,7 +351,7 @@ public class ClientFactory
         {
             output = new FileOutputStream(file);
 
-            buildChain(file, method, password).save(client, output);
+            buildPersister(file, method, password).save(client, output);
         }
         finally
         {
@@ -396,14 +360,12 @@ public class ClientFactory
         }
     }
 
-    private static Interceptor buildChain(File file, String method, char[] password)
+    private static ClientPersister buildPersister(File file, String method, char[] password)
     {
-        Interceptor chain = new XmlSerialization();
-
         if (file != null && isEncrypted(file))
-            chain = new Decryptor(chain, method, password);
-
-        return chain;
+            return new Decryptor(method, password);
+        else
+            return new PlainWriter();
     }
 
     private static void upgradeModel(Client client)

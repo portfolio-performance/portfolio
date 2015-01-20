@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
-
+import java.nio.charset.StandardCharsets;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
@@ -16,8 +16,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.util.com.jenkov.io.ITokenResolver;
-import name.abuchen.portfolio.util.com.jenkov.io.TokenReplacingReader;
+import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.TokenReplacingReader;
+import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -37,8 +38,9 @@ public class OpenSampleHandler
 {
     @Inject
     private UISynchronize sync;
-    
-    private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.ui.parts.samplemessages");
+
+    private static final ResourceBundle RESOURCES = ResourceBundle
+                    .getBundle("name.abuchen.portfolio.ui.parts.samplemessages"); //$NON-NLS-1$
 
     @Execute
     public void execute(
@@ -54,11 +56,12 @@ public class OpenSampleHandler
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
                 {
-                    try
+                    try (InputStream in = this.getClass().getResourceAsStream(sampleFile))
                     {
-                        InputStream inputStream = ClientFactory.enrichInputStreamWithMonitor(this.getClass().getResourceAsStream(sampleFile), monitor);
-                        Reader replacingReader = new TokenReplacingReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")), buildResourcesTokenResolver());
-                        
+                        InputStream inputStream = new ProgressMonitorInputStream(in, monitor);
+                        Reader replacingReader = new TokenReplacingReader(new InputStreamReader(inputStream,
+                                        StandardCharsets.UTF_8), buildResourcesTokenResolver());
+
                         final Client client = ClientFactory.load(replacingReader);
 
                         sync.asyncExec(new Runnable()
@@ -86,16 +89,12 @@ public class OpenSampleHandler
             };
             new ProgressMonitorDialog(shell).run(true, true, loadResourceOperation);
         }
-        catch (InvocationTargetException e)
-        {
-            PortfolioPlugin.log(e);
-        }
-        catch (InterruptedException e)
+        catch (InvocationTargetException | InterruptedException e)
         {
             PortfolioPlugin.log(e);
         }
     }
-    
+
     private static ITokenResolver buildResourcesTokenResolver()
     {
         return new ITokenResolver()
@@ -103,7 +102,14 @@ public class OpenSampleHandler
             @Override
             public String resolveToken(String tokenName)
             {
-                return RESOURCES.getString(tokenName);
+                try
+                {
+                    return RESOURCES.getString(tokenName);
+                }
+                catch (MissingResourceException e)
+                {
+                    return tokenName;
+                }
             }
         };
     }
