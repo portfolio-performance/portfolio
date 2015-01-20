@@ -33,6 +33,7 @@ public class PerformanceIndex
     protected long[] taxes;
     protected double[] accumulated;
     protected double[] delta;
+    protected double maxDrawdown;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -138,6 +139,11 @@ public class PerformanceIndex
     public long[] getTransferals()
     {
         return transferals;
+    }
+
+    public double getMaxDrawdown()
+    {
+        return maxDrawdown;
     }
 
     public long[] getTaxes()

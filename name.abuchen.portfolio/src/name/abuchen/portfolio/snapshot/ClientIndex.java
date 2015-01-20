@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.model.Client;
 
 import org.joda.time.DateMidnight;
@@ -30,6 +31,7 @@ import org.joda.time.Interval;
         accumulated = new double[size];
         transferals = new long[size];
         taxes = new long[size];
+        maxDrawdown = 0d;
 
         collectTransferalsAndTaxes(size, interval);
 
@@ -75,6 +77,7 @@ import org.joda.time.Interval;
             valuation = thisValuation;
             index++;
         }
+        maxDrawdown = Risk.calculateMaxDrawdown(accumulated);
     }
 
     private void addValue(long[] array, long value, Interval interval, DateMidnight time)
