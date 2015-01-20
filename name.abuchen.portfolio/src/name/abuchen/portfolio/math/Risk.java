@@ -6,16 +6,16 @@ import java.util.List;
 public final class Risk
 {
 
-    public static double calculateMaxDrawdown(List<Double> values)
+    public static double calculateMaxDrawdown(double[] values)
     {
         Double peak = Double.MIN_VALUE;
         List<Double> dd = new ArrayList<Double>();
         Double maxDD = 0d;
         int i = 0;
-        for (Double value : values)
+        for (double value : values)
         {
             peak = Math.max(peak, value);
-            dd.add(i, (peak - values.get(i)) / peak);
+            dd.add(i, (peak - values[i]) / peak);
             maxDD = Math.max(maxDD, dd.get(i));
             i++;
         }
