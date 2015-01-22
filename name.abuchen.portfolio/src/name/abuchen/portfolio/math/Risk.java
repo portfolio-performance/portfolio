@@ -22,15 +22,15 @@ public final class Risk
         return maxDD;
     }
 
-    public static double calculateAverageVolatility(List<Double> values)
+    public static double calculateAverageVolatility(long[] values)
     {
-        Double temp;
+        double temp;
         List<Double> vola = new ArrayList<Double>();
         Double average = 0d;
         Double variance = 0d;
-        for (int i = 1; i < values.size(); i++)
+        for (int i = 1; i < values.length; i++)
         {
-            temp = (values.get(i) - values.get(i - 1)) / values.get(i - 1);
+            temp = (double) (values[i] - values[i - 1]) / values[i - 1];
             vola.add(temp);
             average = average + temp;
         }

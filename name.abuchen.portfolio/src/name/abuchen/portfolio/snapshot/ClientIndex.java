@@ -32,6 +32,7 @@ import org.joda.time.Interval;
         transferals = new long[size];
         taxes = new long[size];
         maxDrawdown = 0d;
+        volatility = 0d;
 
         collectTransferalsAndTaxes(size, interval);
 
@@ -78,6 +79,7 @@ import org.joda.time.Interval;
             index++;
         }
         maxDrawdown = Risk.calculateMaxDrawdown(totals);
+        volatility = Risk.calculateAverageVolatility(totals);
     }
 
     private void addValue(long[] array, long value, Interval interval, DateMidnight time)
