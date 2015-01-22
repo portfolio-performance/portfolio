@@ -76,6 +76,7 @@ public class PerformanceView extends AbstractHistoricView
         private Label absoluteChange;
         private Label delta;
         private Label maxDrawdown;
+        private Label volatility;
 
         private Label ttwrorLastDay;
         private Label absoluteChangeLastDay;
@@ -96,6 +97,7 @@ public class PerformanceView extends AbstractHistoricView
                 absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
                 delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
                 maxDrawdown.setText(Values.Percent2.format(index.getMaxDrawdown()));
+                volatility.setText(Values.Percent2.format(index.getVolatility()));
 
                 ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
                 absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
@@ -103,7 +105,7 @@ public class PerformanceView extends AbstractHistoricView
             }
             else
             {
-                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown);
+                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown, volatility);
             }
 
             int ii = 0;
@@ -160,8 +162,9 @@ public class PerformanceView extends AbstractHistoricView
             ttwror = addKPIBelow(Messages.LabelTTWROR, heading, maxWidth);
             irr = addKPIBelow(Messages.LabelIRR, ttwror, maxWidth);
             absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
-            maxDrawdown = addKPIBelow("Maximum Drawdown", absoluteChange, maxWidth);
-            delta = addKPIBelow(Messages.LabelAbsoluteDelta, maxDrawdown, maxWidth);
+            maxDrawdown = addKPIBelow("Maximaler Drawdown", absoluteChange, maxWidth);
+            volatility = addKPIBelow("Volatilität", maxDrawdown, maxWidth);
+            delta = addKPIBelow(Messages.LabelAbsoluteDelta, volatility, maxWidth);
             
 
             Label headingLastDay = new Label(composite, SWT.NONE);
