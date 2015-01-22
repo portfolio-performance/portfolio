@@ -6,7 +6,7 @@ import java.util.List;
 public final class Risk
 {
 
-    public static double calculateMaxDrawdown(double[] values)
+    public static double calculateMaxDrawdown(long[] values)
     {
         Double peak = Double.MIN_VALUE;
         List<Double> dd = new ArrayList<Double>();

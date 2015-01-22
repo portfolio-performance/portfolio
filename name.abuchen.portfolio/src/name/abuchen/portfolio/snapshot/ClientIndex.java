@@ -77,7 +77,7 @@ import org.joda.time.Interval;
             valuation = thisValuation;
             index++;
         }
-        maxDrawdown = Risk.calculateMaxDrawdown(accumulated);
+        maxDrawdown = Risk.calculateMaxDrawdown(totals);
     }
 
     private void addValue(long[] array, long value, Interval interval, DateMidnight time)
