@@ -2,6 +2,7 @@ package name.abuchen.portfolio.math;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.DoubleStream;
 
 public final class Risk
 {
@@ -22,26 +23,45 @@ public final class Risk
         return maxDD;
     }
 
+    private static double[] getReturns(long[] values)
+    {
+        double[] returns = new double[values.length - 1];
+        for (int i = 0; i < returns.length; i++)
+        {
+            returns[i] = (double) values[i + 1] / values[i];
+        }
+        return returns;
+    }
+
     public static double calculateAverageVolatility(long[] values)
     {
-        double temp;
-        List<Double> vola = new ArrayList<Double>();
-        Double average = 0d;
+        double[] vola = Risk.getReturns(values);
+        double average = DoubleStream.of(vola).average().getAsDouble();
         Double variance = 0d;
-        for (int i = 1; i < values.length; i++)
+        for (int i = 0; i < vola.length; i++)
         {
-            temp = (double) (values[i] - values[i - 1]) / values[i - 1];
-            vola.add(temp);
-            average = average + temp;
+            variance = Math.pow(vola[i] - average, 2) + variance;
         }
-        average = average / vola.size();
-        for (int i = 0; i < vola.size(); i++)
-        {
-            variance = Math.pow(vola.get(i) - average, 2) + variance;
-        }
-        variance = variance / vola.size();
+        variance = variance / vola.length;
         variance = Math.sqrt(variance);
         return variance;
+    }
+
+    public static double calculateSemiVolatility(long[] values)
+    {
+        double[] returns = Risk.getReturns(values);
+        double averageReturn = DoubleStream.of(returns).average().getAsDouble();
+        double semiVariance = 0;
+
+        for (int i = 0; i < returns.length; i++)
+        {
+            if (returns[i] < averageReturn)
+            {
+                semiVariance = semiVariance + Math.pow(averageReturn - returns[i], 2);
+            }
+        }
+        semiVariance = semiVariance / returns.length;
+        return Math.sqrt(semiVariance);
     }
 
 }

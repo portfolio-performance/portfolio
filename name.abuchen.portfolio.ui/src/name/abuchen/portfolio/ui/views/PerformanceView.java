@@ -77,6 +77,7 @@ public class PerformanceView extends AbstractHistoricView
         private Label delta;
         private Label maxDrawdown;
         private Label volatility;
+        private Label semiVolatility;
 
         private Label ttwrorLastDay;
         private Label absoluteChangeLastDay;
@@ -98,6 +99,7 @@ public class PerformanceView extends AbstractHistoricView
                 delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
                 maxDrawdown.setText(Values.Percent2.format(index.getMaxDrawdown()));
                 volatility.setText(Values.Percent2.format(index.getVolatility()));
+                semiVolatility.setText(Values.Percent2.format(index.getSemiVolatility()));
 
                 ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
                 absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
@@ -105,7 +107,7 @@ public class PerformanceView extends AbstractHistoricView
             }
             else
             {
-                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown, volatility);
+                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown, volatility, semiVolatility);
             }
 
             int ii = 0;
@@ -164,7 +166,8 @@ public class PerformanceView extends AbstractHistoricView
             absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
             maxDrawdown = addKPIBelow("Maximaler Drawdown", absoluteChange, maxWidth);
             volatility = addKPIBelow("Volatilität", maxDrawdown, maxWidth);
-            delta = addKPIBelow(Messages.LabelAbsoluteDelta, volatility, maxWidth);
+            semiVolatility = addKPIBelow("Semi Volatilität", volatility, maxWidth);
+            delta = addKPIBelow(Messages.LabelAbsoluteDelta, semiVolatility, maxWidth);
             
 
             Label headingLastDay = new Label(composite, SWT.NONE);

@@ -35,6 +35,7 @@ public class PerformanceIndex
     protected double[] delta;
     protected double maxDrawdown;
     protected double volatility;
+    protected double semiVolatility;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -150,6 +151,11 @@ public class PerformanceIndex
     public double getVolatility()
     {
         return volatility;
+    }
+
+    public double getSemiVolatility()
+    {
+        return semiVolatility;
     }
 
     public long[] getTaxes()

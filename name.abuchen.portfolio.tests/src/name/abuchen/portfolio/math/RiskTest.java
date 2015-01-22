@@ -24,5 +24,15 @@ public class RiskTest
         double many = Risk.calculateAverageVolatility(new long[] {1,2,2,4,4,2});
         assert(many == 0.5d);
     }
+    
+    @Test
+    public void testSemiVolatility() {
+        double steady = Risk.calculateSemiVolatility(new long[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
+        assert(steady == 0d);
+        double full = Risk.calculateSemiVolatility(new long[] {1,0,1,0,1,2,0});
+        assert(full == 1d);
+        double many = Risk.calculateSemiVolatility(new long[] {1,2,2,4,4,2});
+        assert(many == 0.1d);
+    }
 
 }
