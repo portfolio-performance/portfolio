@@ -37,7 +37,7 @@ public final class Risk
     {
         double[] vola = Risk.getReturns(values);
         double average = DoubleStream.of(vola).average().getAsDouble();
-        Double variance = 0d;
+        double variance = 0d;
         for (int i = 0; i < vola.length; i++)
         {
             variance = Math.pow(vola[i] - average, 2) + variance;
@@ -52,7 +52,6 @@ public final class Risk
         double[] returns = Risk.getReturns(values);
         double averageReturn = DoubleStream.of(returns).average().getAsDouble();
         double semiVariance = 0;
-
         for (int i = 0; i < returns.length; i++)
         {
             if (returns[i] < averageReturn)
@@ -62,6 +61,13 @@ public final class Risk
         }
         semiVariance = semiVariance / returns.length;
         return Math.sqrt(semiVariance);
+    }
+
+    public static double annualize(double risk)
+    {
+        // as the values are always daily, the annualization does not need a
+        // parameter
+        return risk * Math.sqrt(250);
     }
 
 }

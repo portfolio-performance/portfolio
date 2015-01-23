@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -156,6 +157,21 @@ public class PerformanceIndex
     public double getSemiVolatility()
     {
         return semiVolatility;
+    }
+
+    public double getAnnualizedVolatility()
+    {
+        return Risk.annualize(volatility);
+    }
+
+    public double getAnnualizedSemiVolatility()
+    {
+        return Risk.annualize(semiVolatility);
+    }
+
+    public double getAnnualizedMaxDrawdown()
+    {
+        return Risk.annualize(maxDrawdown);
     }
 
     public long[] getTaxes()
