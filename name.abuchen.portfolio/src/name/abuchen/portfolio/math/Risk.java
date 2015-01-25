@@ -5,15 +5,17 @@ import java.util.stream.DoubleStream;
 public final class Risk
 {
 
-    public static double calculateMaxDrawdown(long[] values)
+    public static double calculateMaxDrawdown(double[] values)
     {
-        long peak = Long.MIN_VALUE;
+        double peak = Double.MIN_VALUE;
         double maxDD = 0;
 
-        for (long value : values)
+        for (double value : values)
         {
             peak = Math.max(peak, value);
-            maxDD = Math.max(maxDD, (peak - value) / (double) peak);
+            // as the values are the accumulated percentages there is no need to
+            // calculate a relation. We can simply reduce the peak
+            maxDD = Math.max(maxDD, (peak - value));
         }
         return maxDD;
     }

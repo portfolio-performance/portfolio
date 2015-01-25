@@ -78,7 +78,7 @@ import org.joda.time.Interval;
             valuation = thisValuation;
             index++;
         }
-        maxDrawdown = Risk.calculateMaxDrawdown(totals);
+        maxDrawdown = Risk.calculateMaxDrawdown(accumulated);
         volatility = Risk.calculateAverageVolatility(totals);
         semiVolatility = Risk.calculateSemiVolatility(totals);
     }
