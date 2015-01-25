@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.math;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.DoubleStream;
 
 public final class Risk
@@ -9,16 +7,13 @@ public final class Risk
 
     public static double calculateMaxDrawdown(long[] values)
     {
-        Double peak = Double.MIN_VALUE;
-        List<Double> dd = new ArrayList<Double>();
-        Double maxDD = 0d;
-        int i = 0;
-        for (double value : values)
+        long peak = Long.MIN_VALUE;
+        double maxDD = 0;
+
+        for (long value : values)
         {
             peak = Math.max(peak, value);
-            dd.add(i, (peak - values[i]) / peak);
-            maxDD = Math.max(maxDD, dd.get(i));
-            i++;
+            maxDD = Math.max(maxDD, (peak - value) / (double) peak);
         }
         return maxDD;
     }
