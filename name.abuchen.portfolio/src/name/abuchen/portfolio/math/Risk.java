@@ -21,17 +21,17 @@ public final class Risk
         return maxDD;
     }
 
-    private static double[] getReturns(long[] values)
+    private static double[] getReturns(double[] values)
     {
         double[] returns = new double[values.length - 1];
         for (int i = 0; i < returns.length; i++)
         {
-            returns[i] = (double) values[i + 1] / values[i];
+            returns[i] = values[i + 1] - values[i];
         }
         return returns;
     }
 
-    public static double calculateAverageVolatility(long[] values)
+    public static double calculateAverageVolatility(double[] values)
     {
         double[] vola = Risk.getReturns(values);
         double average = DoubleStream.of(vola).average().getAsDouble();
@@ -45,7 +45,7 @@ public final class Risk
         return variance;
     }
 
-    public static double calculateSemiVolatility(long[] values)
+    public static double calculateSemiVolatility(double[] values)
     {
         double[] returns = Risk.getReturns(values);
         double averageReturn = DoubleStream.of(returns).average().getAsDouble();

@@ -7,31 +7,31 @@ public class RiskTest
     
     @Test
     public void testDrawdown() {
-        double steady = Risk.calculateMaxDrawdown(new long[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
+        double steady = Risk.calculateMaxDrawdown(new double[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
         assert(steady == 0d);
-        double full = Risk.calculateMaxDrawdown(new long[] {2,2,0,1,2,3,4,5,6,7});
+        double full = Risk.calculateMaxDrawdown(new double[] {2,2,0,1,2,3,4,5,6,7});
         assert(full == 1d);
-        double many = Risk.calculateMaxDrawdown(new long[] {1,2,3,4,3,4,5,6,5,3,4,5,6,7,6,8,5,9});
+        double many = Risk.calculateMaxDrawdown(new double[] {1,2,3,4,3,4,5,6,5,3,4,5,6,7,6,8,5,9});
         assert(many == 0.5d);
     }
     
     @Test
     public void testVolatility() {
-        double steady = Risk.calculateAverageVolatility(new long[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
+        double steady = Risk.calculateAverageVolatility(new double[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
         assert(steady == 0d);
-        double full = Risk.calculateAverageVolatility(new long[] {1,0,1,0,1,2,0});
+        double full = Risk.calculateAverageVolatility(new double[] {1,0,1,0,1,2,0});
         assert(full == 1d);
-        double many = Risk.calculateAverageVolatility(new long[] {1,2,2,4,4,2});
+        double many = Risk.calculateAverageVolatility(new double[] {1,2,2,4,4,2});
         assert(many == 0.5d);
     }
     
     @Test
     public void testSemiVolatility() {
-        double steady = Risk.calculateSemiVolatility(new long[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
+        double steady = Risk.calculateSemiVolatility(new double[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
         assert(steady == 0d);
-        double full = Risk.calculateSemiVolatility(new long[] {1,0,1,0,1,2,0});
+        double full = Risk.calculateSemiVolatility(new double[] {1,0,1,0,1,2,0});
         assert(full == 1d);
-        double many = Risk.calculateSemiVolatility(new long[] {1,2,2,4,4,2});
+        double many = Risk.calculateSemiVolatility(new double[] {1,2,2,4,4,2});
         assert(many == 0.1d);
     }
 
