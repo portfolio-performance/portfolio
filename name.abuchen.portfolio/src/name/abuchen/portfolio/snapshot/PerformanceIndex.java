@@ -161,17 +161,17 @@ public class PerformanceIndex
 
     public double getAnnualizedVolatility()
     {
-        return Risk.annualize(volatility);
+        return Risk.annualize(volatility, dates);
     }
 
     public double getAnnualizedSemiVolatility()
     {
-        return Risk.annualize(semiVolatility);
+        return Risk.annualize(semiVolatility, dates);
     }
 
     public double getAnnualizedMaxDrawdown()
     {
-        return Risk.annualize(maxDrawdown);
+        return Risk.annualize(maxDrawdown, dates);
     }
 
     public long[] getTaxes()

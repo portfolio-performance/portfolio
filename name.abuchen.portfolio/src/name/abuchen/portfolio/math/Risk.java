@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.math;
 
+import java.util.Date;
 import java.util.stream.DoubleStream;
 
 public final class Risk
@@ -60,11 +61,11 @@ public final class Risk
         return Math.sqrt(semiVariance);
     }
 
-    public static double annualize(double risk)
+    public static double annualize(double risk, Date[] dates)
     {
-        // as the values are always daily, the annualization does not need a
-        // parameter
-        return risk * Math.sqrt(250);
+        // annualization is obatined by multiplying with the square root of the
+        // number of periods the risk was calculated with
+        return risk * Math.sqrt(dates.length);
     }
 
 }
