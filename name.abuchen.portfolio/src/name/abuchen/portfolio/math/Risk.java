@@ -3,10 +3,13 @@ package name.abuchen.portfolio.math;
 import java.util.Date;
 import java.util.stream.DoubleStream;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+
 public final class Risk
 {
 
-    public static double calculateMaxDrawdown(double[] values)
+    public static double calculateMaxDrawdownMagnitude(double[] values)
     {
         double peak = Double.MIN_VALUE;
         double maxDD = 0;
@@ -19,6 +22,28 @@ public final class Risk
             maxDD = Math.max(maxDD, (peak - value));
         }
         return maxDD;
+    }
+
+    public static Duration calculateMaxDrawdownDuration(double[] values, Date[] dates)
+    {
+        double peak = values[0];
+        Date peakDate = dates[0];
+        Duration drawdownDuration = new Duration(new DateTime(dates[0]), new DateTime(dates[0]));
+        Duration currentDuration;
+        for (int i = 0; i < dates.length; i++)
+        {
+            if (values[i] > peak)
+            {
+                peak = values[i];
+                currentDuration = new Duration(new DateTime(peakDate), new DateTime(dates[i]));
+                peakDate = dates[i];
+                if (currentDuration.compareTo(drawdownDuration) > 0)
+                {
+                    drawdownDuration = currentDuration;
+                }
+            }
+        }
+        return drawdownDuration;
     }
 
     private static double[] getReturns(double[] values)

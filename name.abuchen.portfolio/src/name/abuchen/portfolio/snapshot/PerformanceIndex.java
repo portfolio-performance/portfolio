@@ -28,6 +28,7 @@ import name.abuchen.portfolio.model.Values;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 public class PerformanceIndex
 {
@@ -153,6 +154,11 @@ public class PerformanceIndex
     public double getMaxDrawdown()
     {
         return maxDrawdown;
+    }
+
+    public Duration getMaxDrawdownDuration()
+    {
+        return Risk.calculateMaxDrawdownDuration(accumulated, dates);
     }
 
     public double getVolatility()

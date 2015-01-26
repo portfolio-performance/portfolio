@@ -7,11 +7,11 @@ public class RiskTest
     
     @Test
     public void testDrawdown() {
-        double steady = Risk.calculateMaxDrawdown(new double[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
+        double steady = Risk.calculateMaxDrawdownMagnitude(new double[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
         assert(steady == 0d);
-        double full = Risk.calculateMaxDrawdown(new double[] {2,2,0,1,2,3,4,5,6,7});
+        double full = Risk.calculateMaxDrawdownMagnitude(new double[] {2,2,0,1,2,3,4,5,6,7});
         assert(full == 1d);
-        double many = Risk.calculateMaxDrawdown(new double[] {1,2,3,4,3,4,5,6,5,3,4,5,6,7,6,8,5,9});
+        double many = Risk.calculateMaxDrawdownMagnitude(new double[] {1,2,3,4,3,4,5,6,5,3,4,5,6,7,6,8,5,9});
         assert(many == 0.5d);
     }
     
