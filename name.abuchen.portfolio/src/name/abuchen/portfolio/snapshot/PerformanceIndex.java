@@ -6,8 +6,14 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.DoubleStream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk;
@@ -161,7 +167,32 @@ public class PerformanceIndex
 
     public double getAnnualizedVolatility()
     {
-        return Risk.annualize(volatility, dates);
+        Map<Integer, List<Date>> buckets = new HashMap<Integer, List<Date>>();
+        DateTime current;
+        for (Date date : dates)
+        {
+            current = new DateTime(date);
+            if (buckets.get(current.getYear()) == null)
+            {
+                buckets.put(current.getYear(), new ArrayList<Date>());
+            }
+            buckets.get(current.getYear()).add(date);
+        }
+        double[] volas = new double[buckets.size()];
+        int j = 0;
+        for (Entry<Integer, List<Date>> entry : buckets.entrySet())
+        {
+            List<Date> tempDates = entry.getValue();
+            double[] tempAccumulated = new double[tempDates.size()];
+            int i = 0;
+            for (Date d : tempDates)
+            {
+                tempAccumulated[i++] = accumulated[Arrays.asList(dates).indexOf(d)];
+            }
+            Date[] temp = new Date[tempDates.size()];
+            volas[j++] = Risk.annualize(Risk.calculateAverageVolatility(tempAccumulated), tempDates.toArray(temp));
+        }
+        return DoubleStream.of(volas).average().getAsDouble();
     }
 
     public double getAnnualizedSemiVolatility()
