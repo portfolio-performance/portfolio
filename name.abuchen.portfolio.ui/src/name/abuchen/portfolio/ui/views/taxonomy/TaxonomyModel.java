@@ -45,6 +45,7 @@ public final class TaxonomyModel
     private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<InvestmentVehicle, Assignment>();
 
     private boolean excludeUnassignedCategoryInCharts = false;
+    private boolean orderByTaxonomyInStackChart = false;
 
     private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
 
@@ -230,6 +231,16 @@ public final class TaxonomyModel
         this.excludeUnassignedCategoryInCharts = excludeUnassignedCategoryInCharts;
     }
 
+    public boolean isOrderByTaxonomyInStackChart()
+    {
+        return orderByTaxonomyInStackChart;
+    }
+    
+    public void setOrderByTaxonomyInStackChart(boolean orderByTaxonomyInStackChart)
+    {
+        this.orderByTaxonomyInStackChart = orderByTaxonomyInStackChart;
+    }
+    
     public Taxonomy getTaxonomy()
     {
         return taxonomy;

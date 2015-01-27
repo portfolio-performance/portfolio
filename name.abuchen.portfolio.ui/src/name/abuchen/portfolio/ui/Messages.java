@@ -273,6 +273,7 @@ public class Messages extends NLS
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
     public static String LabelOther;
+    public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
     public static String LabelPerformanceCalculation;
