@@ -6,44 +6,57 @@ import java.util.stream.DoubleStream;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-public final class Risk
+public class Risk
 {
 
-    public static double calculateMaxDrawdownMagnitude(double[] values)
+    public static class Drawdown
     {
-        double peak = Double.MIN_VALUE;
-        double maxDD = 0;
 
-        for (double value : values)
+        double[] values;
+        Date[] dates;
+        double peak, max;
+        Duration duration;
+
+        public Drawdown(double[] values, Date[] dates)
         {
-            peak = Math.max(peak, value);
-            // as the values are the accumulated percentages there is no need to
-            // calculate a relation. We can simply reduce the peak
-            maxDD = Math.max(maxDD, (peak - value));
+            this.values = values;
+            this.dates = dates;
+            calculate();
         }
-        return maxDD;
-    }
 
-    public static Duration calculateMaxDrawdownDuration(double[] values, Date[] dates)
-    {
-        double peak = values[0];
-        Date peakDate = dates[0];
-        Duration drawdownDuration = new Duration(new DateTime(dates[0]), new DateTime(dates[0]));
-        Duration currentDuration;
-        for (int i = 0; i < dates.length; i++)
+        private void calculate()
         {
-            if (values[i] > peak)
+            max = 0d;
+            peak = values[0];
+            Date peakDate = dates[0];
+            duration = new Duration(new DateTime(peakDate), new DateTime(peakDate));
+            Duration currentDuration;
+            for (int i = 0; i < values.length; i++)
             {
-                peak = values[i];
-                currentDuration = new Duration(new DateTime(peakDate), new DateTime(dates[i]));
-                peakDate = dates[i];
-                if (currentDuration.compareTo(drawdownDuration) > 0)
+                max = Math.max(max, (peak - values[i]));
+                if (values[i] > peak)
                 {
-                    drawdownDuration = currentDuration;
+                    peak = values[i];
+                    currentDuration = new Duration(new DateTime(peakDate), new DateTime(dates[i]));
+                    peakDate = dates[i];
+                    if (currentDuration.compareTo(duration) > 0)
+                    {
+                        duration = currentDuration;
+                    }
                 }
             }
         }
-        return drawdownDuration;
+
+        public double getMagnitude()
+        {
+            return max;
+        }
+
+        public Duration getDuration()
+        {
+            return duration;
+        }
+
     }
 
     private static double[] getReturns(double[] values)

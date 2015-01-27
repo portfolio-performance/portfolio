@@ -17,6 +17,7 @@ import java.util.stream.DoubleStream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk;
+import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -41,7 +42,7 @@ public class PerformanceIndex
     protected long[] taxes;
     protected double[] accumulated;
     protected double[] delta;
-    protected double maxDrawdown;
+    protected Drawdown drawdown;
     protected double volatility;
     protected double semiVolatility;
 
@@ -153,12 +154,12 @@ public class PerformanceIndex
 
     public double getMaxDrawdown()
     {
-        return maxDrawdown;
+        return drawdown.getMagnitude();
     }
 
     public Duration getMaxDrawdownDuration()
     {
-        return Risk.calculateMaxDrawdownDuration(accumulated, dates);
+        return drawdown.getDuration();
     }
 
     public double getVolatility()
@@ -204,11 +205,6 @@ public class PerformanceIndex
     public double getAnnualizedSemiVolatility()
     {
         return Risk.annualize(semiVolatility, dates);
-    }
-
-    public double getAnnualizedMaxDrawdown()
-    {
-        return Risk.annualize(maxDrawdown, dates);
     }
 
     public long[] getTaxes()
