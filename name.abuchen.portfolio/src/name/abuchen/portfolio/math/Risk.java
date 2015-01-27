@@ -104,36 +104,6 @@ public class Risk
         return returns;
     }
 
-    // public static double calculateAverageVolatility(double[] values)
-    // {
-    // double[] vola = Risk.getReturns(values);
-    // double average = DoubleStream.of(vola).average().getAsDouble();
-    // double variance = 0d;
-    // for (int i = 0; i < vola.length; i++)
-    // {
-    // variance = Math.pow(vola[i] - average, 2) + variance;
-    // }
-    // variance = variance / vola.length;
-    // variance = Math.sqrt(variance);
-    // return variance;
-    // }
-    //
-    // public static double calculateSemiVolatility(double[] values)
-    // {
-    // double[] returns = Risk.getReturns(values);
-    // double averageReturn = DoubleStream.of(returns).average().getAsDouble();
-    // double semiVariance = 0;
-    // for (int i = 0; i < returns.length; i++)
-    // {
-    // if (returns[i] < averageReturn)
-    // {
-    // semiVariance = semiVariance + Math.pow(averageReturn - returns[i], 2);
-    // }
-    // }
-    // semiVariance = semiVariance / returns.length;
-    // return Math.sqrt(semiVariance);
-    // }
-
     public static double annualize(double risk, Date[] dates)
     {
         // annualization is obatined by multiplying with the square root of the
