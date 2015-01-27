@@ -21,11 +21,6 @@ public class Risk
         {
             this.values = values;
             this.dates = dates;
-            calculate();
-        }
-
-        private void calculate()
-        {
             max = 0d;
             peak = values[0];
             Date peakDate = dates[0];
@@ -59,6 +54,46 @@ public class Risk
 
     }
 
+    public static class Volatility
+    {
+
+        double[] values;
+        double[] returns;
+        double average;
+        double standard;
+        double semi;
+
+        public Volatility(double[] values)
+        {
+            this.values = values;
+            returns = getReturns(values);
+            average = DoubleStream.of(returns).average().getAsDouble();
+            standard = 0d;
+            semi = 0d;
+            for (int i = 0; i < returns.length; i++)
+            {
+                standard = standard + Math.pow(returns[i] - average, 2);
+                if (returns[i] < average)
+                {
+                    semi = semi + Math.pow(returns[i] - average, 2);
+                }
+            }
+            standard = Math.sqrt(standard / returns.length);
+            semi = Math.sqrt(semi / returns.length);
+        }
+
+        public double getStandardDeviation()
+        {
+            return standard;
+        }
+
+        public double getSemiDeviation()
+        {
+            return semi;
+        }
+
+    }
+
     private static double[] getReturns(double[] values)
     {
         double[] returns = new double[values.length - 1];
@@ -69,35 +104,35 @@ public class Risk
         return returns;
     }
 
-    public static double calculateAverageVolatility(double[] values)
-    {
-        double[] vola = Risk.getReturns(values);
-        double average = DoubleStream.of(vola).average().getAsDouble();
-        double variance = 0d;
-        for (int i = 0; i < vola.length; i++)
-        {
-            variance = Math.pow(vola[i] - average, 2) + variance;
-        }
-        variance = variance / vola.length;
-        variance = Math.sqrt(variance);
-        return variance;
-    }
-
-    public static double calculateSemiVolatility(double[] values)
-    {
-        double[] returns = Risk.getReturns(values);
-        double averageReturn = DoubleStream.of(returns).average().getAsDouble();
-        double semiVariance = 0;
-        for (int i = 0; i < returns.length; i++)
-        {
-            if (returns[i] < averageReturn)
-            {
-                semiVariance = semiVariance + Math.pow(averageReturn - returns[i], 2);
-            }
-        }
-        semiVariance = semiVariance / returns.length;
-        return Math.sqrt(semiVariance);
-    }
+    // public static double calculateAverageVolatility(double[] values)
+    // {
+    // double[] vola = Risk.getReturns(values);
+    // double average = DoubleStream.of(vola).average().getAsDouble();
+    // double variance = 0d;
+    // for (int i = 0; i < vola.length; i++)
+    // {
+    // variance = Math.pow(vola[i] - average, 2) + variance;
+    // }
+    // variance = variance / vola.length;
+    // variance = Math.sqrt(variance);
+    // return variance;
+    // }
+    //
+    // public static double calculateSemiVolatility(double[] values)
+    // {
+    // double[] returns = Risk.getReturns(values);
+    // double averageReturn = DoubleStream.of(returns).average().getAsDouble();
+    // double semiVariance = 0;
+    // for (int i = 0; i < returns.length; i++)
+    // {
+    // if (returns[i] < averageReturn)
+    // {
+    // semiVariance = semiVariance + Math.pow(averageReturn - returns[i], 2);
+    // }
+    // }
+    // semiVariance = semiVariance / returns.length;
+    // return Math.sqrt(semiVariance);
+    // }
 
     public static double annualize(double risk, Date[] dates)
     {

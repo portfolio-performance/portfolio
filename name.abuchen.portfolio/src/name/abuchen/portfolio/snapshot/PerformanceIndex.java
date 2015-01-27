@@ -18,6 +18,7 @@ import java.util.stream.DoubleStream;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -43,8 +44,7 @@ public class PerformanceIndex
     protected double[] accumulated;
     protected double[] delta;
     protected Drawdown drawdown;
-    protected double volatility;
-    protected double semiVolatility;
+    protected Volatility volatility;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -164,12 +164,12 @@ public class PerformanceIndex
 
     public double getVolatility()
     {
-        return volatility;
+        return volatility.getStandardDeviation();
     }
 
     public double getSemiVolatility()
     {
-        return semiVolatility;
+        return volatility.getSemiDeviation();
     }
 
     public double getAnnualizedVolatility()
@@ -197,14 +197,15 @@ public class PerformanceIndex
                 tempAccumulated[i++] = accumulated[Arrays.asList(dates).indexOf(d)];
             }
             Date[] temp = new Date[tempDates.size()];
-            volas[j++] = Risk.annualize(Risk.calculateAverageVolatility(tempAccumulated), tempDates.toArray(temp));
+            volas[j++] = Risk
+                            .annualize(new Volatility(tempAccumulated).getStandardDeviation(), tempDates.toArray(temp));
         }
         return DoubleStream.of(volas).average().getAsDouble();
     }
 
     public double getAnnualizedSemiVolatility()
     {
-        return Risk.annualize(semiVolatility, dates);
+        return Risk.annualize(volatility.getSemiDeviation(), dates);
     }
 
     public long[] getTaxes()

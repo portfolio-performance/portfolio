@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Client;
 
 import org.joda.time.DateMidnight;
@@ -32,7 +32,6 @@ import org.joda.time.Interval;
         accumulated = new double[size];
         transferals = new long[size];
         taxes = new long[size];
-        volatility = 0d;
 
         collectTransferalsAndTaxes(size, interval);
 
@@ -79,8 +78,7 @@ import org.joda.time.Interval;
             index++;
         }
         drawdown = new Drawdown(accumulated, dates);
-        volatility = Risk.calculateAverageVolatility(accumulated);
-        semiVolatility = Risk.calculateSemiVolatility(accumulated);
+        volatility = new Volatility(accumulated);
     }
 
     private void addValue(long[] array, long value, Interval interval, DateMidnight time)
