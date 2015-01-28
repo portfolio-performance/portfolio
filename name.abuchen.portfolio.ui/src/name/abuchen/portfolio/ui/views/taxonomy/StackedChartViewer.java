@@ -169,7 +169,7 @@ public class StackedChartViewer extends AbstractChartPage
                 onConfigChanged();
             }
         };
-        action.setChecked(!getModel().isOrderByTaxonomyInStackChart());
+        action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
     }
     
