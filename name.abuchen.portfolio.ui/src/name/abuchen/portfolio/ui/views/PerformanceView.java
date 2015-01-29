@@ -97,7 +97,7 @@ public class PerformanceView extends AbstractHistoricView
                 irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
                 absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
                 delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
-                maxDrawdown.setText(Values.Percent2.format(index.getMaxDrawdown()) + " / " + index.getMaxDrawdownDuration().getStandardDays() + " Tage");
+                maxDrawdown.setText(Values.Percent2.format(index.getMaxDrawdown()) + " / " + index.getMaxDrawdownDuration().getStandardDays() + " Tage / " + index.getDurationSinceLastPeak().getStandardDays() + " Tage");
                 volatility.setText(Values.Percent2.format(index.getVolatility()));
                 semiVolatility.setText(Values.Percent2.format(index.getSemiVolatility()));
 
@@ -164,7 +164,7 @@ public class PerformanceView extends AbstractHistoricView
             ttwror = addKPIBelow(Messages.LabelTTWROR, heading, maxWidth);
             irr = addKPIBelow(Messages.LabelIRR, ttwror, maxWidth);
             absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
-            maxDrawdown = addKPIBelow("Maximaler Drawdown Betrag / Dauer", absoluteChange, maxWidth);
+            maxDrawdown = addKPIBelow("Maximaler Drawdown Betrag / Dauer / seit letztem Hoch", absoluteChange, maxWidth);
             volatility = addKPIBelow("Volatilität", maxDrawdown, maxWidth);
             semiVolatility = addKPIBelow("Semi Volatilität", volatility, maxWidth);
             delta = addKPIBelow(Messages.LabelAbsoluteDelta, semiVolatility, maxWidth);

@@ -15,7 +15,7 @@ public class Risk
         double[] values;
         Date[] dates;
         double peak, max;
-        Duration duration;
+        Duration drawdownDuration, lastPeakDuration;
 
         public Drawdown(double[] values, Date[] dates)
         {
@@ -24,7 +24,7 @@ public class Risk
             max = 0d;
             peak = values[0];
             Date peakDate = dates[0];
-            duration = new Duration(new DateTime(peakDate), new DateTime(peakDate));
+            drawdownDuration = new Duration(new DateTime(peakDate), new DateTime(peakDate));
             Duration currentDuration;
             for (int i = 0; i < values.length; i++)
             {
@@ -34,12 +34,18 @@ public class Risk
                     peak = values[i];
                     currentDuration = new Duration(new DateTime(peakDate), new DateTime(dates[i]));
                     peakDate = dates[i];
-                    if (currentDuration.compareTo(duration) > 0)
+                    if (currentDuration.compareTo(drawdownDuration) > 0)
                     {
-                        duration = currentDuration;
+                        drawdownDuration = currentDuration;
                     }
                 }
             }
+            lastPeakDuration = new Duration(new DateTime(peakDate), new DateTime(dates[dates.length - 1]));
+        }
+
+        public Duration getDurationSinceLastPeak()
+        {
+            return lastPeakDuration;
         }
 
         public double getMagnitude()
@@ -49,7 +55,7 @@ public class Risk
 
         public Duration getDuration()
         {
-            return duration;
+            return drawdownDuration;
         }
 
     }

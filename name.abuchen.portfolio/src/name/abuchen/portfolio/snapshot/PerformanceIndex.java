@@ -155,6 +155,11 @@ public class PerformanceIndex
         return drawdown.getDuration();
     }
 
+    public Duration getDurationSinceLastPeak()
+    {
+        return drawdown.getDurationSinceLastPeak();
+    }
+
     public double getVolatility()
     {
         return volatility.getStandardDeviation();
