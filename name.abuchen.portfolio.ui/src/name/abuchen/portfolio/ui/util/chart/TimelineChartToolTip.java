@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.chart;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import name.abuchen.portfolio.ui.Messages;
@@ -37,6 +38,7 @@ public class TimelineChartToolTip implements Listener
     private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
     private boolean categoryEnabled = false;
+    private boolean reverseLabels = false;
 
     public TimelineChartToolTip(Chart chart)
     {
@@ -52,6 +54,11 @@ public class TimelineChartToolTip implements Listener
     public void enableCategory(boolean enabled)
     {
         categoryEnabled = enabled;
+    }
+
+    public void reverseLabels(boolean reverseLabels)
+    {
+        this.reverseLabels = reverseLabels;
     }
 
     public void handleEvent(Event event)
@@ -221,7 +228,11 @@ public class TimelineChartToolTip implements Listener
         right.setText(categoryEnabled ? chart.getAxisSet().getXAxis(0).getCategorySeries()[(Integer) focus] : String
                         .format(dateFormat, focus));
 
-        for (ISeries series : chart.getSeriesSet().getSeries())
+        ISeries[] allSeries = chart.getSeriesSet().getSeries();
+        if (reverseLabels)
+            Collections.reverse(Arrays.asList(allSeries));
+
+        for (ISeries series : allSeries)
         {
             double value;
 

@@ -107,7 +107,7 @@ public class StackedChartViewer extends AbstractChartPage
         {
             long l1 = values[values.length - 1];
             long l2 = other.values[other.values.length - 1];
-            return Long.compare(l1, l2);
+            return Long.compare(l1, l2) * -1;
         }
     }
 
