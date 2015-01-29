@@ -10,14 +10,21 @@ import org.junit.Test;
 public class RiskTest
 {
     
+    private Date[] getDates(int size) {
+        Date[] dates = new Date[size];
+        for (int i=0;i<size;i++) {
+            dates[i] = new Date(2015,1,i+1);
+        }
+        return dates;
+    }
+    
     @Test
     public void testDrawdown() {
         int size = 10;
+        Date[] dates = getDates(size);
         double[] values = new double[size];
-        Date[] dates = new Date[size];
         for (int i=0;i<size;i++) {
-            values[i] = i;
-            dates[i] = new Date(2015,1,i+1);
+         values[i] = i;
         }
         Drawdown drawdown = new Drawdown(values, dates);
         assert(drawdown.getMagnitude() == 0d);
