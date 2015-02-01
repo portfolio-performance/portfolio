@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.math;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.DoubleStream;
 
@@ -76,9 +77,11 @@ public class Risk
             average = DoubleStream.of(returns).average().getAsDouble();
             standard = 0d;
             semi = 0d;
+            double add;
             for (int i = 0; i < returns.length; i++)
             {
-                standard = standard + Math.pow(returns[i] - average, 2);
+                add = Math.pow(returns[i] - average, 2);
+                standard = standard + add;
                 if (returns[i] < average)
                 {
                     semi = semi + Math.pow(returns[i] - average, 2);
