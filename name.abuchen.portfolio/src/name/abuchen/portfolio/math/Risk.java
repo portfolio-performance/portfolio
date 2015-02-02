@@ -15,38 +15,42 @@ public class Risk
 
         double[] values;
         Date[] dates;
-        double peak, max;
-        Duration drawdownDuration, lastPeakDuration;
+        double peak, max, drawdown;
+        Duration currentDrawdownDuration, lastDrawdownDuration;
+        Date lastPeakDate;
 
         public Drawdown(double[] values, Date[] dates)
         {
             this.values = values;
             this.dates = dates;
-            max = 0d;
             peak = values[0];
-            Date peakDate = dates[0];
-            drawdownDuration = new Duration(new DateTime(peakDate), new DateTime(peakDate));
-            Duration currentDuration;
-            for (int i = 0; i < values.length; i++)
-            {
-                max = Math.max(max, (peak - values[i]));
-                if (values[i] > peak)
-                {
+            max = 0d;
+            lastDrawdownDuration = Duration.ZERO;
+            lastPeakDate = dates[0];
+            for (int i = 0;i<values.length;i++) {
+                currentDrawdownDuration = new Duration(new DateTime(lastPeakDate), new DateTime(dates[i]));
+                if (values[i] > peak) {
                     peak = values[i];
-                    currentDuration = new Duration(new DateTime(peakDate), new DateTime(dates[i]));
-                    peakDate = dates[i];
-                    if (currentDuration.compareTo(drawdownDuration) > 0)
-                    {
-                        drawdownDuration = currentDuration;
+                    lastPeakDate = dates[i];
+                    if (currentDrawdownDuration.isLongerThan(lastDrawdownDuration)) {
+                        lastDrawdownDuration = currentDrawdownDuration;
+                    }
+                } else {
+                    if (peak == 0d) {
+                        drawdown = peak - values[i];
+                    } else {
+                        drawdown = (peak - values[i]) / peak;
+                    }
+                    if (drawdown > max) {
+                        max = drawdown;
                     }
                 }
             }
-            lastPeakDuration = new Duration(new DateTime(peakDate), new DateTime(dates[dates.length - 1]));
         }
 
         public Duration getDurationSinceLastPeak()
         {
-            return lastPeakDuration;
+            return currentDrawdownDuration;
         }
 
         public double getMagnitude()
@@ -56,7 +60,7 @@ public class Risk
 
         public Duration getDuration()
         {
-            return drawdownDuration;
+            return lastDrawdownDuration;
         }
 
     }
@@ -66,7 +70,7 @@ public class Risk
 
         double[] values;
         double[] returns;
-        double average;
+        double averageReturn;
         double standard;
         double semi;
 
@@ -74,17 +78,17 @@ public class Risk
         {
             this.values = values;
             returns = getReturns(values);
-            average = DoubleStream.of(returns).average().getAsDouble();
+            averageReturn = DoubleStream.of(returns).average().getAsDouble();
             standard = 0d;
             semi = 0d;
             double add;
             for (int i = 0; i < returns.length; i++)
             {
-                add = Math.pow(returns[i] - average, 2);
+                add = Math.pow(returns[i] - averageReturn, 2);
                 standard = standard + add;
-                if (returns[i] < average)
+                if (returns[i] < averageReturn)
                 {
-                    semi = semi + Math.pow(returns[i] - average, 2);
+                    semi = semi + Math.pow(returns[i] - averageReturn, 2);
                 }
             }
             standard = Math.sqrt(standard / returns.length);
@@ -108,7 +112,11 @@ public class Risk
         double[] returns = new double[values.length - 1];
         for (int i = 0; i < returns.length; i++)
         {
-            returns[i] = values[i + 1] - values[i];
+            if (values[i] == 0) {
+                returns[i] = values[i+1];
+            } else {
+                returns[i] = (values[i + 1] - values[i]) / values[i];
+            }
         }
         return returns;
     }

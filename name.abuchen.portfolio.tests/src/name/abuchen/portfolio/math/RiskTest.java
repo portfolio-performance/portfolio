@@ -33,18 +33,18 @@ public class RiskTest
         Drawdown drawdown = new Drawdown(values, dates);
         //Every new value is a new peak, so there never is a drawdown and threfore the magnitude is 0
         assertThat(drawdown.getMagnitude(), is(0d));
-        //Dradown duration is the longest duration between peaks. Every vlaue is a peak, so 1 day is
+        //Dradown duration is the longest duration between peaks. Every value is a peak, so 1 day is
         //every time the duration. The fact that there is never a drawdown does not negate the duration
         assertThat(drawdown.getDuration().getStandardDays(), is(1l));
-        drawdown = new Drawdown(new double[] {2,2,0,1,2,3,4,5,6,7}, dates);
-        //values are interpreted as performance, so percentages
-        //from 2 to 0, the difference is 2, so 200%
-        assertThat(drawdown.getMagnitude(), is(2d));
+        drawdown = new Drawdown(new double[] {2,2,0.5,1,2,3,4,5,6,7}, dates);
+        //the drawdown is from 2 to 0.5 which is 1.5 or 75% of 2
+        assertThat(drawdown.getMagnitude(), is(0.75d));
         //the first peak is the first 2. The second 2 is not a peak, the next peak is the 3,
         //which is 5 days later
         assertThat(drawdown.getDuration().getStandardDays(), is(5l));
-        drawdown = new Drawdown(new double[] {0, 0.1d, 0.21d, -0.395}, getDates(4));
-        assertThat(drawdown.getMagnitude(), is(0.21+0.395));
+        drawdown = new Drawdown(new double[] {1, 1.1, 1.2, -0.4}, getDates(4));
+        //The drawdown is from 1.2 to -0.4 or 1.6, which is 4/3 from 1.2
+        assertThat(drawdown.getMagnitude(), closeTo(4d/3, 0.1e-10));
     }
     
     @Test
@@ -52,23 +52,16 @@ public class RiskTest
         Volatility volatility = new Volatility(new double[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1});
         assertThat(volatility.getStandardDeviation(), is(0d));
         assertThat(volatility.getSemiDeviation(), is(0d));
-        volatility = new Volatility(new double[] {1,0,1,0,1,2,0});
-        //The return sequence is [-1.0, 1.0, -1.0, 1.0, 1.0, -2.0]
-        //The average return is the -1/6
-        //Standard is the square root of the average of the square difference to the average return
-        //for -1 ==> (-1--1/6)^2 = (5/6)^2 = 25/36
-        //for 1 ==> (1--1/6)^2 = (7/6)^2 = 49/36
-        //for -2 ==> (-2--1/6)^2 = (11/6)^2 = 121/36
-        //Total square root of (2*25/36 + 3*49/36 + 121/36)/6
-        //(318/216)^(1/2)
-        assertThat(volatility.getStandardDeviation(), closeTo(Math.sqrt(318d/216), 1e10));
+        volatility = new Volatility(new double[] {1,1.5,1,0.5,1,2,1});
+        //returns are 0.5, -1/3, -0.5, 1, 1, -0.5 with an average of 7/36
+        //the deviation from the average is 11/36 for 0.5, 19/36 for -1/3 and so on
+        //each of these deviations is squared and the sum divided by the number of returns (6)
+        //the resulting division is root((121+1250+1682+361)/(1296*6)) or 3414/7776
+        assertThat(volatility.getStandardDeviation(), closeTo(Math.sqrt(3414d/7776), 0.1e-10));
         //for semi deviation, only the returns lower than the average are counted
-        //so only the 2 times -1 and the -2
-        //root (2*25/36+121/36)/6 = (171/216/^(1/2)
-        assertThat(volatility.getSemiDeviation(), closeTo(Math.sqrt(171d/216), 1e10));
-        
-        volatility = new Volatility(new double[] {1,2,2,4,4,2});
-        assertThat(volatility.getStandardDeviation(), closeTo(Math.sqrt(220d/125), 1e10));
+        //so only the -1/3 and the two times -0.5
+        //root((361+1250)/(1296*6)) or 1611/7776
+        assertThat(volatility.getSemiDeviation(), closeTo(Math.sqrt(1611d/7776), 0.1e-10));
     }
 
 }
