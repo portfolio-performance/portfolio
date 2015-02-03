@@ -23,23 +23,25 @@ public class Risk
         {
             this.values = values;
             this.dates = dates;
-            peak = values[0];
+            peak = values[0] + 1;
             max = 0d;
             lastDrawdownDuration = Duration.ZERO;
             lastPeakDate = dates[0];
+            double value;
             for (int i = 0;i<values.length;i++) {
+                value = values[i] + 1;
                 currentDrawdownDuration = new Duration(new DateTime(lastPeakDate), new DateTime(dates[i]));
-                if (values[i] > peak) {
-                    peak = values[i];
+                if (value > peak) {
+                    peak = value;
                     lastPeakDate = dates[i];
                     if (currentDrawdownDuration.isLongerThan(lastDrawdownDuration)) {
                         lastDrawdownDuration = currentDrawdownDuration;
                     }
                 } else {
                     if (peak == 0d) {
-                        drawdown = peak - values[i];
+                        drawdown = peak - value;
                     } else {
-                        drawdown = (peak - values[i]) / peak;
+                        drawdown = (peak - value) / peak;
                     }
                     if (drawdown > max) {
                         max = drawdown;
@@ -115,7 +117,7 @@ public class Risk
             if (values[i] == 0) {
                 returns[i] = values[i+1];
             } else {
-                returns[i] = (values[i + 1] - values[i]) / values[i];
+                returns[i] = (values[i + 1] - values[i]) / (values[i] + 1);
             }
         }
         return returns;
