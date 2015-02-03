@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -21,6 +23,7 @@ import name.abuchen.portfolio.model.Values;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 public class PerformanceIndex
 {
@@ -33,6 +36,8 @@ public class PerformanceIndex
     protected long[] taxes;
     protected double[] accumulated;
     protected double[] delta;
+    protected Drawdown drawdown;
+    protected Volatility volatility;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -138,6 +143,31 @@ public class PerformanceIndex
     public long[] getTransferals()
     {
         return transferals;
+    }
+
+    public double getMaxDrawdown()
+    {
+        return drawdown.getMagnitude();
+    }
+
+    public Duration getMaxDrawdownDuration()
+    {
+        return drawdown.getDuration();
+    }
+
+    public Duration getDurationSinceLastPeak()
+    {
+        return drawdown.getDurationSinceLastPeak();
+    }
+
+    public double getVolatility()
+    {
+        return volatility.getStandardDeviation();
+    }
+
+    public double getSemiVolatility()
+    {
+        return volatility.getSemiDeviation();
     }
 
     public long[] getTaxes()
