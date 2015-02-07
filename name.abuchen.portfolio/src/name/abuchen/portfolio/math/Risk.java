@@ -1,79 +1,68 @@
 package name.abuchen.portfolio.math;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import name.abuchen.portfolio.util.Interval;
 
-public class Risk
+public final class Risk
 {
 
     public static class Drawdown
     {
-
-        double[] values;
-        Date[] dates;
-        double peak, max, drawdown;
-        Duration currentDrawdownDuration, lastDrawdownDuration;
-        Date lastPeakDate;
+        private double maxDD;
+        private Interval maxDDDuration;
+        private Interval intervalMaxDD;
 
         public Drawdown(double[] values, Date[] dates)
         {
-            this.values = values;
-            this.dates = dates;
-            peak = values[0] + 1;
-            max = 0d;
-            lastDrawdownDuration = Duration.ZERO;
-            lastPeakDate = dates[0];
-            double value;
-            for (int i = 0; i < values.length; i++)
+            double peak = values[0] + 1;
+            Instant lastPeakDate = dates[0].toInstant();
+
+            maxDDDuration = Interval.of(lastPeakDate, lastPeakDate);
+            Interval currentDrawdownDuration;
+
+            for (int ii = 0; ii < values.length; ii++)
             {
-                value = values[i] + 1;
-                currentDrawdownDuration = new Duration(new DateTime(lastPeakDate), new DateTime(dates[i]));
+                double value = values[ii] + 1;
+                currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii].toInstant());
+
                 if (value > peak)
                 {
                     peak = value;
-                    lastPeakDate = dates[i];
-                    if (currentDrawdownDuration.isLongerThan(lastDrawdownDuration))
-                    {
-                        lastDrawdownDuration = currentDrawdownDuration;
-                    }
+                    lastPeakDate = dates[ii].toInstant();
+
+                    if (currentDrawdownDuration.isLongerThan(maxDDDuration))
+                        maxDDDuration = currentDrawdownDuration;
                 }
                 else
                 {
-                    if (peak == 0d)
+                    double drawdown = (peak - value) / peak;
+                    if (drawdown > maxDD)
                     {
-                        drawdown = peak - value;
-                    }
-                    else
-                    {
-                        drawdown = (peak - value) / peak;
-                    }
-                    if (drawdown > max)
-                    {
-                        max = drawdown;
+                        maxDD = drawdown;
+                        intervalMaxDD = Interval.of(lastPeakDate, dates[ii].toInstant());
                     }
                 }
             }
         }
 
-        public Duration getDurationSinceLastPeak()
+        public double getMaxDrawdown()
         {
-            return currentDrawdownDuration;
+            return maxDD;
         }
 
-        public double getMagnitude()
+        public Interval getIntervalOfMaxDrawdown()
         {
-            return max;
+            return intervalMaxDD;
         }
 
-        public Duration getDuration()
+        public Interval getMaxDrawdownDuration()
         {
-            return lastDrawdownDuration;
+            return maxDDDuration;
         }
-
     }
 
     public static class Volatility
@@ -139,4 +128,7 @@ public class Risk
             return semiDeviation;
         }
     }
+
+    private Risk()
+    {}
 }

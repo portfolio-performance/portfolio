@@ -17,7 +17,7 @@ public class PerformanceIndexTest
 
     private final class PerformanceIndexStub extends PerformanceIndex
     {
-        private PerformanceIndexStub(Date[] dates, long totals[], double delta[])
+        private PerformanceIndexStub(Date[] dates, long[] totals, double[] delta)
         {
             super(new Client(), new ReportingPeriod.LastX(1, 0));
 
@@ -41,8 +41,8 @@ public class PerformanceIndexTest
 
         PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
 
-        assertThat(index.getVolatility(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(index.getSemiVolatility(), closeTo(Math.sqrt(1611d / 3888), 0.1e-10));
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
+        assertThat(index.getVolatility().getSemiDeviation(), closeTo(Math.sqrt(1611d / 3888), 0.1e-10));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class PerformanceIndexTest
 
         PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
 
-        assertThat(index.getVolatility(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(index.getSemiVolatility(), closeTo(Math.sqrt(1611d / 3888), 0.1e-10));
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
+        assertThat(index.getVolatility().getSemiDeviation(), closeTo(Math.sqrt(1611d / 3888), 0.1e-10));
     }
 }

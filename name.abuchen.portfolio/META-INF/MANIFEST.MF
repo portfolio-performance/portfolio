@@ -6,6 +6,7 @@ Bundle-Version: 0.15.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
+ name.abuchen.portfolio.math,
  name.abuchen.portfolio.model,
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,

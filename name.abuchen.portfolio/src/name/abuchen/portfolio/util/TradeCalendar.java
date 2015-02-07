@@ -37,7 +37,7 @@ public class TradeCalendar
         private final Month month;
         private final int dayOfMonth;
 
-        private FixedHoliday(Month month, int dayOfMonth)
+        public FixedHoliday(Month month, int dayOfMonth)
         {
             this.month = month;
             this.dayOfMonth = dayOfMonth;

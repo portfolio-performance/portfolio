@@ -24,7 +24,6 @@ import name.abuchen.portfolio.util.TradeCalendar;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 
 public class PerformanceIndex
 {
@@ -146,22 +145,7 @@ public class PerformanceIndex
         return transferals;
     }
 
-    public double getMaxDrawdown()
-    {
-        return drawdown().getMagnitude();
-    }
-
-    public Duration getMaxDrawdownDuration()
-    {
-        return drawdown().getDuration();
-    }
-
-    public Duration getDurationSinceLastPeak()
-    {
-        return drawdown().getDurationSinceLastPeak();
-    }
-
-    private Drawdown drawdown()
+    public Drawdown getDrawdown()
     {
         if (drawdown == null)
             drawdown = new Drawdown(accumulated, dates);
@@ -169,17 +153,7 @@ public class PerformanceIndex
         return drawdown;
     }
 
-    public double getVolatility()
-    {
-        return volatility().getStandardDeviation();
-    }
-
-    public double getSemiVolatility()
-    {
-        return volatility().getSemiDeviation();
-    }
-
-    private Volatility volatility()
+    public Volatility getVolatility()
     {
         if (volatility == null)
         {
