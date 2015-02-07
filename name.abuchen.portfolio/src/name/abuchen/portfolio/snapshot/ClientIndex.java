@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.math.Risk.Drawdown;
-import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Client;
 
 import org.joda.time.DateMidnight;
@@ -77,8 +75,6 @@ import org.joda.time.Interval;
             valuation = thisValuation;
             index++;
         }
-        drawdown = new Drawdown(accumulated, dates);
-        volatility = new Volatility(accumulated);
     }
 
     private void addValue(long[] array, long value, Interval interval, DateMidnight time)

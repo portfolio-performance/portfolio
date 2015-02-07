@@ -147,27 +147,59 @@ public class PerformanceIndex
 
     public double getMaxDrawdown()
     {
-        return drawdown.getMagnitude();
+        return drawdown().getMagnitude();
     }
 
     public Duration getMaxDrawdownDuration()
     {
-        return drawdown.getDuration();
+        return drawdown().getDuration();
     }
 
     public Duration getDurationSinceLastPeak()
     {
-        return drawdown.getDurationSinceLastPeak();
+        return drawdown().getDurationSinceLastPeak();
+    }
+
+    private Drawdown drawdown()
+    {
+        if (drawdown == null)
+            drawdown = new Drawdown(accumulated, dates);
+
+        return drawdown;
     }
 
     public double getVolatility()
     {
-        return volatility.getStandardDeviation();
+        return volatility().getStandardDeviation();
     }
 
     public double getSemiVolatility()
     {
-        return volatility.getSemiDeviation();
+        return volatility().getSemiDeviation();
+    }
+
+    private Volatility volatility()
+    {
+        if (volatility == null)
+        {
+            // Volatility calculation must only include values starting with the
+            // first data point.
+            int skip = 0;
+            for (int ii = 0; ii < totals.length; ii++)
+            {
+                if (totals[ii] != 0)
+                {
+                    skip = ii;
+                    break;
+                }
+            }
+
+            // additionally skip first value as it is always 0 (as there is no
+            // previous period for the delta)
+            volatility = new Volatility(delta, skip + 1);
+        }
+
+        return volatility;
     }
 
     public long[] getTaxes()

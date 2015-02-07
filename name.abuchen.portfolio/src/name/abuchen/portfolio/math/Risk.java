@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.math;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 import org.joda.time.DateTime;
@@ -77,68 +78,41 @@ public class Risk
 
     public static class Volatility
     {
+        private final double stdDeviation;
+        private final double semiDeviation;
 
-        double[] values;
-        double[] returns;
-        double averageReturn;
-        double standard;
-        double semi;
-
-        public Volatility(double[] values)
+        public Volatility(double[] returns, int skip)
         {
-            this.values = values;
-            returns = getReturns(values);
-            averageReturn = DoubleStream.of(returns).average().getAsDouble();
-            standard = 0d;
-            semi = 0d;
-            double add;
-            for (int i = 0; i < returns.length; i++)
+            Objects.requireNonNull(returns);
+
+            double averageReturn = DoubleStream.of(returns).skip(skip).average().getAsDouble();
+            double tempStandard = 0;
+            double tempSemi = 0;
+            int countSemi = 0;
+
+            for (int ii = skip; ii < returns.length; ii++)
             {
-                add = Math.pow(returns[i] - averageReturn, 2);
-                standard = standard + add;
-                if (returns[i] < averageReturn)
+                double add = Math.pow(returns[ii] - averageReturn, 2);
+                tempStandard = tempStandard + add;
+                if (returns[ii] < averageReturn)
                 {
-                    semi = semi + Math.pow(returns[i] - averageReturn, 2);
+                    tempSemi = tempSemi + add;
+                    countSemi++;
                 }
             }
-            standard = Math.sqrt(standard / returns.length);
-            semi = Math.sqrt(semi / returns.length);
+
+            stdDeviation = Math.sqrt(tempStandard / (returns.length - skip));
+            semiDeviation = Math.sqrt(tempSemi / countSemi);
         }
 
         public double getStandardDeviation()
         {
-            return standard;
+            return stdDeviation;
         }
 
         public double getSemiDeviation()
         {
-            return semi;
+            return semiDeviation;
         }
-
     }
-
-    private static double[] getReturns(double[] values)
-    {
-        double[] returns = new double[values.length - 1];
-        for (int i = 0; i < returns.length; i++)
-        {
-            if (values[i] == 0)
-            {
-                returns[i] = values[i + 1];
-            }
-            else
-            {
-                returns[i] = (values[i + 1] - values[i]) / (values[i] + 1);
-            }
-        }
-        return returns;
-    }
-
-    public static double annualize(double risk, Date[] dates)
-    {
-        // annualization is obatined by multiplying with the square root of the
-        // number of periods the risk was calculated with
-        return risk * Math.sqrt(dates.length);
-    }
-
 }
