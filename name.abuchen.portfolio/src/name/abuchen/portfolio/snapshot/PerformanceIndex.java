@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.util.TradeCalendar;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
@@ -196,7 +197,8 @@ public class PerformanceIndex
 
             // additionally skip first value as it is always 0 (as there is no
             // previous period for the delta)
-            volatility = new Volatility(delta, skip + 1);
+            TradeCalendar calendar = new TradeCalendar();
+            volatility = new Volatility(dates, delta, skip + 1, date -> !calendar.isHoldiay(date));
         }
 
         return volatility;

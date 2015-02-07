@@ -2,7 +2,7 @@ package name.abuchen.portfolio.math;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.stream.DoubleStream;
+import java.util.function.Predicate;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -81,19 +81,26 @@ public class Risk
         private final double stdDeviation;
         private final double semiDeviation;
 
-        public Volatility(double[] returns, int skip)
+        public Volatility(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
         {
             Objects.requireNonNull(returns);
 
-            double averageReturn = DoubleStream.of(returns).skip(skip).average().getAsDouble();
+            double averageReturn = average(dates, returns, skip, filter);
             double tempStandard = 0;
+            int countStandard = 0;
             double tempSemi = 0;
             int countSemi = 0;
 
             for (int ii = skip; ii < returns.length; ii++)
             {
+                if (!filter.test(dates[ii]))
+                    continue;
+
                 double add = Math.pow(returns[ii] - averageReturn, 2);
+
                 tempStandard = tempStandard + add;
+                countStandard++;
+
                 if (returns[ii] < averageReturn)
                 {
                     tempSemi = tempSemi + add;
@@ -101,8 +108,25 @@ public class Risk
                 }
             }
 
-            stdDeviation = Math.sqrt(tempStandard / (returns.length - skip));
+            stdDeviation = Math.sqrt(tempStandard / countStandard);
             semiDeviation = Math.sqrt(tempSemi / countSemi);
+        }
+
+        private double average(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
+        {
+            double sum = 0;
+            int count = 0;
+
+            for (int ii = skip; ii < returns.length; ii++)
+            {
+                if (!filter.test(dates[ii]))
+                    continue;
+
+                sum += returns[ii];
+                count++;
+            }
+
+            return sum / count;
         }
 
         public double getStandardDeviation()
