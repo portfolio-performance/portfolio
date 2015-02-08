@@ -76,9 +76,8 @@ public final class Risk
 
             double averageReturn = average(dates, returns, skip, filter);
             double tempStandard = 0;
-            int countStandard = 0;
             double tempSemi = 0;
-            int countSemi = 0;
+            int count = 0;
 
             for (int ii = skip; ii < returns.length; ii++)
             {
@@ -88,17 +87,14 @@ public final class Risk
                 double add = Math.pow(returns[ii] - averageReturn, 2);
 
                 tempStandard = tempStandard + add;
-                countStandard++;
+                count++;
 
                 if (returns[ii] < averageReturn)
-                {
                     tempSemi = tempSemi + add;
-                    countSemi++;
-                }
             }
 
-            stdDeviation = Math.sqrt(tempStandard / countStandard);
-            semiDeviation = Math.sqrt(tempSemi / countSemi);
+            stdDeviation = Math.sqrt(tempStandard / count);
+            semiDeviation = Math.sqrt(tempSemi / count);
         }
 
         private double average(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
