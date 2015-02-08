@@ -4,7 +4,11 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
 import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
+import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -79,6 +83,11 @@ public class PerformanceView extends AbstractHistoricView
         private Label ttwrorLastDay;
         private Label absoluteChangeLastDay;
 
+        private Label maxDrawdown;
+        private Label maxDrawdownDuration;
+        private Label volatility;
+        private Label semiVolatility;
+
         private Label[] labels;
         private Label[] values;
 
@@ -86,22 +95,15 @@ public class PerformanceView extends AbstractHistoricView
         {
             PerformanceIndex index = snapshot.getPerformanceIndex();
 
-            int length = index.getTotals().length;
-
-            if (length > 1)
+            if (index.getTotals().length > 1)
             {
-                ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[length - 1]));
-                irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
-                absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
-                delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
-
-                ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
-                absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
-                                - index.getTotals()[length - 2]));
+                setIndicators(snapshot, index);
+                setRiskIndicators(index);
             }
             else
             {
-                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay);
+                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown,
+                                maxDrawdownDuration, volatility, semiVolatility);
             }
 
             int ii = 0;
@@ -115,6 +117,41 @@ public class PerformanceView extends AbstractHistoricView
             }
 
             container.layout(true);
+        }
+
+        private void setIndicators(ClientPerformanceSnapshot snapshot, PerformanceIndex index)
+        {
+            int length = index.getTotals().length;
+            ttwror.setText(Values.Percent2.format(index.getFinalAccumulatedPercentage()));
+            irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
+            absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
+            delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
+
+            ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
+            absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
+                            - index.getTotals()[length - 2]));
+        }
+
+        private void setRiskIndicators(PerformanceIndex index)
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withZone(
+                            ZoneId.systemDefault());
+
+            Drawdown drawdown = index.getDrawdown();
+
+            maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
+            maxDrawdown.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdown,
+                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
+                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
+
+            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, //
+                            drawdown.getMaxDrawdownDuration().getDays()));
+            maxDrawdownDuration.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdownDuration,
+                            formatter.format(drawdown.getMaxDrawdownDuration().getStart()),
+                            formatter.format(drawdown.getMaxDrawdownDuration().getEnd())));
+
+            volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
+            semiVolatility.setText(Values.Percent2.format(index.getVolatility().getSemiDeviation()));
         }
 
         public void createTab(CTabFolder folder)
@@ -135,6 +172,7 @@ public class PerformanceView extends AbstractHistoricView
                             JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
             createIndicators(container);
+            createRiskIndicators(container);
             createCalculation(container);
 
             CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -180,6 +218,34 @@ public class PerformanceView extends AbstractHistoricView
             data.top = new FormAttachment(delta, 20);
             data.width = maxWidth[0];
             headingLastDay.setLayoutData(data);
+        }
+
+        private void createRiskIndicators(Composite container2)
+        {
+            Composite composite = new Composite(container, SWT.NONE);
+            composite.setLayout(new FormLayout());
+            composite.setBackground(container.getBackground());
+
+            Label heading = new Label(composite, SWT.NONE);
+            heading.setText(Messages.LabelRiskIndicators);
+            heading.setFont(boldFont);
+            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
+
+            int[] maxWidth = new int[1];
+
+            maxDrawdown = addKPIBelow(Messages.LabelMaxDrawdown, heading, maxWidth);
+            maxDrawdownDuration = addKPIBelow(Messages.LabelMaxDrawdownDuration, maxDrawdown, maxWidth);
+            volatility = addKPIBelow(Messages.LabelVolatility, maxDrawdownDuration, maxWidth);
+            volatility.setToolTipText(Messages.TooltipVolatility);
+            semiVolatility = addKPIBelow(Messages.LabelSemiVolatility, volatility, maxWidth);
+            semiVolatility.setToolTipText(Messages.TooltipSemiVolatility);
+
+            // layout
+
+            FormData data = new FormData();
+            data.left = new FormAttachment(0, 5);
+            data.width = Math.max(maxWidth[0], heading.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
+            heading.setLayoutData(data);
         }
 
         private Label addKPIBelow(String label, Control other, int[] maxWidth)

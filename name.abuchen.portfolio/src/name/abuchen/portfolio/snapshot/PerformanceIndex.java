@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -17,6 +19,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.util.TradeCalendar;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
@@ -33,6 +36,8 @@ public class PerformanceIndex
     protected long[] taxes;
     protected double[] accumulated;
     protected double[] delta;
+    protected Drawdown drawdown;
+    protected Volatility volatility;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -138,6 +143,39 @@ public class PerformanceIndex
     public long[] getTransferals()
     {
         return transferals;
+    }
+
+    public Drawdown getDrawdown()
+    {
+        if (drawdown == null)
+            drawdown = new Drawdown(accumulated, dates);
+
+        return drawdown;
+    }
+
+    public Volatility getVolatility()
+    {
+        if (volatility == null)
+        {
+            // Volatility calculation must only include values starting with the
+            // first data point.
+            int skip = 0;
+            for (int ii = 0; ii < totals.length; ii++)
+            {
+                if (totals[ii] != 0)
+                {
+                    skip = ii;
+                    break;
+                }
+            }
+
+            // additionally skip first value as it is always 0 (as there is no
+            // previous period for the delta)
+            TradeCalendar calendar = new TradeCalendar();
+            volatility = new Volatility(dates, delta, skip + 1, date -> !calendar.isHoldiay(date));
+        }
+
+        return volatility;
     }
 
     public long[] getTaxes()
