@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
@@ -157,25 +158,30 @@ public class PerformanceIndex
     {
         if (volatility == null)
         {
-            // Volatility calculation must only include values starting with the
-            // first data point.
-            int skip = 0;
-            for (int ii = 0; ii < totals.length; ii++)
-            {
-                if (totals[ii] != 0)
-                {
-                    skip = ii;
-                    break;
-                }
-            }
-
-            // additionally skip first value as it is always 0 (as there is no
-            // previous period for the delta)
             TradeCalendar calendar = new TradeCalendar();
-            volatility = new Volatility(dates, delta, skip + 1, date -> !calendar.isHoldiay(date));
+            volatility = new Volatility(dates, delta, getVolatilitySkip(), date -> !calendar.isHoldiay(date));
         }
 
         return volatility;
+    }
+
+    /**
+     * Volatility calculation must only include values starting with the first
+     * data point. Additionally skip first value as it is always 0 (as there is
+     * no previous period for the delta)
+     */
+    private int getVolatilitySkip()
+    {
+        int skip = 0;
+        for (int ii = 0; ii < totals.length; ii++)
+        {
+            if (totals[ii] != 0)
+            {
+                skip = ii;
+                break;
+            }
+        }
+        return skip + 1;
     }
 
     public long[] getTaxes()
@@ -217,6 +223,17 @@ public class PerformanceIndex
 
     public void exportTo(File file) throws IOException
     {
+        exportTo(file, 0, d -> true);
+    }
+
+    public void exportVolatilityData(File file) throws IOException
+    {
+        TradeCalendar calendar = new TradeCalendar();
+        exportTo(file, getVolatilitySkip(), date -> !calendar.isHoldiay(date));
+    }
+
+    private void exportTo(File file, int skip, Predicate<Date> filter) throws IOException
+    {
         CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED, CSVStrategy.ESCAPE_DISABLED,
                         false, false, false, false);
 
@@ -231,8 +248,11 @@ public class PerformanceIndex
                             Messages.CSVColumn_DeltaInPercent, //
                             Messages.CSVColumn_CumulatedPerformanceInPercent });
 
-            for (int ii = 0; ii < totals.length; ii++)
+            for (int ii = skip; ii < totals.length; ii++)
             {
+                if (!filter.test(dates[ii]))
+                    continue;
+
                 printer.print(Values.Date.format(dates[ii]));
                 printer.print(Values.Amount.format(totals[ii]));
                 printer.print(Values.Amount.format(transferals[ii]));

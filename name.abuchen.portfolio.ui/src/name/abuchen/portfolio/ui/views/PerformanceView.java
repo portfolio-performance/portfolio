@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views;
 import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
 import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +21,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
@@ -68,6 +71,8 @@ public class PerformanceView extends AbstractHistoricView
 {
     private static class OverviewTab implements DisposeListener
     {
+        private ClientPerformanceSnapshot snapshot;
+
         private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 
         private Font kpiFont;
@@ -93,6 +98,8 @@ public class PerformanceView extends AbstractHistoricView
 
         public void setInput(ClientPerformanceSnapshot snapshot)
         {
+            this.snapshot = snapshot;
+
             PerformanceIndex index = snapshot.getPerformanceIndex();
 
             if (index.getTotals().length > 1)
@@ -292,6 +299,11 @@ public class PerformanceView extends AbstractHistoricView
         public void widgetDisposed(DisposeEvent e)
         {
             resourceManager.dispose();
+        }
+
+        public ClientPerformanceSnapshot getSnapshot()
+        {
+            return snapshot;
         }
     }
 
@@ -772,6 +784,32 @@ public class PerformanceView extends AbstractHistoricView
                 }
             });
 
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.LabelVolatility))
+            {
+                @Override
+                public void run()
+                {
+                    new AbstractCSVExporter()
+                    {
+                        @Override
+                        protected void writeToFile(File file) throws IOException
+                        {
+                            ClientPerformanceSnapshot snapshot = overview.getSnapshot();
+                            if (snapshot == null)
+                                return;
+
+                            PerformanceIndex index = snapshot.getPerformanceIndex();
+                            index.exportVolatilityData(file);
+                        }
+
+                        @Override
+                        protected Control getControl()
+                        {
+                            return ExportDropDown.this.getToolBar();
+                        }
+                    }.export(Messages.LabelVolatility + ".csv"); //$NON-NLS-1$
+                }
+            });
         }
     }
 
