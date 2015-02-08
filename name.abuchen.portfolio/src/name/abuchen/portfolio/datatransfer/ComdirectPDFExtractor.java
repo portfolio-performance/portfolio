@@ -103,7 +103,7 @@ public class ComdirectPDFExtractor implements Extractor
                 StringJoiner j = new StringJoiner(" "); //$NON-NLS-1$
                 for (int i = 1; i < parts.length; i++)
                     j.add(parts[i]);
-                String name = j.toString();
+                String name = j.toString().trim();
                 security = new Security(name, isin, null, QuoteFeed.MANUAL);
                 security.setWkn(wkn);
                 // Store
@@ -112,8 +112,9 @@ public class ComdirectPDFExtractor implements Extractor
                 SecurityItem item = new SecurityItem(security);
                 results.add(item);
             }
-            //The representation in the File changes with the way the account is given
-            //The difference is whether or not the account is named by the IBAN
+            // The representation in the File changes with the way the account
+            // is given
+            // The difference is whether or not the account is named by the IBAN
             int dateWorkOffset = 9;
             if (text.contains("Verrechnung über Konto (IBAN)")) { //$NON-NLS-1$
                 dateWorkOffset = 13;
@@ -132,7 +133,7 @@ public class ComdirectPDFExtractor implements Extractor
                 errors.add(e);
             }
             Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1)); //$NON-NLS-1$
-            Number pieces = getNextNumber(text, text.indexOf("STK")+3);
+            Number pieces = getNextNumber(text, text.indexOf("STK") + 3); //$NON-NLS-1$
             t.setType(AccountTransaction.Type.DIVIDENDS);
             t.setAmount(Math.round(value.doubleValue() * Values.Amount.factor()));
             t.setShares(Math.round(pieces.doubleValue() * Values.Share.factor()));
