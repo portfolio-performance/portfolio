@@ -220,7 +220,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public Color getForeground(Object e)
             {
-                return getColor(((SecurityPerformanceRecord) e).getIrr());
+                return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
