@@ -476,6 +476,8 @@ public class PerformanceChartView extends AbstractHistoricView
                                 index = dataCache.get(Client.class);
                             else if (series.isPortfolioPlus())
                                 index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
+                            else if (series.getType() == Security.class && !series.isBenchmark())
+                                index = dataCache.get(((Security) series.getInstance()).getUUID());
                             else
                                 index = dataCache.get(series.getInstance());
 
