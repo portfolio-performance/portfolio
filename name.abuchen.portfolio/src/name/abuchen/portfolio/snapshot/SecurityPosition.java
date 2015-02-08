@@ -182,8 +182,8 @@ public class SecurityPosition
         }
 
         long sharesBought = 0;
-        long value = 0;
-        long investment = 0;
+        long grossInvestment = 0;
+        long netInvestment = 0;
         for (PortfolioTransaction t : input)
         {
             if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
@@ -202,15 +202,19 @@ public class SecurityPosition
 
                 if (bought > 0)
                 {
+                    long grossAmount = t.getAmount();
+                    long netAmount = t.getLumpSumPrice();
+
                     sharesBought += bought;
-                    value += (bought * t.getActualPurchasePrice()) / Values.Share.factor();
-                    investment += bought * t.getAmount() / t.getShares();
+                    grossInvestment += grossAmount * bought / (double) t.getShares();
+                    netInvestment += netAmount * bought / (double) t.getShares();
                 }
             }
         }
 
-        this.purchasePrice = sharesBought > 0 ? (value * Values.Share.factor()) / sharesBought : 0;
-        this.purchaseValue = investment;
+        this.purchasePrice = sharesBought > 0 ? Math.round((netInvestment * Values.Share.factor())
+                        / (double) sharesBought) : 0;
+        this.purchaseValue = grossInvestment;
     }
 
     public static SecurityPosition merge(SecurityPosition p1, SecurityPosition p2)
