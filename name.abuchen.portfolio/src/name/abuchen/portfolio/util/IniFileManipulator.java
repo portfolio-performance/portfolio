@@ -29,7 +29,7 @@ public class IniFileManipulator
         isDirty = false;
     }
 
-    private Path getIniFile()
+    public Path getIniFile()
     {
         String eclipseLauncher = System.getProperty("eclipse.launcher"); //$NON-NLS-1$
 

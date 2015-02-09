@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-nl de_DE</programArgs>
+      <programArgs>-nl de_DE -clearPersistedState</programArgs>
       <programArgsMac>-os macosx -ws cocoa -arch x86_64</programArgsMac>
       <vmArgs>-Xms40m -Xmx512m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
