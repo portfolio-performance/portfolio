@@ -24,6 +24,7 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Dates;
 
+import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -153,6 +154,9 @@ public class CurrencyTestCase
                         performance.getValue(CategoryType.CURRENCY_GAINS)),
                         is(performance.getValue(CategoryType.FINAL_VALUE).subtract(
                                         performance.getValue(CategoryType.INITIAL_VALUE))));
+
+        // compare with result calculated by Excel's XIRR function
+        assertThat(performance.getPerformanceIRR(), IsCloseTo.closeTo(0.505460984, 0.00000001));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)
