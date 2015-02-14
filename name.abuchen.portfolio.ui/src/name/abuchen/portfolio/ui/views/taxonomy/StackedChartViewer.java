@@ -2,10 +2,13 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -22,6 +25,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -102,7 +107,7 @@ public class StackedChartViewer extends AbstractChartPage
         {
             long l1 = values[values.length - 1];
             long l2 = other.values[other.values.length - 1];
-            return Long.compare(l1, l2);
+            return Long.compare(l1, l2) * -1;
         }
     }
 
@@ -151,6 +156,24 @@ public class StackedChartViewer extends AbstractChartPage
     }
 
     @Override
+    protected void initializeConfigMenu(IMenuManager manager)
+    {
+        super.initializeConfigMenu(manager);
+        Action action = new Action(Messages.LabelOrderByTaxonomy)
+        {
+            @Override
+            public void run()
+            {
+                getModel().setOrderByTaxonomyInStackChart(
+                                !getModel().isOrderByTaxonomyInStackChart());
+                onConfigChanged();
+            }
+        };
+        action.setChecked(getModel().isOrderByTaxonomyInStackChart());
+        manager.add(action);
+    }
+    
+    @Override
     public void nodeChange(TaxonomyNode node)
     {
         onConfigChanged();
@@ -198,7 +221,7 @@ public class StackedChartViewer extends AbstractChartPage
     private void updateChart()
     {
         final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<InvestmentVehicle, VehicleBuilder>();
-        final Map<TaxonomyNode, SeriesBuilder> node2series = new HashMap<TaxonomyNode, SeriesBuilder>();
+        final Map<TaxonomyNode, SeriesBuilder> node2series = new LinkedHashMap<>();
 
         getModel().visitAll(new NodeVisitor()
         {
@@ -253,23 +276,27 @@ public class StackedChartViewer extends AbstractChartPage
                 totals[ii] -= unassigned.values[ii];
         }
 
-        final List<SeriesBuilder> series = node2series
+        Stream<SeriesBuilder> seriesStream = node2series
                         .values()
                         .stream()
-                        .filter(s -> s.hasValues())
-                        .filter(s -> !getModel().isUnassignedCategoryInChartsExcluded()
-                                        || !s.node.isUnassignedCategory()) //
-                        .sorted() //
-                        .collect(Collectors.toList());
-
-        Display.getDefault().asyncExec(new Runnable()
+                        .filter(s -> s.hasValues());
+        if (getModel().isUnassignedCategoryInChartsExcluded())
+            seriesStream = seriesStream.filter(s -> !s.node.isUnassignedCategory());
+        
+        List<SeriesBuilder> series = seriesStream.collect(Collectors.toList());
+        
+        if (getModel().isOrderByTaxonomyInStackChart()) 
         {
-            @Override
-            public void run()
-            {
-                rebuildChartSeries(totals, series);
-            }
-        });
+            // reverse because chart is stacked bottom-up
+            Collections.reverse(series);
+        } 
+        else 
+        {
+            Collections.sort(series);
+        }
+
+
+        Display.getDefault().asyncExec(() -> rebuildChartSeries(totals, series));
     }
 
     private void rebuildChartSeries(long[] totals, List<SeriesBuilder> series)

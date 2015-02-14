@@ -300,6 +300,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnPurchasePrice_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

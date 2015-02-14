@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.Scanner;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -59,39 +62,49 @@ public class ComdirectPDFExtractorTest
             {
                 secItem = (SecurityItem) it;
             }
-            if (it instanceof AccountTransaction)
+            if (it instanceof TransactionItem)
             {
-                accItem = (AccountTransaction) it;
+                accItem = (AccountTransaction) ((TransactionItem) it).getSubject();
             }
         }
-        assert (secItem != null);
-        assert (accItem != null);
+        assertThat(secItem, is(notNullValue()));
+        assertThat(accItem, is(notNullValue()));
         Security security = secItem.getSecurity();
-        assert (security.getName().equals("Name des Wertpapiers"));
-        assert (accItem.getAmount() == 1);
-        assert (accItem.getSecurity().equals(security));
-        assert (results.size() == 2);
+        assertThat(security.getName(), is("Name des Wertpapiers"));
+        assertThat(accItem.getAmount(), is(1_00L));
+        assertThat(accItem.getSecurity(), is(security));
+        assertThat(results.size(), is(2));
         // Should complete without error
-        assert (errors.size() == 0);
-        results = extractor.extract(gutschrift2, "Gutschrift2", errors);
+        assertThat(errors, is(empty()));
+    }
+
+    @Test
+    public void testGutschrift2() throws IOException
+    {
+        Client client = new Client();
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(gutschrift2, "Gutschrift2", errors);
+        SecurityItem secItem = null;
+        AccountTransaction accItem = null;
         for (Item it : results)
         {
             if (it instanceof SecurityItem)
             {
                 secItem = (SecurityItem) it;
             }
-            if (it instanceof AccountTransaction)
+            if (it instanceof TransactionItem)
             {
-                accItem = (AccountTransaction) it;
+                accItem = (AccountTransaction) ((TransactionItem) it).getSubject();
             }
         }
-        security = secItem.getSecurity();
-        assert (accItem.getSecurity().equals(security));
-        assert (accItem.getAmount() == 1.11);
-        assert (security.getName().equals("Bank-Global-Rent"));
-        assert (security.getIsin().equals("AT0000123456"));
-        assert (results.size() == 2);
-        assert (errors.size() == 0);
+        Security security = secItem.getSecurity();
+        assertThat(accItem.getSecurity(), is(security));
+        assertThat(accItem.getAmount(), is(1_11L));
+        assertThat(security.getName(), is("Bank-Global-Rent"));
+        assertThat(security.getIsin(), is("AT0000123456"));
+        assertThat(results.size(), is(2));
+        assertThat(errors, is(empty()));
     }
 
     @Test
@@ -114,15 +127,15 @@ public class ComdirectPDFExtractorTest
                 buyItem = (BuySellEntryItem) it;
             }
         }
-        assert (secItem != null);
-        assert (buyItem != null);
+        assertThat(secItem, is(notNullValue()));
+        assertThat(buyItem, is(notNullValue()));
         Security security = secItem.getSecurity();
-        assert (security.getName().equals("Name der Security"));
-        assert (buyItem.getSecurity().equals(security));
-        assert (buyItem.getAmount() == 1);
-        assert (results.size() == 2);
+        assertThat(security.getName(), is("Name der Security"));
+        assertThat(buyItem.getSecurity(), is(security));
+        assertThat(buyItem.getAmount(), is(1_00L));
+        assertThat(results.size(), is(2));
         // Should complete without error
-        assert (errors.size() == 0);
+        assertThat(errors, is(empty()));
     }
 
     @Test

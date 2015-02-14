@@ -26,6 +26,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String identifierView;
     /** preference key: include unassigned category in charts */
     private String identifierUnassigned;
+    /** preference key: order by taxonomy in stack chart */
+    private String identifierOrderByTaxonomy;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
@@ -46,9 +48,11 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
+        this.identifierOrderByTaxonomy = TaxonomyView.class.getSimpleName() + "-ORDERBYTAXONOMY-" + taxonomy.getId(); //$NON-NLS-1$
 
         this.model = getPart().make(TaxonomyModel.class, taxonomy);
         this.model.setExcludeUnassignedCategoryInCharts(part.getPreferenceStore().getBoolean(identifierUnassigned));
+        this.model.setOrderByTaxonomyInStackChart(part.getPreferenceStore().getBoolean(identifierOrderByTaxonomy));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -63,6 +67,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     public void dispose()
     {
         getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
+        getPreferenceStore().setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         taxonomy.removePropertyChangeListener(this);
 
         Control[] children = container.getChildren();

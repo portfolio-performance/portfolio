@@ -113,6 +113,10 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
         @Override
         public String format(Date date, int line)
         {
+            // benchmark data series might not have all values
+            if (line >= values.length)
+                return ""; //$NON-NLS-1$
+
             return valueFormat.format(values[line]);
         }
     }

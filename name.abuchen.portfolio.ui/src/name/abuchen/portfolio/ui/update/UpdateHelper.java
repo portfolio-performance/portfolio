@@ -217,6 +217,8 @@ public class UpdateHelper
 
             if (m.isDirty())
                 m.save();
+
+            PortfolioPlugin.log("Set -clearPersistedState flag to " + m.getIniFile().toAbsolutePath().toString()); //$NON-NLS-1$
         }
         catch (IOException ignore)
         {

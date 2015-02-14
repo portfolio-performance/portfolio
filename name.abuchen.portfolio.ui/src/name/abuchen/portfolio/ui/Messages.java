@@ -279,6 +279,7 @@ public class Messages extends NLS
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
     public static String LabelOther;
+    public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
     public static String LabelPerformanceCalculation;
@@ -299,12 +300,16 @@ public class Messages extends NLS
     public static String LabelReportingDialogYears;
     public static String LabelReportingYears;
     public static String LabelReportInterval;
+    public static String LabelRiskIndicators;
     public static String LabelSampleData;
     public static String LabelSearch;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
+    public static String LabelSemiVolatility;
     public static String LabelDividends;
     public static String LabelKeyIndicators;
+    public static String LabelMaxDrawdown;
+    public static String LabelMaxDrawdownDuration;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
@@ -323,7 +328,9 @@ public class Messages extends NLS
     public static String LabelViewStackedChart;
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
+    public static String LabelVolatility;
     public static String LabelWithoutClassification;
+    public static String LabelXDays;
     public static String LabelYes;
     public static String MenuAddAll;
     public static String MenuChartAdjustRange;
@@ -483,6 +490,10 @@ public class Messages extends NLS
     public static String SystemMenuCheckForUpdates;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
+    public static String TooltipMaxDrawdown;
+    public static String TooltipMaxDrawdownDuration;
+    public static String TooltipSemiVolatility;
+    public static String TooltipVolatility;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;

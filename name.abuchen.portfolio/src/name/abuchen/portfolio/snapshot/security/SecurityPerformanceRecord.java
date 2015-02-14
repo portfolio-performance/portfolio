@@ -263,7 +263,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         CostCalculation cost = Calculation.perform(CostCalculation.class, transactions);
         this.fifoCost = cost.getFifoCost();
         this.sharesHeld = cost.getSharesHeld();
-        this.fifoCostPerSharesHeld = Math.round(fifoCost * Values.Share.factor() / (double) sharesHeld);
+        this.fifoCostPerSharesHeld = Math.round(cost.getNetFifoCost() * Values.Share.factor() / (double) sharesHeld);
         this.fees = cost.getFees();
         this.taxes = cost.getTaxes();
     }

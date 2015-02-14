@@ -30,18 +30,7 @@ public abstract class AbstractChartPage extends Page
                 @Override
                 public void menuAboutToShow(IMenuManager manager)
                 {
-                    Action action = new Action(Messages.LabelIncludeUnassignedCategoryInCharts)
-                    {
-                        @Override
-                        public void run()
-                        {
-                            getModel().setExcludeUnassignedCategoryInCharts(
-                                            !getModel().isUnassignedCategoryInChartsExcluded());
-                            onConfigChanged();
-                        }
-                    };
-                    action.setChecked(!getModel().isUnassignedCategoryInChartsExcluded());
-                    manager.add(action);
+                    initializeConfigMenu(manager);
                 }
             });
 
@@ -49,6 +38,21 @@ public abstract class AbstractChartPage extends Page
         }
 
         configMenu.setVisible(true);
+    }
+    
+    protected void initializeConfigMenu(IMenuManager manager) {
+        Action action = new Action(Messages.LabelIncludeUnassignedCategoryInCharts)
+        {
+            @Override
+            public void run()
+            {
+                getModel().setExcludeUnassignedCategoryInCharts(
+                                !getModel().isUnassignedCategoryInChartsExcluded());
+                onConfigChanged();
+            }
+        };
+        action.setChecked(!getModel().isUnassignedCategoryInChartsExcluded());
+        manager.add(action);
     }
 
     public abstract void onConfigChanged();

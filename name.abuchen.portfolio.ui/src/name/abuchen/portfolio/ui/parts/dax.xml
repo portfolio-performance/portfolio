@@ -7588,7 +7588,7 @@
   <accounts>
     <account>
       <uuid>d18cef06-ebb6-4e14-8cad-fe7410d2e6b6</uuid>
-      <name>Konto 1</name>
+      <name>${Dax_Account1}</name>
       <isRetired>false</isRetired>
       <transactions>
         <account-transaction>
@@ -7603,7 +7603,7 @@
           <crossEntry class="buysell">
             <portfolio>
               <uuid>c8676f98-3337-4c64-a6c2-0974788790bb</uuid>
-              <name>Portfolio 1</name>
+              <name>${Dax_Portfolio1}</name>
               <referenceAccount reference="../../../../.."/>
               <transactions>
                 <portfolio-transaction>
@@ -8503,7 +8503,7 @@
       </root>
     </taxonomy>
     <taxonomy>
-      <id>industries</id>
+      <id>industry-gics</id>
       <name>Branchen (GICS)</name>
       <dimensions class="java.util.Arrays$ArrayList">
         <a class="string-array">

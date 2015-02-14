@@ -103,7 +103,7 @@ public class ComdirectPDFExtractor implements Extractor
                 StringJoiner j = new StringJoiner(" "); //$NON-NLS-1$
                 for (int i = 1; i < parts.length; i++)
                     j.add(parts[i]);
-                String name = j.toString();
+                String name = j.toString().trim();
                 security = new Security(name, isin, null, QuoteFeed.MANUAL);
                 security.setWkn(wkn);
                 // Store
@@ -112,8 +112,9 @@ public class ComdirectPDFExtractor implements Extractor
                 SecurityItem item = new SecurityItem(security);
                 results.add(item);
             }
-            //The representation in the File changes with the way the account is given
-            //The difference is whether or not the account is named by the IBAN
+            // The representation in the File changes with the way the account
+            // is given
+            // The difference is whether or not the account is named by the IBAN
             int dateWorkOffset = 9;
             if (text.contains("Verrechnung über Konto (IBAN)")) { //$NON-NLS-1$
                 dateWorkOffset = 13;
@@ -132,15 +133,17 @@ public class ComdirectPDFExtractor implements Extractor
                 errors.add(e);
             }
             Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1)); //$NON-NLS-1$
+            Number pieces = getNextNumber(text, text.indexOf("STK") + 3); //$NON-NLS-1$
             t.setType(AccountTransaction.Type.DIVIDENDS);
             t.setAmount(Math.round(value.doubleValue() * Values.Amount.factor()));
+            t.setShares(Math.round(pieces.doubleValue() * Values.Share.factor()));
             t.setSecurity(security);
             results.add(new TransactionItem(t));
         }
         // The buy transaction can be parsed from the name of the file
         // this requires that the user does not change the name from the
         // download
-        else if (filename.contains("Wertpapierabrechnung_Kauf")) //$NON-NLS-1$
+        else if (text.contains("Wertpapierkauf")) //$NON-NLS-1$
         {
             try
             {
@@ -167,7 +170,7 @@ public class ComdirectPDFExtractor implements Extractor
                     results.add(item);
                 }
                 int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von")); //$NON-NLS-1$ //$NON-NLS-2$
-                Number stueck = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
+                Number shares = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
                 // Fees need not be present
                 // In case they are a section is present in the file
                 int provPos = -1;
@@ -184,7 +187,7 @@ public class ComdirectPDFExtractor implements Extractor
                 purchase.setType(PortfolioTransaction.Type.BUY);
                 purchase.setDate(tag);
                 purchase.setSecurity(security);
-                purchase.setShares(Math.round(stueck.doubleValue() * Values.Share.factor()));
+                purchase.setShares(Math.round(shares.doubleValue() * Values.Share.factor()));
                 purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
                 results.add(new BuySellEntryItem(purchase));
             }

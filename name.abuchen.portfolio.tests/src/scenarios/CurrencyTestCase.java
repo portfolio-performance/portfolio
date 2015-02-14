@@ -24,7 +24,6 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,8 +41,7 @@ public class CurrencyTestCase
     @BeforeClass
     public static void prepare() throws IOException
     {
-        client = ClientFactory.load(SecurityTestCase.class.getResourceAsStream("currency_sample.xml"),
-                        new NullProgressMonitor());
+        client = ClientFactory.load(SecurityTestCase.class.getResourceAsStream("currency_sample.xml"));
 
         securityEUR = client.getSecurities().stream().filter(s -> s.getName().equals("BASF")).findFirst().get();
         securityUSD = client.getSecurities().stream().filter(s -> s.getName().equals("Apple")).findFirst().get();

@@ -3,10 +3,16 @@ package name.abuchen.portfolio.ui.views;
 import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
 import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.inject.Inject;
 
+import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -20,6 +26,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
@@ -69,6 +76,8 @@ public class PerformanceView extends AbstractHistoricView
 {
     private static class OverviewTab implements DisposeListener
     {
+        private ClientPerformanceSnapshot snapshot;
+
         private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 
         private Font kpiFont;
@@ -84,29 +93,29 @@ public class PerformanceView extends AbstractHistoricView
         private Label ttwrorLastDay;
         private Label absoluteChangeLastDay;
 
+        private Label maxDrawdown;
+        private Label maxDrawdownDuration;
+        private Label volatility;
+        private Label semiVolatility;
+
         private Label[] labels;
         private Label[] values;
 
         public void setInput(ClientPerformanceSnapshot snapshot)
         {
+            this.snapshot = snapshot;
+
             PerformanceIndex index = snapshot.getPerformanceIndex();
 
-            int length = index.getTotals().length;
-
-            if (length > 1)
+            if (index.getTotals().length > 1)
             {
-                ttwror.setText(Values.Percent2.format(index.getAccumulatedPercentage()[length - 1]));
-                irr.setText(Values.Percent2.format(snapshot.getPerformanceIRR()));
-                absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
-                delta.setText(Values.Money.format(snapshot.getAbsoluteDelta(), index.getClient().getBaseCurrency()));
-
-                ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
-                absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
-                                - index.getTotals()[length - 2]));
+                setIndicators(snapshot, index);
+                setRiskIndicators(index);
             }
             else
             {
-                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay);
+                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown,
+                                maxDrawdownDuration, volatility, semiVolatility);
             }
 
             int ii = 0;
@@ -120,6 +129,41 @@ public class PerformanceView extends AbstractHistoricView
             }
 
             container.layout(true);
+        }
+
+        private void setIndicators(ClientPerformanceSnapshot snapshot, PerformanceIndex index)
+        {
+            int length = index.getTotals().length;
+            ttwror.setText(Values.Percent2.format(index.getFinalAccumulatedPercentage()));
+            irr.setText(Values.Percent2.format(snapshot.getPerformanceIRR()));
+            absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
+            delta.setText(Values.Money.format(snapshot.getAbsoluteDelta(), index.getClient().getBaseCurrency()));
+
+            ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
+            absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
+                            - index.getTotals()[length - 2]));
+        }
+
+        private void setRiskIndicators(PerformanceIndex index)
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withZone(
+                            ZoneId.systemDefault());
+
+            Drawdown drawdown = index.getDrawdown();
+
+            maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
+            maxDrawdown.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdown,
+                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
+                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
+
+            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, //
+                            drawdown.getMaxDrawdownDuration().getDays()));
+            maxDrawdownDuration.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdownDuration,
+                            formatter.format(drawdown.getMaxDrawdownDuration().getStart()),
+                            formatter.format(drawdown.getMaxDrawdownDuration().getEnd())));
+
+            volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
+            semiVolatility.setText(Values.Percent2.format(index.getVolatility().getSemiDeviation()));
         }
 
         public void createTab(CTabFolder folder)
@@ -140,6 +184,7 @@ public class PerformanceView extends AbstractHistoricView
                             JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
             createIndicators(container);
+            createRiskIndicators(container);
             createCalculation(container);
 
             CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -187,6 +232,34 @@ public class PerformanceView extends AbstractHistoricView
             headingLastDay.setLayoutData(data);
         }
 
+        private void createRiskIndicators(Composite container2)
+        {
+            Composite composite = new Composite(container, SWT.NONE);
+            composite.setLayout(new FormLayout());
+            composite.setBackground(container.getBackground());
+
+            Label heading = new Label(composite, SWT.NONE);
+            heading.setText(Messages.LabelRiskIndicators);
+            heading.setFont(boldFont);
+            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
+
+            int[] maxWidth = new int[1];
+
+            maxDrawdown = addKPIBelow(Messages.LabelMaxDrawdown, heading, maxWidth);
+            maxDrawdownDuration = addKPIBelow(Messages.LabelMaxDrawdownDuration, maxDrawdown, maxWidth);
+            volatility = addKPIBelow(Messages.LabelVolatility, maxDrawdownDuration, maxWidth);
+            volatility.setToolTipText(Messages.TooltipVolatility);
+            semiVolatility = addKPIBelow(Messages.LabelSemiVolatility, volatility, maxWidth);
+            semiVolatility.setToolTipText(Messages.TooltipSemiVolatility);
+
+            // layout
+
+            FormData data = new FormData();
+            data.left = new FormAttachment(0, 5);
+            data.width = Math.max(maxWidth[0], heading.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
+            heading.setLayoutData(data);
+        }
+
         private Label addKPIBelow(String label, Control other, int[] maxWidth)
         {
             Label lblKpi = new Label(other.getParent(), SWT.NONE);
@@ -231,6 +304,11 @@ public class PerformanceView extends AbstractHistoricView
         public void widgetDisposed(DisposeEvent e)
         {
             resourceManager.dispose();
+        }
+
+        public ClientPerformanceSnapshot getSnapshot()
+        {
+            return snapshot;
         }
     }
 
@@ -715,6 +793,32 @@ public class PerformanceView extends AbstractHistoricView
                 }
             });
 
+            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.LabelVolatility))
+            {
+                @Override
+                public void run()
+                {
+                    new AbstractCSVExporter()
+                    {
+                        @Override
+                        protected void writeToFile(File file) throws IOException
+                        {
+                            ClientPerformanceSnapshot snapshot = overview.getSnapshot();
+                            if (snapshot == null)
+                                return;
+
+                            PerformanceIndex index = snapshot.getPerformanceIndex();
+                            index.exportVolatilityData(file);
+                        }
+
+                        @Override
+                        protected Control getControl()
+                        {
+                            return ExportDropDown.this.getToolBar();
+                        }
+                    }.export(Messages.LabelVolatility + ".csv"); //$NON-NLS-1$
+                }
+            });
         }
     }
 

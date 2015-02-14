@@ -87,7 +87,7 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
                     if (listener != null)
                         listener.reportingPeriodUpdated();
 
-                    if (periods.size() > 5)
+                    if (periods.size() > 20)
                         periods.removeLast();
                 }
             }

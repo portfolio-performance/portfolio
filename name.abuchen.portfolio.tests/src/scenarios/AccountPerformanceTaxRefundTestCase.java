@@ -20,7 +20,6 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.util.Dates;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -33,9 +32,8 @@ public class AccountPerformanceTaxRefundTestCase
     @Test
     public void testAccountPerformanceTaxRefund() throws IOException
     {
-        Client client = ClientFactory.load(
-                        SecurityTestCase.class.getResourceAsStream("account_performance_tax_refund.xml"),
-                        new NullProgressMonitor());
+        Client client = ClientFactory.load(SecurityTestCase.class
+                        .getResourceAsStream("account_performance_tax_refund.xml"));
 
         Account account = client.getAccounts().get(0);
         ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-06"), Dates.date("2014-12-06"));
@@ -46,7 +44,7 @@ public class AccountPerformanceTaxRefundTestCase
         double startValue = deposit.getAmount();
         double endValue = account.getCurrentAmount();
         double ttwror = (endValue / startValue) - 1;
-        
+
         List<Exception> warnings = new ArrayList<Exception>();
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);

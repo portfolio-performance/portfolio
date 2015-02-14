@@ -114,6 +114,22 @@ public class Taxonomy
         return answer;
     }
 
+    public List<Classification> getAllClassifications()
+    {
+        List<Classification> answer = new ArrayList<Classification>();
+
+        foreach(new Visitor()
+        {
+            @Override
+            public void visit(Classification classification)
+            {
+                answer.add(classification);
+            }
+        });
+
+        return answer;
+    }
+
     public int getHeigth()
     {
         return getHeight(root);

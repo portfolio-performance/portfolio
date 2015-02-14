@@ -8,7 +8,21 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 
 /* package */class CostCalculation extends Calculation
 {
-    private List<long[]> fifo = new ArrayList<long[]>();
+    private static class LineItem
+    {
+        public long shares;
+        public long grossAmount;
+        public long netAmount;
+
+        public LineItem(long shares, long grossAmount, long netAmount)
+        {
+            this.shares = shares;
+            this.grossAmount = grossAmount;
+            this.netAmount = netAmount;
+        }
+    }
+
+    private List<LineItem> fifo = new ArrayList<>();
 
     private long fees;
     private long taxes;
@@ -16,7 +30,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     @Override
     public void visit(DividendInitialTransaction t)
     {
-        fifo.add(new long[] { t.getPosition().getShares(), t.getAmount() });
+        fifo.add(new LineItem(t.getPosition().getShares(), t.getAmount(), t.getAmount()));
     }
 
     @Override
@@ -29,23 +43,24 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
         {
             case BUY:
             case DELIVERY_INBOUND:
-                fifo.add(new long[] { t.getShares(), t.getAmount() });
+                fifo.add(new LineItem(t.getShares(), t.getAmount(), t.getLumpSumPrice()));
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
                 long sold = t.getShares();
-                for (long[] entry : fifo)
+                for (LineItem entry : fifo)
                 {
-                    if (entry[0] == 0)
+                    if (entry.shares == 0)
                         continue;
 
                     if (sold <= 0)
                         break;
 
-                    long n = Math.min(sold, entry[0]);
+                    long n = Math.min(sold, entry.shares);
 
-                    entry[1] -= Math.round(n * entry[1] / entry[0]);
-                    entry[0] -= n;
+                    entry.grossAmount -= Math.round(n * entry.grossAmount / entry.shares);
+                    entry.netAmount -= Math.round(n * entry.netAmount / entry.shares);
+                    entry.shares -= n;
 
                     sold -= n;
                 }
@@ -79,19 +94,33 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
         t.setTotalShares(getSharesHeld());
     }
 
+    /**
+     * gross investment
+     */
     public long getFifoCost()
     {
         long cost = 0;
-        for (long[] entry : fifo)
-            cost += entry[1];
+        for (LineItem entry : fifo)
+            cost += entry.grossAmount;
+        return cost;
+    }
+
+    /**
+     * net investment, i.e. without fees and taxes
+     */
+    public long getNetFifoCost()
+    {
+        long cost = 0;
+        for (LineItem entry : fifo)
+            cost += entry.netAmount;
         return cost;
     }
 
     public long getSharesHeld()
     {
         long shares = 0;
-        for (long[] entry : fifo)
-            shares += entry[0];
+        for (LineItem entry : fifo)
+            shares += entry.shares;
         return shares;
     }
 
