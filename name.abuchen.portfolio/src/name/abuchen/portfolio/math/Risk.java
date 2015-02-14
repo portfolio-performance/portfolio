@@ -15,7 +15,8 @@ public final class Risk
         private double maxDD;
         private Interval maxDDDuration;
         private Interval intervalMaxDD;
-
+        private Interval intervalSinceLastPeak;
+        
         public Drawdown(double[] values, Date[] dates)
         {
             double peak = values[0] + 1;
@@ -47,6 +48,7 @@ public final class Risk
                     }
                 }
             }
+            intervalSinceLastPeak = Interval.of(lastPeakDate, dates[dates.length-1].toInstant());
         }
 
         public double getMaxDrawdown()
@@ -62,6 +64,14 @@ public final class Risk
         public Interval getMaxDrawdownDuration()
         {
             return maxDDDuration;
+        }
+        
+        public Interval getIntervalSinceLastPeak() {
+            return intervalSinceLastPeak;
+        }
+        
+        public boolean isInMaxDrawdownDuration() {
+            return intervalSinceLastPeak.isLongerThan(intervalMaxDD);
         }
     }
 
