@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -145,6 +146,7 @@ public class PerformanceView extends AbstractHistoricView
                             ZoneId.systemDefault());
 
             Drawdown drawdown = index.getDrawdown();
+            Volatility vola = index.getVolatility();
 
             maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
             maxDrawdown.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdown,
@@ -158,7 +160,12 @@ public class PerformanceView extends AbstractHistoricView
                             formatter.format(drawdown.getMaxDrawdownDuration().getEnd())));
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
+            volatility.setToolTipText(Messages.TooltipVolatility);
+            
             semiVolatility.setText(Values.Percent2.format(index.getVolatility().getSemiDeviation()));
+            semiVolatility.setToolTipText(MessageFormat.format(Messages.TooltipSemiVolatility,
+                            Values.Percent2.format(vola.getNormalizedSemiDeviation()),
+                            vola.getNormalizedSemiDeviationComparison()));
         }
 
         public void createTab(CTabFolder folder)
@@ -243,10 +250,8 @@ public class PerformanceView extends AbstractHistoricView
             maxDrawdown = addKPIBelow(Messages.LabelMaxDrawdown, heading, maxWidth);
             maxDrawdownDuration = addKPIBelow(Messages.LabelMaxDrawdownDuration, maxDrawdown, maxWidth);
             volatility = addKPIBelow(Messages.LabelVolatility, maxDrawdownDuration, maxWidth);
-            volatility.setToolTipText(Messages.TooltipVolatility);
             semiVolatility = addKPIBelow(Messages.LabelSemiVolatility, volatility, maxWidth);
-            semiVolatility.setToolTipText(Messages.TooltipSemiVolatility);
-
+            
             // layout
 
             FormData data = new FormData();

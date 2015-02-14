@@ -123,6 +123,19 @@ public final class Risk
         {
             return semiDeviation;
         }
+        
+        public double getNormalizedSemiDeviation() {
+            return semiDeviation * Math.sqrt(2);
+        }
+        
+        public String getNormalizedSemiDeviationComparison() {
+            if (getNormalizedSemiDeviation() > getStandardDeviation()) {
+                return ">";
+            } else if (getNormalizedSemiDeviation() < getStandardDeviation()) {
+                return "<";
+            }
+            return "=";
+        }
     }
 
     private Risk()
