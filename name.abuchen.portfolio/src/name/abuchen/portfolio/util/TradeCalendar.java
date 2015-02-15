@@ -161,7 +161,7 @@ public class TradeCalendar
                     new FixedHoliday(Month.DECEMBER, 26), //
                     new EasterHoliday());
 
-    public boolean isHoldiay(Date date)
+    public boolean isHoliday(Date date)
     {
         LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 

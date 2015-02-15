@@ -159,7 +159,7 @@ public class PerformanceIndex
         if (volatility == null)
         {
             TradeCalendar calendar = new TradeCalendar();
-            volatility = new Volatility(dates, delta, getVolatilitySkip(), date -> !calendar.isHoldiay(date));
+            volatility = new Volatility(dates, delta, getVolatilitySkip(), date -> !calendar.isHoliday(date));
         }
 
         return volatility;
@@ -229,7 +229,7 @@ public class PerformanceIndex
     public void exportVolatilityData(File file) throws IOException
     {
         TradeCalendar calendar = new TradeCalendar();
-        exportTo(file, getVolatilitySkip(), date -> !calendar.isHoldiay(date));
+        exportTo(file, getVolatilitySkip(), date -> !calendar.isHoliday(date));
     }
 
     private void exportTo(File file, int skip, Predicate<Date> filter) throws IOException
