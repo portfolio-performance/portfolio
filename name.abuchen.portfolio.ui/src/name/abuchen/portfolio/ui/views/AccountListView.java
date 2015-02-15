@@ -16,7 +16,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
@@ -590,11 +590,11 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 public void run()
                 {
                     BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
-                    BuySellSecurityDialog dialog = getPart().make(BuySellSecurityDialog.class,
+                    SecurityTransactionDialog dialog = getPart().make(SecurityTransactionDialog.class,
                                     entry.getPortfolioTransaction().getType());
                     dialog.setBuySellEntry(entry);
 
-                    if (dialog.open() == BuySellSecurityDialog.OK)
+                    if (dialog.open() == SecurityTransactionDialog.OK)
                     {
                         markDirty();
                         notifyModelUpdated();

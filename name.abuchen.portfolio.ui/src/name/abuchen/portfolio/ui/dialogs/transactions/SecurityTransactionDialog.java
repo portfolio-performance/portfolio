@@ -16,12 +16,12 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.BuySellModel.Properties;
+import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.Text;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
 
-public class BuySellSecurityDialog extends TitleAreaDialog
+public class SecurityTransactionDialog extends TitleAreaDialog
 {
     public class Input
     {
@@ -139,18 +139,31 @@ public class BuySellSecurityDialog extends TitleAreaDialog
     }
 
     private Client client;
-    private BuySellModel model;
+    private AbstractSecurityTransactionModel model;
     private DataBindingContext context = new DataBindingContext();
     private ModelStatusListener status = new ModelStatusListener();
 
     @Inject
-    public BuySellSecurityDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
+    public SecurityTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
                     PortfolioTransaction.Type type)
     {
         super(parentShell);
 
         this.client = client;
-        this.model = new BuySellModel(client, type);
+
+        switch (type)
+        {
+            case BUY:
+            case SELL:
+                this.model = new BuySellModel(client, type);
+                break;
+            case DELIVERY_INBOUND:
+            case DELIVERY_OUTBOUND:
+                this.model = new SecurityDeliveryModel(client, type);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     @Inject
@@ -301,7 +314,7 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
         taxes.bindCurrency(Properties.accountCurrencyCode.name());
 
-        String label = model.getType() == Type.BUY ? Messages.ColumnDebitNote : Messages.ColumnCreditNote;
+        String label = getTotalLabel();
         Input total = new Input(editArea, "= " + label); //$NON-NLS-1$
         total.bindValue(Properties.total.name(), label, Values.Amount, true);
         total.bindCurrency(Properties.accountCurrencyCode.name());
@@ -374,13 +387,31 @@ public class BuySellSecurityDialog extends TitleAreaDialog
         switch (model.getType())
         {
             case BUY:
+            case DELIVERY_INBOUND:
                 return "+ "; //$NON-NLS-1$
             case SELL:
+            case DELIVERY_OUTBOUND:
                 return "- "; //$NON-NLS-1$
             default:
                 throw new UnsupportedOperationException();
         }
+    }
 
+    private String getTotalLabel()
+    {
+        switch (model.getType())
+        {
+            case BUY:
+                return Messages.ColumnDebitNote;
+            case DELIVERY_INBOUND:
+                return "Wert der Einlieferung";
+            case SELL:
+                return Messages.ColumnCreditNote;
+            case DELIVERY_OUTBOUND:
+                return "Wert der Auslieferung";
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -402,6 +433,15 @@ public class BuySellSecurityDialog extends TitleAreaDialog
 
     public void setBuySellEntry(BuySellEntry entry)
     {
-        model.setBuySellEntry(entry);
+        if (!model.accepts(entry.getPortfolioTransaction().getType()))
+            throw new IllegalArgumentException();
+        model.setSource(entry);
+    }
+
+    public void setDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
+    {
+        if (!model.accepts(pair.getTransaction().getType()))
+            throw new IllegalArgumentException();
+        model.setSource(pair);
     }
 }

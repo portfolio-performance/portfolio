@@ -11,11 +11,12 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -35,6 +36,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -366,19 +368,34 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
                         .getSelection()).getFirstElement();
 
-        if (transaction != null && transaction.getCrossEntry() instanceof BuySellEntry)
+        if (transaction != null)
         {
             manager.add(new Action(Messages.MenuEditTransaction)
             {
                 @Override
                 public void run()
                 {
-                    BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
-                    BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
-                                    entry.getPortfolioTransaction().getType());
-                    dialog.setBuySellEntry(entry);
+                    Dialog dialog;
 
-                    if (dialog.open() == BuySellSecurityDialog.OK)
+                    switch (transaction.getType())
+                    {
+                        case BUY:
+                        case SELL:
+                            BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+                            dialog = owner.getPart().make(SecurityTransactionDialog.class, transaction.getType());
+                            ((SecurityTransactionDialog) dialog).setBuySellEntry(entry);
+                            break;
+                        case DELIVERY_INBOUND:
+                        case DELIVERY_OUTBOUND:
+                            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio, transaction);
+                            dialog = owner.getPart().make(SecurityTransactionDialog.class, transaction.getType());
+                            ((SecurityTransactionDialog) dialog).setDeliveryTransaction(pair);
+                            break;
+                        default:
+                            throw new IllegalArgumentException();
+                    }
+
+                    if (dialog.open() == SecurityTransactionDialog.OK)
                     {
                         owner.markDirty();
                         owner.notifyModelUpdated();

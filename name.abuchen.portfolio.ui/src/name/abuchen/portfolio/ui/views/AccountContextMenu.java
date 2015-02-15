@@ -12,7 +12,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.TransferDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -84,7 +84,7 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
+                    SecurityTransactionDialog dialog = owner.getPart().make(SecurityTransactionDialog.class,
                                     PortfolioTransaction.Type.BUY);
                     if (portfolio[0] != null)
                         dialog.setPortfolio(portfolio[0]);
@@ -100,7 +100,7 @@ public class AccountContextMenu
                 @Override
                 Dialog createDialog()
                 {
-                    BuySellSecurityDialog dialog = owner.getPart().make(BuySellSecurityDialog.class,
+                    SecurityTransactionDialog dialog = owner.getPart().make(SecurityTransactionDialog.class,
                                     PortfolioTransaction.Type.SELL);
                     if (portfolio[0] != null)
                         dialog.setPortfolio(portfolio[0]);

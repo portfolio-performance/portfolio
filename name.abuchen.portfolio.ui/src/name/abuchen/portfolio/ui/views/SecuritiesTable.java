@@ -21,7 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.BuySellSecurityDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
@@ -535,7 +535,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                BuySellSecurityDialog dialog = view.getPart().make(BuySellSecurityDialog.class,
+                SecurityTransactionDialog dialog = view.getPart().make(SecurityTransactionDialog.class,
                                 PortfolioTransaction.Type.BUY);
                 dialog.setSecurity(security);
                 return dialog;
@@ -547,7 +547,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                BuySellSecurityDialog dialog = view.getPart().make(BuySellSecurityDialog.class,
+                SecurityTransactionDialog dialog = view.getPart().make(SecurityTransactionDialog.class,
                                 PortfolioTransaction.Type.SELL);
                 dialog.setSecurity(security);
                 return dialog;
