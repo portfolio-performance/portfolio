@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
+import name.abuchen.portfolio.math.Performance.SharpeRatio;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
@@ -92,6 +93,8 @@ public class PerformanceView extends AbstractHistoricView
         private Label maxDrawdownDuration;
         private Label volatility;
         private Label semiVolatility;
+        
+        private Label sharpeRatio;
 
         private Label[] labels;
         private Label[] values;
@@ -110,7 +113,7 @@ public class PerformanceView extends AbstractHistoricView
             else
             {
                 clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown,
-                                maxDrawdownDuration, volatility, semiVolatility);
+                                maxDrawdownDuration, volatility, semiVolatility, sharpeRatio);
             }
 
             int ii = 0;
@@ -133,6 +136,9 @@ public class PerformanceView extends AbstractHistoricView
             irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
             absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
             delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
+            
+            SharpeRatio sRatio = index.getSharpeRatio();
+            sharpeRatio.setText(String.format("%.2f",sRatio.getRatio()));
 
             ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
             absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
@@ -204,6 +210,8 @@ public class PerformanceView extends AbstractHistoricView
             irr = addKPIBelow(Messages.LabelIRR, ttwror, maxWidth);
             absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
             delta = addKPIBelow(Messages.LabelAbsoluteDelta, absoluteChange, maxWidth);
+            sharpeRatio = addKPIBelow("SharpeRatio", delta, maxWidth);
+            sharpeRatio.setToolTipText(Messages.TooltipSharpeRatio);
 
             Label headingLastDay = new Label(composite, SWT.NONE);
             headingLastDay.setText(Messages.LabelTTWROROneDay);
@@ -212,6 +220,8 @@ public class PerformanceView extends AbstractHistoricView
 
             ttwrorLastDay = addKPIBelow(Messages.LabelTTWROR, headingLastDay, maxWidth);
             absoluteChangeLastDay = addKPIBelow(Messages.LabelAbsoluteChange, ttwrorLastDay, maxWidth);
+            
+            
 
             // layout
 
@@ -222,7 +232,7 @@ public class PerformanceView extends AbstractHistoricView
 
             data = new FormData();
             data.left = new FormAttachment(0, 5);
-            data.top = new FormAttachment(delta, 20);
+            data.top = new FormAttachment(sharpeRatio, 20);
             data.width = maxWidth[0];
             headingLastDay.setLayoutData(data);
         }

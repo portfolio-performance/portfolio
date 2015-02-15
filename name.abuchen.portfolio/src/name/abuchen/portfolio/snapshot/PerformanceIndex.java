@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.Performance.SharpeRatio;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
@@ -39,6 +40,7 @@ public class PerformanceIndex
     protected double[] delta;
     protected Drawdown drawdown;
     protected Volatility volatility;
+    protected SharpeRatio sharpe;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -159,10 +161,22 @@ public class PerformanceIndex
         if (volatility == null)
         {
             TradeCalendar calendar = new TradeCalendar();
-            volatility = new Volatility(dates, delta, getVolatilitySkip(), date -> !calendar.isHoldiay(date));
+            volatility = new Volatility(dates, delta, getReturnSkip(), date -> !calendar.isHoliday(date));
         }
 
         return volatility;
+    }
+    
+    public SharpeRatio getSharpeRatio() {
+        
+        float benchmark = 0.03f;
+        
+        if (sharpe == null) {
+            TradeCalendar calendar = new TradeCalendar();
+            sharpe = new SharpeRatio(dates, delta, getReturnSkip(), date -> !calendar.isHoliday(date), benchmark);
+        }
+        
+        return sharpe;
     }
 
     /**
@@ -170,7 +184,7 @@ public class PerformanceIndex
      * data point. Additionally skip first value as it is always 0 (as there is
      * no previous period for the delta)
      */
-    private int getVolatilitySkip()
+    private int getReturnSkip()
     {
         int skip = 0;
         for (int ii = 0; ii < totals.length; ii++)
@@ -229,7 +243,7 @@ public class PerformanceIndex
     public void exportVolatilityData(File file) throws IOException
     {
         TradeCalendar calendar = new TradeCalendar();
-        exportTo(file, getVolatilitySkip(), date -> !calendar.isHoldiay(date));
+        exportTo(file, getReturnSkip(), date -> !calendar.isHoliday(date));
     }
 
     private void exportTo(File file, int skip, Predicate<Date> filter) throws IOException
