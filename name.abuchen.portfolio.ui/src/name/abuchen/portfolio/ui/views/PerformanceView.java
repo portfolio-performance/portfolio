@@ -161,11 +161,13 @@ public class PerformanceView extends AbstractHistoricView
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
             volatility.setToolTipText(Messages.TooltipVolatility);
-            
-            semiVolatility.setText(Values.Percent2.format(index.getVolatility().getSemiDeviation()));
+
+            semiVolatility.setText(Values.Percent2.format(vola.getSemiDeviation()));
             semiVolatility.setToolTipText(MessageFormat.format(Messages.TooltipSemiVolatility,
-                            Values.Percent2.format(vola.getNormalizedSemiDeviation()),
-                            vola.getNormalizedSemiDeviationComparison()));
+                            Values.Percent5.format(vola.getExpectedSemiDeviation()),
+                            vola.getNormalizedSemiDeviationComparison(),
+                            Values.Percent5.format(vola.getStandardDeviation()),
+                            Values.Percent5.format(vola.getSemiDeviation())));
         }
 
         public void createTab(CTabFolder folder)
@@ -251,7 +253,7 @@ public class PerformanceView extends AbstractHistoricView
             maxDrawdownDuration = addKPIBelow(Messages.LabelMaxDrawdownDuration, maxDrawdown, maxWidth);
             volatility = addKPIBelow(Messages.LabelVolatility, maxDrawdownDuration, maxWidth);
             semiVolatility = addKPIBelow(Messages.LabelSemiVolatility, volatility, maxWidth);
-            
+
             // layout
 
             FormData data = new FormData();

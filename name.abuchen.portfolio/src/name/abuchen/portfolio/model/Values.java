@@ -110,6 +110,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Double> Percent5 = new Values<Double>("0.00000%", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%,.5f%%", percent * 100); //$NON-NLS-1$ 
+        }
+    };
+
     public static final Values<Integer> Id = new Values<Integer>("#,##0", 1D, 1) //$NON-NLS-1$
     {
         @Override

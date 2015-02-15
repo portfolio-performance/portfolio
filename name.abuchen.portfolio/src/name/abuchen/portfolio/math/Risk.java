@@ -123,18 +123,20 @@ public final class Risk
         {
             return semiDeviation;
         }
-        
-        public double getNormalizedSemiDeviation() {
-            return semiDeviation * Math.sqrt(2);
+
+        public double getExpectedSemiDeviation()
+        {
+            return stdDeviation / Math.sqrt(2);
         }
-        
-        public String getNormalizedSemiDeviationComparison() {
-            if (getNormalizedSemiDeviation() > getStandardDeviation()) {
-                return ">";
-            } else if (getNormalizedSemiDeviation() < getStandardDeviation()) {
-                return "<";
-            }
-            return "=";
+
+        public String getNormalizedSemiDeviationComparison()
+        {
+            double expectedSemiDeviation = getExpectedSemiDeviation();
+            if (expectedSemiDeviation > semiDeviation)
+                return ">"; //$NON-NLS-1$
+            else if (expectedSemiDeviation < semiDeviation)
+                return "<"; //$NON-NLS-1$
+            return "="; //$NON-NLS-1$
         }
     }
 
