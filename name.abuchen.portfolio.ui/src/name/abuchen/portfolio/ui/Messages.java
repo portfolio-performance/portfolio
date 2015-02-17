@@ -300,6 +300,7 @@ public class Messages extends NLS
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelSemiVolatility;
+    public static String LabelSharpeRatio;
     public static String LabelDividends;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;

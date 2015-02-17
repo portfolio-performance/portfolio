@@ -210,7 +210,7 @@ public class PerformanceView extends AbstractHistoricView
             irr = addKPIBelow(Messages.LabelIRR, ttwror, maxWidth);
             absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
             delta = addKPIBelow(Messages.LabelAbsoluteDelta, absoluteChange, maxWidth);
-            sharpeRatio = addKPIBelow("SharpeRatio", delta, maxWidth);
+            sharpeRatio = addKPIBelow(Messages.LabelSharpeRatio, delta, maxWidth);
             sharpeRatio.setToolTipText(Messages.TooltipSharpeRatio);
 
             Label headingLastDay = new Label(composite, SWT.NONE);
