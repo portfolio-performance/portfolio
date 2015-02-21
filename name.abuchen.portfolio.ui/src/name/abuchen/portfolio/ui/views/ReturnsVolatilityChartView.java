@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,22 +12,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.chart.ScatterChart;
+import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
@@ -43,51 +40,27 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
-import org.swtchart.IBarSeries;
+import org.swtchart.IAxis;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 
-public class PerformanceChartView extends AbstractHistoricView
+public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
-    private static final String KEY_AGGREGATION_PERIOD = "performance-chart-aggregation-period"; //$NON-NLS-1$
-
-    private TimelineChart chart;
+    private ScatterChart chart;
     private ChartConfigurator picker;
-
-    private Aggregation.Period aggregationPeriod;
 
     private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
 
     @Override
     protected String getTitle()
     {
-        return Messages.LabelPerformanceChart;
-    }
-
-    @Override
-    public void init(PortfolioPart part, Object parameter)
-    {
-        super.init(part, parameter);
-
-        String key = part.getPreferenceStore().getString(KEY_AGGREGATION_PERIOD);
-        if (key != null && key.length() > 0)
-        {
-            try
-            {
-                aggregationPeriod = Aggregation.Period.valueOf(key);
-            }
-            catch (IllegalArgumentException ignore)
-            {
-                // ignore if key is not a valid aggregation period
-            }
-        }
+        return Messages.LabelHistoricalReturnsAndVolatiltity;
     }
 
     @Override
     protected void addButtons(ToolBar toolBar)
     {
         super.addButtons(toolBar);
-        new AggregationPeriodDropDown(toolBar);
         new ExportDropDown(toolBar);
         addConfigButton(toolBar);
     }
@@ -125,13 +98,19 @@ public class PerformanceChartView extends AbstractHistoricView
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
-        chart = new TimelineChart(composite);
+        chart = new ScatterChart(composite);
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
-        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.PERFORMANCE);
+        IAxis xAxis = chart.getAxisSet().getXAxis(0);
+        xAxis.getTitle().setText(Messages.LabelVolatility);
+        xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+
+        IAxis yAxis = chart.getAxisSet().getYAxis(0);
+        yAxis.getTitle().setText(Messages.LabelPeformanceTTWROR);
+        yAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+
+        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.RETURN_VOLATILITY);
         picker.setListener(new ChartConfigurator.Listener()
         {
             @Override
@@ -153,7 +132,7 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     public void setFocus()
     {
-        chart.getAxisSet().adjustRange();
+        chart.adjustRange();
         chart.setFocus();
     }
 
@@ -181,7 +160,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
             setChartSeries();
 
-            chart.getAxisSet().adjustRange();
+            chart.adjustRange();
         }
         finally
         {
@@ -198,8 +177,6 @@ public class PerformanceChartView extends AbstractHistoricView
         {
             if (item.getType() == Client.class)
                 addClient(item, (ClientDataSeries) item.getInstance(), warnings);
-            else if (item.getType() == ConsumerPriceIndex.class)
-                addConsumerPriceIndex(item, warnings);
             else if (item.getType() == Security.class)
                 addSecurity(item, (Security) item.getInstance(), warnings);
             else if (item.getType() == Portfolio.class)
@@ -211,6 +188,14 @@ public class PerformanceChartView extends AbstractHistoricView
         }
 
         PortfolioPlugin.log(warnings);
+    }
+
+    private void addScatterSeries(DataSeries item, PerformanceIndex index)
+    {
+        Volatility volatility = index.getVolatility();
+        ILineSeries series = chart.addScatterSeries(new double[] { volatility.getStandardDeviation() },
+                        new double[] { index.getFinalAccumulatedPercentage() }, item.getLabel());
+        item.configure(series);
     }
 
     private PerformanceIndex getClientIndex(List<Exception> warnings)
@@ -228,48 +213,9 @@ public class PerformanceChartView extends AbstractHistoricView
     private void addClient(DataSeries item, ClientDataSeries type, List<Exception> warnings)
     {
         PerformanceIndex clientIndex = getClientIndex(warnings);
-        PerformanceIndex aggregatedIndex = aggregationPeriod != null ? Aggregation.aggregate(clientIndex,
-                        aggregationPeriod) : clientIndex;
 
-        switch (type)
-        {
-            case TOTALS:
-                ILineSeries series = chart.addDateSeries(aggregatedIndex.getDates(), //
-                                aggregatedIndex.getAccumulatedPercentage(), //
-                                Messages.PerformanceChartLabelAccumulatedIRR);
-                item.configure(series);
-                break;
-            case TRANSFERALS:
-                IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
-                                aggregatedIndex.getDeltaPercentage(), //
-                                aggregationPeriod != null ? aggregationPeriod.toString()
-                                                : Messages.LabelAggregationDaily);
-                item.configure(barSeries);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void addConsumerPriceIndex(DataSeries item, List<Exception> warnings)
-    {
-        PerformanceIndex cpiIndex = dataCache.get(ConsumerPriceIndex.class);
-
-        if (cpiIndex == null)
-        {
-            PerformanceIndex clientIndex = getClientIndex(warnings);
-            cpiIndex = PerformanceIndex.forConsumerPriceIndex(clientIndex, warnings);
-            dataCache.put(ConsumerPriceIndex.class, cpiIndex);
-        }
-
-        if (cpiIndex.getDates().length > 0
-                        && (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY))
-        {
-            ILineSeries series = chart.addDateSeries(cpiIndex.getDates(), //
-                            cpiIndex.getAccumulatedPercentage(), //
-                            item.getLabel());
-            item.configure(series);
-        }
+        if (type == ClientDataSeries.TOTALS)
+            addScatterSeries(item, clientIndex);
     }
 
     private void addSecurity(DataSeries item, Security security, List<Exception> warnings)
@@ -291,13 +237,7 @@ public class PerformanceChartView extends AbstractHistoricView
             dataCache.put(security, securityIndex);
         }
 
-        if (aggregationPeriod != null)
-            securityIndex = Aggregation.aggregate(securityIndex, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(securityIndex.getDates(), //
-                        securityIndex.getAccumulatedPercentage(), //
-                        item.getLabel());
-        item.configure(series);
+        addScatterSeries(item, securityIndex);
     }
 
     private void addSecurityPerformance(DataSeries item, Security security, List<Exception> warnings)
@@ -310,13 +250,7 @@ public class PerformanceChartView extends AbstractHistoricView
             dataCache.put(security.getUUID(), securityIndex);
         }
 
-        if (aggregationPeriod != null)
-            securityIndex = Aggregation.aggregate(securityIndex, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(securityIndex.getDates(), //
-                        securityIndex.getAccumulatedPercentage(), //
-                        item.getLabel());
-        item.configure(series);
+        addScatterSeries(item, securityIndex);
     }
 
     private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
@@ -332,13 +266,7 @@ public class PerformanceChartView extends AbstractHistoricView
             dataCache.put(cacheKey, portfolioIndex);
         }
 
-        if (aggregationPeriod != null)
-            portfolioIndex = Aggregation.aggregate(portfolioIndex, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(portfolioIndex.getDates(), //
-                        portfolioIndex.getAccumulatedPercentage(), //
-                        item.getLabel());
-        item.configure(series);
+        addScatterSeries(item, portfolioIndex);
     }
 
     private void addAccount(DataSeries item, Account account, List<Exception> warnings)
@@ -351,13 +279,7 @@ public class PerformanceChartView extends AbstractHistoricView
             dataCache.put(account, accountIndex);
         }
 
-        if (aggregationPeriod != null)
-            accountIndex = Aggregation.aggregate(accountIndex, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(accountIndex.getDates(), //
-                        accountIndex.getAccumulatedPercentage(), //
-                        account.getName());
-        item.configure(series);
+        addScatterSeries(item, accountIndex);
     }
 
     private void addClassification(DataSeries item, Classification classification, List<Exception> warnings)
@@ -370,56 +292,7 @@ public class PerformanceChartView extends AbstractHistoricView
             dataCache.put(classification, index);
         }
 
-        if (aggregationPeriod != null)
-            index = Aggregation.aggregate(index, aggregationPeriod);
-
-        ILineSeries series = chart.addDateSeries(index.getDates(), //
-                        index.getAccumulatedPercentage(), //
-                        item.getLabel());
-        item.configure(series);
-    }
-
-    private final class AggregationPeriodDropDown extends AbstractDropDown
-    {
-        private AggregationPeriodDropDown(ToolBar toolBar)
-        {
-            super(toolBar, aggregationPeriod == null ? Messages.LabelAggregationDaily : aggregationPeriod.toString());
-        }
-
-        @Override
-        public void menuAboutToShow(IMenuManager manager)
-        {
-            Action daily = new Action(Messages.LabelAggregationDaily)
-            {
-                @Override
-                public void run()
-                {
-                    setLabel(Messages.LabelAggregationDaily);
-                    aggregationPeriod = null;
-                    getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, ""); //$NON-NLS-1$
-                    updateChart();
-                }
-            };
-            daily.setChecked(aggregationPeriod == null);
-            manager.add(daily);
-
-            for (final Aggregation.Period period : Aggregation.Period.values())
-            {
-                Action action = new Action(period.toString())
-                {
-                    @Override
-                    public void run()
-                    {
-                        setLabel(period.toString());
-                        aggregationPeriod = period;
-                        getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, period.name());
-                        updateChart();
-                    }
-                };
-                action.setChecked(aggregationPeriod == period);
-                manager.add(action);
-            }
-        }
+        addScatterSeries(item, index);
     }
 
     private final class ExportDropDown extends AbstractDropDown
@@ -437,10 +310,8 @@ public class PerformanceChartView extends AbstractHistoricView
                 @Override
                 public void run()
                 {
-                    TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
-                    exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
-                    exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
-                    exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
+                    ScatterChartCSVExporter exporter = new ScatterChartCSVExporter(chart);
+                    exporter.setValueFormat(new DecimalFormat("0.##########%")); //$NON-NLS-1$
                     exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
                 }
             });
@@ -465,36 +336,39 @@ public class PerformanceChartView extends AbstractHistoricView
                 @Override
                 public void run()
                 {
-                    AbstractCSVExporter exporter = new AbstractCSVExporter()
-                    {
-                        @Override
-                        protected void writeToFile(File file) throws IOException
-                        {
-                            PerformanceIndex index = null;
-
-                            if (series.getType() == Client.class)
-                                index = dataCache.get(Client.class);
-                            else if (series.isPortfolioPlus())
-                                index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
-                            else if (series.getType() == Security.class && !series.isBenchmark())
-                                index = dataCache.get(((Security) series.getInstance()).getUUID());
-                            else
-                                index = dataCache.get(series.getInstance());
-
-                            if (aggregationPeriod != null)
-                                index = Aggregation.aggregate(index, aggregationPeriod);
-                            index.exportTo(file);
-                        }
-
-                        @Override
-                        protected Control getControl()
-                        {
-                            return ExportDropDown.this.getToolBar();
-                        }
-                    };
-                    exporter.export(getTitle() + "_" + series.getLabel() + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
+                    exportDataSeries(series);
                 }
             });
+        }
+
+        private void exportDataSeries(DataSeries series)
+        {
+            AbstractCSVExporter exporter = new AbstractCSVExporter()
+            {
+                @Override
+                protected void writeToFile(File file) throws IOException
+                {
+                    PerformanceIndex index = null;
+
+                    if (series.getType() == Client.class)
+                        index = dataCache.get(Client.class);
+                    else if (series.isPortfolioPlus())
+                        index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
+                    else if (series.getType() == Security.class && !series.isBenchmark())
+                        index = dataCache.get(((Security) series.getInstance()).getUUID());
+                    else
+                        index = dataCache.get(series.getInstance());
+
+                    index.exportVolatilityData(file);
+                }
+
+                @Override
+                protected Control getControl()
+                {
+                    return ExportDropDown.this.getToolBar();
+                }
+            };
+            exporter.export(getTitle() + "_" + series.getLabel() + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

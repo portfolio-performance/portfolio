@@ -266,6 +266,8 @@ import org.eclipse.swt.widgets.Menu;
         performance.setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
+        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility,
+                        "ReturnsVolatilityChart")).setContextMenu(setAsStartPage); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
     }
