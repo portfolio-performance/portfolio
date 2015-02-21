@@ -66,7 +66,10 @@ public class MovePlotKeyListener implements Listener
         }
         else if (event.character == '0')
         {
-            chart.getAxisSet().adjustRange();
+            if (chart instanceof ScatterChart)
+                ((ScatterChart) chart).adjustRange();
+            else
+                chart.getAxisSet().adjustRange();
             chart.redraw();
         }
     }

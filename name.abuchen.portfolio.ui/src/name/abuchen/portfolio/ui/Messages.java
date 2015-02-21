@@ -44,6 +44,7 @@ public class Messages extends NLS
     public static String ColumnColor;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
+    public static String ColumnDataSeries;
     public static String ColumnDate;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
