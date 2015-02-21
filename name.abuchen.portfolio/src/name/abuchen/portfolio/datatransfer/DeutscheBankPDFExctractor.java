@@ -81,7 +81,7 @@ public class DeutscheBankPDFExctractor implements Extractor
     {
         try
         {
-            if (!text.startsWith("Deutsche Bank")) //$NON-NLS-1$
+            if (!text.contains("Deutsche Bank")) //$NON-NLS-1$
                 throw new UnsupportedOperationException( //
                                 MessageFormat.format(Messages.PDFdbMsgFileNotSupported, filename));
 
