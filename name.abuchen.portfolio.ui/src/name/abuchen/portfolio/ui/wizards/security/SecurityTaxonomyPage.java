@@ -34,6 +34,9 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -128,6 +131,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     public static final String PAGE_NAME = "taxonomies"; //$NON-NLS-1$
     private final EditSecurityModel model;
     private final BindingHelper bindings;
+    private ScrolledComposite scrolledComposite;
     private Font boldFont;
     private List<ValidationStatusProvider> validators = new ArrayList<ValidationStatusProvider>();
 
@@ -145,16 +149,24 @@ public class SecurityTaxonomyPage extends AbstractPage
 
         boldFont = resources.createFont(FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD));
 
-        Composite container = new Composite(parent, SWT.NULL);
-        setControl(container);
+        scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        setControl(scrolledComposite);
+        Composite container = new Composite(scrolledComposite, SWT.NULL);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
-        final Composite taxonomyPicker = new Composite(container, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span(2, 1).grab(true, false).applyTo(taxonomyPicker);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(taxonomyPicker);
+        scrolledComposite.setContent(container);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
 
-        for (TaxonomyDesignation designation : model.getDesignations())
-            createTaxonomySection(taxonomyPicker, designation);
+        createTaxonomyPicker(container);
+
+        scrolledComposite.addControlListener(new ControlAdapter()
+        {
+            public void controlResized(ControlEvent e)
+            {
+                scrolledComposite.setMinSize(container.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
     }
 
     private void createTaxonomySection(final Composite taxonomyPicker, final TaxonomyDesignation designation)
@@ -352,6 +364,8 @@ public class SecurityTaxonomyPage extends AbstractPage
 
         for (TaxonomyDesignation designation : model.getDesignations())
             createTaxonomySection(taxonomyPicker, designation);
+
+        scrolledComposite.setMinSize(container.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
 }
