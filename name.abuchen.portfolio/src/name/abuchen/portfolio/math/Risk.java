@@ -21,6 +21,8 @@ public final class Risk
             double peak = values[0] + 1;
             Instant lastPeakDate = dates[0].toInstant();
 
+            maxDD = 0;
+            intervalMaxDD = Interval.of(lastPeakDate, lastPeakDate);
             maxDDDuration = Interval.of(lastPeakDate, lastPeakDate);
             Interval currentDrawdownDuration = null;
 
