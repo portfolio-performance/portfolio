@@ -155,9 +155,15 @@ public class PerformanceView extends AbstractHistoricView
 
             maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, //
                             drawdown.getMaxDrawdownDuration().getDays()));
-            maxDrawdownDuration.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdownDuration,
+            String maxDurationTooltip = MessageFormat.format(Messages.TooltipMaxDrawdownDuration,
                             formatter.format(drawdown.getMaxDrawdownDuration().getStart()),
-                            formatter.format(drawdown.getMaxDrawdownDuration().getEnd())));
+                            formatter.format(drawdown.getMaxDrawdownDuration().getEnd()));
+            if (drawdown.isInMaxDrawdownDuration()) {
+                maxDurationTooltip += MessageFormat.format(Messages.TooltipMaxDrawdownDurationSupplement, 
+                                drawdown.getIntervalSinceLastPeak().getDays(),
+                                formatter.format(drawdown.getIntervalSinceLastPeak().getStart()));
+            }
+            maxDrawdownDuration.setToolTipText(maxDurationTooltip);
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
             volatility.setToolTipText(Messages.TooltipVolatility);
