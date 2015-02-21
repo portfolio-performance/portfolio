@@ -22,7 +22,7 @@ public final class Risk
             Instant lastPeakDate = dates[0].toInstant();
 
             maxDDDuration = Interval.of(lastPeakDate, lastPeakDate);
-            Interval currentDrawdownDuration;
+            Interval currentDrawdownDuration = null;
 
             for (int ii = 0; ii < values.length; ii++)
             {
@@ -47,6 +47,14 @@ public final class Risk
                     }
                 }
             }
+
+            // check if current drawdown duration is longer than the max
+            // drawdown duration currently calculated --> use it because it is
+            // the longest duration even if we do not know how much longer it
+            // will get
+
+            if (currentDrawdownDuration != null && currentDrawdownDuration.isLongerThan(maxDDDuration))
+                maxDDDuration = currentDrawdownDuration;
         }
 
         public double getMaxDrawdown()

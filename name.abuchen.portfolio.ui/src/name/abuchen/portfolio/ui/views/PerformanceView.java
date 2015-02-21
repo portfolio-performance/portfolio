@@ -32,6 +32,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.util.Interval;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -153,11 +154,15 @@ public class PerformanceView extends AbstractHistoricView
                             formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
                             formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
 
-            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, //
-                            drawdown.getMaxDrawdownDuration().getDays()));
-            maxDrawdownDuration.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdownDuration,
-                            formatter.format(drawdown.getMaxDrawdownDuration().getStart()),
-                            formatter.format(drawdown.getMaxDrawdownDuration().getEnd())));
+            Interval duration = drawdown.getMaxDrawdownDuration();
+            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, duration.getDays()));
+            boolean isUntilEndOfPeriod = duration.getEnd().equals(index.getReportInterval().getEndDate().toInstant());
+            String supplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
+                            : Messages.TooltipMaxDrawdownDurationFromXtoY;
+            maxDrawdownDuration.setToolTipText(Messages.TooltipMaxDrawdownDuration
+                            + "\n\n" //$NON-NLS-1$
+                            + MessageFormat.format(supplement, formatter.format(duration.getStart()),
+                                            formatter.format(duration.getEnd())));
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
             volatility.setToolTipText(Messages.TooltipVolatility);

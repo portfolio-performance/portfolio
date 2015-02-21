@@ -486,6 +486,8 @@ public class Messages extends NLS
     public static String TitlePasswordDialog;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
+    public static String TooltipMaxDrawdownDurationEndOfPeriod;
+    public static String TooltipMaxDrawdownDurationFromXtoY;
     public static String TooltipSemiVolatility;
     public static String TooltipVolatility;
     public static String WatchlistDelete;
