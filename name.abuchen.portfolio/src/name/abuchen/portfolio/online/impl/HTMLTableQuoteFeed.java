@@ -196,7 +196,11 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (Security security : securities)
         {
-            List<LatestSecurityPrice> quotes = internalGetQuotes(security, security.getLatestFeedURL(), errors);
+            // if latestFeed is null, then the policy is 'use same configuration
+            // as historic quotes'
+            String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+
+            List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
             int size = quotes.size();
             if (size > 0)
             {
