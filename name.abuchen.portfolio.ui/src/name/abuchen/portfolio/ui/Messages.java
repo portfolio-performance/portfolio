@@ -411,6 +411,8 @@ public class Messages extends NLS
     public static String NewFileWizardSecurityTitle;
     public static String NewFileWizardTaxonomyDescription;
     public static String NewFileWizardTaxonomyTitle;
+    public static String PDFImportDebugTextExtraction;
+    public static String PDFImportFilterName;
     public static String PDFImportWizardDescription;
     public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
