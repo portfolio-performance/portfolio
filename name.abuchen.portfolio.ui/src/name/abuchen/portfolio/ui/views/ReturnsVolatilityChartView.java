@@ -317,7 +317,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             });
 
             Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
-                            Client.class, Security.class, Portfolio.class, Account.class }));
+                            Client.class, Security.class, Portfolio.class, Account.class, Classification.class }));
 
             for (DataSeries series : picker.getSelectedDataSeries())
             {
