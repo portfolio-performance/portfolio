@@ -58,7 +58,7 @@ public class RiskTest
     public void testVolatility()
     {
         double[] delta = new double[] { 0.5, -1 / 3d, -0.5, 1, 1, -0.5 };
-        Volatility volatility = new Volatility(getDates(delta.length), delta, 0, d -> true);
+        Volatility volatility = new Volatility(delta, index -> true);
         // returns are 0.5, -1/3, -0.5, 1, 1, -0.5 with an average of 7/36
         // the deviation from the average is 11/36 for 0.5, 19/36 for -1/3 and
         // so on each of these deviations is squared and the sum divided by the
@@ -76,7 +76,7 @@ public class RiskTest
     public void testVolatilityWithSkip()
     {
         double[] delta = new double[] { 0, 0.5, -1 / 3d, -0.5, 1, 1, -0.5 };
-        Volatility volatility = new Volatility(getDates(delta.length), delta, 1, d -> true);
+        Volatility volatility = new Volatility(delta, index -> index > 0);
         assertThat(volatility.getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
         assertThat(volatility.getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
     }
@@ -87,7 +87,7 @@ public class RiskTest
         double[] returns = new double[20];
         Arrays.fill(returns, 0.1);
 
-        Volatility volatility = new Volatility(getDates(returns.length), returns, 0, d -> true);
+        Volatility volatility = new Volatility(returns, index -> true);
         assertThat(volatility.getStandardDeviation(), closeTo(0d, 0.1e-10));
         assertThat(volatility.getSemiDeviation(), closeTo(0d, 0.1e-10));
     }

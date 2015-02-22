@@ -58,7 +58,7 @@ import org.joda.time.Days;
         dates[0] = startDate.toDate();
         delta[0] = 0;
         accumulated[0] = adjustment;
-        long valuation = security.getSecurityPrice(startDate.toDate()).getValue();
+        long valuation = totals[0] = security.getSecurityPrice(startDate.toDate()).getValue();
 
         // calculate series
         int index = 1;
@@ -67,7 +67,7 @@ import org.joda.time.Days;
         {
             dates[index] = date.toDate();
 
-            long thisValuation = security.getSecurityPrice(date.toDate()).getValue();
+            long thisValuation = totals[index] = security.getSecurityPrice(date.toDate()).getValue();
             long thisDelta = thisValuation - valuation;
 
             delta[index] = (double) thisDelta / (double) valuation;

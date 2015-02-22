@@ -157,31 +157,26 @@ public class PerformanceIndex
     public Volatility getVolatility()
     {
         if (volatility == null)
-        {
-            TradeCalendar calendar = new TradeCalendar();
-            volatility = new Volatility(dates, delta, getVolatilitySkip(), date -> !calendar.isHoliday(date));
-        }
+            volatility = new Volatility(delta, filterReturnsForVolatilityCalculation());
 
         return volatility;
     }
 
     /**
-     * Volatility calculation must only include values starting with the first
-     * data point. Additionally skip first value as it is always 0 (as there is
-     * no previous period for the delta)
+     * The volatility calculation must excludes returns
+     * <ul>
+     * <li>on first day (because on the first day the return is always zero as
+     * there is no previous day to compare to)</li>
+     * <li>on days where there are no holdings including the first day it was
+     * bought (for example if the investment vehicle was bought in the middle of
+     * the reporting period)</li>
+     * <li>on weekends or public holidays</li>
+     * </ul>
      */
-    private int getVolatilitySkip()
+    private Predicate<Integer> filterReturnsForVolatilityCalculation()
     {
-        int skip = 0;
-        for (int ii = 0; ii < totals.length; ii++)
-        {
-            if (totals[ii] != 0)
-            {
-                skip = ii;
-                break;
-            }
-        }
-        return skip + 1;
+        TradeCalendar calendar = new TradeCalendar();
+        return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);
     }
 
     public long[] getTaxes()
@@ -223,16 +218,15 @@ public class PerformanceIndex
 
     public void exportTo(File file) throws IOException
     {
-        exportTo(file, 0, d -> true);
+        exportTo(file, index -> true);
     }
 
     public void exportVolatilityData(File file) throws IOException
     {
-        TradeCalendar calendar = new TradeCalendar();
-        exportTo(file, getVolatilitySkip(), date -> !calendar.isHoliday(date));
+        exportTo(file, filterReturnsForVolatilityCalculation());
     }
 
-    private void exportTo(File file, int skip, Predicate<Date> filter) throws IOException
+    private void exportTo(File file, Predicate<Integer> filter) throws IOException
     {
         CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED, CSVStrategy.ESCAPE_DISABLED,
                         false, false, false, false);
@@ -248,9 +242,9 @@ public class PerformanceIndex
                             Messages.CSVColumn_DeltaInPercent, //
                             Messages.CSVColumn_CumulatedPerformanceInPercent });
 
-            for (int ii = skip; ii < totals.length; ii++)
+            for (int ii = 0; ii < totals.length; ii++)
             {
-                if (!filter.test(dates[ii]))
+                if (!filter.test(ii))
                     continue;
 
                 printer.print(Values.Date.format(dates[ii]));

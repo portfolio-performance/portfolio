@@ -80,18 +80,18 @@ public final class Risk
         private final double stdDeviation;
         private final double semiDeviation;
 
-        public Volatility(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
+        public Volatility(double[] returns, Predicate<Integer> filter)
         {
             Objects.requireNonNull(returns);
 
-            double averageReturn = average(dates, returns, skip, filter);
+            double averageReturn = average(returns, filter);
             double tempStandard = 0;
             double tempSemi = 0;
             int count = 0;
 
-            for (int ii = skip; ii < returns.length; ii++)
+            for (int ii = 0; ii < returns.length; ii++)
             {
-                if (!filter.test(dates[ii]))
+                if (!filter.test(ii))
                     continue;
 
                 double add = Math.pow(returns[ii] - averageReturn, 2);
@@ -107,14 +107,14 @@ public final class Risk
             semiDeviation = Math.sqrt(tempSemi / count);
         }
 
-        private double average(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
+        private double average(double[] returns, Predicate<Integer> filter)
         {
             double sum = 0;
             int count = 0;
 
-            for (int ii = skip; ii < returns.length; ii++)
+            for (int ii = 0; ii < returns.length; ii++)
             {
-                if (!filter.test(dates[ii]))
+                if (!filter.test(ii))
                     continue;
 
                 sum += returns[ii];
