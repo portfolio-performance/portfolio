@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 import name.abuchen.portfolio.Messages;
@@ -339,6 +340,15 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             errors.add(e);
         }
+
+        // Issue #251
+        // sometimes Yahoo does not return the default exchange which prevents
+        // selecting this security (example: searching for GOOG does return only
+        // unimportant exchanges)
+        Optional<Exchange> defaultExchange = answer.stream() //
+                        .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
+        if (!defaultExchange.isPresent())
+            answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
 
         if (answer.isEmpty())
         {
