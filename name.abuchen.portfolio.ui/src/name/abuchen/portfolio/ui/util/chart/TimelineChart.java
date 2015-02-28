@@ -190,7 +190,7 @@ public class TimelineChart extends Chart
         LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
         LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
 
-        LocalDate cursor = start.plusMonths(1).withDayOfMonth(1);
+        LocalDate cursor = start.getDayOfMonth() == 1 ? start : start.plusMonths(1).withDayOfMonth(1);
         Period period = null;
         DateTimeFormatter format = null;
 
@@ -204,7 +204,7 @@ public class TimelineChart extends Chart
         {
             period = Period.ofMonths(3);
             format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((cursor.getMonthValue() - 1) % 3);
+            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
         }
         else if (days < 1200)
         {
