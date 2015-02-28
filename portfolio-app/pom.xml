@@ -38,17 +38,17 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository</url>
 		</repository>
 		<repository>
 			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.1-201409250400</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.12.0/luna</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.12.1/luna</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
