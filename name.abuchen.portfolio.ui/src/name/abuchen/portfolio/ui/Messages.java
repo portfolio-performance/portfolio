@@ -490,6 +490,7 @@ public class Messages extends NLS
     public static String TooltipMaxDrawdownDuration;
     public static String TooltipMaxDrawdownDurationEndOfPeriod;
     public static String TooltipMaxDrawdownDurationFromXtoY;
+    public static String TooltipMaxDurationLowToHigh;
     public static String TooltipSemiVolatility;
     public static String TooltipVolatility;
     public static String WatchlistDelete;
