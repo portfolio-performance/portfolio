@@ -154,15 +154,27 @@ public class PerformanceView extends AbstractHistoricView
                             formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
                             formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
 
-            Interval duration = drawdown.getMaxDrawdownDuration();
-            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, duration.getDays()));
-            boolean isUntilEndOfPeriod = duration.getEnd().equals(index.getReportInterval().getEndDate().toInstant());
-            String supplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
+            // max drawdown duration
+            Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
+            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
+            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(
+                            index.getReportInterval().getEndDate().toInstant());
+            String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
+                            : Messages.TooltipMaxDrawdownDurationFromXtoY;
+
+            // recovery time
+            Interval recoveryTime = drawdown.getLongestRecoveryTime();
+            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate().toInstant());
+            String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                             : Messages.TooltipMaxDrawdownDurationFromXtoY;
             maxDrawdownDuration.setToolTipText(Messages.TooltipMaxDrawdownDuration
                             + "\n\n" //$NON-NLS-1$
-                            + MessageFormat.format(supplement, formatter.format(duration.getStart()),
-                                            formatter.format(duration.getEnd())));
+                            + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
+                                            formatter.format(maxDDDuration.getEnd()))
+                            + "\n\n" //$NON-NLS-1$
+                            + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays())
+                            + MessageFormat.format(recoveryTimeSupplement, formatter.format(recoveryTime.getStart()),
+                                            formatter.format(recoveryTime.getEnd())));
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
             volatility.setToolTipText(Messages.TooltipVolatility);
