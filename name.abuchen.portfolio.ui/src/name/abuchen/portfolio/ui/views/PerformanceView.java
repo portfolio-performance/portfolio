@@ -10,9 +10,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import name.abuchen.portfolio.math.Performance.SharpeRatio;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
+import name.abuchen.portfolio.math.SharpeRatio;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -95,7 +95,7 @@ public class PerformanceView extends AbstractHistoricView
         private Label maxDrawdownDuration;
         private Label volatility;
         private Label semiVolatility;
-        
+
         private Label sharpeRatio;
 
         private Label[] labels;
@@ -138,9 +138,9 @@ public class PerformanceView extends AbstractHistoricView
             irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
             absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
             delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
-            
+
             SharpeRatio sRatio = index.getSharpeRatio();
-            sharpeRatio.setText(String.format("%.2f",sRatio.getRatio()));
+            sharpeRatio.setText(String.format("%.2f", sRatio.getRatio()));
 
             ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
             absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
@@ -246,8 +246,6 @@ public class PerformanceView extends AbstractHistoricView
 
             ttwrorLastDay = addKPIBelow(Messages.LabelTTWROR, headingLastDay, maxWidth);
             absoluteChangeLastDay = addKPIBelow(Messages.LabelAbsoluteChange, ttwrorLastDay, maxWidth);
-            
-            
 
             // layout
 
