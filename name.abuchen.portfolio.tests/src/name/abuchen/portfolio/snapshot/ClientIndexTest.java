@@ -201,8 +201,8 @@ public class ClientIndexTest
                         Dates.date(2012, Calendar.JANUARY, 8));
         ClientIndex index = PerformanceIndex.forClient(client, period, new ArrayList<Exception>());
 
-        assertThat(index.getFirstDataPoint(), is(new DateMidnight(2011, 12, 31).toDateTime()));
-        assertThat(index.getFirstDataPoint(), not(period.toInterval().getStart()));
+        assertThat(index.getFirstDataPoint().get(), is(new DateMidnight(2011, 12, 31).toDateTime()));
+        assertThat(index.getFirstDataPoint().get(), not(period.toInterval().getStart()));
     }
 
     @Test

@@ -3,7 +3,10 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.util.Comparator;
 
-public interface Named
+/**
+ * An Named object has an editable name and note.
+ */
+public interface Named extends Annotated
 {
     class ByName implements Comparator<Named>, Serializable
     {
@@ -21,8 +24,4 @@ public interface Named
     String getName();
 
     void setName(String name);
-
-    String getNote();
-
-    void setNote(String note);
 }

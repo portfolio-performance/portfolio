@@ -21,9 +21,9 @@ import org.joda.time.Interval;
 
     /* package */void calculate(PerformanceIndex clientIndex)
     {
-        DateTime firstDataPoint = clientIndex.getFirstDataPoint();
-        Interval interval = firstDataPoint != null ? new Interval(firstDataPoint, clientIndex.getReportInterval()
-                        .toInterval().getEnd()) : clientIndex.getReportInterval().toInterval();
+        Interval actualInterval = clientIndex.getActualInterval();
+        DateTime firstDataPoint = clientIndex.getFirstDataPoint().orElse(actualInterval.getStart());
+        Interval interval = new Interval(firstDataPoint, actualInterval.getEnd());
 
         List<ConsumerPriceIndex> cpiSeries = new ArrayList<ConsumerPriceIndex>(clientIndex.getClient()
                         .getConsumerPriceIndices());

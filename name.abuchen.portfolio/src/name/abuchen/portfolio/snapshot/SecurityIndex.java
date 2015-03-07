@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.Days;
+import org.joda.time.Interval;
 
 /* package */class SecurityIndex extends PerformanceIndex
 {
@@ -26,24 +27,31 @@ import org.joda.time.Days;
             return;
         }
 
+        Interval actualInterval = clientIndex.getActualInterval();
+
         DateMidnight firstPricePoint = new DateMidnight(prices.get(0).getTime());
-        if (firstPricePoint.isAfter(clientIndex.getReportInterval().getEndDate().getTime()))
+        if (firstPricePoint.isAfter(actualInterval.getEndMillis()))
         {
             initEmpty(clientIndex);
             return;
         }
 
-        DateMidnight startDate = clientIndex.getFirstDataPoint().toDateMidnight();
+        DateMidnight startDate = clientIndex.getFirstDataPoint().orElse(actualInterval.getEnd()).toDateMidnight();
         if (firstPricePoint.isAfter(startDate))
             startDate = firstPricePoint;
 
-        DateMidnight endDate = new DateMidnight(clientIndex.getReportInterval().getEndDate());
+        DateMidnight endDate = new DateMidnight(actualInterval.getEndMillis());
         DateMidnight lastPricePoint = new DateMidnight(prices.get(prices.size() - 1).getTime());
 
         if (lastPricePoint.isBefore(endDate))
             endDate = lastPricePoint;
 
         int size = Days.daysBetween(startDate, endDate).getDays() + 1;
+        if (size <= 0)
+        {
+            initEmpty(clientIndex);
+            return;
+        }
 
         dates = new Date[size];
         delta = new double[size];
@@ -52,13 +60,13 @@ import org.joda.time.Days;
         totals = new long[size];
 
         final double adjustment = clientIndex.getAccumulatedPercentage()[Days.daysBetween(
-                        new DateMidnight(clientIndex.getReportInterval().getStartDate()), startDate).getDays()];
+                        new DateMidnight(actualInterval.getStartMillis()), startDate).getDays()];
 
         // first value = reference value
         dates[0] = startDate.toDate();
         delta[0] = 0;
         accumulated[0] = adjustment;
-        long valuation = security.getSecurityPrice(startDate.toDate()).getValue();
+        long valuation = totals[0] = security.getSecurityPrice(startDate.toDate()).getValue();
 
         // calculate series
         int index = 1;
@@ -67,7 +75,7 @@ import org.joda.time.Days;
         {
             dates[index] = date.toDate();
 
-            long thisValuation = security.getSecurityPrice(date.toDate()).getValue();
+            long thisValuation = totals[index] = security.getSecurityPrice(date.toDate()).getValue();
             long thisDelta = thisValuation - valuation;
 
             delta[index] = (double) thisDelta / (double) valuation;
@@ -81,7 +89,8 @@ import org.joda.time.Days;
 
     private void initEmpty(PerformanceIndex clientIndex)
     {
-        DateMidnight startDate = clientIndex.getFirstDataPoint().toDateMidnight();
+        DateMidnight startDate = clientIndex.getFirstDataPoint().orElse(clientIndex.getActualInterval().getStart())
+                        .toDateMidnight();
 
         dates = new Date[] { startDate.toDate() };
         delta = new double[] { 0d };

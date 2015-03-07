@@ -8,12 +8,13 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.math.Performance.SharpeRatio;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
+import name.abuchen.portfolio.math.SharpeRatio;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -26,6 +27,7 @@ import name.abuchen.portfolio.util.TradeCalendar;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 public class PerformanceIndex
 {
@@ -113,6 +115,16 @@ public class PerformanceIndex
         return reportInterval;
     }
 
+    /**
+     * Returns the interval for which data exists. Might be different from
+     * {@link #getReportInterval()} if the reporting interval extends into the
+     * future.
+     */
+    public Interval getActualInterval()
+    {
+        return new Interval(dates[0].getTime(), dates[dates.length - 1].getTime());
+    }
+
     public Date[] getDates()
     {
         return dates;
@@ -160,42 +172,39 @@ public class PerformanceIndex
     {
         if (volatility == null)
         {
-            TradeCalendar calendar = new TradeCalendar();
-            volatility = new Volatility(dates, delta, getReturnSkip(), date -> !calendar.isHoliday(date));
+            volatility = new Volatility(delta, filterReturnsForVolatilityCalculation());
         }
-
         return volatility;
     }
-    
-    public SharpeRatio getSharpeRatio() {
-        
+
+    public SharpeRatio getSharpeRatio()
+    {
+
         float benchmark = 0.03f;
-        
-        if (sharpe == null) {
-            TradeCalendar calendar = new TradeCalendar();
-            sharpe = new SharpeRatio(dates, delta, getReturnSkip(), date -> !calendar.isHoliday(date), benchmark);
+
+        if (sharpe == null)
+        {
+            sharpe = new SharpeRatio(delta, filterReturnsForVolatilityCalculation(), benchmark);
         }
-        
+
         return sharpe;
     }
 
     /**
-     * Volatility calculation must only include values starting with the first
-     * data point. Additionally skip first value as it is always 0 (as there is
-     * no previous period for the delta)
+     * The volatility calculation must excludes returns
+     * <ul>
+     * <li>on first day (because on the first day the return is always zero as
+     * there is no previous day to compare to)</li>
+     * <li>on days where there are no holdings including the first day it was
+     * bought (for example if the investment vehicle was bought in the middle of
+     * the reporting period)</li>
+     * <li>on weekends or public holidays</li>
+     * </ul>
      */
-    private int getReturnSkip()
+    private Predicate<Integer> filterReturnsForVolatilityCalculation()
     {
-        int skip = 0;
-        for (int ii = 0; ii < totals.length; ii++)
-        {
-            if (totals[ii] != 0)
-            {
-                skip = ii;
-                break;
-            }
-        }
-        return skip + 1;
+        TradeCalendar calendar = new TradeCalendar();
+        return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);
     }
 
     public long[] getTaxes()
@@ -224,29 +233,29 @@ public class PerformanceIndex
         return answer;
     }
 
-    public DateTime getFirstDataPoint()
+    public Optional<DateTime> getFirstDataPoint()
     {
         for (int ii = 0; ii < totals.length; ii++)
         {
             if (totals[ii] != 0)
-                return new DateTime(dates[ii]);
+                return Optional.of(new DateTime(dates[ii]));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public void exportTo(File file) throws IOException
     {
-        exportTo(file, 0, d -> true);
+        exportTo(file, index -> true);
     }
 
     public void exportVolatilityData(File file) throws IOException
     {
         TradeCalendar calendar = new TradeCalendar();
-        exportTo(file, getReturnSkip(), date -> !calendar.isHoliday(date));
+        exportTo(file, filterReturnsForVolatilityCalculation());
     }
 
-    private void exportTo(File file, int skip, Predicate<Date> filter) throws IOException
+    private void exportTo(File file, Predicate<Integer> filter) throws IOException
     {
         CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED, CSVStrategy.ESCAPE_DISABLED,
                         false, false, false, false);
@@ -262,9 +271,9 @@ public class PerformanceIndex
                             Messages.CSVColumn_DeltaInPercent, //
                             Messages.CSVColumn_CumulatedPerformanceInPercent });
 
-            for (int ii = skip; ii < totals.length; ii++)
+            for (int ii = 0; ii < totals.length; ii++)
             {
-                if (!filter.test(dates[ii]))
+                if (!filter.test(ii))
                     continue;
 
                 printer.print(Values.Date.format(dates[ii]));

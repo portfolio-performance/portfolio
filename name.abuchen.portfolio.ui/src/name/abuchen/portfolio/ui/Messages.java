@@ -34,6 +34,7 @@ public class Messages extends NLS
     public static String ClientEditorLabelHoldings;
     public static String ClientEditorLabelPerformance;
     public static String ClientEditorLabelReports;
+    public static String ClientEditorLabelReturnsVolatility;
     public static String ColumnAccount;
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
@@ -44,6 +45,7 @@ public class Messages extends NLS
     public static String ColumnColor;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
+    public static String ColumnDataSeries;
     public static String ColumnDate;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
@@ -276,6 +278,7 @@ public class Messages extends NLS
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
+    public static String LabelPeformanceTTWROR;
     public static String LabelPerformanceCalculation;
     public static String LabelPerformanceChart;
     public static String LabelPortfolioPerformance;
@@ -302,6 +305,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSharpeRatio;
     public static String LabelDividends;
+    public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
@@ -408,6 +412,8 @@ public class Messages extends NLS
     public static String NewFileWizardSecurityTitle;
     public static String NewFileWizardTaxonomyDescription;
     public static String NewFileWizardTaxonomyTitle;
+    public static String PDFImportDebugTextExtraction;
+    public static String PDFImportFilterName;
     public static String PDFImportWizardDescription;
     public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
@@ -483,6 +489,9 @@ public class Messages extends NLS
     public static String TitlePasswordDialog;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
+    public static String TooltipMaxDrawdownDurationEndOfPeriod;
+    public static String TooltipMaxDrawdownDurationFromXtoY;
+    public static String TooltipMaxDurationLowToHigh;
     public static String TooltipSemiVolatility;
     public static String TooltipSharpeRatio;
     public static String TooltipVolatility;
