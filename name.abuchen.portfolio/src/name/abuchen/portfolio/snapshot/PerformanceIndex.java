@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.util.TradeCalendar;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 public class PerformanceIndex
 {
@@ -109,6 +111,16 @@ public class PerformanceIndex
     public ReportingPeriod getReportInterval()
     {
         return reportInterval;
+    }
+
+    /**
+     * Returns the interval for which data exists. Might be different from
+     * {@link #getReportInterval()} if the reporting interval extends into the
+     * future.
+     */
+    public Interval getActualInterval()
+    {
+        return new Interval(dates[0].getTime(), dates[dates.length - 1].getTime());
     }
 
     public Date[] getDates()
@@ -205,15 +217,15 @@ public class PerformanceIndex
         return answer;
     }
 
-    public DateTime getFirstDataPoint()
+    public Optional<DateTime> getFirstDataPoint()
     {
         for (int ii = 0; ii < totals.length; ii++)
         {
             if (totals[ii] != 0)
-                return new DateTime(dates[ii]);
+                return Optional.of(new DateTime(dates[ii]));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public void exportTo(File file) throws IOException
