@@ -180,7 +180,7 @@ public class PerformanceIndex
     public SharpeRatio getSharpeRatio()
     {
 
-        float benchmark = 0.03f;
+        float benchmark = 0.01f;
 
         if (sharpe == null)
         {
