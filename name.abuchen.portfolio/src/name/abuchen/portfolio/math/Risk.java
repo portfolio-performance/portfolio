@@ -15,27 +15,27 @@ public final class Risk
         private double maxDD;
         private Interval maxDDDuration;
         private Interval intervalMaxDD;
-        private Interval intervalLowToHigh;
+        private Interval recoveryTime;
 
         public Drawdown(double[] values, Date[] dates)
         {
             double peak = values[0] + 1;
-            double low = values[0] + 1;
+            double bottom = values[0] + 1;
             Instant lastPeakDate = dates[0].toInstant();
-            Instant lastLowDate = dates[0].toInstant();
+            Instant lastBottomDate = dates[0].toInstant();
 
             maxDD = 0;
             intervalMaxDD = Interval.of(lastPeakDate, lastPeakDate);
             maxDDDuration = Interval.of(lastPeakDate, lastPeakDate);
-            intervalLowToHigh = Interval.of(lastLowDate, lastPeakDate);
+            recoveryTime = Interval.of(lastBottomDate, lastPeakDate);
             Interval currentDrawdownDuration = null;
-            Interval currentLowToHighDuration = null;
+            Interval currentRecoveryTime = null;
 
             for (int ii = 0; ii < values.length; ii++)
             {
                 double value = values[ii] + 1;
                 currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii].toInstant());
-                currentLowToHighDuration = Interval.of(lastLowDate, dates[ii].toInstant());
+                currentRecoveryTime = Interval.of(lastBottomDate, dates[ii].toInstant());
 
                 if (value > peak)
                 {
@@ -45,12 +45,12 @@ public final class Risk
                     if (currentDrawdownDuration.isLongerThan(maxDDDuration))
                         maxDDDuration = currentDrawdownDuration;
 
-                    if (currentLowToHighDuration.isLongerThan(intervalLowToHigh))
-                        intervalLowToHigh = currentLowToHighDuration;
+                    if (currentRecoveryTime.isLongerThan(recoveryTime))
+                        recoveryTime = currentRecoveryTime;
                     // Reset the recovery time calculation, as the recovery is
                     // now complete
-                    lastLowDate = dates[ii].toInstant();
-                    low = value;
+                    lastBottomDate = dates[ii].toInstant();
+                    bottom = value;
                 }
                 else
                 {
@@ -61,10 +61,10 @@ public final class Risk
                         intervalMaxDD = Interval.of(lastPeakDate, dates[ii].toInstant());
                     }
                 }
-                if (value < low)
+                if (value < bottom)
                 {
-                    low = value;
-                    lastLowDate = dates[ii].toInstant();
+                    bottom = value;
+                    lastBottomDate = dates[ii].toInstant();
                 }
             }
 
@@ -76,13 +76,13 @@ public final class Risk
             if (currentDrawdownDuration != null && currentDrawdownDuration.isLongerThan(maxDDDuration))
                 maxDDDuration = currentDrawdownDuration;
 
-            if (currentLowToHighDuration != null && currentLowToHighDuration.isLongerThan(intervalLowToHigh))
-                intervalLowToHigh = currentLowToHighDuration;
+            if (currentRecoveryTime != null && currentRecoveryTime.isLongerThan(recoveryTime))
+                recoveryTime = currentRecoveryTime;
         }
 
-        public Interval getLongestLowToHighDuration()
+        public Interval getLongestRecoveryTime()
         {
-            return intervalLowToHigh;
+            return recoveryTime;
         }
 
         public double getMaxDrawdown()
