@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.joda.time.DateMidnight;
 
-public abstract class Transaction
+public abstract class Transaction implements Annotated
 {
     public static final class ByDate implements Comparator<Transaction>, Serializable
     {

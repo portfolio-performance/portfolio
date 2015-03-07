@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
 import name.abuchen.portfolio.util.Dates;
@@ -758,7 +759,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
-                        + "@transactions2", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
+                        + "@transactions3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -897,6 +898,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return pair.getOwner().toString();
             }
         });
+        support.addColumn(column);
+
+        column = new NoteColumn();
+        column.setEditingSupport(null);
         support.addColumn(column);
 
         support.createColumns();
