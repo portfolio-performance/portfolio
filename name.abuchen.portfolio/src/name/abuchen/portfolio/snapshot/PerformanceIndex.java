@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
+import name.abuchen.portfolio.math.SharpeRatio;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -41,6 +42,7 @@ public class PerformanceIndex
     protected double[] delta;
     protected Drawdown drawdown;
     protected Volatility volatility;
+    protected SharpeRatio sharpe;
 
     /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
     {
@@ -169,9 +171,23 @@ public class PerformanceIndex
     public Volatility getVolatility()
     {
         if (volatility == null)
+        {
             volatility = new Volatility(delta, filterReturnsForVolatilityCalculation());
-
+        }
         return volatility;
+    }
+
+    public SharpeRatio getSharpeRatio()
+    {
+
+        float benchmark = 0.01f;
+
+        if (sharpe == null)
+        {
+            sharpe = new SharpeRatio(delta, filterReturnsForVolatilityCalculation(), benchmark);
+        }
+
+        return sharpe;
     }
 
     /**
@@ -235,6 +251,7 @@ public class PerformanceIndex
 
     public void exportVolatilityData(File file) throws IOException
     {
+        TradeCalendar calendar = new TradeCalendar();
         exportTo(file, filterReturnsForVolatilityCalculation());
     }
 
