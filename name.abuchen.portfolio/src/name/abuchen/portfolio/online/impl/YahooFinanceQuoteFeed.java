@@ -20,11 +20,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
@@ -76,19 +77,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
     {
-        Map<String, Security> requested = new HashMap<String, Security>();
+        Map<String, List<Security>> symbol2security = securities.stream()
+                        //
+                        .filter(s -> s.getTickerSymbol() != null)
+                        .collect(Collectors.groupingBy(s -> s.getTickerSymbol().toUpperCase(Locale.ROOT)));
 
-        StringBuilder symbolString = new StringBuilder();
-        for (Security security : securities)
-        {
-            if (security.getTickerSymbol() == null)
-                continue;
-
-            if (symbolString.length() > 0)
-                symbolString.append("+"); //$NON-NLS-1$
-            symbolString.append(security.getTickerSymbol());
-            requested.put(security.getTickerSymbol().toUpperCase(), security);
-        }
+        String symbolString = symbol2security.keySet().stream().collect(Collectors.joining("+")); //$NON-NLS-1$
 
         boolean isUpdated = false;
 
@@ -110,9 +104,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 }
 
                 String symbol = stripQuotes(values[0]);
-
-                Security security = requested.remove(symbol);
-                if (security == null)
+                List<Security> forSymbol = symbol2security.remove(symbol);
+                if (forSymbol == null)
                 {
                     errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedSymbol, symbol, line)));
                     continue;
@@ -138,12 +131,15 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 price.setPreviousClose(previousClose);
                 price.setVolume(volume);
 
-                boolean isAdded = security.setLatest(price);
-                isUpdated = isUpdated || isAdded;
+                for (Security security : forSymbol)
+                {
+                    boolean isAdded = security.setLatest(price);
+                    isUpdated = isUpdated || isAdded;
+                }
             }
 
-            for (Security s : requested.values())
-                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, s.getTickerSymbol())));
+            for (String symbol : symbol2security.keySet())
+                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol)));
         }
         catch (NumberFormatException | ParseException e)
         {
