@@ -217,10 +217,11 @@ public class ComdirectPDFExtractor implements Extractor
 
     private Security getSecurityForISIN(String isin)
     {
-        for (Security sec : allSecurities)
-        {
-            if (sec.getIsin().equals(isin)) { return sec; }
-        }
+        if (isin == null)
+            return null;
+        for (Security security : allSecurities)
+            if (isin.equals(security.getIsin()))
+                return security;
         return null;
     }
 
