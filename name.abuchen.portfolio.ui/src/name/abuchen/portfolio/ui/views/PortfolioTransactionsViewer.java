@@ -59,7 +59,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
             PortfolioTransaction t = (PortfolioTransaction) element;
 
-            if (t.getType() == Type.SELL || t.getType() == Type.TRANSFER_OUT)
+            if (t.getType() == Type.SELL || t.getType() == Type.TRANSFER_OUT || t.getType() == Type.DELIVERY_OUTBOUND)
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
             else
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
