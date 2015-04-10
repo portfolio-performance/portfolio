@@ -169,7 +169,8 @@ public class ComdirectPDFExtractor implements Extractor
                     SecurityItem item = new SecurityItem(security);
                     results.add(item);
                 }
-                int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von")); //$NON-NLS-1$ //$NON-NLS-2$
+                // Do not use 'Zum Kurs von' as there are tons of other variants ('Zum Preis von', 'Zum comdirect Preis von', ...)
+                int stueckLinePos = text.indexOf('\n', text.indexOf("Nennwert")); //$NON-NLS-2$
                 Number shares = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
                 // Fees need not be present
                 // In case they are a section is present in the file
