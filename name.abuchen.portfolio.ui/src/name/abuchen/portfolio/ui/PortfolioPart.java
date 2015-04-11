@@ -34,8 +34,10 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -133,20 +135,29 @@ public class PortfolioPart implements LoadClientThread.Callback
     private void createContainerWithViews(Composite parent)
     {
         container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(1, 0).applyTo(container);
+        container.setLayout(new FillLayout());
+
+        SashForm sash = new SashForm(container, SWT.HORIZONTAL | SWT.SMOOTH);
+        sash.setSashWidth(1);
+
+        Composite navigationBar = new Composite(sash, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
-        Control control = sidebar.createSidebarControl(container);
-        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).grab(false, true).applyTo(control);
-
-        book = new PageBook(container, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, true).span(1, 2).applyTo(book);
+        Control control = sidebar.createSidebarControl(navigationBar);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
 
         IEclipseContext childContext = context.createChild();
-        childContext.set(Composite.class, container);
+        childContext.set(Composite.class, navigationBar);
         childContext.set(Client.class, client);
         ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, childContext);
-        GridDataFactory.fillDefaults().hint(180, SWT.DEFAULT).applyTo(provider.getControl());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
+
+        book = new PageBook(sash, SWT.NONE);
+
+        SashHelper sashHelper = new SashHelper(PortfolioPart.class.getSimpleName() + "-sash", getPreferenceStore()); //$NON-NLS-1$
+        sashHelper.setConstantWidth(new int[] { 180, -1 });
+        sashHelper.attachTo(sash);
 
         sidebar.selectDefaultView();
 
