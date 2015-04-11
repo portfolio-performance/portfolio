@@ -100,6 +100,11 @@ public class DeutscheBankPDFExctractor implements Extractor
                 SecurityBuyParser parser = new SecurityBuyParser(filename, lines);
                 parser.parse(items);
             }
+            else if (text.contains("Verkauf von Wertpapieren")) //$NON-NLS-1$
+            {
+                SecuritySellParser parser = new SecuritySellParser(filename, lines);
+                parser.parse(items);
+            }
             else
             {
                 throw new UnsupportedOperationException( //
@@ -233,31 +238,51 @@ public class DeutscheBankPDFExctractor implements Extractor
         }
     }
 
-    private class SecurityBuyParser
+    private abstract class AbstractBuySellParser
     {
         private String filename;
         private String[] lines;
 
-        public SecurityBuyParser(String filename, String[] lines)
+        public AbstractBuySellParser(String filename, String[] lines)
         {
             this.filename = filename;
             this.lines = lines;
         }
 
-        private void parse(List<Item> items) throws ParseException
+        protected void fillInTaxes(BuySellEntry entry) throws ParseException
         {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
+            // looking for
+            // Kapitalertragsteuer EUR -122,94
+            // Solidaritätszuschlag auf Kapitalertragsteuer EUR -6,76
 
-            fillInSecurity(entry, items);
-            fillInDateAndAmount(entry);
-            fillInShares(entry);
-            fillInFees(entry);
+            Pattern pattern = Pattern.compile("Kapitalertragsteuer (\\w{3}+) ([\\d.-]+,\\d+)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches())
+                {
+                    long taxes = Math.abs(Math.round(numberFormat.parse(matcher.group(2)).doubleValue()
+                                    * Values.Amount.factor()));
+                    entry.setTaxes(taxes);
+                    break;
+                }
+            }
 
-            items.add(new BuySellEntryItem(entry));
+            pattern = Pattern.compile("Solidaritätszuschlag auf Kapitalertragsteuer (\\w{3}+) ([\\d.-]+,\\d+)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches())
+                {
+                    long taxes = Math.abs(Math.round(numberFormat.parse(matcher.group(2)).doubleValue()
+                                    * Values.Amount.factor()));
+                    entry.setTaxes(entry.getPortfolioTransaction().getTaxes() + taxes);
+                    break;
+                }
+            }
         }
 
-        private void fillInFees(BuySellEntry entry) throws ParseException
+        protected void fillInFees(BuySellEntry entry) throws ParseException
         {
             // looking for
             // Kurswert EUR 665,00
@@ -270,13 +295,27 @@ public class DeutscheBankPDFExctractor implements Extractor
                 {
                     long marketValue = Math.round(numberFormat.parse(matcher.group(2)).doubleValue()
                                     * Values.Amount.factor());
-                    entry.setFees(entry.getPortfolioTransaction().getAmount() - marketValue);
+                    long totalAmount = entry.getPortfolioTransaction().getAmount();
+                    long taxes = entry.getPortfolioTransaction().getTaxes();
+
+                    switch (entry.getPortfolioTransaction().getType())
+                    {
+                        case BUY:
+                            entry.setFees(totalAmount - taxes - marketValue);
+                            break;
+                        case SELL:
+                            entry.setFees(marketValue - taxes - totalAmount);
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+
                     break;
                 }
             }
         }
 
-        private void fillInShares(BuySellEntry entry) throws ParseException
+        protected void fillInShares(BuySellEntry entry) throws ParseException
         {
             // looking for
             // WKN BASF11 Nominal ST 19
@@ -295,7 +334,7 @@ public class DeutscheBankPDFExctractor implements Extractor
             }
         }
 
-        private void fillInDateAndAmount(BuySellEntry entry) throws ParseException
+        protected void fillInDateAndAmount(BuySellEntry entry) throws ParseException
         {
             // looking for
             // @formatter:off
@@ -321,7 +360,7 @@ public class DeutscheBankPDFExctractor implements Extractor
             }
         }
 
-        private void fillInSecurity(BuySellEntry entry, List<Item> items)
+        protected void fillInSecurity(BuySellEntry entry, List<Item> items)
         {
             Security security = extractSecurity();
 
@@ -378,6 +417,49 @@ public class DeutscheBankPDFExctractor implements Extractor
 
             return null;
         }
-
     }
+
+    private class SecurityBuyParser extends AbstractBuySellParser
+    {
+        public SecurityBuyParser(String filename, String[] lines)
+        {
+            super(filename, lines);
+        }
+
+        private void parse(List<Item> items) throws ParseException
+        {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+
+            fillInSecurity(entry, items);
+            fillInDateAndAmount(entry);
+            fillInShares(entry);
+            fillInFees(entry);
+
+            items.add(new BuySellEntryItem(entry));
+        }
+    }
+
+    private class SecuritySellParser extends AbstractBuySellParser
+    {
+        public SecuritySellParser(String filename, String[] lines)
+        {
+            super(filename, lines);
+        }
+
+        private void parse(List<Item> items) throws ParseException
+        {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+
+            fillInSecurity(entry, items);
+            fillInDateAndAmount(entry);
+            fillInShares(entry);
+            fillInTaxes(entry);
+            fillInFees(entry);
+
+            items.add(new BuySellEntryItem(entry));
+        }
+    }
+
 }

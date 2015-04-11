@@ -42,6 +42,18 @@ public class DeutscheBankPDFExtractorTest
         assertThat(errors.get(0), instanceOf(UnsupportedOperationException.class));
     }
 
+    private Security assertSecurity(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000BASF111"));
+        assertThat(security.getWkn(), is("BASF11"));
+        assertThat(security.getName(), is("BASF SE"));
+
+        return security;
+    }
+
     @Test
     public void testErtragsgutschrift() throws IOException
     {
@@ -54,13 +66,10 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // check security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
+        Security security = assertSecurity(results);
 
         // check transaction
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
@@ -104,15 +113,10 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // check security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertThat(security.getName(), is("BASF SE"));
+        assertSecurity(results);
 
         // check buy sell transaction
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
@@ -137,16 +141,10 @@ public class DeutscheBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        // check security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertThat(security.getName(), is("BASF SE"));
+        assertSecurity(results);
 
         // check buy sell transaction
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
@@ -158,6 +156,35 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(36_00000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(11_38L));
+    }
+
+    @Test
+    public void testWertpapierVerkauf() throws IOException
+    {
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract("", from("DeutscheBankVerkauf.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        assertSecurity(results);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(2074_71L));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(61_00000L));
+        assertThat(entry.getPortfolioTransaction().getTaxes(), is(122_94L + 6_76L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(7_90L + 60L + 2_00L));
     }
 
     private String from(String resource)
