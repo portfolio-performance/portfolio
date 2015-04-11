@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -85,23 +87,27 @@ public class DeutscheBankPDFExctractor implements Extractor
                 throw new UnsupportedOperationException( //
                                 MessageFormat.format(Messages.PDFdbMsgFileNotSupported, filename));
 
-            boolean isDividend = text.contains("Ertragsgutschrift"); //$NON-NLS-1$
-            if (!isDividend)
-                throw new UnsupportedOperationException( //
-                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename));
-
             List<Item> items = new ArrayList<Item>();
             String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
 
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-            transaction.setNote(filename);
+            if (text.contains("Ertragsgutschrift")) //$NON-NLS-1$
+            {
+                DividendParser parser = new DividendParser(filename, lines);
+                parser.parse(items);
+            }
+            else if (text.contains("Kauf von Wertpapieren")) //$NON-NLS-1$
+            {
+                SecurityBuyParser parser = new SecurityBuyParser(filename, lines);
+                parser.parse(items);
+            }
+            else
+            {
+                throw new UnsupportedOperationException( //
+                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename));
+            }
 
-            fillInSecurity(transaction, filename, lines, items);
-            fillInDateAndAmount(transaction, lines);
-            fillInShares(transaction, lines);
-
-            items.add(new TransactionItem(transaction));
+            for (Item item : items)
+                item.getAnnotated().setNote(filename);
 
             return items;
         }
@@ -112,88 +118,266 @@ public class DeutscheBankPDFExctractor implements Extractor
         }
     }
 
-    private void fillInDateAndAmount(AccountTransaction transaction, String[] lines) throws ParseException
+    private class DividendParser
     {
-        Pattern pattern = Pattern.compile("Gutschrift mit Wert (\\d+.\\d+.\\d{4}+) (\\d+,\\d+) (\\w{3}+)"); //$NON-NLS-1$
-        for (int ii = 0; ii < lines.length; ii++)
+        private String filename;
+        private String[] lines;
+
+        public DividendParser(String filename, String[] lines)
         {
-            Matcher matcher = pattern.matcher(lines[ii]);
-            if (matcher.matches())
+            this.filename = filename;
+            this.lines = lines;
+        }
+
+        private void parse(List<Item> items) throws ParseException
+        {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+
+            fillInSecurity(transaction, items);
+            fillInDateAndAmount(transaction);
+            fillInShares(transaction);
+
+            items.add(new TransactionItem(transaction));
+        }
+
+        private void fillInDateAndAmount(AccountTransaction transaction) throws ParseException
+        {
+            // looking for:
+            // Gutschrift mit Wert 15.12.2014 14,95 EUR
+
+            Pattern pattern = Pattern.compile("Gutschrift mit Wert (\\d+.\\d+.\\d{4}+) ([\\d.]+,\\d+) (\\w{3}+)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
             {
-                LocalDate date = LocalDate.parse(matcher.group(1), DATE_FORMAT);
-                transaction.setDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
-                long amount = Math.round(numberFormat.parse(matcher.group(2)).doubleValue() * Values.Amount.factor());
-                transaction.setAmount(amount);
-
-                break;
-            }
-        }
-    }
-
-    private void fillInShares(AccountTransaction transaction, String[] lines) throws ParseException
-    {
-        Pattern pattern = Pattern.compile("(\\d+,\\d*) (\\S*) (\\S*)"); //$NON-NLS-1$
-        for (int ii = 0; ii < lines.length; ii++)
-        {
-            Matcher matcher = pattern.matcher(lines[ii]);
-            if (matcher.matches())
-            {
-                long shares = Math.round(numberFormat.parse(matcher.group(0)).doubleValue() * Values.Share.factor());
-                transaction.setShares(shares);
-
-                break;
-            }
-        }
-    }
-
-    private void fillInSecurity(AccountTransaction transaction, String filename, String[] lines, List<Item> items)
-    {
-        Security security = extractSecurity(lines);
-
-        if (security == null)
-            throw new UnsupportedOperationException(MessageFormat.format(Messages.PDFdbMsgCannotFindSecurity, filename));
-
-        Security existing = isin2security.get(security.getIsin());
-        if (existing != null)
-        {
-            transaction.setSecurity(existing);
-        }
-        else
-        {
-            isin2security.put(security.getIsin(), security);
-            items.add(new SecurityItem(security));
-            transaction.setSecurity(security);
-        }
-    }
-
-    private Security extractSecurity(String[] lines)
-    {
-        // looking for a group of three lines
-        // Stück WKN ISIN
-        // (number) (wkn) (isin)
-        // (name of security)
-
-        for (int ii = 0; ii < lines.length - 2; ii++)
-        {
-            if ("Stück WKN ISIN".equals(lines[ii])) //$NON-NLS-1$
-            {
-                Pattern pattern = Pattern.compile("(\\d+,\\d*) (\\S*) (\\S*)"); //$NON-NLS-1$
-                Matcher matcher = pattern.matcher(lines[ii + 1]);
+                Matcher matcher = pattern.matcher(lines[ii]);
                 if (matcher.matches())
                 {
+                    LocalDate date = LocalDate.parse(matcher.group(1), DATE_FORMAT);
+                    transaction.setDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+                    long amount = Math.round(numberFormat.parse(matcher.group(2)).doubleValue()
+                                    * Values.Amount.factor());
+                    transaction.setAmount(amount);
+
+                    break;
+                }
+            }
+        }
+
+        private void fillInShares(AccountTransaction transaction) throws ParseException
+        {
+            Pattern pattern = Pattern.compile("(\\d+,\\d*) (\\S*) (\\S*)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches())
+                {
+                    long shares = Math
+                                    .round(numberFormat.parse(matcher.group(0)).doubleValue() * Values.Share.factor());
+                    transaction.setShares(shares);
+
+                    break;
+                }
+            }
+        }
+
+        private void fillInSecurity(AccountTransaction transaction, List<Item> items)
+        {
+            Security security = extractSecurity();
+
+            if (security == null)
+                throw new UnsupportedOperationException(MessageFormat.format(Messages.PDFdbMsgCannotFindSecurity,
+                                filename));
+
+            Security existing = isin2security.get(security.getIsin());
+            if (existing != null)
+            {
+                transaction.setSecurity(existing);
+            }
+            else
+            {
+                isin2security.put(security.getIsin(), security);
+                items.add(new SecurityItem(security));
+                transaction.setSecurity(security);
+            }
+        }
+
+        private Security extractSecurity()
+        {
+            // looking for a group of three lines
+            // Stück WKN ISIN
+            // (number) (wkn) (isin)
+            // (name of security)
+
+            for (int ii = 0; ii < lines.length - 2; ii++)
+            {
+                if ("Stück WKN ISIN".equals(lines[ii])) //$NON-NLS-1$
+                {
+                    Pattern pattern = Pattern.compile("(\\d+,\\d*) (\\S*) (\\S*)"); //$NON-NLS-1$
+                    Matcher matcher = pattern.matcher(lines[ii + 1]);
+                    if (matcher.matches())
+                    {
+                        Security security = new Security();
+                        security.setIsin(matcher.group(3));
+                        security.setWkn(matcher.group(2));
+                        security.setName(lines[ii + 2]);
+                        security.setFeed(QuoteFeed.MANUAL);
+                        return security;
+                    }
+
+                    break;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    private class SecurityBuyParser
+    {
+        private String filename;
+        private String[] lines;
+
+        public SecurityBuyParser(String filename, String[] lines)
+        {
+            this.filename = filename;
+            this.lines = lines;
+        }
+
+        private void parse(List<Item> items) throws ParseException
+        {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+
+            fillInSecurity(entry, items);
+            fillInDateAndAmount(entry);
+            fillInShares(entry);
+            fillInFees(entry);
+
+            items.add(new BuySellEntryItem(entry));
+        }
+
+        private void fillInFees(BuySellEntry entry) throws ParseException
+        {
+            // looking for
+            // Kurswert EUR 665,00
+
+            Pattern pattern = Pattern.compile("Kurswert (\\w{3}+) ([\\d.]+,\\d+)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches())
+                {
+                    long marketValue = Math.round(numberFormat.parse(matcher.group(2)).doubleValue()
+                                    * Values.Amount.factor());
+                    entry.setFees(entry.getPortfolioTransaction().getAmount() - marketValue);
+                    break;
+                }
+            }
+        }
+
+        private void fillInShares(BuySellEntry entry) throws ParseException
+        {
+            // looking for
+            // WKN BASF11 Nominal ST 19
+
+            Pattern pattern = Pattern.compile("^WKN [^ ]* Nominal ST (\\d+(,\\d+)?)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches())
+                {
+                    long shares = Math
+                                    .round(numberFormat.parse(matcher.group(1)).doubleValue() * Values.Share.factor());
+                    entry.setShares(shares);
+                    break;
+                }
+            }
+        }
+
+        private void fillInDateAndAmount(BuySellEntry entry) throws ParseException
+        {
+            // looking for
+            // @formatter:off
+            // Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 675,50
+            // @formatter:on
+
+            Pattern pattern = Pattern
+                            .compile("Buchung auf Kontonummer [\\d ]* mit Wertstellung (\\d+.\\d+.\\d{4}+) (\\w{3}+) ([\\d.]+,\\d+)"); //$NON-NLS-1$
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = pattern.matcher(lines[ii]);
+                if (matcher.matches())
+                {
+                    LocalDate date = LocalDate.parse(matcher.group(1), DATE_FORMAT);
+                    entry.setDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+                    long amount = Math.round(numberFormat.parse(matcher.group(3)).doubleValue()
+                                    * Values.Amount.factor());
+                    entry.setAmount(amount);
+
+                    break;
+                }
+            }
+        }
+
+        private void fillInSecurity(BuySellEntry entry, List<Item> items)
+        {
+            Security security = extractSecurity();
+
+            if (security == null)
+                throw new UnsupportedOperationException(MessageFormat.format(Messages.PDFdbMsgCannotFindSecurity,
+                                filename));
+
+            Security existing = isin2security.get(security.getIsin());
+            if (existing != null)
+            {
+                entry.setSecurity(existing);
+            }
+            else
+            {
+                isin2security.put(security.getIsin(), security);
+                items.add(new SecurityItem(security));
+                entry.setSecurity(security);
+            }
+        }
+
+        private Security extractSecurity()
+        {
+            // looking for a group of *four* lines
+            // Filialnummer Depotnummer Wertpapierbezeichnung Seite
+            // 123 1234567 00 BASF SE
+            // WKN BASF11 Nominal ST 19
+            // ISIN DE000BASF111 Kurs EUR 35,00
+
+            for (int ii = 0; ii < lines.length - 3; ii++)
+            {
+                if (lines[ii].contains("Wertpapierbezeichnung")) //$NON-NLS-1$
+                {
+                    // name (skip account number)
+                    String name = lines[ii + 1].substring(15);
+
+                    // WKN
+                    Pattern pattern = Pattern.compile("^WKN ([^ ]*) (.*)$"); //$NON-NLS-1$
+                    Matcher matcher = pattern.matcher(lines[ii + 2]);
+                    String wkn = matcher.matches() ? matcher.group(1) : null;
+
+                    // ISIN
+                    pattern = Pattern.compile("^ISIN ([^ ]*) (.*)$"); //$NON-NLS-1$
+                    matcher = pattern.matcher(lines[ii + 3]);
+                    String isin = matcher.matches() ? matcher.group(1) : null;
+
                     Security security = new Security();
-                    security.setIsin(matcher.group(3));
-                    security.setWkn(matcher.group(2));
-                    security.setName(lines[ii + 2]);
+                    security.setIsin(isin);
+                    security.setWkn(wkn);
+                    security.setName(name);
                     security.setFeed(QuoteFeed.MANUAL);
                     return security;
                 }
-
-                break;
             }
+
+            return null;
         }
 
-        return null;
     }
 }

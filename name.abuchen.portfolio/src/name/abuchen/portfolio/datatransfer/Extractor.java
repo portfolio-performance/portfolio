@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -27,6 +28,8 @@ public interface Extractor
         long getAmount();
 
         Security getSecurity();
+
+        Annotated getAnnotated();
 
         void insert(Client client, Portfolio portfolio, Account account);
     }
@@ -78,6 +81,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return transaction.getSecurity();
+        }
+
+        @Override
+        public Annotated getAnnotated()
+        {
+            return transaction;
         }
 
         @Override
@@ -138,6 +147,12 @@ public interface Extractor
         }
 
         @Override
+        public Annotated getAnnotated()
+        {
+            return entry;
+        }
+
+        @Override
         public void insert(Client client, Portfolio portfolio, Account account)
         {
             entry.setPortfolio(portfolio);
@@ -182,6 +197,12 @@ public interface Extractor
 
         @Override
         public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public Annotated getAnnotated()
         {
             return security;
         }

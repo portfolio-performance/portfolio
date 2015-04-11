@@ -4,7 +4,7 @@ import java.util.Date;
 
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 
-public class BuySellEntry implements CrossEntry
+public class BuySellEntry implements CrossEntry, Annotated
 {
     private Portfolio portfolio;
     private PortfolioTransaction portfolioTransaction;
@@ -74,6 +74,19 @@ public class BuySellEntry implements CrossEntry
     public void setTaxes(long taxes)
     {
         this.portfolioTransaction.setTaxes(taxes);
+    }
+
+    @Override
+    public String getNote()
+    {
+        return this.portfolioTransaction.getNote();
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        this.portfolioTransaction.setNote(note);
+        this.accountTransaction.setNote(note);
     }
 
     public void insert()

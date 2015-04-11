@@ -12,11 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Dates;
 
@@ -87,6 +90,74 @@ public class DeutscheBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) results.get(0).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
+    }
+
+    @Test
+    public void testWertpapierKauf() throws IOException
+    {
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract("", from("DeutscheBankKauf.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000BASF111"));
+        assertThat(security.getWkn(), is("BASF11"));
+        assertThat(security.getName(), is("BASF SE"));
+
+        // check buy sell transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(67550L));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(19_00000L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(10_50L));
+    }
+
+    @Test
+    public void testWertpapierKauf2() throws IOException
+    {
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract("", from("DeutscheBankKauf2.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000BASF111"));
+        assertThat(security.getWkn(), is("BASF11"));
+        assertThat(security.getName(), is("BASF SE"));
+
+        // check buy sell transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(3524_98L));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(36_00000L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(11_38L));
     }
 
     private String from(String resource)
