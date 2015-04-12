@@ -91,6 +91,8 @@ public class Messages extends NLS
     public static String ColumnLevels;
     public static String ColumnLumpSumPrice;
     public static String ColumnMarketValue;
+    public static String ColumnMaxDrawdown;
+    public static String ColumnMaxDrawdownDuration;
     public static String ColumnMessage;
     public static String ColumnMonth;
     public static String ColumnName;

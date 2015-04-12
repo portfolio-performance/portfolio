@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Client;
@@ -45,6 +46,18 @@ public final class SecurityPerformanceRecord implements Adaptable
      * {@link #calculatePerformance(ReportingPeriod)}
      */
     private double twror;
+
+    /**
+     * Max Drawdown and Max Drawdown Duration
+     * {@link #calculatePerformance(ReportingPeriod)}
+     */
+    private Risk.Drawdown drawdown;
+
+    /**
+     * Volatility and semi-volatility
+     * {@link #calculatePerformance(ReportingPeriod)}
+     */
+    private Risk.Volatility volatility;
 
     /**
      * delta = market value + sells + dividends - purchase costs
@@ -132,6 +145,26 @@ public final class SecurityPerformanceRecord implements Adaptable
     public double getTrueTimeWeightedRateOfReturn()
     {
         return twror;
+    }
+
+    public double getMaxDrawdown()
+    {
+        return drawdown.getMaxDrawdown();
+    }
+
+    public long getMaxDrawdownDuration()
+    {
+        return drawdown.getMaxDrawdownDuration().getDays();
+    }
+
+    public double getVolatility()
+    {
+        return volatility.getStandardDeviation();
+    }
+
+    public double getSemiVolatility()
+    {
+        return volatility.getSemiDeviation();
     }
 
     public long getDelta()
@@ -248,8 +281,10 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculatePerformance(Client client, ReportingPeriod period)
     {
-        this.twror = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>())
-                        .getFinalAccumulatedPercentage();
+        PerformanceIndex index = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>());
+        this.twror = index.getFinalAccumulatedPercentage();
+        this.drawdown = index.getDrawdown();
+        this.volatility = index.getVolatility();
     }
 
     private void calculateDelta()
