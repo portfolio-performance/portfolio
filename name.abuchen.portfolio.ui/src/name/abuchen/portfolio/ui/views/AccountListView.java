@@ -305,7 +305,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        transactions = new TableViewer(container, SWT.FULL_SELECTION);
+        transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(transactions);
 
@@ -575,16 +575,16 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 @Override
                 public void run()
                 {
-                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
-                                    .getSelection()).getFirstElement();
+                    Object[] selection = ((IStructuredSelection) transactions.getSelection()).toArray();
                     Account account = (Account) transactions.getData(Account.class.toString());
 
-                    if (transaction == null || account == null)
+                    if (selection == null || selection.length == 0 || account == null)
                         return;
 
-                    account.deleteTransaction(transaction, getClient());
-                    markDirty();
+                    for (Object transaction : selection)
+                        account.deleteTransaction((AccountTransaction) transaction, getClient());
 
+                    markDirty();
                     accounts.refresh();
                     transactions.setInput(account.getTransactions());
                 }

@@ -90,7 +90,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
+        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnEditingSupport.prepare(tableViewer);
 
         support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "3", //$NON-NLS-1$
@@ -361,17 +361,17 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         if (portfolio == null)
             return;
 
-        final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
+        PortfolioTransaction firstTransaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
                         .getSelection()).getFirstElement();
 
-        if (fullContextMenu && transaction != null)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
+        if (fullContextMenu && firstTransaction != null)
+            new SecurityContextMenu(owner).menuAboutToShow(manager, firstTransaction.getSecurity(), portfolio);
         else if (fullContextMenu)
             new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
-        else if (transaction != null)
-            manager.add(new WebLocationMenu(transaction.getSecurity()));
+        else if (firstTransaction != null)
+            manager.add(new WebLocationMenu(firstTransaction.getSecurity()));
 
-        if (transaction != null)
+        if (firstTransaction != null)
         {
             manager.add(new Separator());
             manager.add(new Action(Messages.MenuTransactionDelete)
@@ -379,7 +379,10 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 @Override
                 public void run()
                 {
-                    portfolio.deleteTransaction(transaction, owner.getClient());
+                    Object[] selection = ((IStructuredSelection) tableViewer.getSelection()).toArray();
+                    for (Object transaction : selection)
+                        portfolio.deleteTransaction((PortfolioTransaction) transaction, owner.getClient());
+
                     owner.markDirty();
                     owner.notifyModelUpdated();
                 }
