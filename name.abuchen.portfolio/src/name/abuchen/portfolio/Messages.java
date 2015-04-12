@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+    public static String AttributesAcquisitionFeeColumn;
+    public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
     public static String AttributesAUMName;
     public static String AttributesTERColumn;
