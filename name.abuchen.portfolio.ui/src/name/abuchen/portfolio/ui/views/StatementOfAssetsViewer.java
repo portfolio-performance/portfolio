@@ -9,6 +9,7 @@ import java.util.Map;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeTypes;
@@ -776,7 +777,7 @@ public class StatementOfAssetsViewer
             {
                 return type.cast(getSecurity());
             }
-            else if (type == Named.class)
+            else if (type == Named.class || type == Annotated.class)
             {
                 if (isSecurity())
                     return type.cast(getSecurity());

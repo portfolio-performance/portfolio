@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Annotated;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Column;
@@ -27,7 +28,11 @@ public class NoteColumn extends Column
             public String getText(Object e)
             {
                 Annotated n = Adaptor.adapt(Annotated.class, e);
-                return n != null ? n.getNote() : null;
+                if (n != null)
+                    return n.getNote();
+
+                Named n2 = Adaptor.adapt(Named.class, e);
+                return n2 != null ? n2.getNote() : null;
             }
 
             @Override
