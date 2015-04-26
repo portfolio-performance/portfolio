@@ -381,6 +381,7 @@ public class Messages extends NLS
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
     public static String MsgDialogNotAValidISIN;
+    public static String MsgEmbeddedBrowserError;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="${/META-INF/js/d3.min.js}"></script>
+<script src="${/META-INF/js/d3pie.min.js}"></script>
+<script src="${/META-INF/js/pp.js}"></script>
+</head>
+<body>
+
+<div id="holdings"></div>
+
+<script>
+
+pp.onResizeEnd(function() {
+	piedata.size.canvasWidth = window.innerWidth;
+	piedata.size.canvasHeight = window.innerHeight;
+	pie.destroy();
+	pie = new d3pie("holdings", piedata);
+});
+
+// callback into name.abuchen.portfolio.ui.views.HoldingsPieChartView
+var content = JSON.parse(loadData());
+
+var piedata = {
+	size: {
+		canvasWidth: document.width - 10,
+		canvasHeight: document.height - 20
+	},
+	data: {
+		sortOrder: "value-desc",
+		content: content
+	},
+	labels: {
+		outer: {
+			pieDistance: 32
+		},
+		inner: {
+			hideWhenLessThanPercentage: 3
+		},
+		mainLabel: {
+			fontSize: 11,
+			font: "Lucida Grande,arial"
+		},
+		percentage: {
+			color: "#ffffff",
+			font: "Lucida Grande,arial",
+			decimalPlaces: 2
+		}
+	},
+	effects: {
+		load: {
+			effect: "none"
+		},
+		pullOutSegmentOnClick: {
+			effect: "none"
+		}
+	},
+	tooltips: {
+		enabled: true,
+		type: "caption"
+	},
+	misc: {
+		gradient: {
+			enabled: true,
+			percentage: 100
+		}
+	}
+};
+
+var pie = new d3pie("holdings", piedata);
+</script>
+
+</body>
+</html>

@@ -170,7 +170,7 @@ public class ComdirectPDFExtractor implements Extractor
                     results.add(item);
                 }
                 // Do not use 'Zum Kurs von' as there are tons of other variants ('Zum Preis von', 'Zum comdirect Preis von', ...)
-                int stueckLinePos = text.indexOf('\n', text.indexOf("Nennwert")); //$NON-NLS-2$
+                int stueckLinePos = text.indexOf('\n', text.indexOf("Nennwert")); //$NON-NLS-1$
                 Number shares = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
                 // Fees need not be present
                 // In case they are a section is present in the file
