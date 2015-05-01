@@ -1,0 +1,17 @@
+body {
+	font-family: Lucida Grande, Arial;
+	margin: 0px 0px 0px 0px;
+	overflow: hidden;
+}
+
+div.tooltip {
+	position: absolute;
+	padding: 2px;
+	font-size: 12px;
+	color: #efefef;
+	background-color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 0.6);
+	border: 0px;
+	border-radius: 2px;
+	pointer-events: none;
+}
