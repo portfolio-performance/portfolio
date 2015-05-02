@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="${/META-INF/css/pp.css}">
+<body>
+	<script src="${/META-INF/js/d3.min.js}"></script>
+	<script src="${/META-INF/js/pp.js}"></script>
+	<script>
+
+pp.onResizeEnd(function() {
+  width = pp.getInnerWidth();
+  height = pp.getInnerHeight();
+
+  d3.select("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  line
+    .transition()
+    .duration(500)
+    .attr("x2", width)
+    .attr("y2", height);
+});
+
+var width = pp.getInitialWidth(),
+    height = pp.getInitialHeight();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var line = svg.append("line")
+                         .attr("x1", 0)
+                         .attr("y1", 0)
+                         .attr("x2", width)
+                         .attr("y2", height)
+                         .attr("stroke-width", 1)
+                         .attr("stroke", "black");
+
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .html("Tooltip 11px")
+    .style("left", "10px")
+    .style("top", "10px")
+    .style("font-size", "11px")
+    .style("opacity", 1);
+
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .html("Tooltip 12px")
+    .style("left", "10px")
+    .style("top", "30px")
+    .style("font-size", "12px")
+    .style("opacity", 1);
+
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .html("Tooltip 13px")
+    .style("left", "10px")
+    .style("top", "50px")
+    .style("font-size", "13px")
+    .style("opacity", 1);
+</script>
