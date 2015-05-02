@@ -30,7 +30,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        return new EmbeddedBrowser("/META-INF/html/holdings.html") ///$NON-NLS-1$
+        return new EmbeddedBrowser("/META-INF/html/pie.html") ///$NON-NLS-1$
                         .createControl(parent, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
     }
 
@@ -39,7 +39,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
         private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
                         + "\"value\":%s," //$NON-NLS-1$
                         + "\"color\":\"%s\"," //$NON-NLS-1$
-                        + "\"caption\":\"%s  %s  (%s)\"" //$NON-NLS-1$
+                        + "\"caption\":\"%s  %s  (%s)\"," //$NON-NLS-1$
+                        + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
         private LoadDataFunction(Browser browser, String name)
@@ -64,12 +65,11 @@ public class HoldingsPieChartView extends AbstractFinanceView
                         continue;
 
                     String name = StringEscapeUtils.escapeJson(a.getAccount().getName());
-                    joiner.add(String.format(ENTRY,
-                                    name, //
+                    String percentage = Values.Percent2.format(value / (double) totalAssets);
+                    joiner.add(String.format(ENTRY, name, //
                                     value, //
                                     Colors.CASH.asHex(), //
-                                    name, Values.Amount.format(value),
-                                    Values.Percent2.format(value / (double) totalAssets)));
+                                    name, Values.Amount.format(value), percentage, percentage));
                 }
 
                 for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
@@ -79,12 +79,11 @@ public class HoldingsPieChartView extends AbstractFinanceView
                         continue;
 
                     String name = StringEscapeUtils.escapeJson(position.getSecurity().getName());
-                    joiner.add(String.format(ENTRY,
-                                    name, //
+                    String percentage = Values.Percent2.format(value / (double) totalAssets);
+                    joiner.add(String.format(ENTRY, name, //
                                     value, //
                                     Colors.EQUITY.asHex(), //
-                                    name, Values.Amount.format(value),
-                                    Values.Percent2.format(value / (double) totalAssets)));
+                                    name, Values.Amount.format(value), percentage, percentage));
                 }
 
                 return joiner.toString();
