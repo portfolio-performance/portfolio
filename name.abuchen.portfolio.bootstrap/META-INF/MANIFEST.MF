@@ -4,11 +4,24 @@ Bundle-Name: Portfolio Performance Bootstrap
 Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
 Bundle-Version: 0.17.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.eclipse.e4.ui.model.application,
+Import-Package: javax.inject;version="1.0.0",
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.core.services.events,
+ org.eclipse.e4.ui.internal.workbench,
+ org.eclipse.e4.ui.model.application,
  org.eclipse.e4.ui.model.application.ui,
  org.eclipse.e4.ui.model.application.ui.basic,
+ org.eclipse.e4.ui.workbench,
  org.eclipse.e4.ui.workbench.lifecycle,
  org.eclipse.e4.ui.workbench.modeling,
  org.eclipse.jface.dialogs,
+ org.eclipse.jface.layout,
+ org.eclipse.jface.viewers,
+ org.eclipse.jface.window,
  org.eclipse.osgi.util;version="1.1.0",
- org.eclipse.swt.widgets
+ org.eclipse.swt,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.widgets,
+ org.osgi.service.event;version="1.3.0"

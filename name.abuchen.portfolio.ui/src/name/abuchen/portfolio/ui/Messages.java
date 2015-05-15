@@ -250,7 +250,6 @@ public class Messages extends NLS
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
     public static String LabelAvailableAttributes;
-    public static String LabelCancel;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
@@ -272,7 +271,6 @@ public class Messages extends NLS
     public static String LabelLevelNumber;
     public static String LabelNewClassification;
     public static String LabelNewTaxonomy;
-    public static String LabelNo;
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
@@ -331,7 +329,6 @@ public class Messages extends NLS
     public static String LabelVolatility;
     public static String LabelWithoutClassification;
     public static String LabelXDays;
-    public static String LabelYes;
     public static String MenuAddAll;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;
@@ -438,9 +435,6 @@ public class Messages extends NLS
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleLanguage;
-    public static String SaveHandlerMsgSelectFileToSave;
-    public static String SaveHandlerPrompt;
-    public static String SaveHandlerTitle;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;
