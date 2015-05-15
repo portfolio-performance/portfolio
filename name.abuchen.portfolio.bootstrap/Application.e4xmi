@@ -35,6 +35,7 @@
         <children xsi:type="menu:Menu" xmi:id="_mF9JAEYQEeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.menu.file.import" label="%command.import.name">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.import.csv" command="_GgTyQBhXEeOR1rNFCzC82A"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_-_9i0LpsEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_k6K6cPr-EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-pdf" label="%command.import.pdf.import-pdf" enabled="false"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_yN1J4GOVEeSokLBol-mQAQ" elementId="name.abuchen.portfolio.ui.menu.file.import.pdf-comdirect" label="%command.import.pdf.comdirect" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_yN1J4WOVEeSokLBol-mQAQ" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="comdirect"/>
           </children>
@@ -44,6 +45,10 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_p7RKwInJEeSYsbvne6dyow" elementId="name.abuchen.portfolio.ui.menu.file.import.db" label="%command.import.pdf.db" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_p7RKwYnJEeSYsbvne6dyow" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="db"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_x6DOEPr6EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.dab" label="%command.import.pdf.dab" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_x6DOEfr6EeS4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="dab"/>
+          </children>
+          <children xsi:type="menu:MenuSeparator" xmi:id="_gNzZUPr7EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.1"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C1cmoLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-text" command="_Jw7yELptEeSHOs-ah25CLg"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_QviD8BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.export" label="%command.export.name" command="_lcgCQBfWEeOders_POVQHQ"/>

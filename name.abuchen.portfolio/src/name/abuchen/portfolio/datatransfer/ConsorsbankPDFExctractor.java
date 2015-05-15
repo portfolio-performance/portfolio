@@ -56,7 +56,7 @@ public class ConsorsbankPDFExctractor implements Extractor
     @Override
     public String getLabel()
     {
-        return Messages.PDFdbLabel;
+        return "Consorsbank"; //$NON-NLS-1$
     }
 
     @Override

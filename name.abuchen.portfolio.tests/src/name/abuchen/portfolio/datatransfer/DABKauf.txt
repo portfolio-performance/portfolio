@@ -1,0 +1,46 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=8080808080
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Maxima Mustermann
+Kauf  ADRESSZEILE2=An den Häusern 5
+Kommissionsgeschäft ADRESSZEILE3=08150 Berlin
+Frau ADRESSZEILE4=
+Maxima Mustermann MDJ Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+Herr Max Mustermann 8080808080
+Frau Maximiliane Mustermann 9090909090 / 06.01.2015
+ADRESSZEILE6=
+BELEGNUMMER=14600
+An den Häusern 5 SEITENNUMMER=1
+08150 Berlin STEUERERSTATTUNG=N
+Depotinhaber
+Maxima Mustermann
+München, 06.01.2015
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+ARERO - Der Weltfonds Inhaber-Anteile o.N. LU0360863863
+Nominal Kurs
+STK 0,9192 EUR 163,1900
+Handelstag 06.01.2015 Kurswert EUR 150,00-
+Börse Kapitalverwaltungsgesellschaft
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+08.01.2015 8022574001 EUR 150,00
+Zwischengewinn pro Anteil: EUR 0,0000 Zwischengewinn Gesamt: EUR 0,00
+Akkumulierter Ertrag: EUR 4,1606
+Die Höhe des von der KVG festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie die jährlich zu zahlende Ver-
+waltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Aggregierte Order ggf. zum Mischkurs.
+Widerrufsbelehrung für den Erwerb von Anteilen oder Aktien eines offenen Investmentvermögens: Ist der Käufer von Anteilen oder Aktien eines offenen Investmentvermögens 
+durch mündliche Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die Anteile oder Aktien verkauft oder den Verkauf vermittelt hat, dazu bestimmt worden, 
+eine auf den Kauf gerichtete Willenserklärung abzugeben, so ist er an diese Erklärung nur gebunden, wenn er sie nicht innerhalb einer Frist von zwei Wochen bei der 
+Verwaltungsgesellschaft oder einem Repräsentanten im Sinne des § 319 KAGB schriftlich widerruft.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben. Kapitalerträge sind einkommensteuerpflichtig.
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Ernst Huber (Sprecher des Vorstands), Dr. Niklas Dieterich, Dr. Josef Zellner
+ 
+3.19/ABREABHNHANDKF/GABAUFTL/014600/060115/215429

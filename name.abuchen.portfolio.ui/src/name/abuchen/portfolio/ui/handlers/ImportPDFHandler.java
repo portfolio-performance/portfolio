@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.DABPDFExctractor;
 import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.model.Client;
@@ -45,14 +46,23 @@ public class ImportPDFHandler
         // determine extractor class
 
         Extractor extractor = null;
-        if ("comdirect".equals(type)) //$NON-NLS-1$
-            extractor = new ComdirectPDFExtractor(client);
-        if ("consorsbank".equals(type)) //$NON-NLS-1$
-            extractor = new ConsorsbankPDFExctractor(client);
-        else if ("db".equals(type)) //$NON-NLS-1$
-            extractor = new DeutscheBankPDFExctractor(client);
-        else
-            throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
+        switch (type)
+        {
+            case "comdirect": //$NON-NLS-1$
+                extractor = new ComdirectPDFExtractor(client);
+                break;
+            case "consorsbank": //$NON-NLS-1$
+                extractor = new ConsorsbankPDFExctractor(client);
+                break;
+            case "dab": //$NON-NLS-1$
+                extractor = new DABPDFExctractor(client);
+                break;
+            case "db": //$NON-NLS-1$
+                extractor = new DeutscheBankPDFExctractor(client);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
+        }
 
         // open file dialog to pick pdf files
 
