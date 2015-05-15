@@ -38,6 +38,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_yN1J4GOVEeSokLBol-mQAQ" elementId="name.abuchen.portfolio.ui.menu.file.import.pdf-comdirect" label="%command.import.pdf.comdirect" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_yN1J4WOVEeSokLBol-mQAQ" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="comdirect"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="__ZN00PrtEeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.pdf-consorsbank" label="%command.import.pdf.consorsbank" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="__ZN00frtEeS4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="consorsbank"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_p7RKwInJEeSYsbvne6dyow" elementId="name.abuchen.portfolio.ui.menu.file.import.db" label="%command.import.pdf.db" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_p7RKwYnJEeSYsbvne6dyow" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="db"/>
           </children>

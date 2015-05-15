@@ -9,6 +9,7 @@ import java.util.List;
 import javax.inject.Named;
 
 import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.ConsorsbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.model.Client;
@@ -46,6 +47,8 @@ public class ImportPDFHandler
         Extractor extractor = null;
         if ("comdirect".equals(type)) //$NON-NLS-1$
             extractor = new ComdirectPDFExtractor(client);
+        if ("consorsbank".equals(type)) //$NON-NLS-1$
+            extractor = new ConsorsbankPDFExctractor(client);
         else if ("db".equals(type)) //$NON-NLS-1$
             extractor = new DeutscheBankPDFExctractor(client);
         else
