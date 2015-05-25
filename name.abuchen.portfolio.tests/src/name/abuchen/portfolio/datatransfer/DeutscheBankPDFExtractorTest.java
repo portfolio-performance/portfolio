@@ -5,9 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -32,10 +34,17 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testSanityCheckForBankName() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return "some text";
+            }
+        };
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract("", "some text", errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(results, empty());
         assertThat(errors.size(), is(1));
@@ -57,10 +66,17 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("DeutscheBankErtragsgutschrift.txt");
+            }
+        };
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract("", from("DeutscheBankErtragsgutschrift.txt"), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -87,10 +103,17 @@ public class DeutscheBankPDFExtractorTest
         Security security = new Security("BASF", "DE000BASF111", null, null);
         client.addSecurity(security);
 
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client);
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client)
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("DeutscheBankErtragsgutschrift.txt");
+            }
+        };
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract("", from("DeutscheBankErtragsgutschrift.txt"), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -104,10 +127,17 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("DeutscheBankKauf.txt");
+            }
+        };
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract("", from("DeutscheBankKauf.txt"), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -133,10 +163,17 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("DeutscheBankKauf2.txt");
+            }
+        };
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract("", from("DeutscheBankKauf2.txt"), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -161,10 +198,17 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("DeutscheBankVerkauf.txt");
+            }
+        };
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract("", from("DeutscheBankVerkauf.txt"), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

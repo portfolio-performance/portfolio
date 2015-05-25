@@ -5,9 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -28,20 +30,6 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractorTest
 {
-
-    @Test
-    public void testSanityCheckForBankName() throws IOException
-    {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
-
-        List<Item> results = extractor.extract("", "some text", errors);
-
-        assertThat(results, empty());
-        assertThat(errors.size(), is(1));
-        assertThat(errors.get(0), instanceOf(UnsupportedOperationException.class));
-    }
-
     private Security assertSecurity(List<Item> results, boolean mustHaveIsin)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -58,10 +46,17 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("ConsorsbankErtragsgutschrift.txt");
+            }
+        };
 
-        List<Item> results = extractor.extract("", from("ConsorsbankErtragsgutschrift.txt"), errors);
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -84,10 +79,17 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
 
-        List<Item> results = extractor.extract("", from("ConsorsbankKauf.txt"), errors);
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankKauf.txt")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -108,6 +110,36 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-01-19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_80212L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
+    }
+
+    @Test
+    public void testWertpapierKaufIfSecurityIsPresent() throws IOException
+    {
+        Client client = new Client();
+        Security s = new Security();
+        s.setName("COMS.-MSCI WORL.T.U.ETF I");
+        s.setWkn("ETF110");
+        client.addSecurity(s);
+
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(client)
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankKauf.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(5000_00L));
     }
 
     private String from(String resource)

@@ -5,9 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -28,19 +30,6 @@ import org.junit.Test;
 public class DABPDFExtractorTest
 {
 
-    @Test
-    public void testSanityCheckForBankName() throws IOException
-    {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
-
-        List<Item> results = extractor.extract("", "some text", errors);
-
-        assertThat(results, empty());
-        assertThat(errors.size(), is(1));
-        assertThat(errors.get(0), instanceOf(UnsupportedOperationException.class));
-    }
-
     private Security getSecurity(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -51,10 +40,17 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
 
-        List<Item> results = extractor.extract("", from("DABKauf.txt"), errors);
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABKauf.txt")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -82,10 +78,17 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
 
-        List<Item> results = extractor.extract("", from("DABKauf2.txt"), errors);
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABKauf2.txt")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
