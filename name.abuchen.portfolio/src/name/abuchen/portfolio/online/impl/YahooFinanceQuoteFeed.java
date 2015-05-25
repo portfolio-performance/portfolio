@@ -88,12 +88,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
 
-        String line = null;
         try (BufferedReader reader = openReader(url, errors))
         {
             if (reader == null)
                 return false;
 
+            String line = null;
             while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
@@ -111,39 +111,24 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     continue;
                 }
 
-                long lastTrade = asPrice(values[1]);
-
-                Date lastTradeDate = asDate(values[2]);
-                if (lastTradeDate == null) // can't work w/o date
-                    lastTradeDate = Dates.today();
-
-                long daysHigh = asPrice(values[3]);
-
-                long daysLow = asPrice(values[4]);
-
-                long previousClose = asPrice(values[5]);
-
-                int volume = asNumber(values[6]);
-
-                LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
-                price.setHigh(daysHigh);
-                price.setLow(daysLow);
-                price.setPreviousClose(previousClose);
-                price.setVolume(volume);
-
-                for (Security security : forSymbol)
+                try
                 {
-                    boolean isAdded = security.setLatest(price);
-                    isUpdated = isUpdated || isAdded;
+                    LatestSecurityPrice price = buildPrice(values);
+
+                    for (Security security : forSymbol)
+                    {
+                        boolean isAdded = security.setLatest(price);
+                        isUpdated = isUpdated || isAdded;
+                    }
+                }
+                catch (NumberFormatException | ParseException e)
+                {
+                    errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
                 }
             }
 
             for (String symbol : symbol2security.keySet())
                 errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol)));
-        }
-        catch (NumberFormatException | ParseException e)
-        {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
         catch (IOException e)
         {
@@ -151,6 +136,31 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
 
         return isUpdated;
+    }
+
+    private LatestSecurityPrice buildPrice(String[] values) throws ParseException
+    {
+        long lastTrade = asPrice(values[1]);
+
+        Date lastTradeDate = asDate(values[2]);
+        if (lastTradeDate == null) // can't work w/o date
+            lastTradeDate = Dates.today();
+
+        long daysHigh = asPrice(values[3]);
+
+        long daysLow = asPrice(values[4]);
+
+        long previousClose = asPrice(values[5]);
+
+        int volume = asNumber(values[6]);
+
+        LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
+        price.setHigh(daysHigh);
+        price.setLow(daysLow);
+        price.setPreviousClose(previousClose);
+        price.setVolume(volume);
+
+        return price;
     }
 
     @Override
