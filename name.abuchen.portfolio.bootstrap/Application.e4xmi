@@ -48,6 +48,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_x6DOEPr6EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.dab" label="%command.import.pdf.dab" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_x6DOEfr6EeS4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="dab"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_VDIBcALOEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.flatex" label="%command.import.pdf.flatex" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_VDIBcQLOEeW4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="flatex"/>
+          </children>
           <children xsi:type="menu:MenuSeparator" xmi:id="_gNzZUPr7EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.1"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C1cmoLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-text" command="_Jw7yELptEeSHOs-ah25CLg"/>
         </children>
