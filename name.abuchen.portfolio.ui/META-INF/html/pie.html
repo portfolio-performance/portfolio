@@ -9,7 +9,7 @@ path {
 }
 
 text {
-	font-size: 11px;
+    cursor: default;
 }
 </style>
 <body>
@@ -40,8 +40,8 @@ var thePieChart = {
             .innerRadius(this.radius / 2)
             .outerRadius(this.radius - 50);
 
-        this.tooltip = d3.select("body").append("div")   
-            .attr("class", "tooltip")               
+        this.tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
             .style("opacity", 0);
 
         this.svg = d3.select("body").append("svg")
@@ -125,7 +125,7 @@ var thePieChart = {
             .attr("visibility", "hidden");
         labels.exit()
             .remove();
-        
+
         // label positioning algorithm (if want to call it that):
         // on the right side, if it conflicts, move it below
         // on the left side, if it conflicts, move it up

@@ -8,7 +8,7 @@ path {
 }
 
 text {
-  font-size: 9px;
+  cursor: default;
 }
 </style>
 <body>
@@ -40,8 +40,8 @@ var x = d3.scale.linear()
 var y = d3.scale.linear()
     .range([0, radius]);
 
-var tooltip = d3.select("body").append("div")   
-    .attr("class", "tooltip")               
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
 var svg = d3.select("body").append("svg")

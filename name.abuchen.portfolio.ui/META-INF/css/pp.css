@@ -1,5 +1,6 @@
 body {
-	font-family: Lucida Grande, Arial;
+	font-family: Lucida Grande, Segoe UI, Arial;
+	font-size: 11px;
 	margin: 0px 0px 0px 0px;
 	overflow: hidden;
 }
@@ -7,7 +8,7 @@ body {
 div.tooltip {
 	position: absolute;
 	padding: 2px;
-	font-size: 12px;
+	font-size: 11px;
 	color: #efefef;
 	background-color: rgb(0, 0, 0);
 	background-color: rgba(0, 0, 0, 0.6);

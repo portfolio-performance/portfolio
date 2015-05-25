@@ -30,7 +30,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        return new EmbeddedBrowser("/META-INF/html/pie.html") ///$NON-NLS-1$
+        return new EmbeddedBrowser("/META-INF/html/pie.html") //$NON-NLS-1$
                         .createControl(parent, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
     }
 

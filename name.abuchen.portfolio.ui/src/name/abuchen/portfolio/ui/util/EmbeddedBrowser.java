@@ -31,7 +31,7 @@ import org.osgi.framework.Bundle;
 
 public class EmbeddedBrowser
 {
-    private String htmlpage;
+    private final String htmlpage;
     private Browser browser;
 
     public EmbeddedBrowser(String htmlpage)
@@ -77,7 +77,7 @@ public class EmbeddedBrowser
 
     public void refresh()
     {
-        browser.setText(browser.getText());
+        browser.setText(loadHTML(htmlpage));
     }
 
     private String loadHTML(String htmlpage)
