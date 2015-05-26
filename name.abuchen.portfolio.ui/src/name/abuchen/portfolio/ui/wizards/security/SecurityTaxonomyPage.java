@@ -8,6 +8,7 @@ import java.util.Set;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -77,13 +78,16 @@ public class SecurityTaxonomyPage extends AbstractPage
         }
     }
 
-    private static final class WeightsAre100Validator extends MultiValidator
+    private static final class WeightsAreGreaterThan100Validator extends MultiValidator
     {
+        private final Label label;
         private final Taxonomy taxonomy;
         private final List<IObservableValue> observables;
 
-        private WeightsAre100Validator(Taxonomy taxonomy, List<IObservableValue> weightObservables)
+        private WeightsAreGreaterThan100Validator(Label label, Taxonomy taxonomy,
+                        List<IObservableValue> weightObservables)
         {
+            this.label = label;
             this.taxonomy = taxonomy;
             this.observables = weightObservables;
         }
@@ -99,11 +103,14 @@ public class SecurityTaxonomyPage extends AbstractPage
             for (IObservableValue value : observables)
                 weights += (Integer) value.getValue();
 
-            if (Classification.ONE_HUNDRED_PERCENT == weights)
+            if (label != null)
+                label.setText(Values.Weight.format(weights) + "%"); //$NON-NLS-1$
+
+            if (Classification.ONE_HUNDRED_PERCENT >= weights)
                 return ValidationStatus.ok();
             else
                 return ValidationStatus.error(MessageFormat.format(Messages.EditWizardMasterDataMsgWeightNot100Percent,
-                                taxonomy.getName()));
+                                taxonomy.getName(), Values.Weight.format(weights)));
         }
     }
 
@@ -187,7 +194,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         // add button
         Link link = new Link(taxonomyPicker, SWT.UNDERLINE_LINK);
         link.setText(Messages.EditWizardMasterDataLinkNewCategory);
-        GridDataFactory.fillDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
+        GridDataFactory.fillDefaults().span(2, 1).indent(0, 5).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
 
         link.addSelectionListener(new SelectionAdapter()
         {
@@ -205,6 +212,7 @@ public class SecurityTaxonomyPage extends AbstractPage
 
     private void addBlock(final Composite taxonomyPicker, final TaxonomyDesignation designation)
     {
+        Label sumOfWeights = null;
         final List<IObservableValue> weightObservables = new ArrayList<IObservableValue>();
         final List<IObservableValue> classificationObservables = new ArrayList<IObservableValue>();
 
@@ -213,13 +221,18 @@ public class SecurityTaxonomyPage extends AbstractPage
         {
             addSimpleBlock(taxonomyPicker, designation, designation.getLinks().get(0), classificationObservables);
         }
-        else
+        else if (!designation.getLinks().isEmpty())
         {
             for (ClassificationLink link : designation.getLinks())
                 addFullBlock(taxonomyPicker, designation, link, weightObservables, classificationObservables);
+
+            // add summary
+            sumOfWeights = new Label(taxonomyPicker, SWT.NONE);
+            sumOfWeights.setText(""); //$NON-NLS-1$
+            GridDataFactory.fillDefaults().span(2, 1).indent(0, 5).align(SWT.BEGINNING, SWT.CENTER).applyTo(sumOfWeights);
         }
 
-        setupWeightMultiValidator(designation, weightObservables);
+        setupWeightMultiValidator(sumOfWeights, designation, weightObservables);
         setupClassificationMultiValidator(designation, classificationObservables);
     }
 
@@ -268,10 +281,11 @@ public class SecurityTaxonomyPage extends AbstractPage
         parent.layout();
     }
 
-    private void setupWeightMultiValidator(TaxonomyDesignation designation,
+    private void setupWeightMultiValidator(Label sumOfWeights, TaxonomyDesignation designation,
                     final List<IObservableValue> weightObservables)
     {
-        MultiValidator multiValidator = new WeightsAre100Validator(designation.getTaxonomy(), weightObservables);
+        MultiValidator multiValidator = new WeightsAreGreaterThan100Validator(sumOfWeights, designation.getTaxonomy(),
+                        weightObservables);
 
         bindings.getBindingContext().addValidationStatusProvider(multiValidator);
         validators.add(multiValidator);
