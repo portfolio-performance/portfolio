@@ -17,6 +17,7 @@ import java.util.Scanner;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -110,7 +111,43 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(60_00L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-05-04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(1_42270L));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(4_95L));
+    }
+
+    @Test
+    public void testDividend() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABDividend.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("DE0005660104"));
+        assertThat(security.getName(), is("EUWAX AG Inhaber-Aktien o.N."));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(326_00L));
+        assertThat(transaction.getDate(), is(Dates.date("2014-07-02")));
+        assertThat(transaction.getShares(), is(100_00000L));
     }
 
     private String from(String resource)

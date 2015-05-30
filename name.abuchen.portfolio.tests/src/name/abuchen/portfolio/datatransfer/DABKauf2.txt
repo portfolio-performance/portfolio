@@ -23,7 +23,7 @@ db x-tr.MSCI World Index ETF Inhaber-Anteile 1C o.N. LU0274208692
 Nominal Kurs
 STK 1,4227 EUR 42,1710
 Handelstag 04.05.2015 Kurswert EUR 60,00-
-Handelszeit 09:15*
+Handelszeit 09:15* Provision EUR 4,95-
 Börse Lang & Schwarz
 Verwahrart Girosammelverwahrung
 Wert Konto-Nr. Betrag zu Ihren Lasten

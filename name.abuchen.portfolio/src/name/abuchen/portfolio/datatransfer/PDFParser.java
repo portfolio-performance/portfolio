@@ -118,6 +118,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
     /* package */static class Section<T>
     {
+        private boolean isOptional = false;
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<Pattern>();
@@ -127,6 +128,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         {
             this.transaction = transaction;
             this.attributes = attributes;
+        }
+
+        public Section<T> optional()
+        {
+            this.isOptional = true;
+            return this;
         }
 
         public Section<T> find(String string)
@@ -169,8 +176,14 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             }
 
             if (patternNo < pattern.size())
+            {
+                // if section is option, ignore if patterns do not match
+                if (isOptional)
+                    return;
+
                 throw new IllegalArgumentException(MessageFormat.format("Not all pattern matched {0} ", //$NON-NLS-1$
                                 pattern.toString()));
+            }
 
             if (values.size() != attributes.length)
                 throw new IllegalArgumentException(MessageFormat.format("Detected values {0} but expected {1}", //$NON-NLS-1$
