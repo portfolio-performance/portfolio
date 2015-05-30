@@ -70,7 +70,8 @@ var flare = {
 
     this.path = svg.datum(root).selectAll("path")
       .data(partition.value(function(d) { return d.value; }).nodes)
-      .enter().append("path")
+      .enter()
+      .append("path")
       .attr("d", arc)
       .style("fill", function(d) { return d.color })
       .on("click", this.click)
@@ -79,7 +80,8 @@ var flare = {
       .on("mouseout", this.mouseout)
       .each(stash);
 
-    this.text = svg.datum(root).selectAll("text")
+    this.text = svg.datum(root)
+      .selectAll("text")
       .data(partition.value(function(d) { return d.value; }).nodes)
 
     var textEnter = this.text.enter().append("text")
@@ -92,10 +94,8 @@ var flare = {
       })
       .attr("dy", ".2em")
       .attr("transform", function(d) {
-        var multiline = (d.name || "").split(" ").length > 1,
-            angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-            rotate = angle + (multiline ? -.5 : 0);
-        return "rotate(" + rotate + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+        var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+        return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
       })
       .on("click", this.click)
       .on("mouseover", this.mouseover)
@@ -104,11 +104,8 @@ var flare = {
 
     textEnter.append("tspan")
       .attr("x", 0)
-      .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
-    textEnter.append("tspan")
-      .attr("x", 0)
-      .attr("dy", "1em")
-      .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
+      .attr("visibility", function(d) { return isBigEnough(d) ? null : "hidden" })
+      .text(cropped);
   },
 
   click: function(d) {
@@ -120,7 +117,7 @@ var flare = {
 
     // Somewhat of a hack as we rely on arcTween updating the scales.
     flare.text.style("visibility", function(e) {
-          return isParentOf(d, e) ? null : d3.select(this).style("visibility");
+          return isBigEnough(e) && isParentOf(d, e) ? null : d3.select(this).style("visibility");
         })
       .transition()
       .duration(1000)
@@ -130,16 +127,16 @@ var flare = {
           };
       })
       .attrTween("transform", function(d) {
-          var multiline = (d.name || "").split(" ").length > 1;
           return function() {
-            var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-                rotate = angle + (multiline ? -.5 : 0);
-            return "rotate(" + rotate + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+            var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+            return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
           };
         })
       .style("fill-opacity", function(e) { return isParentOf(d, e) ? 1 : 1e-6; })
       .each("end", function(e) {
-          d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
+          d3.select(this)
+            .style("visibility", isBigEnough(e) && isParentOf(d, e) ? null : "hidden")
+            .text(cropped(e));
       });
   },
 
@@ -164,6 +161,23 @@ var flare = {
       .duration(250)
       .style("opacity", 0);
   }
+}
+
+function cropped(d) {
+  if (!d.depth)
+    return "";
+
+  var available = (Math.max(0, y(d.y + d.dy)) - Math.max(0, y(d.y))) / 7;
+  if (d.name.length <= available)
+    return d.name;
+  else
+    return d.name.substring(0, available) + "...";
+}
+
+function isBigEnough(d) {
+  var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+  var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+  return d.depth && (endAngle - startAngle) > (2 * Math.PI / 100);
 }
 
 // Setup for switching data: stash the old values for transition.
