@@ -2,9 +2,10 @@ package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -102,19 +103,25 @@ public class ClientSnapshot
 
     public Map<InvestmentVehicle, AssetPosition> getPositionsByVehicle()
     {
-        Map<InvestmentVehicle, AssetPosition> answer = new HashMap<InvestmentVehicle, AssetPosition>();
+        return getAssetPositions().collect(Collectors.toMap(AssetPosition::getInvestmentVehicle, v -> v));
+    }
+
+    public Stream<AssetPosition> getAssetPositions()
+    {
+        List<AssetPosition> answer = new ArrayList<AssetPosition>();
 
         long assets = getAssets();
 
         for (SecurityPosition p : jointPortfolio.getPositions())
-            answer.put(p.getSecurity(), new AssetPosition(p.getSecurity(), p, assets));
+            answer.add(new AssetPosition(p.getSecurity(), p, assets));
 
         for (AccountSnapshot a : accounts)
         {
             SecurityPosition sp = new SecurityPosition(new SecurityPrice(getTime(), a.getFunds()),
                             Values.Share.factor());
-            answer.put(a.getAccount(), new AssetPosition(a.getAccount(), sp, assets));
+            answer.add(new AssetPosition(a.getAccount(), sp, assets));
         }
-        return answer;
+
+        return answer.stream();
     }
 }

@@ -33,12 +33,14 @@ var thePieChart = {
         this.radius = (Math.min(this.width, this.height) / 2) - 10;
 
         this.pie = d3.layout.pie()
+            .startAngle(Math.PI / 2)
+            .endAngle(2.5 * Math.PI)
             .value(function(d) { return d.value; })
             .sort(function(a, b) { return d3.descending(a.value, b.value) });
 
         this.arc = d3.svg.arc()
             .innerRadius(this.radius / 2)
-            .outerRadius(this.radius - 50);
+            .outerRadius(this.radius - 60);
 
         this.tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -79,6 +81,7 @@ var thePieChart = {
     },
 
     update: function(data) {
+        var that = this;
         this.piedata = this.pie(data);
 
         var pathGroup = this.svg.select("g.piePaths");
@@ -95,9 +98,9 @@ var thePieChart = {
             .attr("line", "#ffffff")
             .attr("fill", function(d) { return d.data.color })
             .attr("d", this.arc)
-            .on("mouseover", this.mouseover)
-            .on("mousemove", this.mousemove)
-            .on("mouseout", this.mouseout)
+            .on("mouseover", function(d) { that.mouseover(d); })
+            .on("mousemove", function(d) { that.mousemove(d); })
+            .on("mouseout", function(d) { that.mouseout(d); })
             .transition();
 
         this.path.exit()
@@ -120,31 +123,32 @@ var thePieChart = {
             .data(this.piedata.sort(function(p1,p2) { return p1.startAngle - p2.startAngle;}));
         labels.enter()
             .append("text")
-            .filter(function(d) { return d.data.value / total > 0.01 })
+            .filter(function(d) { return d.data.value / total > 0.001 })
             .attr("text-anchor", "start")
             .attr("visibility", "hidden");
         labels.exit()
             .remove();
 
-        // label positioning algorithm (if want to call it that):
+        // label positioning algorithm (if we want to call it that):
         // on the right side, if it conflicts, move it below
         // on the left side, if it conflicts, move it up
 
-        var rightMaximumBottom;
-        var leftMiniumTop;
+        var previous;
 
         labels
-            .filter(function(d) { return d.data.value / total > 0.01 })
+            .filter(function(d) { return d.data.value / total > 0.001 })
             .text(function (d) { return d.data.label; })
             .each(function (d, i) {
-                var a = (d.startAngle + d.endAngle) / 2 ;
+                var a = (d.startAngle + d.endAngle) / 2;
                 var bbox = this.getBBox();
                 var labelRadius = that.radius - 40;
+
+                var isRight = (a >= 0 && a <= Math.PI) || (a >= 2 * Math.PI);
 
                 d.cx =  Math.sin(a) * (labelRadius);
                 d.cy = -Math.cos(a) * (labelRadius);
 
-                if (a >= 0 && a <= Math.PI) {
+                if (isRight) {
                     d.x = d.cx;
                     d.l = d.cx - 2;
                     d.r = d.cx + bbox.width + 2;
@@ -157,19 +161,20 @@ var thePieChart = {
                 d.b = d.y;
                 d.t = d.y - bbox.height;
 
-                if (a >= 0 && a <= Math.PI) {
-                    if (rightMaximumBottom && rightMaximumBottom > d.t) {
-                        d.t = rightMaximumBottom;
-                        d.b = d.y = rightMaximumBottom + bbox.height;
+                // check for conflict
+                if (previous && d.l < previous.r && d.r > previous.l &&
+                    d.t < previous.b && d.b > previous.t) {
+
+                    if (isRight) {
+                        d.t = previous.b - 2;
+                        d.b = d.y = previous.b + bbox.height - 2;
+                    } else {
+                        d.t = previous.t - bbox.height - 2;
+                        d.b = d.y = previous.t - 2;
                     }
-                    rightMaximumBottom = d.b;
-                } else {
-                    if (leftMiniumTop && leftMiniumTop < d.b) {
-                        d.t = leftMiniumTop - bbox.height;
-                        d.b = d.y = leftMiniumTop;
-                    }
-                    leftMiniumTop = d.t;
                 }
+
+                previous = d;
             })
             .transition() //we can use transitions now!
             .attr("x", function (d) { return d.x; })
@@ -196,9 +201,9 @@ var thePieChart = {
             .attr("text-anchor", "middle")
             .style("fill", function(d) { return brightness(d3.rgb(d.data.color)) < 125 ? "#eee" : "#000"; })
             .text(function(d) { return d.data.valueLabel; })
-            .on("mouseover", this.mouseover)
-            .on("mousemove", this.mousemove)
-            .on("mouseout", this.mouseout);
+            .on("mouseover", function(d) { that.mouseover(d); })
+            .on("mousemove", function(d) { that.mousemove(d); })
+            .on("mouseout", function(d) { that.mouseout(d); });
 
         this.valueLabels.exit()
             .remove();
@@ -211,25 +216,25 @@ var thePieChart = {
     },
 
     mouseover: function(d) {
-        thePieChart.tooltip
+        this.tooltip
             .transition()
             .duration(250)
             .style("opacity", 1);
 
-        thePieChart.tooltip
+        this.tooltip
             .html(d.data.caption)
             .style("left", (d3.event.pageX + 6) + "px")
             .style("top", (d3.event.pageY - 20) + "px");
     },
 
     mousemove: function(d) {
-        thePieChart.tooltip
+        this.tooltip
             .style("left", (d3.event.pageX + 6) + "px")
             .style("top", (d3.event.pageY - 20) + "px");
     },
 
     mouseout: function(d) {
-        thePieChart.tooltip.transition()
+        this.tooltip.transition()
           .duration(250)
           .style("opacity", 0);
     }

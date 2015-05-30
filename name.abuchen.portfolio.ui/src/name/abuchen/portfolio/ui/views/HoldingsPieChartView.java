@@ -1,16 +1,16 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.Comparator;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.AccountSnapshot;
+import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.util.ColorConversion;
 import name.abuchen.portfolio.util.Dates;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -34,6 +34,24 @@ public class HoldingsPieChartView extends AbstractFinanceView
                         .createControl(parent, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
     }
 
+    private static final class JSColors
+    {
+        private static final int SIZE = 11;
+        private static final float STEP = (360.0f / (float) SIZE);
+
+        private static final float HUE = 262.3f;
+        private static final float SATURATION = 0.464f;
+        private static final float BRIGHTNESS = 0.886f;
+
+        private int nextSlice = 0;
+
+        public String next()
+        {
+            float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / SIZE)));
+            return ColorConversion.toHex((HUE + (STEP * nextSlice++)) % 360f, SATURATION, brightness);
+        }
+    }
+
     private final class LoadDataFunction extends BrowserFunction
     {
         private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
@@ -55,36 +73,20 @@ public class HoldingsPieChartView extends AbstractFinanceView
                 ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
 
                 StringJoiner joiner = new StringJoiner(",", "[", "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                JSColors colors = new JSColors();
 
-                long totalAssets = snapshot.getAssets();
-
-                for (AccountSnapshot a : snapshot.getAccounts())
-                {
-                    long value = a.getFunds();
-                    if (value == 0)
-                        continue;
-
-                    String name = StringEscapeUtils.escapeJson(a.getAccount().getName());
-                    String percentage = Values.Percent2.format(value / (double) totalAssets);
-                    joiner.add(String.format(ENTRY, name, //
-                                    value, //
-                                    Colors.CASH.asHex(), //
-                                    name, Values.Amount.format(value), percentage, percentage));
-                }
-
-                for (SecurityPosition position : snapshot.getJointPortfolio().getPositions())
-                {
-                    long value = position.calculateValue();
-                    if (value == 0)
-                        continue;
-
-                    String name = StringEscapeUtils.escapeJson(position.getSecurity().getName());
-                    String percentage = Values.Percent2.format(value / (double) totalAssets);
-                    joiner.add(String.format(ENTRY, name, //
-                                    value, //
-                                    Colors.EQUITY.asHex(), //
-                                    name, Values.Amount.format(value), percentage, percentage));
-                }
+                snapshot.getAssetPositions() //
+                                .filter(p -> p.getValuation() > 0) //
+                                .sorted(Comparator.comparing(AssetPosition::getValuation).reversed())
+                                .forEach(p -> {
+                                    String name = StringEscapeUtils.escapeJson(p.getDescription());
+                                    String percentage = Values.Percent2.format(p.getShare());
+                                    joiner.add(String.format(ENTRY, name, //
+                                                    p.getValuation(), //
+                                                    colors.next(), //
+                                                    name, Values.Amount.format(p.getValuation()), percentage, //
+                                                    percentage));
+                                });
 
                 return joiner.toString();
             }
