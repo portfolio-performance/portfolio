@@ -112,7 +112,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
             Item item = wrapper.apply(target);
-            items.add(item);
+            if (item != null)
+                items.add(item);
         }
     }
 

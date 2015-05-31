@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
@@ -51,29 +52,70 @@ public class ConsorsbankPDFExtractorTest
             @Override
             String strip(File file) throws IOException
             {
-                return from("ConsorsbankErtragsgutschrift.txt");
+                return from(file.getName());
             }
         };
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankErtragsgutschrift.txt")), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
 
         // check security
         Security security = assertSecurity(results, false);
 
         // check transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertDividendTransaction(security, item);
+
+        assertTaxTransaction(results.stream().filter(i -> i instanceof TransactionItem)
+                        .reduce((previous, current) -> current).get());
+    }
+
+    private void assertDividendTransaction(Security security, Optional<Item> item)
+    {
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(Dates.date("2015-05-08")));
-        assertThat(transaction.getAmount(), is(326_90L));
+        assertThat(transaction.getAmount(), is(444_00L));
         assertThat(transaction.getShares(), is(370_00000L));
+    }
+
+    private void assertTaxTransaction(Item item)
+    {
+        assertThat(item.getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction t = (AccountTransaction) item.getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(t.getAmount(), is(111_00L + 6_10L));
+        assertThat(t.getDate(), is(Dates.date("2015-05-08")));
+        assertThat(t.getShares(), is(0L));
+        assertThat(t.getSecurity(), is(nullValue()));
+    }
+
+    @Test
+    public void testErtragsgutschrift2() throws IOException
+    {
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankErtragsgutschrift2.txt")), errors);
+
+        assertThat(errors, empty());
+
+        // since taxes are zero, no tax transaction must be created
+        assertThat(results.size(), is(2));
     }
 
     @Test

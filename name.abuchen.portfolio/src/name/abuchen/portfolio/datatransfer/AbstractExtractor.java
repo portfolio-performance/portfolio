@@ -91,7 +91,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
         for (Item item : new ArrayList<Item>(results))
         {
             Security security = item.getSecurity();
-            if (!client.getSecurities().contains(security) && !added.contains(security))
+            if (security != null && !client.getSecurities().contains(security) && !added.contains(security))
             {
                 added.add(security);
                 results.add(new SecurityItem(security));

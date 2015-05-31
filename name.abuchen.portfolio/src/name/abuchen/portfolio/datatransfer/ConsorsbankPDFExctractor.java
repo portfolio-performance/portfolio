@@ -70,13 +70,13 @@ public class ConsorsbankPDFExctractor extends AbstractExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-        .subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DIVIDENDS);
-            return t;
-        })
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DIVIDENDS);
+                            return t;
+                        })
 
-        .section("wkn", "name", "shares")
+                        .section("wkn", "name", "shares")
                         //
                         .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *")
                         //
@@ -85,15 +85,46 @@ public class ConsorsbankPDFExctractor extends AbstractExtractor
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount")
+                        .section("amount")
                         //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *(?<amount>[\\d.]+,\\d+) *")
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setDate(asDate(v.get("date")));
-                        })
+                        .match("BRUTTO *(\\w{3}+) *(?<amount>[\\d.]+,\\d+) *")
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+
+                        .section("date")
+                        //
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *([\\d.]+,\\d+) *")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
+
+        block = new Block("DIVIDENDENGUTSCHRIFT.*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+                        //
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAXES);
+                            return t;
+                        })
+
+                        .section("kapst", "solz")
+                        //
+                        .match("KAPST.*(\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *")
+                        .match("SOLZ.*(\\w{3}+) *(?<solz>[\\d.]+,\\d+) *")
+                        //
+                        .assign((t, v) -> {
+                            long kapst = asAmount(v.get("kapst"));
+                            long solz = asAmount(v.get("solz"));
+                            t.setAmount(kapst + solz);
+                        })
+
+                        .section("date")
+                        //
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *([\\d.]+,\\d+) *")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
+
     }
 
     @Override
