@@ -73,14 +73,14 @@ public class FlatexPDFExctractor extends AbstractExtractor
         Block block = new Block("Dividendengutschrift.*");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
+                        //
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DIVIDENDS);
+                            return t;
+                        })
 
-        .subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DIVIDENDS);
-            return t;
-        })
-
-        .section("wkn", "isin", "name")
+                        .section("wkn", "isin", "name")
                         .match("Nr.(\\d*) * (?<name>[^(]*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
@@ -88,7 +88,7 @@ public class FlatexPDFExctractor extends AbstractExtractor
 
                         .section("shares")
                         //
-                        .match("^St. *: *(?<shares>\\d+(,\\d*)?)")
+                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount")
