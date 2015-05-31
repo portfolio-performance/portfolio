@@ -30,7 +30,6 @@ public class FlatexPDFExctractor extends AbstractExtractor
         Block block = new Block("Nr.(\\d*)/(\\d*)  Kauf.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
-
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
@@ -57,9 +56,21 @@ public class FlatexPDFExctractor extends AbstractExtractor
                         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
 
                         .section("fee")
+                        .optional()
                         //
                         .match(".* Provision *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
                         .assign((t, v) -> t.setFees(asAmount(v.get("fee"))))
+
+                        .section("fee")
+                        .optional()
+                        //
+                        .match(".* Eigene Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
+
+                        .section("fee").optional()
+                        //
+                        .match(".* \\*Fremde Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
