@@ -16,6 +16,9 @@ public class ConsorsbankPDFExctractor extends AbstractExtractor
     {
         super(client);
 
+        addBankIdentifier("Consorsbank"); //$NON-NLS-1$
+        addBankIdentifier("Cortal Consors"); //$NON-NLS-1$
+
         addBuyTransaction();
         addDividendTransaction();
     }
@@ -36,10 +39,10 @@ public class ConsorsbankPDFExctractor extends AbstractExtractor
             return entry;
         })
 
-        .section("wkn", "isin", "name").find("Wertpapier WKN ISIN").match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+        .section("wkn", "isin", "name") //
+                        .find("Wertpapier WKN ISIN") //
+                        .match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
                         .find("Einheit Umsatz") //
@@ -67,18 +70,17 @@ public class ConsorsbankPDFExctractor extends AbstractExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
+        .subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.DIVIDENDS);
+            return t;
+        })
 
-                        .section("wkn", "name", "shares")
+        .section("wkn", "name", "shares")
                         //
                         .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *")
                         //
-                        .match("^(?<name>.*)$")
-                        .assign((t, v) -> {
+                        .match("^(?<name>.*)$").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })

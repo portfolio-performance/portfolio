@@ -32,6 +32,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 {
     private final Client client;
     private final PDFTextStripper textStripper;
+    private final List<String> bankIdentifier = new ArrayList<String>();
     private final List<DocumentType> documentTypes = new ArrayList<DocumentType>();
 
     private final Map<String, Security> isin2security;
@@ -56,6 +57,11 @@ import org.apache.pdfbox.util.PDFTextStripper;
     protected final void addDocumentTyp(DocumentType type)
     {
         this.documentTypes.add(type);
+    }
+
+    protected final void addBankIdentifier(String identifier)
+    {
+        this.bankIdentifier.add(identifier);
     }
 
     @Override
@@ -105,12 +111,9 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
     private List<Item> extract(String filename, String text, List<Exception> errors)
     {
-
         try
         {
-            if (!text.contains(getLabel()))
-                throw new UnsupportedOperationException( //
-                                MessageFormat.format(Messages.PDFMsgFileNotSupported, filename, getLabel()));
+            checkBankIdentifier(filename, text);
 
             List<Item> items = new ArrayList<Item>();
 
@@ -136,6 +139,19 @@ import org.apache.pdfbox.util.PDFTextStripper;
             errors.add(e);
             return Collections.emptyList();
         }
+    }
+
+    private void checkBankIdentifier(String filename, String text)
+    {
+        if (bankIdentifier.isEmpty())
+            bankIdentifier.add(getLabel());
+
+        for (String identifier : bankIdentifier)
+            if (text.contains(identifier))
+                return;
+
+        throw new UnsupportedOperationException( //
+                        MessageFormat.format(Messages.PDFMsgFileNotSupported, filename, getLabel()));
     }
 
     protected Security getOrCreateSecurity(Map<String, String> values)
