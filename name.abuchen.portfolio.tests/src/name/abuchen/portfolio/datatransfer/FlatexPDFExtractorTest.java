@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class FlatexPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(5893_10L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2014-01-28")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(150_00000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(150_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(5_90L));
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(39_24L));
     }
@@ -105,7 +106,7 @@ public class FlatexPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(5954_80L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2014-01-28")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(100_00000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(5_90L));
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
     }
@@ -144,8 +145,8 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(Dates.date("2014-05-08")));
-        assertThat(transaction.getAmount(), is(795_15L));
-        assertThat(transaction.getShares(), is(360_00000L));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(795.15)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(360)));
     }
 
     private String from(String resource)

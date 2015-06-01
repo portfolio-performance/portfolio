@@ -435,6 +435,9 @@ public class ClientFactory
                 // property to security
             case 24:
                 // do nothing --> added 'TAX_REFUND' as account transaction
+            case 25:
+                // incremented precision of shares to 6 digits after the decimal sign
+                incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(client);
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -442,6 +445,16 @@ public class ClientFactory
             default:
                 break;
         }
+    }
+
+    private static void incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(Client client)
+    {
+        for(Portfolio portfolio : client.getPortfolios())
+            for(PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 10);
+        for(Account account : client.getAccounts())
+            for(AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 10);
     }
 
     private static void fixAssetClassTypes(Client client)

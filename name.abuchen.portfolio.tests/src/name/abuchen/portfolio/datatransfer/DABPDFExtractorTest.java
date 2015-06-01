@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
@@ -70,9 +71,9 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(150_00L));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(150.00)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-01-06")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(91920L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.91920)));
         assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
     }
 
@@ -108,9 +109,9 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(60_00L));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(60)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-05-04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(1_42270L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.42270)));
         assertThat(entry.getPortfolioTransaction().getFees(), is(4_95L));
     }
 
@@ -145,9 +146,9 @@ public class DABPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getAmount(), is(326_00L));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(326)));
         assertThat(transaction.getDate(), is(Dates.date("2014-07-02")));
-        assertThat(transaction.getShares(), is(100_00000L));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }
 
     private String from(String resource)

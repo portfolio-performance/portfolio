@@ -36,7 +36,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> Share = new Values<Long>("#,##0.#####", 100000D, 100000) //$NON-NLS-1$
+    public static final Values<Long> Share = new Values<Long>("#,##0.######", 1000000D, 1000000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
@@ -161,6 +161,11 @@ public abstract class Values<E>
     public int factor()
     {
         return factor;
+    }
+    
+    public long factorize(double value)
+    {
+        return Double.valueOf(value * factor).longValue();
     }
 
     public abstract String format(E amount);
