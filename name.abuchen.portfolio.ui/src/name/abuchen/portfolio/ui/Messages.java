@@ -200,6 +200,7 @@ public class Messages extends NLS
     public static String ExportWizardUnsupportedExport;
     public static String GroupLabelAttributes;
     public static String GroupLabelDividends;
+    public static String IBImportHandler_LabelXMLFile;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;
