@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
@@ -81,8 +82,8 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(Dates.date("2015-05-08")));
-        assertThat(transaction.getAmount(), is(444_00L));
-        assertThat(transaction.getShares(), is(370_00000L));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(444)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(370)));
     }
 
     private void assertTaxTransaction(Item item)
@@ -150,7 +151,7 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(5000_00L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-01-19")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(132_80212L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
     }
 

@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Values;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -50,9 +51,9 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
-                        .inbound_delivery(c, "2010-01-01", 1000000, 12000) //
-                        .inbound_delivery(d, "2010-01-01", 1000000, 12000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(c, "2010-01-01", Values.Share.factorize(10), 12000) //
+                        .inbound_delivery(d, "2010-01-01", Values.Share.factorize(10), 12000) //
                         .addTo(client);
 
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
@@ -89,7 +90,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
@@ -124,7 +125,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
@@ -155,7 +156,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
@@ -189,7 +190,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
