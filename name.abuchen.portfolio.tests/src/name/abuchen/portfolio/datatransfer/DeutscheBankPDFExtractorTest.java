@@ -228,8 +228,9 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2074.71)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
-        assertThat(entry.getPortfolioTransaction().getTaxes(), is(Values.Amount.factorize(122.94) + Values.Amount.factorize(6.76)));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(7.90) + Values.Amount.factorize(0.60) + Values.Amount.factorize(2)));
+        assertThat(entry.getPortfolioTransaction().getTaxes(),
+                        is(Values.Amount.factorize(122.94) + Values.Amount.factorize(6.76)));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(7.90 + 0.60 + 2)));
     }
 
     private String from(String resource)
