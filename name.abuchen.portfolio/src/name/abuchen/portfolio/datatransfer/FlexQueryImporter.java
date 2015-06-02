@@ -207,10 +207,10 @@ public class FlexQueryImporter
     { 
         
         //Unused Information from Flexstatement Trades, to used in the future
-        //System.out.println("currency : " + eElement.getAttribute("currency"));
-        //System.out.println("tradeTime : " + eElement.getAttribute("tradeTime"));
-        //System.out.println("transactionID : " + eElement.getAttribute("transactionID"));
-        //System.out.println("ibOrderID : " + eElement.getAttribute("ibOrderID"));
+        //eElement.getAttribute("currency"));
+        //eElement.getAttribute("tradeTime"));
+        //eElement.getAttribute("transactionID"));
+        //eElement.getAttribute("ibOrderID"));
         
         Portfolio portfolio = this.getPortfolio(eElement.getAttribute("accountId"));        
         
@@ -263,8 +263,6 @@ public class FlexQueryImporter
     void buildCorporateTransaction(Client client, Element eElement) throws ParseException
     { 
         Portfolio portfolio = this.getPortfolio(eElement.getAttribute("accountId"));         
-        //Transaction transaction;     
-        System.out.println(eElement.getNodeName());
         
         Double amount = Double.parseDouble(eElement.getAttribute("proceeds")) ;
         if (amount != 0) {
@@ -321,7 +319,6 @@ public class FlexQueryImporter
      * @param eElement
      */
     public void calculateShares(Transaction transaction, Element eElement) {
-        Portfolio p = this.getPortfolio(eElement.getAttribute("accountId"));
         
         //Figure out how many shares were holding related to this Dividend Payment
         long numShares = 0;
@@ -371,7 +368,6 @@ public class FlexQueryImporter
         } else if (eElement.getAttribute("type").equals("Other Fees") ) {
             transaction.setType(AccountTransaction.Type.FEES);
         } else {
-            System.out.println("Unkown Transaction Type :"+eElement.getAttribute("type"));
             throw new IllegalArgumentException();
         }
         
@@ -386,6 +382,11 @@ public class FlexQueryImporter
         account.addTransaction(transaction);
     }        
     
+    /**
+     * Imports Trades, CorporateActions and CashTransactions from Doc
+     * @param doc
+     * @param type
+     */
     public void importModelObjects(Document doc, String type) {
         
         NodeList nList = doc.getElementsByTagName(type);
@@ -437,7 +438,7 @@ public class FlexQueryImporter
             // Process all CorporateTransactions
             importModelObjects(doc,"CorporateAction");
            
-            // Process all FxTransactions and ConversionRates
+            // TODO: Process all FxTransactions and ConversionRates
             
         }
         catch (ParserConfigurationException e)
