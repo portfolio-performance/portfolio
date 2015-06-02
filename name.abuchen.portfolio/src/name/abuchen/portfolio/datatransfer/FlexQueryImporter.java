@@ -139,7 +139,14 @@ public class FlexQueryImporter
         throw new IllegalArgumentException();        
     }
     
-    // Lookup the Security in the Model or create a new one if it does not yet exist
+    /**
+     * Lookup a Security in the Model or create a new one if it does not yet exist
+     * It uses IB ContractID (conID) for the WKN, tries to degrade if conID or ISIN are not available
+     * @param client
+     * @param eElement
+     * @param doCreate
+     * @return
+     */
     protected Security lookupSecurity(Client client, Element eElement, boolean doCreate)
     {
         // Lookup the Exchange Suffix for Yahoo
@@ -199,7 +206,7 @@ public class FlexQueryImporter
     void buildPortfolioTransaction(Client client, Element eElement) throws ParseException
     { 
         
-        //Unused Information from Flexstatement Trades
+        //Unused Information from Flexstatement Trades, to used in the future
         //System.out.println("currency : " + eElement.getAttribute("currency"));
         //System.out.println("tradeTime : " + eElement.getAttribute("tradeTime"));
         //System.out.println("transactionID : " + eElement.getAttribute("transactionID"));
@@ -208,23 +215,13 @@ public class FlexQueryImporter
         Portfolio portfolio = this.getPortfolio(eElement.getAttribute("accountId"));        
         
         //PortfolioTransaction transaction = new PortfolioTransaction(); 
-        BuySellEntry transaction = new BuySellEntry(portfolio, portfolio.getReferenceAccount());     
-
- 
-        System.out.println(eElement.getNodeName());
+        BuySellEntry transaction = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
         
         // Set Transaction Type
-        // eventually should also implement here the Corporate Actions as Transfer and 
         if (eElement.getAttribute("buySell").equals("BUY") ) {
             transaction.setType(PortfolioTransaction.Type.BUY);
         } else if (eElement.getAttribute("buySell").equals("SELL") ) {
             transaction.setType(PortfolioTransaction.Type.SELL);
-        } else if (eElement.getNodeName().equals("CorporateAction") ) {
-            if ( Double.parseDouble(eElement.getAttribute("quantity")) >= 0 ) {
-                transaction.setType(PortfolioTransaction.Type.TRANSFER_IN);
-            } else {
-                transaction.setType(PortfolioTransaction.Type.TRANSFER_OUT);
-            }
         } else throw new IllegalArgumentException();
                 
         String d = eElement.getAttribute("tradeDate");
@@ -415,6 +412,11 @@ public class FlexQueryImporter
         }        
     }
     
+    /**
+     * Import an Interactive Broker Activitystatement from XML File
+     * It currently only imports Trades, Corporate Transactions and Cash Transactions
+     * @param errors
+     */
     public void importActivityStatement(List<Exception> errors)
     {        
 
@@ -453,8 +455,5 @@ public class FlexQueryImporter
         finally
         {
         }        
-        
-        
- 
     }    
 }
