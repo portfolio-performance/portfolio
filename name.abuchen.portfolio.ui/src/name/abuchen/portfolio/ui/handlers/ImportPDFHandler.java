@@ -14,6 +14,7 @@ import name.abuchen.portfolio.datatransfer.DABPDFExctractor;
 import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.FlatexPDFExctractor;
+import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
@@ -64,6 +65,9 @@ public class ImportPDFHandler
             case "flatex": //$NON-NLS-1$
                 extractor = new FlatexPDFExctractor(client);
                 break;
+            case "ib": //$NON-NLS-1$
+                extractor = new IBFlexStatementExtractor(client);
+                break;                
             default:
                 throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
         }
