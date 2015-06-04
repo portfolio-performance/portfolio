@@ -2,16 +2,19 @@ package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 
@@ -27,11 +30,14 @@ public interface Extractor
 
         long getAmount();
 
+        long getShares();
+
         Security getSecurity();
 
         Annotated getAnnotated();
 
-        void insert(Client client, Portfolio portfolio, Account account);
+        void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount, Portfolio secondaryPortfolio,
+                        Account secondaryAccount);
     }
 
     class TransactionItem implements Item
@@ -40,11 +46,23 @@ public interface Extractor
 
         public TransactionItem(AccountTransaction transaction)
         {
+            if (EnumSet.of(AccountTransaction.Type.BUY, //
+                            AccountTransaction.Type.SELL, //
+                            AccountTransaction.Type.TRANSFER_IN, //
+                            AccountTransaction.Type.TRANSFER_OUT) //
+                            .contains(transaction.getType()))
+                throw new UnsupportedOperationException();
             this.transaction = transaction;
         }
 
         public TransactionItem(PortfolioTransaction transaction)
         {
+            if (EnumSet.of(PortfolioTransaction.Type.BUY, //
+                            PortfolioTransaction.Type.SELL, //
+                            PortfolioTransaction.Type.TRANSFER_IN, //
+                            PortfolioTransaction.Type.TRANSFER_OUT) //
+                            .contains(transaction.getType()))
+                throw new UnsupportedOperationException();
             this.transaction = transaction;
         }
 
@@ -78,6 +96,12 @@ public interface Extractor
         }
 
         @Override
+        public long getShares()
+        {
+            return transaction.getShares();
+        }
+
+        @Override
         public Security getSecurity()
         {
             return transaction.getSecurity();
@@ -90,7 +114,8 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio portfolio, Account account)
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
         {
             // ensure consistency (in case the user deleted the creation of the
             // security via the dialog)
@@ -99,9 +124,9 @@ public interface Extractor
                 client.addSecurity(security);
 
             if (transaction instanceof AccountTransaction)
-                account.addTransaction((AccountTransaction) transaction);
+                primaryAccount.addTransaction((AccountTransaction) transaction);
             else if (transaction instanceof PortfolioTransaction)
-                portfolio.addTransaction((PortfolioTransaction) transaction);
+                primaryPortfolio.addTransaction((PortfolioTransaction) transaction);
             else
                 throw new UnsupportedOperationException();
         }
@@ -109,7 +134,7 @@ public interface Extractor
 
     class BuySellEntryItem implements Item
     {
-        private BuySellEntry entry;
+        private final BuySellEntry entry;
 
         public BuySellEntryItem(BuySellEntry entry)
         {
@@ -141,6 +166,12 @@ public interface Extractor
         }
 
         @Override
+        public long getShares()
+        {
+            return entry.getAccountTransaction().getShares();
+        }
+
+        @Override
         public Security getSecurity()
         {
             return entry.getAccountTransaction().getSecurity();
@@ -153,13 +184,136 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio portfolio, Account account)
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
         {
-            entry.setPortfolio(portfolio);
-            entry.setAccount(account);
+            entry.setPortfolio(primaryPortfolio);
+            entry.setAccount(primaryAccount);
             entry.insert();
         }
 
+    }
+
+    class AccountTransferItem implements Item
+    {
+        private final AccountTransferEntry entry;
+
+        public AccountTransferItem(AccountTransferEntry entry)
+        {
+            this.entry = entry;
+        }
+
+        @Override
+        public Object getSubject()
+        {
+            return entry;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelTransferAccount;
+        }
+
+        @Override
+        public Date getDate()
+        {
+            return entry.getSourceTransaction().getDate();
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return entry.getSourceTransaction().getAmount();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return 0;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return null;
+        }
+
+        @Override
+        public Annotated getAnnotated()
+        {
+            return entry;
+        }
+
+        @Override
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        {
+            entry.setSourceAccount(primaryAccount);
+            entry.setTargetAccount(secondaryAccount);
+            entry.insert();
+        }
+    }
+
+    class PortfolioTransferItem implements Item
+    {
+        private final PortfolioTransferEntry entry;
+
+        public PortfolioTransferItem(PortfolioTransferEntry entry)
+        {
+            this.entry = entry;
+        }
+
+        @Override
+        public Object getSubject()
+        {
+            return entry;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelTransferPortfolio;
+        }
+
+        @Override
+        public Date getDate()
+        {
+            return entry.getSourceTransaction().getDate();
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return entry.getSourceTransaction().getAmount();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return entry.getSourceTransaction().getShares();
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return entry.getSourceTransaction().getSecurity();
+        }
+
+        @Override
+        public Annotated getAnnotated()
+        {
+            return entry;
+        }
+
+        @Override
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        {
+            entry.setSourcePortfolio(primaryPortfolio);
+            entry.setTargetPortfolio(secondaryPortfolio);
+            entry.insert();
+        }
     }
 
     class SecurityItem implements Item
@@ -196,6 +350,12 @@ public interface Extractor
         }
 
         @Override
+        public long getShares()
+        {
+            return 0;
+        }
+
+        @Override
         public Security getSecurity()
         {
             return security;
@@ -208,7 +368,8 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio portfolio, Account account)
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
         {
             // might have been added via a transaction
             if (!client.getSecurities().contains(security))

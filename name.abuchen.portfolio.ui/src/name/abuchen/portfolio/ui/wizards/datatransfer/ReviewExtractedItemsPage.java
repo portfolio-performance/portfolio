@@ -27,6 +27,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -54,8 +55,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 {
     private TableViewer tableViewer;
     private TableViewer errorTableViewer;
-    private ComboViewer portfolio;
-    private ComboViewer account;
+
+    private Label lblPrimaryPortfolio;
+    private ComboViewer primaryPortfolio;
+    private Label lblSecondaryPortfolio;
+    private ComboViewer secondaryPortfolio;
+    private Label lblPrimaryAccount;
+    private ComboViewer primaryAccount;
+    private Label lblSecondaryAccount;
+    private ComboViewer secondaryAccount;
 
     private final Client client;
     private final Extractor extractor;
@@ -80,14 +88,24 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         return allItems;
     }
 
-    public Portfolio getPortfolio()
+    public Portfolio getPrimaryPortfolio()
     {
-        return (Portfolio) ((IStructuredSelection) portfolio.getSelection()).getFirstElement();
+        return (Portfolio) ((IStructuredSelection) primaryPortfolio.getSelection()).getFirstElement();
     }
 
-    public Account getAccount()
+    public Portfolio getSecondaryPortfolio()
     {
-        return (Account) ((IStructuredSelection) account.getSelection()).getFirstElement();
+        return (Portfolio) ((IStructuredSelection) secondaryPortfolio.getSelection()).getFirstElement();
+    }
+
+    public Account getPrimaryAccount()
+    {
+        return (Account) ((IStructuredSelection) primaryAccount.getSelection()).getFirstElement();
+    }
+
+    public Account getSecondaryAccount()
+    {
+        return (Account) ((IStructuredSelection) secondaryAccount.getSelection()).getFirstElement();
     }
 
     @Override
@@ -97,21 +115,44 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         setControl(container);
         container.setLayout(new FormLayout());
 
-        Label lblAccount = new Label(container, SWT.NONE);
-        lblAccount.setText(Messages.ColumnAccount);
-        Combo cmbAccount = new Combo(container, SWT.READ_ONLY);
-        account = new ComboViewer(cmbAccount);
-        account.setContentProvider(ArrayContentProvider.getInstance());
-        account.setInput(client.getAccounts());
+        Composite targetContainer = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(4).applyTo(targetContainer);
+
+        lblPrimaryAccount = new Label(targetContainer, SWT.NONE);
+        lblPrimaryAccount.setText(Messages.ColumnAccount);
+        Combo cmbAccount = new Combo(targetContainer, SWT.READ_ONLY);
+        primaryAccount = new ComboViewer(cmbAccount);
+        primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
+        primaryAccount.setInput(client.getAccounts());
         cmbAccount.select(0);
 
-        Label lblPortfolio = new Label(container, SWT.NONE);
-        lblPortfolio.setText(Messages.ColumnPortfolio);
-        Combo cmbPortfolio = new Combo(container, SWT.READ_ONLY);
-        portfolio = new ComboViewer(cmbPortfolio);
-        portfolio.setContentProvider(ArrayContentProvider.getInstance());
-        portfolio.setInput(client.getPortfolios());
+        lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
+        lblSecondaryAccount.setText(Messages.LabelTransferTo);
+        lblSecondaryAccount.setVisible(false);
+        Combo cmbAccountTarget = new Combo(targetContainer, SWT.READ_ONLY);
+        secondaryAccount = new ComboViewer(cmbAccountTarget);
+        secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
+        secondaryAccount.setInput(client.getAccounts());
+        secondaryAccount.getControl().setVisible(false);
+        cmbAccountTarget.select(0);
+
+        lblPrimaryPortfolio = new Label(targetContainer, SWT.NONE);
+        lblPrimaryPortfolio.setText(Messages.ColumnPortfolio);
+        Combo cmbPortfolio = new Combo(targetContainer, SWT.READ_ONLY);
+        primaryPortfolio = new ComboViewer(cmbPortfolio);
+        primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
+        primaryPortfolio.setInput(client.getPortfolios());
         cmbPortfolio.select(0);
+
+        lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
+        lblSecondaryPortfolio.setText(Messages.LabelTransferTo);
+        lblSecondaryPortfolio.setVisible(false);
+        Combo cmbPortfolioTarget = new Combo(targetContainer, SWT.READ_ONLY);
+        secondaryPortfolio = new ComboViewer(cmbPortfolioTarget);
+        secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
+        secondaryPortfolio.setInput(client.getPortfolios());
+        secondaryPortfolio.getControl().setVisible(false);
+        cmbPortfolioTarget.select(0);
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
@@ -121,26 +162,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         //
 
         FormData data = new FormData();
-        data.top = new FormAttachment(cmbAccount, 0, SWT.CENTER);
-        lblAccount.setLayoutData(data);
+        data.top = new FormAttachment(0, 0);
+        data.left = new FormAttachment(0, 0);
+        data.right = new FormAttachment(100, 0);
+        targetContainer.setLayoutData(data);
 
         data = new FormData();
-        data.left = new FormAttachment(lblPortfolio, 5);
-        data.right = new FormAttachment(50, -5);
-        cmbAccount.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbPortfolio, 0, SWT.CENTER);
-        lblPortfolio.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbAccount, 5);
-        data.left = new FormAttachment(cmbAccount, 0, SWT.LEFT);
-        data.right = new FormAttachment(50, -5);
-        cmbPortfolio.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbPortfolio, 10);
+        data.top = new FormAttachment(targetContainer, 10);
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
         data.bottom = new FormAttachment(70, 0);
@@ -259,14 +287,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
             @Override
             public String getText(Object element)
             {
-                if (element instanceof Extractor.BuySellEntryItem)
-                    return Values.Share.format(((BuySellEntry) ((Extractor.Item) element).getSubject())
-                                    .getPortfolioTransaction().getShares());
-                else if (((Extractor.Item) element).getSubject() instanceof AccountTransaction)
-                    return Values.Share.formatNonZero(((AccountTransaction) ((Extractor.Item) element).getSubject())
-                                    .getShares());
-                else
-                    return null;
+                return Values.Share.formatNonZero(((Extractor.Item) element).getShares());
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
@@ -341,16 +362,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                     // Logging them is not a bad idea if the whole method fails
                     PortfolioPlugin.log(errors);
 
-                    Display.getDefault().asyncExec(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            allItems.addAll(items);
-                            tableViewer.setInput(allItems);
-                            errorTableViewer.setInput(errors);
-                        }
-                    });
+                    Display.getDefault().asyncExec(() -> setResults(items, errors));
 
                     return Status.OK_STATUS;
                 }
@@ -359,6 +371,27 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         catch (Exception e)
         {
             throw new UnsupportedOperationException(e);
+        }
+    }
+
+    private void setResults(List<Extractor.Item> items, List<Exception> errors)
+    {
+        allItems.addAll(items);
+        tableViewer.setInput(allItems);
+        errorTableViewer.setInput(errors);
+
+        for (Extractor.Item item : items)
+        {
+            if (item instanceof Extractor.AccountTransferItem)
+            {
+                lblSecondaryAccount.setVisible(true);
+                secondaryAccount.getControl().setVisible(true);
+            }
+            else if (item instanceof Extractor.PortfolioTransferItem)
+            {
+                lblSecondaryPortfolio.setVisible(true);
+                secondaryPortfolio.getControl().setVisible(true);
+            }
         }
     }
 }

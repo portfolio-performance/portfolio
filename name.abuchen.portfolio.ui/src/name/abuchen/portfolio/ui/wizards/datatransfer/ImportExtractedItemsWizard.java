@@ -7,6 +7,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -41,19 +42,28 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public boolean performFinish()
     {
-        Portfolio portfolio = page.getPortfolio();
-        Account account = page.getAccount();
+        Portfolio primaryPortfolio = page.getPrimaryPortfolio();
+        Account primaryAccount = page.getPrimaryAccount();
+        Portfolio secondaryPortfolio = page.getSecondaryPortfolio();
+        Account secondaryAccount = page.getSecondaryAccount();
 
         boolean isDirty = false;
 
         for (Extractor.Item item : page.getItems())
         {
-            item.insert(client, portfolio, account);
+            item.insert(client, primaryPortfolio, primaryAccount, secondaryPortfolio, secondaryAccount);
             isDirty = true;
         }
 
         if (isDirty)
+        {
             client.markDirty();
+
+            // run consistency checks in case bogus transactions have been
+            // created (say: an outbound delivery of a security where there no
+            // held shares)
+            new ConsistencyChecksJob(client, false).schedule();
+        }
 
         return true;
     }

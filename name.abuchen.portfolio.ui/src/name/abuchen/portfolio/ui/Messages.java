@@ -316,6 +316,7 @@ public class Messages extends NLS
     public static String LabelTotalSum;
     public static String LabelTransactions;
     public static String LabelTransferals;
+    public static String LabelTransferTo;
     public static String LabelTTWROR;
     public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
