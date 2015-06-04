@@ -51,8 +51,11 @@ public class ImportExtractedItemsWizard extends Wizard
 
         for (Extractor.Item item : page.getItems())
         {
-            item.insert(client, primaryPortfolio, primaryAccount, secondaryPortfolio, secondaryAccount);
-            isDirty = true;
+            if (item.isImported())
+            {
+                item.insert(client, primaryPortfolio, primaryAccount, secondaryPortfolio, secondaryAccount);
+                isDirty = true;
+            }
         }
 
         if (isDirty)

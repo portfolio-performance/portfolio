@@ -20,27 +20,43 @@ import name.abuchen.portfolio.model.Transaction;
 
 public interface Extractor
 {
-    interface Item
+    public static abstract class Item
     {
-        Object getSubject();
+        private boolean isImported = true;
 
-        String getTypeInformation();
+        public abstract Annotated getSubject();
 
-        Date getDate();
+        public abstract Security getSecurity();
 
-        long getAmount();
+        public abstract String getTypeInformation();
 
-        long getShares();
+        public abstract Date getDate();
 
-        Security getSecurity();
+        public long getAmount()
+        {
+            return 0;
+        }
 
-        Annotated getAnnotated();
+        public long getShares()
+        {
+            return 0;
+        }
 
-        void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount, Portfolio secondaryPortfolio,
-                        Account secondaryAccount);
+        public abstract void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount);
+
+        public boolean isImported()
+        {
+            return isImported;
+        }
+
+        public void setImported(boolean isImported)
+        {
+            this.isImported = isImported;
+        }
     }
 
-    class TransactionItem implements Item
+    static class TransactionItem extends Item
     {
         private Transaction transaction;
 
@@ -67,7 +83,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return transaction;
         }
@@ -108,12 +124,6 @@ public interface Extractor
         }
 
         @Override
-        public Annotated getAnnotated()
-        {
-            return transaction;
-        }
-
-        @Override
         public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
                         Portfolio secondaryPortfolio, Account secondaryAccount)
         {
@@ -132,7 +142,7 @@ public interface Extractor
         }
     }
 
-    class BuySellEntryItem implements Item
+    static class BuySellEntryItem extends Item
     {
         private final BuySellEntry entry;
 
@@ -142,7 +152,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return entry;
         }
@@ -178,12 +188,6 @@ public interface Extractor
         }
 
         @Override
-        public Annotated getAnnotated()
-        {
-            return entry;
-        }
-
-        @Override
         public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
                         Portfolio secondaryPortfolio, Account secondaryAccount)
         {
@@ -194,7 +198,7 @@ public interface Extractor
 
     }
 
-    class AccountTransferItem implements Item
+    static class AccountTransferItem extends Item
     {
         private final AccountTransferEntry entry;
 
@@ -204,7 +208,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return entry;
         }
@@ -228,21 +232,9 @@ public interface Extractor
         }
 
         @Override
-        public long getShares()
-        {
-            return 0;
-        }
-
-        @Override
         public Security getSecurity()
         {
             return null;
-        }
-
-        @Override
-        public Annotated getAnnotated()
-        {
-            return entry;
         }
 
         @Override
@@ -255,7 +247,7 @@ public interface Extractor
         }
     }
 
-    class PortfolioTransferItem implements Item
+    static class PortfolioTransferItem extends Item
     {
         private final PortfolioTransferEntry entry;
 
@@ -265,7 +257,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return entry;
         }
@@ -301,12 +293,6 @@ public interface Extractor
         }
 
         @Override
-        public Annotated getAnnotated()
-        {
-            return entry;
-        }
-
-        @Override
         public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
                         Portfolio secondaryPortfolio, Account secondaryAccount)
         {
@@ -316,7 +302,7 @@ public interface Extractor
         }
     }
 
-    class SecurityItem implements Item
+    static class SecurityItem extends Item
     {
         private Security security;
 
@@ -326,7 +312,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return security;
         }
@@ -344,25 +330,7 @@ public interface Extractor
         }
 
         @Override
-        public long getAmount()
-        {
-            return 0;
-        }
-
-        @Override
-        public long getShares()
-        {
-            return 0;
-        }
-
-        @Override
         public Security getSecurity()
-        {
-            return security;
-        }
-
-        @Override
-        public Annotated getAnnotated()
         {
             return security;
         }

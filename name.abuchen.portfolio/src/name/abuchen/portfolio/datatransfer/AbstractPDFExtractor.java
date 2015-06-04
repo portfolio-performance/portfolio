@@ -130,7 +130,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
             }
 
             for (Item item : items)
-                item.getAnnotated().setNote(filename);
+                item.getSubject().setNote(filename);
 
             return items;
         }

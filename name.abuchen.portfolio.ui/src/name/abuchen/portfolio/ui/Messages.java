@@ -254,7 +254,8 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
     public static String LabelDefaultReferenceAccountName;
-    public static String LabelDelete;
+    public static String LabelDoImport;
+    public static String LabelDoNotImport;
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelExport;

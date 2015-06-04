@@ -8,10 +8,12 @@ import java.util.List;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.AbstractClientJob;
@@ -35,12 +37,17 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -228,12 +235,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     {
         TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnDate);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Object element)
+            public String getText(Extractor.Item item)
             {
-                Date date = ((Extractor.Item) element).getDate();
+                Date date = item.getDate();
                 return date != null ? Values.Date.format(date) : null;
             }
         });
@@ -241,19 +248,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnTransactionType);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Object element)
+            public String getText(Extractor.Item item)
             {
-                return ((Extractor.Item) element).getTypeInformation();
+                return item.getTypeInformation();
             }
 
             @Override
-            public Image getImage(Object element)
+            public Image getImage(Extractor.Item item)
             {
-                Extractor.Item item = (Extractor.Item) element;
-
                 if (item.getSubject() instanceof AccountTransaction)
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
                 else if (item.getSubject() instanceof PortfolioTransaction)
@@ -261,6 +266,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 else if (item.getSubject() instanceof Security)
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
                 else if (item.getSubject() instanceof BuySellEntry)
+                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                else if (item.getSubject() instanceof AccountTransferEntry)
+                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                else if (item.getSubject() instanceof PortfolioTransferEntry)
                     return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
                 else
                     return null;
@@ -270,36 +279,36 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
         column = new TableViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnAmount);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Object element)
+            public String getText(Extractor.Item item)
             {
-                return Values.Amount.formatNonZero(((Extractor.Item) element).getAmount());
+                return Values.Amount.formatNonZero(item.getAmount());
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
 
         column = new TableViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnShares);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Object element)
+            public String getText(Extractor.Item item)
             {
-                return Values.Share.formatNonZero(((Extractor.Item) element).getShares());
+                return Values.Share.formatNonZero(item.getShares());
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Object element)
+            public String getText(Extractor.Item item)
             {
-                Security security = ((Extractor.Item) element).getSecurity();
+                Security security = item.getSecurity();
                 return security != null ? security.getName() : null;
             }
         });
@@ -315,18 +324,47 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
             @Override
             public void menuAboutToShow(IMenuManager manager)
             {
-                manager.add(new Action(Messages.LabelDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 
-                        allItems.removeAll(selection.toList());
-                        tableViewer.remove(selection.toArray());
-                        errorTableViewer.remove(selection.toArray());
-                    }
-                });
+                boolean atLeastOneImported = false;
+                boolean atLeastOneNotImported = false;
+
+                for (Object element : selection.toList())
+                {
+                    atLeastOneImported = atLeastOneImported || ((Extractor.Item) element).isImported();
+                    atLeastOneNotImported = atLeastOneNotImported || !((Extractor.Item) element).isImported();
+                }
+
+                if (atLeastOneImported)
+                {
+                    manager.add(new Action(Messages.LabelDoNotImport)
+                    {
+                        @Override
+                        public void run()
+                        {
+                            for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
+                                ((Extractor.Item) element).setImported(false);
+
+                            tableViewer.refresh();
+                        }
+                    });
+                }
+
+                if (atLeastOneNotImported)
+                {
+                    manager.add(new Action(Messages.LabelDoImport)
+                    {
+                        @Override
+                        public void run()
+                        {
+                            for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
+                                ((Extractor.Item) element).setImported(true);
+
+                            tableViewer.refresh();
+                        }
+                    });
+                }
+
             }
         });
 
@@ -392,6 +430,45 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 lblSecondaryPortfolio.setVisible(true);
                 secondaryPortfolio.getControl().setVisible(true);
             }
+        }
+    }
+
+    static class FormattedLabelProvider extends StyledCellLabelProvider
+    {
+        private static Styler strikeoutStyler = new Styler()
+        {
+            @Override
+            public void applyStyles(TextStyle textStyle)
+            {
+                textStyle.strikeout = true;
+            }
+        };
+
+        public String getText(Extractor.Item element)
+        {
+            return null;
+        }
+
+        public Image getImage(Extractor.Item element)
+        {
+            return null;
+        }
+
+        @Override
+        public void update(ViewerCell cell)
+        {
+            Extractor.Item item = (Extractor.Item) cell.getElement();
+            String text = getText(item);
+            if (text == null)
+                text = ""; //$NON-NLS-1$
+
+            StyledString styledString = new StyledString(text, !item.isImported() ? strikeoutStyler : null);
+
+            cell.setText(styledString.toString());
+            cell.setStyleRanges(styledString.getStyleRanges());
+            cell.setImage(getImage(item));
+
+            super.update(cell);
         }
     }
 }
