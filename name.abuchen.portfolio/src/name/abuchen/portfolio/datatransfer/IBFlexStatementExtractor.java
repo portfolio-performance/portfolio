@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,32 +77,6 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     /**
-     * Verify if a Transaction t2 already exists in the portfolio
-     * 
-     * @param portfolio
-     * @param t2
-     * @return true or false if transaction exists
-     */
-    public boolean ptransactionExists(Portfolio portfolio, PortfolioTransaction t2)
-    {
-
-        for (PortfolioTransaction t : portfolio.getTransactions())
-        {
-
-            if (t.getDate().equals(t2.getDate()) && t.getType().equals(t2.getType()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Lookup an active Portfolio for accountId Portfolioname in PP has to be
      * equal to the IB Account
      * 
@@ -147,7 +124,7 @@ public class IBFlexStatementExtractor implements Extractor
      * @param doCreate
      * @return
      */
-    protected Security lookupSecurity(Client client, Element eElement, boolean doCreate)
+    protected Security getOrCreateSecurity(Client client, Element eElement, boolean doCreate)
     {
         // Lookup the Exchange Suffix for Yahoo
         String tickerSymbol = eElement.getAttribute("symbol");
@@ -248,15 +225,10 @@ public class IBFlexStatementExtractor implements Extractor
         Double amount = Double.parseDouble(eElement.getAttribute("tradePrice")) * qty + fees + taxes;
         transaction.setAmount(Math.abs(Long.valueOf((long) Math.round(amount.doubleValue() * Values.Amount.factor()))));
 
-        transaction.setSecurity(this.lookupSecurity(client, eElement, true));
+        transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
         transaction.setNote(eElement.getAttribute("description"));
 
-        // create transaction only if it does not yet exist
-        // if ( ! ptransactionExists( portfolio,
-        // transaction.getPortfolioTransaction()) ) {
-        // transaction.insert();
-        // }
         results.add(new BuySellEntryItem(transaction));
 
     }
@@ -290,16 +262,11 @@ public class IBFlexStatementExtractor implements Extractor
             Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
             transaction.setShares(Long.valueOf((long) Math.round(qty.doubleValue() * Values.Share.factor())));
 
-            transaction.setSecurity(this.lookupSecurity(client, eElement, true));
+            transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
             transaction.setNote(eElement.getAttribute("description"));
 
             transaction.setAmount(Math.abs(Long.valueOf((long) Math.round(amount.doubleValue() * Values.Amount.factor()))));
 
-            // create transaction only if it does not yet exist
-            // if ( ! ptransactionExists( portfolio,
-            // transaction.getPortfolioTransaction()) ) {
-            // transaction.insert();
-            // }
             results.add(new BuySellEntryItem(transaction));
 
         }
@@ -320,12 +287,9 @@ public class IBFlexStatementExtractor implements Extractor
             Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
             transaction.setShares(Long.valueOf((long) Math.round(qty.doubleValue() * Values.Share.factor())));
 
-            transaction.setSecurity(this.lookupSecurity(client, eElement, true));
+            transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
             transaction.setNote(eElement.getAttribute("description"));
-            // create transaction only if it does not yet exist
-            // if ( ! ptransactionExists( portfolio, transaction) ) {
-            // portfolio.addTransaction(transaction);
-            // }
+
             results.add(new TransactionItem(transaction));
         }
 
@@ -363,14 +327,14 @@ public class IBFlexStatementExtractor implements Extractor
     public void buildAccountTransaction(Client client, Element eElement) throws ParseException
     {
 
-        Account account = this.getAccount(eElement.getAttribute("accountId"));
+        //Account account = this.getAccount(eElement.getAttribute("accountId"));
         AccountTransaction transaction = new AccountTransaction();
 
         transaction.setDate(convertDate(eElement.getAttribute("dateTime")));
         Double amount = Double.parseDouble(eElement.getAttribute("amount"));
         // Set the Symbol
         if (eElement.getAttribute("symbol").length() > 0)
-            transaction.setSecurity(this.lookupSecurity(client, eElement, true));
+            transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
         // Set Transaction Type
         if (eElement.getAttribute("type").equals("Deposits")
@@ -421,7 +385,7 @@ public class IBFlexStatementExtractor implements Extractor
 
         transaction.setNote(eElement.getAttribute("description"));
 
-        account.addTransaction(transaction);
+        results.add(new TransactionItem(transaction));
     }
 
     /**
@@ -470,9 +434,9 @@ public class IBFlexStatementExtractor implements Extractor
      * 
      * @param errors
      */
-    public void importActivityStatement(File f, List<Exception> errors)
+    public void importActivityStatement(InputStream f, List<Exception> errors)
     {
-
+        
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -507,6 +471,11 @@ public class IBFlexStatementExtractor implements Extractor
         }
     }
 
+    public List<Item> getResults()
+    {
+        return results;
+    }    
+    
     @Override
     public String getLabel()
     {
@@ -524,8 +493,17 @@ public class IBFlexStatementExtractor implements Extractor
     {
         for (File f : files)
         {
-            importActivityStatement(f, errors);
+            try
+            {
+                importActivityStatement(new FileInputStream(f), errors);
+            }
+            catch (FileNotFoundException e)
+            {
+                errors.add(e);
+            }
         }
         return results;
     }
+
+
 }

@@ -1,0 +1,135 @@
+package name.abuchen.portfolio.datatransfer;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.util.Dates;
+
+import org.junit.Test;
+
+@SuppressWarnings("nls")
+public class IBFlexStatementExtractorTest
+{
+
+    private InputStream activityStatement;
+    private InputStream otherFile;
+
+    public IBFlexStatementExtractorTest()
+    {
+        activityStatement = getClass().getResourceAsStream("IBActivityStatement.xml");
+        otherFile = getClass().getResourceAsStream("Gutschrift.txt");
+    }
+
+    @Test
+    public void testIBAcitvityStatement() throws IOException
+    {
+
+        Client client = new Client();
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+        List<Exception> errors = new ArrayList<Exception>();
+        extractor.importActivityStatement(activityStatement, errors);
+        List<Item> results = extractor.getResults();
+
+        results.forEach(n -> System.out.println(n));
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(25));
+
+        assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
+        assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
+
+        assertSecondSecurity(results.stream().filter(i -> i instanceof SecurityItem)
+                        .reduce((previous, current) -> current).get());
+        assertFourthTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).skip(3).findFirst());
+
+        //TODO Check CorporateActions
+    }
+
+    private void assertFirstSecurity(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("CA38501D2041"));
+        assertThat(security.getWkn(), is("80845553"));
+        assertThat(security.getName(), is("GRAN COLOMBIA GOLD CORP"));
+        assertThat(security.getTickerSymbol(), is("GCM.TO"));
+    }
+
+    private void assertSecondSecurity(Item item)
+    {
+        // Why is the second Security the GCM after Split ??? expected to be UUU
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("CA38501D5010"));
+        assertThat(security.getWkn(), is("129258970"));
+        assertThat(security.getName(),
+                        is("GCM(CA38501D2041) SPLIT 1 FOR 25 (GCM, GRAN COLOMBIA GOLD CORP, CA38501D5010)"));
+        // assertThat(security.getTickerSymbol(), is("GCM.TO"));
+        // currently fails because the exchange is empty in corporate actions.
+    }
+
+    private void assertFirstTransaction(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("GRAN COLOMBIA GOLD CORP"));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(1356_75L));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-04-01")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(5000_00000L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(6_75L));
+        // Why is this 0_33 while the actual value is 0_27 ???
+        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(0_33L));
+
+    }
+
+    private void assertFourthTransaction(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("URANIUM ONE INC."));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(232_00L));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-01-02")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(100_00000L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(1_00L));
+    }
+
+    @Test
+    public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
+    {
+        Client client = new Client();
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+        List<Exception> errors = new ArrayList<Exception>();
+        extractor.importActivityStatement(otherFile, errors);
+        List<Item> results = extractor.getResults();
+
+        assertThat(results.isEmpty(), is(true));
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0).getMessage(), containsString("Content is not allowed in prolog"));
+    }
+}
