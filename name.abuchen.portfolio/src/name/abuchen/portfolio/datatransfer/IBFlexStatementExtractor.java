@@ -276,11 +276,11 @@ public class IBFlexStatementExtractor implements Extractor
             PortfolioTransaction transaction = new PortfolioTransaction();
             if (Double.parseDouble(eElement.getAttribute("quantity")) >= 0)
             {
-                transaction.setType(PortfolioTransaction.Type.TRANSFER_IN);
+                transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             }
             else
             {
-                transaction.setType(PortfolioTransaction.Type.TRANSFER_OUT);
+                transaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
             }
             transaction.setDate(convertDate(eElement.getAttribute("reportDate")));
             // Share Quantity

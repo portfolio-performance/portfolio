@@ -96,7 +96,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("GRAN COLOMBIA GOLD CORP"));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(1356_75L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-04-01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(5000_00000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(6_75L));
         // Why is this 0_33 while the actual value is 0_27 ???
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(0_33L));
@@ -115,7 +115,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("URANIUM ONE INC."));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(232_00L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-01-02")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(100_00000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(1_00L));
     }
 
