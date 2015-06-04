@@ -53,10 +53,12 @@ public class IBFlexStatementExtractor implements Extractor
         this.results = new ArrayList<Item>();
         allSecurities = new ArrayList<Security>(client.getSecurities());
 
-        // Maps Interactive Broker Exchange to Yahoo Exchanges
+        // Maps Interactive Broker Exchange to Yahoo Exchanges, to be completed
         this.exchanges = new HashMap<String, String>();
+        
+        this.exchanges.put("EBS", "SW");        
+        this.exchanges.put("LSE", "L");
         this.exchanges.put("SWX", "SW");
-        this.exchanges.put("EBS", "SW"); // ISLAND,BEX,
         this.exchanges.put("TSE", "TO");
         this.exchanges.put("VENTURE", "V");
     }
@@ -183,7 +185,7 @@ public class IBFlexStatementExtractor implements Extractor
     void buildPortfolioTransaction(Client client, Element eElement) throws ParseException
     {
 
-        // Unused Information from Flexstatement Trades, to used in the future
+        // Unused Information from Flexstatement Trades, ev. to be used in the future
         // eElement.getAttribute("currency"));
         // eElement.getAttribute("tradeTime"));
         // eElement.getAttribute("transactionID"));
@@ -213,17 +215,17 @@ public class IBFlexStatementExtractor implements Extractor
 
         // Share Quantity
         Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
-        transaction.setShares(Long.valueOf((long) Math.round(qty.doubleValue() * Values.Share.factor())));
+        transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
         Double fees = Math.abs(Double.parseDouble(eElement.getAttribute("ibCommission")));
-        transaction.setFees(Long.valueOf((long) Math.round(fees.doubleValue() * Values.Amount.factor())));
+        transaction.setFees(Math.round(fees.doubleValue() * Values.Amount.factor()));
 
         Double taxes = Math.abs(Double.parseDouble(eElement.getAttribute("taxes")));
-        transaction.setTaxes(Long.valueOf((long) Math.round(taxes.doubleValue() * Values.Amount.factor())));
+        transaction.setTaxes(Math.round(taxes.doubleValue() * Values.Amount.factor()));
 
         // Set the Amount which is ( tradePrice * qty ) + Fees + Taxes
         Double amount = Double.parseDouble(eElement.getAttribute("tradePrice")) * qty + fees + taxes;
-        transaction.setAmount(Math.abs(Long.valueOf((long) Math.round(amount.doubleValue() * Values.Amount.factor()))));
+        transaction.setAmount(Math.abs(Math.round(amount.doubleValue() * Values.Amount.factor())));
 
         transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
@@ -260,12 +262,12 @@ public class IBFlexStatementExtractor implements Extractor
             transaction.setDate(convertDate(eElement.getAttribute("reportDate")));
             // Share Quantity
             Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
-            transaction.setShares(Long.valueOf((long) Math.round(qty.doubleValue() * Values.Share.factor())));
+            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
             transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
             transaction.setNote(eElement.getAttribute("description"));
 
-            transaction.setAmount(Math.abs(Long.valueOf((long) Math.round(amount.doubleValue() * Values.Amount.factor()))));
+            transaction.setAmount(Math.abs(Math.round(amount.doubleValue() * Values.Amount.factor())));
 
             results.add(new BuySellEntryItem(transaction));
 
@@ -285,7 +287,7 @@ public class IBFlexStatementExtractor implements Extractor
             transaction.setDate(convertDate(eElement.getAttribute("reportDate")));
             // Share Quantity
             Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
-            transaction.setShares(Long.valueOf((long) Math.round(qty.doubleValue() * Values.Share.factor())));
+            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
             transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
             transaction.setNote(eElement.getAttribute("description"));
@@ -381,7 +383,7 @@ public class IBFlexStatementExtractor implements Extractor
         {
             amount = Math.abs(amount);
         }
-        transaction.setAmount(Long.valueOf((long) Math.round(amount.doubleValue() * Values.Amount.factor())));
+        transaction.setAmount(Math.round(amount.doubleValue() * Values.Amount.factor()));
 
         transaction.setNote(eElement.getAttribute("description"));
 
