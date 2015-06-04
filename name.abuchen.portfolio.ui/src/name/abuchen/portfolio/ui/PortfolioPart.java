@@ -498,7 +498,7 @@ public class PortfolioPart implements LoadClientThread.Callback
                 {
                     answer.add(ReportingPeriod.from(c));
                 }
-                catch (IOException ignore)
+                catch (IOException | RuntimeException ignore)
                 {
                     PortfolioPlugin.log(ignore);
                 }

@@ -44,6 +44,8 @@
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.core.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
+      <feature id="org.eclipse.nebula.cwt.feature"/>
+      <feature id="org.eclipse.nebula.widgets.cdatetime.feature"/>
    </features>
 
    <configurations>

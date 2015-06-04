@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,10 +8,12 @@ import java.util.List;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -26,7 +29,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 
@@ -87,7 +89,7 @@ public class SelectSplitPage extends AbstractWizardPage
         Label labelExDate = new Label(container, SWT.NONE);
         labelExDate.setText(Messages.ColumnExDate);
 
-        DateTime boxExDate = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+        DateTimePicker boxExDate = new DateTimePicker(container);
 
         Label labelSplit = new Label(container, SWT.NONE);
         labelSplit.setText(Messages.SplitWizardLabelSplit);
@@ -120,7 +122,7 @@ public class SelectSplitPage extends AbstractWizardPage
         comboSecurity.getControl().setLayoutData(data);
 
         data = new FormData();
-        data.top = new FormAttachment(boxExDate, 0, SWT.CENTER);
+        data.top = new FormAttachment(boxExDate.getControl(), 0, SWT.CENTER);
         labelExDate.setLayoutData(data);
 
         data = new FormData();
@@ -133,8 +135,8 @@ public class SelectSplitPage extends AbstractWizardPage
         labelSplit.setLayoutData(data);
 
         data = new FormData();
-        data.top = new FormAttachment(boxExDate, 5);
-        data.left = new FormAttachment(boxExDate, 0, SWT.LEFT);
+        data.top = new FormAttachment(boxExDate.getControl(), 5);
+        data.left = new FormAttachment(boxExDate.getControl(), 0, SWT.LEFT);
         spinnerNewShares.setLayoutData(data);
 
         data = new FormData();
@@ -143,7 +145,7 @@ public class SelectSplitPage extends AbstractWizardPage
         labelColon.setLayoutData(data);
 
         data = new FormData();
-        data.top = new FormAttachment(boxExDate, 5);
+        data.top = new FormAttachment(boxExDate.getControl(), 5);
         data.left = new FormAttachment(labelColon, 5);
         spinnerOldShares.setLayoutData(data);
 
@@ -153,8 +155,15 @@ public class SelectSplitPage extends AbstractWizardPage
         context.bindValue(ViewersObservables.observeSingleSelection(comboSecurity),
                         BeansObservables.observeValue(model, "security"), null, null); //$NON-NLS-1$
 
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(boxExDate),
-                        BeansObservables.observeValue(model, "exDate")); //$NON-NLS-1$
+        context.bindValue(new SimpleDateTimeSelectionProperty().observe(boxExDate.getControl()), //
+                        BeansObservables.observeValue(model, "exDate"), //$NON-NLS-1$
+                        new UpdateValueStrategy() //
+                                        .setAfterConvertValidator(value -> {
+                                            return value != null ? ValidationStatus.ok() : ValidationStatus
+                                                            .error(MessageFormat.format(
+                                                                            Messages.MsgDialogInputRequired,
+                                                                            Messages.ColumnExDate));
+                                        }), null);
 
         final ISWTObservableValue observeNewShares = SWTObservables.observeSelection(spinnerNewShares);
         context.bindValue(observeNewShares, BeansObservables.observeValue(model, "newShares")); //$NON-NLS-1$
@@ -178,5 +187,4 @@ public class SelectSplitPage extends AbstractWizardPage
         };
         context.addValidationStatusProvider(validator);
     }
-
 }
