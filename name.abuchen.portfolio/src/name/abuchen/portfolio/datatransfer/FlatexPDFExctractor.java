@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
-public class FlatexPDFExctractor extends AbstractExtractor
+public class FlatexPDFExctractor extends AbstractPDFExtractor
 {
 
     public FlatexPDFExctractor(Client client) throws IOException

@@ -28,7 +28,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
-/* package */abstract class AbstractExtractor implements Extractor
+/* package */abstract class AbstractPDFExtractor implements Extractor
 {
     private final Client client;
     private final PDFTextStripper textStripper;
@@ -38,7 +38,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
     private final Map<String, Security> isin2security;
     private final Map<String, Security> wkn2security;
 
-    public AbstractExtractor(Client client) throws IOException
+    public AbstractPDFExtractor(Client client) throws IOException
     {
         this.client = client;
 

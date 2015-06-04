@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
-public class DABPDFExctractor extends AbstractExtractor
+public class DABPDFExctractor extends AbstractPDFExtractor
 {
     public DABPDFExctractor(Client client) throws IOException
     {

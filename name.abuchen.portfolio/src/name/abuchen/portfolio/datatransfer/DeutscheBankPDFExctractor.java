@@ -11,7 +11,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
-public class DeutscheBankPDFExctractor extends AbstractExtractor
+public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 {
     public DeutscheBankPDFExctractor(Client client) throws IOException
     {
