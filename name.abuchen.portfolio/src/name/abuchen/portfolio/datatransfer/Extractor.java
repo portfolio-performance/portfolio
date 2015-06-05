@@ -213,7 +213,7 @@ public interface Extractor
         @Override
         public long getShares()
         {
-            return entry.getAccountTransaction().getShares();
+            return entry.getPortfolioTransaction().getShares();
         }
 
         @Override
