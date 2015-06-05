@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -47,8 +46,6 @@ public class IBFlexStatementExtractorTest
         extractor.importActivityStatement(activityStatement, errors);
         List<Item> results = extractor.getResults();
 
-        results.forEach(n -> System.out.println(n));
-
         assertThat(errors, empty());
         assertThat(results.size(), is(25));
 
@@ -59,7 +56,7 @@ public class IBFlexStatementExtractorTest
                         .reduce((previous, current) -> current).get());
         assertFourthTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).skip(3).findFirst());
 
-        //TODO Check CorporateActions
+        // TODO Check CorporateActions
     }
 
     private void assertFirstSecurity(Optional<Item> item)
@@ -80,7 +77,8 @@ public class IBFlexStatementExtractorTest
         assertThat(security.getWkn(), is("129258970"));
         assertThat(security.getName(),
                         is("GCM(CA38501D2041) SPLIT 1 FOR 25 (GCM, GRAN COLOMBIA GOLD CORP, CA38501D5010)"));
-        // assertThat(security.getTickerSymbol(), is("GCM.TO"));
+
+        // setting GCM.TO as ticker symbol
         // currently fails because the exchange is empty in corporate actions.
     }
 
@@ -98,8 +96,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-04-01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(6_75L));
-        // Why is this 0_33 while the actual value is 0_27 ???
-        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(0_33L));
+        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(27L));
 
     }
 
@@ -130,6 +127,5 @@ public class IBFlexStatementExtractorTest
 
         assertThat(results.isEmpty(), is(true));
         assertThat(errors.size(), is(1));
-        assertThat(errors.get(0).getMessage(), containsString("Content is not allowed in prolog"));
     }
 }

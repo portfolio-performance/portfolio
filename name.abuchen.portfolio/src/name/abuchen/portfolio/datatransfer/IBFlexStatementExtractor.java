@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,11 +21,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -40,12 +39,11 @@ import org.xml.sax.SAXException;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractor implements Extractor
 {
-
     private final Client client;
     private final List<Item> results;
     private List<Security> allSecurities;
-    
-    private HashMap<String, String> exchanges;
+
+    private Map<String, String> exchanges;
 
     public IBFlexStatementExtractor(Client client)
     {
@@ -55,15 +53,15 @@ public class IBFlexStatementExtractor implements Extractor
 
         // Maps Interactive Broker Exchange to Yahoo Exchanges, to be completed
         this.exchanges = new HashMap<String, String>();
-        
-        this.exchanges.put("EBS", "SW");        
+
+        this.exchanges.put("EBS", "SW");
         this.exchanges.put("LSE", "L");
         this.exchanges.put("SWX", "SW");
         this.exchanges.put("TSE", "TO");
         this.exchanges.put("VENTURE", "V");
     }
 
-    protected Date convertDate(String date) throws ParseException
+    private Date convertDate(String date) throws ParseException
     {
         // 20111215
         if (date.length() > 8)
@@ -79,54 +77,11 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     /**
-     * Lookup an active Portfolio for accountId Portfolioname in PP has to be
-     * equal to the IB Account
-     * 
-     * @param accountId
-     * @return
-     */
-    public Portfolio getPortfolio(String accountId)
-    {
-        List<Portfolio> portfolios = client.getActivePortfolios();
-        for (Portfolio temp : portfolios)
-        {
-            if (temp.getName().equals(accountId))
-                return temp;
-        }
-
-        throw new IllegalArgumentException();
-    }
-
-    /**
-     * Lookup the Account with the Name accountId Accountname in PP has to be
-     * equal to the IB Account
-     * 
-     * @param accountId
-     * @return
-     */
-    public Account getAccount(String accountId)
-    {
-        List<Account> accounts = client.getActiveAccounts();
-        for (Account temp : accounts)
-        {
-            if (temp.getName().equals(accountId))
-                return temp;
-        }
-
-        throw new IllegalArgumentException();
-    }
-
-    /**
      * Lookup a Security in the Model or create a new one if it does not yet
      * exist It uses IB ContractID (conID) for the WKN, tries to degrade if
      * conID or ISIN are not available
-     * 
-     * @param client
-     * @param eElement
-     * @param doCreate
-     * @return
      */
-    protected Security getOrCreateSecurity(Client client, Element eElement, boolean doCreate)
+    private Security getOrCreateSecurity(Client client, Element eElement, boolean doCreate)
     {
         // Lookup the Exchange Suffix for Yahoo
         String tickerSymbol = eElement.getAttribute("symbol");
@@ -148,23 +103,25 @@ public class IBFlexStatementExtractor implements Extractor
                 yahooSymbol = tickerSymbol + '.' + exch;
         }
 
-        
         for (Security s : allSecurities)
         {
             // Find security with same conID or isin or yahooSymbol
-            if (conID != null && conID.length() > 0 && conID.equals(s.getWkn())) { return s; }
-            if (isin != null && isin.length() > 0 && isin.equals(s.getIsin())) { return s; }
-            if (yahooSymbol != null && yahooSymbol.length() > 0 && yahooSymbol.equals(s.getTickerSymbol())) { return s; }
+            if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
+                return s;
+            if (isin != null && isin.length() > 0 && isin.equals(s.getIsin()))
+                return s;
+            if (yahooSymbol != null && yahooSymbol.length() > 0 && yahooSymbol.equals(s.getTickerSymbol()))
+                return s;
         }
 
         if (!doCreate)
             return null;
 
-        Security security = new Security( description, isin, yahooSymbol, QuoteFeed.MANUAL);
+        Security security = new Security(description, isin, yahooSymbol, QuoteFeed.MANUAL);
         // We use the Wkn to store the IB conID as a unique identifier
         security.setWkn(conID);
         security.setNote(description);
-                
+
         // Store
         allSecurities.add(security);
         // add to result
@@ -176,20 +133,11 @@ public class IBFlexStatementExtractor implements Extractor
 
     /**
      * Construct a BuySellEntry based on Trade object defined in eElement
-     * 
-     * @param client
-     * @param eElement
-     * @throws ParseException
      */
-    
-    void buildPortfolioTransaction(Client client, Element eElement) throws ParseException
+    private void buildPortfolioTransaction(Client client, Element eElement) throws ParseException
     {
-
-        // Unused Information from Flexstatement Trades, ev. to be used in the future
-        // eElement.getAttribute("currency"));
-        // eElement.getAttribute("tradeTime"));
-        // eElement.getAttribute("transactionID"));
-        // eElement.getAttribute("ibOrderID"));
+        // Unused Information from Flexstatement Trades, to be used in the
+        // future: currency, tradeTime, transactionID, ibOrderID
 
         BuySellEntry transaction = new BuySellEntry();
 
@@ -203,13 +151,15 @@ public class IBFlexStatementExtractor implements Extractor
             transaction.setType(PortfolioTransaction.Type.SELL);
         }
         else
+        {
             throw new IllegalArgumentException();
+        }
 
         String d = eElement.getAttribute("tradeDate");
         if (d == null || d.length() == 0)
         {
             // use reportDate for CorporateActions
-            d = eElement.getAttribute("reportDate");        
+            d = eElement.getAttribute("reportDate");
         }
         transaction.setDate(convertDate(d));
 
@@ -238,14 +188,9 @@ public class IBFlexStatementExtractor implements Extractor
     /**
      * Constructs a Transaction object for a Corporate Transaction defined in
      * eElement.
-     * 
-     * @param client
-     * @param eElement
-     * @throws ParseException
      */
-    void buildCorporateTransaction(Client client, Element eElement) throws ParseException
+    private void buildCorporateTransaction(Client client, Element eElement) throws ParseException
     {
-
         Double amount = Double.parseDouble(eElement.getAttribute("proceeds"));
         if (amount != 0)
         {
@@ -300,20 +245,16 @@ public class IBFlexStatementExtractor implements Extractor
     /**
      * Figure out how many shares a dividend payment is related to. Extracts the
      * information from the description string given by IB
-     * 
-     * @param transaction
-     * @param eElement
      */
-    public void calculateShares(Transaction transaction, Element eElement)
+    private void calculateShares(Transaction transaction, Element eElement)
     {
-
         // Figure out how many shares were holding related to this Dividend
         // Payment
         long numShares = 0;
         String desc = eElement.getAttribute("description");
         double amount = Double.parseDouble(eElement.getAttribute("amount"));
 
-        // Regex Patternmatch the Dividend per Share and calculate number of
+        // Regex Pattern matches the Dividend per Share and calculate number of
         // shares
         Pattern dividendPattern = Pattern.compile("DIVIDEND ([0-9]*\\.[0-9]*) .*");
         Matcher tagmatch = dividendPattern.matcher(desc);
@@ -326,10 +267,8 @@ public class IBFlexStatementExtractor implements Extractor
         transaction.setShares(numShares);
     }
 
-    public void buildAccountTransaction(Client client, Element eElement) throws ParseException
+    private void buildAccountTransaction(Client client, Element eElement) throws ParseException
     {
-
-        //Account account = this.getAccount(eElement.getAttribute("accountId"));
         AccountTransaction transaction = new AccountTransaction();
 
         transaction.setDate(convertDate(eElement.getAttribute("dateTime")));
@@ -391,18 +330,13 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     /**
-     * Imports Trades, CorporateActions and CashTransactions from Doc
-     * 
-     * @param doc
-     * @param type
+     * Imports Trades, CorporateActions and CashTransactions from Document
      */
-    public void importModelObjects(Document doc, String type, List<Exception> errors)
+    private void importModelObjects(Document doc, String type, List<Exception> errors)
     {
-
         NodeList nList = doc.getElementsByTagName(type);
         for (int temp = 0; temp < nList.getLength(); temp++)
         {
-
             Node nNode = nList.item(temp);
 
             if (nNode.getNodeType() == Node.ELEMENT_NODE)
@@ -431,14 +365,13 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     /**
-     * Import an Interactive Broker Activitystatement from XML File It currently
-     * only imports Trades, Corporate Transactions and Cash Transactions
-     * 
-     * @param errors
+     * Import an Interactive Broker ActivityStatement from an XML file. It
+     * currently only imports Trades, Corporate Transactions and Cash
+     * Transactions.
      */
-    public void importActivityStatement(InputStream f, List<Exception> errors)
+    /* package */void importActivityStatement(InputStream f, List<Exception> errors)
     {
-        
+
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -457,27 +390,18 @@ public class IBFlexStatementExtractor implements Extractor
             importModelObjects(doc, "CorporateAction", errors);
 
             // TODO: Process all FxTransactions and ConversionRates
-
         }
-        catch (ParserConfigurationException e)
-        {
-            errors.add(e);
-        }
-        catch (SAXException e)
-        {
-            errors.add(e);
-        }
-        catch (IOException e)
+        catch (ParserConfigurationException | SAXException | IOException e)
         {
             errors.add(e);
         }
     }
 
-    public List<Item> getResults()
+    /* package */List<Item> getResults()
     {
         return results;
-    }    
-    
+    }
+
     @Override
     public String getLabel()
     {
@@ -493,6 +417,7 @@ public class IBFlexStatementExtractor implements Extractor
     @Override
     public List<Item> extract(List<File> files, List<Exception> errors)
     {
+        results.clear();
         for (File f : files)
         {
             try
