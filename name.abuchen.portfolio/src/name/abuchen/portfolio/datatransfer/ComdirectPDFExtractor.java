@@ -169,16 +169,21 @@ public class ComdirectPDFExtractor implements Extractor
                     SecurityItem item = new SecurityItem(security);
                     results.add(item);
                 }
-                int stueckLinePos = text.indexOf("\n", text.indexOf("Zum Kurs von")); //$NON-NLS-1$ //$NON-NLS-2$
+                // Do not use 'Zum Kurs von' as there are tons of other variants ('Zum Preis von', 'Zum comdirect Preis von', ...)
+                int stueckLinePos = text.indexOf('\n', text.indexOf("Nennwert")); //$NON-NLS-1$
                 Number shares = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
                 // Fees need not be present
                 // In case they are a section is present in the file
                 int provPos = -1;
-                provPos = text.indexOf("Provision", stueckLinePos); //$NON-NLS-1$
+                provPos = text.indexOf("Summe Entgelte", stueckLinePos); //$NON-NLS-1$
+                // Fallback to 'Provision'; perhaps unneeded, but for backward compatability
+                if (provPos <= 0)
+                    provPos = text.indexOf("Provision", stueckLinePos); //$NON-NLS-1$
+
                 BuySellEntry purchase = new BuySellEntry();
                 if (provPos > 0)
                 {
-                    Number fee = getNextNumber(text, jumpWord(text, provPos, 3));
+                    Number fee = getNextNumber(text, getLastWordInLinePos(text, provPos));
                     purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
                 }
                 int totalEURPos = text.indexOf("EUR", //$NON-NLS-1$
@@ -217,10 +222,11 @@ public class ComdirectPDFExtractor implements Extractor
 
     private Security getSecurityForISIN(String isin)
     {
-        for (Security sec : allSecurities)
-        {
-            if (sec.getIsin().equals(isin)) { return sec; }
-        }
+        if (isin == null)
+            return null;
+        for (Security security : allSecurities)
+            if (isin.equals(security.getIsin()))
+                return security;
         return null;
     }
 
@@ -270,6 +276,7 @@ public class ComdirectPDFExtractor implements Extractor
         }
     }
 
+
     private int jumpWord(String text, int position, int words)
     {
         for (int i = 0; i < words; i++)
@@ -280,24 +287,39 @@ public class ComdirectPDFExtractor implements Extractor
         return position;
     }
 
+    private int getLastWordInLinePos(String text, int position)
+    {
+        int wordPos;
+
+        wordPos = text.indexOf('\n', position);
+        if (wordPos == 0) // we started at a newline; try again
+            wordPos = text.indexOf('\n', position + 1);
+
+        if (wordPos == 0) // yeah, a bunch of newlines -> just give up
+            return -1;
+
+        if (wordPos < 0) // no newline -> last line
+            wordPos = text.length();
+        
+        wordPos--;
+
+        // possible white space at end of line
+        while (text.charAt(wordPos) == ' ')
+        {
+            wordPos--;
+        }
+
+        // pass over the word
+        wordPos = text.lastIndexOf(' ', wordPos);
+
+        // if wordPos is -1, there was no whitespace, hence 0 is the last word
+        // if wordPos is >=0, then it points to a whitespace -> +1 first char of word
+        return wordPos + 1;
+    }
+
     private String getLastWordInLine(String text, int position)
     {
-        while (text.charAt(position) != '\n')
-        {
-            position++;
-        }
-        position--;
-        while (text.charAt(position) == ' ')
-        {
-            position--;
-        }
-        String result = ""; //$NON-NLS-1$
-        while (text.charAt(position) != ' ')
-        {
-            result = text.charAt(position) + result;
-            position--;
-        }
-        return result;
+        return getNextWord(text, getLastWordInLinePos(text, position));
     }
 
     private String getNextLine(String text, int position)

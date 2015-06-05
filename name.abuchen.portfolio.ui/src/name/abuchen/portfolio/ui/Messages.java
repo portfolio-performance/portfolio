@@ -35,6 +35,7 @@ public class Messages extends NLS
     public static String ClientEditorLabelHoldings;
     public static String ClientEditorLabelPerformance;
     public static String ClientEditorLabelReports;
+    public static String ClientEditorLabelReturnsVolatility;
     public static String ColumnAccount;
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
@@ -47,6 +48,7 @@ public class Messages extends NLS
     public static String ColumnCurrency;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
+    public static String ColumnDataSeries;
     public static String ColumnDate;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
@@ -94,6 +96,8 @@ public class Messages extends NLS
     public static String ColumnLevels;
     public static String ColumnLumpSumPrice;
     public static String ColumnMarketValue;
+    public static String ColumnMaxDrawdown;
+    public static String ColumnMaxDrawdownDuration;
     public static String ColumnMessage;
     public static String ColumnMonth;
     public static String ColumnName;
@@ -252,12 +256,12 @@ public class Messages extends NLS
     public static String LabelAggregationDaily;
     public static String LabelAllSecurities;
     public static String LabelAvailableAttributes;
-    public static String LabelCancel;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
     public static String LabelDefaultReferenceAccountName;
-    public static String LabelDelete;
+    public static String LabelDoImport;
+    public static String LabelDoNotImport;
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelExport;
@@ -274,7 +278,6 @@ public class Messages extends NLS
     public static String LabelLevelNumber;
     public static String LabelNewClassification;
     public static String LabelNewTaxonomy;
-    public static String LabelNo;
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
@@ -282,11 +285,13 @@ public class Messages extends NLS
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
+    public static String LabelPeformanceTTWROR;
     public static String LabelPerformanceCalculation;
     public static String LabelPerformanceChart;
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
+    public static String LabelPotentialDuplicate;
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
@@ -307,6 +312,7 @@ public class Messages extends NLS
     public static String LabelSecurityPerformance;
     public static String LabelSemiVolatility;
     public static String LabelDividends;
+    public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
@@ -318,6 +324,7 @@ public class Messages extends NLS
     public static String LabelTotalSum;
     public static String LabelTransactions;
     public static String LabelTransferals;
+    public static String LabelTransferTo;
     public static String LabelTTWROR;
     public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
@@ -331,7 +338,6 @@ public class Messages extends NLS
     public static String LabelVolatility;
     public static String LabelWithoutClassification;
     public static String LabelXDays;
-    public static String LabelYes;
     public static String MenuAddAll;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;
@@ -382,6 +388,7 @@ public class Messages extends NLS
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
     public static String MsgDialogNotAValidISIN;
+    public static String MsgEmbeddedBrowserError;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
@@ -417,6 +424,8 @@ public class Messages extends NLS
     public static String NewFileWizardSecurityTitle;
     public static String NewFileWizardTaxonomyDescription;
     public static String NewFileWizardTaxonomyTitle;
+    public static String PDFImportDebugTextExtraction;
+    public static String PDFImportFilterName;
     public static String PDFImportWizardDescription;
     public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
@@ -439,9 +448,6 @@ public class Messages extends NLS
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleLanguage;
-    public static String SaveHandlerMsgSelectFileToSave;
-    public static String SaveHandlerPrompt;
-    public static String SaveHandlerTitle;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;
@@ -492,6 +498,9 @@ public class Messages extends NLS
     public static String TitlePasswordDialog;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
+    public static String TooltipMaxDrawdownDurationEndOfPeriod;
+    public static String TooltipMaxDrawdownDurationFromXtoY;
+    public static String TooltipMaxDurationLowToHigh;
     public static String TooltipSemiVolatility;
     public static String TooltipVolatility;
     public static String WatchlistDelete;

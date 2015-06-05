@@ -33,7 +33,14 @@ public final class AttributeTypes
                                     .columnLabel(Messages.AttributesVendorColumn) //
                                     .target(Security.class) //
                                     .type(String.class) //
-                                    .converter(new StringConverter()) //
+                                    .converter(new StringConverter()), //
+
+                    new AttributeType("acquisitionFee") //$NON-NLS-1$
+                                    .name(Messages.AttributesAcquisitionFeeName) //
+                                    .columnLabel(Messages.AttributesAcquisitionFeeColumn) //
+                                    .target(Security.class) //
+                                    .type(Double.class) //
+                                    .converter(new DoubleConverter(Values.PercentPlain)) //
                     );
 
     public static List<AttributeType> available(Class<? extends Attributable> target)

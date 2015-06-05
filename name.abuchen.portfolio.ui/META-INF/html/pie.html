@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="${/META-INF/css/pp.css}">
+<style>
+path {
+	stroke: #fff;
+	fill-rule: evenodd;
+}
+
+text {
+    cursor: default;
+}
+</style>
+<body>
+<script src="${/META-INF/js/d3.min.js}"></script>
+<script src="${/META-INF/js/pp.js}"></script>
+<script>
+var data = JSON.parse(loadData());
+var total = d3.sum(data, function(d) {return d.value;} );
+
+pp.onResizeEnd(function() {
+    thePieChart.resize();
+});
+
+var thePieChart = {
+
+    toPercent: d3.format("0.2%"),
+
+    build: function () {
+        this.width = pp.getInitialWidth();
+        this.height = pp.getInitialHeight();
+        this.radius = (Math.min(this.width, this.height) / 2) - 10;
+
+        this.pie = d3.layout.pie()
+            .startAngle(Math.PI / 2)
+            .endAngle(2.5 * Math.PI)
+            .value(function(d) { return d.value; })
+            .sort(function(a, b) { return d3.descending(a.value, b.value) });
+
+        this.arc = d3.svg.arc()
+            .innerRadius(this.radius / 2)
+            .outerRadius(this.radius - 60);
+
+        this.tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        this.svg = d3.select("body").append("svg")
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .append("g")
+            .attr("transform", "translate(" + this.width / 2 + "," + this.height / 2 + ")");
+    },
+
+    resize: function() {
+        var that = this;
+
+        this.width = pp.getInnerWidth();
+        this.height = pp.getInnerHeight();
+        this.radius = (Math.min(this.width, this.height) / 2) - 10;
+
+        this.arc = this.arc
+            .innerRadius(this.radius / 2)
+            .outerRadius(this.radius - 50);
+
+        this.svg
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .attr("transform", "translate(" + this.width / 2 + "," + (this.height / 2) + ")");
+
+        this.path
+            .attr("d", this.arc)
+            .transition();
+
+        this.addLabels();
+
+        this.valueLabels
+            .attr("transform", this.transformValueLabels)
+            .transition();
+    },
+
+    update: function(data) {
+        var that = this;
+        this.piedata = this.pie(data);
+
+        var pathGroup = this.svg.select("g.piePaths");
+        if (pathGroup.empty()) {
+            pathGroup = this.svg.append("g").attr("class", "piePaths");
+        }
+
+        this.path = pathGroup.selectAll("path.pie")
+            .data(this.piedata);
+
+        this.path.enter()
+            .append("path")
+            .attr("class", "pie")
+            .attr("line", "#ffffff")
+            .attr("fill", function(d) { return d.data.color })
+            .attr("d", this.arc)
+            .on("mouseover", function(d) { that.mouseover(d); })
+            .on("mousemove", function(d) { that.mousemove(d); })
+            .on("mouseout", function(d) { that.mouseout(d); })
+            .transition();
+
+        this.path.exit()
+            .transition()
+            .remove();
+
+        this.addLabels();
+        this.addPercentageLabels();
+    },
+
+    addLabels: function() {
+        var that = this;
+
+        var labelGroup = this.svg.select("g.labels")
+        if (labelGroup.empty() ) {
+            labelGroup = this.svg.append("g").attr("class", "labels");
+        }
+
+        var labels = labelGroup.selectAll("text")
+            .data(this.piedata.sort(function(p1,p2) { return p1.startAngle - p2.startAngle;}));
+        labels.enter()
+            .append("text")
+            .filter(function(d) { return d.data.value / total > 0.001 })
+            .attr("text-anchor", "start")
+            .attr("visibility", "hidden");
+        labels.exit()
+            .remove();
+
+        // label positioning algorithm (if we want to call it that):
+        // on the right side, if it conflicts, move it below
+        // on the left side, if it conflicts, move it up
+
+        var previous;
+
+        labels
+            .filter(function(d) { return d.data.value / total > 0.001 })
+            .text(function (d) { return d.data.label; })
+            .each(function (d, i) {
+                var a = (d.startAngle + d.endAngle) / 2;
+                var bbox = this.getBBox();
+                var labelRadius = that.radius - 40;
+
+                var isRight = (a >= 0 && a <= Math.PI) || (a >= 2 * Math.PI);
+
+                d.cx =  Math.sin(a) * (labelRadius);
+                d.cy = -Math.cos(a) * (labelRadius);
+
+                if (isRight) {
+                    d.x = d.cx;
+                    d.l = d.cx - 2;
+                    d.r = d.cx + bbox.width + 2;
+                } else {
+                    d.x = d.cx - bbox.width;
+                    d.l = d.cx - bbox.width - 2;
+                    d.r = d.cx + 2;
+                }
+                d.y = d.cy;
+                d.b = d.y;
+                d.t = d.y - bbox.height;
+
+                // check for conflict
+                if (previous && d.l < previous.r && d.r > previous.l &&
+                    d.t < previous.b && d.b > previous.t) {
+
+                    if (isRight) {
+                        d.t = previous.b - 2;
+                        d.b = d.y = previous.b + bbox.height - 2;
+                    } else {
+                        d.t = previous.t - bbox.height - 2;
+                        d.b = d.y = previous.t - 2;
+                    }
+                }
+
+                previous = d;
+            })
+            .transition() //we can use transitions now!
+            .attr("x", function (d) { return d.x; })
+            .attr("y", function (d) { return d.y; })
+            .attr("visibility", "visible");
+    },
+
+    addPercentageLabels: function() {
+        var that = this;
+
+        var labelGroup = this.svg.select("g.values")
+        if (labelGroup.empty() ) {
+            labelGroup = this.svg.append("g").attr("class", "values");
+        }
+
+        this.valueLabels = labelGroup.selectAll("text")
+            .data(this.piedata.sort(function(p1,p2) { return p1.startAngle - p2.startAngle;}));
+
+        this.valueLabels.enter()
+            .append("text")
+            .filter(function(d) { return d.data.value / total > 0.03 })
+            .attr("transform", this.transformValueLabels)
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .style("fill", function(d) { return brightness(d3.rgb(d.data.color)) < 125 ? "#eee" : "#000"; })
+            .text(function(d) { return d.data.valueLabel; })
+            .on("mouseover", function(d) { that.mouseover(d); })
+            .on("mousemove", function(d) { that.mousemove(d); })
+            .on("mouseout", function(d) { that.mouseout(d); });
+
+        this.valueLabels.exit()
+            .remove();
+    },
+
+    transformValueLabels: function(d) {
+        indent = 3 * thePieChart.radius / 4 - 20;
+        return "translate(" + ( indent * Math.sin( ((d.endAngle - d.startAngle) / 2) + d.startAngle ) )
+                + "," + ( -1 * indent * Math.cos( ((d.endAngle - d.startAngle) / 2) + d.startAngle ) ) + ")";
+    },
+
+    mouseover: function(d) {
+        this.tooltip
+            .transition()
+            .duration(250)
+            .style("opacity", 1);
+
+        this.tooltip
+            .html(d.data.caption)
+            .style("left", (d3.event.pageX + 6) + "px")
+            .style("top", (d3.event.pageY - 20) + "px");
+    },
+
+    mousemove: function(d) {
+        this.tooltip
+            .style("left", (d3.event.pageX + 6) + "px")
+            .style("top", (d3.event.pageY - 20) + "px");
+    },
+
+    mouseout: function(d) {
+        this.tooltip.transition()
+          .duration(250)
+          .style("opacity", 0);
+    }
+}
+
+thePieChart.build();
+thePieChart.update(data);
+
+// http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
+function brightness(rgb) {
+  return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
+}
+</script>

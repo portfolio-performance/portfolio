@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
@@ -75,30 +77,23 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
     {
-        Map<String, Security> requested = new HashMap<String, Security>();
+        Map<String, List<Security>> symbol2security = securities.stream()
+                        //
+                        .filter(s -> s.getTickerSymbol() != null)
+                        .collect(Collectors.groupingBy(s -> s.getTickerSymbol().toUpperCase(Locale.ROOT)));
 
-        StringBuilder symbolString = new StringBuilder();
-        for (Security security : securities)
-        {
-            if (security.getTickerSymbol() == null)
-                continue;
-
-            if (symbolString.length() > 0)
-                symbolString.append("+"); //$NON-NLS-1$
-            symbolString.append(security.getTickerSymbol());
-            requested.put(security.getTickerSymbol().toUpperCase(), security);
-        }
+        String symbolString = symbol2security.keySet().stream().collect(Collectors.joining("+")); //$NON-NLS-1$
 
         boolean isUpdated = false;
 
         String url = MessageFormat.format(LATEST_URL, symbolString.toString());
 
-        String line = null;
         try (BufferedReader reader = openReader(url, errors))
         {
             if (reader == null)
                 return false;
 
+            String line = null;
             while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
@@ -109,44 +104,31 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 }
 
                 String symbol = stripQuotes(values[0]);
-
-                Security security = requested.remove(symbol);
-                if (security == null)
+                List<Security> forSymbol = symbol2security.remove(symbol);
+                if (forSymbol == null)
                 {
                     errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedSymbol, symbol, line)));
                     continue;
                 }
 
-                long lastTrade = asPrice(values[1]);
+                try
+                {
+                    LatestSecurityPrice price = buildPrice(values);
 
-                Date lastTradeDate = asDate(values[2]);
-                if (lastTradeDate == null) // can't work w/o date
-                    lastTradeDate = Dates.today();
-
-                long daysHigh = asPrice(values[3]);
-
-                long daysLow = asPrice(values[4]);
-
-                long previousClose = asPrice(values[5]);
-
-                int volume = asNumber(values[6]);
-
-                LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
-                price.setHigh(daysHigh);
-                price.setLow(daysLow);
-                price.setPreviousClose(previousClose);
-                price.setVolume(volume);
-
-                boolean isAdded = security.setLatest(price);
-                isUpdated = isUpdated || isAdded;
+                    for (Security security : forSymbol)
+                    {
+                        boolean isAdded = security.setLatest(price);
+                        isUpdated = isUpdated || isAdded;
+                    }
+                }
+                catch (NumberFormatException | ParseException e)
+                {
+                    errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
+                }
             }
 
-            for (Security s : requested.values())
-                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, s.getTickerSymbol())));
-        }
-        catch (NumberFormatException | ParseException e)
-        {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
+            for (String symbol : symbol2security.keySet())
+                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol)));
         }
         catch (IOException e)
         {
@@ -154,6 +136,31 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
 
         return isUpdated;
+    }
+
+    private LatestSecurityPrice buildPrice(String[] values) throws ParseException
+    {
+        long lastTrade = asPrice(values[1]);
+
+        Date lastTradeDate = asDate(values[2]);
+        if (lastTradeDate == null) // can't work w/o date
+            lastTradeDate = Dates.today();
+
+        long daysHigh = asPrice(values[3]);
+
+        long daysLow = asPrice(values[4]);
+
+        long previousClose = asPrice(values[5]);
+
+        int volume = asNumber(values[6]);
+
+        LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
+        price.setHigh(daysHigh);
+        price.setLow(daysLow);
+        price.setPreviousClose(previousClose);
+        price.setVolume(volume);
+
+        return price;
     }
 
     @Override
@@ -339,6 +346,15 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             errors.add(e);
         }
+
+        // Issue #251
+        // sometimes Yahoo does not return the default exchange which prevents
+        // selecting this security (example: searching for GOOG does return only
+        // unimportant exchanges)
+        Optional<Exchange> defaultExchange = answer.stream() //
+                        .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
+        if (!defaultExchange.isPresent())
+            answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
 
         if (answer.isEmpty())
         {

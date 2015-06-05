@@ -19,10 +19,13 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
@@ -67,6 +70,7 @@ import org.eclipse.swt.widgets.Menu;
 
     private Menu taxonomyMenu;
 
+    private ScrolledComposite scrolledComposite;
     private Sidebar sidebar;
     private Entry allSecurities;
     private Entry statementOfAssets;
@@ -95,7 +99,9 @@ import org.eclipse.swt.widgets.Menu;
 
     public Control createSidebarControl(Composite parent)
     {
-        sidebar = new Sidebar(parent, SWT.NONE);
+        scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+
+        sidebar = new Sidebar(scrolledComposite, SWT.NONE);
 
         createGeneralDataSection(sidebar);
         createMasterDataSection(sidebar);
@@ -103,7 +109,20 @@ import org.eclipse.swt.widgets.Menu;
         createTaxonomyDataSection(sidebar);
         createMiscSection(sidebar);
 
-        return sidebar;
+        scrolledComposite.setContent(sidebar);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
+
+        parent.getParent().addControlListener(new ControlAdapter()
+        {
+            @Override
+            public void controlResized(ControlEvent e)
+            {
+                scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
+
+        return scrolledComposite;
     }
 
     public void selectDefaultView()
@@ -141,6 +160,7 @@ import org.eclipse.swt.widgets.Menu;
 
                 createWatchlistEntry(section, watchlist);
                 sidebar.layout();
+                scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             }
         });
 
@@ -187,6 +207,7 @@ import org.eclipse.swt.widgets.Menu;
                         editor.markDirty();
                         entry.dispose();
                         allSecurities.select();
+                        scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
                     }
                 });
 
@@ -266,6 +287,8 @@ import org.eclipse.swt.widgets.Menu;
         performance.setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
+        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility,
+                        "ReturnsVolatilityChart")).setContextMenu(setAsStartPage); //$NON-NLS-1$
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
     }
@@ -319,6 +342,7 @@ import org.eclipse.swt.widgets.Menu;
                         editor.markDirty();
                         entry.dispose();
                         statementOfAssets.select();
+                        scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
                     }
                 });
 
@@ -401,6 +425,7 @@ import org.eclipse.swt.widgets.Menu;
 
         sidebar.select(entry);
         sidebar.layout();
+        scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
     private String askTaxonomyName(String initialValue)
@@ -420,5 +445,8 @@ import org.eclipse.swt.widgets.Menu;
                         .setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction("Währungen", "ExchangeRatesList")) //$NON-NLS-2$
                         .setContextMenu(setAsStartPage);
+
+        if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
+            new Entry(section, new ActivateViewAction("Browser Test", "BrowserTest")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

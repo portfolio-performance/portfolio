@@ -8,7 +8,6 @@ package name.abuchen.portfolio.util;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
-import java.nio.CharBuffer;
 
 public class TokenReplacingReader extends Reader
 {
@@ -27,12 +26,6 @@ public class TokenReplacingReader extends Reader
     {
         this.pushbackReader = new PushbackReader(source, 2);
         this.tokenResolver = resolver;
-    }
-
-    @Override
-    public int read(CharBuffer target) throws IOException
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override

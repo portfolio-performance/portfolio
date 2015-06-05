@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.util.Dates;
@@ -137,7 +138,7 @@ public class ClientPerformanceSnapshotTest
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
-                        1_00, security, 10, PortfolioTransaction.Type.BUY, 0, 0));
+                        1_00, security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         Account account = new Account();
@@ -171,7 +172,7 @@ public class ClientPerformanceSnapshotTest
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
-                        1_00, security, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+                        1_00, security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -201,9 +202,9 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction("2010-01-01", CurrencyUnit.EUR, 1_00, security, 1000000,
+        portfolio.addTransaction(new PortfolioTransaction("2010-01-01", CurrencyUnit.EUR, 1_00, security, Values.Share.factorize(10),
                         PortfolioTransaction.Type.BUY, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction("2011-01-15", CurrencyUnit.EUR, 99_00, security, 100000,
+        portfolio.addTransaction(new PortfolioTransaction("2011-01-15", CurrencyUnit.EUR, 99_00, security, Values.Share.factorize(1),
                         PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
         client.addPortfolio(portfolio);
 
@@ -239,8 +240,8 @@ public class ClientPerformanceSnapshotTest
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .buy(security, "2010-01-01", 10_00000, 1_00) //
-                        .sell(security, "2011-01-15", 1_00000, 99_00) //
+                        .buy(security, "2010-01-01", Values.Share.factorize(10), 1_00) //
+                        .sell(security, "2011-01-15", Values.Share.factorize(1), 99_00) //
                         .addTo(client);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -274,8 +275,8 @@ public class ClientPerformanceSnapshotTest
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .buy(security, "2010-01-01", 10_00000, 1_00) //
-                        .sell(security, "2011-01-15", 1_00000, 99_00, 1) //
+                        .buy(security, "2010-01-01", Values.Share.factorize(10), 1_00) //
+                        .sell(security, "2011-01-15", Values.Share.factorize(1), 99_00, 1) //
                         .addTo(client);
 
         CurrencyConverter converter = new TestCurrencyConverter();

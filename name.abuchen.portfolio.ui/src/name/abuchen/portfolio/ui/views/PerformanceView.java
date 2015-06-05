@@ -13,6 +13,7 @@ import java.time.format.FormatStyle;
 import javax.inject.Inject;
 
 import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -36,6 +37,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.util.Interval;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -150,20 +152,44 @@ public class PerformanceView extends AbstractHistoricView
                             ZoneId.systemDefault());
 
             Drawdown drawdown = index.getDrawdown();
+            Volatility vola = index.getVolatility();
 
             maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
             maxDrawdown.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdown,
                             formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
                             formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
 
-            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, //
-                            drawdown.getMaxDrawdownDuration().getDays()));
-            maxDrawdownDuration.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdownDuration,
-                            formatter.format(drawdown.getMaxDrawdownDuration().getStart()),
-                            formatter.format(drawdown.getMaxDrawdownDuration().getEnd())));
+            // max drawdown duration
+            Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
+            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
+            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(
+                            index.getReportInterval().getEndDate().toInstant());
+            String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
+                            : Messages.TooltipMaxDrawdownDurationFromXtoY;
+
+            // recovery time
+            Interval recoveryTime = drawdown.getLongestRecoveryTime();
+            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate().toInstant());
+            String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
+                            : Messages.TooltipMaxDrawdownDurationFromXtoY;
+            maxDrawdownDuration.setToolTipText(Messages.TooltipMaxDrawdownDuration
+                            + "\n\n" //$NON-NLS-1$
+                            + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
+                                            formatter.format(maxDDDuration.getEnd()))
+                            + "\n\n" //$NON-NLS-1$
+                            + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays())
+                            + MessageFormat.format(recoveryTimeSupplement, formatter.format(recoveryTime.getStart()),
+                                            formatter.format(recoveryTime.getEnd())));
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
-            semiVolatility.setText(Values.Percent2.format(index.getVolatility().getSemiDeviation()));
+            volatility.setToolTipText(Messages.TooltipVolatility);
+
+            semiVolatility.setText(Values.Percent2.format(vola.getSemiDeviation()));
+            semiVolatility.setToolTipText(MessageFormat.format(Messages.TooltipSemiVolatility,
+                            Values.Percent5.format(vola.getExpectedSemiDeviation()),
+                            vola.getNormalizedSemiDeviationComparison(),
+                            Values.Percent5.format(vola.getStandardDeviation()),
+                            Values.Percent5.format(vola.getSemiDeviation())));
         }
 
         public void createTab(CTabFolder folder)
@@ -248,9 +274,7 @@ public class PerformanceView extends AbstractHistoricView
             maxDrawdown = addKPIBelow(Messages.LabelMaxDrawdown, heading, maxWidth);
             maxDrawdownDuration = addKPIBelow(Messages.LabelMaxDrawdownDuration, maxDrawdown, maxWidth);
             volatility = addKPIBelow(Messages.LabelVolatility, maxDrawdownDuration, maxWidth);
-            volatility.setToolTipText(Messages.TooltipVolatility);
             semiVolatility = addKPIBelow(Messages.LabelSemiVolatility, volatility, maxWidth);
-            semiVolatility.setToolTipText(Messages.TooltipSemiVolatility);
 
             // layout
 

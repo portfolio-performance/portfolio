@@ -15,19 +15,27 @@ public final class Risk
         private double maxDD;
         private Interval maxDDDuration;
         private Interval intervalMaxDD;
+        private Interval recoveryTime;
 
         public Drawdown(double[] values, Date[] dates)
         {
             double peak = values[0] + 1;
+            double bottom = values[0] + 1;
             Instant lastPeakDate = dates[0].toInstant();
+            Instant lastBottomDate = dates[0].toInstant();
 
+            maxDD = 0;
+            intervalMaxDD = Interval.of(lastPeakDate, lastPeakDate);
             maxDDDuration = Interval.of(lastPeakDate, lastPeakDate);
-            Interval currentDrawdownDuration;
+            recoveryTime = Interval.of(lastBottomDate, lastPeakDate);
+            Interval currentDrawdownDuration = null;
+            Interval currentRecoveryTime = null;
 
             for (int ii = 0; ii < values.length; ii++)
             {
                 double value = values[ii] + 1;
                 currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii].toInstant());
+                currentRecoveryTime = Interval.of(lastBottomDate, dates[ii].toInstant());
 
                 if (value > peak)
                 {
@@ -36,6 +44,13 @@ public final class Risk
 
                     if (currentDrawdownDuration.isLongerThan(maxDDDuration))
                         maxDDDuration = currentDrawdownDuration;
+
+                    if (currentRecoveryTime.isLongerThan(recoveryTime))
+                        recoveryTime = currentRecoveryTime;
+                    // Reset the recovery time calculation, as the recovery is
+                    // now complete
+                    lastBottomDate = dates[ii].toInstant();
+                    bottom = value;
                 }
                 else
                 {
@@ -46,7 +61,28 @@ public final class Risk
                         intervalMaxDD = Interval.of(lastPeakDate, dates[ii].toInstant());
                     }
                 }
+                if (value < bottom)
+                {
+                    bottom = value;
+                    lastBottomDate = dates[ii].toInstant();
+                }
             }
+
+            // check if current drawdown duration is longer than the max
+            // drawdown duration currently calculated --> use it because it is
+            // the longest duration even if we do not know how much longer it
+            // will get
+
+            if (currentDrawdownDuration != null && currentDrawdownDuration.isLongerThan(maxDDDuration))
+                maxDDDuration = currentDrawdownDuration;
+
+            if (currentRecoveryTime != null && currentRecoveryTime.isLongerThan(recoveryTime))
+                recoveryTime = currentRecoveryTime;
+        }
+
+        public Interval getLongestRecoveryTime()
+        {
+            return recoveryTime;
         }
 
         public double getMaxDrawdown()
@@ -70,18 +106,18 @@ public final class Risk
         private final double stdDeviation;
         private final double semiDeviation;
 
-        public Volatility(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
+        public Volatility(double[] returns, Predicate<Integer> filter)
         {
             Objects.requireNonNull(returns);
 
-            double averageReturn = average(dates, returns, skip, filter);
+            double averageReturn = average(returns, filter);
             double tempStandard = 0;
             double tempSemi = 0;
             int count = 0;
 
-            for (int ii = skip; ii < returns.length; ii++)
+            for (int ii = 0; ii < returns.length; ii++)
             {
-                if (!filter.test(dates[ii]))
+                if (!filter.test(ii))
                     continue;
 
                 double add = Math.pow(returns[ii] - averageReturn, 2);
@@ -97,14 +133,14 @@ public final class Risk
             semiDeviation = Math.sqrt(tempSemi / count);
         }
 
-        private double average(Date[] dates, double[] returns, int skip, Predicate<Date> filter)
+        private double average(double[] returns, Predicate<Integer> filter)
         {
             double sum = 0;
             int count = 0;
 
-            for (int ii = skip; ii < returns.length; ii++)
+            for (int ii = 0; ii < returns.length; ii++)
             {
-                if (!filter.test(dates[ii]))
+                if (!filter.test(ii))
                     continue;
 
                 sum += returns[ii];
@@ -122,6 +158,21 @@ public final class Risk
         public double getSemiDeviation()
         {
             return semiDeviation;
+        }
+
+        public double getExpectedSemiDeviation()
+        {
+            return stdDeviation / Math.sqrt(2);
+        }
+
+        public String getNormalizedSemiDeviationComparison()
+        {
+            double expectedSemiDeviation = getExpectedSemiDeviation();
+            if (expectedSemiDeviation > semiDeviation)
+                return ">"; //$NON-NLS-1$
+            else if (expectedSemiDeviation < semiDeviation)
+                return "<"; //$NON-NLS-1$
+            return "="; //$NON-NLS-1$
         }
     }
 

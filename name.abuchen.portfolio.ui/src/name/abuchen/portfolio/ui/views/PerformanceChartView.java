@@ -280,7 +280,7 @@ public class PerformanceChartView extends AbstractHistoricView
         {
             ILineSeries series = chart.addDateSeries(cpiIndex.getDates(), //
                             cpiIndex.getAccumulatedPercentage(), //
-                            Messages.PerformanceChartLabelCPI);
+                            item.getLabel());
             item.configure(series);
         }
     }

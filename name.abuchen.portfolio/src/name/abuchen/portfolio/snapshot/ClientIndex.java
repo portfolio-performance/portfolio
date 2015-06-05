@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.Dates;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -26,6 +27,19 @@ import org.joda.time.Interval;
     /* package */void calculate(List<Exception> warnings)
     {
         Interval interval = getReportInterval().toInterval();
+
+        // the actual interval should not extend into the future
+        if (interval.getEnd().isAfterNow())
+        {
+            long start = interval.getStartMillis();
+            long end = Dates.today().getTime();
+
+            if (start > end)
+                start = end;
+
+            interval = new Interval(start, end);
+        }
+
         int size = Days.daysBetween(interval.getStart(), interval.getEnd()).getDays() + 1;
 
         dates = new Date[size];

@@ -9,13 +9,14 @@ import java.util.List;
 import javax.inject.Named;
 
 import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.DABPDFExctractor;
 import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.FlatexPDFExctractor;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -31,8 +32,7 @@ public class ImportPDFHandler
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        return Platform.OS_LINUX.equals(Platform.getOS())
-                        || (null != part && part.getObject() instanceof PortfolioPart);
+        return MenuHelper.isClientPartActive(part);
     }
 
     @Execute
@@ -40,21 +40,33 @@ public class ImportPDFHandler
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Named("name.abuchen.portfolio.ui.param.pdf-type") String type) throws IOException
     {
-        if (part == null || !(part.getObject() instanceof PortfolioPart))
+        Client client = MenuHelper.getActiveClient(part);
+        if (client == null)
             return;
-
-        PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
-        Client client = portfolioPart.getClient();
 
         // determine extractor class
 
         Extractor extractor = null;
-        if ("comdirect".equals(type)) //$NON-NLS-1$
-            extractor = new ComdirectPDFExtractor(client);
-        else if ("db".equals(type)) //$NON-NLS-1$
-            extractor = new DeutscheBankPDFExctractor(client);
-        else
-            throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
+        switch (type)
+        {
+            case "comdirect": //$NON-NLS-1$
+                extractor = new ComdirectPDFExtractor(client);
+                break;
+            case "consorsbank": //$NON-NLS-1$
+                extractor = new ConsorsbankPDFExctractor(client);
+                break;
+            case "dab": //$NON-NLS-1$
+                extractor = new DABPDFExctractor(client);
+                break;
+            case "db": //$NON-NLS-1$
+                extractor = new DeutscheBankPDFExctractor(client);
+                break;
+            case "flatex": //$NON-NLS-1$
+                extractor = new FlatexPDFExctractor(client);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
+        }
 
         // open file dialog to pick pdf files
 

@@ -1,199 +1,200 @@
 package name.abuchen.portfolio.datatransfer;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-
-public class DeutscheBankPDFExctractor implements Extractor
+public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY); //$NON-NLS-1$
-    private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
-
-    private final PDFTextStripper textStripper;
-    private final Map<String, Security> isin2security;
-
     public DeutscheBankPDFExctractor(Client client) throws IOException
     {
-        textStripper = new PDFTextStripper();
-        textStripper.setSortByPosition(true);
+        super(client);
 
-        this.isin2security = client.getSecurities().stream() //
-                        .filter(s -> s.getIsin() != null && !s.getIsin().isEmpty()) //
-                        .collect(Collectors.toMap(Security::getIsin, s -> s));
+        addBuyTransaction();
+        addSellTransaction();
+        addDividendTransaction();
+    }
+
+    @SuppressWarnings("nls")
+    private void addBuyTransaction()
+    {
+        DocumentType type = new DocumentType("Kauf von Wertpapieren");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Abrechnung: Kauf von Wertpapieren");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+
+                        .section("wkn", "isin", "name")
+                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite")
+                        .match("^.{15}(?<name>.*)$")
+                        .match("^WKN (?<wkn>[^ ]*) (.*)$")
+                        .match("^ISIN (?<isin>[^ ]*) (.*)$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("shares")
+                        .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date", "amount")
+                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (\\w{3}+) (?<amount>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("fees") //
+                        .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            long marketValue = asAmount(v.get("fees"));
+                            long totalAmount = t.getPortfolioTransaction().getAmount();
+                            long taxes = t.getPortfolioTransaction().getTaxes();
+
+                            switch (t.getPortfolioTransaction().getType())
+                            {
+                                case BUY:
+                                    t.setFees(totalAmount - taxes - marketValue);
+                                    break;
+                                case SELL:
+                                    t.setFees(marketValue - taxes - totalAmount);
+                                    break;
+                                default:
+                                    throw new UnsupportedOperationException();
+                            }
+                        })
+
+                        .wrap(t -> new BuySellEntryItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addSellTransaction()
+    {
+        DocumentType type = new DocumentType("Verkauf von Wertpapieren");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Abrechnung: Verkauf von Wertpapieren");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("wkn", "isin", "name")
+                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite")
+                        .match("^.{15}(?<name>.*)$")
+                        .match("^WKN (?<wkn>[^ ]*) (.*)$")
+                        .match("^ISIN (?<isin>[^ ]*) (.*)$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("shares")
+                        .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date", "amount")
+                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (\\w{3}+) (?<amount>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("tax")
+                        //
+                        .match("Kapitalertragsteuer (\\w{3}+) (?<tax>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.setTaxes(asAmount(v.get("tax"))))
+
+                        .section("soli")
+                        .match("Solidaritätszuschlag auf Kapitalertragsteuer (\\w{3}+) (?<soli>[\\d.-]+,\\d+)") //
+                        .assign((t, v) -> t.setTaxes(t.getPortfolioTransaction().getTaxes() + asAmount(v.get("soli"))))
+
+                        .section("fees") //
+                        .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            long marketValue = asAmount(v.get("fees"));
+                            long totalAmount = t.getPortfolioTransaction().getAmount();
+                            long taxes = t.getPortfolioTransaction().getTaxes();
+
+                            switch (t.getPortfolioTransaction().getType())
+                            {
+                                case BUY:
+                                    t.setFees(totalAmount - taxes - marketValue);
+                                    break;
+                                case SELL:
+                                    t.setFees(marketValue - taxes - totalAmount);
+                                    break;
+                                default:
+                                    throw new UnsupportedOperationException();
+                            }
+                        })
+
+                        .wrap(t -> new BuySellEntryItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addDividendTransaction()
+    {
+        DocumentType type = new DocumentType("Ertragsgutschrift");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Ertragsgutschrift");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return transaction;
+                        })
+
+                        .section("wkn", "isin", "name")
+                        //
+                        .find("Stück WKN ISIN")
+                        //
+                        .match("(\\d+,\\d*) (?<wkn>\\S*) (?<isin>\\S*)")
+                        //
+                        .match("^(?<name>.*)$")
+                        //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("shares")
+                        //
+                        .match("(?<shares>\\d+,\\d*) (\\S*) (\\S*)")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date", "amount")
+                        .match("Gutschrift mit Wert (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(t -> new TransactionItem(t)));
     }
 
     @Override
     public String getLabel()
     {
         return Messages.PDFdbLabel;
-    }
-
-    @Override
-    public String getFilterExtension()
-    {
-        return "*.pdf"; //$NON-NLS-1$
-    }
-
-    @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
-    {
-        List<Item> results = new ArrayList<Item>();
-        for (File f : files)
-        {
-            try (PDDocument doc = PDDocument.load(f))
-            {
-                String text = textStripper.getText(doc);
-                results.addAll(extract(f.getName(), text, errors));
-            }
-            catch (IOException e)
-            {
-                errors.add(e);
-            }
-        }
-        return results;
-    }
-
-    /* protected */List<Item> extract(String filename, String text, List<Exception> errors)
-    {
-        try
-        {
-            if (!text.startsWith("Deutsche Bank")) //$NON-NLS-1$
-                throw new UnsupportedOperationException( //
-                                MessageFormat.format(Messages.PDFdbMsgFileNotSupported, filename));
-
-            boolean isDividend = text.contains("Ertragsgutschrift"); //$NON-NLS-1$
-            if (!isDividend)
-                throw new UnsupportedOperationException( //
-                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename));
-
-            List<Item> items = new ArrayList<Item>();
-            String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
-
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-            transaction.setNote(filename);
-
-            fillInSecurity(transaction, filename, lines, items);
-            fillInDateAndAmount(transaction, lines);
-            fillInShares(transaction, lines);
-
-            items.add(new TransactionItem(transaction));
-
-            return items;
-        }
-        catch (ParseException | UnsupportedOperationException e)
-        {
-            errors.add(e);
-            return Collections.emptyList();
-        }
-    }
-
-    private void fillInDateAndAmount(AccountTransaction transaction, String[] lines) throws ParseException
-    {
-        Pattern pattern = Pattern.compile("Gutschrift mit Wert (\\d+.\\d+.\\d{4}+) (\\d+,\\d+) (\\w{3}+)"); //$NON-NLS-1$
-        for (int ii = 0; ii < lines.length; ii++)
-        {
-            Matcher matcher = pattern.matcher(lines[ii]);
-            if (matcher.matches())
-            {
-                LocalDate date = LocalDate.parse(matcher.group(1), DATE_FORMAT);
-                transaction.setDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
-                long amount = Math.round(numberFormat.parse(matcher.group(2)).doubleValue() * Values.Amount.factor());
-                transaction.setAmount(amount);
-
-                break;
-            }
-        }
-    }
-
-    private void fillInShares(AccountTransaction transaction, String[] lines) throws ParseException
-    {
-        Pattern pattern = Pattern.compile("(\\d+,\\d*) (\\S*) (\\S*)"); //$NON-NLS-1$
-        for (int ii = 0; ii < lines.length; ii++)
-        {
-            Matcher matcher = pattern.matcher(lines[ii]);
-            if (matcher.matches())
-            {
-                long shares = Math.round(numberFormat.parse(matcher.group(0)).doubleValue() * Values.Share.factor());
-                transaction.setShares(shares);
-
-                break;
-            }
-        }
-    }
-
-    private void fillInSecurity(AccountTransaction transaction, String filename, String[] lines, List<Item> items)
-    {
-        Security security = extractSecurity(lines);
-
-        if (security == null)
-            throw new UnsupportedOperationException(MessageFormat.format(Messages.PDFdbMsgCannotFindSecurity, filename));
-
-        Security existing = isin2security.get(security.getIsin());
-        if (existing != null)
-        {
-            transaction.setSecurity(existing);
-        }
-        else
-        {
-            isin2security.put(security.getIsin(), security);
-            items.add(new SecurityItem(security));
-            transaction.setSecurity(security);
-        }
-    }
-
-    private Security extractSecurity(String[] lines)
-    {
-        // looking for a group of three lines
-        // Stück WKN ISIN
-        // (number) (wkn) (isin)
-        // (name of security)
-
-        for (int ii = 0; ii < lines.length - 2; ii++)
-        {
-            if ("Stück WKN ISIN".equals(lines[ii])) //$NON-NLS-1$
-            {
-                Pattern pattern = Pattern.compile("(\\d+,\\d*) (\\S*) (\\S*)"); //$NON-NLS-1$
-                Matcher matcher = pattern.matcher(lines[ii + 1]);
-                if (matcher.matches())
-                {
-                    Security security = new Security();
-                    security.setIsin(matcher.group(3));
-                    security.setWkn(matcher.group(2));
-                    security.setName(lines[ii + 2]);
-                    security.setFeed(QuoteFeed.MANUAL);
-                    return security;
-                }
-
-                break;
-            }
-        }
-
-        return null;
     }
 }

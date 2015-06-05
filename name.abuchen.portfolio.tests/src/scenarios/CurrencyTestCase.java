@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -115,7 +116,7 @@ public class CurrencyTestCase
     {
         AssetPosition equityUSD = getAssetPositionByName(grouping, securityUSD.getName());
 
-        assertThat(equityUSD.getPosition().getShares(), is(10_00000L));
+        assertThat(equityUSD.getPosition().getShares(), is(Values.Share.factorize(10)));
         // purchase value must be sum of both purchases:
         // the one in EUR account and the one in USD account
         assertThat(equityUSD.getPosition().getFIFOPurchaseValue(),

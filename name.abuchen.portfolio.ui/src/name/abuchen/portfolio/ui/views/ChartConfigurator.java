@@ -224,6 +224,7 @@ import org.swtchart.LineStyle;
         public void configure(ILineSeries series)
         {
             series.setLineColor(getColor());
+            series.setSymbolColor(getColor());
             series.enableArea(showArea);
             series.setLineStyle(lineStyle);
         }
@@ -242,7 +243,7 @@ import org.swtchart.LineStyle;
 
     public enum Mode
     {
-        STATEMENT_OF_ASSETS, PERFORMANCE
+        STATEMENT_OF_ASSETS, PERFORMANCE, RETURN_VOLATILITY
     }
 
     private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
@@ -360,6 +361,8 @@ import org.swtchart.LineStyle;
             case PERFORMANCE:
                 buildPerformanceDataSeries(wheel);
                 break;
+            case RETURN_VOLATILITY:
+                buildReturnVolatilitySeries(wheel);
         }
 
         buildCommonDataSeries(wheel);
@@ -413,6 +416,23 @@ import org.swtchart.LineStyle;
         for (Security security : client.getSecurities())
         {
             series = new DataSeries(Security.class, security, security.getName(), //
+                            wheel.getSegment(index++).getColor());
+            series.setBenchmark(true);
+            availableSeries.add(series);
+        }
+    }
+
+    private void buildReturnVolatilitySeries(ColorWheel wheel)
+    {
+        // accumulated performance
+        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS,
+                        Messages.PerformanceChartLabelAccumulatedIRR, colorFor(Colors.TOTALS)));
+
+        // securities as benchmark
+        int index = 0;
+        for (Security security : client.getSecurities())
+        {
+            DataSeries series = new DataSeries(Security.class, security, security.getName(), //
                             wheel.getSegment(index++).getColor());
             series.setBenchmark(true);
             availableSeries.add(series);
@@ -575,7 +595,7 @@ import org.swtchart.LineStyle;
             }
         });
 
-        if (mode == Mode.PERFORMANCE)
+        if (mode != Mode.STATEMENT_OF_ASSETS)
         {
             manager.add(new Action(Messages.ChartSeriesPickerAddBenchmark)
             {
@@ -617,7 +637,7 @@ import org.swtchart.LineStyle;
             }
         });
 
-        if (paintItem.series.isLineChart())
+        if (paintItem.series.isLineChart() && mode != Mode.RETURN_VOLATILITY)
         {
             MenuManager lineStyle = new MenuManager(Messages.ChartSeriesPickerLineStyle);
             for (final LineStyle style : LineStyle.values())

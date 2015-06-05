@@ -29,6 +29,8 @@ public class WebLocationMenu extends MenuManager
                                         "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS"), //$NON-NLS-1$
                         new WebLocation("Finanzen.net", //$NON-NLS-1$
                                         "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}"), //$NON-NLS-1$
+                        new WebLocation("Ariva.de Fundamentaldaten", //$NON-NLS-1$
+                                        "http://www.ariva.de/{isin}/bilanz-guv"), //$NON-NLS-1$
                         new WebLocation("justETF", //$NON-NLS-1$
                                         "https://www.justetf.com/de/etf-profile.html?isin={isin}"), //$NON-NLS-1$
                         new WebLocation("fondsweb.de", //$NON-NLS-1$

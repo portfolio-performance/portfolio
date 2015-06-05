@@ -1,5 +1,5 @@
 <client>
-  <version>26</version>
+  <version>27</version>
   <baseCurrency>EUR</baseCurrency>
   <securities>
     <security>
@@ -2987,7 +2987,7 @@
                   <amount>71880</amount>
                   <security reference="../../../../../../../../../securities/security[2]"/>
                   <crossEntry class="buysell" reference="../../../.."/>
-                  <shares>1000000</shares>
+                  <shares>10000000</shares>
                   <type>BUY</type>
                   <fees>1000</fees>
                   <taxes>1000</taxes>
@@ -3018,7 +3018,7 @@
                     </accountTransaction>
                   </crossEntry>
                   <forex reference="../crossEntry/accountTransaction/forex"/>
-                  <shares>500000</shares>
+                  <shares>5000000</shares>
                   <type>BUY</type>
                   <fees>0</fees>
                   <taxes>0</taxes>
@@ -3080,7 +3080,7 @@
                   <amount>57190</amount>
                   <security reference="../../../../../../../../../securities/security"/>
                   <crossEntry class="buysell" reference="../../../.."/>
-                  <shares>500000</shares>
+                  <shares>5000000</shares>
                   <type>BUY</type>
                   <fees>1000</fees>
                   <taxes>1000</taxes>
@@ -3111,7 +3111,7 @@
                     </accountTransaction>
                   </crossEntry>
                   <forex reference="../crossEntry/accountTransaction/forex"/>
-                  <shares>1000000</shares>
+                  <shares>10000000</shares>
                   <type>BUY</type>
                   <fees>0</fees>
                   <taxes>0</taxes>

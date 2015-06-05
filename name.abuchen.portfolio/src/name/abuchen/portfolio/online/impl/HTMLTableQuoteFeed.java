@@ -39,11 +39,19 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 {
     private abstract static class Column
     {
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT = new ThreadLocal<DecimalFormat>()
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
         {
             protected DecimalFormat initialValue()
             {
                 return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
+            }
+        };
+
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = new ThreadLocal<DecimalFormat>()
+        {
+            protected DecimalFormat initialValue()
+            {
+                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
             }
         };
 
@@ -71,8 +79,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         protected long asQuote(Element value) throws ParseException
         {
-            String text = value.text();
-            double quote = DECIMAL_FORMAT.get().parse(text).doubleValue();
+            String text = value.text().trim();
+
+            double quote;
+
+            if (text.length() > 3 && text.charAt(text.length() - 3) == '.')
+                quote = DECIMAL_FORMAT_ENGLISH.get().parse(text).doubleValue();
+            else
+                quote = DECIMAL_FORMAT_GERMAN.get().parse(text).doubleValue();
+
             return Math.round(quote * 100);
         }
     }
@@ -196,7 +211,11 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (Security security : securities)
         {
-            List<LatestSecurityPrice> quotes = internalGetQuotes(security, security.getLatestFeedURL(), errors);
+            // if latestFeed is null, then the policy is 'use same configuration
+            // as historic quotes'
+            String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+
+            List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
             int size = quotes.size();
             if (size > 0)
             {
