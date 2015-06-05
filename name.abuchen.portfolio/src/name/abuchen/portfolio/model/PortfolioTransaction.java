@@ -110,4 +110,27 @@ public class PortfolioTransaction extends Transaction
 
         return getLumpSumPrice() * Values.Share.factor() / getShares();
     }
+
+    @Override
+    public boolean isPotentialDuplicate(Transaction other)
+    {
+        if (!(other instanceof PortfolioTransaction))
+            return false;
+
+        if (!super.isPotentialDuplicate(other))
+            return false;
+
+        PortfolioTransaction pother = (PortfolioTransaction) other;
+
+        if (type != pother.getType())
+            return false;
+
+        if (fees != pother.getFees())
+            return false;
+
+        if (taxes != pother.getTaxes())
+            return false;
+
+        return true;
+    }
 }

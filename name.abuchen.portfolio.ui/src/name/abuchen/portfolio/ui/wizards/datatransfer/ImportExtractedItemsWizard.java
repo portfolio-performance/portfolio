@@ -51,7 +51,7 @@ public class ImportExtractedItemsWizard extends Wizard
 
         for (Extractor.Item item : page.getItems())
         {
-            if (item.isImported())
+            if (item.isImported() && !item.isDuplicate())
             {
                 item.insert(client, primaryPortfolio, primaryAccount, secondaryPortfolio, secondaryAccount);
                 isDirty = true;

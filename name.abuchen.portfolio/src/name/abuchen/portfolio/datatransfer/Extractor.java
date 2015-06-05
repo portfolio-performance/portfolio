@@ -20,9 +20,30 @@ import name.abuchen.portfolio.model.Transaction;
 
 public interface Extractor
 {
-    public static abstract class Item
+    public abstract static class Item
     {
         private boolean isImported = true;
+        private boolean isDuplicate = false;
+
+        public boolean isImported()
+        {
+            return isImported;
+        }
+
+        public void setImported(boolean isImported)
+        {
+            this.isImported = isImported;
+        }
+
+        public boolean isDuplicate()
+        {
+            return isDuplicate;
+        }
+
+        public void setDuplicate(boolean isDuplicate)
+        {
+            this.isDuplicate = isDuplicate;
+        }
 
         public abstract Annotated getSubject();
 
@@ -45,14 +66,19 @@ public interface Extractor
         public abstract void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
                         Portfolio secondaryPortfolio, Account secondaryAccount);
 
-        public boolean isImported()
-        {
-            return isImported;
-        }
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {}
 
-        public void setImported(boolean isImported)
+        protected <T extends Transaction> void check(Transaction transaction, List<T> transactions)
         {
-            this.isImported = isImported;
+            for (T t : transactions)
+            {
+                if (transaction.isPotentialDuplicate(t))
+                {
+                    this.setDuplicate(true);
+                    break;
+                }
+            }
         }
     }
 
@@ -140,6 +166,15 @@ public interface Extractor
             else
                 throw new UnsupportedOperationException();
         }
+
+        @Override
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            if (type != transaction.getClass())
+                return;
+
+            check(transaction, transactions);
+        }
     }
 
     static class BuySellEntryItem extends Item
@@ -196,6 +231,14 @@ public interface Extractor
             entry.insert();
         }
 
+        @Override
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            Transaction transaction = type == AccountTransaction.class ? entry.getAccountTransaction() : entry
+                            .getPortfolioTransaction();
+
+            check(transaction, transactions);
+        }
     }
 
     static class AccountTransferItem extends Item
@@ -244,6 +287,14 @@ public interface Extractor
             entry.setSourceAccount(primaryAccount);
             entry.setTargetAccount(secondaryAccount);
             entry.insert();
+        }
+
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            if (type != AccountTransaction.class)
+                return;
+
+            check(entry.getSourceTransaction(), transactions);
         }
     }
 
@@ -300,6 +351,14 @@ public interface Extractor
             entry.setTargetPortfolio(secondaryPortfolio);
             entry.insert();
         }
+
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            if (type != PortfolioTransaction.class)
+                return;
+
+            check(entry.getSourceTransaction(), transactions);
+        }
     }
 
     static class SecurityItem extends Item
@@ -343,7 +402,6 @@ public interface Extractor
             if (!client.getSecurities().contains(security))
                 client.addSecurity(security);
         }
-
     }
 
     /**

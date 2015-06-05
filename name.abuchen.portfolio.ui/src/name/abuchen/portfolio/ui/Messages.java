@@ -285,6 +285,7 @@ public class Messages extends NLS
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
+    public static String LabelPotentialDuplicate;
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;

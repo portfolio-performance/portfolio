@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.AbstractClientJob;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -26,7 +27,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -44,8 +44,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -130,7 +128,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         Combo cmbAccount = new Combo(targetContainer, SWT.READ_ONLY);
         primaryAccount = new ComboViewer(cmbAccount);
         primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        primaryAccount.setInput(client.getAccounts());
+        primaryAccount.setInput(client.getActiveAccounts());
+        primaryAccount.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allItems));
         cmbAccount.select(0);
 
         lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
@@ -139,7 +138,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         Combo cmbAccountTarget = new Combo(targetContainer, SWT.READ_ONLY);
         secondaryAccount = new ComboViewer(cmbAccountTarget);
         secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryAccount.setInput(client.getAccounts());
+        secondaryAccount.setInput(client.getActiveAccounts());
         secondaryAccount.getControl().setVisible(false);
         cmbAccountTarget.select(0);
 
@@ -148,7 +147,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         Combo cmbPortfolio = new Combo(targetContainer, SWT.READ_ONLY);
         primaryPortfolio = new ComboViewer(cmbPortfolio);
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        primaryPortfolio.setInput(client.getPortfolios());
+        primaryPortfolio.setInput(client.getActivePortfolios());
+        primaryPortfolio.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allItems));
         cmbPortfolio.select(0);
 
         lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -157,7 +157,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         Combo cmbPortfolioTarget = new Combo(targetContainer, SWT.READ_ONLY);
         secondaryPortfolio = new ComboViewer(cmbPortfolioTarget);
         secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryPortfolio.setInput(client.getPortfolios());
+        secondaryPortfolio.setInput(client.getActivePortfolios());
         secondaryPortfolio.getControl().setVisible(false);
         cmbPortfolioTarget.select(0);
 
@@ -319,67 +319,75 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener()
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-
-                boolean atLeastOneImported = false;
-                boolean atLeastOneNotImported = false;
-
-                for (Object element : selection.toList())
-                {
-                    atLeastOneImported = atLeastOneImported || ((Extractor.Item) element).isImported();
-                    atLeastOneNotImported = atLeastOneNotImported || !((Extractor.Item) element).isImported();
-                }
-
-                if (atLeastOneImported)
-                {
-                    manager.add(new Action(Messages.LabelDoNotImport)
-                    {
-                        @Override
-                        public void run()
-                        {
-                            for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                                ((Extractor.Item) element).setImported(false);
-
-                            tableViewer.refresh();
-                        }
-                    });
-                }
-
-                if (atLeastOneNotImported)
-                {
-                    manager.add(new Action(Messages.LabelDoImport)
-                    {
-                        @Override
-                        public void run()
-                        {
-                            for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                                ((Extractor.Item) element).setImported(true);
-
-                            tableViewer.refresh();
-                        }
-                    });
-                }
-
-            }
-        });
+        menuMgr.addMenuListener(manager -> showContextMenu(manager));
 
         final Menu contextMenu = menuMgr.createContextMenu(table.getShell());
         table.setMenu(contextMenu);
 
-        table.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (contextMenu != null && !contextMenu.isDisposed())
-                    contextMenu.dispose();
-            }
+        table.addDisposeListener(e -> {
+            if (contextMenu != null && !contextMenu.isDisposed())
+                contextMenu.dispose();
         });
+    }
+
+    private void showContextMenu(IMenuManager manager)
+    {
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+
+        boolean atLeastOneImported = false;
+        boolean atLeastOneNotImported = false;
+
+        for (Object element : selection.toList())
+        {
+            Extractor.Item item = (Extractor.Item) element;
+
+            // an item will be imported if it is marked as to be
+            // imported *and* not a duplicate
+            atLeastOneImported = atLeastOneImported || (item.isImported() && !item.isDuplicate());
+
+            // an item will not be imported if it marked as not to be
+            // imported *or* if it is marked as duplicate
+            atLeastOneNotImported = atLeastOneNotImported || (!item.isImported() || item.isDuplicate());
+        }
+
+        // provide a hint to the user why the item is struck out
+        if (selection.size() == 1 && ((Extractor.Item) selection.getFirstElement()).isDuplicate())
+        {
+            manager.add(new LabelOnly(Messages.LabelPotentialDuplicate));
+        }
+
+        if (atLeastOneImported)
+        {
+            manager.add(new Action(Messages.LabelDoNotImport)
+            {
+                @Override
+                public void run()
+                {
+                    for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
+                        ((Extractor.Item) element).setImported(false);
+
+                    tableViewer.refresh();
+                }
+            });
+        }
+
+        if (atLeastOneNotImported)
+        {
+            manager.add(new Action(Messages.LabelDoImport)
+            {
+                @Override
+                public void run()
+                {
+                    for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
+                    {
+                        ((Extractor.Item) element).setImported(true);
+                        ((Extractor.Item) element).setDuplicate(false);
+                    }
+
+                    tableViewer.refresh();
+                }
+            });
+        }
     }
 
     @Override
@@ -414,6 +422,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
     private void setResults(List<Extractor.Item> items, List<Exception> errors)
     {
+        markDuplicates(items);
+
         allItems.addAll(items);
         tableViewer.setInput(allItems);
         errorTableViewer.setInput(errors);
@@ -430,6 +440,24 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 lblSecondaryPortfolio.setVisible(true);
                 secondaryPortfolio.getControl().setVisible(true);
             }
+        }
+    }
+
+    private void markDuplicatesAndRefresh(List<Extractor.Item> items)
+    {
+        markDuplicates(items);
+        tableViewer.refresh();
+    }
+
+    private void markDuplicates(List<Extractor.Item> items)
+    {
+        Account account = getPrimaryAccount();
+        Portfolio portfolio = getPrimaryPortfolio();
+        for (Extractor.Item item : items)
+        {
+            item.setDuplicate(false);
+            item.markDuplicates(AccountTransaction.class, account.getTransactions());
+            item.markDuplicates(PortfolioTransaction.class, portfolio.getTransactions());
         }
     }
 
@@ -462,7 +490,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
             if (text == null)
                 text = ""; //$NON-NLS-1$
 
-            StyledString styledString = new StyledString(text, !item.isImported() ? strikeoutStyler : null);
+            boolean strikeout = !item.isImported() || item.isDuplicate();
+            StyledString styledString = new StyledString(text, strikeout ? strikeoutStyler : null);
 
             cell.setText(styledString.toString());
             cell.setStyleRanges(styledString.getStyleRanges());

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.joda.time.DateMidnight;
 
@@ -100,6 +101,23 @@ public abstract class Transaction implements Annotated
     }
 
     public abstract long getAmount();
+
+    public boolean isPotentialDuplicate(Transaction other)
+    {
+        if (!other.getDate().equals(date))
+            return false;
+
+        if (other.getAmount() != getAmount())
+            return false;
+
+        if (other.getShares() != shares)
+            return false;
+
+        if (!Objects.equals(other.getSecurity(), security))
+            return false;
+
+        return true;
+    }
 
     public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
     {
