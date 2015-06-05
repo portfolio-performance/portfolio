@@ -3246,5 +3246,13 @@
       <string>StatementOfAssetsHistoryView-PICKER</string>
       <string>Client-totals;#0;SOLID;false,Client-transferals;#808080;SOLID;false,Account7ba2f169-977e-4694-891f-6c9b4f593d86;#e28b79;SOLID;false,Securityd7aa722d-5242-4270-8fec-a79c7a44008b;#ca79e2;SOLID;false</string>
     </entry>
+    <entry>
+      <string>ReturnsVolatilityChartView-PICKER</string>
+      <string>Client-totals;#000000;SOLID;false,Securityd7aa722d-5242-4270-8fec-a79c7a44008b;#0000ff;SOLID;false,Security053c7c76-6aeb-46fa-acfe-a4e0ea8a2dc8;#ff0000;SOLID;false,Classificationca67d6a4-1ade-4149-ad31-fe340e937885;#408000;SOLID;false</string>
+    </entry>
+    <entry>
+      <string>PerformanceChartView-PICKER</string>
+      <string>Client-totals;#000000;SOLID;false,Client-transferals;#808080;SOLID;false,[b]ConsumerPriceIndex;#787878;DASHDOTDOT;false</string>
+    </entry>
   </properties>
 </client>

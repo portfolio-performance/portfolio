@@ -90,7 +90,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
                                     String name = StringEscapeUtils.escapeJson(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
                                     joiner.add(String.format(ENTRY, name, //
-                                                    p.getValuation(), //
+                                                    p.getValuation().getAmount(), //
                                                     colors.next(), //
                                                     name, Values.Money.format(p.getValuation()), percentage, //
                                                     percentage));
