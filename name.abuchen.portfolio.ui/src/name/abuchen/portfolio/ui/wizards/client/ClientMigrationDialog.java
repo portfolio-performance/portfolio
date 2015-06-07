@@ -30,7 +30,7 @@ public class ClientMigrationDialog extends WizardDialog
     {
         private Client client;
 
-        private BaseCurrencySelectionPage page;
+        private BaseCurrencyMigrationPage page;
 
         public MigrationWizard(Client client)
         {
@@ -40,7 +40,7 @@ public class ClientMigrationDialog extends WizardDialog
         @Override
         public void addPages()
         {
-            page = new BaseCurrencySelectionPage();
+            page = new BaseCurrencyMigrationPage(client);
             addPage(page);
         }
 
@@ -56,47 +56,15 @@ public class ClientMigrationDialog extends WizardDialog
         }
     }
 
-    private static class BaseCurrencySelectionPage extends WizardPage
+    private static class BaseCurrencyMigrationPage extends BaseCurrencySelectionPage
     {
-        private ComboViewer combo;
 
-        public BaseCurrencySelectionPage()
+        public BaseCurrencyMigrationPage(Client client)
         {
-            super("base-currency-selection"); //$NON-NLS-1$
+            super(client); //$NON-NLS-1$
 
-            setTitle("Währung wählen");
-            setDescription("Ab dieser Version brauchen Konten und Wertpapiere eine Währung.");
-        }
-
-        @Override
-        public void createControl(Composite parent)
-        {
-            Composite editArea = new Composite(parent, SWT.NONE);
-            editArea.setLayout(new FormLayout());
-
-            Label label = new Label(editArea, SWT.NONE);
-            label.setText(Messages.ColumnCurrency);
-
-            List<CurrencyUnit> currencies = CurrencyUnit.getAvailableCurrencyUnits();
-            Collections.sort(currencies);
-            combo = new ComboViewer(editArea);
-            combo.setContentProvider(ArrayContentProvider.getInstance());
-            combo.setInput(currencies);
-            combo.setSelection(new StructuredSelection(CurrencyUnit.getInstance(CurrencyUnit.EUR)));
-
-            Label description = new Label(editArea, SWT.WRAP);
-            description.setText("Die aktuelle Datei wurde mit einer früheren Version von Portfolio Performance erstellt. "
-                            + "Ab jetzt brauchen Konten und Wertpapiere eine Währung. Mit diesem Dialog legen Sie die Währung "
-                            + "fest, die zunächst allen Konten und Wertpapieren zugewiesen wird."
-                            + "\n\n"
-                            + "Die Währung einzelner Wertpapiere kann anschließend über das Kontektmenü in der Wertpapier-Übersicht geändert werden.");
-
-            FormDataFactory.startingWith(combo.getControl(), label).thenBelow(description).left(label);
-
-            FormData data = (FormData) description.getLayoutData();
-            data.width = 500;
-
-            setControl(editArea);
+            setDescription(Messages.BaseCurrencyMigrationPage_Description);
+            this.explanationIndividualCurrency = Messages.BaseCurrencyMigrationPage_ExplanationIndividualCurrency;
         }
 
         public CurrencyUnit getSelectedCurrency()
