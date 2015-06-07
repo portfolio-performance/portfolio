@@ -14,6 +14,11 @@ public class Messages extends NLS
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
     public static String BaseCurrencyCue;
+    public static String BaseCurrencyMigrationPage_Description;
+    public static String BaseCurrencyMigrationPage_ExplanationIndividualCurrency;
+    public static String BaseCurrencySelectionPage_Description;
+    public static String BaseCurrencySelectionPage_ExplanationIndividualCurrency;
+    public static String BaseCurrencySelectionPage_Title;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;

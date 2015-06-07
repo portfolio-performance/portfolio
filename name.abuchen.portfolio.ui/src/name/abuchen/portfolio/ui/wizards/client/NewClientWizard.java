@@ -28,6 +28,7 @@ public class NewClientWizard extends Wizard
     @Override
     public void addPages()
     {
+        addPage(new BaseCurrencySelectionPage(client));
         addPage(new NewPortfolioAccountPage(client));
         addPage(new NewAccountPage(client));
         addPage(new ImportIndizesPage(client));
