@@ -20,7 +20,8 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
@@ -530,49 +531,33 @@ public final class SecuritiesTable implements ModificationListener
         if (security == null)
             return;
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                SecurityTransactionDialog dialog = view.getPart().make(SecurityTransactionDialog.class,
-                                PortfolioTransaction.Type.BUY);
-                dialog.setSecurity(security);
-                return dialog;
-            }
-        });
+        new OpenDialogAction(view, Messages.SecurityMenuBuy) //
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.BUY) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                SecurityTransactionDialog dialog = view.getPart().make(SecurityTransactionDialog.class,
-                                PortfolioTransaction.Type.SELL);
-                dialog.setSecurity(security);
-                return dialog;
-            }
-        });
+        new OpenDialogAction(view, Messages.SecurityMenuSell) //
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.SELL) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.DIVIDENDS, getClient(),
-                                null, security);
-            }
-        });
+        new OpenDialogAction(view, Messages.SecurityMenuDividends) //
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.DIVIDENDS) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
 
-        manager.add(new AbstractDialogAction(AccountTransaction.Type.TAX_REFUND.toString() + "...") //$NON-NLS-1$
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.TAX_REFUND,
-                                getClient(), null, security);
-            }
-        });
+        new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAX_REFUND) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
         {
@@ -645,6 +630,16 @@ public final class SecuritiesTable implements ModificationListener
                     securities.setInput(watchlist.getSecurities());
                 }
             });
+        }
+    }
+
+    private void performFinish(Security security)
+    {
+        markDirty();
+        if (!securities.getControl().isDisposed())
+        {
+            securities.refresh(security, true);
+            securities.setSelection(securities.getSelection());
         }
     }
 

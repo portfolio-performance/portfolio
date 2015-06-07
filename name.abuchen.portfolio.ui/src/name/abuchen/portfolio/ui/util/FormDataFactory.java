@@ -6,7 +6,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public class FormDataFactory
+public final class FormDataFactory
 {
     public static FormDataFactory startingWith(Control reference, Label label)
     {
@@ -26,7 +26,7 @@ public class FormDataFactory
 
     private Control reference;
 
-    public FormDataFactory(Control reference)
+    private FormDataFactory(Control reference)
     {
         this.reference = reference;
     }
@@ -61,6 +61,14 @@ public class FormDataFactory
         data.top = new FormAttachment(reference, 0, SWT.CENTER);
         data.left = new FormAttachment(reference, 5);
         data.right = new FormAttachment(100);
+        return this;
+    }
+
+    public FormDataFactory suffix(Control suffix)
+    {
+        FormData data = from(suffix);
+        data.top = new FormAttachment(reference, 0, SWT.CENTER);
+        data.left = new FormAttachment(reference, 5);
         return this;
     }
 

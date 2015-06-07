@@ -16,6 +16,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Column;
@@ -582,26 +584,25 @@ public class AccountListView extends AbstractListView implements ModificationLis
         AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions.getSelection())
                         .getFirstElement();
 
-        if (transaction != null && transaction.getCrossEntry() instanceof BuySellEntry)
+        if (transaction != null)
         {
-            manager.add(new Action(Messages.MenuEditTransaction)
+            // buy / sell
+            if (transaction.getCrossEntry() instanceof BuySellEntry)
             {
-                @Override
-                public void run()
-                {
-                    BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
-                    SecurityTransactionDialog dialog = getPart().make(SecurityTransactionDialog.class,
-                                    entry.getPortfolioTransaction().getType());
-                    dialog.setBuySellEntry(entry);
-
-                    if (dialog.open() == SecurityTransactionDialog.OK)
-                    {
-                        markDirty();
-                        notifyModelUpdated();
-                    }
-                }
-            });
-
+                BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+                new OpenDialogAction(this, Messages.MenuEditTransaction)
+                                .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                                .parameters(entry.getPortfolioTransaction().getType()) //
+                                .addTo(manager);
+            }
+            else
+            {
+                // FIXME edit transfers missing
+                new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                                .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
+                                .parameters(transaction.getType()) //
+                                .addTo(manager);
+            }
             manager.add(new Separator());
         }
 

@@ -9,9 +9,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.OtherAccountTransactionsDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.TransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 
 import org.eclipse.jface.action.Action;
@@ -40,14 +40,12 @@ public class AccountContextMenu
                         AccountTransaction.Type.TAXES, //
                         AccountTransaction.Type.FEES))
         {
-            manager.add(new AbstractDialogAction(type.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                Dialog createDialog()
-                {
-                    return new OtherAccountTransactionsDialog(owner.getActiveShell(), owner.getClient(), account, type);
-                }
-            });
+            new OpenDialogAction(owner, type.toString() + "...") //$NON-NLS-1$
+                            .type(AccountTransactionDialog.class) //
+                            .parameters(type) //
+                            .with(account) //
+                            .with(security) //
+                            .addTo(manager);
         }
 
         manager.add(new Separator());
@@ -79,58 +77,34 @@ public class AccountContextMenu
                 }
             }
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
-            {
-                @Override
-                Dialog createDialog()
-                {
-                    SecurityTransactionDialog dialog = owner.getPart().make(SecurityTransactionDialog.class,
-                                    PortfolioTransaction.Type.BUY);
-                    if (portfolio[0] != null)
-                        dialog.setPortfolio(portfolio[0]);
-                    if (security != null)
-                        dialog.setSecurity(security);
+            new OpenDialogAction(owner, Messages.SecurityMenuBuy) //
+                            .type(SecurityTransactionDialog.class) //
+                            .parameters(PortfolioTransaction.Type.BUY) //
+                            .with(portfolio[0]) //
+                            .with(security) //
+                            .addTo(manager);
 
-                    return dialog;
-                }
-            });
+            new OpenDialogAction(owner, Messages.SecurityMenuSell) //
+                            .type(SecurityTransactionDialog.class) //
+                            .parameters(PortfolioTransaction.Type.SELL) //
+                            .with(portfolio[0]) //
+                            .with(security) //
+                            .addTo(manager);
 
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-            {
-                @Override
-                Dialog createDialog()
-                {
-                    SecurityTransactionDialog dialog = owner.getPart().make(SecurityTransactionDialog.class,
-                                    PortfolioTransaction.Type.SELL);
-                    if (portfolio[0] != null)
-                        dialog.setPortfolio(portfolio[0]);
-                    if (security != null)
-                        dialog.setSecurity(security);
-                    return dialog;
-                }
-            });
-
-            manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-            {
-                @Override
-                Dialog createDialog()
-                {
-                    return new SecurityAccountTransactionDialog(owner.getActiveShell(),
-                                    AccountTransaction.Type.DIVIDENDS, owner.getClient(), account, null);
-                }
-            });
+            new OpenDialogAction(owner, Messages.SecurityMenuDividends) //
+                            .type(AccountTransactionDialog.class) //
+                            .parameters(AccountTransaction.Type.DIVIDENDS) //
+                            .with(account) //
+                            .with(security) //
+                            .addTo(manager);
         }
 
-        manager.add(new AbstractDialogAction(AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
-        {
-            @Override
-            Dialog createDialog()
-            {
-                return new SecurityAccountTransactionDialog(owner.getActiveShell(), AccountTransaction.Type.TAX_REFUND,
-                                owner.getClient(), account, null);
-            }
-        });
-
+        new OpenDialogAction(owner, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAX_REFUND) //
+                        .with(account) //
+                        .with(security) //
+                        .addTo(manager);
     }
 
     private abstract class AbstractDialogAction extends Action

@@ -1,0 +1,255 @@
+package name.abuchen.portfolio.ui.dialogs.transactions;
+
+import java.text.MessageFormat;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
+
+import org.eclipse.core.databinding.AggregateValidationStatus;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.StringToNumberConverter;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.MultiValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
+
+public abstract class AbstractTransactionDialog extends TitleAreaDialog
+{
+    public class Input
+    {
+        public Label label;
+        public Text value;
+        public Label currency;
+
+        public Input(Composite editArea, String text)
+        {
+            label = new Label(editArea, SWT.LEFT);
+            label.setText(text);
+            value = new Text(editArea, SWT.BORDER | SWT.RIGHT);
+            value.addFocusListener(new FocusAdapter()
+            {
+                @Override
+                public void focusGained(FocusEvent e)
+                {
+                    value.selectAll();
+                }
+            });
+
+            currency = new Label(editArea, SWT.NONE);
+        }
+
+        public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
+        {
+            UpdateValueStrategy strategy = new UpdateValueStrategy();
+            strategy.setConverter(new StringToCurrencyConverter(values));
+            if (isMandatory)
+            {
+                strategy.setAfterConvertValidator(new IValidator()
+                {
+                    @Override
+                    public IStatus validate(Object value)
+                    {
+                        Long v = (Long) value;
+                        return v != null && v.longValue() > 0 ? ValidationStatus.ok() : ValidationStatus
+                                        .error(MessageFormat.format(Messages.MsgDialogInputRequired, description));
+                    }
+                });
+            }
+
+            context.bindValue(SWTObservables.observeText(value, SWT.Modify), //
+                            BeansObservables.observeValue(model, property), //
+                            strategy, new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(values)));
+        }
+
+        public void bindCurrency(String property)
+        {
+            context.bindValue(SWTObservables.observeText(currency), BeansObservables.observeValue(model, property));
+        }
+
+        public void bindExchangeRate(String property, String description)
+        {
+            NumberFormat format = new DecimalFormat("#,##0.0000"); //$NON-NLS-1$
+
+            context.bindValue(
+                            SWTObservables.observeText(value, SWT.Modify), //
+                            BeansObservables.observeValue(model, property), //
+                            new UpdateValueStrategy().setConverter(StringToNumberConverter.toBigDecimal()),
+                            new UpdateValueStrategy().setConverter(NumberToStringConverter.fromBigDecimal(format)));
+        }
+
+        public void setVisible(boolean visible)
+        {
+            label.setVisible(visible);
+            value.setVisible(visible);
+            currency.setVisible(visible);
+        }
+    }
+
+    public class ComboInput
+    {
+        public Label label;
+        public ComboViewer value;
+        public Label currency;
+
+        public ComboInput(Composite editArea, String text)
+        {
+            label = new Label(editArea, SWT.RIGHT);
+            label.setText(text);
+            value = new ComboViewer(editArea);
+            value.setContentProvider(new ArrayContentProvider());
+            currency = new Label(editArea, SWT.NONE);
+        }
+
+        public void bindValue(String property, String missingValueMessage)
+        {
+            UpdateValueStrategy strategy = new UpdateValueStrategy();
+            strategy.setAfterConvertValidator(v -> v != null ? ValidationStatus.ok() : ValidationStatus
+                            .error(missingValueMessage));
+            context.bindValue(ViewersObservables.observeSingleSelection(value), //
+                            BeansObservables.observeValue(model, property), strategy, null);
+        }
+
+        public void bindCurrency(String property)
+        {
+            context.bindValue(SWTObservables.observeText(currency), BeansObservables.observeValue(model, property));
+        }
+    }
+
+    class ModelStatusListener
+    {
+        public void setStatus(IStatus status)
+        {
+            setMessage(status.getSeverity() == IStatus.OK ? "" : status.getMessage()); //$NON-NLS-1$
+
+            Control button = getButton(IDialogConstants.OK_ID);
+            if (button != null)
+                button.setEnabled(status.getSeverity() == IStatus.OK);
+        }
+
+        public IStatus getStatus()
+        {
+            // irrelevant
+            return ValidationStatus.ok();
+        }
+    }
+
+    protected AbstractModel model;
+    protected DataBindingContext context = new DataBindingContext();
+    protected ModelStatusListener status = new ModelStatusListener();
+
+    public AbstractTransactionDialog(Shell parentShell, AbstractModel model)
+    {
+        super(parentShell);
+
+        this.model = model;
+    }
+
+    @Inject
+    public void setExchangeRateProviderFactory(ExchangeRateProviderFactory factory)
+    {
+        model.setExchangeRateProviderFactory(factory);
+    }
+
+    @PostConstruct
+    public void registerValidationStatusListener()
+    {
+        this.context.addValidationStatusProvider(new MultiValidator()
+        {
+            IObservableValue observable = BeansObservables.observeValue(model, "calculationStatus"); //$NON-NLS-1$
+
+            @Override
+            protected IStatus validate()
+            {
+                return (IStatus) observable.getValue();
+            }
+        });
+    }
+
+    @Override
+    public void create()
+    {
+        super.create();
+
+        setTitle(model.getHeading());
+        setMessage(""); //$NON-NLS-1$
+
+        setShellStyle(getShellStyle() | SWT.RESIZE);
+
+        status.setStatus(AggregateValidationStatus.getStatusMaxSeverity(context.getValidationStatusProviders()));
+    }
+
+    @Override
+    protected int getShellStyle()
+    {
+        return super.getShellStyle() | SWT.RESIZE;
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent)
+    {
+        Composite area = (Composite) super.createDialogArea(parent);
+
+        Composite editArea = new Composite(area, SWT.NONE);
+        FormLayout layout = new FormLayout();
+        layout.marginWidth = 5;
+        layout.marginHeight = 5;
+        editArea.setLayout(layout);
+
+        createFormElements(editArea);
+
+        context.bindValue(PojoObservables.observeValue(status, "status"), //$NON-NLS-1$
+                        new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
+
+        return editArea;
+    }
+
+    protected abstract void createFormElements(Composite editArea);
+
+    @Override
+    protected void okPressed()
+    {
+        model.applyChanges();
+        super.okPressed();
+    }
+
+    public void setAccount(Account account)
+    {}
+
+    public void setPortfolio(Portfolio portfolio)
+    {}
+
+    public void setSecurity(Security security)
+    {}
+}

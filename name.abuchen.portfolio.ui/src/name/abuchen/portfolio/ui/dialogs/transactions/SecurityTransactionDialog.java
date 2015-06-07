@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.stringWidth;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -18,136 +17,30 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
-import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
-import org.eclipse.core.databinding.AggregateValidationStatus;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.beans.PojoObservables;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.conversion.StringToNumberConverter;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.validation.IValidator;
-import org.eclipse.core.databinding.validation.MultiValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.NumberFormat;
-
-public class SecurityTransactionDialog extends TitleAreaDialog
+public class SecurityTransactionDialog extends AbstractTransactionDialog
 {
-    public class Input
-    {
-        public Label label;
-        public Text value;
-        public Label currency;
-
-        public Input(Composite editArea, String text)
-        {
-            label = new Label(editArea, SWT.LEFT);
-            label.setText(text);
-            value = new Text(editArea, SWT.BORDER | SWT.RIGHT);
-            currency = new Label(editArea, SWT.NONE);
-        }
-
-        public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
-        {
-            UpdateValueStrategy strategy = new UpdateValueStrategy();
-            strategy.setConverter(new StringToCurrencyConverter(values));
-            if (isMandatory)
-            {
-                strategy.setAfterConvertValidator(new IValidator()
-                {
-                    @Override
-                    public IStatus validate(Object value)
-                    {
-                        Long v = (Long) value;
-                        return v != null && v.longValue() > 0 ? ValidationStatus.ok() : ValidationStatus
-                                        .error(MessageFormat.format(Messages.MsgDialogInputRequired, description));
-                    }
-                });
-            }
-
-            context.bindValue(SWTObservables.observeText(value, SWT.Modify), //
-                            BeansObservables.observeValue(model, property), //
-                            strategy, new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(values)));
-        }
-
-        public void bindCurrency(String property)
-        {
-            context.bindValue(SWTObservables.observeText(currency), BeansObservables.observeValue(model, property));
-        }
-
-        public void bindExchangeRate(String property, String description)
-        {
-            NumberFormat format = new DecimalFormat("#,##0.0000"); //$NON-NLS-1$
-
-            context.bindValue(
-                            SWTObservables.observeText(value, SWT.Modify), //
-                            BeansObservables.observeValue(model, property), //
-                            new UpdateValueStrategy().setConverter(StringToNumberConverter.toBigDecimal()),
-                            new UpdateValueStrategy().setConverter(NumberToStringConverter.fromBigDecimal(format)));
-        }
-
-        public void setVisible(boolean visible)
-        {
-            label.setVisible(visible);
-            value.setVisible(visible);
-            currency.setVisible(visible);
-        }
-    }
-
-    class ModelStatusListener
-    {
-        public void setStatus(IStatus status)
-        {
-            setMessage(status.getSeverity() == IStatus.OK ? "" : status.getMessage()); //$NON-NLS-1$
-
-            Control button = getButton(IDialogConstants.OK_ID);
-            if (button != null)
-                button.setEnabled(status.getSeverity() == IStatus.OK);
-        }
-
-        public IStatus getStatus()
-        {
-            // irrelevant
-            return ValidationStatus.ok();
-        }
-    }
-
     private Client client;
-    private AbstractSecurityTransactionModel model;
-    private DataBindingContext context = new DataBindingContext();
-    private ModelStatusListener status = new ModelStatusListener();
 
     @Inject
     public SecurityTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
                     PortfolioTransaction.Type type)
     {
-        super(parentShell);
+        super(parentShell, isBuySell(type) ? new BuySellModel(client, type) : new SecurityDeliveryModel(client, type));
 
         this.client = client;
 
@@ -166,76 +59,32 @@ public class SecurityTransactionDialog extends TitleAreaDialog
         }
     }
 
-    @Inject
-    public void setExchangeRateProviderFactory(ExchangeRateProviderFactory factory)
+    private static boolean isBuySell(PortfolioTransaction.Type type)
     {
-        this.model.setExchangeRateProviderFactory(factory);
+        return type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
+    }
+
+    private AbstractSecurityTransactionModel model()
+    {
+        return (AbstractSecurityTransactionModel) this.model;
     }
 
     @PostConstruct
-    public void registerListeners()
+    public void preselectPorfolioAndSecurity()
     {
         // set portfolio only if exactly one exists
         // (otherwise force user to choose)
         List<Portfolio> activePortfolios = client.getActivePortfolios();
         if (activePortfolios.size() == 1)
-            model.setPortfolio(activePortfolios.get(0));
+            model().setPortfolio(activePortfolios.get(0));
 
         List<Security> activeSecurities = client.getActiveSecurities();
         if (!activeSecurities.isEmpty())
-            model.setSecurity(activeSecurities.get(0));
-
-        this.context.addValidationStatusProvider(new MultiValidator()
-        {
-            IObservableValue observable = BeansObservables.observeValue(model, Properties.calculationStatus.name());
-
-            @Override
-            protected IStatus validate()
-            {
-                return (IStatus) observable.getValue();
-            }
-        });
+            model().setSecurity(activeSecurities.get(0));
     }
 
     @Override
-    public void create()
-    {
-        super.create();
-
-        setTitle(model.getType().toString());
-        setMessage(""); //$NON-NLS-1$
-
-        setShellStyle(getShellStyle() | SWT.RESIZE);
-
-        status.setStatus(AggregateValidationStatus.getStatusMaxSeverity(context.getValidationStatusProviders()));
-    }
-
-    @Override
-    protected int getShellStyle()
-    {
-        return super.getShellStyle() | SWT.RESIZE;
-    }
-
-    @Override
-    protected Control createDialogArea(Composite parent)
-    {
-        Composite area = (Composite) super.createDialogArea(parent);
-
-        Composite editArea = new Composite(area, SWT.NONE);
-        FormLayout layout = new FormLayout();
-        layout.marginWidth = 5;
-        layout.marginHeight = 5;
-        editArea.setLayout(layout);
-
-        createFormElements(editArea);
-
-        context.bindValue(PojoObservables.observeValue(status, "status"), //$NON-NLS-1$
-                        new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
-
-        return editArea;
-    }
-
-    private void createFormElements(Composite editArea)
+    protected void createFormElements(Composite editArea)
     {
         //
         // input elements
@@ -243,38 +92,17 @@ public class SecurityTransactionDialog extends TitleAreaDialog
 
         // security
 
-        Label lblSecurity = new Label(editArea, SWT.RIGHT);
-        lblSecurity.setText(Messages.ColumnSecurity);
-        ComboViewer valueSecurity = new ComboViewer(editArea);
-        valueSecurity.setContentProvider(new ArrayContentProvider());
-        valueSecurity.setInput(client.getActiveSecurities());
-        Label curSecurity = new Label(editArea, SWT.NONE);
-
-        context.bindValue(SWTObservables.observeText(curSecurity),
-                        BeansObservables.observeValue(model, Properties.securityCurrencyCode.name()));
-
-        context.bindValue(
-                        ViewersObservables.observeSingleSelection(valueSecurity), //
-                        BeansObservables.observeValue(model, Properties.security.name()), new UpdateValueStrategy(),
-                        null);
+        ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
+        securities.value.setInput(client.getActiveSecurities());
+        securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
+        securities.bindCurrency(Properties.securityCurrencyCode.name());
 
         // portfolio
 
-        Label lblPortfolio = new Label(editArea, SWT.RIGHT);
-        lblPortfolio.setText(Messages.ColumnPortfolio);
-        ComboViewer valuePortfolio = new ComboViewer(editArea);
-        valuePortfolio.setContentProvider(new ArrayContentProvider());
-        valuePortfolio.setInput(client.getActivePortfolios());
-        Label referencePortfolio = new Label(editArea, SWT.NONE);
-
-        UpdateValueStrategy strategy = new UpdateValueStrategy();
-        strategy.setAfterConvertValidator(value -> value != null ? ValidationStatus.ok() : ValidationStatus
-                        .error(Messages.MsgMissingPortfolio));
-        context.bindValue(ViewersObservables.observeSingleSelection(valuePortfolio), //
-                        BeansObservables.observeValue(model, Properties.portfolio.name()), strategy, null);
-
-        context.bindValue(SWTObservables.observeText(referencePortfolio),
-                        BeansObservables.observeValue(model, Properties.accountName.name()));
+        ComboInput portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
+        portfolio.value.setInput(client.getActivePortfolios());
+        portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
+        portfolio.bindCurrency(Properties.accountName.name());
 
         // date
 
@@ -332,8 +160,8 @@ public class SecurityTransactionDialog extends TitleAreaDialog
 
         int width = stringWidth(total.value, "12345678,00"); //$NON-NLS-1$
 
-        startingWith(valueSecurity.getControl(), lblSecurity).suffix(curSecurity)
-                        .thenBelow(valuePortfolio.getControl()).label(lblPortfolio).suffix(referencePortfolio)
+        startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
+                        .thenBelow(portfolio.value.getControl()).label(portfolio.label).suffix(portfolio.currency)
                         .thenBelow(valueDate)
                         .label(lblDate)
                         // shares - quote - lump sum
@@ -355,7 +183,7 @@ public class SecurityTransactionDialog extends TitleAreaDialog
                         // total
                         .thenBelow(total.value).width(width).label(total.label).suffix(total.currency)
                         // note
-                        .thenBelow(valueNote).left(valueSecurity.getControl()).right(total.value).label(lblNote);
+                        .thenBelow(valueNote).left(securities.value.getControl()).right(total.value).label(lblNote);
 
         //
         // hide / show exchange rate if necessary
@@ -366,8 +194,8 @@ public class SecurityTransactionDialog extends TitleAreaDialog
             @Override
             public void propertyChange(PropertyChangeEvent event)
             {
-                String securityCurrency = model.getSecurityCurrencyCode();
-                String accountCurrency = model.getAccountCurrencyCode();
+                String securityCurrency = model().getSecurityCurrencyCode();
+                String accountCurrency = model().getAccountCurrencyCode();
 
                 // make exchange rate visible if both are set but different
 
@@ -379,12 +207,12 @@ public class SecurityTransactionDialog extends TitleAreaDialog
             }
         });
 
-        model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model.getExchangeRateCurrencies()); //$NON-NLS-1$
+        model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }
 
     private String sign()
     {
-        switch (model.getType())
+        switch (model().getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
@@ -399,7 +227,7 @@ public class SecurityTransactionDialog extends TitleAreaDialog
 
     private String getTotalLabel()
     {
-        switch (model.getType())
+        switch (model().getType())
         {
             case BUY:
                 return Messages.ColumnDebitNote;
@@ -415,33 +243,28 @@ public class SecurityTransactionDialog extends TitleAreaDialog
     }
 
     @Override
-    protected void okPressed()
-    {
-        model.applyChanges();
-        super.okPressed();
-    }
-
     public void setPortfolio(Portfolio portfolio)
     {
-        model.setPortfolio(portfolio);
+        model().setPortfolio(portfolio);
     }
 
+    @Override
     public void setSecurity(Security security)
     {
-        model.setSecurity(security);
+        model().setSecurity(security);
     }
 
     public void setBuySellEntry(BuySellEntry entry)
     {
-        if (!model.accepts(entry.getPortfolioTransaction().getType()))
+        if (!model().accepts(entry.getPortfolioTransaction().getType()))
             throw new IllegalArgumentException();
-        model.setSource(entry);
+        model().setSource(entry);
     }
 
     public void setDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
     {
-        if (!model.accepts(pair.getTransaction().getType()))
+        if (!model().accepts(pair.getTransaction().getType()))
             throw new IllegalArgumentException();
-        model.setSource(pair);
+        model().setSource(pair);
     }
 }

@@ -3,12 +3,16 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+
 public abstract class AbstractModel
 {
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private ExchangeRateProviderFactory factory;
 
-    public AbstractModel()
-    {}
+    public abstract String getHeading();
+
+    public abstract void applyChanges();
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
@@ -33,5 +37,15 @@ public abstract class AbstractModel
     protected void firePropertyChange(String attribute, long oldValue, long newValue)
     {
         propertyChangeSupport.firePropertyChange(attribute, oldValue, newValue);
+    }
+
+    public void setExchangeRateProviderFactory(ExchangeRateProviderFactory factory)
+    {
+        this.factory = factory;
+    }
+
+    public ExchangeRateProviderFactory getExchangeRateProviderFactory()
+    {
+        return factory;
     }
 }

@@ -65,6 +65,13 @@ public final class Security implements Attributable, InvestmentVehicle
         this.uuid = UUID.randomUUID().toString();
     }
 
+    public Security(String name, String currencyCode)
+    {
+        this();
+        this.name = name;
+        this.currencyCode = currencyCode;
+    }
+
     public Security(String name, String isin, String tickerSymbol, String feed)
     {
         this();
