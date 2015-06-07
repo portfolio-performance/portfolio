@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+    public static String AttributesAcquisitionFeeColumn;
+    public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
     public static String AttributesAUMName;
     public static String AttributesTERColumn;
@@ -90,6 +92,8 @@ public class Messages extends NLS
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
     public static String LabelSecurity;
+    public static String LabelTransferAccount;
+    public static String LabelTransferPortfolio;
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
@@ -121,7 +125,7 @@ public class Messages extends NLS
     public static String PDFdbLabel;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFdbMsgCannotFindSecurity;
-    public static String PDFdbMsgFileNotSupported;
+    public static String PDFMsgFileNotSupported;
     public static String QuoteFeedManual;
     static
     {

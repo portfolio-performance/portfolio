@@ -18,9 +18,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 26;
+    /* package */static final int CURRENT_VERSION = 27;
 
-    public static final int VERSION_WITH_CURRENCY_SUPPORT = 26;
+    public static final int VERSION_WITH_CURRENCY_SUPPORT = 27;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 

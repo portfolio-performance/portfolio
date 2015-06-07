@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -89,7 +90,7 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public <T> T adapt(Class<T> type)
         {
-            if (type == Named.class)
+            if (type == Named.class || type == Annotated.class)
                 return type.cast(classification);
             else
                 return super.adapt(type);
@@ -181,7 +182,7 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public <T> T adapt(Class<T> type)
         {
-            if (type == Named.class)
+            if (type == Named.class || type == Annotated.class)
                 return type.cast(assignment.getInvestmentVehicle());
             else
                 return super.adapt(type);

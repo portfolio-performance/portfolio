@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.dialogs;
+package name.abuchen.portfolio.bootstrap;
 
 import java.util.Collection;
 

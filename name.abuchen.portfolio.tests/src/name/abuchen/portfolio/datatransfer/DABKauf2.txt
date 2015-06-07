@@ -1,0 +1,46 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=8111111111
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=Manfred Mustermann
+Kommissionsgeschäft ADRESSZEILE3=Manni-Mustermann-Weg 8
+Herr ADRESSZEILE4=12345 Klöttingen
+Manfred Mustermann Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+Manni-Mustermann-Weg 8 8111111111 ADRESSZEILE6=
+37085 Göttingen 81119025 / 05.05.2015 BELEGNUMMER=21111
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Manfred Mustermann
+München, 05.05.2015
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+db x-tr.MSCI World Index ETF Inhaber-Anteile 1C o.N. LU0274208692
+Nominal Kurs
+STK 1,4227 EUR 42,1710
+Handelstag 04.05.2015 Kurswert EUR 60,00-
+Handelszeit 09:15* Provision EUR 4,95-
+Börse Lang & Schwarz
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+06.05.2015 8111111111 EUR 60,00
+Zwischengewinn pro Anteil: EUR 0,0000 Zwischengewinn Gesamt: EUR 0,00
+Akkumulierter Ertrag: EUR 0,00000891
+Die Höhe des von der KVG festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie die jährlich zu zahlende Ver-
+waltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Aggregierte Order ggf. zum Mischkurs.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Widerrufsbelehrung für den Erwerb von Anteilen oder Aktien eines offenen Investmentvermögens: Ist der Käufer von Anteilen oder Aktien eines offenen Investmentvermögens 
+durch mündliche Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die Anteile oder Aktien verkauft oder den Verkauf vermittelt hat, dazu bestimmt worden, 
+eine auf den Kauf gerichtete Willenserklärung abzugeben, so ist er an diese Erklärung nur gebunden, wenn er sie nicht innerhalb einer Frist von zwei Wochen bei der 
+Verwaltungsgesellschaft oder einem Repräsentanten im Sinne des § 319 KAGB schriftlich widerruft.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben. Kapitalerträge sind einkommensteuerpflichtig.
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Kai Friedrich > Vorstand: Ernst Huber (Sprecher des Vorstands), Dr. Niklas Dieterich, Dr. Josef Zellner
+ 
+3.19/ABREABHNHANDKF/GABAUFTL/011111/050515/224303

@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * A pair of transaction owner (account or portfolio) and a transaction.
  */
-public class TransactionPair<T extends Transaction>
+public class TransactionPair<T extends Transaction> implements Adaptable
 {
     public static final class ByDate implements Comparator<TransactionPair<?>>, Serializable
     {
@@ -45,5 +45,14 @@ public class TransactionPair<T extends Transaction>
     public void deleteTransaction(Client client)
     {
         owner.deleteTransaction(transaction, client);
+    }
+
+    @Override
+    public <A> A adapt(Class<A> type)
+    {
+        if (type == Annotated.class)
+            return type.cast(transaction);
+        else
+            return null;
     }
 }

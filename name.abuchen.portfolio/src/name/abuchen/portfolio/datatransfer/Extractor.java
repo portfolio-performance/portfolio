@@ -2,51 +2,114 @@ package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 
 public interface Extractor
 {
-    interface Item
+    public abstract static class Item
     {
-        Object getSubject();
+        private boolean isImported = true;
+        private boolean isDuplicate = false;
 
-        String getTypeInformation();
+        public boolean isImported()
+        {
+            return isImported;
+        }
 
-        Date getDate();
+        public void setImported(boolean isImported)
+        {
+            this.isImported = isImported;
+        }
 
-        long getAmount();
+        public boolean isDuplicate()
+        {
+            return isDuplicate;
+        }
 
-        Security getSecurity();
+        public void setDuplicate(boolean isDuplicate)
+        {
+            this.isDuplicate = isDuplicate;
+        }
 
-        void insert(Client client, Portfolio portfolio, Account account);
+        public abstract Annotated getSubject();
+
+        public abstract Security getSecurity();
+
+        public abstract String getTypeInformation();
+
+        public abstract Date getDate();
+
+        public long getAmount()
+        {
+            return 0;
+        }
+
+        public long getShares()
+        {
+            return 0;
+        }
+
+        public abstract void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount);
+
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {}
+
+        protected <T extends Transaction> void check(Transaction transaction, List<T> transactions)
+        {
+            for (T t : transactions)
+            {
+                if (transaction.isPotentialDuplicate(t))
+                {
+                    this.setDuplicate(true);
+                    break;
+                }
+            }
+        }
     }
 
-    class TransactionItem implements Item
+    static class TransactionItem extends Item
     {
         private Transaction transaction;
 
         public TransactionItem(AccountTransaction transaction)
         {
+            if (EnumSet.of(AccountTransaction.Type.BUY, //
+                            AccountTransaction.Type.SELL, //
+                            AccountTransaction.Type.TRANSFER_IN, //
+                            AccountTransaction.Type.TRANSFER_OUT) //
+                            .contains(transaction.getType()))
+                throw new UnsupportedOperationException();
             this.transaction = transaction;
         }
 
         public TransactionItem(PortfolioTransaction transaction)
         {
+            if (EnumSet.of(PortfolioTransaction.Type.BUY, //
+                            PortfolioTransaction.Type.SELL, //
+                            PortfolioTransaction.Type.TRANSFER_IN, //
+                            PortfolioTransaction.Type.TRANSFER_OUT) //
+                            .contains(transaction.getType()))
+                throw new UnsupportedOperationException();
             this.transaction = transaction;
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return transaction;
         }
@@ -75,13 +138,20 @@ public interface Extractor
         }
 
         @Override
+        public long getShares()
+        {
+            return transaction.getShares();
+        }
+
+        @Override
         public Security getSecurity()
         {
             return transaction.getSecurity();
         }
 
         @Override
-        public void insert(Client client, Portfolio portfolio, Account account)
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
         {
             // ensure consistency (in case the user deleted the creation of the
             // security via the dialog)
@@ -90,17 +160,26 @@ public interface Extractor
                 client.addSecurity(security);
 
             if (transaction instanceof AccountTransaction)
-                account.addTransaction((AccountTransaction) transaction);
+                primaryAccount.addTransaction((AccountTransaction) transaction);
             else if (transaction instanceof PortfolioTransaction)
-                portfolio.addTransaction((PortfolioTransaction) transaction);
+                primaryPortfolio.addTransaction((PortfolioTransaction) transaction);
             else
                 throw new UnsupportedOperationException();
         }
+
+        @Override
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            if (type != transaction.getClass())
+                return;
+
+            check(transaction, transactions);
+        }
     }
 
-    class BuySellEntryItem implements Item
+    static class BuySellEntryItem extends Item
     {
-        private BuySellEntry entry;
+        private final BuySellEntry entry;
 
         public BuySellEntryItem(BuySellEntry entry)
         {
@@ -108,7 +187,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return entry;
         }
@@ -132,22 +211,157 @@ public interface Extractor
         }
 
         @Override
+        public long getShares()
+        {
+            return entry.getPortfolioTransaction().getShares();
+        }
+
+        @Override
         public Security getSecurity()
         {
             return entry.getAccountTransaction().getSecurity();
         }
 
         @Override
-        public void insert(Client client, Portfolio portfolio, Account account)
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
         {
-            entry.setPortfolio(portfolio);
-            entry.setAccount(account);
+            entry.setPortfolio(primaryPortfolio);
+            entry.setAccount(primaryAccount);
             entry.insert();
         }
 
+        @Override
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            Transaction transaction = type == AccountTransaction.class ? entry.getAccountTransaction() : entry
+                            .getPortfolioTransaction();
+
+            check(transaction, transactions);
+        }
     }
 
-    class SecurityItem implements Item
+    static class AccountTransferItem extends Item
+    {
+        private final AccountTransferEntry entry;
+
+        public AccountTransferItem(AccountTransferEntry entry)
+        {
+            this.entry = entry;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return entry;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelTransferAccount;
+        }
+
+        @Override
+        public Date getDate()
+        {
+            return entry.getSourceTransaction().getDate();
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return entry.getSourceTransaction().getAmount();
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return null;
+        }
+
+        @Override
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        {
+            entry.setSourceAccount(primaryAccount);
+            entry.setTargetAccount(secondaryAccount);
+            entry.insert();
+        }
+
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            if (type != AccountTransaction.class)
+                return;
+
+            check(entry.getSourceTransaction(), transactions);
+        }
+    }
+
+    static class PortfolioTransferItem extends Item
+    {
+        private final PortfolioTransferEntry entry;
+
+        public PortfolioTransferItem(PortfolioTransferEntry entry)
+        {
+            this.entry = entry;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return entry;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelTransferPortfolio;
+        }
+
+        @Override
+        public Date getDate()
+        {
+            return entry.getSourceTransaction().getDate();
+        }
+
+        @Override
+        public long getAmount()
+        {
+            return entry.getSourceTransaction().getAmount();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return entry.getSourceTransaction().getShares();
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return entry.getSourceTransaction().getSecurity();
+        }
+
+        @Override
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        {
+            entry.setSourcePortfolio(primaryPortfolio);
+            entry.setTargetPortfolio(secondaryPortfolio);
+            entry.insert();
+        }
+
+        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
+        {
+            if (type != PortfolioTransaction.class)
+                return;
+
+            check(entry.getSourceTransaction(), transactions);
+        }
+    }
+
+    static class SecurityItem extends Item
     {
         private Security security;
 
@@ -157,7 +371,7 @@ public interface Extractor
         }
 
         @Override
-        public Object getSubject()
+        public Annotated getSubject()
         {
             return security;
         }
@@ -175,25 +389,19 @@ public interface Extractor
         }
 
         @Override
-        public long getAmount()
-        {
-            return 0;
-        }
-
-        @Override
         public Security getSecurity()
         {
             return security;
         }
 
         @Override
-        public void insert(Client client, Portfolio portfolio, Account account)
+        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
+                        Portfolio secondaryPortfolio, Account secondaryAccount)
         {
             // might have been added via a transaction
             if (!client.getSecurities().contains(security))
                 client.addSecurity(security);
         }
-
     }
 
     /**

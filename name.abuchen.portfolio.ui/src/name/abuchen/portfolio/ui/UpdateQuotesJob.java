@@ -84,7 +84,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private boolean doUpdateLatestQuotes(IProgressMonitor monitor, List<IStatus> errors)
     {
-        Map<String, List<Security>> feed2securities = new HashMap<String, List<Security>>();
+        Map<String, List<Security>> feed2securities = new HashMap<>();
         for (Security s : securities)
         {
             // if configured, use feed for latest quotes
@@ -93,10 +93,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (feedId == null)
                 feedId = s.getFeed();
 
-            List<Security> l = feed2securities.get(feedId);
-            if (l == null)
-                feed2securities.put(feedId, l = new ArrayList<Security>());
-            l.add(s);
+            feed2securities.computeIfAbsent(feedId, key -> new ArrayList<Security>()).add(s);
         }
 
         boolean isDirty = false;

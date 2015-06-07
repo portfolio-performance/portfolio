@@ -37,7 +37,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -285,11 +284,19 @@ public class BindingHelper
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
-        DateTime boxDate = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(boxDate);
 
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(boxDate),
-                        BeansObservables.observeValue(model, property));
+        DateTimePicker boxDate = new DateTimePicker(editArea);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(boxDate.getControl());
+
+        context.bindValue(
+                        new SimpleDateTimeSelectionProperty().observe(boxDate.getControl()),
+                        BeansObservables.observeValue(model, property),
+                        new UpdateValueStrategy() //
+                                        .setAfterConvertValidator(value -> {
+                                            return value != null ? ValidationStatus.ok() : ValidationStatus
+                                                            .error(MessageFormat.format(
+                                                                            Messages.MsgDialogInputRequired, label));
+                                        }), null);
     }
 
     public final void bindAmountInput(Composite editArea, String label, String property)

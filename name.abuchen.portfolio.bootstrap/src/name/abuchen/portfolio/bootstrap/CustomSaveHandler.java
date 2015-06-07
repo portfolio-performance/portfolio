@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.handlers;
+package name.abuchen.portfolio.bootstrap;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -6,39 +6,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.CheckedListSelectionDialog;
-
 import org.eclipse.e4.ui.internal.workbench.PartServiceSaveHandler;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class CustomSaveHandler extends PartServiceSaveHandler
 {
-    private static final class PartLabelProvider extends LabelProvider
-    {
-        @Override
-        public String getText(Object element)
-        {
-            MPart part = (MPart) element;
-            String tooltip = part.getTooltip();
-            return tooltip != null ? part.getLabel() + " (" + part.getTooltip() + ")" : part.getLabel(); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
-        @Override
-        public Image getImage(Object element)
-        {
-            return PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_16);
-        }
-    }
-
     private static final class PromptForSaveDialog extends MessageDialog
     {
         private PromptForSaveDialog(Shell parentShell, String dialogMessage)
@@ -81,7 +59,17 @@ public class CustomSaveHandler extends PartServiceSaveHandler
     private Save[] promptToSaveMultiple(Collection<MPart> dirtyParts)
     {
         CheckedListSelectionDialog dialog = new CheckedListSelectionDialog(Display.getDefault().getActiveShell(),
-                        new PartLabelProvider());
+                        new LabelProvider()
+                        {
+                            @Override
+                            public String getText(Object element)
+                            {
+                                MPart part = (MPart) element;
+                                String tooltip = part.getTooltip();
+                                return tooltip != null ? part.getLabel() + " (" + part.getTooltip() + ")" : part.getLabel(); //$NON-NLS-1$ //$NON-NLS-2$
+                            }
+
+                        });
         dialog.setTitle(Messages.SaveHandlerTitle);
         dialog.setMessage(Messages.SaveHandlerMsgSelectFileToSave);
         dialog.setElements(dirtyParts);

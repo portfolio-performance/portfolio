@@ -2,7 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.util.Date;
 
-public class AccountTransferEntry implements CrossEntry
+public class AccountTransferEntry implements CrossEntry, Annotated
 {
     private Account accountFrom;
     private AccountTransaction transactionFrom;
@@ -10,19 +10,41 @@ public class AccountTransferEntry implements CrossEntry
     private AccountTransaction transactionTo;
 
     public AccountTransferEntry()
-    {}
-
-    public AccountTransferEntry(Account accountFrom, Account accountTo)
     {
-        this.accountFrom = accountFrom;
         this.transactionFrom = new AccountTransaction();
         this.transactionFrom.setType(AccountTransaction.Type.TRANSFER_OUT);
         this.transactionFrom.setCrossEntry(this);
 
-        this.accountTo = accountTo;
         this.transactionTo = new AccountTransaction();
         this.transactionTo.setType(AccountTransaction.Type.TRANSFER_IN);
         this.transactionTo.setCrossEntry(this);
+    }
+
+    public AccountTransferEntry(Account accountFrom, Account accountTo)
+    {
+        this();
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+    }
+
+    public AccountTransaction getSourceTransaction()
+    {
+        return this.transactionFrom;
+    }
+
+    public AccountTransaction getTargetTransaction()
+    {
+        return this.transactionTo;
+    }
+
+    public void setSourceAccount(Account account)
+    {
+        this.accountFrom = account;
+    }
+
+    public void setTargetAccount(Account account)
+    {
+        this.accountTo = account;
     }
 
     public void setDate(Date date)
@@ -35,6 +57,19 @@ public class AccountTransferEntry implements CrossEntry
     {
         this.transactionFrom.setAmount(amount);
         this.transactionTo.setAmount(amount);
+    }
+
+    @Override
+    public String getNote()
+    {
+        return this.transactionFrom.getNote();
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        this.transactionFrom.setNote(note);
+        this.transactionTo.setNote(note);
     }
 
     public void insert()

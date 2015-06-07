@@ -152,6 +152,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         createCommonColumns();
         createDividendColumns();
+        createRiskColumns();
         createAdditionalColumns();
 
         recordColumns.createColumns();
@@ -437,6 +438,67 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+    }
+
+    private void createRiskColumns()
+    {
+        Column column = new Column("mdd", Messages.ColumnMaxDrawdown, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.LabelMaxDrawdown);
+        column.setGroupLabel(Messages.LabelRiskIndicators);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getMaxDrawdown());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "maxDrawdown")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("mddduration", Messages.ColumnMaxDrawdownDuration, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.LabelMaxDrawdownDuration);
+        column.setGroupLabel(Messages.LabelRiskIndicators);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return String.valueOf(((SecurityPerformanceRecord) r).getMaxDrawdownDuration());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "maxDrawdownDuration")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("vola", Messages.LabelVolatility, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelRiskIndicators);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getVolatility());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "volatility")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("semivola", Messages.LabelSemiVolatility, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelRiskIndicators);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getSemiVolatility());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "semiVolatility")); //$NON-NLS-1$
         recordColumns.addColumn(column);
     }
 

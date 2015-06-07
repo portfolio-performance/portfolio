@@ -31,7 +31,7 @@ public class ColorConversion
 
     public static String toHex(int red, int green, int blue)
     {
-        return '#' + Integer.toHexString((red << 16) | (green << 8) | blue);
+        return String.format("#%02x%02x%02x", red, green, blue); //$NON-NLS-1$
     }
 
     public static String toHex(float hue, float saturation, float brightness)

@@ -63,7 +63,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
             PortfolioTransaction t = (PortfolioTransaction) element;
 
-            if (t.getType() == Type.SELL || t.getType() == Type.TRANSFER_OUT)
+            if (t.getType() == Type.SELL || t.getType() == Type.TRANSFER_OUT || t.getType() == Type.DELIVERY_OUTBOUND)
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
             else
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
@@ -94,7 +94,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
+        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnEditingSupport.prepare(tableViewer);
 
         support = new ShowHideColumnHelper(PortfolioTransactionsViewer.class.getSimpleName() + "3", //$NON-NLS-1$
@@ -365,10 +365,10 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         if (portfolio == null)
             return;
 
-        final PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
+        PortfolioTransaction firstTransaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
                         .getSelection()).getFirstElement();
 
-        if (transaction != null)
+        if (firstTransaction != null)
         {
             manager.add(new Action(Messages.MenuEditTransaction)
             {
@@ -377,18 +377,19 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 {
                     Dialog dialog;
 
-                    switch (transaction.getType())
+                    switch (firstTransaction.getType())
                     {
                         case BUY:
                         case SELL:
-                            BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
-                            dialog = owner.getPart().make(SecurityTransactionDialog.class, transaction.getType());
+                            BuySellEntry entry = (BuySellEntry) firstTransaction.getCrossEntry();
+                            dialog = owner.getPart().make(SecurityTransactionDialog.class, firstTransaction.getType());
                             ((SecurityTransactionDialog) dialog).setBuySellEntry(entry);
                             break;
                         case DELIVERY_INBOUND:
                         case DELIVERY_OUTBOUND:
-                            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio, transaction);
-                            dialog = owner.getPart().make(SecurityTransactionDialog.class, transaction.getType());
+                            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio,
+                                            firstTransaction);
+                            dialog = owner.getPart().make(SecurityTransactionDialog.class, firstTransaction.getType());
                             ((SecurityTransactionDialog) dialog).setDeliveryTransaction(pair);
                             break;
                         default:
@@ -406,14 +407,14 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             manager.add(new Separator());
         }
 
-        if (fullContextMenu && transaction != null)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, transaction.getSecurity(), portfolio);
+        if (fullContextMenu && firstTransaction != null)
+            new SecurityContextMenu(owner).menuAboutToShow(manager, firstTransaction.getSecurity(), portfolio);
         else if (fullContextMenu)
             new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
-        else if (transaction != null)
-            manager.add(new WebLocationMenu(transaction.getSecurity()));
+        else if (firstTransaction != null)
+            manager.add(new WebLocationMenu(firstTransaction.getSecurity()));
 
-        if (transaction != null)
+        if (firstTransaction != null)
         {
             manager.add(new Separator());
             manager.add(new Action(Messages.MenuTransactionDelete)
@@ -421,7 +422,10 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 @Override
                 public void run()
                 {
-                    portfolio.deleteTransaction(transaction, owner.getClient());
+                    Object[] selection = ((IStructuredSelection) tableViewer.getSelection()).toArray();
+                    for (Object transaction : selection)
+                        portfolio.deleteTransaction((PortfolioTransaction) transaction, owner.getClient());
+
                     owner.markDirty();
                     owner.notifyModelUpdated();
                 }

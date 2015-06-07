@@ -440,6 +440,10 @@ public class ClientFactory
             case 24:
                 // do nothing --> added 'TAX_REFUND' as account transaction
             case 25:
+                // incremented precision of shares to 6 digits after the decimal
+                // sign
+                incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(client);
+            case 26:
                 // added currency support --> designate a default currency (user
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
@@ -753,6 +757,16 @@ public class ClientFactory
                 }
             }
         }
+    }
+
+    private static void incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 10);
+        for (Account account : client.getAccounts())
+            for (AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 10);
     }
 
     public static void setAllCurrencies(Client client, String currencyCode)

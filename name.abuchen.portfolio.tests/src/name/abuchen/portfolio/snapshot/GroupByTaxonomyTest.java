@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.joda.time.DateTime;
@@ -55,9 +56,9 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
-                        .inbound_delivery(c, "2010-01-01", 1000000, 12000) //
-                        .inbound_delivery(d, "2010-01-01", 1000000, 12000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(c, "2010-01-01", Values.Share.factorize(10), 12000) //
+                        .inbound_delivery(d, "2010-01-01", Values.Share.factorize(10), 12000) //
                         .addTo(client);
 
         Date date = Dates.date("2010-01-01");
@@ -95,7 +96,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
@@ -131,7 +132,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
@@ -163,7 +164,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();
@@ -198,7 +199,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", 1000000, 10000) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         Date date = new DateTime("2010-01-01").toDate();

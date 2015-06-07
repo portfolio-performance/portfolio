@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;
@@ -52,16 +53,16 @@ public class PortfolioMergeTest
 
         Portfolio portfolioA = new Portfolio();
         portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
-                        100_00, securityA, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+                        100_00, securityA, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
-                        121_00, securityX, 1000000, PortfolioTransaction.Type.BUY, 100, 0));
+                        121_00, securityX, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 100, 0));
         client.addPortfolio(portfolioA);
 
         Portfolio portfolioB = new Portfolio();
         portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
-                        110_00, securityB, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+                        110_00, securityB, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
-                        100_00, securityX, 1000000, PortfolioTransaction.Type.BUY, 0, 0));
+                        100_00, securityX, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolioB);
     }
 
@@ -74,15 +75,15 @@ public class PortfolioMergeTest
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
 
         SecurityPosition positionA = jointPortfolio.getPositionsBySecurity().get(securityA);
-        assertThat(positionA.getShares(), is(1000000L));
+        assertThat(positionA.getShares(), is(Values.Share.factorize(10)));
         assertThat(positionA.calculateValue(), is(Money.of(CurrencyUnit.EUR, 100_00)));
 
         SecurityPosition positionB = jointPortfolio.getPositionsBySecurity().get(securityB);
-        assertThat(positionB.getShares(), is(1000000L));
+        assertThat(positionB.getShares(), is(Values.Share.factorize(10)));
         assertThat(positionB.calculateValue(), is(Money.of(CurrencyUnit.EUR, 110_00)));
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertThat(positionX.getShares(), is(2000000L));
+        assertThat(positionX.getShares(), is(Values.Share.factorize(10 * 2)));
         assertThat(positionX.calculateValue(), is(Money.of(CurrencyUnit.EUR, 240_00)));
     }
 
@@ -96,7 +97,7 @@ public class PortfolioMergeTest
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
 
-        assertThat(positionX.getShares(), is(2000000L));
+        assertThat(positionX.getShares(), is(Values.Share.factorize(20)));
         assertThat(positionX.calculateValue(), is(Money.of(CurrencyUnit.EUR, 240_00)));
         // calculate purchase price w/o costs
         assertThat(positionX.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 11_00)));

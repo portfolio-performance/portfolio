@@ -18,4 +18,16 @@
          </property>
       </product>
    </extension>
+   <extension
+         id="id1"
+         point="org.eclipse.e4.workbench.model">
+      <processor
+            apply="always"
+            beforefragment="false"
+            class="name.abuchen.portfolio.bootstrap.SaveHandlerProcessor">
+         <element
+               id="name.abuchen.portfolio.ui.window.mainwindow">
+         </element>
+      </processor>
+   </extension>
 </plugin>

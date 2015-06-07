@@ -1,0 +1,41 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=1000000001
+Erträgnisgutschrift aus Wertpapieren DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Max Mustermann
+ADRESSZEILE2=Musterstrasse 5
+Dividende für ADRESSZEILE3=11111 Berlin
+Frau 01.01.2013 - 31.12.2013 ADRESSZEILE4=
+Max Mustermann MDJ Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+BELEGNUMMER=7317
+Musterstrasse 5 SEITENNUMMER=1
+11111 Berlin STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Dividendengutschrift München, 02.07.2014
+Gattungsbezeichnung ISIN
+EUWAX AG Inhaber-Aktien o.N. DE0005660104
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 100,000 02.07.2014 02.07.2014 EUR 3,260000
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+02.07.2014 1000000000 EUR 326,00
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+inländische Dividende EUR 326,00
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 700,00) EUR 698,61 372,61
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Zahlungstag 02.07.2014
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Ernst Huber (Sprecher des Vorstands), Dr. Niklas Dieterich, Dr. Josef Zellner
+ 
+

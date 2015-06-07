@@ -103,7 +103,7 @@ import org.eclipse.swt.widgets.Display;
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                if (node.isClassification() && !node.isRoot())
+                if (node.isClassification())
                     return getRenderer().getColorFor((TaxonomyNode) element);
                 else
                     return null;
@@ -132,17 +132,14 @@ import org.eclipse.swt.widgets.Display;
 
         MenuManager color = new MenuManager(Messages.ColumnColor);
 
-        if (!node.isRoot())
+        color.add(new Action(Messages.MenuTaxonomyColorEdit)
         {
-            color.add(new Action(Messages.MenuTaxonomyColorEdit)
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    doEditColor(node);
-                }
-            });
-        }
+                doEditColor(node);
+            }
+        });
 
         color.add(new Action(Messages.MenuTaxonomyColorRandomPalette)
         {
@@ -153,17 +150,14 @@ import org.eclipse.swt.widgets.Display;
             }
         });
 
-        if (!node.isRoot())
+        color.add(new Action(Messages.MenuTaxonomyColorCascadeToChildren)
         {
-            color.add(new Action(Messages.MenuTaxonomyColorCascadeToChildren)
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    doCascadeColorsDown(node);
-                }
-            });
-        }
+                doCascadeColorsDown(node);
+            }
+        });
 
         manager.appendToGroup(MENU_GROUP_DEFAULT_ACTIONS, color);
     }
