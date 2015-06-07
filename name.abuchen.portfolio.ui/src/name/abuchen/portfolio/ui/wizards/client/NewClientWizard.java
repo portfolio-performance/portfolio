@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.wizards.client;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 import org.eclipse.jface.wizard.Wizard;
@@ -8,6 +11,7 @@ import org.eclipse.jface.wizard.Wizard;
 public class NewClientWizard extends Wizard
 {
     private Client client;
+    private BaseCurrencySelectionPage page;
 
     public NewClientWizard()
     {
@@ -17,6 +21,9 @@ public class NewClientWizard extends Wizard
     @Override
     public boolean performFinish()
     {
+        CurrencyUnit currency = page.getSelectedCurrency();
+        ClientFactory.setAllCurrencies(client, currency.getCurrencyCode());
+
         return true;
     }
 
@@ -28,7 +35,11 @@ public class NewClientWizard extends Wizard
     @Override
     public void addPages()
     {
-        addPage(new BaseCurrencySelectionPage(client));
+        page = new BaseCurrencySelectionPage(Messages.BaseCurrencySelectionPage_Title,
+                        Messages.BaseCurrencySelectionPage_Description,
+                        Messages.BaseCurrencySelectionPage_ExplanationIndividualCurrency);
+        addPage(page);
+
         addPage(new NewPortfolioAccountPage(client));
         addPage(new NewAccountPage(client));
         addPage(new ImportIndizesPage(client));
