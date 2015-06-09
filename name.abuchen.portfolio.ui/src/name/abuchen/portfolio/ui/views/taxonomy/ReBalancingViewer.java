@@ -5,6 +5,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -23,9 +24,9 @@ import org.eclipse.swt.widgets.Display;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
-    public ReBalancingViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public ReBalancingViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        super(model, renderer);
+        super(part, model, renderer);
     }
 
     @Override

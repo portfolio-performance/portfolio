@@ -423,7 +423,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         });
     }
 
-    protected void activateView(String target, Object parameter)
+    public void activateView(String target, Object parameter)
     {
         disposeView();
 
