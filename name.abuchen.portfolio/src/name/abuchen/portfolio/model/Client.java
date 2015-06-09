@@ -35,6 +35,7 @@ public class Client
     private List<Taxonomy> taxonomies;
 
     private Map<String, String> properties; // old versions!
+    private ClientSettings settings;
 
     @Deprecated
     private String industryTaxonomyId;
@@ -71,6 +72,9 @@ public class Client
 
         if (taxonomies == null)
             taxonomies = new ArrayList<Taxonomy>();
+        
+        if (settings == null)
+            settings = new ClientSettings();
     }
 
     public int getVersion()
@@ -274,6 +278,11 @@ public class Client
         return taxonomies.stream() //
                         .filter(t -> id.equals(t.getId())) //
                         .findAny().orElse(null);
+    }
+    
+    public ClientSettings getSettings()
+    {
+        return settings;
     }
 
     public void setProperty(String key, String value)

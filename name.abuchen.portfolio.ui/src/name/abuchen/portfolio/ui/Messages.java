@@ -12,7 +12,15 @@ public class Messages extends NLS
     public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
-    public static String AccountMenuTransfer;
+    public static String AccountMenuTransfer;   
+    public static String BookmarksListView_insertAfter;
+    public static String BookmarksListView_bookmark;
+    public static String BookmarksListView_delete;
+    public static String BookmarksListView_insertBefore;
+    public static String BookmarksListView_NewBookmark;
+    public static String BookmarksListView_title;
+    public static String BookmarksListView_tooltip;
+    public static String BookmarksListView_url;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
@@ -498,6 +506,7 @@ public class Messages extends NLS
     public static String WatchlistEditDialogMsg;
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
+    public static String BookmarkMenu_EditBookmarks;
     static
     {
         // initialize resource bundle

@@ -26,7 +26,7 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -369,7 +369,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         else if (fullContextMenu)
             new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
         else if (firstTransaction != null)
-            manager.add(new WebLocationMenu(firstTransaction.getSecurity()));
+            manager.add(new BookmarkMenu(owner.getPart(), firstTransaction.getSecurity()));
 
         if (firstTransaction != null)
         {

@@ -775,6 +775,8 @@ public class ClientFactory
 
                     xstream.alias("account", Account.class);
                     xstream.alias("client", Client.class);
+                    xstream.alias("settings", ClientSettings.class);
+                    xstream.alias("bookmark", Bookmark.class);
                     xstream.alias("portfolio", Portfolio.class);
                     xstream.alias("account-transaction", AccountTransaction.class);
                     xstream.alias("portfolio-transaction", PortfolioTransaction.class);
