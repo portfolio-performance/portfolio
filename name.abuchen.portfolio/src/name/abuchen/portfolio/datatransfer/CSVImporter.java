@@ -106,16 +106,23 @@ public class CSVImporter
     public static class Field
     {
         private final String name;
+        private final String normalizedName;
         private boolean isOptional = false;
 
         public Field(String name)
         {
             this.name = name;
+            this.normalizedName = normalizeColumnName(name);
         }
 
         public String getName()
         {
             return name;
+        }
+        
+        public String getNormalizedName()
+        {
+            return normalizedName;
         }
 
         public Field setOptional(boolean isOptional)
@@ -147,6 +154,30 @@ public class CSVImporter
         /* package */DateField(String name)
         {
             super(name);
+        }
+        
+        /**
+         * Guesses the used date format from the given value.
+         * @param value value (can be null)
+         * @return date format on success, else first date format
+         */
+        public static FieldFormat guessDateFormat(String value)
+        {
+            if (value != null)
+            {
+                for (FieldFormat f : FORMATS)
+                {
+                    try
+                    {
+                        // try to parse the value and return it on success
+                        f.format.parseObject(value);
+                        return f;
+                    } catch (ParseException e)
+                    {}
+                }
+            }
+            // fallback
+            return FORMATS[0];
         }
     }
 
@@ -372,7 +403,7 @@ public class CSVImporter
             }
         }
     }
-
+    
     private void mapToImportDefinition()
     {
         List<Field> list = new LinkedList<Field>(importDefinition.getFields());
@@ -380,16 +411,21 @@ public class CSVImporter
         for (Column column : columns)
         {
             column.setField(null);
-            Iterator<Field> iter = list.iterator();
+            String normalizedColumnName = normalizeColumnName(column.getLabel());
+           Iterator<Field> iter = list.iterator();
             while (iter.hasNext())
             {
                 Field field = iter.next();
-                if (field.getName().equalsIgnoreCase(column.getLabel()))
+                if (field.getNormalizedName().equals(normalizedColumnName))
                 {
                     column.setField(field);
 
                     if (field instanceof DateField)
-                        column.setFormat(DateField.FORMATS[0]);
+                    {
+                        // try to guess date format
+                        String value = getFirstNonEmptyValue(column);
+                        column.setFormat(DateField.guessDateFormat(value));
+                    }
                     else if (field instanceof AmountField)
                         column.setFormat(AmountField.FORMATS[0]);
                     else if (field instanceof EnumField<?>)
@@ -427,5 +463,74 @@ public class CSVImporter
                                 e.getMessage()), e));
             }
         }
+    }
+    
+    /**
+     * Finds the first value that is not empty for the given column.
+     * @param column {@link Column}
+     * @return value on success, else null
+     */
+    private String getFirstNonEmptyValue(Column column)
+    {
+        int index = column.getColumnIndex();
+        for (String[] rawValues : values)
+        {
+            String value = rawValues[index];
+            // check if value is set and is not empty (ignore whitespace)
+            if ((value != null) && (!value.trim().isEmpty()))
+            {
+                return value;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Normalizes the given column name for better matching to field names.
+     * @param name name of the column
+     * @return normalized name (upper case)
+     */
+    private static String normalizeColumnName(String name)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < name.length(); i++)
+        {
+            // get uppercase character
+            char c = Character.toUpperCase(name.charAt(i));
+            // transform special characters (Ä->AE etc.)
+            switch (c)
+            {
+                case 'Ä':
+                {
+                    sb.append("AE");
+                }
+                    break;
+                case 'Ö':
+                {
+                    sb.append("OE");
+                }
+                    break;
+                case 'Ü':
+                {
+                    sb.append("UE");
+                }
+                    break;
+                case 'ß':
+                {
+                    sb.append("SS");
+                }
+                    break;
+                case ' ':
+                {
+                    // strip whitespace
+                }
+                    break;
+                default:
+                {
+                    sb.append(c);
+                }
+            }
+        }
+        return sb.toString();
     }
 }
