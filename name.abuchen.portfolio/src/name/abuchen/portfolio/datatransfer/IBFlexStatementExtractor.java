@@ -63,7 +63,7 @@ public class IBFlexStatementExtractor implements Extractor
 
     private Date convertDate(String date) throws ParseException
     {
-        // 20111215
+
         if (date.length() > 8)
         {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -273,9 +273,6 @@ public class IBFlexStatementExtractor implements Extractor
 
         transaction.setDate(convertDate(eElement.getAttribute("dateTime")));
         Double amount = Double.parseDouble(eElement.getAttribute("amount"));
-        // Set the Symbol
-        if (eElement.getAttribute("symbol").length() > 0)
-            transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
         // Set Transaction Type
         if (eElement.getAttribute("type").equals("Deposits")
@@ -290,23 +287,36 @@ public class IBFlexStatementExtractor implements Extractor
                 transaction.setType(AccountTransaction.Type.REMOVAL);
             }
         }
-        else if (eElement.getAttribute("type").equals("Dividends"))
+        else if (eElement.getAttribute("type").equals("Dividends")
+                        || eElement.getAttribute("type").equals("Payment In Lieu Of Dividends"))
         {
             transaction.setType(AccountTransaction.Type.DIVIDENDS);
-            this.calculateShares(transaction, eElement);
-        }
-        else if (eElement.getAttribute("type").equals("Payment In Lieu Of Dividends"))
-        {
-            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+
+            // Set the Symbol
+            if (eElement.getAttribute("symbol").length() > 0)
+                transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
+
             this.calculateShares(transaction, eElement);
         }
         else if (eElement.getAttribute("type").equals("Withholding Tax"))
-        {
+        {             
+            // Set the Symbol
+            if (eElement.getAttribute("symbol").length() > 0)
+                transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
+            
             transaction.setType(AccountTransaction.Type.TAXES);
+            
+            //Temporary until the model supports negative interest rates and dividends see #310
+            throw new ParseException( eElement.getAttribute("dateTime") + " Witholding Tax is not supported", 0);               
+        }
+        else if (eElement.getAttribute("type").equals("Broker Interest Recieved"))
+        {
+            transaction.setType(AccountTransaction.Type.INTEREST);
         }
         else if (eElement.getAttribute("type").equals("Broker Interest Paid"))
         {
-            transaction.setType(AccountTransaction.Type.INTEREST);
+            //Temporary until the model supports negative interest see #310
+            throw new ParseException( eElement.getAttribute("dateTime") + " Broker Interest Paid is not supported", 0);  
         }
         else if (eElement.getAttribute("type").equals("Other Fees"))
         {
@@ -317,11 +327,7 @@ public class IBFlexStatementExtractor implements Extractor
             throw new IllegalArgumentException();
         }
 
-        // For interest payments we should not use absolute values
-        if (transaction.getType() != AccountTransaction.Type.INTEREST)
-        {
-            amount = Math.abs(amount);
-        }
+        amount = Math.abs(amount);
         transaction.setAmount(Math.round(amount.doubleValue() * Values.Amount.factor()));
 
         transaction.setNote(eElement.getAttribute("description"));
@@ -341,6 +347,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (nNode.getNodeType() == Node.ELEMENT_NODE)
             {
+                System.out.println(type.equals("Trade"));
                 try
                 {
                     if (type.equals("Trade"))

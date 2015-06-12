@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -46,7 +45,8 @@ public class IBFlexStatementExtractorTest
         extractor.importActivityStatement(activityStatement, errors);
         List<Item> results = extractor.getResults();
 
-        assertThat(errors, empty());
+        // 1 Error Messages for negative interest which is not yet supported
+        assertThat(errors.size(), is(1));
         assertThat(results.size(), is(25));
 
         assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
