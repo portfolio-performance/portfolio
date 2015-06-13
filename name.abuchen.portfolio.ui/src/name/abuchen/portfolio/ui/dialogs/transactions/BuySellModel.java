@@ -32,7 +32,7 @@ import name.abuchen.portfolio.ui.Messages;
         this.source = (BuySellEntry) entry;
 
         this.type = source.getPortfolioTransaction().getType();
-        this.portfolio = (Portfolio) source.getEntity(source.getPortfolioTransaction());
+        this.portfolio = (Portfolio) source.getOwner(source.getPortfolioTransaction());
         fillFromTransaction(source.getPortfolioTransaction());
     }
 
@@ -45,7 +45,7 @@ import name.abuchen.portfolio.ui.Messages;
 
         BuySellEntry entry;
 
-        if (source != null && source.getEntity(source.getPortfolioTransaction()).equals(portfolio))
+        if (source != null && source.getOwner(source.getPortfolioTransaction()).equals(portfolio))
         {
             entry = source;
         }
@@ -54,7 +54,7 @@ import name.abuchen.portfolio.ui.Messages;
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
-                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source.getEntity(source
+                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source.getOwner(source
                                 .getPortfolioTransaction());
                 owner.deleteTransaction(source.getPortfolioTransaction(), client);
                 source = null;

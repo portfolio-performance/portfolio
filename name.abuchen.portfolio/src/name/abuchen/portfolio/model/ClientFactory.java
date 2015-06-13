@@ -728,7 +728,7 @@ public class ClientFactory
                         case BUY:
                         case SELL:
                             if (portfolioTransaction.getCrossEntry() != null)
-                                account = (Account) portfolioTransaction.getCrossEntry().getCrossEntity(
+                                account = (Account) portfolioTransaction.getCrossEntry().getCrossOwner(
                                                 portfolioTransaction);
                         case TRANSFER_IN:
                         case TRANSFER_OUT:

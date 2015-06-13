@@ -298,7 +298,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object e)
             {
                 PortfolioTransaction t = (PortfolioTransaction) e;
-                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
             }
         });
         support.addColumn(column);

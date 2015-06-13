@@ -663,7 +663,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 if (t instanceof PortfolioTransaction)
                 {
                     PortfolioTransaction p = (PortfolioTransaction) t;
-                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossEntity(p).toString() : null;
+                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossOwner(p).toString() : null;
                 }
                 else if (t instanceof DividendTransaction)
                 {

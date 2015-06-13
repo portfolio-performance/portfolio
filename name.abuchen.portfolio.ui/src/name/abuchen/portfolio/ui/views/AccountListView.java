@@ -509,7 +509,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public String getText(Object e)
             {
                 AccountTransaction t = (AccountTransaction) e;
-                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
             }
 
             @Override

@@ -133,7 +133,7 @@ public class BuySellEntry implements CrossEntry, Annotated
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getOwner(Transaction t)
     {
         if (t.equals(portfolioTransaction))
             return portfolio;
@@ -156,7 +156,7 @@ public class BuySellEntry implements CrossEntry, Annotated
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossOwner(Transaction t)
     {
         if (t.equals(portfolioTransaction))
             return account;

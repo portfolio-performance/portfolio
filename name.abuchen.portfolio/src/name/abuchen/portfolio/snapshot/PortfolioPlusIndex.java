@@ -48,7 +48,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             {
                 case BUY:
                 case TRANSFER_IN:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio.getReferenceAccount()))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio.getReferenceAccount()))
                     {
                         pseudoPortfolio.addTransaction(t);
                     }
@@ -61,7 +61,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     break;
                 case SELL:
                 case TRANSFER_OUT:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio.getReferenceAccount()))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio.getReferenceAccount()))
                     {
                         pseudoPortfolio.addTransaction(t);
                     }
@@ -95,7 +95,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             switch (t.getType())
             {
                 case BUY:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio))
                     {
                         pseudoAccount.addTransaction(t);
                     }
@@ -106,7 +106,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                     break;
                 case SELL:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio))
                     {
                         pseudoAccount.addTransaction(t);
                     }

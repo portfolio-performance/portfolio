@@ -63,10 +63,10 @@ public class CrossEntryTest
         assertThat(pt.getTaxes(), is(11L));
 
         // check cross entity identification
-        assertThat(entry.getCrossEntity(pt), is((Object) account));
+        assertThat(entry.getCrossOwner(pt), is((Object) account));
         assertThat(entry.getCrossTransaction(pt), is((Transaction) pa));
 
-        assertThat(entry.getCrossEntity(pa), is((Object) portfolio));
+        assertThat(entry.getCrossOwner(pa), is((Object) portfolio));
         assertThat(entry.getCrossTransaction(pa), is((Transaction) pt));
 
         // check cross editing
@@ -111,10 +111,10 @@ public class CrossEntryTest
         assertThat(pB.getDate(), is(Dates.today()));
 
         // check cross entity identification
-        assertThat(entry.getCrossEntity(pA), is((Object) accountB));
+        assertThat(entry.getCrossOwner(pA), is((Object) accountB));
         assertThat(entry.getCrossTransaction(pA), is((Transaction) pB));
 
-        assertThat(entry.getCrossEntity(pB), is((Object) accountA));
+        assertThat(entry.getCrossOwner(pB), is((Object) accountA));
         assertThat(entry.getCrossTransaction(pB), is((Transaction) pA));
 
         // check cross editing
@@ -162,10 +162,10 @@ public class CrossEntryTest
         assertThat(pB.getDate(), is(Dates.today()));
 
         // check cross entity identification
-        assertThat(entry.getCrossEntity(pA), is((Object) portfolioB));
+        assertThat(entry.getCrossOwner(pA), is((Object) portfolioB));
         assertThat(entry.getCrossTransaction(pA), is((Transaction) pB));
 
-        assertThat(entry.getCrossEntity(pB), is((Object) portfolioA));
+        assertThat(entry.getCrossOwner(pB), is((Object) portfolioA));
         assertThat(entry.getCrossTransaction(pB), is((Transaction) pA));
 
         // check cross editing

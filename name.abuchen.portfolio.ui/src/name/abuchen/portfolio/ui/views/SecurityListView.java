@@ -894,7 +894,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 TransactionPair<?> pair = (TransactionPair<?>) element;
                 Transaction t = pair.getTransaction();
                 if (t instanceof PortfolioTransaction)
-                    return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+                    return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
                 else
                     return pair.getOwner().toString();
             }
