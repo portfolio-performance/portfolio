@@ -309,7 +309,7 @@ public class IBFlexStatementExtractor implements Extractor
             //Temporary until the model supports negative interest rates and dividends see #310
             throw new ParseException( eElement.getAttribute("dateTime") + " Witholding Tax is not supported", 0);               
         }
-        else if (eElement.getAttribute("type").equals("Broker Interest Recieved"))
+        else if (eElement.getAttribute("type").equals("Broker Interest Received"))
         {
             transaction.setType(AccountTransaction.Type.INTEREST);
         }
@@ -347,7 +347,6 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (nNode.getNodeType() == Node.ELEMENT_NODE)
             {
-                System.out.println(type.equals("Trade"));
                 try
                 {
                     if (type.equals("Trade"))
