@@ -575,8 +575,9 @@ public class PortfolioPart implements LoadClientThread.Callback
     public <T> T make(Class<T> type, Object... parameters)
     {
         IEclipseContext c2 = EclipseContextFactory.create();
-        for (Object param : parameters)
-            c2.set(param.getClass().getName(), param);
+        if (parameters != null)
+            for (Object param : parameters)
+                c2.set(param.getClass().getName(), param);
         return ContextInjectionFactory.make(type, this.context, c2);
     }
 

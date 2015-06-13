@@ -132,13 +132,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             currency = new Label(editArea, SWT.NONE);
         }
 
-        public void bindValue(String property, String missingValueMessage)
+        public IObservableValue bindValue(String property, String missingValueMessage)
         {
             UpdateValueStrategy strategy = new UpdateValueStrategy();
             strategy.setAfterConvertValidator(v -> v != null ? ValidationStatus.ok() : ValidationStatus
                             .error(missingValueMessage));
-            context.bindValue(ViewersObservables.observeSingleSelection(value), //
-                            BeansObservables.observeValue(model, property), strategy, null);
+            IObservableValue observable = ViewersObservables.observeSingleSelection(value);
+            context.bindValue(observable, BeansObservables.observeValue(model, property), strategy, null);
+            return observable;
         }
 
         public void bindCurrency(String property)

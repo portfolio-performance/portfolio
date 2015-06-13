@@ -59,6 +59,12 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this.transactionTo.setAmount(amount);
     }
 
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.transactionFrom.setCurrencyCode(currencyCode);
+        this.transactionTo.setCurrencyCode(currencyCode);
+    }
+
     @Override
     public String getNote()
     {

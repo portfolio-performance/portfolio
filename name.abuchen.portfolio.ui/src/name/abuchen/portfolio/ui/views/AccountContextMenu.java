@@ -9,15 +9,13 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.TransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 
 public class AccountContextMenu
 {
@@ -49,14 +47,11 @@ public class AccountContextMenu
         }
 
         manager.add(new Separator());
-        manager.add(new AbstractDialogAction(Messages.AccountMenuTransfer)
-        {
-            @Override
-            Dialog createDialog()
-            {
-                return new TransferDialog(owner.getActiveShell(), owner.getClient(), account);
-            }
-        });
+
+        new OpenDialogAction(owner, Messages.AccountMenuTransfer) //
+                        .type(AccountTransferDialog.class) //
+                        .with(account) //
+                        .addTo(manager);
 
         manager.add(new Separator());
 
@@ -105,26 +100,5 @@ public class AccountContextMenu
                         .with(account) //
                         .with(security) //
                         .addTo(manager);
-    }
-
-    private abstract class AbstractDialogAction extends Action
-    {
-        public AbstractDialogAction(String text)
-        {
-            super(text);
-        }
-
-        @Override
-        public final void run()
-        {
-            Dialog dialog = createDialog();
-            if (dialog.open() == TransferDialog.OK)
-            {
-                owner.markDirty();
-                owner.notifyModelUpdated();
-            }
-        }
-
-        abstract Dialog createDialog();
     }
 }

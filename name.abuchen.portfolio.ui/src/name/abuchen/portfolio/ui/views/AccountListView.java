@@ -8,6 +8,7 @@ import java.util.List;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -17,6 +18,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
@@ -595,9 +597,15 @@ public class AccountListView extends AbstractListView implements ModificationLis
                                 .parameters(entry.getPortfolioTransaction().getType()) //
                                 .addTo(manager);
             }
+            else if (transaction.getCrossEntry() instanceof AccountTransferEntry)
+            {
+                AccountTransferEntry entry = (AccountTransferEntry) transaction.getCrossEntry();
+                new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                                .type(AccountTransferDialog.class, d -> d.setEntry(entry)) //
+                                .addTo(manager);
+            }
             else
             {
-                // FIXME edit transfers missing
                 new OpenDialogAction(this, Messages.MenuEditTransaction) //
                                 .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
                                 .parameters(transaction.getType()) //

@@ -57,10 +57,16 @@ public final class FormDataFactory
 
     public FormDataFactory suffix(Label label)
     {
+        return suffix(label, SWT.DEFAULT);
+    }
+
+    public FormDataFactory suffix(Label label, int width)
+    {
         FormData data = from(label);
         data.top = new FormAttachment(reference, 0, SWT.CENTER);
         data.left = new FormAttachment(reference, 5);
         data.right = new FormAttachment(100);
+        data.width = width;
         return this;
     }
 
