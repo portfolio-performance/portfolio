@@ -6,10 +6,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
@@ -84,20 +84,11 @@ public class SecurityContextMenu
         if (portfolio != null && owner.getClient().getActivePortfolios().size() > 1)
         {
             manager.add(new Separator());
-            manager.add(new Action(Messages.SecurityMenuTransfer)
-            {
-                @Override
-                public void run()
-                {
-                    SecurityTransferDialog dialog = new SecurityTransferDialog(owner.getActiveShell(), owner
-                                    .getClient(), portfolio);
-                    if (dialog.open() == Dialog.OK)
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
+            new OpenDialogAction(owner, Messages.SecurityMenuTransfer) //
+                            .type(SecurityTransferDialog.class) //
+                            .with(portfolio) //
+                            .with(security) //
+                            .addTo(manager);
         }
 
         if (portfolio != null)

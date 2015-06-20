@@ -10,13 +10,16 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -36,7 +39,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -284,7 +286,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((PortfolioTransaction) element).getAmount());
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return Values.Money.format(t.getMonetaryAmount(), owner.getClient().getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(column); //$NON-NLS-1$
@@ -370,40 +373,30 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
         if (firstTransaction != null)
         {
-            manager.add(new Action(Messages.MenuEditTransaction)
+            // buy / sell
+            if (firstTransaction.getCrossEntry() instanceof BuySellEntry)
             {
-                @Override
-                public void run()
-                {
-                    Dialog dialog;
-
-                    switch (firstTransaction.getType())
-                    {
-                        case BUY:
-                        case SELL:
-                            BuySellEntry entry = (BuySellEntry) firstTransaction.getCrossEntry();
-                            dialog = owner.getPart().make(SecurityTransactionDialog.class, firstTransaction.getType());
-                            ((SecurityTransactionDialog) dialog).setBuySellEntry(entry);
-                            break;
-                        case DELIVERY_INBOUND:
-                        case DELIVERY_OUTBOUND:
-                            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio,
-                                            firstTransaction);
-                            dialog = owner.getPart().make(SecurityTransactionDialog.class, firstTransaction.getType());
-                            ((SecurityTransactionDialog) dialog).setDeliveryTransaction(pair);
-                            break;
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-
-                    if (dialog.open() == SecurityTransactionDialog.OK)
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
-
+                BuySellEntry entry = (BuySellEntry) firstTransaction.getCrossEntry();
+                new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
+                                .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                                .parameters(entry.getPortfolioTransaction().getType()) //
+                                .addTo(manager);
+            }
+            else if (firstTransaction.getCrossEntry() instanceof PortfolioTransferEntry)
+            {
+                PortfolioTransferEntry entry = (PortfolioTransferEntry) firstTransaction.getCrossEntry();
+                new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
+                                .type(SecurityTransferDialog.class, d -> d.setEntry(entry)) //
+                                .addTo(manager);
+            }
+            else
+            {
+                TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio, firstTransaction);
+                new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
+                                .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
+                                .parameters(firstTransaction.getType()) //
+                                .addTo(manager);
+            }
             manager.add(new Separator());
         }
 
