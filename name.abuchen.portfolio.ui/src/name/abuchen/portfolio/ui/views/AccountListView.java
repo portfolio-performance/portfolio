@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -11,8 +10,8 @@ import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -27,7 +26,6 @@ import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -380,7 +378,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 long v = t.getAmount();
                 if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
                     v = -v;
-                return Values.Amount.format(v);
+                return Values.Money.format(Money.of(t.getCurrencyCode(), v), getClient().getBaseCurrency());
             }
 
             @Override
@@ -390,7 +388,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "amount")); //$NON-NLS-1$
-        new ValueEditingSupport(AccountTransaction.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
@@ -410,29 +407,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
-        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
-        Collections.sort(securities, new Security.ByName());
-        new ListEditingSupport(AccountTransaction.class, "security", securities) //$NON-NLS-1$
-        {
-            @Override
-            public boolean canEdit(Object element)
-            {
-                AccountTransaction t = (AccountTransaction) element;
-
-                return t.getType() == AccountTransaction.Type.BUY //
-                                || t.getType() == AccountTransaction.Type.SELL //
-                                || t.getType() == AccountTransaction.Type.DIVIDENDS //
-                                || t.getType() == AccountTransaction.Type.TAX_REFUND;
-            }
-
-            @Override
-            public boolean canBeNull(Object element)
-            {
-                AccountTransaction t = (AccountTransaction) element;
-                return t.getType() == AccountTransaction.Type.TAX_REFUND;
-            }
-
-        }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
@@ -482,13 +456,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 AccountTransaction t = (AccountTransaction) e;
                 if (t.getCrossEntry() instanceof BuySellEntry)
                 {
-                    PortfolioTransaction portfolioTransaction = ((BuySellEntry) t.getCrossEntry())
-                                    .getPortfolioTransaction();
-                    return Values.Amount.format(portfolioTransaction.getActualPurchasePrice());
+                    PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
+                    return Values.Money.format(pt.getPricePerShare(), getClient().getBaseCurrency());
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
-                    return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / t.getShares()));
+                    long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider() / t.getShares());
+                    return Values.Money.format(Money.of(t.getCurrencyCode(), dividendPerShare), getClient()
+                                    .getBaseCurrency());
                 }
                 else
                 {

@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +9,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
@@ -25,7 +23,6 @@ import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
@@ -197,9 +194,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "security").attachTo(column); //$NON-NLS-1$
-        List<Security> securities = new ArrayList<Security>(owner.getClient().getSecurities());
-        Collections.sort(securities, new Security.ByName());
-        new ListEditingSupport(PortfolioTransaction.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
@@ -236,7 +230,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return t.getShares() != 0 ? Values.Amount.format(t.getActualPurchasePrice()) : null;
+                return t.getShares() != 0 ? Values.Money.format(t.getPricePerShare(), owner.getClient()
+                                .getBaseCurrency()) : null;
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice").attachTo(column); //$NON-NLS-1$
@@ -248,7 +243,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((PortfolioTransaction) element).getLumpSumPrice());
+                return Values.Money.format(((PortfolioTransaction) element).getLumpSum(), owner.getClient()
+                                .getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice").attachTo(column); //$NON-NLS-1$
@@ -260,11 +256,12 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((PortfolioTransaction) element).getFees());
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getFees()), owner.getClient()
+                                .getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(PortfolioTransaction.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
@@ -273,11 +270,12 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((PortfolioTransaction) element).getTaxes());
+                PortfolioTransaction t = (PortfolioTransaction) element;
+                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getTaxes()), owner.getClient()
+                                .getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "taxes").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(PortfolioTransaction.class, "taxes", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
@@ -291,7 +289,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "amount").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(PortfolioTransaction.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
