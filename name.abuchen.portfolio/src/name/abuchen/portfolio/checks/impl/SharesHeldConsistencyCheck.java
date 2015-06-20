@@ -72,7 +72,7 @@ public class SharesHeldConsistencyCheck implements Check
 
         for (Portfolio portfolio : client.getPortfolios())
         {
-            int[] shares = new int[securities.size()];
+            long[] shares = new long[securities.size()];
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
