@@ -16,7 +16,7 @@ public class ClientSettings
     {
 
         bookmarks.add(new Bookmark(
-                        "OnVista", "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$
+                        "OnVista", "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$ //$NON-NLS-2$
         bookmarks.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
                         "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("Ariva.de Fundamentaldaten", //$NON-NLS-1$
@@ -35,17 +35,11 @@ public class ClientSettings
 
     public void doPostLoadInitialization()
     {
-
         if (bookmarks == null)
-        {
             this.bookmarks = new ArrayList<Bookmark>();
-        }
-        
-        if (bookmarks.isEmpty() )
-        {
-            setDefaultBookmarks();
-        }
 
+        if (bookmarks.isEmpty())
+            setDefaultBookmarks();
     }
 
     public List<Bookmark> getBookmarks()
@@ -53,33 +47,24 @@ public class ClientSettings
         return bookmarks;
     }
 
-    public boolean removeBookmark(Bookmark w)
+    public boolean removeBookmark(Bookmark bookmark)
     {
-        return bookmarks.remove(w);
+        return bookmarks.remove(bookmark);
     }
 
-    public void insertBookmark(Bookmark i, Bookmark n)
+    public void insertBookmark(Bookmark before, Bookmark bookmark)
     {
-        if (i == null)
-        {
-            bookmarks.add(n);
-        }
+        if (before == null)
+            bookmarks.add(bookmark);
         else
-        {
-            bookmarks.add(bookmarks.indexOf(i), n);
-        }
+            bookmarks.add(bookmarks.indexOf(before), bookmark);
     }
 
-    public void insertBookmarkAfter(Bookmark i, Bookmark n)
+    public void insertBookmarkAfter(Bookmark after, Bookmark bookmark)
     {
-        if (i == null)
-        {
-            bookmarks.add(n);
-        }
+        if (after == null)
+            bookmarks.add(bookmark);
         else
-        {
-            bookmarks.add(bookmarks.indexOf(i) + 1, n);
-        }
+            bookmarks.add(bookmarks.indexOf(after) + 1, bookmark);
     }
-
 }

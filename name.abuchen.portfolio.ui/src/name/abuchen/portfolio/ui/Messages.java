@@ -13,6 +13,7 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;   
+    public static String BookmarksListView_addSeparator;
     public static String BookmarksListView_insertAfter;
     public static String BookmarksListView_bookmark;
     public static String BookmarksListView_delete;

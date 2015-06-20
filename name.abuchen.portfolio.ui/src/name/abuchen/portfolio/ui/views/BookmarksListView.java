@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -14,20 +15,20 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
 public class BookmarksListView extends AbstractFinanceView implements ModificationListener
 {
-
     private static final String DEFAULT_URL = "http://example.net/{tickerSymbol}?isin={isin}&wkn={wkn}&name={name}"; //$NON-NLS-1$
     private TableViewer bookmarks;
 
@@ -60,7 +61,7 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
                 bookmarks.editElement(wl, 0);
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ADD));
+        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
         export.setToolTipText(Messages.BookmarksListView_tooltip);
 
         new ActionContributionItem(export).fill(toolBar, -1);
@@ -92,7 +93,7 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        bookmarks = new TableViewer(container, SWT.FULL_SELECTION);
+        bookmarks = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(bookmarks);
 
@@ -108,6 +109,13 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
             {
                 return ((Bookmark) element).getLabel();
             }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                return PortfolioPlugin.image(PortfolioPlugin.IMG_TEXT);
+            }
+
         });
 
         new StringEditingSupport(Bookmark.class, "label").addListener(this).attachTo(column); //$NON-NLS-1$
@@ -117,7 +125,6 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
         column = new Column(Messages.BookmarksListView_url, SWT.None, 500);
         column.setLabelProvider(new ColumnLabelProvider()
         {
-
             @Override
             public String getText(Object element)
             {
@@ -140,40 +147,13 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
         bookmarks.setInput(getClient().getSettings().getBookmarks());
         bookmarks.refresh();
 
-        hookContextMenu(bookmarks.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillContextMenu(manager);
-            }
-
-        });
+        hookContextMenu(bookmarks.getTable(), m -> fillContextMenu(m));
         return container;
     }
 
     private void fillContextMenu(IMenuManager manager)
     {
-        Action a = new Action(Messages.BookmarksListView_delete)
-        {
-            @Override
-            public void run()
-            {
-                Bookmark index = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
-
-                if (index == null)
-                    return;
-
-                getClient().getSettings().removeBookmark(index);
-                markDirty();
-
-                bookmarks.setInput(getClient().getSettings().getBookmarks());
-
-            }
-        };
-        a.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_REMOVE));
-        manager.add(a);
-
-        a = new Action(Messages.BookmarksListView_insertBefore)
+        manager.add(new Action(Messages.BookmarksListView_insertBefore)
         {
             @Override
             public void run()
@@ -187,11 +167,9 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
                 bookmarks.setInput(getClient().getSettings().getBookmarks());
                 bookmarks.editElement(wl, 0);
             }
-        };
-        a.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ADD));
-        manager.add(a);
+        });
 
-        a = new Action(Messages.BookmarksListView_insertAfter)
+        manager.add(new Action(Messages.BookmarksListView_insertAfter)
         {
             @Override
             public void run()
@@ -205,9 +183,38 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
                 bookmarks.setInput(getClient().getSettings().getBookmarks());
                 bookmarks.editElement(wl, 0);
             }
-        };
-        a.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ADD));
-        manager.add(a);
+        });
+
+        manager.add(new Action(Messages.BookmarksListView_addSeparator)
+        {
+            @Override
+            public void run()
+            {
+                Bookmark index = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
+                Bookmark wl = new Bookmark("-", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+                getClient().getSettings().insertBookmarkAfter(index, wl);
+                markDirty();
+
+                bookmarks.setInput(getClient().getSettings().getBookmarks());
+            }
+        });
+
+        manager.add(new Separator());
+        manager.add(new Action(Messages.BookmarksListView_delete)
+        {
+            @Override
+            public void run()
+            {
+                ClientSettings settings = getClient().getSettings();
+                for (Object element : ((IStructuredSelection) bookmarks.getSelection()).toArray())
+                    settings.removeBookmark((Bookmark) element);
+
+                markDirty();
+                bookmarks.setInput(settings.getBookmarks());
+            }
+        });
+
     }
 
 }

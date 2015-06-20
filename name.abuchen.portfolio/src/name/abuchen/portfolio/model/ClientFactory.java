@@ -438,6 +438,8 @@ public class ClientFactory
             case 25:
                 // incremented precision of shares to 6 digits after the decimal sign
                 incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(client);
+            case 26:
+                // do nothing --> added client settings
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
