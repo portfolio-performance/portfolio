@@ -157,8 +157,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
 
-        updateSharesAndQuote();
-        updateExchangeRate();
+        if (security != null)
+        {
+            updateSharesAndQuote();
+            updateExchangeRate();
+        }
     }
 
     public Security getSecurity()
