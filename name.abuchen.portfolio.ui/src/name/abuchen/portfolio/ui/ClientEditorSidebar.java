@@ -443,7 +443,7 @@ import org.eclipse.swt.widgets.Menu;
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction("Währungen", "ExchangeRatesList")) //$NON-NLS-2$
+        new Entry(section, new ActivateViewAction(Messages.LabelCurrencies, "ExchangeRatesList")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$

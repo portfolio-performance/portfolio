@@ -154,7 +154,7 @@ public class AccountTransferModel extends AbstractModel
         long lower = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
         if (amount < lower || amount > upper)
-            return ValidationStatus.error("Umgewandelter Betrag ist nicht korrekt");
+            return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
 
         if (amount == 0L || fxAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));

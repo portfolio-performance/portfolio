@@ -48,9 +48,11 @@ public class Messages extends NLS
     public static String ColumnActualValue;
     public static String ColumnAmount;
     public static String ColumnBalance;
+    public static String ColumnBaseCurrency;
     public static String ColumnColor;
     public static String ColumnCreditNote;
     public static String ColumnCurrency;
+    public static String ColumnCurrencyProvider;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
     public static String ColumnDataSeries;
@@ -81,6 +83,7 @@ public class Messages extends NLS
     public static String ColumnFees;
     public static String ColumnFees_Description;
     public static String ColumnFix;
+    public static String ColumnForeignCurrencies;
     public static String ColumnIndex;
     public static String ColumnInterval;
     public static String ColumnIRR;
@@ -101,6 +104,7 @@ public class Messages extends NLS
     public static String ColumnLevels;
     public static String ColumnLumpSumPrice;
     public static String ColumnMarketValue;
+    public static String ColumnMarketValueBaseCurrency;
     public static String ColumnMaxDrawdown;
     public static String ColumnMaxDrawdownDuration;
     public static String ColumnMessage;
@@ -116,10 +120,12 @@ public class Messages extends NLS
     public static String ColumnPreviousClose;
     public static String ColumnPrice;
     public static String ColumnProfitLoss;
+    public static String ColumnProfitLossBaseCurrency;
     public static String ColumnPurchasePrice;
     public static String ColumnPurchasePrice_Description;
     public static String ColumnPurchaseValue;
     public static String ColumnPurchaseValue_Description;
+    public static String ColumnPurchaseValueBaseCurrency;
     public static String ColumnQuote;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
@@ -136,6 +142,7 @@ public class Messages extends NLS
     public static String ColumnTargetValue;
     public static String ColumnTaxes;
     public static String ColumnTaxonomy;
+    public static String ColumnTermCurrency;
     public static String ColumnTicker;
     public static String ColumnTotal;
     public static String ColumnTotalProfitLoss;
@@ -264,6 +271,7 @@ public class Messages extends NLS
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
+    public static String LabelCurrencies;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
@@ -335,6 +343,8 @@ public class Messages extends NLS
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
     public static String LabelUpdatesAvailable;
+    public static String LabelValueInboundDelivery;
+    public static String LabelValueOutboundDelivery;
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
     public static String LabelViewStackedChart;
@@ -394,6 +404,7 @@ public class Messages extends NLS
     public static String MsgDialogInputRequired;
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
+    public static String MsgErrorConvertedAmount;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
@@ -419,6 +430,7 @@ public class Messages extends NLS
     public static String MsgPortfolioToMissing;
     public static String MsgRestartRequired;
     public static String MsgUpdateRequiresLatestJavaVersion;
+    public static String MsgUpdatingExchangeRates;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;
     public static String NewFileWizardAddAll;

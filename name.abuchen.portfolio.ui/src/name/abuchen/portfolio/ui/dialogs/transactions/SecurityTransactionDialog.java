@@ -232,11 +232,11 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
             case BUY:
                 return Messages.ColumnDebitNote;
             case DELIVERY_INBOUND:
-                return "Wert der Einlieferung";
+                return Messages.LabelValueInboundDelivery;
             case SELL:
                 return Messages.ColumnCreditNote;
             case DELIVERY_OUTBOUND:
-                return "Wert der Auslieferung";
+                return Messages.LabelValueOutboundDelivery;
             default:
                 throw new UnsupportedOperationException();
         }

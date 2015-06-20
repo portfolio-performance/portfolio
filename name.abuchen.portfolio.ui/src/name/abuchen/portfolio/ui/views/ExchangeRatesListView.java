@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
@@ -38,7 +39,7 @@ public class ExchangeRatesListView extends AbstractListView
     @Override
     protected String getTitle()
     {
-        return "Währungen";
+        return Messages.LabelCurrencies;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class ExchangeRatesListView extends AbstractListView
         ShowHideColumnHelper support = new ShowHideColumnHelper(
                         ExchangeRatesListView.class.getSimpleName() + "@top", getPreferenceStore(), indeces, layout); //$NON-NLS-1$
 
-        Column column = new Column("Base Currency", SWT.None, 80);
+        Column column = new Column(Messages.ColumnBaseCurrency, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -69,11 +70,11 @@ public class ExchangeRatesListView extends AbstractListView
                 return ((ExchangeRateTimeSeries) element).getBaseCurrency();
             }
         });
-        ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "baseCurrency", "termCurrency").attachTo(column,
-                        SWT.DOWN);
+        ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "baseCurrency", "termCurrency") //$NON-NLS-1$ //$NON-NLS-2$
+                        .attachTo(column, SWT.DOWN);
         support.addColumn(column);
 
-        column = new Column("Term Currency", SWT.None, 80);
+        column = new Column(Messages.ColumnTermCurrency, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -82,10 +83,11 @@ public class ExchangeRatesListView extends AbstractListView
                 return ((ExchangeRateTimeSeries) element).getTermCurrency();
             }
         });
-        ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "termCurrency", "baseCurrency").attachTo(column); //$NON-NLS-1$ //$NON-NLS-2$
+        ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "termCurrency", "baseCurrency") //$NON-NLS-1$ //$NON-NLS-2$
+                        .attachTo(column);
         support.addColumn(column);
 
-        column = new Column("Provider", SWT.None, 150);
+        column = new Column(Messages.ColumnCurrencyProvider, SWT.None, 150);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -134,7 +136,7 @@ public class ExchangeRatesListView extends AbstractListView
 
         if (series == null || series.getRates().isEmpty())
         {
-            chart.getTitle().setText("Währungen");
+            chart.getTitle().setText(Messages.LabelCurrencies);
             return;
         }
 
@@ -151,8 +153,8 @@ public class ExchangeRatesListView extends AbstractListView
             ii++;
         }
 
-        String title = MessageFormat.format("{0}/{1} ({2})", series.getBaseCurrency(), series.getTermCurrency(), series
-                        .getProvider().getName());
+        String title = MessageFormat.format("{0}/{1} ({2})", //$NON-NLS-1$
+                        series.getBaseCurrency(), series.getTermCurrency(), series.getProvider().getName());
 
         chart.getTitle().setText(title);
         chart.addDateSeries(dates, values, Colors.TOTALS, title);

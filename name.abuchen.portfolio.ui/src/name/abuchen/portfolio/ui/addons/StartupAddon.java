@@ -109,7 +109,7 @@ public class StartupAddon
     {
         for (final ExchangeRateProvider provider : factory.getProviders())
         {
-            new Job(MessageFormat.format("Updating exchanges rates for {0}", provider.getName()))
+            new Job(MessageFormat.format(Messages.MsgUpdatingExchangeRates, provider.getName()))
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)

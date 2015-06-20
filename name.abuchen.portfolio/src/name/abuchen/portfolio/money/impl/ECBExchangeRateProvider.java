@@ -3,12 +3,14 @@ package name.abuchen.portfolio.money.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
@@ -53,13 +55,13 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     @Override
     public String getName()
     {
-        return "European Central Bank";
+        return Messages.LabelEuropeanCentralBank;
     }
 
     @Override
     public synchronized void load(IProgressMonitor monitor) throws IOException
     {
-        monitor.beginTask("Loading ECB exchange rates", 2);
+        monitor.beginTask(MessageFormat.format(Messages.MsgLoadingExchangeRates, getName()), 2);
 
         // read summary first (contains only latest rates, but is fast)
         File file = getStorageFile(FILE_SUMMARY);

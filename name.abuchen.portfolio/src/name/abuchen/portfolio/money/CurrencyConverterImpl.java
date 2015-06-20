@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.Messages;
+
 public class CurrencyConverterImpl implements CurrencyConverter
 {
     private final ExchangeRateProviderFactory factory;
@@ -50,7 +52,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
 
         Optional<ExchangeRate> rate = series.lookupRate(date);
         if (!rate.isPresent())
-            throw new MonetaryException(MessageFormat.format("No rate available to convert from {0} to {1}",
+            throw new MonetaryException(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion,
                             currencyCode, termCurrency));
 
         return rate.get();
@@ -60,7 +62,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
     {
         ExchangeRateTimeSeries series = factory.getTimeSeries(currencyCode, termCurrency);
         if (series == null)
-            throw new MonetaryException(MessageFormat.format("Unable to convert from {0} to {1}", currencyCode,
+            throw new MonetaryException(MessageFormat.format(Messages.MsgNoExchangeRateTimeSeriesFound, currencyCode,
                             termCurrency));
 
         return series;

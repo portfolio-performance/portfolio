@@ -84,6 +84,7 @@ public class Messages extends NLS
     public static String IssueMissingReferenceAccount;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
+    public static String LabelEuropeanCentralBank;
     public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
@@ -104,10 +105,13 @@ public class Messages extends NLS
     public static String MsgErrorsConvertingValue;
     public static String MsgFileNotFound;
     public static String MsgKeyLengthNotSupported;
+    public static String MsgLoadingExchangeRates;
     public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResultsAvailable;
+    public static String MsgNoExchangeRateAvailableForConversion;
+    public static String MsgNoExchangeRateTimeSeriesFound;
     public static String MsgNoResults;
     public static String MsgNotANumber;
     public static String MsgNotAPortflioFile;
