@@ -48,17 +48,39 @@ public class CSVExporter
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
+                            Messages.CSVColumn_BaseCurrencyAmount, //
+                            Messages.CSVColumn_BaseCurrencyCode, //
+                            Messages.CSVColumn_ExchangeRate, //
                             Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_CurrencyCode, //
+                            Messages.CSVColumn_Note, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description });
+
+            DecimalFormat df = new DecimalFormat();
+            df.setMaximumFractionDigits(4);
 
             for (AccountTransaction t : account.getTransactions())
             {
                 printer.print(dateFormat.format(t.getDate()));
                 printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                printer.print(escapeNull(t.getCurrencyCode()));
+                if (t.getForex() != null)
+                {
+                    printer.print(df.format(t.getForex().getExchangeRate()));
+                    printer.print(currencyFormat.format((t.getForex().getBaseAmount()) / Values.Amount.divider()));
+                    printer.print(escapeNull(t.getForex().getBaseCurrency()));
+                }
+                else
+                {
+                    printer.print("1"); //$NON-NLS-1$
+                    printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                    printer.print(escapeNull(t.getCurrencyCode()));
+                }
+                printer.print(escapeNull(t.getNote()));
 
                 printSecurityInfo(printer, t);
 
@@ -82,23 +104,45 @@ public class CSVExporter
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
+                            Messages.CSVColumn_BaseCurrencyAmount, //
+                            Messages.CSVColumn_BaseCurrencyCode, //
+                            Messages.CSVColumn_ExchangeRate, //
                             Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_CurrencyCode, //
                             Messages.CSVColumn_Fees, //
                             Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
+                            Messages.CSVColumn_Note, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description });
+
+            DecimalFormat df = new DecimalFormat();
+            df.setMaximumFractionDigits(5);
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
                 printer.print(dateFormat.format(t.getDate()));
                 printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                printer.print(escapeNull(t.getCurrencyCode()));
+                if (t.getForex() != null)
+                {
+                    printer.print(df.format(t.getForex().getExchangeRate()));
+                    printer.print(currencyFormat.format((t.getForex().getBaseAmount()) / Values.Amount.divider()));
+                    printer.print(escapeNull(t.getForex().getBaseCurrency()));
+                }
+                else
+                {
+                    printer.print("1"); //$NON-NLS-1$
+                    printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                    printer.print(escapeNull(t.getCurrencyCode()));
+                }
                 printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
                 printer.print(currencyFormat.format(t.getTaxes() / Values.Amount.divider()));
                 printer.print(Values.Share.format(t.getShares()));
+                printer.print(escapeNull(t.getNote()));
 
                 printSecurityInfo(printer, t);
 
@@ -143,7 +187,9 @@ public class CSVExporter
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description, //
-                            Messages.CSVColumn_TickerSymbol });
+                            Messages.CSVColumn_TickerSymbol, //
+                            Messages.CSVColumn_CurrencyCode, //
+                            Messages.CSVColumn_Description }); //$NON-NLS-1$
 
             for (Security s : securities)
             {
@@ -152,6 +198,8 @@ public class CSVExporter
                 printer.print(escapeNull(s.getTickerSymbol()));
                 printer.print(escapeNull(s.getName()));
                 printer.print(escapeNull(s.getTickerSymbol()));
+                printer.print(escapeNull(s.getCurrencyCode()));
+                printer.print(escapeNull(s.getNote()));
                 printer.println();
             }
         }

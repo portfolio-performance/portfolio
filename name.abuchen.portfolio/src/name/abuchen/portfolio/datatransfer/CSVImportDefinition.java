@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,10 +19,12 @@ import name.abuchen.portfolio.datatransfer.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -113,7 +116,8 @@ public abstract class CSVImportDefinition
         return value != null && value.trim().length() == 0 ? null : value;
     }
 
-    protected Security lookupSecurity(Client client, String isin, String tickerSymbol, String wkn, boolean doCreate)
+    protected Security lookupSecurity(Client client, String isin, String tickerSymbol, String wkn, String currencyCode,
+                    boolean doCreate)
     {
         for (Security s : client.getSecurities())
         {
@@ -132,9 +136,54 @@ public abstract class CSVImportDefinition
         Security security = new Security(MessageFormat.format(Messages.CSVImportedSecurityLabel, key), isin,
                         tickerSymbol, QuoteFeed.MANUAL);
         security.setWkn(wkn);
+        security.setCurrencyCode(currencyCode);
         client.addSecurity(security);
 
         return security;
+    }
+
+    protected BigDecimal convertExchangeRate(String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException
+    {
+        String value = getTextValue(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
+        if (value == null)
+            return null;
+
+        Number num = (Number) field2column.get(Messages.CSVColumn_ExchangeRate).getFormat().getFormat()
+                        .parseObject(value);
+
+        return new BigDecimal(num.toString());
+    }
+
+    protected String setCurrencyAndExchangeRate(Transaction transaction, String[] rawValues,
+                    Map<String, Column> field2column, String termCurrency) throws ParseException
+    {
+        String currencyCode = getTextValue(Messages.CSVColumn_CurrencyCode, rawValues, field2column);
+        BigDecimal exchangeRate = convertExchangeRate(rawValues, field2column);
+
+        transaction.setCurrencyCode(termCurrency);
+
+        if (currencyCode == null)
+        {
+            currencyCode = termCurrency;
+        }
+
+        if (termCurrency.equals(currencyCode))
+        {
+            transaction.setForex(null);
+        }
+        else
+        {
+            ForexData forex = new ForexData();
+            forex.setBaseCurrency(currencyCode);
+            forex.setTermCurrency(termCurrency);
+            forex.setExchangeRate(exchangeRate);
+            forex.setBaseAmount(transaction.getAmount());
+            transaction.setForex(forex);
+        }
+
+        return currencyCode;
+
     }
 
     //
@@ -155,6 +204,9 @@ public abstract class CSVImportDefinition
             fields.add(new AmountField(Messages.CSVColumn_Value));
             fields.add(new EnumField<AccountTransaction.Type>(Messages.CSVColumn_Type, AccountTransaction.Type.class)
                             .setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_CurrencyCode).setOptional(true));
+            fields.add(new AmountField(Messages.CSVColumn_ExchangeRate).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
         }
 
         @Override
@@ -193,9 +245,12 @@ public abstract class CSVImportDefinition
             String tickerSymbol = getTextValue(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
             String wkn = getTextValue(Messages.CSVColumn_WKN, rawValues, field2column);
 
+            String termCurrency = account.getCurrencyCode();
+            String currencyCode = setCurrencyAndExchangeRate(transaction, rawValues, field2column, termCurrency);
+
             if (isin != null || tickerSymbol != null || wkn != null)
             {
-                Security security = lookupSecurity(client, isin, tickerSymbol, wkn, true);
+                Security security = lookupSecurity(client, isin, tickerSymbol, wkn, currencyCode, true);
                 transaction.setSecurity(security);
             }
 
@@ -205,6 +260,9 @@ public abstract class CSVImportDefinition
                 transaction.setType(amount < 0 ? AccountTransaction.Type.FEES : AccountTransaction.Type.DIVIDENDS);
             else
                 transaction.setType(amount < 0 ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT);
+
+            String description = getTextValue(Messages.CSVColumn_Description, rawValues, field2column);
+            transaction.setNote(description);
 
             account.addTransaction(transaction);
         }
@@ -228,6 +286,10 @@ public abstract class CSVImportDefinition
             fields.add(new AmountField(Messages.CSVColumn_Shares));
             fields.add(new EnumField<PortfolioTransaction.Type>(Messages.CSVColumn_Type,
                             PortfolioTransaction.Type.class).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_CurrencyCode).setOptional(true));
+            fields.add(new AmountField(Messages.CSVColumn_ExchangeRate).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
+
         }
 
         @Override
@@ -283,7 +345,11 @@ public abstract class CSVImportDefinition
             PortfolioTransaction transaction = new PortfolioTransaction();
             transaction.setDate(date);
             transaction.setAmount(Math.abs(amount));
-            transaction.setSecurity(lookupSecurity(client, isin, tickerSymbol, wkn, true));
+
+            String termCurrency = portfolio.getReferenceAccount().getCurrencyCode();
+            String currencyCode = setCurrencyAndExchangeRate(transaction, rawValues, field2column, termCurrency);
+
+            transaction.setSecurity(lookupSecurity(client, isin, tickerSymbol, wkn, currencyCode, true));
             transaction.setShares(Math.abs(shares));
             transaction.setFees(Math.abs(fees));
             transaction.setTaxes(Math.abs(taxes));
@@ -348,6 +414,7 @@ public abstract class CSVImportDefinition
             fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
             fields.add(new Field(Messages.CSVColumn_Description).setOptional(true));
+            fields.add(new Field(Messages.CSVColumn_CurrencyCode).setOptional(true));
         }
 
         @Override
@@ -372,7 +439,7 @@ public abstract class CSVImportDefinition
                                 Messages.CSVColumn_ISIN + ", " + Messages.CSVColumn_TickerSymbol + ", " //$NON-NLS-1$ //$NON-NLS-2$
                                                 + Messages.CSVColumn_WKN), 0);
 
-            Security security = lookupSecurity(client, isin, tickerSymbol, wkn, false);
+            Security security = lookupSecurity(client, isin, tickerSymbol, wkn, null, false);
             if (security != null)
                 throw new ParseException(MessageFormat.format(Messages.CSVImportSecurityExists, security.getName(),
                                 isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn), 0);
