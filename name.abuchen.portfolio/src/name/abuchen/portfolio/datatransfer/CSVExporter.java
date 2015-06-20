@@ -48,11 +48,11 @@ public class CSVExporter
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
-                            Messages.CSVColumn_Value, //
-                            Messages.CSVColumn_CurrencyCode, //
-                            Messages.CSVColumn_ExchangeRate, //
                             Messages.CSVColumn_BaseCurrencyAmount, //
                             Messages.CSVColumn_BaseCurrencyCode, //
+                            Messages.CSVColumn_ExchangeRate, //
+                            Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_CurrencyCode, //
                             Messages.CSVColumn_Note, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
@@ -104,11 +104,11 @@ public class CSVExporter
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
-                            Messages.CSVColumn_Value, //
-                            Messages.CSVColumn_CurrencyCode, //
-                            Messages.CSVColumn_ExchangeRate, //
                             Messages.CSVColumn_BaseCurrencyAmount, //
                             Messages.CSVColumn_BaseCurrencyCode, //
+                            Messages.CSVColumn_ExchangeRate, //
+                            Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_CurrencyCode, //
                             Messages.CSVColumn_Fees, //
                             Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
@@ -119,7 +119,7 @@ public class CSVExporter
                             Messages.CSVColumn_Description });
 
             DecimalFormat df = new DecimalFormat();
-            df.setMaximumFractionDigits(4);
+            df.setMaximumFractionDigits(5);
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
@@ -188,7 +188,8 @@ public class CSVExporter
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_Description, //
                             Messages.CSVColumn_TickerSymbol, //
-                            Messages.CSVColumn_CurrencyCode }); //$NON-NLS-1$
+                            Messages.CSVColumn_CurrencyCode, //
+                            Messages.CSVColumn_Description }); //$NON-NLS-1$
 
             for (Security s : securities)
             {
@@ -198,6 +199,7 @@ public class CSVExporter
                 printer.print(escapeNull(s.getName()));
                 printer.print(escapeNull(s.getTickerSymbol()));
                 printer.print(escapeNull(s.getCurrencyCode()));
+                printer.print(escapeNull(s.getNote()));
                 printer.println();
             }
         }

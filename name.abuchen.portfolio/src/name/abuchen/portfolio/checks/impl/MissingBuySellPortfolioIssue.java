@@ -47,6 +47,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
             entry.setFees(0);
             entry.setTaxes(0);
             entry.setAmount(transaction.getAmount());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
+            entry.setForex(transaction.getForex());
             entry.insert();
 
             account.getTransactions().remove(transaction);
