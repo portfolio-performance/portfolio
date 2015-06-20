@@ -23,6 +23,8 @@ public class Messages extends NLS
     public static String ColumnPerformance;
     public static String ColumnPerformanceIZF;
     public static String ColumnTransfers;
+    public static String CSVColumn_BaseCurrencyAmount;
+    public static String CSVColumn_BaseCurrencyCode;
     public static String CSVColumn_Date;
     public static String CSVColumn_Description;
     public static String CSVColumn_Fees;
@@ -35,7 +37,10 @@ public class Messages extends NLS
     public static String CSVColumn_Value;
     public static String CSVColumn_WKN;
     public static String CSVColumn_CumulatedPerformanceInPercent;
+    public static String CSVColumn_CurrencyCode;
     public static String CSVColumn_DeltaInPercent;
+    public static String CSVColumn_ExchangeRate;
+    public static String CSVColumn_Note;
     public static String CSVColumn_Transferals;
     public static String CSVDefAccountTransactions;
     public static String CSVDefHistoricalQuotes;
