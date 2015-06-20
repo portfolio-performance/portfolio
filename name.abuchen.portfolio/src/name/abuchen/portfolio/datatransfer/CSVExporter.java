@@ -127,9 +127,18 @@ public class CSVExporter
                 printer.print(t.getType().toString());
                 printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
                 printer.print(escapeNull(t.getCurrencyCode()));
-                printer.print(df.format(t.getForex().getExchangeRate()));
-                printer.print(currencyFormat.format((t.getForex().getBaseAmount()) / Values.Amount.divider()));
-                printer.print(escapeNull(t.getForex().getBaseCurrency()));
+                if (t.getForex() != null)
+                {
+                    printer.print(df.format(t.getForex().getExchangeRate()));
+                    printer.print(currencyFormat.format((t.getForex().getBaseAmount()) / Values.Amount.divider()));
+                    printer.print(escapeNull(t.getForex().getBaseCurrency()));
+                }
+                else
+                {
+                    printer.print("1"); //$NON-NLS-1$
+                    printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                    printer.print(escapeNull(t.getCurrencyCode()));
+                }
                 printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
                 printer.print(currencyFormat.format(t.getTaxes() / Values.Amount.divider()));
                 printer.print(Values.Share.format(t.getShares()));
