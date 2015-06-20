@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.ToolBar;
 public class StatementOfAssetsView extends AbstractFinanceView
 {
     private StatementOfAssetsViewer assetViewer;
+    private PropertyChangeListener currencyChangeListener;
 
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -73,7 +75,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 }
             }
         };
-        getClient().addPropertyChangeListener("baseCurrency", e -> dropdown.setLabel(e.getNewValue().toString())); //$NON-NLS-1$
+        currencyChangeListener = e -> dropdown.setLabel(e.getNewValue().toString());
+        getClient().addPropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
 
         Action export = new Action()
         {
@@ -130,4 +133,10 @@ public class StatementOfAssetsView extends AbstractFinanceView
         return assetViewer.getControl();
     }
 
+    @Override
+    public void dispose()
+    {
+        if (currencyChangeListener != null)
+            getClient().removePropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
+    }
 }
