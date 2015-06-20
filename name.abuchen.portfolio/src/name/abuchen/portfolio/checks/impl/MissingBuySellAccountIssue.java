@@ -52,6 +52,8 @@ import name.abuchen.portfolio.money.Values;
             t.setFees(transaction.getFees());
             t.setTaxes(transaction.getTaxes());
             t.setAmount(transaction.getAmount());
+            t.setCurrencyCode(transaction.getCurrencyCode());
+            t.setForex(transaction.getForex());
             portfolio.addTransaction(t);
 
             portfolio.getTransactions().remove(transaction);
@@ -90,6 +92,8 @@ import name.abuchen.portfolio.money.Values;
             entry.setFees(transaction.getFees());
             entry.setTaxes(transaction.getTaxes());
             entry.setAmount(transaction.getAmount());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
+            entry.setForex(transaction.getForex());
             entry.insert();
 
             portfolio.getTransactions().remove(transaction);
