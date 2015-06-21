@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
@@ -57,9 +58,9 @@ import org.eclipse.swt.widgets.Control;
         {
             try
             {
-                long total = getModel().getRootNode().getActual();
+                Money total = getModel().getRootNode().getActual();
                 if (getModel().isUnassignedCategoryInChartsExcluded())
-                    total -= getModel().getUnassignedNode().getActual();
+                    total = total.subtract(getModel().getUnassignedNode().getActual());
 
                 StringBuilder buffer = new StringBuilder();
                 printNode(buffer, getModel().getRootNode(), total);
@@ -73,22 +74,22 @@ import org.eclipse.swt.widgets.Control;
         }
 
         @SuppressWarnings("nls")
-        private void printNode(StringBuilder buffer, TaxonomyNode node, long total)
+        private void printNode(StringBuilder buffer, TaxonomyNode node, Money total)
         {
             String name = StringEscapeUtils.escapeJson(node.getName());
-            long actual = node.isRoot() ? total : node.getActual();
+            long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
 
             buffer.append("{\"name\":\"").append(name);
             buffer.append("\",\"caption\":\"");
             buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
-                            .append(Values.Percent2.format(actual / (double) total)).append(")\",");
-            buffer.append("\"value\":").append(node.getActual());
+                            .append(Values.Percent2.format(actual / (double) total.getAmount())).append(")\",");
+            buffer.append("\"value\":").append(node.getActual().getAmount());
             buffer.append(",\"color\":\"").append(node.getColor()).append("\"");
 
             boolean isFirst = true;
             for (TaxonomyNode child : node.getChildren())
             {
-                if (child.getActual() == 0L)
+                if (child.getActual().isZero())
                     continue;
 
                 if (getModel().isUnassignedCategoryInChartsExcluded() && child.isUnassignedCategory())

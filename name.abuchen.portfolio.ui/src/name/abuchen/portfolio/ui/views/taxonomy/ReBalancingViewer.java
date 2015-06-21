@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -94,7 +95,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isClassification() ? Values.Amount.format(node.getTarget()) : null;
+                return node.isClassification() ? Values.Money.format(node.getTarget(), getModel().getCurrencyCode())
+                                : null;
             }
         });
         support.addColumn(column);
@@ -108,16 +110,22 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isClassification() ? Values.Percent.format(((double) node.getActual() / (double) node
-                                .getTarget()) - 1) : null;
+                if (node.getTarget() == null)
+                    return null;
+
+                return Values.Percent.format(((double) node.getActual().getAmount() / (double) node.getTarget()
+                                .getAmount()) - 1);
             }
 
             @Override
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
                 return Display.getCurrent().getSystemColor(
-                                node.getActual() >= node.getTarget() ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                                node.getActual().isGreaterOrEqualThan(node.getTarget()) ? SWT.COLOR_DARK_GREEN
+                                                : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
@@ -129,15 +137,20 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isClassification() ? Values.Amount.format(node.getActual() - node.getTarget()) : null;
+                if (node.getTarget() == null)
+                    return null;
+                return Values.Money.format(node.getActual().subtract(node.getTarget()), getModel().getCurrencyCode());
             }
 
             @Override
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
                 return Display.getCurrent().getSystemColor(
-                                node.getActual() >= node.getTarget() ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                                node.getActual().isGreaterOrEqualThan(node.getTarget()) ? SWT.COLOR_DARK_GREEN
+                                                : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
@@ -155,7 +168,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 SecurityPrice price = security.getSecurityPrice(Dates.today());
-                return Values.Quote.format(price.getValue());
+                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getModel().getCurrencyCode());
             }
         });
         support.addColumn(column);
@@ -175,10 +188,25 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (security == null)
                     return null;
 
+                String priceCurrency = security.getCurrencyCode();
                 long price = security.getSecurityPrice(Dates.today()).getValue();
                 long weightedPrice = Math.round(node.getWeight() * price / Classification.ONE_HUNDRED_PERCENT);
-                long delta = node.getParent().getTarget() - node.getParent().getActual();
-                long shares = weightedPrice == 0 ? 0 : Math.round(delta * Values.Share.factor() / weightedPrice);
+                if (weightedPrice == 0L)
+                    return Values.Share.format(0L);
+
+                String deltaCurrency = node.getActual().getCurrencyCode();
+                long delta = node.getParent().getTarget().getAmount() - node.getParent().getActual().getAmount();
+
+                // if currency of the data (here: deltaCurrency) does not match
+                // the currency of the security (here: priceCurrency), convert
+                // delta in order to know how many shares need to bought or sold
+                if (!deltaCurrency.equals(priceCurrency))
+                {
+                    delta = getModel().getCurrencyConverter().with(priceCurrency)
+                                    .convert(Dates.today(), Money.of(deltaCurrency, delta)).getAmount();
+                }
+
+                long shares = Math.round(delta * Values.Share.factor() / weightedPrice);
                 return Values.Share.format(shares);
             }
         });

@@ -14,7 +14,6 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 
@@ -23,13 +22,6 @@ public class ClientSnapshot
     // //////////////////////////////////////////////////////////////
     // factory methods
     // //////////////////////////////////////////////////////////////
-
-    @Deprecated
-    public static ClientSnapshot create(Client client, Date time)
-    {
-        CurrencyConverter converter = new CurrencyConverterImpl(null, client.getBaseCurrency());
-        return create(client, converter, time);
-    }
 
     public static ClientSnapshot create(Client client, CurrencyConverter converter, Date date)
     {
@@ -136,12 +128,6 @@ public class ClientSnapshot
         }
 
         return this.assets;
-    }
-
-    @Deprecated
-    public long getAssets()
-    {
-        return getMonetaryAssets().getAmount();
     }
 
     public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)

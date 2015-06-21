@@ -45,6 +45,14 @@ public final class Money
         return amount < 0L;
     }
 
+    public boolean isGreaterOrEqualThan(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount >= other.getAmount();
+    }
+
     public Money add(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))

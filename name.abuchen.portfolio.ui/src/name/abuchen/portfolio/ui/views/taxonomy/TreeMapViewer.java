@@ -157,9 +157,9 @@ import de.engehausen.treemap.swt.TreeMap;
         public long getWeight(TaxonomyNode item)
         {
             if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
-                return item.getActual() - model.getUnassignedNode().getActual();
+                return item.getActual().subtract(model.getUnassignedNode().getActual()).getAmount();
             else
-                return item.getActual();
+                return item.getActual().getAmount();
         }
     }
 
@@ -193,12 +193,12 @@ import de.engehausen.treemap.swt.TreeMap;
 
             String label = item.getName();
 
-            double total = this.model.getRootNode().getActual();
+            double total = this.model.getRootNode().getActual().getAmount();
             if (this.model.isUnassignedCategoryInChartsExcluded())
-                total -= this.model.getUnassignedNode().getActual();
+                total -= this.model.getUnassignedNode().getActual().getAmount();
 
-            String info = String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format(item.getActual() / total));
+            String info = String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
+                            Values.Percent.format(item.getActual().getAmount() / total));
 
             event.gc.setForeground(Colors.getTextColor(event.gc.getBackground()));
 

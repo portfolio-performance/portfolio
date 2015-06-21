@@ -21,10 +21,10 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.snapshot.AccountSnapshot;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
@@ -43,8 +43,9 @@ public final class TaxonomyModel
         void nodeChange(TaxonomyNode node);
     }
 
-    private Taxonomy taxonomy;
-    private ClientSnapshot snapshot;
+    private final Taxonomy taxonomy;
+    private final ClientSnapshot snapshot;
+    private final CurrencyConverter converter;
 
     private TaxonomyNode rootNode;
     private TaxonomyNode unassignedNode;
@@ -62,7 +63,7 @@ public final class TaxonomyModel
         Objects.requireNonNull(taxonomy);
 
         this.taxonomy = taxonomy;
-        CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         this.snapshot = ClientSnapshot.create(client, converter, Dates.today());
 
         Classification root = taxonomy.getRoot();
@@ -169,46 +170,31 @@ public final class TaxonomyModel
 
     private void visitActuals(ClientSnapshot snapshot, TaxonomyNode node)
     {
-        long actual = 0;
+        MutableMoney actual = MutableMoney.of(snapshot.getCurrencyCode());
 
         for (TaxonomyNode child : node.getChildren())
         {
             visitActuals(snapshot, child);
-            actual += child.getActual();
+            actual.add(child.getActual());
         }
 
         if (node.isAssignment())
         {
             Assignment assignment = node.getAssignment();
-            if (assignment.getInvestmentVehicle() instanceof Security)
+
+            AssetPosition p = snapshot.getPositionsByVehicle().get(assignment.getInvestmentVehicle());
+
+            if (p != null)
             {
-                PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
-                SecurityPosition p = portfolio.getPositionsBySecurity().get(assignment.getInvestmentVehicle());
-                if (p != null)
-                    actual += Math.round(p.calculateValue().getAmount() * assignment.getWeight()
-                                    / (double) Classification.ONE_HUNDRED_PERCENT);
-            }
-            else if (assignment.getInvestmentVehicle() instanceof Account)
-            {
-                for (AccountSnapshot s : snapshot.getAccounts())
-                {
-                    if (s.getAccount().equals(assignment.getInvestmentVehicle()))
-                    {
-                        actual += Math.round(s.getFunds().getAmount() * assignment.getWeight() // FIXME
-                                                                                               // c
-                                        / (double) Classification.ONE_HUNDRED_PERCENT);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                throw new UnsupportedOperationException(
-                                "unknown element: " + assignment.getInvestmentVehicle().getClass().getName()); //$NON-NLS-1$
+                Money valuation = p.getValuation();
+                actual.add(Money.of(
+                                valuation.getCurrencyCode(),
+                                Math.round(valuation.getAmount() * assignment.getWeight()
+                                                / (double) Classification.ONE_HUNDRED_PERCENT)));
             }
         }
 
-        node.setActual(actual);
+        node.setActual(actual.toMoney());
     }
 
     private void recalculateTargets()
@@ -216,7 +202,7 @@ public final class TaxonomyModel
         // see #124
         // only assigned assets go into the target value in order to allow an
         // asset allocation only for assigned securities
-        rootNode.setTarget(rootNode.getActual() - unassignedNode.getActual());
+        rootNode.setTarget(rootNode.getActual().subtract(unassignedNode.getActual()));
 
         visitAll(new NodeVisitor()
         {
@@ -225,8 +211,11 @@ public final class TaxonomyModel
             {
                 if (node.isClassification() && !node.isRoot())
                 {
-                    long target = Math.round(node.getParent().getTarget() * node.getWeight()
-                                    / (double) Classification.ONE_HUNDRED_PERCENT);
+                    Money parent = node.getParent().getTarget();
+                    Money target = Money.of(
+                                    parent.getCurrencyCode(),
+                                    Math.round(parent.getAmount() * node.getWeight()
+                                                    / (double) Classification.ONE_HUNDRED_PERCENT));
                     node.setTarget(target);
                 }
             }
@@ -247,12 +236,12 @@ public final class TaxonomyModel
     {
         return orderByTaxonomyInStackChart;
     }
-    
+
     public void setOrderByTaxonomyInStackChart(boolean orderByTaxonomyInStackChart)
     {
         this.orderByTaxonomyInStackChart = orderByTaxonomyInStackChart;
     }
-    
+
     public Taxonomy getTaxonomy()
     {
         return taxonomy;
@@ -273,9 +262,19 @@ public final class TaxonomyModel
         return snapshot.getClient();
     }
 
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
+    public String getCurrencyCode()
+    {
+        return converter.getTermCurrency();
+    }
+
     public void recalculate()
     {
-        rootNode.setActual(snapshot.getAssets());
+        rootNode.setActual(snapshot.getMonetaryAssets());
         visitActuals(snapshot, rootNode);
         recalculateTargets();
     }

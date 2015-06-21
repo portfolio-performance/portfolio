@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -350,8 +352,9 @@ import org.eclipse.swt.widgets.Shell;
                 TaxonomyNode node = (TaxonomyNode) element;
                 // actual %
                 // --> root is compared to target = total assets
-                long actual = node.getActual();
-                long base = node.getParent() == null ? node.getActual() : node.getParent().getActual();
+                long actual = node.getActual().getAmount();
+                long base = node.getParent() == null ? node.getActual().getAmount() : node.getParent().getActual()
+                                .getAmount();
 
                 if (base == 0d)
                     return Values.Percent.format(0d);
@@ -368,7 +371,7 @@ import org.eclipse.swt.widgets.Shell;
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return Values.Amount.format(node.getActual());
+                return Values.Money.format(node.getActual(), getModel().getCurrencyCode());
             }
         });
         support.addColumn(column);
@@ -376,9 +379,54 @@ import org.eclipse.swt.widgets.Shell;
 
     protected void addAdditionalColumns(ShowHideColumnHelper support)
     {
+        Column column = new Column("exchangeRate", Messages.ColumnExchangeRate, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (!node.isAssignment())
+                    return null;
+
+                String baseCurrency = node.getAssignment().getInvestmentVehicle().getCurrencyCode();
+                CurrencyConverter converter = getModel().getCurrencyConverter();
+                return Values.ExchangeRate.format(converter.getRate(Dates.today(), baseCurrency).getValue());
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("actBaseCurrency", Messages.ColumnActualValue + Messages.BaseCurrencyCue, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnActualValueBaseCurrency);
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if (!node.isAssignment())
+                {
+                    return Values.Money.format(node.getActual(), getModel().getCurrencyCode());
+                }
+                else
+                {
+                    return Values.Money.format(
+                                    getModel().getCurrencyConverter()
+                                                    .with(node.getAssignment().getInvestmentVehicle().getCurrencyCode())
+                                                    .convert(Dates.today(), node.getActual()), getModel()
+                                                    .getCurrencyCode());
+                }
+            }
+        });
+        support.addColumn(column);
+
         for (final AttributeType attribute : AttributeTypes.available(Security.class))
         {
-            Column column = new AttributeColumn(attribute);
+            column = new AttributeColumn(attribute);
             column.setVisible(false);
             column.setSorter(null);
             column.getEditingSupport().addListener(this);

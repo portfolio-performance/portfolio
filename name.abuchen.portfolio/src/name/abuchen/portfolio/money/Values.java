@@ -33,6 +33,34 @@ public abstract class Values<E>
         }
     }
 
+    public static final class QuoteValues extends Values<Long>
+    {
+        private QuoteValues()
+        {
+            super("#,##0.00", 100D, 100); //$NON-NLS-1$
+        }
+
+        @Override
+        public String format(Long quote)
+        {
+            return String.format("%,.2f", quote / divider()); //$NON-NLS-1$
+        }
+
+        public String format(String currencyCode, long quote)
+        {
+            return String.format("%s %,.2f", currencyCode, quote / divider()); //$NON-NLS-1$
+        }
+
+        public String format(String currencyCode, long quote, String skipCurrencyCode)
+        {
+            if (skipCurrencyCode.equals(currencyCode))
+                return format(quote);
+            else
+                return format(currencyCode, quote);
+        }
+
+    }
+
     public static final Values<Long> Amount = new Values<Long>("#,##0.00", 100D, 100) //$NON-NLS-1$
     {
         @Override
@@ -77,14 +105,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> Quote = new Values<Long>("#,##0.00", 100D, 100) //$NON-NLS-1$
-    {
-        @Override
-        public String format(Long quote)
-        {
-            return String.format("%,.2f", quote / divider()); //$NON-NLS-1$
-        }
-    };
+    public static final QuoteValues Quote = new QuoteValues();
 
     public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("0.0000", 1D, 1) //$NON-NLS-1$
     {

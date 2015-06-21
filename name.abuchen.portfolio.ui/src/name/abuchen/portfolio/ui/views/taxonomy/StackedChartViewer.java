@@ -52,7 +52,7 @@ public class StackedChartViewer extends AbstractChartPage
 
         public void book(int index, AssetPosition pos)
         {
-            long value = pos.getValuation().getAmount(); // FIXME c
+            long value = pos.getValuation().getAmount();
 
             for (int ii = 0; ii < weights.size(); ii++)
                 series.get(ii).book(index, value * weights.get(ii) / Classification.ONE_HUNDRED_PERCENT);
@@ -253,8 +253,9 @@ public class StackedChartViewer extends AbstractChartPage
         int index = 0;
         for (DateMidnight current : dates)
         {
-            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getClient(), current.toDate());
-            totals[index] = snapshot.getAssets();
+            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getClient(), getModel().getCurrencyConverter(),
+                            current.toDate());
+            totals[index] = snapshot.getMonetaryAssets().getAmount();
 
             Map<InvestmentVehicle, AssetPosition> p = snapshot.getPositionsByVehicle();
 
