@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -13,14 +14,19 @@ import org.eclipse.core.databinding.conversion.IConverter;
 
 public class StringToCurrencyConverter implements IConverter
 {
-    private static final Pattern PATTERN = Pattern.compile("^([\\d.]*)(,(\\d*))?$"); //$NON-NLS-1$
-    private final NumberFormat full = new DecimalFormat("#,###"); //$NON-NLS-1$
+    private final Pattern pattern;
+    private final NumberFormat full;
 
     private final double factor;
 
     public StringToCurrencyConverter(Values<?> type)
     {
         this.factor = type.divider();
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        pattern = Pattern.compile("^([\\d" + symbols.getGroupingSeparator() + "]*)(" //$NON-NLS-1$ //$NON-NLS-2$
+                        + symbols.getDecimalSeparator() + "(\\d*))?$"); //$NON-NLS-1$
+        full = new DecimalFormat("#,###"); //$NON-NLS-1$
     }
 
     @Override
@@ -58,7 +64,7 @@ public class StringToCurrencyConverter implements IConverter
 
     private long convertToLong(String part) throws ParseException
     {
-        Matcher m = PATTERN.matcher(String.valueOf(part));
+        Matcher m = pattern.matcher(String.valueOf(part));
         if (!m.matches())
             throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, part));
 
