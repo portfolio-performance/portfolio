@@ -391,6 +391,9 @@ import org.eclipse.swt.widgets.Shell;
                     return null;
 
                 String baseCurrency = node.getAssignment().getInvestmentVehicle().getCurrencyCode();
+                if (baseCurrency == null)
+                    return null;
+
                 CurrencyConverter converter = getModel().getCurrencyConverter();
                 return Values.ExchangeRate.format(converter.getRate(Dates.today(), baseCurrency).getValue());
             }
@@ -408,17 +411,29 @@ import org.eclipse.swt.widgets.Shell;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
-                if (!node.isAssignment())
+                if (node.isClassification()
+                                || getModel().getCurrencyCode().equals(
+                                                node.getAssignment().getInvestmentVehicle().getCurrencyCode()))
                 {
+                    // if it is a classification
+                    // *or* it is an assignment, but currency code matches
+                    // then no currency conversion is needed
+
                     return Values.Money.format(node.getActual(), getModel().getCurrencyCode());
                 }
-                else
+                else if (node.getAssignment().getInvestmentVehicle().getCurrencyCode() != null)
                 {
+                    // convert into target currency if investment vehicle has a
+                    // currency code (e.g. is not an stock market index)
                     return Values.Money.format(
                                     getModel().getCurrencyConverter()
                                                     .with(node.getAssignment().getInvestmentVehicle().getCurrencyCode())
                                                     .convert(Dates.today(), node.getActual()), getModel()
                                                     .getCurrencyCode());
+                }
+                else
+                {
+                    return null;
                 }
             }
         });

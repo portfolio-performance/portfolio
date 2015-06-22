@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -226,13 +227,10 @@ public class EditSecurityDialog extends Dialog
         // ask user what to do with existing quotes
         boolean hasQuotes = !security.getPrices().isEmpty();
 
-        boolean feedChanged = model.getFeed() != null ? !model.getFeed().equals(security.getFeed()) : security
-                        .getFeed() != null;
-        boolean tickerChanged = model.getTickerSymbol() != null ? !model.getTickerSymbol().equals(
-                        security.getTickerSymbol()) : security.getTickerSymbol() != null;
-        boolean feedURLChanged = model.getFeedURL() != null ? !model.getFeedURL().equals(security.getFeedURL())
-                        : security.getFeedURL() != null;
-        boolean currencyChanged = !model.getCurrencyCode().equals(security.getCurrencyCode());
+        boolean feedChanged = !Objects.equals(model.getFeed(), security.getFeed());
+        boolean tickerChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
+        boolean feedURLChanged = !Objects.equals(model.getFeedURL(), security.getFeedURL());
+        boolean currencyChanged = !Objects.equals(model.getCurrencyCode(), security.getCurrencyCode());
 
         boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
 

@@ -145,6 +145,7 @@ public class Client
     public List<Security> getActiveSecurities()
     {
         return securities.stream() //
+                        .filter(s -> s.getCurrencyCode() != null) //
                         .filter(s -> !s.isRetired()) //
                         .sorted(new Security.ByName()) //
                         .collect(Collectors.toList());

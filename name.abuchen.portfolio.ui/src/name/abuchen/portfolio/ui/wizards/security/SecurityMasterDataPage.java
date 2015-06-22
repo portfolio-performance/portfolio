@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 public class SecurityMasterDataPage extends AbstractPage
 {
@@ -30,7 +33,22 @@ public class SecurityMasterDataPage extends AbstractPage
 
         ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode"); //$NON-NLS-1$
         if (model.getSecurity().hasTransactions(model.getClient()))
+        {
             currencyCode.getCombo().setEnabled(false);
+
+            // empty cell
+            new Label(container, SWT.NONE).setText(""); //$NON-NLS-1$
+
+            Composite info = new Composite(container, SWT.NONE);
+            info.setLayout(new RowLayout());
+
+            Label l = new Label(info, SWT.NONE);
+            l.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_INFO));
+
+            l = new Label(info, SWT.NONE);
+            l.setText(Messages.MsgInfoChangingCurrencyNotPossible);
+
+        }
 
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$

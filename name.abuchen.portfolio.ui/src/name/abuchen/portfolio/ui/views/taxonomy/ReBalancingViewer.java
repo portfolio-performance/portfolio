@@ -164,7 +164,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
 
                 Security security = node.getBackingSecurity();
-                if (security == null)
+                if (security == null || security.getCurrencyCode() == null)
                     return null;
 
                 SecurityPrice price = security.getSecurityPrice(Dates.today());
@@ -185,7 +185,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 Security security = node.getBackingSecurity();
-                if (security == null)
+                if (security == null || security.getCurrencyCode() == null)
                     return null;
 
                 String priceCurrency = security.getCurrencyCode();

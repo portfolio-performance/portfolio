@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -167,12 +166,6 @@ public class NewPlanDialog extends AbstractDialog
     {
         bindings().bindMandatoryStringInput(editArea, Messages.ColumnName, "name"); //$NON-NLS-1$
 
-        List<Security> securities = new ArrayList<Security>();
-        for (Security s : getModel().getClient().getSecurities())
-            if (!s.isRetired())
-                securities.add(s);
-        Collections.sort(securities, new Security.ByName());
-
         bindings().bindComboViewer(editArea, Messages.ColumnSecurity, "security", new LabelProvider() //$NON-NLS-1$
                         {
                             @Override
@@ -180,7 +173,7 @@ public class NewPlanDialog extends AbstractDialog
                             {
                                 return ((Security) element).getName();
                             }
-                        }, securities.toArray());
+                        }, getModel().getClient().getActiveSecurities());
 
         bindings().bindComboViewer(editArea, Messages.ColumnPortfolio, "portfolio", new LabelProvider() //$NON-NLS-1$
                         {
@@ -198,7 +191,7 @@ public class NewPlanDialog extends AbstractDialog
                                 return value != null ? ValidationStatus.ok() : ValidationStatus
                                                 .error(Messages.MsgMissingPortfolio);
                             }
-                        }, getModel().getClient().getActivePortfolios().toArray());
+                        }, getModel().getClient().getActivePortfolios());
 
         List<Account> accounts = getModel().getClient().getActiveAccounts();
         accounts.add(0, DELIVERY);
@@ -210,7 +203,7 @@ public class NewPlanDialog extends AbstractDialog
                             {
                                 return ((Account) element).getName();
                             }
-                        }, accounts.toArray());
+                        }, accounts);
 
         bindings().bindDatePicker(editArea, Messages.ColumnStartDate, "start"); //$NON-NLS-1$
 

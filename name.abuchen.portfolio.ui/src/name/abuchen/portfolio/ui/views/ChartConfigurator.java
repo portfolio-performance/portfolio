@@ -444,8 +444,15 @@ import org.swtchart.LineStyle;
         int index = client.getSecurities().size();
 
         for (Security security : client.getSecurities())
+        {
+            // securites w/o currency code (e.g. a stock index) cannot be added
+            // as equity data series (only as benchmark)
+            if (security.getCurrencyCode() == null)
+                continue;
+
             availableSeries.add(new DataSeries(Security.class, security, security.getName(), wheel.getSegment(index++)
                             .getColor()));
+        }
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(Portfolio.class, portfolio, portfolio.getName(), wheel.getSegment(

@@ -531,45 +531,9 @@ public final class SecuritiesTable implements ModificationListener
         if (security == null)
             return;
 
-        new OpenDialogAction(view, Messages.SecurityMenuBuy) //
-                        .type(SecurityTransactionDialog.class) //
-                        .parameters(PortfolioTransaction.Type.BUY) //
-                        .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
-                        .addTo(manager);
-
-        new OpenDialogAction(view, Messages.SecurityMenuSell) //
-                        .type(SecurityTransactionDialog.class) //
-                        .parameters(PortfolioTransaction.Type.SELL) //
-                        .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
-                        .addTo(manager);
-
-        new OpenDialogAction(view, Messages.SecurityMenuDividends) //
-                        .type(AccountTransactionDialog.class) //
-                        .parameters(AccountTransaction.Type.DIVIDENDS) //
-                        .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
-                        .addTo(manager);
-
-        new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
-                        .type(AccountTransactionDialog.class) //
-                        .parameters(AccountTransaction.Type.TAX_REFUND) //
-                        .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
-                        .addTo(manager);
-
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
-                return new WizardDialog(getShell(), wizard);
-            }
-        });
-
-        manager.add(new Separator());
+        // only if the security has a currency code, it can be bought
+        if (security.getCurrencyCode() != null)
+            fillTransactionContextMenu(manager, security);
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)
         {
@@ -631,6 +595,49 @@ public final class SecuritiesTable implements ModificationListener
                 }
             });
         }
+    }
+
+    private void fillTransactionContextMenu(IMenuManager manager, Security security)
+    {
+        new OpenDialogAction(view, Messages.SecurityMenuBuy) //
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.BUY) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.SecurityMenuSell) //
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.SELL) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.SecurityMenuDividends) //
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.DIVIDENDS) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAX_REFUND) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
+
+        manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                return new WizardDialog(getShell(), wizard);
+            }
+        });
+
+        manager.add(new Separator());
     }
 
     private void performFinish(Security security)

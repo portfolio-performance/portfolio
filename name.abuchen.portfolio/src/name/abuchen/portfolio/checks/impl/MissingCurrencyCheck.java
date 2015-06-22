@@ -55,7 +55,7 @@ public class MissingCurrencyCheck implements Check
                     account.setCurrencyCode(currency.getCurrencyCode());
 
             for (Security security : client.getSecurities())
-                if (security.getCurrencyCode() == null)
+                if (security.getCurrencyCode() == null && security.hasTransactions(client))
                     security.setCurrencyCode(currency.getCurrencyCode());
         }
     }
@@ -126,7 +126,7 @@ public class MissingCurrencyCheck implements Check
         if (!hasCurrencyMissing)
         {
             for (Security security : client.getSecurities())
-                if (security.getCurrencyCode() == null)
+                if (security.getCurrencyCode() == null && security.hasTransactions(client))
                     hasCurrencyMissing = true;
         }
 

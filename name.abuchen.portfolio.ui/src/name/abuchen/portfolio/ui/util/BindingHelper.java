@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.util;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Client;
@@ -60,7 +62,7 @@ public class BindingHelper
         @Override
         public Object convert(Object fromObject)
         {
-            return CurrencyUnit.getInstance((String)fromObject);
+            return fromObject == null ? CurrencyUnit.EMPTY : CurrencyUnit.getInstance((String) fromObject);
         }
     }
 
@@ -81,7 +83,7 @@ public class BindingHelper
         @Override
         public Object convert(Object fromObject)
         {
-            return ((CurrencyUnit) fromObject).getCurrencyCode();
+            return CurrencyUnit.EMPTY.equals(fromObject) ? null : ((CurrencyUnit) fromObject).getCurrencyCode();
         }
     }
 
@@ -266,17 +268,21 @@ public class BindingHelper
         ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setLabelProvider(new LabelProvider());
-        combo.setInput(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
+
+        List<CurrencyUnit> currencies = new ArrayList<CurrencyUnit>();
+        currencies.add(CurrencyUnit.EMPTY);
+        currencies.addAll(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
+        combo.setInput(currencies);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
 
         UpdateValueStrategy targetToModel = new UpdateValueStrategy();
         targetToModel.setConverter(new CurrencyUnitToStringConverter());
-        
+
         UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
         modelToTarget.setConverter(new StringToCurrencyUnitConverter());
 
         context.bindValue(ViewersObservables.observeSingleSelection(combo), //
-                        BeansObservables.observeValue(model, property),  targetToModel, modelToTarget);
+                        BeansObservables.observeValue(model, property), targetToModel, modelToTarget);
         return combo;
     }
 

@@ -38,6 +38,14 @@ public class SecurityContextMenu
         if (owner.getClient().getSecurities().isEmpty())
             return;
 
+        // if the security has no currency code, e.g. is an index, then show now
+        // menus to create transactions
+        if (security != null && security.getCurrencyCode() == null)
+        {
+            new WebLocationMenu(security);
+            return;
+        }
+
         new OpenDialogAction(owner, Messages.SecurityMenuBuy) //
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.BUY) //

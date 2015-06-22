@@ -88,6 +88,8 @@ public class Messages extends NLS
     public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
+    public static String LabelNoCurrency;
+    public static String LabelNoCurrencyDescription;
     public static String LabelRemovals;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodMonths;
