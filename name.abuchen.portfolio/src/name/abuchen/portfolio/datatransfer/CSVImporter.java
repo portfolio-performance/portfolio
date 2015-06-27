@@ -23,15 +23,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVStrategy;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.AccountTransactionDef;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.PortfolioTransactionDef;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityDef;
 import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityPriceDef;
 import name.abuchen.portfolio.model.Client;
-
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVStrategy;
 
 public class CSVImporter
 {
@@ -148,7 +148,8 @@ public class CSVImporter
         public static final FieldFormat[] FORMATS = new FieldFormat[] {
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")) //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")) //$NON-NLS-1$
         };
 
         /* package */DateField(String name)
