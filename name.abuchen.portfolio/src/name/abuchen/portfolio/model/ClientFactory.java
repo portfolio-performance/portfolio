@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
@@ -42,6 +43,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.LocalDateConverter;
@@ -51,10 +53,36 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
 {
+    private static class PortfolioTransactionConverter extends ReflectionConverter
+    {
+        public PortfolioTransactionConverter(Mapper mapper, ReflectionProvider reflectionProvider)
+        {
+            super(mapper, reflectionProvider);
+        }
+
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type == PortfolioTransaction.class;
+        }
+
+        @Override
+        protected boolean shouldUnmarshalField(Field field)
+        {
+            if ("fees".equals(field.getName()) || "taxes".equals(field.getName())) //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+            return super.shouldUnmarshalField(field);
+        }
+
+    }
+
     private static class XmlSerialization
     {
         public Client load(Reader input) throws IOException
@@ -449,6 +477,7 @@ public class ClientFactory
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
                 bumpUpCPIMonthValue(client);
+                convertFeesAndTaxesToTransactionUnits(client);
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -797,6 +826,25 @@ public class ClientFactory
                         .forEach(t -> t.setCurrencyCode(currencyCode));
     }
 
+    private static void convertFeesAndTaxesToTransactionUnits(Client client)
+    {
+        for (Portfolio p : client.getPortfolios())
+        {
+            for (PortfolioTransaction t : p.getTransactions())
+            {
+                long fees = t.fees;
+                if (fees != 0)
+                    t.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of(t.getCurrencyCode(), fees)));
+                t.fees = 0;
+
+                long taxes = t.taxes;
+                if (taxes != 0)
+                    t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(t.getCurrencyCode(), taxes)));
+                t.taxes = 0;
+            }
+        }
+    }
+
     @SuppressWarnings("nls")
     private static XStream xstream()
     {
@@ -811,12 +859,20 @@ public class ClientFactory
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
                     xstream.registerConverter(new LocalDateConverter());
+                    xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(), xstream
+                                    .getReflectionProvider()));
+
+                    xstream.useAttributeFor(Money.class, "amount");
+                    xstream.useAttributeFor(Money.class, "currencyCode");
+                    xstream.aliasAttribute(Money.class, "currencyCode", "currency");
 
                     xstream.alias("account", Account.class);
                     xstream.alias("client", Client.class);
                     xstream.alias("settings", ClientSettings.class);
                     xstream.alias("bookmark", Bookmark.class);
                     xstream.alias("portfolio", Portfolio.class);
+                    xstream.alias("unit", Transaction.Unit.class);
+                    xstream.useAttributeFor(Transaction.Unit.class, "type");
                     xstream.alias("account-transaction", AccountTransaction.class);
                     xstream.alias("portfolio-transaction", PortfolioTransaction.class);
                     xstream.alias("security", Security.class);
@@ -848,7 +904,6 @@ public class ClientFactory
                     xstream.alias("assignment", Assignment.class);
 
                     xstream.alias("event", SecurityEvent.class);
-                    xstream.alias("forex", ForexData.class);
                 }
             }
         }

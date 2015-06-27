@@ -3,19 +3,22 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
+
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
@@ -120,19 +123,16 @@ public class AccountTransactionModel extends AbstractModel
         t.setNote(note);
         t.setCurrencyCode(getAccountCurrencyCode());
 
+        t.clearUnits();
+
         String fxCurrencyCode = getFxCurrencyCode();
-        if (fxCurrencyCode.equals(account.getCurrencyCode()))
+        if (!fxCurrencyCode.equals(account.getCurrencyCode()))
         {
-            t.setForex(null);
-        }
-        else
-        {
-            ForexData forex = new ForexData();
-            forex.setBaseCurrency(fxCurrencyCode);
-            forex.setTermCurrency(account.getCurrencyCode());
-            forex.setExchangeRate(getExchangeRate());
-            forex.setBaseAmount(fxAmount);
-            t.setForex(forex);
+            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+                            Money.of(getAccountCurrencyCode(), amount), //
+                            Money.of(getSecurityCurrencyCode(), fxAmount), //
+                            getExchangeRate());
+            t.addUnit(forex);
         }
     }
 
@@ -162,12 +162,12 @@ public class AccountTransactionModel extends AbstractModel
         this.shares = transaction.getShares();
         this.amount = transaction.getAmount();
 
-        ForexData forex = transaction.getForex();
-        if (forex != null && forex.getBaseCurrency().equals(getFxCurrencyCode())
-                        && forex.getTermCurrency().equals(getAccountCurrencyCode()))
+        Optional<Transaction.Unit> forex = transaction.getUnit(Transaction.Unit.Type.LUMPSUM);
+        if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(getAccountCurrencyCode())
+                        && forex.get().getForex().getCurrencyCode().equals(getFxCurrencyCode()))
         {
-            this.exchangeRate = forex.getExchangeRate();
-            this.fxAmount = forex.getBaseAmount();
+            this.exchangeRate = forex.get().getExchangeRate();
+            this.fxAmount = forex.get().getForex().getAmount();
         }
         else
         {

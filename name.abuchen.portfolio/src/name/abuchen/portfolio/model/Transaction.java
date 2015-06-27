@@ -1,16 +1,83 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.money.Money;
 
 public abstract class Transaction implements Annotated
 {
+    public static class Unit
+    {
+        public enum Type
+        {
+            LUMPSUM, TAX, FEE
+        };
+
+        public Unit(Type type, Money amount)
+        {
+            this(type, amount, null, null);
+        }
+
+        public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
+        {
+            this.type = type;
+            this.amount = amount;
+            this.forex = forex;
+            this.exchangeRate = exchangeRate;
+        }
+
+        /**
+         * Type of transaction unit
+         */
+        private final Type type;
+
+        /**
+         * Amount in transaction currency
+         */
+        private final Money amount;
+
+        /**
+         * Original amount in foreign currency; can be null if unit is recorded
+         * in currency of transaction
+         */
+        private final Money forex;
+
+        /**
+         * Exchange rate used to convert forex amount to amount
+         */
+        private final BigDecimal exchangeRate;
+
+        public Type getType()
+        {
+            return type;
+        }
+
+        public Money getAmount()
+        {
+            return amount;
+        }
+
+        public Money getForex()
+        {
+            return forex;
+        }
+
+        public BigDecimal getExchangeRate()
+        {
+            return exchangeRate;
+        }
+
+    }
+
     public static final class ByDate implements Comparator<Transaction>, Serializable
     {
         private static final long serialVersionUID = 1L;
@@ -28,9 +95,10 @@ public abstract class Transaction implements Annotated
 
     private Security security;
     private CrossEntry crossEntry;
-    private ForexData forex;
     private long shares;
     private String note;
+
+    private List<Unit> units;
 
     public Transaction()
     {}
@@ -111,16 +179,6 @@ public abstract class Transaction implements Annotated
         this.crossEntry = crossEntry;
     }
 
-    public ForexData getForex()
-    {
-        return forex;
-    }
-
-    public void setForex(ForexData forex)
-    {
-        this.forex = forex;
-    }
-
     public long getShares()
     {
         return shares;
@@ -139,6 +197,39 @@ public abstract class Transaction implements Annotated
     public void setNote(String note)
     {
         this.note = note;
+    }
+
+    public Stream<Unit> getUnits()
+    {
+        return units != null ? units.stream() : Stream.empty();
+    }
+
+    public Optional<Unit> getUnit(Unit.Type type)
+    {
+        return getUnits().filter(u -> u.getType() == type).findAny();
+    }
+
+    public void clearUnits()
+    {
+        units = null;
+    }
+
+    public void addUnit(Unit unit)
+    {
+        Objects.requireNonNull(unit.getAmount());
+        if (!unit.getAmount().getCurrencyCode().equals(currencyCode))
+            throw new IllegalArgumentException();
+
+        if (units == null)
+            units = new ArrayList<Unit>();
+        units.add(unit);
+    }
+
+    public void removeUnit(Unit unit)
+    {
+        if (units == null)
+            units = new ArrayList<Unit>();
+        units.remove(unit);
     }
 
     public boolean isPotentialDuplicate(Transaction other)

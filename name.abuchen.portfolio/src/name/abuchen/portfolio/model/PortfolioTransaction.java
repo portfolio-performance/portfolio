@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 
 public class PortfolioTransaction extends Transaction
@@ -21,8 +23,12 @@ public class PortfolioTransaction extends Transaction
     }
 
     private Type type;
-    private long fees;
-    private long taxes;
+
+    @Deprecated
+    /* package */transient long fees;
+
+    @Deprecated
+    /* package */transient long taxes;
 
     public PortfolioTransaction()
     {}
@@ -33,8 +39,11 @@ public class PortfolioTransaction extends Transaction
     {
         super(date, currencyCode, amount, security, shares, null);
         this.type = type;
-        this.fees = fees;
-        this.taxes = taxes;
+
+        if (fees != 0)
+            addUnit(new Unit(Unit.Type.FEE, Money.of(currencyCode, fees)));
+        if (taxes != 0)
+            addUnit(new Unit(Unit.Type.TAX, Money.of(currencyCode, taxes)));
     }
 
     public PortfolioTransaction(String date, String currencyCode, long amount, Security security, long shares,
@@ -55,32 +64,42 @@ public class PortfolioTransaction extends Transaction
 
     public long getFees()
     {
-        return fees;
+        return getMonetaryFees().getAmount();
     }
 
     public Money getMonetaryFees()
     {
-        return Money.of(getCurrencyCode(), fees);
+        return getUnits().filter(u -> u.getType() == Unit.Type.FEE)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
     }
 
+    @Deprecated
     public void setFees(long fees)
     {
-        this.fees = fees;
+        Optional<Unit> unit = getUnits().filter(u -> u.getType() == Unit.Type.FEE).findAny();
+        if (unit.isPresent())
+            removeUnit(unit.get());
+        addUnit(new Unit(Unit.Type.FEE, Money.of(getCurrencyCode(), fees)));
     }
 
     public long getTaxes()
     {
-        return taxes;
+        return getMonetaryTaxes().getAmount();
     }
 
     public Money getMonetaryTaxes()
     {
-        return Money.of(getCurrencyCode(), taxes);
+        return getUnits().filter(u -> u.getType() == Unit.Type.TAX)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
     }
 
+    @Deprecated
     public void setTaxes(long taxes)
     {
-        this.taxes = taxes;
+        Optional<Unit> unit = getUnits().filter(u -> u.getType() == Unit.Type.TAX).findAny();
+        if (unit.isPresent())
+            removeUnit(unit.get());
+        addUnit(new Unit(Unit.Type.TAX, Money.of(getCurrencyCode(), taxes)));
     }
 
     public long getLumpSumPrice()
@@ -90,11 +109,11 @@ public class PortfolioTransaction extends Transaction
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return getAmount() - fees - taxes;
+                return getAmount() - getFees() - getTaxes();
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return getAmount() + fees + taxes;
+                return getAmount() + getFees() + getTaxes();
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }
@@ -133,12 +152,6 @@ public class PortfolioTransaction extends Transaction
         PortfolioTransaction pother = (PortfolioTransaction) other;
 
         if (type != pother.getType())
-            return false;
-
-        if (fees != pother.getFees())
-            return false;
-
-        if (taxes != pother.getTaxes())
             return false;
 
         return true;

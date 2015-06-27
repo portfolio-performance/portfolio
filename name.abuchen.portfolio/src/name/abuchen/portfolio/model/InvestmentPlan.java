@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -219,21 +220,19 @@ public class InvestmentPlan implements Named, Adaptable
         String targetCurrencyCode = getCurrencyCode();
         boolean needsCurrencyConversion = !targetCurrencyCode.equals(security.getCurrencyCode());
 
-        ForexData forex = null;
+        Transaction.Unit forex = null;
         long price = getSecurity().getSecurityPrice(tDate).getValue();
         long availableAmount = amount - fees;
 
         if (needsCurrencyConversion)
         {
-            availableAmount = converter.with(security.getCurrencyCode())
-                            .convert(tDate, Money.of(targetCurrencyCode, amount - fees)).getAmount();
+            Money availableMoney = Money.of(targetCurrencyCode, amount - fees);
+            availableAmount = converter.with(security.getCurrencyCode()).convert(tDate, availableMoney).getAmount();
 
-            forex = new ForexData();
-            forex.setBaseCurrency(security.getCurrencyCode());
-            forex.setTermCurrency(targetCurrencyCode);
-            forex.setExchangeRate(converter.with(targetCurrencyCode) //
-                            .getRate(tDate, security.getCurrencyCode()).getValue());
-            forex.setBaseAmount(availableAmount);
+            forex = new Transaction.Unit(Unit.Type.LUMPSUM, //
+                            availableMoney, //
+                            Money.of(security.getCurrencyCode(), availableAmount), //
+                            converter.with(targetCurrencyCode).getRate(tDate, security.getCurrencyCode()).getValue());
         }
 
         long shares = Math.round(availableAmount * Values.Share.factor() / (double) price);
@@ -251,7 +250,8 @@ public class InvestmentPlan implements Named, Adaptable
             entry.setCurrencyCode(targetCurrencyCode);
             entry.setAmount(amount);
             entry.setSecurity(getSecurity());
-            entry.setForex(forex);
+            if (forex != null)
+                entry.getPortfolioTransaction().addUnit(forex);
             entry.insert();
             return entry.getPortfolioTransaction();
         }
@@ -267,7 +267,8 @@ public class InvestmentPlan implements Named, Adaptable
             transaction.setAmount(amount);
             transaction.setFees(fees);
             transaction.setShares(shares);
-            transaction.setForex(forex);
+            if (forex != null)
+                transaction.addUnit(forex);
             portfolio.addTransaction(transaction);
             return transaction;
         }

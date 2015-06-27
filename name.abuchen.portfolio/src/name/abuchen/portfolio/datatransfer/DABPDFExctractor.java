@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class DABPDFExctractor extends AbstractPDFExtractor
 {
@@ -33,6 +34,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
+                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
@@ -75,6 +77,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         .subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
+            entry.setCurrencyCode(CurrencyUnit.EUR);
             return entry;
         })
 

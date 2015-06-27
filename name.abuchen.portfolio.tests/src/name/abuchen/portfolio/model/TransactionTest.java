@@ -34,8 +34,8 @@ public class TransactionTest
     @Test
     public void testDuplicateDetection4PortfolioTransaction() throws Exception
     {
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "note", "forex", "monetaryAmount")
-                        .before((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(true)))
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "forex",
+                        "monetaryAmount").before((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(true)))
                         .after((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(false))) //
                         .run();
     }

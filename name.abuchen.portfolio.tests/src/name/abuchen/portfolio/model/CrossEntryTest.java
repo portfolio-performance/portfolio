@@ -7,7 +7,9 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.time.Month;
 
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +39,7 @@ public class CrossEntryTest
         Security security = client.getSecurities().get(0);
 
         BuySellEntry entry = new BuySellEntry(portfolio, account);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setDate(LocalDate.now());
         entry.setSecurity(security);
         entry.setShares(1 * Values.Share.factor());
@@ -139,6 +142,7 @@ public class CrossEntryTest
         Portfolio portfolioB = client.getPortfolios().get(1);
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setDate(LocalDate.now());
         entry.setAmount(1000);
         entry.setSecurity(security);

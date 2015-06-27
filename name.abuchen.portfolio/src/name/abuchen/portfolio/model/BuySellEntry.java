@@ -82,20 +82,16 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setCurrencyCode(currencyCode);
     }
 
+    @Deprecated
     public void setFees(long fees)
     {
         this.portfolioTransaction.setFees(fees);
     }
 
+    @Deprecated
     public void setTaxes(long taxes)
     {
         this.portfolioTransaction.setTaxes(taxes);
-    }
-
-    public void setForex(ForexData forex)
-    {
-        portfolioTransaction.setForex(forex);
-        accountTransaction.setForex(forex);
     }
 
     @Override

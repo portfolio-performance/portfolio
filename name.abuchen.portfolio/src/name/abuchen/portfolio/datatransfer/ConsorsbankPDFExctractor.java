@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 {
@@ -36,6 +37,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         .subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
+            entry.setCurrencyCode(CurrencyUnit.EUR);
             return entry;
         })
 
@@ -73,6 +75,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.DIVIDENDS);
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                             return t;
                         })
 
@@ -104,6 +107,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.TAXES);
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                             return t;
                         })
 

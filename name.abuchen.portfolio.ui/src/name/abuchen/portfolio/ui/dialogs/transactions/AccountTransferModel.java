@@ -3,16 +3,19 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.Messages;
+
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
@@ -89,27 +92,32 @@ public class AccountTransferModel extends AbstractModel
         // if source and target account have the same currencies, no forex data
         // needs to be stored
 
+        AccountTransaction sourceTransaction = t.getSourceTransaction();
+
+        sourceTransaction.setCurrencyCode(sourceAccount.getCurrencyCode());
+        t.getTargetTransaction().setCurrencyCode(targetAccount.getCurrencyCode());
+
+        sourceTransaction.clearUnits();
+
         if (sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode()))
         {
-            t.setAmount(amount);
-            t.setCurrencyCode(sourceAccount.getCurrencyCode());
-            t.getSourceTransaction().setForex(null);
-            t.getTargetTransaction().setForex(null);
+            sourceTransaction.setAmount(amount);
+            t.getTargetTransaction().setAmount(amount);
         }
         else
         {
-            t.getSourceTransaction().setAmount(fxAmount);
-            t.getSourceTransaction().setCurrencyCode(sourceAccount.getCurrencyCode());
-
+            // TODO improve naming of fields: the source amount is called
+            // 'fxAmount' while the target amount is just called 'amount' but
+            // then the source account holds the 'forex' which is switched
+            sourceTransaction.setAmount(fxAmount);
             t.getTargetTransaction().setAmount(amount);
-            t.getTargetTransaction().setCurrencyCode(targetAccount.getCurrencyCode());
 
-            ForexData forex = new ForexData();
-            forex.setBaseCurrency(sourceAccount.getCurrencyCode());
-            forex.setTermCurrency(targetAccount.getCurrencyCode());
-            forex.setExchangeRate(getExchangeRate());
-            forex.setBaseAmount(fxAmount);
-            t.getTargetTransaction().setForex(forex);
+            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+                            Money.of(sourceAccount.getCurrencyCode(), fxAmount), //
+                            Money.of(targetAccount.getCurrencyCode(), amount), //
+                            getExchangeRate());
+
+            sourceTransaction.addUnit(forex);
         }
     }
 
@@ -125,11 +133,12 @@ public class AccountTransferModel extends AbstractModel
         this.fxAmount = entry.getSourceTransaction().getAmount();
         this.amount = entry.getTargetTransaction().getAmount();
 
-        ForexData forex = entry.getTargetTransaction().getForex();
-        if (forex != null && forex.getBaseCurrency().equals(sourceAccount.getCurrencyCode())
-                        && forex.getTermCurrency().equals(targetAccount.getCurrencyCode()))
+        Optional<Transaction.Unit> forex = entry.getSourceTransaction().getUnit(Transaction.Unit.Type.LUMPSUM);
+
+        if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(sourceAccount.getCurrencyCode())
+                        && forex.get().getForex().getCurrencyCode().equals(targetAccount.getCurrencyCode()))
         {
-            this.exchangeRate = forex.getExchangeRate();
+            this.exchangeRate = forex.get().getExchangeRate();
         }
         else
         {

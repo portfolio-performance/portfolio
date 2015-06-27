@@ -2,11 +2,11 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.Messages;
 
 /* package */class BuySellModel extends AbstractSecurityTransactionModel
@@ -65,27 +65,31 @@ import name.abuchen.portfolio.ui.Messages;
         }
 
         entry.setDate(date);
+        entry.setCurrencyCode(getAccountCurrencyCode());
         entry.setSecurity(security);
         entry.setShares(shares);
-        entry.setFees(fees);
-        entry.setTaxes(taxes);
         entry.setAmount(total);
         entry.setType(type);
         entry.setNote(note);
-        entry.setCurrencyCode(getAccountCurrencyCode());
 
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
+        transaction.clearUnits();
+
+        if (fees != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                            Money.of(getAccountCurrencyCode(), fees)));
+
+        if (taxes != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+                            Money.of(getAccountCurrencyCode(), taxes)));
+
+        if (!getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
         {
-            entry.setForex(null);
-        }
-        else
-        {
-            ForexData forex = new ForexData();
-            forex.setBaseCurrency(getSecurityCurrencyCode());
-            forex.setTermCurrency(getAccountCurrencyCode());
-            forex.setExchangeRate(getExchangeRate());
-            forex.setBaseAmount(lumpSum);
-            entry.setForex(forex);
+            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+                            Money.of(getAccountCurrencyCode(), convertedLumpSum), //
+                            Money.of(getSecurityCurrencyCode(), lumpSum), //
+                            getExchangeRate());
+            transaction.addUnit(forex);
         }
     }
 }

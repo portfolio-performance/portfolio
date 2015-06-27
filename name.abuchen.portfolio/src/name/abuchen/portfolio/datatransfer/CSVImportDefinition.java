@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -286,6 +287,7 @@ public abstract class CSVImportDefinition
                             rawValues, field2column);
 
             PortfolioTransaction transaction = new PortfolioTransaction();
+            transaction.setCurrencyCode(CurrencyUnit.EUR);
             transaction.setDate(date);
             transaction.setAmount(Math.abs(amount));
             transaction.setSecurity(lookupSecurity(client, isin, tickerSymbol, wkn, true));

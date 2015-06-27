@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 {
@@ -35,6 +36,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
+                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
@@ -94,6 +96,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
+                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
@@ -162,6 +165,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             AccountTransaction transaction = new AccountTransaction();
                             transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            transaction.setCurrencyCode(CurrencyUnit.EUR);
                             return transaction;
                         })
 

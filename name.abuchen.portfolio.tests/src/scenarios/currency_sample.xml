@@ -2988,9 +2988,15 @@
                   <security reference="../../../../../../../../../securities/security[2]"/>
                   <crossEntry class="buysell" reference="../../../.."/>
                   <shares>10000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
                   <type>BUY</type>
-                  <fees>1000</fees>
-                  <taxes>1000</taxes>
                 </portfolio-transaction>
                 <portfolio-transaction>
                   <date>2015-01-01</date>
@@ -3007,21 +3013,25 @@
                       <amount>45460</amount>
                       <security reference="../../../../../../../../../../../securities/security"/>
                       <crossEntry class="buysell" reference="../.."/>
-                      <forex>
-                        <baseCurrency>USD</baseCurrency>
-                        <termCurrency>EUR</termCurrency>
-                        <exchangeRate>0.8237</exchangeRate>
-                        <baseAmount>55190</baseAmount>
-                      </forex>
                       <shares>0</shares>
                       <type>BUY</type>
                     </accountTransaction>
                   </crossEntry>
-                  <forex reference="../crossEntry/accountTransaction/forex"/>
                   <shares>5000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="0"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="0"/>
+                    </unit>
+                    <unit type="LUMPSUM">
+                      <amount currency="EUR" amount="45460"/>
+                      <forex currency="USD" amount="55190"/>
+                      <exchangeRate>0.8237</exchangeRate>
+                    </unit>
+                  </units>
                   <type>BUY</type>
-                  <fees>0</fees>
-                  <taxes>0</taxes>
                 </portfolio-transaction>
               </transactions>
             </portfolio>
@@ -3081,9 +3091,15 @@
                   <security reference="../../../../../../../../../securities/security"/>
                   <crossEntry class="buysell" reference="../../../.."/>
                   <shares>5000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="USD" amount="1000"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="USD" amount="1000"/>
+                    </unit>
+                  </units>
                   <type>BUY</type>
-                  <fees>1000</fees>
-                  <taxes>1000</taxes>
                 </portfolio-transaction>
                 <portfolio-transaction>
                   <date>2015-01-01</date>
@@ -3100,21 +3116,19 @@
                       <amount>84841</amount>
                       <security reference="../../../../../../../../../../../securities/security[2]"/>
                       <crossEntry class="buysell" reference="../.."/>
-                      <forex>
-                        <baseCurrency>EUR</baseCurrency>
-                        <termCurrency>USD</termCurrency>
-                        <exchangeRate>1.2141</exchangeRate>
-                        <baseAmount>69880</baseAmount>
-                      </forex>
                       <shares>0</shares>
                       <type>BUY</type>
                     </accountTransaction>
                   </crossEntry>
-                  <forex reference="../crossEntry/accountTransaction/forex"/>
                   <shares>10000000</shares>
+                  <units>
+                    <unit type="LUMPSUM">
+                      <amount currency="USD" amount="84841"/>
+                      <forex currency="EUR" amount="69880"/>
+                      <exchangeRate>1.2141</exchangeRate>
+                    </unit>
+                  </units>
                   <type>BUY</type>
-                  <fees>0</fees>
-                  <taxes>0</taxes>
                 </portfolio-transaction>
               </transactions>
             </portfolio>

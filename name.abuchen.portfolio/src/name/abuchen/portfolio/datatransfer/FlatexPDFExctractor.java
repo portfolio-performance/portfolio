@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class FlatexPDFExctractor extends AbstractPDFExtractor
 {
@@ -33,6 +34,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
+                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 

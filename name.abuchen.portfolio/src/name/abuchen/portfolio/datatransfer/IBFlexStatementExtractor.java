@@ -27,6 +27,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 
@@ -138,6 +139,7 @@ public class IBFlexStatementExtractor implements Extractor
         // future: currency, tradeTime, transactionID, ibOrderID
 
         BuySellEntry transaction = new BuySellEntry();
+        transaction.setCurrencyCode(CurrencyUnit.EUR);
 
         // Set Transaction Type
         if (eElement.getAttribute("buySell").equals("BUY"))

@@ -3,13 +3,14 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
+
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
@@ -80,12 +82,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         this.convertedLumpSum = calcLumpSum(total, fees, taxes);
 
-        ForexData forex = transaction.getForex();
-        if (forex != null && forex.getBaseCurrency().equals(getSecurityCurrencyCode())
-                        && forex.getTermCurrency().equals(getAccountCurrencyCode()))
+        Optional<Transaction.Unit> forex = transaction.getUnit(Transaction.Unit.Type.LUMPSUM);
+        if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(getAccountCurrencyCode())
+                        && forex.get().getForex().getCurrencyCode().equals(getSecurityCurrencyCode()))
         {
-            this.exchangeRate = forex.getExchangeRate();
-            this.lumpSum = forex.getBaseAmount();
+            this.exchangeRate = forex.get().getExchangeRate();
+            this.lumpSum = forex.get().getForex().getAmount();
             this.quote = Math.round(this.lumpSum * Values.Share.factor() / (double) this.shares);
         }
         else

@@ -1,11 +1,12 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ForexData;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.Messages;
 
 public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
@@ -32,7 +33,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     public void setSource(Object transaction)
     {
         this.source = (TransactionPair<PortfolioTransaction>) transaction;
-        
+
         this.type = source.getTransaction().getType();
         this.portfolio = (Portfolio) source.getOwner();
         fillFromTransaction(source.getTransaction());
@@ -67,27 +68,30 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         PortfolioTransaction transaction = entry.getTransaction();
 
         transaction.setDate(date);
+        transaction.setCurrencyCode(getAccountCurrencyCode());
         transaction.setSecurity(security);
         transaction.setShares(shares);
-        transaction.setFees(fees);
-        transaction.setTaxes(taxes);
         transaction.setAmount(total);
         transaction.setType(type);
         transaction.setNote(note);
-        transaction.setCurrencyCode(getAccountCurrencyCode());
 
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
+        transaction.clearUnits();
+
+        if (fees != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                            Money.of(getAccountCurrencyCode(), fees)));
+
+        if (taxes != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+                            Money.of(getAccountCurrencyCode(), taxes)));
+
+        if (!getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
         {
-            transaction.setForex(null);
-        }
-        else
-        {
-            ForexData forex = new ForexData();
-            forex.setBaseCurrency(getSecurityCurrencyCode());
-            forex.setTermCurrency(getAccountCurrencyCode());
-            forex.setExchangeRate(getExchangeRate());
-            forex.setBaseAmount(lumpSum);
-            transaction.setForex(forex);
+            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+                            Money.of(getAccountCurrencyCode(), convertedLumpSum), //
+                            Money.of(getSecurityCurrencyCode(), lumpSum), //
+                            getExchangeRate());
+            transaction.addUnit(forex);
         }
     }
 }
