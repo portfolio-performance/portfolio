@@ -15,5 +15,8 @@ public interface CurrencyConverter
 
     ExchangeRate getRate(Date date, String currencyCode);
 
+    /**
+     * Returns a CurrencyConverter with the provided term currency
+     */
     CurrencyConverter with(String currencyCode);
 }

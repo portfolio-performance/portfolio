@@ -5,6 +5,9 @@ import java.beans.PropertyChangeSupport;
 
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+
 public abstract class AbstractModel
 {
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -13,6 +16,11 @@ public abstract class AbstractModel
     public abstract String getHeading();
 
     public abstract void applyChanges();
+
+    public IStatus getCalculationStatus()
+    {
+        return ValidationStatus.ok();
+    }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {

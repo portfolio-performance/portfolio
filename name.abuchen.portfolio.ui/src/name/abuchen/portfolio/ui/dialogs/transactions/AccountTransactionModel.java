@@ -180,6 +180,7 @@ public class AccountTransactionModel extends AbstractModel
         this.note = transaction.getNote();
     }
 
+    @Override
     public IStatus getCalculationStatus()
     {
         return calculationStatus;

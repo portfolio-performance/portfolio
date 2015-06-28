@@ -88,7 +88,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             this.exchangeRate = forex.getExchangeRate();
             this.lumpSum = forex.getBaseAmount();
-            this.quote = Math.round(this.lumpSum * Values.Share.factor() / this.shares);
+            this.quote = Math.round(this.lumpSum * Values.Share.factor() / (double) this.shares);
         }
         else
         {
@@ -101,6 +101,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         this.calculationStatus = calculateStatus());
     }
 
+    @Override
     public IStatus getCalculationStatus()
     {
         return calculationStatus;

@@ -139,6 +139,7 @@ public class AccountTransferModel extends AbstractModel
         }
     }
 
+    @Override
     public IStatus getCalculationStatus()
     {
         return calculationStatus;

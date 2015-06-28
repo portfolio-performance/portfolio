@@ -158,6 +158,7 @@ public class SecurityTransferModel extends AbstractModel
         this.note = entry.getSourceTransaction().getNote();
     }
 
+    @Override
     public IStatus getCalculationStatus()
     {
         return calculationStatus;

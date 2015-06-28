@@ -246,6 +246,7 @@ public class Messages extends NLS
     public static String InvestmentPlanMenuDelete;
     public static String InvestmentPlanMenuGenerateTransactions;
     public static String InvestmentPlanOptionDelivery;
+    public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
@@ -365,6 +366,7 @@ public class Messages extends NLS
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
     public static String MenuConfigureChart;
+    public static String MenuEditInvestmentPlan;
     public static String MenuEditTransaction;
     public static String MenuExportChartData;
     public static String MenuExportData;
