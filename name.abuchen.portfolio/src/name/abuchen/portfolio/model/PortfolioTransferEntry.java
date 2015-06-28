@@ -118,6 +118,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         target.setSecurity(source.getSecurity());
         target.setShares(source.getShares());
         target.setAmount(source.getAmount());
+        target.setCurrencyCode(source.getCurrencyCode());
         target.setNote(source.getNote());
     }
 

@@ -32,9 +32,19 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.portfolio = portfolio;
     }
 
+    public Portfolio getPortfolio()
+    {
+        return this.portfolio;
+    }
+
     public void setAccount(Account account)
     {
         this.account = account;
+    }
+
+    public Account getAccount()
+    {
+        return this.account;
     }
 
     public void setDate(Date date)
@@ -115,6 +125,7 @@ public class BuySellEntry implements CrossEntry, Annotated
             portfolioTransaction.setDate(accountTransaction.getDate());
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
             portfolioTransaction.setAmount(accountTransaction.getAmount());
+            portfolioTransaction.setCurrencyCode(accountTransaction.getCurrencyCode());
             portfolioTransaction.setType(PortfolioTransaction.Type.valueOf(accountTransaction.getType().name()));
             portfolioTransaction.setNote(accountTransaction.getNote());
         }
@@ -123,6 +134,7 @@ public class BuySellEntry implements CrossEntry, Annotated
             accountTransaction.setDate(portfolioTransaction.getDate());
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
             accountTransaction.setAmount(portfolioTransaction.getAmount());
+            accountTransaction.setCurrencyCode(portfolioTransaction.getCurrencyCode());
             accountTransaction.setType(AccountTransaction.Type.valueOf(portfolioTransaction.getType().name()));
             accountTransaction.setNote(portfolioTransaction.getNote());
         }

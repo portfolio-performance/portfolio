@@ -82,6 +82,7 @@ public class Messages extends NLS
     public static String IssueMissingCurrencyCode;
     public static String IssueMissingPortfolioTransfer;
     public static String IssueMissingReferenceAccount;
+    public static String IssueTransactionMissingCurrencyCode;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
     public static String LabelEuropeanCentralBank;

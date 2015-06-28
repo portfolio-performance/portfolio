@@ -42,9 +42,19 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this.accountFrom = account;
     }
 
+    public Account getSourceAccount()
+    {
+        return accountFrom;
+    }
+
     public void setTargetAccount(Account account)
     {
         this.accountTo = account;
+    }
+
+    public Account getTargetAccount()
+    {
+        return accountTo;
     }
 
     public void setDate(Date date)
