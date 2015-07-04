@@ -63,6 +63,7 @@ import name.abuchen.portfolio.money.Values;
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());
             entry.setAmount(transaction.getAmount());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
             entry.insert();
 
             portfolio.getTransactions().remove(transaction);
