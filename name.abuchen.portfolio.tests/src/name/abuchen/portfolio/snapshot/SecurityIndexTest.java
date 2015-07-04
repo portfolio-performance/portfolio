@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.AccountBuilder;
@@ -15,10 +15,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Dates;
 
 import org.hamcrest.number.IsCloseTo;
-import org.joda.time.DateMidnight;
-import org.joda.time.Days;
 import org.junit.Test;
 
 public class SecurityIndexTest
@@ -27,8 +26,8 @@ public class SecurityIndexTest
     @Test
     public void testThatSecurityIndexIsCalculated()
     {
-        DateMidnight startDate = new DateMidnight(2012, 12, 31);
-        DateMidnight endDate = new DateMidnight(2013, 4, 1);
+        LocalDate startDate = LocalDate.of(2012, 12, 31);
+        LocalDate endDate = LocalDate.of(2013, 4, 1);
         long startPrice = 100 * Values.Amount.factor();
 
         // create model
@@ -47,7 +46,7 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
+        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
@@ -56,11 +55,11 @@ public class SecurityIndexTest
 
         assertTrue(warnings.isEmpty());
 
-        Date[] dates = securityIndex.getDates();
-        assertThat(dates[0], is(startDate.toDate()));
-        assertThat(dates[dates.length - 1], is(endDate.toDate()));
+        LocalDate[] dates = securityIndex.getDates();
+        assertThat(dates[0], is(startDate));
+        assertThat(dates[dates.length - 1], is(endDate));
 
-        long lastPrice = security.getSecurityPrice(endDate.toDate()).getValue();
+        long lastPrice = security.getSecurityPrice(endDate).getValue();
         double performance = (double) (lastPrice - startPrice) / (double) startPrice;
 
         double[] accumulated = securityIndex.getAccumulatedPercentage();
@@ -71,9 +70,9 @@ public class SecurityIndexTest
     @Test
     public void testWhenQuotesAreOnlyAvailableFromTheMiddleOfTheReportInterval()
     {
-        DateMidnight startDate = new DateMidnight(2012, 12, 31);
-        DateMidnight middleDate = new DateMidnight(2013, 2, 18);
-        DateMidnight endDate = new DateMidnight(2013, 4, 1);
+        LocalDate startDate = LocalDate.of(2012, 12, 31);
+        LocalDate middleDate = LocalDate.of(2013, 2, 18);
+        LocalDate endDate = LocalDate.of(2013, 4, 1);
 
         // create model
 
@@ -92,7 +91,7 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
+        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
@@ -101,23 +100,22 @@ public class SecurityIndexTest
 
         assertTrue(warnings.isEmpty());
 
-        Date[] clientDates = clientIndex.getDates();
-        Date[] securityDates = securityIndex.getDates();
+        LocalDate[] clientDates = clientIndex.getDates();
+        LocalDate[] securityDates = securityIndex.getDates();
 
-        assertThat(securityDates[0], is(middleDate.toDate()));
-        assertThat(securityDates[securityDates.length - 1], is(endDate.toDate()));
-        assertThat(new DateMidnight(clientDates[clientDates.length - 1]), is(new DateMidnight(
-                        securityDates[securityDates.length - 1])));
+        assertThat(securityDates[0], is(middleDate));
+        assertThat(securityDates[securityDates.length - 1], is(endDate));
+        assertThat(clientDates[clientDates.length - 1], is(securityDates[securityDates.length - 1]));
 
         double[] clientAccumulated = clientIndex.getAccumulatedPercentage();
         double[] securityAccumulated = securityIndex.getAccumulatedPercentage();
 
-        int index = Days.daysBetween(startDate, middleDate).getDays();
-        assertThat(new DateMidnight(clientDates[index]), is(middleDate));
+        int index = Dates.daysBetween(startDate, middleDate);
+        assertThat(clientDates[index], is(middleDate));
         assertThat(securityAccumulated[0], IsCloseTo.closeTo(clientAccumulated[index], 0.000001d));
 
-        long middlePrice = security.getSecurityPrice(middleDate.toDate()).getValue();
-        long lastPrice = security.getSecurityPrice(endDate.toDate()).getValue();
+        long middlePrice = security.getSecurityPrice(middleDate).getValue();
+        long lastPrice = security.getSecurityPrice(endDate).getValue();
 
         // 10% is interest of the deposit
         double performance = (double) (lastPrice - middlePrice) / (double) middlePrice + 0.1d;
@@ -127,9 +125,9 @@ public class SecurityIndexTest
     @Test
     public void testWhenQuotesAreOnlyAvailableUntilTheMiddleOfTheReportInterval()
     {
-        DateMidnight startDate = new DateMidnight(2012, 12, 31);
-        DateMidnight middleDate = new DateMidnight(2013, 2, 18);
-        DateMidnight endDate = new DateMidnight(2013, 3, 31);
+        LocalDate startDate = LocalDate.of(2012, 12, 31);
+        LocalDate middleDate = LocalDate.of(2013, 2, 18);
+        LocalDate endDate = LocalDate.of(2013, 3, 31);
 
         // create model
 
@@ -150,7 +148,7 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
+        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
@@ -159,20 +157,20 @@ public class SecurityIndexTest
 
         assertTrue(warnings.isEmpty());
 
-        Date[] clientDates = clientIndex.getDates();
-        Date[] securityDates = securityIndex.getDates();
+        LocalDate[] clientDates = clientIndex.getDates();
+        LocalDate[] securityDates = securityIndex.getDates();
 
-        assertThat(securityDates[0], is(startDate.toDate()));
-        assertThat(securityDates[securityDates.length - 1], is(middleDate.toDate()));
-        assertThat(new DateMidnight(clientDates[0]), is(new DateMidnight(securityDates[0])));
+        assertThat(securityDates[0], is(startDate));
+        assertThat(securityDates[securityDates.length - 1], is(middleDate));
+        assertThat(clientDates[0], is(securityDates[0]));
 
         double[] securityAccumulated = securityIndex.getAccumulatedPercentage();
 
-        int index = Days.daysBetween(startDate, middleDate).getDays();
-        assertThat(new DateMidnight(clientDates[index]), is(middleDate));
+        int index = Dates.daysBetween(startDate, middleDate);
+        assertThat(clientDates[index], is(middleDate));
         assertThat(securityAccumulated[0], IsCloseTo.closeTo(0d, 0.000001d));
 
-        long middlePrice = security.getSecurityPrice(middleDate.toDate()).getValue();
+        long middlePrice = security.getSecurityPrice(middleDate).getValue();
         double performance = (double) (middlePrice - startPrice) / (double) startPrice;
         assertThat(securityAccumulated[securityAccumulated.length - 1], IsCloseTo.closeTo(performance, 0.000001d));
     }
@@ -180,8 +178,8 @@ public class SecurityIndexTest
     @Test
     public void testIndexWhenNoQuotesExist()
     {
-        DateMidnight startDate = new DateMidnight(2012, 12, 31);
-        DateMidnight endDate = new DateMidnight(2013, 3, 31);
+        LocalDate startDate = LocalDate.of(2012, 12, 31);
+        LocalDate endDate = LocalDate.of(2013, 3, 31);
 
         // create model
 
@@ -198,7 +196,7 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate.toDate(), endDate.toDate());
+        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
@@ -207,6 +205,6 @@ public class SecurityIndexTest
 
         assertTrue(warnings.isEmpty());
         assertThat(securityIndex.getDates().length, is(1));
-        assertThat(securityIndex.getDates()[0], is(clientIndex.getFirstDataPoint().get().toDate()));
+        assertThat(securityIndex.getDates()[0], is(clientIndex.getFirstDataPoint().get()));
     }
 }

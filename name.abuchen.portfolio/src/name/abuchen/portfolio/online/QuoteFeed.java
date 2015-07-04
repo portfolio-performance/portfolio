@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.online;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Exchange;
@@ -49,7 +49,7 @@ public interface QuoteFeed
      */
     boolean updateHistoricalQuotes(Security security, List<Exception> errors);
 
-    List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors);
+    List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors);
 
     List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors);
 

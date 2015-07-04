@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -142,7 +142,7 @@ public class ExchangeRatesListView extends AbstractListView
 
         List<ExchangeRate> rates = series.getRates();
 
-        Date[] dates = new Date[rates.size()];
+        LocalDate[] dates = new LocalDate[rates.size()];
         double[] values = new double[rates.size()];
 
         int ii = 0;

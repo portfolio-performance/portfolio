@@ -1,15 +1,13 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import name.abuchen.portfolio.money.Money;
-
-import org.joda.time.DateMidnight;
 
 public abstract class Transaction implements Annotated
 {
@@ -24,7 +22,7 @@ public abstract class Transaction implements Annotated
         }
     }
 
-    private Date date;
+    private LocalDate date;
     private String currencyCode;
     private long amount;
 
@@ -37,12 +35,12 @@ public abstract class Transaction implements Annotated
     public Transaction()
     {}
 
-    public Transaction(Date date, String currencyCode, long amount)
+    public Transaction(LocalDate date, String currencyCode, long amount)
     {
         this(date, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(Date date, String currencyCode, long amount, Security security, long shares, String note)
+    public Transaction(LocalDate date, String currencyCode, long amount, Security security, long shares, String note)
     {
         this.date = date;
         this.currencyCode = currencyCode;
@@ -52,17 +50,12 @@ public abstract class Transaction implements Annotated
         this.note = note;
     }
 
-    public Date getDate()
+    public LocalDate getDate()
     {
         return date;
     }
 
-    public DateMidnight getDateMidnight()
-    {
-        return new DateMidnight(date);
-    }
-
-    public void setDate(Date date)
+    public void setDate(LocalDate date)
     {
         this.date = date;
     }

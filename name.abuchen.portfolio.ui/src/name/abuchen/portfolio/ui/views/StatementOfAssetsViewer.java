@@ -1,8 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -716,7 +715,7 @@ public class StatementOfAssetsViewer
             return null;
     }
 
-    private Date getDate()
+    private LocalDate getDate()
     {
         if (clientSnapshot != null)
             return clientSnapshot.getTime();
@@ -736,16 +735,12 @@ public class StatementOfAssetsViewer
             return;
 
         // start date
-        Date endDate = clientSnapshot != null ? clientSnapshot.getTime() : portfolioSnapshot.getTime();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endDate);
-        cal.add(Calendar.YEAR, -option.intValue());
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.add(Calendar.DATE, -1);
+        LocalDate endDate = clientSnapshot != null ? clientSnapshot.getTime() : portfolioSnapshot.getTime();
+        LocalDate startDate = endDate.minusYears(option.intValue()).withDayOfMonth(1).minusDays(1);
 
         SecurityPerformanceSnapshot sps = null;
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(cal.getTime(), endDate);
+        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);
         if (clientSnapshot != null)
         {
             sps = SecurityPerformanceSnapshot.create(client, clientSnapshot.getCurrencyConverter(), period);

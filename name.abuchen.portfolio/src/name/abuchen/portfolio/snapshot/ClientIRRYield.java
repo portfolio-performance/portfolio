@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
@@ -29,7 +28,7 @@ public class ClientIRRYield
         collectPortfolioTransactions(client, interval, transactions);
         Collections.sort(transactions, new Transaction.ByDate());
 
-        List<Date> dates = new ArrayList<Date>();
+        List<LocalDate> dates = new ArrayList<LocalDate>();
         List<Double> values = new ArrayList<Double>();
         collectDatesAndValues(interval, snapshotStart, snapshotEnd, transactions, dates, values);
 
@@ -106,20 +105,18 @@ public class ClientIRRYield
     }
 
     private static void collectDatesAndValues(Interval interval, ClientSnapshot snapshotStart,
-                    ClientSnapshot snapshotEnd, List<Transaction> transactions, List<Date> dates, List<Double> values)
+                    ClientSnapshot snapshotEnd, List<Transaction> transactions, List<LocalDate> dates,
+                    List<Double> values)
     {
         CurrencyConverter converter = snapshotStart.getCurrencyConverter();
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(Date.from(interval.getStart()));
-        dates.add(cal.getTime());
+        dates.add(interval.getStart());
         // snapshots are always in target currency, no conversion needed
         values.add(-snapshotStart.getMonetaryAssets().getAmount() / Values.Amount.divider());
 
         for (Transaction t : transactions)
         {
-            cal.setTime(t.getDate());
-            dates.add(cal.getTime());
+            dates.add(t.getDate());
 
             if (t instanceof AccountTransaction)
             {
@@ -144,8 +141,7 @@ public class ClientIRRYield
             }
         }
 
-        cal.setTime(Date.from(interval.getEnd()));
-        dates.add(cal.getTime());
+        dates.add(interval.getEnd());
         values.add(snapshotEnd.getMonetaryAssets().getAmount() / Values.Amount.divider());
     }
 }

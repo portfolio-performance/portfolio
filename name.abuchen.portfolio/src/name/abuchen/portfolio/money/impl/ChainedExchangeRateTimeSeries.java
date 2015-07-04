@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +46,7 @@ public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
     }
 
     @Override
-    public Optional<ExchangeRate> lookupRate(Date requestedTime)
+    public Optional<ExchangeRate> lookupRate(LocalDate requestedTime)
     {
         BigDecimal value = BigDecimal.ONE;
 

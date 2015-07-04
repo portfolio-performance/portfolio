@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
@@ -10,8 +10,8 @@ import name.abuchen.portfolio.util.Dates;
     private long sum;
     private int numOfEvents;
 
-    private Date firstPayment;
-    private Date lastPayment;
+    private LocalDate firstPayment;
+    private LocalDate lastPayment;
 
     private int regularEvents;
 
@@ -41,7 +41,7 @@ import name.abuchen.portfolio.util.Dates;
         return numOfEvents;
     }
 
-    public Date getLastDividendPayment()
+    public LocalDate getLastDividendPayment()
     {
         return lastPayment;
     }

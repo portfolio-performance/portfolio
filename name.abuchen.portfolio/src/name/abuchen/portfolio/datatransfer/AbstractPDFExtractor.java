@@ -6,11 +6,9 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -214,9 +212,8 @@ import org.apache.pdfbox.util.PDFTextStripper;
         }
     }
 
-    /* protected */Date asDate(String value)
+    /* protected */LocalDate asDate(String value)
     {
-        LocalDate date = LocalDate.parse(value, DATE_FORMAT);
-        return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return LocalDate.parse(value, DATE_FORMAT);
     }
 }

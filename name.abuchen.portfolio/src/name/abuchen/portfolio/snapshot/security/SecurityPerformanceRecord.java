@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -111,7 +111,7 @@ public final class SecurityPerformanceRecord implements Adaptable
     /**
      * last dividend payment in reporting period {@link #calculateDividends()}
      */
-    private Date lastDividendPayment;
+    private LocalDate lastDividendPayment;
 
     /**
      * periodicity of dividend payments {@link #calculateDividends()}
@@ -213,7 +213,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         return dividendEventCount;
     }
 
-    public Date getLastDividendPayment()
+    public LocalDate getLastDividendPayment()
     {
         return lastDividendPayment;
     }

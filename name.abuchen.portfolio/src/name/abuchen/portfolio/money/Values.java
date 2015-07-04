@@ -2,7 +2,7 @@ package name.abuchen.portfolio.money;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 public abstract class Values<E>
 {
@@ -125,10 +125,10 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Date> Date = new Values<Date>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
+    public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
     {
         @Override
-        public String format(Date date)
+        public String format(LocalDate date)
         {
             return String.format("%tF", date); //$NON-NLS-1$
         }

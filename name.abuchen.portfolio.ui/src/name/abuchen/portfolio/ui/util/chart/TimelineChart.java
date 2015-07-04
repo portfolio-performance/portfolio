@@ -41,15 +41,20 @@ public class TimelineChart extends Chart
 {
     private static class MarkerLine
     {
-        private Date date;
+        private LocalDate date;
         private RGB color;
         private String label;
 
-        private MarkerLine(Date date, RGB color, String label)
+        private MarkerLine(LocalDate date, RGB color, String label)
         {
             this.date = date;
             this.color = color;
             this.label = label;
+        }
+
+        public long getTimeMillis()
+        {
+            return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
         }
     }
 
@@ -114,7 +119,7 @@ public class TimelineChart extends Chart
         this.contextMenu = new ChartContextMenu(this);
     }
 
-    public void addMarkerLine(Date date, RGB color, String label)
+    public void addMarkerLine(LocalDate date, RGB color, String label)
     {
         this.markerLines.add(new MarkerLine(date, color, label));
         Collections.sort(this.markerLines, new Comparator<MarkerLine>()
@@ -132,30 +137,30 @@ public class TimelineChart extends Chart
         this.markerLines.clear();
     }
 
-    public ILineSeries addDateSeries(Date[] dates, double[] values, String label)
+    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, String label)
     {
         return addDateSeries(dates, values, Display.getDefault().getSystemColor(SWT.COLOR_BLACK), false, label);
     }
 
-    public ILineSeries addDateSeries(Date[] dates, double[] values, Colors color, String label)
+    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Colors color, String label)
     {
         return addDateSeries(dates, values, resources.createColor(color.swt()), false, label);
     }
 
-    public ILineSeries addDateSeries(Date[] dates, double[] values, Color color, String label)
+    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
     {
         return addDateSeries(dates, values, color, false, label);
     }
 
-    public void addDateSeries(Date[] dates, double[] values, Colors color, boolean showArea)
+    public void addDateSeries(LocalDate[] dates, double[] values, Colors color, boolean showArea)
     {
         addDateSeries(dates, values, resources.createColor(color.swt()), showArea, color.name());
     }
 
-    private ILineSeries addDateSeries(Date[] dates, double[] values, Color color, boolean showArea, String label)
+    private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)
     {
         ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
-        lineSeries.setXDateSeries(dates);
+        lineSeries.setXDateSeries(toJavaUtilDate(dates));
         lineSeries.enableArea(showArea);
         lineSeries.setLineWidth(2);
         lineSeries.setSymbolType(PlotSymbolType.NONE);
@@ -165,10 +170,10 @@ public class TimelineChart extends Chart
         return lineSeries;
     }
 
-    public IBarSeries addDateBarSeries(Date[] dates, double[] values, String label)
+    public IBarSeries addDateBarSeries(LocalDate[] dates, double[] values, String label)
     {
         IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, label);
-        barSeries.setXDateSeries(dates);
+        barSeries.setXDateSeries(toJavaUtilDate(dates));
         barSeries.setYSeries(values);
         barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
         barSeries.setBarPadding(100);
@@ -243,7 +248,7 @@ public class TimelineChart extends Chart
 
         for (MarkerLine marker : markerLines)
         {
-            int x = xAxis.getPixelCoordinate((double) marker.date.getTime());
+            int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
 
             Point textExtent = e.gc.textExtent(marker.label);
             boolean flip = x + 5 + textExtent.x > e.width;
@@ -262,5 +267,14 @@ public class TimelineChart extends Chart
     public void exportMenuAboutToShow(IMenuManager manager, String label)
     {
         this.contextMenu.exportMenuAboutToShow(manager, label);
+    }
+
+    public static Date[] toJavaUtilDate(LocalDate[] dates)
+    {
+        ZoneId zoneId = ZoneId.systemDefault();
+        Date[] answer = new Date[dates.length];
+        for (int ii = 0; ii < answer.length; ii++)
+            answer[ii] = Date.from(dates[ii].atStartOfDay().atZone(zoneId).toInstant());
+        return answer;
     }
 }

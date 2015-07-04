@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +13,13 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.util.LocalDateConverter;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.basic.DateConverter;
 
 /**
  * Load and manage exchanges rates provided by the European Central Bank (ECB).
@@ -186,8 +185,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 
                     xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
 
-                    xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }, Calendar
-                                    .getInstance().getTimeZone()));
+                    xstream.registerConverter(new LocalDateConverter());
 
                     xstream.alias("data", ECBData.class);
                     xstream.alias("series", ExchangeRateTimeSeriesImpl.class);

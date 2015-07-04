@@ -10,10 +10,9 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
@@ -25,8 +24,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
-
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 
@@ -184,7 +181,7 @@ public class CSVExporter
     public void exportMergedSecurityPrices(File file, List<Security> securities) throws IOException
     {
         // prepare: (a) find earliest date (b) ignore securities w/o quotes
-        Date earliestDate = null;
+        LocalDate earliestDate = null;
         List<Security> export = new ArrayList<Security>(securities.size());
 
         for (Security s : securities)
@@ -194,11 +191,11 @@ public class CSVExporter
             {
                 export.add(s);
 
-                Date quoteDate = prices.get(0).getTime();
+                LocalDate quoteDate = prices.get(0).getTime();
                 if (earliestDate == null)
                     earliestDate = quoteDate;
                 else
-                    earliestDate = earliestDate.after(quoteDate) ? quoteDate : earliestDate;
+                    earliestDate = earliestDate.isAfter(quoteDate) ? quoteDate : earliestDate;
             }
         }
 
@@ -218,12 +215,10 @@ public class CSVExporter
                 return;
 
             // write quotes
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(earliestDate);
+            LocalDate pointer = earliestDate;
+            LocalDate today = LocalDate.now();
 
-            Date today = Dates.today();
-
-            while (cal.getTimeInMillis() <= today.getTime())
+            while (pointer.compareTo(today) <= 0)
             {
                 // check if any quotes exist for that day at all
                 int[] indices = new int[export.size()];
@@ -231,7 +226,7 @@ public class CSVExporter
                 int ii = 0;
                 for (Security security : export)
                 {
-                    SecurityPrice p = new SecurityPrice(cal.getTime(), 0);
+                    SecurityPrice p = new SecurityPrice(pointer, 0);
                     indices[ii] = Collections.binarySearch(security.getPrices(), p);
                     ii++;
                 }
@@ -242,7 +237,7 @@ public class CSVExporter
 
                 if (hasValues)
                 {
-                    printer.print(Values.Date.format(cal.getTime()));
+                    printer.print(Values.Date.format(pointer));
 
                     for (ii = 0; ii < indices.length; ii++)
                     {
@@ -255,7 +250,7 @@ public class CSVExporter
                     printer.println();
                 }
 
-                cal.add(Calendar.DATE, 1);
+                pointer = pointer.plusDays(1);
             }
 
         }

@@ -1,9 +1,10 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.time.Period;
+
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -201,9 +202,9 @@ public class ReportingPeriodDialog extends Dialog
 
         dateTo.setSelection(template.getEndDate());
 
-        int m = Dates.monthsBetween(template.getStartDate(), template.getEndDate());
-        years.setSelection(m / 12);
-        months.setSelection(m % 12);
+        Period p = Period.between(template.getStartDate(), template.getEndDate());
+        years.setSelection(p.getYears());
+        months.setSelection(p.getMonths());
     }
 
     @Override

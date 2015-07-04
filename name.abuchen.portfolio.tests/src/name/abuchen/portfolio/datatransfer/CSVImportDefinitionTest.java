@@ -6,7 +6,8 @@ import static org.hamcrest.collection.IsIn.isIn;
 import static org.junit.Assert.assertThat;
 
 import java.text.ParseException;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class CSVImportDefinitionTest
 
         AccountTransaction t = account.getTransactions().get(account.getTransactions().size() - 1);
         assertThat(t.getAmount(), is(100L * Values.Amount.factor()));
-        assertThat(t.getDate(), is(Dates.date(2013, Calendar.JANUARY, 1)));
+        assertThat(t.getDate(), is(LocalDate.of(2013, Month.JANUARY, 1)));
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
     }
@@ -68,7 +68,7 @@ public class CSVImportDefinitionTest
 
         AccountTransaction t = account.getTransactions().get(account.getTransactions().size() - 1);
         assertThat(t.getAmount(), is(200L * Values.Amount.factor()));
-        assertThat(t.getDate(), is(Dates.date(2013, Calendar.JANUARY, 1)));
+        assertThat(t.getDate(), is(LocalDate.of(2013, Month.JANUARY, 1)));
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
     }
@@ -87,7 +87,7 @@ public class CSVImportDefinitionTest
 
         AccountTransaction t = account.getTransactions().get(account.getTransactions().size() - 1);
         assertThat(t.getAmount(), is(300L * Values.Amount.factor()));
-        assertThat(t.getDate(), is(Dates.date(2013, Calendar.JANUARY, 1)));
+        assertThat(t.getDate(), is(LocalDate.of(2013, Month.JANUARY, 1)));
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getType(), is(AccountTransaction.Type.FEES));
     }
@@ -106,7 +106,7 @@ public class CSVImportDefinitionTest
 
         AccountTransaction t = account.getTransactions().get(account.getTransactions().size() - 1);
         assertThat(t.getAmount(), is(100L * Values.Amount.factor()));
-        assertThat(t.getDate(), is(Dates.date(2013, Calendar.JANUARY, 1)));
+        assertThat(t.getDate(), is(LocalDate.of(2013, Month.JANUARY, 1)));
         assertThat(t.getSecurity(), isIn(client.getSecurities()));
         assertThat(t.getSecurity().getIsin(), is("DE000BASF111"));
         assertThat(t.getSecurity().getTickerSymbol(), is("BAS.DE"));
@@ -148,7 +148,7 @@ public class CSVImportDefinitionTest
                         new String[] { "2013-01-01", "123,45" }, //
                         buildField2Column(def));
 
-        SecurityPrice price = security.getSecurityPrice(Dates.date(2013, Calendar.JANUARY, 1));
+        SecurityPrice price = security.getSecurityPrice(LocalDate.of(2013, Month.JANUARY, 1));
         assertThat(price.getValue(), is(12345L));
     }
 

@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ForexData;
@@ -19,8 +19,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.util.Dates;
-
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
@@ -40,7 +38,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected Portfolio portfolio;
     protected Security security;
-    protected Date date = Dates.today();
+    protected LocalDate date = LocalDate.now();
     protected long shares;
     protected long quote;
     protected long lumpSum;
@@ -235,12 +233,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         }
     }
 
-    public Date getDate()
+    public LocalDate getDate()
     {
         return date;
     }
 
-    public void setDate(Date date)
+    public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateExchangeRate();

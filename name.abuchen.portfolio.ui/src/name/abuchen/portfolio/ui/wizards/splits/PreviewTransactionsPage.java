@@ -69,7 +69,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 2:
                     return Values.Share.format(t.getShares());
                 case 3:
-                    if (model.isChangeTransactions() && t.getDate().before(model.getExDate()))
+                    if (model.isChangeTransactions() && t.getDate().isBefore(model.getExDate()))
                     {
                         long shares = t.getShares() * model.getNewShares() / model.getOldShares();
                         return Values.Share.format(shares);

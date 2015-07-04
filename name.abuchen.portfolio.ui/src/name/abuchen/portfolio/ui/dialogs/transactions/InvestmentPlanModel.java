@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -8,7 +8,6 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.util.Dates;
 
 public class InvestmentPlanModel extends AbstractModel
 {
@@ -28,7 +27,7 @@ public class InvestmentPlanModel extends AbstractModel
     private Portfolio portfolio;
     private Account account;
 
-    private Date start = Dates.today();
+    private LocalDate start = LocalDate.now();
 
     private int interval = 1;
     private long amount;
@@ -140,12 +139,12 @@ public class InvestmentPlanModel extends AbstractModel
                         getTransactionCurrencyCode());
     }
 
-    public Date getStart()
+    public LocalDate getStart()
     {
         return start;
     }
 
-    public void setStart(Date start)
+    public void setStart(LocalDate start)
     {
         firePropertyChange(Properties.start.name(), this.start, this.start = start);
     }

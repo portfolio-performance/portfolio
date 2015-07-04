@@ -5,11 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,18 +61,16 @@ public class IBFlexStatementExtractor implements Extractor
         this.exchanges.put("VENTURE", "V");
     }
 
-    private Date convertDate(String date) throws ParseException
+    private LocalDate convertDate(String date) throws DateTimeParseException
     {
 
         if (date.length() > 8)
         {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            return df.parse(date);
+            return LocalDate.parse(date);
         }
         else
         {
-            DateFormat df = new SimpleDateFormat("yyyyMMdd");
-            return df.parse(date);
+            return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
     }
 

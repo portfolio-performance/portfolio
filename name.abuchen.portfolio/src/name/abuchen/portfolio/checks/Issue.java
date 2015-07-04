@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.checks;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface Issue
 {
-    Date getDate();
+    LocalDate getDate();
 
     Object getEntity();
 

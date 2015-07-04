@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -264,7 +264,7 @@ public final class Security implements Attributable, InvestmentVehicle
         prices.clear();
     }
 
-    public SecurityPrice getSecurityPrice(Date requestedTime)
+    public SecurityPrice getSecurityPrice(LocalDate requestedTime)
     {
         // assumption: prefer historic quote over latest if there are more
         // up-to-date historic quotes
@@ -280,16 +280,16 @@ public final class Security implements Attributable, InvestmentVehicle
 
         if (latest != null //
                         && (lastHistoric == null //
-                        || (requestedTime.getTime() >= latest.getTime().getTime() && //
-                        latest.getTime().getTime() >= lastHistoric.getTime().getTime()) //
-                        ))
+                        || (!requestedTime.isBefore(latest.getTime()) && //
+                        !latest.getTime().isBefore(lastHistoric.getTime()) //
+                        )))
             return latest;
 
         if (lastHistoric == null)
             return new SecurityPrice(requestedTime, 0);
 
         // avoid binary search if last historic quote <= requested date
-        if (lastHistoric.getTime().getTime() <= requestedTime.getTime())
+        if (!lastHistoric.getTime().isAfter(requestedTime))
             return lastHistoric;
 
         SecurityPrice p = new SecurityPrice(requestedTime, 0);

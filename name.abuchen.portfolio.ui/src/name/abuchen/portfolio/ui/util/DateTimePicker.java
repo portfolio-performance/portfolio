@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
@@ -52,31 +52,33 @@ public class DateTimePicker
         return control;
     }
 
-    public void setSelection(Date date)
+    public void setSelection(LocalDate date)
     {
         if (control instanceof CDateTime)
         {
-            ((CDateTime) control).setSelection(date);
+            Date d = Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            ((CDateTime) control).setSelection(d);
         }
         else
         {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            ((DateTime) control).setDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-                            cal.get(Calendar.DAY_OF_MONTH));
+            // DateTime widget has zero-based months
+            ((DateTime) control).setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
         }
     }
 
-    public Date getSelection()
+    public LocalDate getSelection()
     {
         if (control instanceof CDateTime)
         {
-            return ((CDateTime) control).getSelection();
+            Date d = ((CDateTime) control).getSelection();
+            return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()).toLocalDate();
+
         }
         else
         {
             DateTime dateTime = (DateTime) control;
-            return Dates.date(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay());
+            // DateTime widget has zero-based months
+            return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
         }
     }
 

@@ -7,15 +7,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
-import name.abuchen.portfolio.util.Dates;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -126,9 +124,9 @@ public class TransactionTest
             {
                 return ((long) value) + 1;
             }
-            else if (propertyType == Date.class)
+            else if (propertyType == LocalDate.class)
             {
-                return Dates.date(1999, 1, 1);
+                return LocalDate.of(1999, 1, 1);
             }
             else if (propertyType == Security.class)
             {
@@ -160,9 +158,9 @@ public class TransactionTest
             {
                 return random.nextLong();
             }
-            else if (propertyType == Date.class)
+            else if (propertyType == LocalDate.class)
             {
-                return Dates.date(2000 + random.nextInt(30), 1, 1);
+                return LocalDate.of(2000 + random.nextInt(30), 1, 1);
             }
             else if (propertyType == Security.class)
             {

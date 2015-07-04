@@ -2,14 +2,14 @@ package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
@@ -32,7 +32,7 @@ public class ComdirectPDFExtractor implements Extractor
 {
 
     private PDFTextStripper stripper;
-    private DateFormat df;
+    private DateTimeFormatter df;
     private Pattern isinPattern;
     private Matcher isinMatcher;
     private NumberFormat format;
@@ -41,7 +41,7 @@ public class ComdirectPDFExtractor implements Extractor
     public ComdirectPDFExtractor(Client client) throws IOException
     {
         // Parsing formats rely on german style PDFs
-        df = new SimpleDateFormat("dd.MM.yyyy"); //$NON-NLS-1$
+        df = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
         format = NumberFormat.getInstance(Locale.GERMANY);
 
         isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]"); //$NON-NLS-1$
@@ -124,13 +124,13 @@ public class ComdirectPDFExtractor implements Extractor
             AccountTransaction t = new AccountTransaction();
             try
             {
-                Date d = df.parse(getNextWord(text, datePos));
+                LocalDate d = LocalDate.parse(getNextWord(text, datePos), df);
                 t.setDate(d);
             }
-            catch (ParseException e)
+            catch (DateTimeParseException e)
             {
-                e.printStackTrace();
                 errors.add(e);
+                t.setDate(LocalDate.now());
             }
             Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1)); //$NON-NLS-1$
             Number pieces = getNextNumber(text, text.indexOf("STK") + 3); //$NON-NLS-1$
@@ -149,7 +149,7 @@ public class ComdirectPDFExtractor implements Extractor
             {
                 int tagPosition = text.indexOf("Geschäftstag"); //$NON-NLS-1$
                 String tagString = getNextWord(text, getNextWhitespace(text, tagPosition));
-                Date tag = df.parse(tagString);
+                LocalDate tag = LocalDate.parse(tagString, df);
                 isinMatcher = isinPattern.matcher(text);
                 String isin;
                 isinMatcher.find();
@@ -196,7 +196,7 @@ public class ComdirectPDFExtractor implements Extractor
                 purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
                 results.add(new BuySellEntryItem(purchase));
             }
-            catch (ParseException e)
+            catch (DateTimeParseException e)
             {
                 errors.add(e);
             }

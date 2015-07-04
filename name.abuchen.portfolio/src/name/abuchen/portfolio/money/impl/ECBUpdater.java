@@ -9,8 +9,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,7 +57,9 @@ import name.abuchen.portfolio.util.Dates;
         Feeds f = Feeds.HISTORIC;
         if (data.getLastModified() != 0)
         {
-            int days = Dates.daysBetween(new Date(data.getLastModified()), Dates.today());
+            LocalDate lastModified = LocalDate.from(Instant.ofEpochMilli(data.getLastModified()).atZone(
+                            ZoneId.systemDefault()));
+            int days = Dates.daysBetween(lastModified, LocalDate.now());
 
             if (days <= 1)
                 f = Feeds.DAILY;
@@ -125,10 +128,7 @@ import name.abuchen.portfolio.util.Dates;
         for (ExchangeRateTimeSeriesImpl series : data.getSeries())
             currency2series.put(series.getTermCurrency(), series);
 
-        // date and value format used by ECB
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-
-        Date currentDate = null;
+        LocalDate currentDate = null;
 
         while (reader.hasNext())
         {
@@ -166,7 +166,7 @@ import name.abuchen.portfolio.util.Dates;
             {
                 String time = reader.getAttributeValue(null, "time"); //$NON-NLS-1$
                 if (time != null)
-                    currentDate = dateFormat.parse(time);
+                    currentDate = LocalDate.parse(time);
             }
         }
     }

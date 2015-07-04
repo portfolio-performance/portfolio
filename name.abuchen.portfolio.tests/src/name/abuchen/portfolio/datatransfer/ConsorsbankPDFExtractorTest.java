@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
@@ -81,7 +81,7 @@ public class ConsorsbankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(Dates.date("2015-05-08")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-05-08")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(444)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(370)));
     }
@@ -93,7 +93,7 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(t.getAmount(), is(111_00L + 6_10L));
-        assertThat(t.getDate(), is(Dates.date("2015-05-08")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-05-08")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }
@@ -150,7 +150,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(5000_00L));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-01-19")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
     }

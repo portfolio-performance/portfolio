@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.money;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +14,5 @@ public interface ExchangeRateTimeSeries
 
     List<ExchangeRate> getRates();
 
-    Optional<ExchangeRate> lookupRate(Date requestedTime);
+    Optional<ExchangeRate> lookupRate(LocalDate requestedTime);
 }

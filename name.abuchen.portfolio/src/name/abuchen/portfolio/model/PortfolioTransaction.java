@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.joda.time.DateMidnight;
 
 public class PortfolioTransaction extends Transaction
 {
@@ -29,7 +27,8 @@ public class PortfolioTransaction extends Transaction
     public PortfolioTransaction()
     {}
 
-    public PortfolioTransaction(Date date, String currencyCode, long amount, Security security, long shares, Type type,
+    public PortfolioTransaction(LocalDate date, String currencyCode, long amount, Security security, long shares,
+                    Type type,
                     long fees, long taxes)
     {
         super(date, currencyCode, amount, security, shares, null);
@@ -41,7 +40,7 @@ public class PortfolioTransaction extends Transaction
     public PortfolioTransaction(String date, String currencyCode, long amount, Security security, long shares,
                     Type type, long fees, long taxes)
     {
-        this(new DateMidnight(date).toDate(), currencyCode, amount, security, shares, type, fees, taxes);
+        this(LocalDate.parse(date), currencyCode, amount, security, shares, type, fees, taxes);
     }
 
     public Type getType()

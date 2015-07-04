@@ -2,6 +2,9 @@ package name.abuchen.portfolio.datatransfer;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,12 +78,14 @@ public abstract class CSVImportDefinition
         return (long) Math.round(num.doubleValue() * Values.Share.factor());
     }
 
-    protected Date convertDate(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
+    protected LocalDate convertDate(String name, String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException
     {
         String value = getTextValue(name, rawValues, field2column);
         if (value == null)
             return null;
-        return (Date) field2column.get(name).getFormat().getFormat().parseObject(value);
+        Date date = (Date) field2column.get(name).getFormat().getFormat().parseObject(value);
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
     }
 
     @SuppressWarnings("unchecked")
@@ -172,7 +177,7 @@ public abstract class CSVImportDefinition
 
             Account account = (Account) target;
 
-            Date date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
+            LocalDate date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
             if (date == null)
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
@@ -245,7 +250,7 @@ public abstract class CSVImportDefinition
 
             Portfolio portfolio = (Portfolio) target;
 
-            Date date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
+            LocalDate date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
             if (date == null)
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);
@@ -323,7 +328,7 @@ public abstract class CSVImportDefinition
 
             Security security = (Security) target;
 
-            Date date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
+            LocalDate date = convertDate(Messages.CSVColumn_Date, rawValues, field2column);
             if (date == null)
                 throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date),
                                 0);

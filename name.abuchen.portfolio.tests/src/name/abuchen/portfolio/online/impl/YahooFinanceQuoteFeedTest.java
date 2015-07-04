@@ -9,16 +9,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.util.Dates;
-
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -34,16 +33,14 @@ public class YahooFinanceQuoteFeedTest
         security.setIsin("DE0007100000");
         security.setTickerSymbol("DAI.DE");
 
-        Calendar fiveYearsAgo = Calendar.getInstance();
-        fiveYearsAgo.setTime(Dates.today()); // no milliseconds
-        fiveYearsAgo.add(Calendar.YEAR, -5);
+        LocalDate fiveYearsAgo = LocalDate.now().minusYears(5);
 
-        Calendar cal = feed.caculateStart(security);
-        assertThat(cal, equalTo(fiveYearsAgo));
+        LocalDate date = feed.caculateStart(security);
+        assertThat(date, equalTo(fiveYearsAgo));
 
-        security.addPrice(new SecurityPrice(Dates.today(), 100));
-        cal = feed.caculateStart(security);
-        assertThat(cal.getTime(), equalTo(Dates.today()));
+        security.addPrice(new SecurityPrice(LocalDate.now(), 100));
+        date = feed.caculateStart(security);
+        assertThat(date, equalTo(LocalDate.now()));
     }
 
     @Test
@@ -71,7 +68,7 @@ public class YahooFinanceQuoteFeedTest
 
         LatestSecurityPrice latest = securities.get(0).getLatest();
         assertThat(latest.getValue(), is(1371L));
-        assertThat(latest.getTime(), equalTo(Dates.date(2011, Calendar.SEPTEMBER, 29)));
+        assertThat(latest.getTime(), equalTo(LocalDate.of(2011, Month.SEPTEMBER, 29)));
         assertThat(latest.getHigh(), is(1375L));
         assertThat(latest.getLow(), is(1370L));
         assertThat(latest.getVolume(), is(10037));
@@ -83,7 +80,7 @@ public class YahooFinanceQuoteFeedTest
         assertThat(latest.getVolume(), is(-1));
 
         latest = securities.get(3).getLatest();
-        assertThat(latest.getTime(), equalTo(Dates.today()));
+        assertThat(latest.getTime(), equalTo(LocalDate.now()));
     }
 
     @Test
@@ -138,10 +135,10 @@ public class YahooFinanceQuoteFeedTest
         assertThat(security.getPrices().size(), is(2257));
 
         assertThat(security.getPrices().get(0), //
-                        equalTo(new SecurityPrice(Dates.date(2003, Calendar.JANUARY, 1), 2935)));
+                        equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1), 2935)));
 
         assertThat(security.getPrices().get(security.getPrices().size() - 1),
-                        equalTo(new SecurityPrice(Dates.date(2011, Calendar.SEPTEMBER, 22), 3274)));
+                        equalTo(new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), 3274)));
     }
 
     @Test
@@ -164,10 +161,10 @@ public class YahooFinanceQuoteFeedTest
         assertThat(security.getPrices().size(), is(2257));
 
         assertThat(security.getPrices().get(0), //
-                        equalTo(new SecurityPrice(Dates.date(2003, Calendar.JANUARY, 1), 2255)));
+                        equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1), 2255)));
 
         assertThat(security.getPrices().get(security.getPrices().size() - 1),
-                        equalTo(new SecurityPrice(Dates.date(2011, Calendar.SEPTEMBER, 22), 3274)));
+                        equalTo(new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), 3274)));
     }
 
     @Test

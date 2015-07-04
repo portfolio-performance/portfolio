@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.checks.Checker;
@@ -173,7 +173,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 @Override
                 public String getText(Object element)
                 {
-                    Date date = ((ReportedIssue) element).getDate();
+                    LocalDate date = ((ReportedIssue) element).getDate();
                     return date != null ? Values.Date.format(date) : null;
                 }
             });
@@ -371,7 +371,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             this.fixes = delegate.getAvailableFixes();
         }
 
-        public Date getDate()
+        public LocalDate getDate()
         {
             return delegate.getDate();
         }

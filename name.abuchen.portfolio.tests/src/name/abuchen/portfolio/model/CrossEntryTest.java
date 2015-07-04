@@ -4,11 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.Month;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +37,7 @@ public class CrossEntryTest
         Security security = client.getSecurities().get(0);
 
         BuySellEntry entry = new BuySellEntry(portfolio, account);
-        entry.setDate(Dates.today());
+        entry.setDate(LocalDate.now());
         entry.setSecurity(security);
         entry.setShares(1 * Values.Share.factor());
         entry.setFees(10);
@@ -56,8 +55,8 @@ public class CrossEntryTest
         assertThat(pt.getSecurity(), is(security));
         assertThat(pa.getSecurity(), is(security));
         assertThat(pt.getAmount(), is(pa.getAmount()));
-        assertThat(pt.getDate(), is(Dates.today()));
-        assertThat(pa.getDate(), is(Dates.today()));
+        assertThat(pt.getDate(), is(LocalDate.now()));
+        assertThat(pa.getDate(), is(LocalDate.now()));
 
         assertThat(pt.getFees(), is(10L));
         assertThat(pt.getTaxes(), is(11L));
@@ -74,7 +73,7 @@ public class CrossEntryTest
         entry.updateFrom(pt);
         assertThat(pa.getAmount(), is(pt.getAmount()));
 
-        pa.setDate(Dates.date(2013, Calendar.MARCH, 16));
+        pa.setDate(LocalDate.of(2013, Month.MARCH, 16));
         entry.updateFrom(pa);
         assertThat(pt.getDate(), is(pa.getDate()));
 
@@ -91,7 +90,7 @@ public class CrossEntryTest
         Account accountB = client.getAccounts().get(1);
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
-        entry.setDate(Dates.today());
+        entry.setDate(LocalDate.now());
         entry.setAmount(1000 * Values.Amount.factor());
         entry.insert();
 
@@ -107,8 +106,8 @@ public class CrossEntryTest
         assertThat(pA.getSecurity(), nullValue());
         assertThat(pB.getSecurity(), nullValue());
         assertThat(pA.getAmount(), is(pB.getAmount()));
-        assertThat(pA.getDate(), is(Dates.today()));
-        assertThat(pB.getDate(), is(Dates.today()));
+        assertThat(pA.getDate(), is(LocalDate.now()));
+        assertThat(pB.getDate(), is(LocalDate.now()));
 
         // check cross entity identification
         assertThat(entry.getCrossOwner(pA), is((Object) accountB));
@@ -122,7 +121,7 @@ public class CrossEntryTest
         entry.updateFrom(pA);
         assertThat(pB.getAmount(), is(pA.getAmount()));
 
-        pB.setDate(Dates.date(2013, Calendar.MARCH, 16));
+        pB.setDate(LocalDate.of(2013, Month.MARCH, 16));
         entry.updateFrom(pB);
         assertThat(pA.getDate(), is(pB.getDate()));
 
@@ -140,7 +139,7 @@ public class CrossEntryTest
         Portfolio portfolioB = client.getPortfolios().get(1);
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
-        entry.setDate(Dates.today());
+        entry.setDate(LocalDate.now());
         entry.setAmount(1000);
         entry.setSecurity(security);
         entry.setShares(1);
@@ -158,8 +157,8 @@ public class CrossEntryTest
         assertThat(pA.getSecurity(), is(security));
         assertThat(pB.getSecurity(), is(security));
         assertThat(pA.getAmount(), is(pB.getAmount()));
-        assertThat(pA.getDate(), is(Dates.today()));
-        assertThat(pB.getDate(), is(Dates.today()));
+        assertThat(pA.getDate(), is(LocalDate.now()));
+        assertThat(pB.getDate(), is(LocalDate.now()));
 
         // check cross entity identification
         assertThat(entry.getCrossOwner(pA), is((Object) portfolioB));
@@ -177,7 +176,7 @@ public class CrossEntryTest
         entry.updateFrom(pA);
         assertThat(pB.getShares(), is(2L));
 
-        pB.setDate(Dates.date(2013, Calendar.MARCH, 16));
+        pB.setDate(LocalDate.of(2013, Month.MARCH, 16));
         entry.updateFrom(pB);
         assertThat(pA.getDate(), is(pB.getDate()));
 

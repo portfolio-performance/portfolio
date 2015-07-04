@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class AccountTransaction extends Transaction
@@ -22,7 +22,7 @@ public class AccountTransaction extends Transaction
     public AccountTransaction()
     {}
 
-    public AccountTransaction(Date date, String currencyCode, long amount, Security security, Type type)
+    public AccountTransaction(LocalDate date, String currencyCode, long amount, Security security, Type type)
     {
         super(date, currencyCode, amount, security, 0, null);
         this.type = type;

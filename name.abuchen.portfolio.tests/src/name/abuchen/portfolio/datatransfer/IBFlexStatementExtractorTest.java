@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
@@ -93,7 +93,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("GRAN COLOMBIA GOLD CORP"));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(1356_75L));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-04-01")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-04-01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(6_75L));
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(27L));
@@ -111,7 +111,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("URANIUM ONE INC."));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(232_00L));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2013-01-02")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-01-02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(1_00L));
     }

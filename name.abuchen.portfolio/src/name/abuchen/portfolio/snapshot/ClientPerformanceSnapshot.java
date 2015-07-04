@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +103,7 @@ public class ClientPerformanceSnapshot
     private double irr;
     private PerformanceIndex performanceIndex;
 
-    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Date startDate, Date endDate)
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
     {
         this(client, converter, new ReportingPeriod.FromXtoY(startDate, endDate));
     }

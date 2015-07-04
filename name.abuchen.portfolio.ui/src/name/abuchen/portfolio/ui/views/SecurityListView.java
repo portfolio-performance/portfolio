@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,8 +43,6 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
-import name.abuchen.portfolio.util.Dates;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -153,7 +153,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TimelineChart chart;
     private SecurityDetailsViewer latest;
 
-    private Date chartPeriod;
+    private LocalDate chartPeriod;
 
     private Watchlist watchlist;
 
@@ -161,9 +161,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     public SecurityListView()
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -2);
-        chartPeriod = cal.getTime();
+        chartPeriod = LocalDate.now().minusYears(2);
     }
 
     @Override
@@ -413,14 +411,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
         RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
 
-        addButton(buttons, Messages.SecurityTabChart1M, Calendar.MONTH, -1);
-        addButton(buttons, Messages.SecurityTabChart2M, Calendar.MONTH, -2);
-        addButton(buttons, Messages.SecurityTabChart6M, Calendar.MONTH, -6);
-        addButton(buttons, Messages.SecurityTabChart1Y, Calendar.YEAR, -1);
-        addButton(buttons, Messages.SecurityTabChart2Y, Calendar.YEAR, -2);
-        addButton(buttons, Messages.SecurityTabChart3Y, Calendar.YEAR, -3);
-        addButton(buttons, Messages.SecurityTabChart5Y, Calendar.YEAR, -5);
-        addButton(buttons, Messages.SecurityTabChart10Y, Calendar.YEAR, -10);
+        addButton(buttons, Messages.SecurityTabChart1M, Period.ofMonths(1));
+        addButton(buttons, Messages.SecurityTabChart2M, Period.ofMonths(2));
+        addButton(buttons, Messages.SecurityTabChart6M, Period.ofMonths(6));
+        addButton(buttons, Messages.SecurityTabChart1Y, Period.ofYears(1));
+        addButton(buttons, Messages.SecurityTabChart2Y, Period.ofYears(3));
+        addButton(buttons, Messages.SecurityTabChart3Y, Period.ofYears(4));
+        addButton(buttons, Messages.SecurityTabChart5Y, Period.ofYears(5));
+        addButton(buttons, Messages.SecurityTabChart10Y, Period.ofYears(10));
 
         Button button = new Button(buttons, SWT.FLAT);
         button.setText(Messages.SecurityTabChartAll);
@@ -454,16 +452,16 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         folder.setSelection(0);
     }
 
-    private void addButton(Composite buttons, String label, final int field, final int amount)
+    private void addButton(Composite buttons, String label, TemporalAmount amountToAdd)
     {
         Button b = new Button(buttons, SWT.FLAT);
         b.setText(label);
         b.addSelectionListener(new ChartPeriodSelectionListener()
         {
             @Override
-            protected void roll(Calendar cal)
+            protected LocalDate startAt()
             {
-                cal.add(field, amount);
+                return LocalDate.now().minus(amountToAdd);
             }
         });
     }
@@ -473,15 +471,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         @Override
         public void widgetSelected(SelectionEvent e)
         {
-            Calendar cal = Calendar.getInstance();
-            roll(cal);
-            chartPeriod = cal.getTime();
+            chartPeriod = startAt();
 
             Security security = (Security) prices.getData(Security.class.toString());
             updateChart(security);
         }
 
-        protected abstract void roll(Calendar cal);
+        protected abstract LocalDate startAt();
 
         @Override
         public void widgetDefaultSelected(SelectionEvent e)
@@ -564,7 +560,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         return;
 
                     SecurityPrice price = new SecurityPrice();
-                    price.setTime(Dates.today());
+                    price.setTime(LocalDate.now());
 
                     security.addPrice(price);
 
@@ -669,13 +665,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         List<SecurityPrice> prices = security.getPrices();
 
         int index;
-        Date[] dates;
+        LocalDate[] dates;
         double[] values;
 
         if (chartPeriod == null)
         {
             index = 0;
-            dates = new Date[prices.size()];
+            dates = new LocalDate[prices.size()];
             values = new double[prices.size()];
         }
         else
@@ -690,7 +686,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return;
             }
 
-            dates = new Date[prices.size() - index];
+            dates = new LocalDate[prices.size() - index];
             values = new double[prices.size() - index];
         }
 
@@ -702,7 +698,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         }
 
         ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.ColumnQuote);
-        lineSeries.setXDateSeries(dates);
+        lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
         lineSeries.setLineWidth(2);
         lineSeries.enableArea(true);
         lineSeries.setSymbolType(PlotSymbolType.NONE);
@@ -715,7 +711,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.before(t.getDate())))
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
                 {
                     String label = Values.Share.format(t.getShares());
                     switch (t.getType())
@@ -739,7 +735,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         for (SecurityEvent event : security.getEvents())
         {
-            if (chartPeriod == null || chartPeriod.before(event.getDate()))
+            if (chartPeriod == null || chartPeriod.isBefore(event.getDate()))
                 chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
         }
 

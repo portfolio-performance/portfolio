@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class PortfolioTransferEntry implements CrossEntry, Annotated
 {
@@ -47,7 +47,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         this.portfolioTo = portfolio;
     }
 
-    public void setDate(Date date)
+    public void setDate(LocalDate date)
     {
         this.transactionFrom.setDate(date);
         this.transactionTo.setDate(date);

@@ -1,11 +1,12 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.text.DateFormatSymbols;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.money.Values;
@@ -23,7 +24,6 @@ import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -151,12 +151,11 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         column = new Column(Messages.ColumnMonth, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
-            private final String[] MONTHS = new DateFormatSymbols().getMonths();
-
             @Override
             public String getText(Object element)
             {
-                return String.valueOf(MONTHS[((ConsumerPriceIndex) element).getMonth()]);
+                int month = ((ConsumerPriceIndex) element).getMonth();
+                return Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault());
             }
         });
         ColumnViewerSorter.create(ConsumerPriceIndex.class, "month", "year").attachTo(column); //$NON-NLS-1$ //$NON-NLS-2$
@@ -225,8 +224,9 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             public void run()
             {
                 ConsumerPriceIndex index = new ConsumerPriceIndex();
-                index.setYear(Calendar.getInstance().get(Calendar.YEAR));
-                index.setMonth(Calendar.getInstance().get(Calendar.MONTH));
+                LocalDate now = LocalDate.now();
+                index.setYear(now.getYear());
+                index.setMonth(now.getMonthValue());
 
                 getClient().addConsumerPriceIndex(index);
                 markDirty();
@@ -258,13 +258,13 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         List<ConsumerPriceIndex> indices = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndices());
         Collections.sort(indices, new ConsumerPriceIndex.ByDate());
 
-        Date[] dates = new Date[indices.size()];
+        LocalDate[] dates = new LocalDate[indices.size()];
         double[] cpis = new double[indices.size()];
 
         int ii = 0;
         for (ConsumerPriceIndex index : indices)
         {
-            dates[ii] = Dates.date(index.getYear(), index.getMonth(), 1);
+            dates[ii] = LocalDate.of(index.getYear(), index.getMonth(), 1);
             cpis[ii] = (double) index.getIndex() / Values.Index.divider();
             ii++;
         }

@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
 import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_PRICE;
-import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_QUOTE_DATE;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asDate;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
@@ -15,11 +14,11 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,8 +32,6 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.util.Dates;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -142,9 +139,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         long lastTrade = asPrice(values[1]);
 
-        Date lastTradeDate = asDate(values[2]);
+        LocalDate lastTradeDate = asDate(values[2]);
         if (lastTradeDate == null) // can't work w/o date
-            lastTradeDate = Dates.today();
+            lastTradeDate = LocalDate.now();
 
         long daysHigh = asPrice(values[3]);
 
@@ -166,9 +163,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final boolean updateHistoricalQuotes(Security security, List<Exception> errors)
     {
-        Calendar start = caculateStart(security);
+        LocalDate start = caculateStart(security);
 
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime(), errors);
+        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start, errors);
 
         boolean isUpdated = false;
         if (quotes != null)
@@ -182,25 +179,25 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return isUpdated;
     }
 
-    /* package */final Calendar caculateStart(Security security)
+    /**
+     * Calculate the first date to request historical quotes for.
+     */
+    /* package */final LocalDate caculateStart(Security security)
     {
-        Calendar start = Calendar.getInstance();
-        start.setTime(Dates.today());
-
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            start.setTime(lastHistoricalQuote.getTime());
+            return lastHistoricalQuote.getTime();
         }
         else
         {
-            start.add(Calendar.YEAR, -5);
+            return LocalDate.now().minusYears(5);
         }
-        return start;
     }
 
     @Override
-    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start,
+                    List<Exception> errors)
     {
         return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
     }
@@ -211,7 +208,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         throw new UnsupportedOperationException();
     }
 
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate,
+    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, LocalDate startDate,
                     List<Exception> errors)
     {
         if (security.getTickerSymbol() == null)
@@ -220,18 +217,16 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             return Collections.emptyList();
         }
 
-        Calendar start = Calendar.getInstance();
-        start.setTime(startDate);
-        Calendar stop = Calendar.getInstance();
+        LocalDate stopDate = LocalDate.now();
 
         String wknUrl = MessageFormat.format(HISTORICAL_URL, //
                         security.getTickerSymbol(), //
-                        start.get(Calendar.MONTH), //
-                        start.get(Calendar.DATE), //
-                        Integer.toString(start.get(Calendar.YEAR)), //
-                        stop.get(Calendar.MONTH), //
-                        stop.get(Calendar.DATE), //
-                        Integer.toString(stop.get(Calendar.YEAR)));
+                        startDate.getMonth().getValue(), //
+                        startDate.getDayOfMonth(), //
+                        Integer.toString(startDate.getYear()), //
+                        stopDate.getMonth().getValue(), //
+                        stopDate.getDayOfMonth(), //
+                        Integer.toString(stopDate.getYear()));
 
         List<T> answer = new ArrayList<T>();
 
@@ -248,7 +243,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
 
             DecimalFormat priceFormat = FMT_PRICE.get();
-            SimpleDateFormat dateFormat = FMT_QUOTE_DATE.get();
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
 
             while ((line = reader.readLine()) != null)
             {
@@ -263,7 +258,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 answer.add(price);
             }
         }
-        catch (NumberFormatException | ParseException e)
+        catch (NumberFormatException | ParseException | DateTimeParseException e)
         {
             errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
         }
@@ -276,9 +271,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     protected <T extends SecurityPrice> void fillValues(String[] values, T price, DecimalFormat priceFormat,
-                    SimpleDateFormat dateFormat) throws ParseException
+                    DateTimeFormatter dateFormat) throws ParseException, DateTimeParseException
     {
-        Date date = dateFormat.parse(values[0]);
+        LocalDate date = LocalDate.parse(values[0], dateFormat);
 
         Number q = priceFormat.parse(values[4]);
         long v = (long) (q.doubleValue() * 100);

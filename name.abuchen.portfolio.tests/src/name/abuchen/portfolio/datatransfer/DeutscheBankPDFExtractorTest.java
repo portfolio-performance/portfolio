@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
@@ -92,7 +92,7 @@ public class DeutscheBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(Dates.date("2014-12-15")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-15")));
         assertThat(transaction.getAmount(), is(1495L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
@@ -156,7 +156,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(675.50)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
         assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(10.50)));
     }
@@ -191,7 +191,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3524.98)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
         assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(11.38)));
     }
@@ -226,7 +226,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2074.71)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getPortfolioTransaction().getTaxes(),
                         is(Values.Amount.factorize(122.94) + Values.Amount.factorize(6.76)));

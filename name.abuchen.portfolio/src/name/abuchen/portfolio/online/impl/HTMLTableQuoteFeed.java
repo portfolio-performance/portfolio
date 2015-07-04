@@ -6,15 +6,15 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +29,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.util.Strings;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -75,7 +76,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             return false;
         }
 
-        abstract void read(Element value, LatestSecurityPrice price) throws ParseException;
+        abstract void setValue(Element value, LatestSecurityPrice price) throws ParseException;
 
         protected long asQuote(Element value) throws ParseException
         {
@@ -94,41 +95,40 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private static class DateColumn extends Column
     {
-        private DateFormatSymbols alternativeSymbols = null;
+        private DateTimeFormatter[] formatters;
 
         @SuppressWarnings("nls")
         public DateColumn()
         {
             super(new String[] { "Datum" });
 
-            // some sites return "mär" instead of the default "mrz"
-            alternativeSymbols = new DateFormatSymbols(Locale.GERMANY);
-            alternativeSymbols.setShortMonths(new String[] { "jan", "feb", "mär", "apr", "may", "jun", "jul", "aug",
-                            "sep", "oct", "nov", "dec" });
+            formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d.M.y"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMM y"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMMM y"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMM. y") //$NON-NLS-1$
+            };
         }
 
         @Override
-        void read(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
-            String text = value.text();
-            try
-            {
-                Date date = new SimpleDateFormat("dd.MM.yy").parse(text); //$NON-NLS-1$
-                price.setTime(date);
-            }
-            catch (ParseException e)
+            String text = Strings.strip(value.text());
+            for (int ii = 0; ii < formatters.length; ii++)
             {
                 try
                 {
-                    Date date = new SimpleDateFormat("dd. MMM yyyy").parse(text); //$NON-NLS-1$
+                    LocalDate date = LocalDate.parse(text, formatters[ii]);
                     price.setTime(date);
+                    return;
                 }
-                catch (ParseException e2)
+                catch (DateTimeParseException e)
                 {
-                    Date date = new SimpleDateFormat("dd. MMM yyyy", alternativeSymbols).parse(text); //$NON-NLS-1$
-                    price.setTime(date);
+                    // continue with next pattern
                 }
             }
+
+            throw new ParseException(text, 0);
         }
     }
 
@@ -141,7 +141,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void read(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
             price.setValue(asQuote(value));
         }
@@ -156,7 +156,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void read(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
             price.setHigh(asQuote(value));
         }
@@ -171,7 +171,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void read(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
             price.setLow(asQuote(value));
         }
@@ -249,7 +249,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
         return internalGetQuotes(security, security.getFeedURL(), errors);
     }
@@ -443,7 +443,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         LatestSecurityPrice price = new LatestSecurityPrice();
 
         for (Spec spec : specs)
-            spec.column.read(cells.get(spec.index), price);
+            spec.column.setValue(cells.get(spec.index), price);
 
         return price;
     }
@@ -458,7 +458,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         PrintWriter writer = new PrintWriter(System.out);
         for (String arg : args)
-            doLoad(arg, writer);
+            if (arg.charAt(0) != '#')
+                doLoad(arg, writer);
         writer.flush();
     }
 

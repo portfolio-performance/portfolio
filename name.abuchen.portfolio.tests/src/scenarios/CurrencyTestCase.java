@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
@@ -23,8 +23,6 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.util.Dates;
-
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,7 +52,7 @@ public class CurrencyTestCase
     @Test
     public void testClientSnapshot()
     {
-        Date requestedTime = Dates.date("2015-01-16");
+        LocalDate requestedTime = LocalDate.parse("2015-01-16");
 
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, requestedTime);
 
@@ -139,7 +137,7 @@ public class CurrencyTestCase
     @Test
     public void testClientPerformanceSnapshot()
     {
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2015-01-02"), Dates.date("2015-01-14"));
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"), LocalDate.parse("2015-01-14"));
         ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter, period);
 
         // calculating the totals is tested with #testClientSnapshot

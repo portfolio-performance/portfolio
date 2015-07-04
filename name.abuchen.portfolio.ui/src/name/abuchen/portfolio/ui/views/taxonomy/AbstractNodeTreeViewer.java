@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,19 +21,18 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -398,7 +398,7 @@ import org.eclipse.swt.widgets.Shell;
                     return null;
 
                 CurrencyConverter converter = getModel().getCurrencyConverter();
-                return Values.ExchangeRate.format(converter.getRate(Dates.today(), baseCurrency).getValue());
+                return Values.ExchangeRate.format(converter.getRate(LocalDate.now(), baseCurrency).getValue());
             }
         });
         column.setVisible(false);
@@ -431,7 +431,7 @@ import org.eclipse.swt.widgets.Shell;
                     return Values.Money.format(
                                     getModel().getCurrencyConverter()
                                                     .with(node.getAssignment().getInvestmentVehicle().getCurrencyCode())
-                                                    .convert(Dates.today(), node.getActual()), getModel()
+                                                    .convert(LocalDate.now(), node.getActual()), getModel()
                                                     .getCurrencyCode());
                 }
                 else

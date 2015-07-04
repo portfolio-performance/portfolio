@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -51,7 +51,7 @@ public interface Extractor
 
         public abstract String getTypeInformation();
 
-        public abstract Date getDate();
+        public abstract LocalDate getDate();
 
         public long getAmount()
         {
@@ -126,7 +126,7 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return transaction.getDate();
         }
@@ -199,7 +199,7 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return entry.getAccountTransaction().getDate();
         }
@@ -263,7 +263,7 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return entry.getSourceTransaction().getDate();
         }
@@ -320,7 +320,7 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return entry.getSourceTransaction().getDate();
         }
@@ -383,7 +383,7 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return null;
         }

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
 
 import name.abuchen.portfolio.model.Account;
@@ -23,7 +25,6 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -244,7 +245,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                     transactions.refresh();
                     CurrencyConverter converter = new CurrencyConverterImpl(factory, portfolio.getReferenceAccount()
                                     .getCurrencyCode());
-                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, Dates.today()));
+                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, LocalDate.now()));
                 }
                 else
                 {

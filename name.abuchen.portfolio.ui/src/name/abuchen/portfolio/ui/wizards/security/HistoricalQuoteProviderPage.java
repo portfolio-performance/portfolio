@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,11 +178,9 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                 s.setFeedURL(getModel().getFeedURL());
 
                 // last 2 months as sample
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.MONTH, -2);
+                LocalDate t = LocalDate.now().minusMonths(2);
 
-                final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, cal.getTime(),
-                                new ArrayList<Exception>());
+                final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, t, new ArrayList<Exception>());
 
                 Display.getDefault().asyncExec(new Runnable()
                 {

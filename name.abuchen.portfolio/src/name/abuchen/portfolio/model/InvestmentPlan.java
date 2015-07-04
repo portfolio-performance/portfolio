@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -18,7 +16,7 @@ public class InvestmentPlan implements Named, Adaptable
     private Portfolio portfolio;
     private Account account;
 
-    private Date start;
+    private LocalDate start;
     private int interval = 1;
 
     private long amount;
@@ -90,12 +88,12 @@ public class InvestmentPlan implements Named, Adaptable
         this.account = account;
     }
 
-    public Date getStart()
+    public LocalDate getStart()
     {
         return start;
     }
 
-    public void setStart(Date start)
+    public void setStart(LocalDate start)
     {
         this.start = start;
     }
@@ -166,7 +164,7 @@ public class InvestmentPlan implements Named, Adaptable
         LocalDate last = null;
         for (PortfolioTransaction t : transactions)
         {
-            LocalDate date = t.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate date = t.getDate();
             if (last == null || last.isBefore(date))
                 last = date;
         }
@@ -180,7 +178,7 @@ public class InvestmentPlan implements Named, Adaptable
      */
     private LocalDate next(LocalDate date)
     {
-        LocalDate startLocalDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate startLocalDate = start;
 
         LocalDate next = date.plusMonths(interval);
 
@@ -195,7 +193,7 @@ public class InvestmentPlan implements Named, Adaptable
         LocalDate transactionDate = null;
 
         if (transactions.isEmpty())
-            transactionDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            transactionDate = start;
         else
             transactionDate = next(getLastDate());
 
@@ -205,9 +203,7 @@ public class InvestmentPlan implements Named, Adaptable
 
         while (transactionDate.isBefore(now))
         {
-            Date tDate = Date.from(transactionDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-
-            PortfolioTransaction transaction = createTransaction(converter, tDate);
+            PortfolioTransaction transaction = createTransaction(converter, transactionDate);
 
             transactions.add(transaction);
             newlyCreated.add(transaction);
@@ -218,7 +214,7 @@ public class InvestmentPlan implements Named, Adaptable
         return newlyCreated;
     }
 
-    private PortfolioTransaction createTransaction(CurrencyConverter converter, Date tDate)
+    private PortfolioTransaction createTransaction(CurrencyConverter converter, LocalDate tDate)
     {
         String targetCurrencyCode = getCurrencyCode();
         boolean needsCurrencyConversion = !targetCurrencyCode.equals(security.getCurrencyCode());

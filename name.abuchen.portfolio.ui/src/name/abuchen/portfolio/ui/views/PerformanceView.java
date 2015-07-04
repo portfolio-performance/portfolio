@@ -162,14 +162,13 @@ public class PerformanceView extends AbstractHistoricView
             // max drawdown duration
             Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
             maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
-            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(
-                            index.getReportInterval().getEndDate().toInstant());
+            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(index.getReportInterval().getEndDate());
             String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                             : Messages.TooltipMaxDrawdownDurationFromXtoY;
 
             // recovery time
             Interval recoveryTime = drawdown.getLongestRecoveryTime();
-            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate().toInstant());
+            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate());
             String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                             : Messages.TooltipMaxDrawdownDurationFromXtoY;
             maxDrawdownDuration.setToolTipText(Messages.TooltipMaxDrawdownDuration

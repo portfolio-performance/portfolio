@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import name.abuchen.portfolio.PortfolioBuilder;
@@ -21,9 +21,6 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
-
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -61,7 +58,7 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(d, "2010-01-01", Values.Share.factorize(10), 12000) //
                         .addTo(client);
 
-        Date date = Dates.date("2010-01-01");
+        LocalDate date = LocalDate.parse("2010-01-01");
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
@@ -99,7 +96,7 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        Date date = new DateTime("2010-01-01").toDate();
+        LocalDate date = LocalDate.parse("2010-01-01");
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
@@ -135,7 +132,7 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        Date date = new DateTime("2010-01-01").toDate();
+        LocalDate date = LocalDate.parse("2010-01-01");
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
@@ -167,7 +164,7 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        Date date = new DateTime("2010-01-01").toDate();
+        LocalDate date = LocalDate.parse("2010-01-01");
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
@@ -202,7 +199,7 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        Date date = new DateTime("2010-01-01").toDate();
+        LocalDate date = LocalDate.parse("2010-01-01");
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 

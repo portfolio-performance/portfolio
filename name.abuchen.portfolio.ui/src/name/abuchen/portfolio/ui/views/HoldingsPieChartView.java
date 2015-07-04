@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
 import java.util.StringJoiner;
 
 import javax.inject.Inject;
@@ -14,7 +15,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.util.ColorConversion;
-import name.abuchen.portfolio.util.Dates;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.browser.Browser;
@@ -77,7 +77,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
             try
             {
                 CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, Dates.today());
+                ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, LocalDate.now());
 
                 StringJoiner joiner = new StringJoiner(",", "[", "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 JSColors colors = new JSColors();

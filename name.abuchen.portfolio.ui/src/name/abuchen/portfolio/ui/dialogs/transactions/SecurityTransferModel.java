@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -15,8 +15,6 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.util.Dates;
-
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
@@ -36,7 +34,7 @@ public class SecurityTransferModel extends AbstractModel
     private Security security;
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
-    private Date date = Dates.today();
+    private LocalDate date = LocalDate.now();
 
     private long shares;
     private long quote;
@@ -214,12 +212,12 @@ public class SecurityTransferModel extends AbstractModel
         return targetPortfolio != null ? targetPortfolio.getReferenceAccount().getName() : ""; //$NON-NLS-1$
     }
 
-    public Date getDate()
+    public LocalDate getDate()
     {
         return date;
     }
 
-    public void setDate(Date date)
+    public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateSharesAndQuote();

@@ -1,11 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import name.abuchen.portfolio.util.Dates;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -27,13 +23,11 @@ public class DateEditingSupport extends PropertyEditingSupport
         }
     }
 
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-
     public DateEditingSupport(Class<?> subjectType, String attributeName)
     {
         super(subjectType, attributeName);
 
-        if (!Date.class.isAssignableFrom(descriptor().getPropertyType()))
+        if (!LocalDate.class.isAssignableFrom(descriptor().getPropertyType()))
             throw new RuntimeException(String.format("Property %s needs to be of type date", attributeName)); //$NON-NLS-1$
     }
 
@@ -49,33 +43,25 @@ public class DateEditingSupport extends PropertyEditingSupport
     @Override
     public final Object getValue(Object element) throws Exception
     {
-        Date v = (Date) descriptor().getReadMethod().invoke(adapt(element));
-        return format.format(v);
+        return ((LocalDate) descriptor().getReadMethod().invoke(adapt(element))).toString();
     }
 
     @Override
     public final void setValue(Object element, Object value) throws Exception
     {
         Object subject = adapt(element);
-        Date newValue = null;
+        LocalDate newValue = null;
 
         try
         {
-            newValue = format.parse(String.valueOf(value));
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(newValue);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            newValue = cal.getTime();
+            newValue = LocalDate.parse(String.valueOf(value));
         }
-        catch (ParseException e)
+        catch (DateTimeParseException e)
         {
-            newValue = Dates.today();
+            newValue = LocalDate.now();
         }
 
-        Date oldValue = (Date) descriptor().getReadMethod().invoke(subject);
+        LocalDate oldValue = (LocalDate) descriptor().getReadMethod().invoke(subject);
 
         if (!newValue.equals(oldValue))
         {

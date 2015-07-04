@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Month;
 
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
@@ -16,14 +16,13 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class PortfolioMergeTest
 {
-    private final Date referenceDate = Dates.date(2010, Calendar.JANUARY, 31);
+    private final LocalDate referenceDate = LocalDate.of(2010, Month.JANUARY, 31);
 
     private Client client;
 
@@ -40,28 +39,28 @@ public class PortfolioMergeTest
         client = new Client();
 
         securityA = new Security();
-        securityA.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1000));
+        securityA.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1000));
         client.addSecurity(securityA);
 
         securityB = new Security();
-        securityB.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1100));
+        securityB.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1100));
         client.addSecurity(securityB);
 
         securityX = new Security();
-        securityX.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1200));
+        securityX.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1200));
         client.addSecurity(securityX);
 
         Portfolio portfolioA = new Portfolio();
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+        portfolioA.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
                         100_00, securityA, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+        portfolioA.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
                         121_00, securityX, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 100, 0));
         client.addPortfolio(portfolioA);
 
         Portfolio portfolioB = new Portfolio();
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+        portfolioB.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
                         110_00, securityB, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), CurrencyUnit.EUR,
+        portfolioB.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
                         100_00, securityX, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolioB);
     }

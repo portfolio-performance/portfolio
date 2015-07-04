@@ -20,7 +20,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,13 +44,13 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.LocalDateConverter;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
-import com.thoughtworks.xstream.converters.basic.DateConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
@@ -449,6 +448,7 @@ public class ClientFactory
                 // added currency support --> designate a default currency (user
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
+                bumpUpCPIMonthValue(client);
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -771,6 +771,20 @@ public class ClientFactory
                 accountTransaction.setShares(accountTransaction.getShares() * 10);
     }
 
+    /**
+     * Previously, January had the index 0 (in line with java.util.Date). Bump
+     * it up by one since we are using new Java 8 Time API.
+     */
+    private static void bumpUpCPIMonthValue(Client client)
+    {
+        for (ConsumerPriceIndex i : client.getConsumerPriceIndices())
+            i.setMonth(i.getMonth() + 1);
+    }
+
+    /**
+     * Sets all currency codes of accounts, securities, and transactions to the
+     * given currency code.
+     */
     public static void setAllCurrencies(Client client, String currencyCode)
     {
         client.setBaseCurrency(currencyCode);
@@ -795,6 +809,8 @@ public class ClientFactory
                     xstream = new XStream();
 
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
+
+                    xstream.registerConverter(new LocalDateConverter());
 
                     xstream.alias("account", Account.class);
                     xstream.alias("client", Client.class);
@@ -822,9 +838,6 @@ public class ClientFactory
                     xstream.aliasField("m", ConsumerPriceIndex.class, "month");
                     xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
                     xstream.aliasField("i", ConsumerPriceIndex.class, "index");
-
-                    xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }, Calendar
-                                    .getInstance().getTimeZone()));
 
                     xstream.alias("buysell", BuySellEntry.class);
                     xstream.alias("account-transfer", AccountTransferEntry.class);

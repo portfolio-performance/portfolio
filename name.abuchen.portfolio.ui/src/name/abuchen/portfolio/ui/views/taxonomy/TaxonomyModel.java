@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +30,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainerNode;
-import name.abuchen.portfolio.util.Dates;
 
 public final class TaxonomyModel
 {
@@ -64,7 +64,7 @@ public final class TaxonomyModel
 
         this.taxonomy = taxonomy;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        this.snapshot = ClientSnapshot.create(client, converter, Dates.today());
+        this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
         Classification root = taxonomy.getRoot();
         rootNode = new ClassificationNode(null, root);

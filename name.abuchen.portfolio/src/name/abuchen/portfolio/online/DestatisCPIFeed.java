@@ -7,8 +7,8 @@ import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.time.Month;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -165,7 +165,7 @@ public class DestatisCPIFeed implements CPIFeed
             {
                 case 1:
                     if (insideAbbr)
-                        price.setMonth(parseMonth(text.getText()));
+                        price.setMonth(parseMonth(text.getText()).getValue());
                     break;
                 case 2:
                     price.setIndex(parseIndex(text.getText()));
@@ -190,32 +190,32 @@ public class DestatisCPIFeed implements CPIFeed
         }
 
         @SuppressWarnings("nls")
-        private int parseMonth(String text) throws IOException
+        private Month parseMonth(String text) throws IOException
         {
             if ("Jan".equals(text))
-                return Calendar.JANUARY;
+                return Month.JANUARY;
             else if ("Feb".equals(text))
-                return Calendar.FEBRUARY;
+                return Month.FEBRUARY;
             else if ("Mär".equals(text))
-                return Calendar.MARCH;
+                return Month.MARCH;
             else if ("Apr".equals(text))
-                return Calendar.APRIL;
+                return Month.APRIL;
             else if ("Mai".equals(text))
-                return Calendar.MAY;
+                return Month.MAY;
             else if ("Jun".equals(text))
-                return Calendar.JUNE;
+                return Month.JUNE;
             else if ("Jul".equals(text))
-                return Calendar.JULY;
+                return Month.JULY;
             else if ("Aug".equals(text))
-                return Calendar.AUGUST;
+                return Month.AUGUST;
             else if ("Sep".equals(text))
-                return Calendar.SEPTEMBER;
+                return Month.SEPTEMBER;
             else if ("Okt".equals(text))
-                return Calendar.OCTOBER;
+                return Month.OCTOBER;
             else if ("Nov".equals(text))
-                return Calendar.NOVEMBER;
+                return Month.NOVEMBER;
             else if ("Dez".equals(text))
-                return Calendar.DECEMBER;
+                return Month.DECEMBER;
 
             throw new IOException("Unknown month: " + text);
         }

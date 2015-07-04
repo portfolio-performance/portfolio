@@ -4,23 +4,22 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
 public class RiskTest
 {
 
-    private Date[] getDates(int size)
+    private LocalDate[] getDates(int size)
     {
-        Date[] dates = new Date[size];
+        LocalDate[] dates = new LocalDate[size];
         for (int i = 0; i < size; i++)
-            dates[i] = Dates.date(2015, 1, i + 1);
+            dates[i] = LocalDate.of(2015, 1, i + 1);
         return dates;
     }
 
@@ -28,7 +27,7 @@ public class RiskTest
     public void testDrawdown()
     {
         int size = 10;
-        Date[] dates = getDates(size);
+        LocalDate[] dates = getDates(size);
         double[] values = new double[size];
         for (int i = 0; i < size; i++)
             values[i] = i;

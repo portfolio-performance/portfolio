@@ -3,9 +3,7 @@ package name.abuchen.portfolio.util;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,13 +159,11 @@ public class TradeCalendar
                     new FixedHoliday(Month.DECEMBER, 26), //
                     new EasterHoliday());
 
-    public boolean isHoliday(Date date)
+    public boolean isHoliday(LocalDate date)
     {
-        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
         for (Holiday holiday : HOLIDAYS)
         {
-            if (holiday.isOn(localDate))
+            if (holiday.isOn(date))
                 return true;
         }
 

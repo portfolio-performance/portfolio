@@ -1,7 +1,7 @@
 package name.abuchen.portfolio;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -11,7 +11,6 @@ import name.abuchen.portfolio.money.MonetaryException;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.impl.ExchangeRateTimeSeriesImpl;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
-import name.abuchen.portfolio.util.Dates;
 
 @SuppressWarnings("nls")
 public class TestCurrencyConverter implements CurrencyConverter
@@ -21,19 +20,19 @@ public class TestCurrencyConverter implements CurrencyConverter
     static
     {
         EUR_USD = new ExchangeRateTimeSeriesImpl(null, CurrencyUnit.EUR, "USD");
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2014-12-31"), BigDecimal.valueOf(1.2141).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-02"), BigDecimal.valueOf(1.2043).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2014-12-31"), BigDecimal.valueOf(1.2141).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-02"), BigDecimal.valueOf(1.2043).setScale(10)));
 
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-05"), BigDecimal.valueOf(1.1915).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-06"), BigDecimal.valueOf(1.1914).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-07"), BigDecimal.valueOf(1.1831).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-08"), BigDecimal.valueOf(1.1768).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-09"), BigDecimal.valueOf(1.1813).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-05"), BigDecimal.valueOf(1.1915).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-06"), BigDecimal.valueOf(1.1914).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-07"), BigDecimal.valueOf(1.1831).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-08"), BigDecimal.valueOf(1.1768).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-09"), BigDecimal.valueOf(1.1813).setScale(10)));
 
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-12"), BigDecimal.valueOf(1.1804).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-14"), BigDecimal.valueOf(1.1775).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-15"), BigDecimal.valueOf(1.1708).setScale(10)));
-        EUR_USD.addRate(new ExchangeRate(Dates.date("2015-01-16"), BigDecimal.valueOf(1.1588).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-12"), BigDecimal.valueOf(1.1804).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-14"), BigDecimal.valueOf(1.1775).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-15"), BigDecimal.valueOf(1.1708).setScale(10)));
+        EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-16"), BigDecimal.valueOf(1.1588).setScale(10)));
     }
 
     private final String termCurrency;
@@ -57,7 +56,7 @@ public class TestCurrencyConverter implements CurrencyConverter
     }
 
     @Override
-    public Money convert(Date date, Money amount)
+    public Money convert(LocalDate date, Money amount)
     {
         if (termCurrency.equals(amount.getCurrencyCode()))
             return amount;
@@ -74,7 +73,7 @@ public class TestCurrencyConverter implements CurrencyConverter
     }
 
     @Override
-    public ExchangeRate getRate(Date date, String currencyCode)
+    public ExchangeRate getRate(LocalDate date, String currencyCode)
     {
         if (termCurrency.equals(currencyCode))
             return new ExchangeRate(date, BigDecimal.ONE);

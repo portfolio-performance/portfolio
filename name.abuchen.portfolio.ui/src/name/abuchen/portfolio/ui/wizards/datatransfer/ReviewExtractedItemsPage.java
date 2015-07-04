@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -240,7 +240,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
             @Override
             public String getText(Extractor.Item item)
             {
-                Date date = item.getDate();
+                LocalDate date = item.getDate();
                 return date != null ? Values.Date.format(date) : null;
             }
         });

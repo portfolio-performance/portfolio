@@ -1,5 +1,6 @@
 package name.abuchen.portfolio;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Account;
@@ -10,9 +11,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
-
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
 
 public class PortfolioBuilder
 {
@@ -33,12 +31,12 @@ public class PortfolioBuilder
 
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
     {
-        return inbound_delivery(security, new DateMidnight(date), shares, amount);
+        return inbound_delivery(security, LocalDate.parse(date), shares, amount);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, DateMidnight date, long shares, long amount)
+    public PortfolioBuilder inbound_delivery(Security security, LocalDate date, long shares, long amount)
     {
-        portfolio.addTransaction(new PortfolioTransaction(date.toDate(), CurrencyUnit.EUR, amount, security, shares,
+        portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, amount, security, shares,
                         Type.DELIVERY_INBOUND, 0, 0));
         return this;
     }
@@ -76,7 +74,7 @@ public class PortfolioBuilder
 
         BuySellEntry entry = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
         entry.setType(type);
-        entry.setDate(new DateTime(date).toDate());
+        entry.setDate(LocalDate.parse(date));
         entry.setSecurity(security);
         entry.setShares(shares);
         entry.setCurrencyCode(CurrencyUnit.EUR);

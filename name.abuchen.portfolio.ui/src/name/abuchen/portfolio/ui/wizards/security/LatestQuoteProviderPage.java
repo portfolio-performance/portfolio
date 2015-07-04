@@ -5,8 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Exchange;
@@ -65,7 +65,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         }
 
         @Override
-        public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+        public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
         {
             return null;
         }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -22,12 +22,11 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
 
 public class PerformanceIndex
 {
@@ -35,7 +34,7 @@ public class PerformanceIndex
     private final CurrencyConverter converter;
     private final ReportingPeriod reportInterval;
 
-    protected Date[] dates;
+    protected LocalDate[] dates;
     protected long[] totals;
     protected long[] transferals;
     protected long[] taxes;
@@ -131,10 +130,10 @@ public class PerformanceIndex
      */
     public Interval getActualInterval()
     {
-        return new Interval(dates[0].getTime(), dates[dates.length - 1].getTime());
+        return Interval.of(dates[0], dates[dates.length - 1]);
     }
 
-    public Date[] getDates()
+    public LocalDate[] getDates()
     {
         return dates;
     }
@@ -228,12 +227,12 @@ public class PerformanceIndex
         return answer;
     }
 
-    public Optional<DateTime> getFirstDataPoint()
+    public Optional<LocalDate> getFirstDataPoint()
     {
         for (int ii = 0; ii < totals.length; ii++)
         {
             if (totals[ii] != 0)
-                return Optional.of(new DateTime(dates[ii]));
+                return Optional.of(dates[ii]);
         }
 
         return Optional.empty();

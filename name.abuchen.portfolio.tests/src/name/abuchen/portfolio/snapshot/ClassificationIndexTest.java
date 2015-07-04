@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +21,13 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 
-import org.joda.time.DateMidnight;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class ClassificationIndexTest
 {
     private ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY( //
-                    new DateMidnight("2011-12-31").toDate(), new DateMidnight("2012-01-08").toDate());
+                    LocalDate.parse("2011-12-31"), LocalDate.parse("2012-01-08"));
 
     private Client createClient(int weight)
     {

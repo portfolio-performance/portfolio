@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
@@ -11,7 +11,7 @@ import name.abuchen.portfolio.money.Values;
 
 /* package */class IRRCalculation extends Calculation
 {
-    private List<Date> dates = new ArrayList<Date>();
+    private List<LocalDate> dates = new ArrayList<LocalDate>();
     private List<Double> values = new ArrayList<Double>();
 
     @Override

@@ -2,21 +2,20 @@ package name.abuchen.portfolio.snapshot;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.Dates;
-
-import org.joda.time.Interval;
+import name.abuchen.portfolio.util.Interval;
 
 public abstract class ReportingPeriod
 {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+
     public static final ReportingPeriod from(String code) throws IOException
     {
         char type = code.charAt(0);
@@ -35,29 +34,27 @@ public abstract class ReportingPeriod
         throw new IOException(code);
     }
 
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
+    protected LocalDate startDate;
+    protected LocalDate endDate;
 
-    protected Date startDate;
-    protected Date endDate;
-
-    public final Date getStartDate()
+    public final LocalDate getStartDate()
     {
         return startDate;
     }
 
-    public final Date getEndDate()
+    public final LocalDate getEndDate()
     {
         return endDate;
     }
 
     public final Predicate<Transaction> containsTransaction()
     {
-        return t -> t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime();
+        return t -> t.getDate().isAfter(startDate) && !t.getDate().isAfter(endDate);
     }
 
     public final Interval toInterval()
     {
-        return new Interval(startDate.getTime(), endDate.getTime());
+        return Interval.of(startDate, endDate);
     }
 
     public abstract void writeTo(StringBuilder buffer);
@@ -80,16 +77,8 @@ public abstract class ReportingPeriod
             this.years = years;
             this.months = months;
 
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.YEAR, -years);
-            cal.add(Calendar.MONTH, -months);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            startDate = cal.getTime();
-            endDate = Dates.today();
+            endDate = LocalDate.now();
+            startDate = endDate.minusYears(years).minusMonths(months);
         }
 
         @Override
@@ -123,19 +112,12 @@ public abstract class ReportingPeriod
 
         /* package */FromXtoY(String code)
         {
-            try
-            {
-                int u = code.indexOf('_');
-                this.startDate = DATE_FORMAT.parse(code.substring(1, u));
-                this.endDate = DATE_FORMAT.parse(code.substring(u + 1));
-            }
-            catch (ParseException e)
-            {
-                throw new RuntimeException(e);
-            }
+            int u = code.indexOf('_');
+            this.startDate = LocalDate.parse(code.substring(1, u));
+            this.endDate = LocalDate.parse(code.substring(u + 1));
         }
 
-        public FromXtoY(Date startDate, Date endDate)
+        public FromXtoY(LocalDate startDate, LocalDate endDate)
         {
             this.startDate = startDate;
             this.endDate = endDate;
@@ -151,7 +133,8 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, getStartDate(), getEndDate());
+            return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, getStartDate().format(DATE_FORMATTER),
+                            getEndDate().format(DATE_FORMATTER));
         }
     }
 
@@ -161,21 +144,14 @@ public abstract class ReportingPeriod
 
         /* package */SinceX(String code)
         {
-            try
-            {
-                this.startDate = DATE_FORMAT.parse(code.substring(1));
-                this.endDate = Dates.today();
-            }
-            catch (ParseException e)
-            {
-                throw new RuntimeException(e);
-            }
+            this.startDate = LocalDate.parse(code.substring(1));
+            this.endDate = LocalDate.now();
         }
 
-        public SinceX(Date startDate)
+        public SinceX(LocalDate startDate)
         {
             this.startDate = startDate;
-            this.endDate = Dates.today();
+            this.endDate = LocalDate.now();
         }
 
         @Override
@@ -187,7 +163,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodSince, getStartDate());
+            return MessageFormat.format(Messages.LabelReportingPeriodSince, getStartDate().format(DATE_FORMATTER));
         }
 
     }

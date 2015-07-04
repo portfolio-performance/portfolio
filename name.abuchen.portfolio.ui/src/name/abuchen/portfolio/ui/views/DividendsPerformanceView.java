@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -417,7 +417,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                Date date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
+                LocalDate date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
                 return date != null ? Values.Date.format(date) : null;
             }
         });

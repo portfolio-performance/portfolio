@@ -45,7 +45,7 @@ public class PreviewQuotesPage extends AbstractWizardPage
                 case 1:
                     return Values.Quote.format(p.getValue());
                 case 2:
-                    if (model.isChangeHistoricalQuotes() && p.getTime().before(model.getExDate()))
+                    if (model.isChangeHistoricalQuotes() && p.getTime().isBefore(model.getExDate()))
                     {
                         long shares = p.getValue() * model.getOldShares() / model.getNewShares();
                         return Values.Quote.format(shares);

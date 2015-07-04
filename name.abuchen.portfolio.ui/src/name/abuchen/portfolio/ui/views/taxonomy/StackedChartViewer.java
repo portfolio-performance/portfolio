@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
+import name.abuchen.portfolio.util.Interval;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,8 +34,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.joda.time.DateMidnight;
-import org.joda.time.Interval;
 import org.swtchart.ISeries;
 import org.swtchart.Range;
 
@@ -115,7 +115,7 @@ public class StackedChartViewer extends AbstractChartPage
     private boolean isVisible = false;
     private boolean isDirty = true;
 
-    private List<DateMidnight> dates;
+    private List<LocalDate> dates;
 
     public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -125,11 +125,11 @@ public class StackedChartViewer extends AbstractChartPage
 
         Period weekly = Aggregation.Period.WEEKLY;
 
-        final DateMidnight start = interval.getStart().toDateMidnight();
-        final DateMidnight end = interval.getEnd().toDateMidnight();
-        DateMidnight current = weekly.getStartDateFor(start);
+        final LocalDate start = interval.getStart();
+        final LocalDate end = interval.getEnd();
+        LocalDate current = weekly.getStartDateFor(start);
 
-        dates = new ArrayList<DateMidnight>();
+        dates = new ArrayList<LocalDate>();
         while (current.isBefore(end))
         {
             dates.add(current);
@@ -164,15 +164,14 @@ public class StackedChartViewer extends AbstractChartPage
             @Override
             public void run()
             {
-                getModel().setOrderByTaxonomyInStackChart(
-                                !getModel().isOrderByTaxonomyInStackChart());
+                getModel().setOrderByTaxonomyInStackChart(!getModel().isOrderByTaxonomyInStackChart());
                 onConfigChanged();
             }
         };
         action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
     }
-    
+
     @Override
     public void nodeChange(TaxonomyNode node)
     {
@@ -251,10 +250,10 @@ public class StackedChartViewer extends AbstractChartPage
         final long[] totals = new long[dates.size()];
 
         int index = 0;
-        for (DateMidnight current : dates)
+        for (LocalDate current : dates)
         {
             ClientSnapshot snapshot = ClientSnapshot.create(getModel().getClient(), getModel().getCurrencyConverter(),
-                            current.toDate());
+                            current);
             totals[index] = snapshot.getMonetaryAssets().getAmount();
 
             Map<InvestmentVehicle, AssetPosition> p = snapshot.getPositionsByVehicle();
@@ -277,25 +276,21 @@ public class StackedChartViewer extends AbstractChartPage
                 totals[ii] -= unassigned.values[ii];
         }
 
-        Stream<SeriesBuilder> seriesStream = node2series
-                        .values()
-                        .stream()
-                        .filter(s -> s.hasValues());
+        Stream<SeriesBuilder> seriesStream = node2series.values().stream().filter(s -> s.hasValues());
         if (getModel().isUnassignedCategoryInChartsExcluded())
             seriesStream = seriesStream.filter(s -> !s.node.isUnassignedCategory());
-        
+
         List<SeriesBuilder> series = seriesStream.collect(Collectors.toList());
-        
-        if (getModel().isOrderByTaxonomyInStackChart()) 
+
+        if (getModel().isOrderByTaxonomyInStackChart())
         {
             // reverse because chart is stacked bottom-up
             Collections.reverse(series);
-        } 
-        else 
+        }
+        else
         {
             Collections.sort(series);
         }
-
 
         Display.getDefault().asyncExec(() -> rebuildChartSeries(totals, series));
     }

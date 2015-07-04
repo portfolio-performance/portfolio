@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -44,7 +44,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, Dates.today());
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, LocalDate.now());
 
         assetViewer.setInput(snapshot);
     }

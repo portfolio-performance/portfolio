@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class LatestSecurityPrice extends SecurityPrice
 {
@@ -13,7 +13,7 @@ public class LatestSecurityPrice extends SecurityPrice
     public LatestSecurityPrice()
     {}
 
-    public LatestSecurityPrice(Date time, long price)
+    public LatestSecurityPrice(LocalDate time, long price)
     {
         super(time, price);
     }

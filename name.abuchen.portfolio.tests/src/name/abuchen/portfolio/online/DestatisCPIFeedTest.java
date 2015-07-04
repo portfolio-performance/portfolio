@@ -4,7 +4,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.Month;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,7 +31,7 @@ public class DestatisCPIFeedTest
 
             ConsumerPriceIndex p = prices.get(5);
             assertThat(p.getYear(), equalTo(2012));
-            assertThat(p.getMonth(), equalTo(Calendar.JANUARY));
+            assertThat(p.getMonth(), equalTo(Month.JANUARY.getValue()));
             assertThat(p.getIndex(), equalTo(11150));
         }
     }

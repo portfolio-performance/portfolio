@@ -10,6 +10,7 @@ import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,6 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ public class SecurityPerformanceTaxRefundTestCase
         Security security = client.getSecurities().get(0);
         Portfolio portfolio = client.getPortfolios().get(0);
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-06"), Dates.date("2014-12-06"));
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
@@ -57,12 +57,12 @@ public class SecurityPerformanceTaxRefundTestCase
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
         double startValue = delivery.getAmount() - delivery.getTaxes();
-        double endValue = delivery.getShares() * security.getSecurityPrice(Dates.date("2014-12-06")).getValue()
+        double endValue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()
                         / Values.Share.divider();
         double ttwror = (endValue / startValue) - 1;
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 
-        // accrued taxes must be 0 (paid 10 on delivery + 5 tax refund):
+        // accrued taxes must be 5 (paid 10 on delivery + 5 tax refund):
         assertThat(record.getTaxes(), is(5L * Values.Amount.factor()));
 
         // accrued fees must be 10 (paid 10 on delivery)
@@ -111,7 +111,7 @@ public class SecurityPerformanceTaxRefundTestCase
         Portfolio portfolio = client.getPortfolios().get(0);
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
         PortfolioTransaction sell = portfolio.getTransactions().get(1);
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-06"), Dates.date("2014-12-06"));
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);

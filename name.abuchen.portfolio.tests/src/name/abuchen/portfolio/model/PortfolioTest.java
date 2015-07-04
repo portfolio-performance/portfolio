@@ -4,8 +4,10 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+
+import java.time.LocalDate;
+
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +42,7 @@ public class PortfolioTest
     {
         transaction = new PortfolioTransaction();
         transaction.setType(Type.DELIVERY_INBOUND);
-        transaction.setDate(Dates.today());
+        transaction.setDate(LocalDate.now());
         transaction.setSecurity(security);
 
         portfolio.addTransaction(transaction);
@@ -50,7 +52,7 @@ public class PortfolioTest
     {
         transactionWithPlan = new PortfolioTransaction();
         transactionWithPlan.setType(Type.DELIVERY_INBOUND);
-        transactionWithPlan.setDate(Dates.today());
+        transactionWithPlan.setDate(LocalDate.now());
         transactionWithPlan.setSecurity(security);
 
         plan.getTransactions().add(transactionWithPlan);

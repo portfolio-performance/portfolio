@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Date;
 
 import name.abuchen.portfolio.money.Values;
 
@@ -19,24 +19,24 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         }
     }
 
-    private Date time;
+    private LocalDate time;
     private long value;
 
     public SecurityPrice()
     {}
 
-    public SecurityPrice(Date time, long price)
+    public SecurityPrice(LocalDate time, long price)
     {
         this.value = price;
         this.time = time;
     }
 
-    public Date getTime()
+    public LocalDate getTime()
     {
         return time;
     }
 
-    public void setTime(Date time)
+    public void setTime(LocalDate time)
     {
         this.time = time;
     }

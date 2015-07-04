@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -33,7 +34,6 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -41,8 +41,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
-import name.abuchen.portfolio.util.Dates;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -211,7 +209,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                SecurityPrice latest = ((Security) e).getSecurityPrice(Dates.today());
+                SecurityPrice latest = ((Security) e).getSecurityPrice(LocalDate.now());
                 return latest != null ? Values.Quote.format(latest.getValue()) : null;
             }
         });
@@ -220,8 +218,8 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public int compare(Object o1, Object o2)
             {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
                 if (p1 == null)
                     return p2 == null ? 0 : -1;
@@ -245,7 +243,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                SecurityPrice price = ((Security) e).getSecurityPrice(Dates.today());
+                SecurityPrice price = ((Security) e).getSecurityPrice(LocalDate.now());
                 if (!(price instanceof LatestSecurityPrice))
                     return null;
 
@@ -258,7 +256,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Color getForeground(Object element)
             {
-                SecurityPrice price = ((Security) element).getSecurityPrice(Dates.today());
+                SecurityPrice price = ((Security) element).getSecurityPrice(LocalDate.now());
                 if (!(price instanceof LatestSecurityPrice))
                     return null;
 
@@ -272,8 +270,8 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public int compare(Object o1, Object o2)
             {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
                 if (!(p1 instanceof LatestSecurityPrice))
                     return p2 == null ? 0 : -1;
@@ -300,7 +298,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
+                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
                 return latest != null ? Values.Date.format(latest.getTime()) : null;
             }
 
@@ -318,10 +316,10 @@ public final class SecuritiesTable implements ModificationListener
 
             private Color getColor(Object element, int colorId)
             {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
+                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
 
-                Date sevenDaysAgo = new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS));
-                if (latest != null && latest.getTime().before(sevenDaysAgo))
+                LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+                if (latest != null && latest.getTime().isBefore(sevenDaysAgo))
                     return Display.getDefault().getSystemColor(colorId);
                 else
                     return null;
@@ -332,8 +330,8 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public int compare(Object o1, Object o2)
             {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
                 if (p1 == null)
                     return p2 == null ? 0 : -1;
@@ -381,7 +379,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                if (latest.getTime().before(new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS))))
+                if (latest.getTime().isBefore(LocalDate.now().minusDays(7)))
                     return Display.getDefault().getSystemColor(colorId);
                 else
                     return null;
