@@ -18,9 +18,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 27;
+    /* package */static final int CURRENT_VERSION = 28;
 
-    public static final int VERSION_WITH_CURRENCY_SUPPORT = 27;
+    public static final int VERSION_WITH_CURRENCY_SUPPORT = 28;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -50,6 +50,7 @@ public class Client
     private List<Taxonomy> taxonomies;
 
     private Map<String, String> properties;
+    private ClientSettings settings;
 
     @Deprecated
     private String industryTaxonomyId;
@@ -86,6 +87,9 @@ public class Client
 
         if (taxonomies == null)
             taxonomies = new ArrayList<Taxonomy>();
+        
+        if (settings == null)
+            settings = new ClientSettings();
     }
 
     /* package */int getVersion()
@@ -322,6 +326,11 @@ public class Client
         return taxonomies.stream() //
                         .filter(t -> id.equals(t.getId())) //
                         .findAny().orElse(null);
+    }
+    
+    public ClientSettings getSettings()
+    {
+        return settings;
     }
 
     public void setProperty(String key, String value)

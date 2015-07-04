@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.Column;
@@ -25,7 +26,7 @@ import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -213,12 +214,14 @@ import org.eclipse.swt.widgets.Shell;
 
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
+    private PortfolioPart part;
 
     private boolean isFirstView = true;
 
-    public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public AbstractNodeTreeViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
+        this.part = part;
     }
 
     protected final TreeViewer getNodeViewer()
@@ -609,7 +612,7 @@ import org.eclipse.swt.widgets.Shell;
             if (security != null)
             {
                 manager.add(new Separator());
-                manager.add(new WebLocationMenu(security));
+                manager.add(new BookmarkMenu(part, security));                
             }
         }
     }

@@ -19,6 +19,15 @@ public class Messages extends NLS
     public static String BaseCurrencySelectionPage_Description;
     public static String BaseCurrencySelectionPage_ExplanationIndividualCurrency;
     public static String BaseCurrencySelectionPage_Title;
+    public static String BookmarksListView_addSeparator;
+    public static String BookmarksListView_insertAfter;
+    public static String BookmarksListView_bookmark;
+    public static String BookmarksListView_delete;
+    public static String BookmarksListView_insertBefore;
+    public static String BookmarksListView_NewBookmark;
+    public static String BookmarksListView_title;
+    public static String BookmarksListView_tooltip;
+    public static String BookmarksListView_url;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
@@ -529,6 +538,7 @@ public class Messages extends NLS
     public static String WatchlistEditDialogMsg;
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
+    public static String BookmarkMenu_EditBookmarks;
     static
     {
         // initialize resource bundle

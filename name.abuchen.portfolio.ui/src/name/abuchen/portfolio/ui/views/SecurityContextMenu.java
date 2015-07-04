@@ -10,7 +10,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
 import org.eclipse.jface.action.Action;
@@ -42,7 +42,7 @@ public class SecurityContextMenu
         // menus to create transactions
         if (security != null && security.getCurrencyCode() == null)
         {
-            new WebLocationMenu(security);
+            new BookmarkMenu(owner.getPart(), security);
             return;
         }
 
@@ -120,7 +120,7 @@ public class SecurityContextMenu
         if (security != null)
         {
             manager.add(new Separator());
-            manager.add(new WebLocationMenu(security));
+            manager.add(new BookmarkMenu(owner.getPart(), security));
         }
     }
 }

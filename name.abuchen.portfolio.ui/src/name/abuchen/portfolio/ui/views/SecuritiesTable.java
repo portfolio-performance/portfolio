@@ -33,7 +33,7 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -555,7 +555,7 @@ public final class SecuritiesTable implements ModificationListener
         new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
 
         manager.add(new Separator());
-        manager.add(new WebLocationMenu(security));
+        manager.add(new BookmarkMenu(view.getPart(), security));
 
         manager.add(new Separator());
         if (watchlist == null)
