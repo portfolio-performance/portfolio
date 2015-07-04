@@ -112,7 +112,6 @@ import org.joda.time.Interval;
     {
         for (Account account : getClient().getAccounts())
         {
-            String currencyCode = account.getCurrencyCode();
             account.getTransactions()
                             .stream()
                             .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
@@ -121,18 +120,20 @@ import org.joda.time.Interval;
                                 switch (t.getType())
                                 {
                                     case DEPOSIT:
-                                        addValue(transferals, currencyCode, t.getAmount(), interval,
+                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDateMidnight());
                                         break;
                                     case REMOVAL:
-                                        addValue(transferals, currencyCode, -t.getAmount(), interval,
+                                        addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
                                                         t.getDateMidnight());
                                         break;
                                     case TAXES:
-                                        addValue(taxes, currencyCode, t.getAmount(), interval, t.getDateMidnight());
+                                        addValue(taxes, t.getCurrencyCode(), t.getAmount(), interval,
+                                                        t.getDateMidnight());
                                         break;
                                     case TAX_REFUND:
-                                        addValue(taxes, currencyCode, -t.getAmount(), interval, t.getDateMidnight());
+                                        addValue(taxes, t.getCurrencyCode(), -t.getAmount(), interval,
+                                                        t.getDateMidnight());
                                         break;
                                     default:
                                         // do nothing
@@ -144,8 +145,6 @@ import org.joda.time.Interval;
 
         for (Portfolio portfolio : getClient().getPortfolios())
         {
-            String currencyCode = portfolio.getReferenceAccount().getCurrencyCode();
-
             portfolio.getTransactions()
                             .stream()
                             .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
@@ -154,17 +153,20 @@ import org.joda.time.Interval;
                                 switch (t.getType())
                                 {
                                     case DELIVERY_INBOUND:
-                                        addValue(transferals, currencyCode, t.getAmount(), interval,
+                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDateMidnight());
-                                        addValue(taxes, currencyCode, t.getTaxes(), interval, t.getDateMidnight());
+                                        addValue(taxes, t.getCurrencyCode(), t.getTaxes(), interval,
+                                                        t.getDateMidnight());
                                         break;
                                     case DELIVERY_OUTBOUND:
-                                        addValue(transferals, currencyCode, -t.getAmount(), interval,
+                                        addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
                                                         t.getDateMidnight());
-                                        addValue(taxes, currencyCode, t.getTaxes(), interval, t.getDateMidnight());
+                                        addValue(taxes, t.getCurrencyCode(), t.getTaxes(), interval,
+                                                        t.getDateMidnight());
                                         break;
                                     default:
-                                        addValue(taxes, currencyCode, t.getTaxes(), interval, t.getDateMidnight());
+                                        addValue(taxes, t.getCurrencyCode(), t.getTaxes(), interval,
+                                                        t.getDateMidnight());
                                         break;
                                 }
                             });
