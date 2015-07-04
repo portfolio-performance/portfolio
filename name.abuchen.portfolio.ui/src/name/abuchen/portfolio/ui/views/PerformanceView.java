@@ -494,12 +494,12 @@ public class PerformanceView extends AbstractHistoricView
                 if (element instanceof ClientPerformanceSnapshot.Category)
                 {
                     ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
-                    return Values.Money.format(cat.getValuation());
+                    return Values.Money.format(cat.getValuation(), getClient().getBaseCurrency());
                 }
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-                    return Values.Money.format(pos.getValuation());
+                    return Values.Money.format(pos.getValuation(), getClient().getBaseCurrency());
                 }
                 return null;
             }
@@ -574,7 +574,7 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((Transaction) element).getAmount());
+                return Values.Money.format(((Transaction) element).getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "amount")); //$NON-NLS-1$
@@ -680,7 +680,7 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
-                return Values.Amount.format(item.getSum());
+                return Values.Money.format(item.getSum(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "sum")); //$NON-NLS-1$
