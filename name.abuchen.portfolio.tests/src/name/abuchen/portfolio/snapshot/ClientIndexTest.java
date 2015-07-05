@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.Messages;
@@ -255,26 +256,37 @@ public class ClientIndexTest
     @Test
     public void testExcelSampleAggregatedWeekly()
     {
-        Client client = createClient();
+        // first day of week is locale dependent
+        Locale locale = Locale.getDefault();
+        Locale.setDefault(Locale.GERMAN);
 
-        ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(LocalDate.of(2011, Month.DECEMBER, 31), //
-                        LocalDate.of(2012, Month.JANUARY, 8));
-        CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
-                        new ArrayList<Exception>());
+        try
+        {
+            Client client = createClient();
 
-        index = Aggregation.aggregate(index, Aggregation.Period.WEEKLY);
+            ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY( //
+                            LocalDate.of(2011, Month.DECEMBER, 31), LocalDate.of(2012, Month.JANUARY, 8));
+            CurrencyConverter converter = new TestCurrencyConverter();
+            PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
+                            new ArrayList<Exception>());
 
-        assertNotNull(index);
+            index = Aggregation.aggregate(index, Aggregation.Period.WEEKLY);
 
-        double[] delta = index.getDeltaPercentage();
-        assertThat(delta.length, is(2));
-        assertThat(delta[0], IsCloseTo.closeTo(0.023d, PRECISION));
-        assertThat(delta[1], IsCloseTo.closeTo(-0.0713587d, PRECISION));
+            assertNotNull(index);
 
-        double[] accumulated = index.getAccumulatedPercentage();
-        assertThat(accumulated[0], IsCloseTo.closeTo(0.023d, PRECISION));
-        assertThat(accumulated[1], IsCloseTo.closeTo(-0.05d, PRECISION));
+            double[] delta = index.getDeltaPercentage();
+            assertThat(delta.length, is(2));
+            assertThat(delta[0], IsCloseTo.closeTo(0.023d, PRECISION));
+            assertThat(delta[1], IsCloseTo.closeTo(-0.0713587d, PRECISION));
+
+            double[] accumulated = index.getAccumulatedPercentage();
+            assertThat(accumulated[0], IsCloseTo.closeTo(0.023d, PRECISION));
+            assertThat(accumulated[1], IsCloseTo.closeTo(-0.05d, PRECISION));
+        }
+        finally
+        {
+            Locale.setDefault(locale);
+        }
     }
 
     @Test
