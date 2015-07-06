@@ -69,6 +69,8 @@ public class Messages extends NLS
     public static String FixDeleteTransaction;
     public static String FixDeleteTransactionDone;
     public static String FixReferenceAccountNameProposal;
+    public static String FixSetSecurity;
+    public static String FixSetSecurityDone;
     public static String IBXML_Label;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
@@ -79,6 +81,7 @@ public class Messages extends NLS
     public static String IssueMissingBuySellInPortfolio;
     public static String IssueMissingPortfolioTransfer;
     public static String IssueMissingReferenceAccount;
+    public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
     public static String LabelHTMLTable;

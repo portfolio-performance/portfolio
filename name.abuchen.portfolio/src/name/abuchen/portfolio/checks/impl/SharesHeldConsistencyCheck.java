@@ -2,6 +2,7 @@ package name.abuchen.portfolio.checks.impl;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class SharesHeldConsistencyCheck implements Check
         @Override
         public List<QuickFix> getAvailableFixes()
         {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -77,6 +78,11 @@ public class SharesHeldConsistencyCheck implements Check
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
                 int index = securities.indexOf(t.getSecurity());
+
+                // negative index means either the security is not known to the
+                // global collection or the security is null -> other checks
+                if (index < 0)
+                    continue;
 
                 switch (t.getType())
                 {
