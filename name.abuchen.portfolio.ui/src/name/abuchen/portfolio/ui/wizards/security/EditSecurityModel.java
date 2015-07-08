@@ -362,6 +362,21 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     @Override
     public void applyChanges()
     {
+        // set all attributes to the current security
+        setAttributes(security);
+        for (TaxonomyDesignation designation : taxonomies)
+            designation.applyChanges();
+    }
+
+    /**
+     * Sets all currently edited attributes to the given {@link Security}. This
+     * function can also be used to create a temporary copy of a security.
+     * 
+     * @param security
+     *            {@link Security}
+     */
+    public void setAttributes(Security security)
+    {
         security.setName(name);
         security.setNote(note);
         security.setIsin(isin);
@@ -372,9 +387,6 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setLatestFeed(latestFeed);
         security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
-
-        for (TaxonomyDesignation designation : taxonomies)
-            designation.applyChanges();
 
         Attributes a = new Attributes();
         for (AttributeDesignation attribute : attributes)

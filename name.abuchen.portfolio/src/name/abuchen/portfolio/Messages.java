@@ -84,6 +84,7 @@ public class Messages extends NLS
     public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
+    public static String LabelFinanztreffDe;
     public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
