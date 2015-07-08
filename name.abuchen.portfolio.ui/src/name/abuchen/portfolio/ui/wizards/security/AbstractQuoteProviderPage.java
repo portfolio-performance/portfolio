@@ -56,8 +56,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             monitor.beginTask(Messages.JobMsgLoadingExchanges, provider.size());
             for (QuoteFeed feed : provider)
             {
-                Security s = new Security();
-                s.setTickerSymbol(model.getTickerSymbol());
+                Security s = buildTemporarySecurity();
 
                 List<Exception> errors = new ArrayList<Exception>();
                 cacheExchanges.put(feed, feed.getExchanges(s, errors));
@@ -75,31 +74,43 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                     QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection())
                                     .getFirstElement();
 
-                    if (feed.getId() != null && feed.getId().startsWith(YAHOO))
+                    if (feed != null && feed.getId() != null)
                     {
                         List<Exchange> exchanges = cacheExchanges.get(feed);
-                        comboExchange.setInput(exchanges);
-
-                        // run only after exchanges have been re-loaded
-                        Exchange selectedExchange = null;
-                        if (exchanges != null && comboExchange != null)
+                        if (comboExchange != null)
                         {
-                            for (Exchange e : exchanges)
+                            if (exchanges != null)
                             {
-                                if (e.getId().equals(model.getTickerSymbol()))
+                                comboExchange.setInput(exchanges);
+                            }
+                            // run only after exchanges have been re-loaded
+                            Exchange selectedExchange = null;
+                            if (exchanges != null)
+                            {
+                                for (Exchange e : exchanges)
                                 {
-                                    selectedExchange = e;
-                                    comboExchange.setSelection(new StructuredSelection(e));
+                                    if (e.getId().equals(model.getTickerSymbol()))
+                                    {
+                                        selectedExchange = e;
+                                        comboExchange.setSelection(new StructuredSelection(e));
 
-                                    break;
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        if (selectedExchange == null)
-                            clearSampleQuotes();
+                            if (selectedExchange == null)
+                                clearSampleQuotes();
+                            else
+                                showSampleQuotes(feed, selectedExchange, null);
+                        }
                         else
-                            showSampleQuotes(feed, selectedExchange, null);
+                        {
+                            if (exchanges == null || exchanges.isEmpty())
+                            {
+                                showSampleQuotes(feed, null, null);
+                            }
+                        }
                     }
 
                 }
@@ -238,6 +249,19 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         });
     }
 
+    /**
+     * Builds a temporary {@link Security} from the currently selected values.
+     * 
+     * @return {@link Security}
+     */
+    protected Security buildTemporarySecurity()
+    {
+        // create a temporary security and set all attributes
+        Security security = new Security();
+        model.setAttributes(security);
+        return security;
+    }
+
     private void createProviderGroup(Composite container)
     {
         grpQuoteFeed = new Group(container, SWT.NONE);
@@ -365,7 +389,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed.getId() != null && feed.getId().startsWith("YAHOO")) //$NON-NLS-1$
+        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && feed.getId().startsWith("YAHOO")) //$NON-NLS-1$
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
             ArrayList<Exchange> input = new ArrayList<Exchange>();
@@ -435,7 +459,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         }
         else
         {
-            clearSampleQuotes();
+            // get sample quotes?
+            if (feed != null)
+            {
+                showSampleQuotes(feed, null, getFeedURL());
+            }
+            else
+            {
+                clearSampleQuotes();
+            }
             setStatus(null);
         }
     }

@@ -285,9 +285,7 @@ public class FinanztreffDeQuoteFeed implements QuoteFeed
     @Override
     public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
-        List<Exchange> exchanges = new ArrayList<Exchange>();
-        exchanges.add(new Exchange(ID_EXCHANGE, Messages.LabelFinanztreffDeSingleQuote));
-        return exchanges;
+        return null;
     }
 
     @Override
