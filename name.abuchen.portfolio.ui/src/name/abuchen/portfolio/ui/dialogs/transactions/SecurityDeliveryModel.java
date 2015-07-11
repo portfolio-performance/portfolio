@@ -4,9 +4,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.Messages;
 
 public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
@@ -36,6 +34,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
         this.type = source.getTransaction().getType();
         this.portfolio = (Portfolio) source.getOwner();
+        this.account = portfolio.getReferenceAccount();
         fillFromTransaction(source.getTransaction());
     }
 
@@ -75,23 +74,6 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         transaction.setType(type);
         transaction.setNote(note);
 
-        transaction.clearUnits();
-
-        if (fees != 0)
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
-                            Money.of(getAccountCurrencyCode(), fees)));
-
-        if (taxes != 0)
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
-                            Money.of(getAccountCurrencyCode(), taxes)));
-
-        if (!getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
-        {
-            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
-                            Money.of(getAccountCurrencyCode(), convertedLumpSum), //
-                            Money.of(getSecurityCurrencyCode(), lumpSum), //
-                            getExchangeRate());
-            transaction.addUnit(forex);
-        }
+        writeToTransaction(transaction);
     }
 }

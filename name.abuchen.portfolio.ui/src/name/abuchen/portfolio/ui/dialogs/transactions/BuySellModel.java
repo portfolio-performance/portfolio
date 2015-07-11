@@ -1,12 +1,12 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.Messages;
 
 /* package */class BuySellModel extends AbstractSecurityTransactionModel
@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.Messages;
 
         this.type = source.getPortfolioTransaction().getType();
         this.portfolio = (Portfolio) source.getOwner(source.getPortfolioTransaction());
+        this.account = (Account) source.getOwner(source.getAccountTransaction());
         fillFromTransaction(source.getPortfolioTransaction());
     }
 
@@ -40,12 +41,13 @@ import name.abuchen.portfolio.ui.Messages;
     {
         if (security == null)
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
-        if (portfolio.getReferenceAccount() == null)
+        if (account == null)
             throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
 
         BuySellEntry entry;
 
-        if (source != null && source.getOwner(source.getPortfolioTransaction()).equals(portfolio))
+        if (source != null && source.getOwner(source.getPortfolioTransaction()).equals(portfolio)
+                        && source.getOwner(source.getAccountTransaction()).equals(account))
         {
             entry = source;
         }
@@ -60,36 +62,18 @@ import name.abuchen.portfolio.ui.Messages;
                 source = null;
             }
 
-            entry = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
+            entry = new BuySellEntry(portfolio, account);
             entry.insert();
         }
 
         entry.setDate(date);
-        entry.setCurrencyCode(getAccountCurrencyCode());
+        entry.setCurrencyCode(account.getCurrencyCode());
         entry.setSecurity(security);
         entry.setShares(shares);
         entry.setAmount(total);
         entry.setType(type);
         entry.setNote(note);
 
-        PortfolioTransaction transaction = entry.getPortfolioTransaction();
-        transaction.clearUnits();
-
-        if (fees != 0)
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
-                            Money.of(getAccountCurrencyCode(), fees)));
-
-        if (taxes != 0)
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
-                            Money.of(getAccountCurrencyCode(), taxes)));
-
-        if (!getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
-        {
-            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
-                            Money.of(getAccountCurrencyCode(), convertedLumpSum), //
-                            Money.of(getSecurityCurrencyCode(), lumpSum), //
-                            getExchangeRate());
-            transaction.addUnit(forex);
-        }
+        writeToTransaction(entry.getPortfolioTransaction());
     }
 }

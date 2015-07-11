@@ -62,11 +62,13 @@ public class PortfolioTransaction extends Transaction
         this.type = type;
     }
 
+    @Deprecated
     public long getFees()
     {
         return getMonetaryFees().getAmount();
     }
 
+    @Deprecated
     public Money getMonetaryFees()
     {
         return getUnits().filter(u -> u.getType() == Unit.Type.FEE)
@@ -82,11 +84,13 @@ public class PortfolioTransaction extends Transaction
         addUnit(new Unit(Unit.Type.FEE, Money.of(getCurrencyCode(), fees)));
     }
 
+    @Deprecated
     public long getTaxes()
     {
         return getMonetaryTaxes().getAmount();
     }
 
+    @Deprecated
     public Money getMonetaryTaxes()
     {
         return getUnits().filter(u -> u.getType() == Unit.Type.TAX)

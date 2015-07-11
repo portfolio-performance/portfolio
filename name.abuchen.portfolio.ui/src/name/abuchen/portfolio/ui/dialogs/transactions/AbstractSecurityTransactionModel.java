@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Optional;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -16,6 +16,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -31,8 +32,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public enum Properties
     {
-        portfolio, security, accountName, date, shares, quote, lumpSum, exchangeRate, convertedLumpSum, //
-        fees, taxes, total, note, exchangeRateCurrencies, accountCurrencyCode, securityCurrencyCode, calculationStatus;
+        portfolio, security, account, date, shares, quote, lumpSum, exchangeRate, convertedLumpSum, //
+        forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, accountCurrencyCode, //
+        securityCurrencyCode, calculationStatus;
     }
 
     protected final Client client;
@@ -40,13 +42,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected Portfolio portfolio;
     protected Security security;
+    protected Account account;
     protected LocalDate date = LocalDate.now();
     protected long shares;
     protected long quote;
     protected long lumpSum;
     protected BigDecimal exchangeRate = BigDecimal.ONE;
     protected long convertedLumpSum;
+    protected long forexFees;
     protected long fees;
+    protected long forexTaxes;
     protected long taxes;
     protected long total;
     protected String note;
@@ -76,29 +81,83 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
-        this.taxes = transaction.getTaxes();
-        this.fees = transaction.getFees();
         this.note = transaction.getNote();
 
-        this.convertedLumpSum = calcLumpSum(total, fees, taxes);
+        // will be overwritten if forex data exists
+        this.exchangeRate = BigDecimal.ONE;
 
-        Optional<Transaction.Unit> forex = transaction.getUnit(Transaction.Unit.Type.LUMPSUM);
-        if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(getAccountCurrencyCode())
-                        && forex.get().getForex().getCurrencyCode().equals(getSecurityCurrencyCode()))
+        transaction.getUnits().forEach(unit -> {
+            switch (unit.getType())
+            {
+                case LUMPSUM:
+                    this.exchangeRate = unit.getExchangeRate();
+                    this.lumpSum = unit.getForex().getAmount();
+                    this.quote = Math.round(this.lumpSum * Values.Share.factor() / (double) this.shares);
+                    break;
+                case FEE:
+                    if (unit.getForex() != null)
+                        this.forexFees += unit.getForex().getAmount();
+                    else
+                        this.fees += unit.getAmount().getAmount();
+                    break;
+                case TAX:
+                    if (unit.getForex() != null)
+                        this.forexTaxes += unit.getForex().getAmount();
+                    else
+                        this.taxes += unit.getAmount().getAmount();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        });
+
+        this.convertedLumpSum = calculateConvertedLumpSum();
+
+        if (exchangeRate.equals(BigDecimal.ONE))
         {
-            this.exchangeRate = forex.get().getExchangeRate();
-            this.lumpSum = forex.get().getForex().getAmount();
-            this.quote = Math.round(this.lumpSum * Values.Share.factor() / (double) this.shares);
-        }
-        else
-        {
-            this.exchangeRate = BigDecimal.ONE;
+            // units contained no information about forex
             this.lumpSum = convertedLumpSum;
             this.quote = transaction.getActualPurchasePrice();
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
+    }
+
+    protected void writeToTransaction(PortfolioTransaction transaction)
+    {
+        transaction.clearUnits();
+
+        if (fees != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                            Money.of(getAccountCurrencyCode(), fees)));
+
+        if (taxes != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+                            Money.of(getAccountCurrencyCode(), taxes)));
+
+        boolean hasForex = !getAccountCurrencyCode().equals(getSecurityCurrencyCode());
+        if (hasForex)
+        {
+            if (forexFees != 0)
+                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                                Money.of(getAccountCurrencyCode(), Math.round(forexFees * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), forexFees), //
+                                exchangeRate));
+
+            if (forexTaxes != 0)
+                transaction.addUnit(new Transaction.Unit(
+                                Transaction.Unit.Type.TAX, //
+                                Money.of(getAccountCurrencyCode(), Math.round(forexTaxes * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), forexTaxes), //
+                                exchangeRate));
+
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+                            Money.of(getAccountCurrencyCode(), convertedLumpSum), //
+                            Money.of(getSecurityCurrencyCode(), lumpSum), //
+                            exchangeRate));
+        }
+
     }
 
     @Override
@@ -132,9 +191,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             return ValidationStatus.error(Messages.MsgIncorrectConvertedSubTotal);
 
         // check total
-        long t = calcTotal(convertedLumpSum, fees, taxes);
+        long t = calculateTotal();
         if (t != total)
-            return ValidationStatus.error(Messages.MsgIncorrectTotal);
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgIncorrectTotal, Values.Amount.format(t)));
 
         if (total == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
@@ -149,14 +208,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public void setPortfolio(Portfolio portfolio)
     {
-        String oldCurrencyCode = getAccountCurrencyCode();
-        String oldAccountName = getAccountName();
-        String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio);
-        firePropertyChange(Properties.accountCurrencyCode.name(), oldCurrencyCode, getAccountCurrencyCode());
-        firePropertyChange(Properties.accountName.name(), oldAccountName, getAccountName());
-        firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
-                        getExchangeRateCurrencies());
+        setAccount(portfolio.getReferenceAccount());
 
         if (security != null)
         {
@@ -181,6 +234,27 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         updateSharesAndQuote();
         updateExchangeRate();
+    }
+
+    public Account getAccount()
+    {
+        return account;
+    }
+
+    public void setAccount(Account account)
+    {
+        String oldAccountCurrency = getAccountCurrencyCode();
+        String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        firePropertyChange(Properties.account.name(), this.account, this.account = account);
+        firePropertyChange(Properties.accountCurrencyCode.name(), oldAccountCurrency, getAccountCurrencyCode());
+        firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
+                        getExchangeRateCurrencies());
+
+        if (security != null)
+        {
+            updateSharesAndQuote();
+            updateExchangeRate();
+        }
     }
 
     private void updateSharesAndQuote()
@@ -342,6 +416,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             BigDecimal newExchangeRate = BigDecimal.valueOf(convertedLumpSum).divide(BigDecimal.valueOf(lumpSum), 10,
                             RoundingMode.HALF_UP);
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
+            triggerTotal(calculateTotal()); // forex fees and taxes might change
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -352,7 +427,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         firePropertyChange(Properties.convertedLumpSum.name(), this.convertedLumpSum,
                         this.convertedLumpSum = convertedLumpSum);
-        triggerTotal(calcTotal(convertedLumpSum, fees, taxes));
+        triggerTotal(calculateTotal());
     }
 
     public long getFees()
@@ -363,7 +438,21 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public void setFees(long fees)
     {
         firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees);
-        triggerTotal(calcTotal(convertedLumpSum, fees, taxes));
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getForexFees()
+    {
+        return forexFees;
+    }
+
+    public void setForexFees(long forexFees)
+    {
+        firePropertyChange(Properties.forexFees.name(), this.forexFees, this.forexFees = forexFees);
+        triggerTotal(calculateTotal());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -377,7 +466,21 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public void setTaxes(long taxes)
     {
         firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes);
-        triggerTotal(calcTotal(convertedLumpSum, fees, taxes));
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getForexTaxes()
+    {
+        return forexTaxes;
+    }
+
+    public void setForexTaxes(long forexTaxes)
+    {
+        firePropertyChange(Properties.forexTaxes.name(), this.forexTaxes, this.forexTaxes = forexTaxes);
+        triggerTotal(calculateTotal());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -393,7 +496,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         triggerTotal(total);
 
         firePropertyChange(Properties.convertedLumpSum.name(), this.convertedLumpSum,
-                        this.convertedLumpSum = calcLumpSum(total, fees, taxes));
+                        this.convertedLumpSum = calculateConvertedLumpSum());
 
         firePropertyChange(Properties.lumpSum.name(), this.lumpSum,
                         this.lumpSum = Math.round(convertedLumpSum / exchangeRate.doubleValue()));
@@ -428,7 +531,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public String getAccountCurrencyCode()
     {
-        return portfolio != null ? portfolio.getReferenceAccount().getCurrencyCode() : ""; //$NON-NLS-1$
+        return account != null ? account.getCurrencyCode() : ""; //$NON-NLS-1$
     }
 
     public String getExchangeRateCurrencies()
@@ -436,41 +539,42 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         return String.format("%s/%s", getAccountCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
     }
 
-    public String getAccountName()
-    {
-        return portfolio != null ? portfolio.getReferenceAccount().getName() : ""; //$NON-NLS-1$
-    }
-
     public PortfolioTransaction.Type getType()
     {
         return type;
     }
 
-    protected long calcLumpSum(long total, long fees, long taxes)
+    protected long calculateConvertedLumpSum()
     {
+        long totalFees = fees + Math.round(exchangeRate.doubleValue() * forexFees);
+        long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * forexTaxes);
+
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return Math.max(0, total - fees - taxes);
+                return Math.max(0, total - totalFees - totalTaxes);
             case SELL:
             case DELIVERY_OUTBOUND:
-                return total + fees + taxes;
+                return total + totalFees + totalTaxes;
             default:
                 throw new UnsupportedOperationException();
         }
     }
 
-    private long calcTotal(long lumpSum, long fees, long taxes)
+    private long calculateTotal()
     {
+        long totalFees = fees + Math.round(exchangeRate.doubleValue() * forexFees);
+        long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * forexTaxes);
+
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return lumpSum + fees + taxes;
+                return convertedLumpSum + totalFees + totalTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                return Math.max(0, lumpSum - fees - taxes);
+                return Math.max(0, convertedLumpSum - totalFees - totalTaxes);
             default:
                 throw new UnsupportedOperationException();
         }

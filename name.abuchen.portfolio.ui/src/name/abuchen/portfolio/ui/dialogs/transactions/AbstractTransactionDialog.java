@@ -125,8 +125,11 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public ComboInput(Composite editArea, String text)
         {
-            label = new Label(editArea, SWT.RIGHT);
-            label.setText(text);
+            if (text != null)
+            {
+                label = new Label(editArea, SWT.RIGHT);
+                label.setText(text);
+            }
             value = new ComboViewer(editArea);
             value.setContentProvider(new ArrayContentProvider());
             currency = new Label(editArea, SWT.NONE);

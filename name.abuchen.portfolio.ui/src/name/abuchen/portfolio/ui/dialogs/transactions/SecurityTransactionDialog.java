@@ -1,10 +1,9 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
-import static name.abuchen.portfolio.ui.util.SWTHelper.stringWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -93,16 +92,19 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         // security
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
-        securities.value.setInput(client.getActiveSecurities());
+        securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
-        // portfolio
+        // portfolio + reference account
 
         ComboInput portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
-        portfolio.value.setInput(client.getActivePortfolios());
+        portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
-        portfolio.bindCurrency(Properties.accountName.name());
+
+        ComboInput account = new ComboInput(editArea, null);
+        account.value.setInput(including(client.getActiveAccounts(), model().getAccount()));
+        account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
 
         // date
 
@@ -134,13 +136,33 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         convertedLumpSum.bindValue(Properties.convertedLumpSum.name(), Messages.ColumnSubTotal, Values.Amount, true);
         convertedLumpSum.bindCurrency(Properties.accountCurrencyCode.name());
 
+        // fees
+
+        Label plusForexFees = new Label(editArea, SWT.NONE);
+        plusForexFees.setText("+"); //$NON-NLS-1$
+
+        Input forexFees = new Input(editArea, sign() + Messages.ColumnFees);
+        forexFees.bindValue(Properties.forexFees.name(), Messages.ColumnFees, Values.Amount, false);
+        forexFees.bindCurrency(Properties.securityCurrencyCode.name());
+
         Input fees = new Input(editArea, sign() + Messages.ColumnFees);
         fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
         fees.bindCurrency(Properties.accountCurrencyCode.name());
 
+        // taxes
+
+        Label plusForexTaxes = new Label(editArea, SWT.NONE);
+        plusForexTaxes.setText("+"); //$NON-NLS-1$
+
+        Input forexTaxes = new Input(editArea, sign() + Messages.ColumnTaxes);
+        forexTaxes.bindValue(Properties.forexTaxes.name(), Messages.ColumnTaxes, Values.Amount, false);
+        forexTaxes.bindCurrency(Properties.securityCurrencyCode.name());
+
         Input taxes = new Input(editArea, sign() + Messages.ColumnTaxes);
         taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
         taxes.bindCurrency(Properties.accountCurrencyCode.name());
+
+        // total
 
         String label = getTotalLabel();
         Input total = new Input(editArea, "= " + label); //$NON-NLS-1$
@@ -148,6 +170,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         total.bindCurrency(Properties.accountCurrencyCode.name());
 
         // note
+
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
@@ -158,11 +181,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         // form layout
         //
 
-        int width = stringWidth(total.value, "12345678,00"); //$NON-NLS-1$
+        int width = amountWidth(lumpSum.value);
+        int currencyWidth = currencyWidth(lumpSum.currency);
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
-                        .thenBelow(portfolio.value.getControl()).label(portfolio.label).suffix(portfolio.currency)
-                        .thenBelow(valueDate)
+                        .thenBelow(portfolio.value.getControl()).label(portfolio.label)
+                        .suffix(account.value.getControl()).thenBelow(valueDate)
                         .label(lblDate)
                         // shares - quote - lump sum
                         .thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
@@ -185,29 +209,48 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
                         // note
                         .thenBelow(valueNote).left(securities.value.getControl()).right(total.value).label(lblNote);
 
+        startingWith(fees.value).thenLeft(plusForexFees).thenLeft(forexFees.currency).width(currencyWidth)
+                        .thenLeft(forexFees.value).width(width).thenLeft(forexFees.label);
+
+        startingWith(taxes.value).thenLeft(plusForexTaxes).thenLeft(forexTaxes.currency).width(currencyWidth)
+                        .thenLeft(forexTaxes.value).width(width).thenLeft(forexTaxes.label);
+
         //
         // hide / show exchange rate if necessary
         //
 
-        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange(PropertyChangeEvent event)
-            {
-                String securityCurrency = model().getSecurityCurrencyCode();
-                String accountCurrency = model().getAccountCurrencyCode();
+        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> {
+            String securityCurrency = model().getSecurityCurrencyCode();
+            String accountCurrency = model().getAccountCurrencyCode();
 
-                // make exchange rate visible if both are set but different
+            // make exchange rate visible if both are set but different
+                        boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
+                                        && !securityCurrency.equals(accountCurrency);
 
-                boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
-                                && !securityCurrency.equals(accountCurrency);
+                        exchangeRate.setVisible(visible);
+                        convertedLumpSum.setVisible(visible);
 
-                exchangeRate.setVisible(visible);
-                convertedLumpSum.setVisible(visible);
-            }
-        });
+                        forexFees.setVisible(visible);
+                        plusForexFees.setVisible(visible);
+                        fees.label.setVisible(!visible);
+
+                        forexTaxes.setVisible(visible);
+                        plusForexTaxes.setVisible(visible);
+                        taxes.label.setVisible(!visible);
+                    });
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
+    }
+
+    /**
+     * make sure drop-down boxes contain the security, portfolio and account of
+     * this transaction (they might be "retired" and do not show by default)
+     */
+    private <T> List<T> including(List<T> list, T element)
+    {
+        if (element != null && !list.contains(element))
+            list.add(0, element);
+        return list;
     }
 
     private String sign()

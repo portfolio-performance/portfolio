@@ -47,6 +47,14 @@ public final class FormDataFactory
         return new FormDataFactory(control);
     }
 
+    public FormDataFactory thenLeft(Control control)
+    {
+        FormData data = from(control);
+        data.top = new FormAttachment(reference, 0, SWT.CENTER);
+        data.right = new FormAttachment(reference, -5);
+        return new FormDataFactory(control);
+    }
+
     public FormDataFactory label(Label label)
     {
         FormData data = from(label);
