@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -118,7 +119,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                         isUpdated = isUpdated || isAdded;
                     }
                 }
-                catch (NumberFormatException | ParseException e)
+                catch (NumberFormatException | ParseException | DateTimeParseException e)
                 {
                     errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
                 }

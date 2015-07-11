@@ -81,12 +81,6 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
     }
 
     @Override
-    public void markDirty()
-    {
-        super.markDirty();
-    }
-
-    @Override
     protected Control createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);

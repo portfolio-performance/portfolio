@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.util;
 
-public class Strings
+public final class Strings
 {
+
+    private Strings()
+    {}
+
     /**
      * Since {@see String#trim} does not trim all whitespace and space
      * characters, this is an alternative implementation. Inspired by the blog

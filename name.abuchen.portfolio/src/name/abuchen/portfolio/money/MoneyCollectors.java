@@ -10,11 +10,11 @@ import java.util.stream.Collector;
 
 public class MoneyCollectors
 {
-    private static abstract class MoneyAdder<T> implements Collector<T, MutableMoney, Money>
+    private abstract static class AbstractMoneyAdder<T> implements Collector<T, MutableMoney, Money>
     {
         private final String currencyCode;
 
-        private MoneyAdder(String currencyCode)
+        private AbstractMoneyAdder(String currencyCode)
         {
             this.currencyCode = currencyCode;
         }
@@ -49,7 +49,7 @@ public class MoneyCollectors
 
     public static Collector<Money, MutableMoney, Money> sum(String currencyCode)
     {
-        return new MoneyAdder<Money>(currencyCode)
+        return new AbstractMoneyAdder<Money>(currencyCode)
         {
             @Override
             public BiConsumer<MutableMoney, Money> accumulator()
@@ -61,7 +61,7 @@ public class MoneyCollectors
 
     public static <T> Collector<T, MutableMoney, Money> sum(String currencyCode, Function<T, Money> converter)
     {
-        return new MoneyAdder<T>(currencyCode)
+        return new AbstractMoneyAdder<T>(currencyCode)
         {
             @Override
             public BiConsumer<MutableMoney, T> accumulator()

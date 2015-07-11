@@ -3,12 +3,16 @@ package name.abuchen.portfolio.ui.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import name.abuchen.portfolio.ui.Messages;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+
+import com.ibm.icu.text.MessageFormat;
 
 public class DateEditingSupport extends PropertyEditingSupport
 {
@@ -58,7 +62,7 @@ public class DateEditingSupport extends PropertyEditingSupport
         }
         catch (DateTimeParseException e)
         {
-            newValue = LocalDate.now();
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), e);
         }
 
         LocalDate oldValue = (LocalDate) descriptor().getReadMethod().invoke(subject);

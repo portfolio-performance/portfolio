@@ -5,7 +5,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 /* package */class YahooHelper
@@ -32,7 +31,7 @@ import java.util.Locale;
         return FMT_PRICE.get().parse(s).intValue();
     }
 
-    static LocalDate asDate(String s) throws DateTimeParseException
+    static LocalDate asDate(String s)
     {
         if ("\"N/A\"".equals(s)) //$NON-NLS-1$
             return null;

@@ -3019,12 +3019,6 @@
                   </crossEntry>
                   <shares>5000000</shares>
                   <units>
-                    <unit type="FEE">
-                      <amount currency="EUR" amount="0"/>
-                    </unit>
-                    <unit type="TAX">
-                      <amount currency="EUR" amount="0"/>
-                    </unit>
                     <unit type="LUMPSUM">
                       <amount currency="EUR" amount="45460"/>
                       <forex currency="USD" amount="55190"/>

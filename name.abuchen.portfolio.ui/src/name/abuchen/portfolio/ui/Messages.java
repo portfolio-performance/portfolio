@@ -418,6 +418,7 @@ public class Messages extends NLS
     public static String MsgEmbeddedBrowserError;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorExchangeMissing;
+    public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorUpdating;
