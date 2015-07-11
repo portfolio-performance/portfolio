@@ -9,8 +9,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -29,7 +30,6 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -257,7 +257,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getFees()), owner.getClient()
+                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.FEE), owner.getClient()
                                 .getBaseCurrency());
             }
         });
@@ -271,7 +271,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getTaxes()), owner.getClient()
+                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient()
                                 .getBaseCurrency());
             }
         });

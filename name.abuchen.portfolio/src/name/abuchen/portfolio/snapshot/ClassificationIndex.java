@@ -12,7 +12,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 /* package */final class ClassificationIndex
 {
@@ -58,35 +60,34 @@ import name.abuchen.portfolio.money.CurrencyConverter;
         {
             for (PortfolioTransaction t : p.getTransactions())
             {
-                if (t.getSecurity().equals(security))
-                {
-                    long shares = value(t.getShares(), weight);
-                    long amount = value(t.getAmount(), weight);
-                    long fees = value(t.getFees(), weight);
-                    long taxes = value(t.getTaxes(), weight);
+                if (!security.equals(t.getSecurity()))
+                    continue;
 
-                    switch (t.getType())
-                    {
-                        case BUY:
-                        case TRANSFER_IN:
-                        case DELIVERY_INBOUND:
-                        {
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(),
-                                            amount - taxes, t.getSecurity(), shares,
-                                            PortfolioTransaction.Type.DELIVERY_INBOUND, fees, 0));
-                            break;
-                        }
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DELIVERY_OUTBOUND:
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(),
-                                            amount + taxes, t.getSecurity(), shares,
-                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, fees, 0));
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
+                PortfolioTransaction pseudo = new PortfolioTransaction();
+                pseudo.setDate(t.getDate());
+                pseudo.setCurrencyCode(t.getCurrencyCode());
+                pseudo.setSecurity(security);
+                pseudo.setShares(value(t.getShares(), weight));
+
+                // convert type to the appropriate delivery type (either inbound
+                // or outbound delivery)
+
+                pseudo.setType(convertTypeToDelivery(t.getType()));
+
+                // calculation is without taxes -> remove any taxes & adapt
+                // total accordingly
+
+                long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
+                long amount = value(t.getAmount(), weight);
+
+                pseudo.setAmount(pseudo.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND ? amount - taxes
+                                : amount + taxes);
+
+                // copy all units (except for taxes) over to the pseudo
+                // transaction
+                t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> pseudo.addUnit(value(u, weight)));
+
+                pseudoPortfolio.addTransaction(pseudo);
             }
         }
 
@@ -125,6 +126,23 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     }
                 }
             }
+        }
+    }
+
+    private static PortfolioTransaction.Type convertTypeToDelivery(PortfolioTransaction.Type type)
+    {
+        switch (type)
+        {
+            case BUY:
+            case TRANSFER_IN:
+            case DELIVERY_INBOUND:
+                return PortfolioTransaction.Type.DELIVERY_INBOUND;
+            case SELL:
+            case TRANSFER_OUT:
+            case DELIVERY_OUTBOUND:
+                return PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 
@@ -174,6 +192,15 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     throw new UnsupportedOperationException();
             }
         }
+    }
+
+    private static Unit value(Unit unit, int weight)
+    {
+        if (weight == Classification.ONE_HUNDRED_PERCENT)
+            return unit;
+        else
+            return new Unit(unit.getType(), Money.of(unit.getAmount().getCurrencyCode(),
+                            value(unit.getAmount().getAmount(), weight)));
     }
 
     private static long value(long value, int weight)

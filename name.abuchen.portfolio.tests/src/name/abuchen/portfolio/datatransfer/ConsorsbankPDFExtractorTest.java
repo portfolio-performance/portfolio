@@ -25,6 +25,9 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 import org.junit.Test;
@@ -152,7 +155,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(5000_00L));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
     @Test

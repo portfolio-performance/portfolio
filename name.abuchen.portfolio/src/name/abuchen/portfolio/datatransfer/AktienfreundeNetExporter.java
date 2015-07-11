@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -109,8 +110,8 @@ public class AktienfreundeNetExporter
         printer.print(type);
         printer.print(Values.Amount.format(transaction.getActualPurchasePrice()));
         printer.print(Values.Share.format(transaction.getShares()));
-        printer.print(Values.Amount.format(transaction.getFees()));
-        printer.print(Values.Amount.format(transaction.getTaxes()));
+        printer.print(Values.Amount.format(transaction.getUnitSum(Unit.Type.FEE).getAmount()));
+        printer.print(Values.Amount.format(transaction.getUnitSum(Unit.Type.TAX).getAmount()));
         printer.println();
     }
 

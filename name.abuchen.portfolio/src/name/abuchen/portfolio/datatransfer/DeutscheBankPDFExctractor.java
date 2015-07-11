@@ -10,7 +10,9 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 {
@@ -60,24 +62,19 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section("fees") //
-                        .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)") //
+                        .section("fees")
+                        //
+                        .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)")
+                        //
                         .assign((t, v) -> {
+                            PortfolioTransaction pt = t.getPortfolioTransaction();
                             long marketValue = asAmount(v.get("fees"));
-                            long totalAmount = t.getPortfolioTransaction().getAmount();
-                            long taxes = t.getPortfolioTransaction().getTaxes();
+                            long totalAmount = pt.getAmount();
 
-                            switch (t.getPortfolioTransaction().getType())
-                            {
-                                case BUY:
-                                    t.setFees(totalAmount - taxes - marketValue);
-                                    break;
-                                case SELL:
-                                    t.setFees(marketValue - taxes - totalAmount);
-                                    break;
-                                default:
-                                    throw new UnsupportedOperationException();
-                            }
+                            long fees = pt.getType() == PortfolioTransaction.Type.BUY ? totalAmount - marketValue
+                                            : marketValue - totalAmount;
+
+                            pt.addUnit(new Unit(Unit.Type.FEE, Money.of(pt.getCurrencyCode(), fees)));
                         })
 
                         .wrap(t -> new BuySellEntryItem(t)));
@@ -123,30 +120,30 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .section("tax")
                         //
                         .match("Kapitalertragsteuer (\\w{3}+) (?<tax>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.setTaxes(asAmount(v.get("tax"))))
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.TAX, //
+                                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                                        asAmount(v.get("tax"))))))
 
                         .section("soli")
                         .match("Solidaritätszuschlag auf Kapitalertragsteuer (\\w{3}+) (?<soli>[\\d.-]+,\\d+)") //
-                        .assign((t, v) -> t.setTaxes(t.getPortfolioTransaction().getTaxes() + asAmount(v.get("soli"))))
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.TAX, //
+                                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                                        asAmount(v.get("soli"))))))
 
                         .section("fees") //
                         .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
+                            PortfolioTransaction pt = t.getPortfolioTransaction();
                             long marketValue = asAmount(v.get("fees"));
-                            long totalAmount = t.getPortfolioTransaction().getAmount();
-                            long taxes = t.getPortfolioTransaction().getTaxes();
+                            long totalAmount = pt.getAmount();
+                            long taxes = pt.getUnitSum(Unit.Type.TAX).getAmount();
 
-                            switch (t.getPortfolioTransaction().getType())
-                            {
-                                case BUY:
-                                    t.setFees(totalAmount - taxes - marketValue);
-                                    break;
-                                case SELL:
-                                    t.setFees(marketValue - taxes - totalAmount);
-                                    break;
-                                default:
-                                    throw new UnsupportedOperationException();
-                            }
+                            long fees = pt.getType() == PortfolioTransaction.Type.BUY ? totalAmount - taxes
+                                            - marketValue : marketValue - taxes - totalAmount;
+
+                            pt.addUnit(new Unit(Unit.Type.FEE, Money.of(pt.getCurrencyCode(), fees)));
                         })
 
                         .wrap(t -> new BuySellEntryItem(t)));

@@ -99,11 +99,6 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     @Override
     public void updateFrom(Transaction t)
     {
-        // fees are not supported for transfers
-        // -> needs separate transaction on account
-        transactionTo.setFees(0);
-        transactionFrom.setFees(0);
-
         if (t.equals(transactionFrom))
             copyAttributesOver(transactionFrom, transactionTo);
         else if (t.equals(transactionTo))

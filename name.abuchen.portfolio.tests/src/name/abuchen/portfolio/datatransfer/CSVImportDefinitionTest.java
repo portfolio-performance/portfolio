@@ -27,6 +27,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 import org.junit.Assert;
@@ -130,8 +133,8 @@ public class CSVImportDefinitionTest
         PortfolioTransaction t = portfolio.getTransactions().get(portfolio.getTransactions().size() - 1);
         assertThat(t.getSecurity(), is(security));
         assertThat(t.getShares(), is((long) (1.234 * Values.Share.factor())));
-        assertThat(t.getFees(), is(10L * Values.Amount.factor()));
-        assertThat(t.getTaxes(), is(11L * Values.Amount.factor()));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11))));
         assertThat(t.getAmount(), is(1000L * Values.Amount.factor()));
         assertThat(t.getType(), is(PortfolioTransaction.Type.BUY));
     }

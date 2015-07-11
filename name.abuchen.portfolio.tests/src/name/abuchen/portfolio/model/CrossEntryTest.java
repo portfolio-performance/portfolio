@@ -7,7 +7,9 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.time.Month;
 
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 import org.junit.Before;
@@ -43,8 +45,8 @@ public class CrossEntryTest
         entry.setDate(LocalDate.now());
         entry.setSecurity(security);
         entry.setShares(1 * Values.Share.factor());
-        entry.setFees(10);
-        entry.setTaxes(11);
+        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 10)));
+        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 11)));
         entry.setAmount(1000 * Values.Amount.factor());
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.insert();
@@ -61,8 +63,8 @@ public class CrossEntryTest
         assertThat(pt.getDate(), is(LocalDate.now()));
         assertThat(pa.getDate(), is(LocalDate.now()));
 
-        assertThat(pt.getFees(), is(10L));
-        assertThat(pt.getTaxes(), is(11L));
+        assertThat(pt.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10L)));
+        assertThat(pt.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 11L)));
 
         // check cross entity identification
         assertThat(entry.getCrossOwner(pt), is((Object) account));

@@ -49,17 +49,31 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                 case BUY:
                 case TRANSFER_IN:
                 {
-                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(), t
-                                    .getAmount(), t.getSecurity(), t.getShares(),
-                                    PortfolioTransaction.Type.DELIVERY_INBOUND, t.getFees(), t.getTaxes()));
+                    PortfolioTransaction clone = new PortfolioTransaction();
+                    clone.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                    clone.setDate(t.getDate());
+                    clone.setCurrencyCode(t.getCurrencyCode());
+                    clone.setSecurity(t.getSecurity());
+                    clone.setAmount(t.getAmount());
+                    clone.setShares(t.getShares());
+                    clone.addUnits(t.getUnits());
+                    pseudoPortfolio.addTransaction(clone);
                     break;
                 }
                 case SELL:
                 case TRANSFER_OUT:
-                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getCurrencyCode(), t
-                                    .getAmount(), t.getSecurity(), t.getShares(),
-                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getFees(), t.getTaxes()));
+                {
+                    PortfolioTransaction clone = new PortfolioTransaction();
+                    clone.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                    clone.setDate(t.getDate());
+                    clone.setCurrencyCode(t.getCurrencyCode());
+                    clone.setSecurity(t.getSecurity());
+                    clone.setAmount(t.getAmount());
+                    clone.setShares(t.getShares());
+                    clone.addUnits(t.getUnits());
+                    pseudoPortfolio.addTransaction(clone);
                     break;
+                }
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
                     pseudoPortfolio.addTransaction(t);

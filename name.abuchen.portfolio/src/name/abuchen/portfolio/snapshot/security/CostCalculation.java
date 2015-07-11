@@ -5,6 +5,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 
 /* package */class CostCalculation extends Calculation
 {
@@ -36,8 +37,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     @Override
     public void visit(PortfolioTransaction t)
     {
-        fees += t.getFees();
-        taxes += t.getTaxes();
+        fees += t.getUnitSum(Unit.Type.FEE).getAmount();
+        taxes += t.getUnitSum(Unit.Type.TAX).getAmount();
 
         switch (t.getType())
         {

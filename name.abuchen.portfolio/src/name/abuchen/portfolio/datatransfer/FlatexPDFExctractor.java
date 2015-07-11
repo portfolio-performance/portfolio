@@ -9,7 +9,9 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class FlatexPDFExctractor extends AbstractPDFExtractor
 {
@@ -61,18 +63,25 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         .optional()
                         //
                         .match(".* Provision *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
-                        .assign((t, v) -> t.setFees(asAmount(v.get("fee"))))
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.FEE, Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                        asAmount(v.get("fee"))))))
 
                         .section("fee")
                         .optional()
                         //
                         .match(".* Eigene Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
-                        .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.FEE, Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                        asAmount(v.get("fee"))))))
 
-                        .section("fee").optional()
+                        .section("fee")
+                        .optional()
                         //
                         .match(".* \\*Fremde Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
-                        .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.FEE, Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                        asAmount(v.get("fee"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }

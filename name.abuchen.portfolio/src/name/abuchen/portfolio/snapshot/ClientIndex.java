@@ -10,6 +10,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.Dates;
@@ -145,19 +146,21 @@ import name.abuchen.portfolio.util.Interval;
                             .filter(t -> !t.getDate().isBefore(interval.getStart())
                                             && !t.getDate().isAfter(interval.getEnd()))
                             .forEach(t -> {
+                                // collect taxes
+                                addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(), //
+                                                interval, t.getDate());
+
+                                // collect transferals
                                 switch (t.getType())
                                 {
                                     case DELIVERY_INBOUND:
                                         addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
-                                        addValue(taxes, t.getCurrencyCode(), t.getTaxes(), interval, t.getDate());
                                         break;
                                     case DELIVERY_OUTBOUND:
                                         addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
                                                         t.getDate());
-                                        addValue(taxes, t.getCurrencyCode(), t.getTaxes(), interval, t.getDate());
                                         break;
                                     default:
-                                        addValue(taxes, t.getCurrencyCode(), t.getTaxes(), interval, t.getDate());
                                         break;
                                 }
                             });

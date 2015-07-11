@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
 
 /* package */class IRRCalculation extends Calculation
@@ -45,17 +46,18 @@ import name.abuchen.portfolio.money.Values;
     public void visit(PortfolioTransaction t)
     {
         dates.add(t.getDate());
+        long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
         switch (t.getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
             case TRANSFER_IN:
-                values.add((-t.getAmount() + t.getTaxes()) / Values.Amount.divider());
+                values.add((-t.getAmount() + taxes) / Values.Amount.divider());
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
-                values.add((t.getAmount() + t.getTaxes()) / Values.Amount.divider());
+                values.add((t.getAmount() + taxes) / Values.Amount.divider());
                 break;
             default:
                 throw new UnsupportedOperationException();

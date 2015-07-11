@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -56,7 +57,7 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getSecurity().getName(), is("Basf SE"));
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
-        double startValue = delivery.getAmount() - delivery.getTaxes();
+        double startValue = delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
         double endValue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()
                         / Values.Share.divider();
         double ttwror = (endValue / startValue) - 1;
@@ -120,8 +121,8 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getSharesHeld(), is(0L));
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
-        double startValue = delivery.getAmount() - delivery.getTaxes();
-        double endValue = sell.getAmount() + sell.getTaxes();
+        double startValue = delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
+        double endValue = sell.getAmount() + sell.getUnitSum(Unit.Type.TAX).getAmount();
         double ttwror = (endValue / startValue) - 1;
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 

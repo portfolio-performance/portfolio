@@ -50,9 +50,9 @@ import name.abuchen.portfolio.money.Values;
             t.setDate(transaction.getDate());
             t.setSecurity(transaction.getSecurity());
             t.setShares(transaction.getShares());
-            t.setFees(transaction.getFees());
-            t.setTaxes(transaction.getTaxes());
             t.setAmount(transaction.getAmount());
+            t.addUnits(transaction.getUnits());
+
             portfolio.addTransaction(t);
 
             portfolio.getTransactions().remove(transaction);
@@ -89,9 +89,9 @@ import name.abuchen.portfolio.money.Values;
             entry.setType(transaction.getType());
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());
-            entry.setFees(transaction.getFees());
-            entry.setTaxes(transaction.getTaxes());
             entry.setAmount(transaction.getAmount());
+            entry.getPortfolioTransaction().addUnits(transaction.getUnits());
+
             entry.insert();
 
             portfolio.getTransactions().remove(transaction);

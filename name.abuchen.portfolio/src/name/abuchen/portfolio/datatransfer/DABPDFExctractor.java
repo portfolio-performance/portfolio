@@ -9,7 +9,9 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class DABPDFExctractor extends AbstractPDFExtractor
 {
@@ -55,11 +57,16 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
 
-                        .section("date").match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
+                        .section("date")
+                        .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                        .section("fees").optional().match("^.* Provision (\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
-                        .assign((t, v) -> t.setFees(asAmount(v.get("fees"))))
+                        .section("fees")
+                        .optional()
+                        .match("^.* Provision (\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.FEE, Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                        asAmount(v.get("fees"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }

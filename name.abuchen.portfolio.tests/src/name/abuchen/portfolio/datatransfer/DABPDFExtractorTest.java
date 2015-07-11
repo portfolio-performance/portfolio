@@ -24,6 +24,9 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 import org.junit.Test;
@@ -74,7 +77,7 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(150.00)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.91920)));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(0L));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
     @Test
@@ -112,7 +115,7 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(60)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-05-04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.42270)));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(4_95L));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 4_95L)));
     }
 
     @Test

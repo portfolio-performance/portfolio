@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -359,8 +360,8 @@ public class ClientPerformanceSnapshot
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
-                        fees.add(t.getMonetaryFees().with(converter.at(t.getDate())));
-                        taxes.add(t.getMonetaryTaxes().with(converter.at(t.getDate())));
+                        fees.add(t.getUnitSum(Unit.Type.FEE, converter));
+                        taxes.add(t.getUnitSum(Unit.Type.TAX, converter));
                         break;
                     default:
                         throw new UnsupportedOperationException();

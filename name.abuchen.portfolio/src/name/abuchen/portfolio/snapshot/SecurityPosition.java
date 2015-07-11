@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -272,11 +273,16 @@ public class SecurityPosition
             t2.setSecurity(t.getSecurity());
             t2.setType(t.getType());
             t2.setCurrencyCode(t.getCurrencyCode());
-
             t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
-            t2.setFees(Math.round(t.getFees() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
-            t2.setTaxes(Math.round(t.getTaxes() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
+
+            t.getUnits().forEach(
+                            u -> {
+                                long splitAmount = Math.round(u.getAmount().getAmount() * weight
+                                                / (double) Classification.ONE_HUNDRED_PERCENT);
+                                t2.addUnit(new Unit(u.getType(), //
+                                                Money.of(u.getAmount().getCurrencyCode(), splitAmount)));
+                            });
 
             splitTransactions.add(t2);
         }

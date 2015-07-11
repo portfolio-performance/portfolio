@@ -10,7 +10,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class PortfolioBuilder
 {
@@ -79,7 +81,7 @@ public class PortfolioBuilder
         entry.setShares(shares);
         entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(amount);
-        entry.setFees(fees);
+        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, fees)));
 
         entry.insert();
 

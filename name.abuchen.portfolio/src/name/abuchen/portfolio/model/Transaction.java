@@ -11,7 +11,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 
 public abstract class Transaction implements Annotated
 {
@@ -204,11 +206,17 @@ public abstract class Transaction implements Annotated
         return units != null ? units.stream() : Stream.empty();
     }
 
+    /**
+     * Returns any unit of the given type
+     */
     public Optional<Unit> getUnit(Unit.Type type)
     {
         return getUnits().filter(u -> u.getType() == type).findAny();
     }
 
+    /**
+     * Clears all currently set units
+     */
     public void clearUnits()
     {
         units = null;
@@ -225,11 +233,44 @@ public abstract class Transaction implements Annotated
         units.add(unit);
     }
 
+    public void addUnits(Stream<Unit> items)
+    {
+        if (units == null)
+            units = new ArrayList<Unit>();
+
+        items.forEach(u -> units.add(u));
+    }
+
     public void removeUnit(Unit unit)
     {
         if (units == null)
             units = new ArrayList<Unit>();
         units.remove(unit);
+    }
+
+    /**
+     * Returns the sum of units in transaction currency
+     */
+    public Money getUnitSum(Unit.Type type)
+    {
+        return getUnits().filter(u -> u.getType() == type) //
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
+    }
+
+    /**
+     * Returns the sum of units in the term currency of the currency converter
+     */
+    public Money getUnitSum(Unit.Type type, CurrencyConverter converter)
+    {
+        return getUnits().filter(u -> u.getType() == type).collect(
+                        MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
+                            if (converter.getTermCurrency().equals(unit.getAmount().getCurrencyCode()))
+                                return unit.getAmount();
+                            else if (unit.getForex() != null)
+                                return unit.getForex().with(converter.at(date));
+                            else
+                                return unit.getAmount().with(converter.at(date));
+                        }));
     }
 
     public boolean isPotentialDuplicate(Transaction other)

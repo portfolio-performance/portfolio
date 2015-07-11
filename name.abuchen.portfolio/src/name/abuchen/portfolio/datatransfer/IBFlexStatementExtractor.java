@@ -27,7 +27,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 
@@ -167,11 +169,15 @@ public class IBFlexStatementExtractor implements Extractor
         Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
         transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-        Double fees = Math.abs(Double.parseDouble(eElement.getAttribute("ibCommission")));
-        transaction.setFees(Math.round(fees.doubleValue() * Values.Amount.factor()));
+        // fees
+        double fees = Math.abs(Double.parseDouble(eElement.getAttribute("ibCommission")));
+        Unit unit = new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(fees)));
+        transaction.getPortfolioTransaction().addUnit(unit);
 
-        Double taxes = Math.abs(Double.parseDouble(eElement.getAttribute("taxes")));
-        transaction.setTaxes(Math.round(taxes.doubleValue() * Values.Amount.factor()));
+        // taxes
+        double taxes = Math.abs(Double.parseDouble(eElement.getAttribute("taxes")));
+        unit = new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(taxes)));
+        transaction.getPortfolioTransaction().addUnit(unit);
 
         // Set the Amount which is ( tradePrice * qty ) + Fees + Taxes
         Double amount = Double.parseDouble(eElement.getAttribute("tradePrice")) * qty + fees + taxes;

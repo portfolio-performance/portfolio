@@ -24,6 +24,9 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 import org.junit.Test;
@@ -158,7 +161,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(675.50)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(10.50)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10_50L)));
     }
 
     @Test
@@ -193,7 +196,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3524.98)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(11.38)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 11_38L)));
     }
 
     @Test
@@ -228,9 +231,10 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2074.71)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
-        assertThat(entry.getPortfolioTransaction().getTaxes(),
-                        is(Values.Amount.factorize(122.94) + Values.Amount.factorize(6.76)));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(7.90 + 0.60 + 2)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(122.94 + 6.76))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.90 + 0.60 + 2))));
     }
 
     private String from(String resource)

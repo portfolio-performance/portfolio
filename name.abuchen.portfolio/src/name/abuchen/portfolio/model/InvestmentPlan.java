@@ -245,13 +245,17 @@ public class InvestmentPlan implements Named, Adaptable
             entry.setType(PortfolioTransaction.Type.BUY);
             entry.setDate(tDate);
             entry.setShares(shares);
-            entry.setFees(fees);
-            entry.setTaxes(0);
             entry.setCurrencyCode(targetCurrencyCode);
             entry.setAmount(amount);
             entry.setSecurity(getSecurity());
+
+            if (fees != 0)
+                entry.getPortfolioTransaction().addUnit(
+                                new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
+
             if (forex != null)
                 entry.getPortfolioTransaction().addUnit(forex);
+
             entry.insert();
             return entry.getPortfolioTransaction();
         }
@@ -265,8 +269,11 @@ public class InvestmentPlan implements Named, Adaptable
             transaction.setSecurity(security);
             transaction.setCurrencyCode(targetCurrencyCode);
             transaction.setAmount(amount);
-            transaction.setFees(fees);
             transaction.setShares(shares);
+
+            if (fees != 0)
+                transaction.addUnit(new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
+
             if (forex != null)
                 transaction.addUnit(forex);
             portfolio.addTransaction(transaction);

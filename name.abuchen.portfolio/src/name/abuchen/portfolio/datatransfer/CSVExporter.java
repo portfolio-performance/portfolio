@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +19,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
+
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
 
@@ -32,9 +30,6 @@ public class CSVExporter
 {
     /* package */static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
                     CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
-
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-    private NumberFormat currencyFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {
@@ -53,9 +48,9 @@ public class CSVExporter
 
             for (AccountTransaction t : account.getTransactions())
             {
-                printer.print(dateFormat.format(t.getDate()));
+                printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
-                printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
+                printer.print(Values.Amount.format(t.getAmount()));
 
                 printSecurityInfo(printer, t);
 
@@ -90,11 +85,11 @@ public class CSVExporter
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
-                printer.print(dateFormat.format(t.getDate()));
+                printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
-                printer.print(currencyFormat.format(t.getAmount() / Values.Amount.divider()));
-                printer.print(currencyFormat.format(t.getFees() / Values.Amount.divider()));
-                printer.print(currencyFormat.format(t.getTaxes() / Values.Amount.divider()));
+                printer.print(Values.Amount.format(t.getAmount()));
+                printer.print(Values.Amount.format(t.getUnitSum(Unit.Type.FEE).getAmount()));
+                printer.print(Values.Amount.format(t.getUnitSum(Unit.Type.TAX).getAmount()));
                 printer.print(Values.Share.format(t.getShares()));
 
                 printSecurityInfo(printer, t);
@@ -165,8 +160,8 @@ public class CSVExporter
 
             for (SecurityPrice p : security.getPrices())
             {
-                printer.print(dateFormat.format(p.getTime()));
-                printer.print(currencyFormat.format(p.getValue() / Values.Quote.divider()));
+                printer.print(p.getTime().toString());
+                printer.print(Values.Quote.format(p.getValue()));
                 printer.println();
             }
         }

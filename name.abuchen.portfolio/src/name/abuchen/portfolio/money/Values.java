@@ -225,7 +225,7 @@ public abstract class Values<E>
     
     public long factorize(double value)
     {
-        return Double.valueOf(value * factor).longValue();
+        return Math.round(value * factor);
     }
 
     public abstract String format(E amount);

@@ -22,6 +22,8 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 
@@ -169,14 +171,16 @@ public class ComdirectPDFExtractor implements Extractor
                     SecurityItem item = new SecurityItem(security);
                     results.add(item);
                 }
-                // Do not use 'Zum Kurs von' as there are tons of other variants ('Zum Preis von', 'Zum comdirect Preis von', ...)
+                // Do not use 'Zum Kurs von' as there are tons of other variants
+                // ('Zum Preis von', 'Zum comdirect Preis von', ...)
                 int stueckLinePos = text.indexOf('\n', text.indexOf("Nennwert")); //$NON-NLS-1$
                 Number shares = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
                 // Fees need not be present
                 // In case they are a section is present in the file
                 int provPos = -1;
                 provPos = text.indexOf("Summe Entgelte", stueckLinePos); //$NON-NLS-1$
-                // Fallback to 'Provision'; perhaps unneeded, but for backward compatability
+                // Fallback to 'Provision'; perhaps unneeded, but for backward
+                // compatability
                 if (provPos <= 0)
                     provPos = text.indexOf("Provision", stueckLinePos); //$NON-NLS-1$
 
@@ -184,7 +188,10 @@ public class ComdirectPDFExtractor implements Extractor
                 if (provPos > 0)
                 {
                     Number fee = getNextNumber(text, getLastWordInLinePos(text, provPos));
-                    purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
+                    purchase.getPortfolioTransaction().addUnit(
+                                    new Unit(Unit.Type.FEE, Money.of(purchase.getPortfolioTransaction()
+                                                    .getCurrencyCode(), Math.round(fee.doubleValue()
+                                                    * Values.Amount.factor()))));
                 }
                 int totalEURPos = text.indexOf("EUR", //$NON-NLS-1$
                                 text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3); //$NON-NLS-1$ //$NON-NLS-2$
@@ -276,7 +283,6 @@ public class ComdirectPDFExtractor implements Extractor
         }
     }
 
-
     private int jumpWord(String text, int position, int words)
     {
         for (int i = 0; i < words; i++)
@@ -300,7 +306,7 @@ public class ComdirectPDFExtractor implements Extractor
 
         if (wordPos < 0) // no newline -> last line
             wordPos = text.length();
-        
+
         wordPos--;
 
         // possible white space at end of line
@@ -313,7 +319,8 @@ public class ComdirectPDFExtractor implements Extractor
         wordPos = text.lastIndexOf(' ', wordPos);
 
         // if wordPos is -1, there was no whitespace, hence 0 is the last word
-        // if wordPos is >=0, then it points to a whitespace -> +1 first char of word
+        // if wordPos is >=0, then it points to a whitespace -> +1 first char of
+        // word
         return wordPos + 1;
     }
 

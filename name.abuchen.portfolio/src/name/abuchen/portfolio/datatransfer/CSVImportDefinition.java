@@ -25,7 +25,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -292,8 +294,11 @@ public abstract class CSVImportDefinition
             transaction.setAmount(Math.abs(amount));
             transaction.setSecurity(lookupSecurity(client, isin, tickerSymbol, wkn, true));
             transaction.setShares(Math.abs(shares));
-            transaction.setFees(Math.abs(fees));
-            transaction.setTaxes(Math.abs(taxes));
+
+            if (fees != 0L)
+                transaction.addUnit(new Unit(Unit.Type.FEE, Money.of(transaction.getCurrencyCode(), Math.abs(fees))));
+            if (taxes != 0L)
+                transaction.addUnit(new Unit(Unit.Type.TAX, Money.of(transaction.getCurrencyCode(), Math.abs(taxes))));
 
             if (type != null)
                 transaction.setType(type);

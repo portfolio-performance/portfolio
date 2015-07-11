@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
@@ -34,8 +33,7 @@ public class PortfolioTransaction extends Transaction
     {}
 
     public PortfolioTransaction(LocalDate date, String currencyCode, long amount, Security security, long shares,
-                    Type type,
-                    long fees, long taxes)
+                    Type type, long fees, long taxes)
     {
         super(date, currencyCode, amount, security, shares, null);
         this.type = type;
@@ -62,62 +60,21 @@ public class PortfolioTransaction extends Transaction
         this.type = type;
     }
 
-    @Deprecated
-    public long getFees()
-    {
-        return getMonetaryFees().getAmount();
-    }
-
-    @Deprecated
-    public Money getMonetaryFees()
-    {
-        return getUnits().filter(u -> u.getType() == Unit.Type.FEE)
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
-    }
-
-    @Deprecated
-    public void setFees(long fees)
-    {
-        Optional<Unit> unit = getUnits().filter(u -> u.getType() == Unit.Type.FEE).findAny();
-        if (unit.isPresent())
-            removeUnit(unit.get());
-        addUnit(new Unit(Unit.Type.FEE, Money.of(getCurrencyCode(), fees)));
-    }
-
-    @Deprecated
-    public long getTaxes()
-    {
-        return getMonetaryTaxes().getAmount();
-    }
-
-    @Deprecated
-    public Money getMonetaryTaxes()
-    {
-        return getUnits().filter(u -> u.getType() == Unit.Type.TAX)
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
-    }
-
-    @Deprecated
-    public void setTaxes(long taxes)
-    {
-        Optional<Unit> unit = getUnits().filter(u -> u.getType() == Unit.Type.TAX).findAny();
-        if (unit.isPresent())
-            removeUnit(unit.get());
-        addUnit(new Unit(Unit.Type.TAX, Money.of(getCurrencyCode(), taxes)));
-    }
-
     public long getLumpSumPrice()
     {
+        long taxAndFees = getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
+
         switch (this.type)
         {
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return getAmount() - getFees() - getTaxes();
+                return getAmount() - taxAndFees;
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return getAmount() + getFees() + getTaxes();
+                return getAmount() + taxAndFees;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }
