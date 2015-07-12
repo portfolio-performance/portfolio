@@ -14,7 +14,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
-public class PortfolioTransactionWithoutSecurityIssue implements Check
+public class PortfolioTransactionWithoutSecurityCheck implements Check
 {
     public static class MissingSecurityIssue implements Issue
     {
