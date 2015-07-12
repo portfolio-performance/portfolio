@@ -62,6 +62,11 @@ public class ClientSettings
             bookmarks.add(bookmarks.indexOf(before), bookmark);
     }
 
+    public void insertBookmark(int index, Bookmark bookmark)
+    {
+        bookmarks.add(index, bookmark);
+    }
+
     public void insertBookmarkAfter(Bookmark after, Bookmark bookmark)
     {
         if (after == null)

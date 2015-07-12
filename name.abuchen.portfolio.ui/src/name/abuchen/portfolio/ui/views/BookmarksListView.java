@@ -2,12 +2,14 @@ package name.abuchen.portfolio.ui.views;
 
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
@@ -16,6 +18,7 @@ import name.abuchen.portfolio.ui.util.ViewerHelper;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -153,6 +156,14 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
 
     private void fillContextMenu(IMenuManager manager)
     {
+        Bookmark bookmark = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
+
+        if (!bookmark.isSeparator())
+            addTestMenu(manager, bookmark);
+
+        addMoveUpAndDownActions(manager, bookmark);
+
+        manager.add(new Separator());
         manager.add(new Action(Messages.BookmarksListView_insertBefore)
         {
             @Override
@@ -217,4 +228,57 @@ public class BookmarksListView extends AbstractFinanceView implements Modificati
 
     }
 
+    private void addTestMenu(IMenuManager manager, Bookmark bookmark)
+    {
+        MenuManager securities = new MenuManager(Messages.MenuOpenSecurityOnSite);
+        for (Security security : getClient().getSecurities())
+        {
+            securities.add(new Action(security.getName())
+            {
+                @Override
+                public void run()
+                {
+                    DesktopAPI.browse(bookmark.constructURL(security));
+                }
+            });
+        }
+        manager.add(securities);
+        manager.add(new Separator());
+    }
+
+    private void addMoveUpAndDownActions(IMenuManager manager, Bookmark bookmark)
+    {
+        int index = getClient().getSettings().getBookmarks().indexOf(bookmark);
+        if (index > 0)
+        {
+            manager.add(new Action(Messages.BookmarksListView_MoveUp)
+            {
+                @Override
+                public void run()
+                {
+                    ClientSettings settings = getClient().getSettings();
+                    settings.removeBookmark(bookmark);
+                    settings.insertBookmark(index - 1, bookmark);
+                    bookmarks.setInput(getClient().getSettings().getBookmarks());
+                    markDirty();
+                }
+            });
+        }
+
+        if (index < getClient().getSettings().getBookmarks().size() - 1)
+        {
+            manager.add(new Action(Messages.BookmarksListView_MoveDown)
+            {
+                @Override
+                public void run()
+                {
+                    ClientSettings settings = getClient().getSettings();
+                    settings.removeBookmark(bookmark);
+                    settings.insertBookmark(index + 1, bookmark);
+                    bookmarks.setInput(getClient().getSettings().getBookmarks());
+                    markDirty();
+                }
+            });
+        }
+    }
 }

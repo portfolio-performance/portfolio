@@ -18,6 +18,8 @@ public class Messages extends NLS
     public static String BookmarksListView_bookmark;
     public static String BookmarksListView_delete;
     public static String BookmarksListView_insertBefore;
+    public static String BookmarksListView_MoveDown;
+    public static String BookmarksListView_MoveUp;
     public static String BookmarksListView_NewBookmark;
     public static String BookmarksListView_title;
     public static String BookmarksListView_tooltip;
