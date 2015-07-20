@@ -54,8 +54,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             @Override
             protected IStatus validate()
             {
-                return observable.getValue() == null ? ValidationStatus.ok() : ValidationStatus.error(observable
-                                .getValue().toString());
+                return observable.getValue() == null ? ValidationStatus.ok()
+                                : ValidationStatus.error(observable.getValue().toString());
             }
         });
 
@@ -157,8 +157,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
         public LoadHistoricalQuotes(QuoteFeed feed, Exchange exchange)
         {
-            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes, exchange != null ? exchange.getName()
-                            : "")); //$NON-NLS-1$
+            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes,
+                            exchange != null ? exchange.getName() : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
 
@@ -170,12 +170,10 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         {
             try
             {
-                Security s = new Security();
-                s.setIsin(getModel().getIsin());
+                Security s = buildTemporarySecurity();
                 if (exchange != null)
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
-                s.setFeedURL(getModel().getFeedURL());
 
                 // last 2 months as sample
                 Calendar cal = Calendar.getInstance();

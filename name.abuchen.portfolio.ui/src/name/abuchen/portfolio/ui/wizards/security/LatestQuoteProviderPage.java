@@ -91,8 +91,8 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
         public LoadLatestQuote(QuoteFeed feed, Exchange exchange, String feedURL)
         {
-            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes, exchange != null ? exchange.getName()
-                            : "")); //$NON-NLS-1$
+            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes,
+                            exchange != null ? exchange.getName() : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
             this.feedURL = feedURL;
@@ -103,10 +103,10 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         {
             try
             {
-                final Security s = new Security();
+                final Security s = buildTemporarySecurity();
                 if (exchange != null)
                     s.setTickerSymbol(exchange.getId());
-                s.setLatestFeedURL(feedURL);
+                s.setFeed(feed.getId());
 
                 List<Security> list = new ArrayList<Security>();
                 list.add(s);
@@ -128,17 +128,17 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                             valueLatestPrices.setText(Values.Amount.format(p.getValue()));
                             valueLatestTrade.setText(Values.Date.format(p.getTime()));
                             long daysHigh = p.getHigh();
-                            valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                            .format(daysHigh));
+                            valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable
+                                            : Values.Amount.format(daysHigh));
                             long daysLow = p.getLow();
-                            valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                            .format(daysLow));
+                            valueDaysLow.setText(
+                                            daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysLow));
                             long volume = p.getVolume();
-                            valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String
-                                            .format("%,d", volume)); //$NON-NLS-1$
+                            valueVolume.setText(
+                                            volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
                             long prevClose = p.getPreviousClose();
-                            valuePreviousClose.setText(prevClose == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                            .format(prevClose));
+                            valuePreviousClose.setText(prevClose == -1 ? Messages.LabelNotAvailable
+                                            : Values.Amount.format(prevClose));
 
                         }
                         else
@@ -192,8 +192,8 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
             @Override
             protected IStatus validate()
             {
-                return observable.getValue() == null ? ValidationStatus.ok() : ValidationStatus.error(observable
-                                .getValue().toString());
+                return observable.getValue() == null ? ValidationStatus.ok()
+                                : ValidationStatus.error(observable.getValue().toString());
             }
         });
     }
