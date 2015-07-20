@@ -56,8 +56,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             monitor.beginTask(Messages.JobMsgLoadingExchanges, provider.size());
             for (QuoteFeed feed : provider)
             {
-                Security s = new Security();
-                s.setTickerSymbol(model.getTickerSymbol());
+                Security s = buildTemporarySecurity();
 
                 List<Exception> errors = new ArrayList<Exception>();
                 cacheExchanges.put(feed, feed.getExchanges(s, errors));
@@ -75,31 +74,39 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                     QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection())
                                     .getFirstElement();
 
-                    if (feed.getId() != null && feed.getId().startsWith(YAHOO))
+                    if (feed != null && feed.getId() != null)
                     {
                         List<Exchange> exchanges = cacheExchanges.get(feed);
-                        comboExchange.setInput(exchanges);
-
-                        // run only after exchanges have been re-loaded
-                        Exchange selectedExchange = null;
-                        if (exchanges != null && comboExchange != null)
+                        if (comboExchange != null)
                         {
-                            for (Exchange e : exchanges)
-                            {
-                                if (e.getId().equals(model.getTickerSymbol()))
-                                {
-                                    selectedExchange = e;
-                                    comboExchange.setSelection(new StructuredSelection(e));
+                            comboExchange.setSelection(StructuredSelection.EMPTY);
 
-                                    break;
-                                }
+                            if (exchanges != null)
+                            {
+                                comboExchange.setInput(exchanges);
+
+                                // if ticker symbol matches any of the
+                                // exchanges, select this exchange in the
+                                // combo list
+                                exchanges.stream() //
+                                                .filter(e -> e.getId().equals(model.getTickerSymbol())) //
+                                                .findAny() //
+                                                .ifPresent(e -> comboExchange.setSelection(new StructuredSelection(e)));
+                            }
+
+                            if (comboExchange.getSelection().isEmpty())
+                                clearSampleQuotes();
+                            else
+                                showSampleQuotes(feed, (Exchange) ((StructuredSelection) comboExchange.getSelection())
+                                                .getFirstElement());
+                        }
+                        else
+                        {
+                            if (exchanges == null || exchanges.isEmpty())
+                            {
+                                showSampleQuotes(feed, null);
                             }
                         }
-
-                        if (selectedExchange == null)
-                            clearSampleQuotes();
-                        else
-                            showSampleQuotes(feed, selectedExchange, null);
                     }
 
                 }
@@ -157,7 +164,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     protected abstract void clearSampleQuotes();
 
-    protected abstract void showSampleQuotes(QuoteFeed feed, Exchange exchange, String feedURL);
+    protected abstract void showSampleQuotes(QuoteFeed feed, Exchange exchange);
 
     @Override
     public void beforePage()
@@ -179,7 +186,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 if (getFeedURL() == null || getFeedURL().length() == 0)
                     clearSampleQuotes();
                 else
-                    showSampleQuotes(feed, null, getFeedURL());
+                    showSampleQuotes(feed, null);
             }
         }
     }
@@ -236,6 +243,19 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 onFeedProviderChanged(event);
             }
         });
+    }
+
+    /**
+     * Builds a temporary {@link Security} from the currently selected values.
+     * 
+     * @return {@link Security}
+     */
+    protected Security buildTemporarySecurity()
+    {
+        // create a temporary security and set all attributes
+        Security security = new Security();
+        model.setAttributes(security);
+        return security;
     }
 
     private void createProviderGroup(Composite container)
@@ -365,7 +385,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed.getId() != null && feed.getId().startsWith("YAHOO")) //$NON-NLS-1$
+        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && feed.getId().startsWith("YAHOO")) //$NON-NLS-1$
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
             ArrayList<Exchange> input = new ArrayList<Exchange>();
@@ -435,7 +455,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         }
         else
         {
-            clearSampleQuotes();
+            // get sample quotes?
+            if (feed != null)
+            {
+                showSampleQuotes(feed, null);
+            }
+            else
+            {
+                clearSampleQuotes();
+            }
             setStatus(null);
         }
     }
@@ -452,7 +480,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         else
         {
             QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
-            showSampleQuotes(feed, exchange, null);
+            showSampleQuotes(feed, exchange);
         }
     }
 
@@ -470,7 +498,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         else
         {
             QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
-            showSampleQuotes(feed, null, getFeedURL());
+            showSampleQuotes(feed, null);
             setStatus(null);
         }
     }
