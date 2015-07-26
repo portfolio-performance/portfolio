@@ -87,15 +87,13 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     {
         private QuoteFeed feed;
         private Exchange exchange;
-        private String feedURL;
 
-        public LoadLatestQuote(QuoteFeed feed, Exchange exchange, String feedURL)
+        public LoadLatestQuote(QuoteFeed feed, Exchange exchange)
         {
             super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes, exchange != null ? exchange.getName()
                             : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
-            this.feedURL = feedURL;
         }
 
         @Override
@@ -103,10 +101,13 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         {
             try
             {
-                final Security s = new Security();
+                final Security s = buildTemporarySecurity();
+
+                // exchange is not bound to model (only set in #afterPage)
+                // therefore we must set it explicitly here
                 if (exchange != null)
                     s.setTickerSymbol(exchange.getId());
-                s.setLatestFeedURL(feedURL);
+                s.setFeed(feed.getId());
 
                 List<Security> list = new ArrayList<Security>();
                 list.add(s);
@@ -331,8 +332,8 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
-    protected void showSampleQuotes(QuoteFeed feed, Exchange exchange, String feedURL)
+    protected void showSampleQuotes(QuoteFeed feed, Exchange exchange)
     {
-        new LoadLatestQuote(feed, exchange, feedURL).schedule();
+        new LoadLatestQuote(feed, exchange).schedule();
     }
 }
