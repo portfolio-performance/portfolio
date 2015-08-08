@@ -39,7 +39,10 @@ import name.abuchen.portfolio.util.Interval;
             interval = Interval.of(start, end);
         }
 
-        int size = (int) interval.getDays() + 1;
+        // reported via forum: if the user selects as 'since' date something in
+        // the future, then #getDays will return something negative. Ensure the
+        // 'size' is at least 1 which will create an empty ClientIndex
+        int size = Math.max(1, (int) interval.getDays() + 1);
 
         dates = new LocalDate[size];
         totals = new long[size];
