@@ -39,7 +39,7 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                         //
                         .match(".*W e r t p a p i e r - B e z e i c h n u n g.*")
                         .match("p e r \\d \\d . \\d \\d . \\d \\d \\d \\d (?<name>.*) (?<wkn>\\S*)")
-                        .match("^STK (?<shares>(\\d )*, (\\d )*).* (?<isin>\\S*)$").assign((t, v) -> {
+                        .match("^STK (?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).* (?<isin>\\S*)$").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(stripBlanks(v.get("shares"))));
                         })

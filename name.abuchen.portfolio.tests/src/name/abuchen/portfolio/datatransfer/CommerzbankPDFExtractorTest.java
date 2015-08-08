@@ -64,6 +64,42 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getAmount(), is(223_45L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
+    
+    @Test
+    public void testErtragsgutschrift2() throws IOException
+    {
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankErtragsgutschrift2.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getName(), is("iShares-MSCI Japan UETF DIS"));
+        assertThat(security.getIsin(), is("DE000A0DPMW9"));
+        assertThat(security.getWkn(), is("A0DPMW"));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(Dates.date("2015-07-20")));
+        assertThat(transaction.getAmount(), is(45_67L));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
+    }
 
     private String from(String resource)
     {
