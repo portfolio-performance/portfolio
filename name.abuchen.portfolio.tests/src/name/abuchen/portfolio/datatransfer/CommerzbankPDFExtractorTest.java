@@ -97,7 +97,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(Dates.date("2015-07-20")));
-        assertThat(transaction.getAmount(), is(45_67L));
+        assertThat(transaction.getAmount(), is(1045_67L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
     }
 
