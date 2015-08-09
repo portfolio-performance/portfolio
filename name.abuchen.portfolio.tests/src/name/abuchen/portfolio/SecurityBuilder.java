@@ -11,7 +11,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class SecurityBuilder
 {
@@ -19,10 +19,14 @@ public class SecurityBuilder
 
     public SecurityBuilder()
     {
-        this.security = new Security(UUID.randomUUID().toString(), //
-                        "DE0001", //$NON-NLS-1$
-                        "DAX.DE", //$NON-NLS-1$
-                        QuoteFeed.MANUAL);
+        this(CurrencyUnit.EUR);
+    }
+
+    public SecurityBuilder(String currencyCode)
+    {
+        this.security = new Security(UUID.randomUUID().toString(), currencyCode);
+        this.security.setIsin("DE0001"); //$NON-NLS-1$
+        this.security.setTickerSymbol("DAX.DE"); //$NON-NLS-1$
     }
 
     public SecurityBuilder addPrice(String date, long price)

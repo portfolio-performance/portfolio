@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
 
@@ -52,6 +53,15 @@ import name.abuchen.portfolio.util.Interval;
             return;
         }
 
+        // needs currency conversion if
+        // a) the currency of the security is not null
+        // (otherwise it is an index)
+        // b) the term currency differs from the currency of the security
+
+        CurrencyConverter converter = security.getCurrencyCode() != null
+                        && !security.getCurrencyCode().equals(clientIndex.getCurrencyConverter().getTermCurrency()) ? clientIndex
+                        .getCurrencyConverter() : null;
+
         dates = new LocalDate[size];
         delta = new double[size];
         accumulated = new double[size];
@@ -65,7 +75,7 @@ import name.abuchen.portfolio.util.Interval;
         dates[0] = startDate;
         delta[0] = 0;
         accumulated[0] = adjustment;
-        long valuation = totals[0] = security.getSecurityPrice(startDate).getValue();
+        long valuation = totals[0] = convert(converter, security, startDate);
 
         // calculate series
         int index = 1;
@@ -74,7 +84,7 @@ import name.abuchen.portfolio.util.Interval;
         {
             dates[index] = date;
 
-            long thisValuation = totals[index] = security.getSecurityPrice(date).getValue();
+            long thisValuation = totals[index] = convert(converter, security, date);
             long thisDelta = thisValuation - valuation;
 
             delta[index] = (double) thisDelta / (double) valuation;
@@ -84,6 +94,17 @@ import name.abuchen.portfolio.util.Interval;
             valuation = thisValuation;
             index++;
         }
+    }
+
+    private long convert(CurrencyConverter converter, Security security, LocalDate date)
+    {
+        SecurityPrice price = security.getSecurityPrice(date);
+        if (converter == null)
+            return price.getValue();
+
+        // use the picked date for currency conversion, not the date of the
+        // quote. This could differ for example on weekends.
+        return converter.convert(date, Money.of(security.getCurrencyCode(), price.getValue())).getAmount();
     }
 
     private void initEmpty(PerformanceIndex clientIndex)

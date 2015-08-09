@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
@@ -251,6 +252,44 @@ public class ClientIndexTest
 
         assertThat((double) (lastPrice - startPrice) / (double) startPrice,
                         IsCloseTo.closeTo(accumulated[accumulated.length - 1], PRECISION));
+
+        PerformanceIndex benchmark = PerformanceIndex.forSecurity(index, security, warnings);
+        assertTrue(warnings.isEmpty());
+        assertThat(benchmark.getFinalAccumulatedPercentage(), is(index.getFinalAccumulatedPercentage()));
+    }
+
+    @Test
+    public void testThatPerformanceOfInvestmentAndIndexIsIdendicalWhenInForeignCurrency()
+    {
+        LocalDate startDate = LocalDate.of(2015, 1, 1);
+        LocalDate endDate = LocalDate.of(2015, 8, 1);
+        long startPrice = 100 * Values.Amount.factor();
+
+        Client client = new Client();
+
+        Security security = new SecurityBuilder("USD") //
+                        .generatePrices(startPrice, startDate, endDate) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2014-01-01", Values.Share.factorize(1), 100) //
+                        .addTo(client);
+
+        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);
+
+        List<Exception> warnings = new ArrayList<Exception>();
+        CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
+
+        ClientIndex index = PerformanceIndex.forClient(client, converter, period, warnings);
+        assertTrue(warnings.isEmpty());
+
+        PerformanceIndex benchmark = PerformanceIndex.forSecurity(index, security, warnings);
+        assertTrue(warnings.isEmpty());
+        assertThat(benchmark.getFinalAccumulatedPercentage(), is(index.getFinalAccumulatedPercentage()));
+
+        PerformanceIndex investment = PerformanceIndex.forInvestment(client, converter, security, period, warnings);
+        assertTrue(warnings.isEmpty());
+        assertThat(investment.getFinalAccumulatedPercentage(), is(index.getFinalAccumulatedPercentage()));
     }
 
     @Test
