@@ -391,9 +391,12 @@ public final class Security implements Attributable, InvestmentVehicle
 
         for (Account account : client.getAccounts())
         {
-            account.getTransactions().stream()
-                            //
+            account.getTransactions()
+                            .stream()
                             .filter(t -> this.equals(t.getSecurity()))
+                            .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
+                                            || t.getType() == AccountTransaction.Type.DIVIDENDS
+                                            || t.getType() == AccountTransaction.Type.TAX_REFUND)
                             .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
                             .forEach(p -> answer.add(p));
         }

@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
@@ -43,6 +44,7 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -830,7 +832,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             public String getText(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
-                return Values.Amount.format(t.getAmount());
+                return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
@@ -854,13 +856,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Amount.format(((PortfolioTransaction) t).getActualPurchasePrice());
+                    return Values.Money.format(((PortfolioTransaction) t).getPricePerShare(), getClient()
+                                    .getBaseCurrency());
                 }
                 else if (t instanceof AccountTransaction)
                 {
                     long shares = ((AccountTransaction) t).getShares();
                     if (shares != 0)
-                        return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / shares));
+                        return Values.Money.format(Money.of(t.getCurrencyCode(),
+                                        Math.round(t.getAmount() * Values.Share.divider() / shares)));
                 }
                 return null;
             }
