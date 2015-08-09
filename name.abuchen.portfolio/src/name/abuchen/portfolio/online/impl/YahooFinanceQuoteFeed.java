@@ -222,10 +222,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         String wknUrl = MessageFormat.format(HISTORICAL_URL, //
                         security.getTickerSymbol(), //
-                        startDate.getMonth().getValue(), //
+                        startDate.getMonth().getValue() - 1, //
                         startDate.getDayOfMonth(), //
                         Integer.toString(startDate.getYear()), //
-                        stopDate.getMonth().getValue(), //
+                        stopDate.getMonth().getValue() - 1, //
                         stopDate.getDayOfMonth(), //
                         Integer.toString(stopDate.getYear()));
 
