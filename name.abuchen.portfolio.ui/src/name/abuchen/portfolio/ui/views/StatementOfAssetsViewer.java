@@ -422,7 +422,7 @@ public class StatementOfAssetsViewer
                 {
                     calculatePerformance(element, option);
                     SecurityPerformanceRecord record = element.getPerformance(option);
-                    return Values.Amount.format(record.getDelta());
+                    return Values.Money.format(record.getDelta(), client.getBaseCurrency());
                 }
                 return null;
             }
@@ -435,11 +435,11 @@ public class StatementOfAssetsViewer
                 {
                     calculatePerformance(element, option);
                     SecurityPerformanceRecord record = element.getPerformance(option);
-                    long delta = record.getDelta();
+                    Money delta = record.getDelta();
 
-                    if (delta < 0)
+                    if (delta.isNegative())
                         return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                    else if (delta > 0)
+                    else if (delta.isPositive())
                         return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
                 }
                 return null;

@@ -1295,14 +1295,135 @@
         <price t="2015-02-09" v="11972"/>
         <price t="2015-02-10" v="12202"/>
         <price t="2015-02-11" v="12488"/>
-        <price t="2015-02-12" v="12646"/>
+        <price t="2015-02-12" v="12645"/>
         <price t="2015-02-13" v="12708"/>
+        <price t="2015-02-17" v="12783"/>
+        <price t="2015-02-18" v="12872"/>
+        <price t="2015-02-19" v="12844"/>
+        <price t="2015-02-20" v="12950"/>
+        <price t="2015-02-23" v="13300"/>
+        <price t="2015-02-24" v="13216"/>
+        <price t="2015-02-25" v="12878"/>
+        <price t="2015-02-26" v="13041"/>
+        <price t="2015-02-27" v="12846"/>
+        <price t="2015-03-02" v="12908"/>
+        <price t="2015-03-03" v="12936"/>
+        <price t="2015-03-04" v="12853"/>
+        <price t="2015-03-05" v="12641"/>
+        <price t="2015-03-06" v="12659"/>
+        <price t="2015-03-09" v="12713"/>
+        <price t="2015-03-10" v="12451"/>
+        <price t="2015-03-11" v="12223"/>
+        <price t="2015-03-12" v="12444"/>
+        <price t="2015-03-13" v="12358"/>
+        <price t="2015-03-16" v="12494"/>
+        <price t="2015-03-17" v="12704"/>
+        <price t="2015-03-18" v="12847"/>
+        <price t="2015-03-19" v="12750"/>
+        <price t="2015-03-20" v="12590"/>
+        <price t="2015-03-23" v="12720"/>
+        <price t="2015-03-24" v="12669"/>
+        <price t="2015-03-25" v="12337"/>
+        <price t="2015-03-26" v="12423"/>
+        <price t="2015-03-27" v="12325"/>
+        <price t="2015-03-30" v="12637"/>
+        <price t="2015-03-31" v="12443"/>
+        <price t="2015-04-01" v="12425"/>
+        <price t="2015-04-02" v="12532"/>
+        <price t="2015-04-06" v="12734"/>
+        <price t="2015-04-07" v="12601"/>
+        <price t="2015-04-08" v="12559"/>
+        <price t="2015-04-09" v="12655"/>
+        <price t="2015-04-10" v="12709"/>
+        <price t="2015-04-13" v="12684"/>
+        <price t="2015-04-14" v="12630"/>
+        <price t="2015-04-15" v="12677"/>
+        <price t="2015-04-16" v="12616"/>
+        <price t="2015-04-17" v="12475"/>
+        <price t="2015-04-20" v="12759"/>
+        <price t="2015-04-21" v="12691"/>
+        <price t="2015-04-22" v="12861"/>
+        <price t="2015-04-23" v="12966"/>
+        <price t="2015-04-24" v="13027"/>
+        <price t="2015-04-27" v="13264"/>
+        <price t="2015-04-28" v="13055"/>
+        <price t="2015-04-29" v="12863"/>
+        <price t="2015-04-30" v="12515"/>
+        <price t="2015-05-01" v="12894"/>
+        <price t="2015-05-04" v="12869"/>
+        <price t="2015-05-05" v="12580"/>
+        <price t="2015-05-06" v="12501"/>
+        <price t="2015-05-07" v="12526"/>
+        <price t="2015-05-08" v="12762"/>
+        <price t="2015-05-11" v="12632"/>
+        <price t="2015-05-12" v="12587"/>
+        <price t="2015-05-13" v="12601"/>
+        <price t="2015-05-14" v="12894"/>
+        <price t="2015-05-15" v="12877"/>
+        <price t="2015-05-18" v="13019"/>
+        <price t="2015-05-19" v="13007"/>
+        <price t="2015-05-20" v="13005"/>
+        <price t="2015-05-21" v="13138"/>
+        <price t="2015-05-22" v="13253"/>
+        <price t="2015-05-26" v="12961"/>
+        <price t="2015-05-27" v="13203"/>
+        <price t="2015-05-28" v="13177"/>
+        <price t="2015-05-29" v="13027"/>
+        <price t="2015-06-01" v="13053"/>
+        <price t="2015-06-02" v="12996"/>
+        <price t="2015-06-03" v="13011"/>
+        <price t="2015-06-04" v="12936"/>
+        <price t="2015-06-05" v="12864"/>
+        <price t="2015-06-08" v="12780"/>
+        <price t="2015-06-09" v="12741"/>
+        <price t="2015-06-10" v="12888"/>
+        <price t="2015-06-11" v="12858"/>
+        <price t="2015-06-12" v="12716"/>
+        <price t="2015-06-15" v="12691"/>
+        <price t="2015-06-16" v="12759"/>
+        <price t="2015-06-17" v="12730"/>
+        <price t="2015-06-18" v="12787"/>
+        <price t="2015-06-19" v="12659"/>
+        <price t="2015-06-22" v="12761"/>
+        <price t="2015-06-23" v="12702"/>
+        <price t="2015-06-24" v="12811"/>
+        <price t="2015-06-25" v="12750"/>
+        <price t="2015-06-26" v="12675"/>
+        <price t="2015-06-29" v="12452"/>
+        <price t="2015-06-30" v="12543"/>
+        <price t="2015-07-01" v="12659"/>
+        <price t="2015-07-02" v="12644"/>
+        <price t="2015-07-06" v="12600"/>
+        <price t="2015-07-07" v="12569"/>
+        <price t="2015-07-08" v="12257"/>
+        <price t="2015-07-09" v="12007"/>
+        <price t="2015-07-10" v="12327"/>
+        <price t="2015-07-13" v="12566"/>
+        <price t="2015-07-14" v="12561"/>
+        <price t="2015-07-15" v="12682"/>
+        <price t="2015-07-16" v="12850"/>
+        <price t="2015-07-17" v="12961"/>
+        <price t="2015-07-20" v="13207"/>
+        <price t="2015-07-21" v="13075"/>
+        <price t="2015-07-22" v="12522"/>
+        <price t="2015-07-23" v="12516"/>
+        <price t="2015-07-24" v="12450"/>
+        <price t="2015-07-27" v="12276"/>
+        <price t="2015-07-28" v="12337"/>
+        <price t="2015-07-29" v="12298"/>
+        <price t="2015-07-30" v="12237"/>
+        <price t="2015-07-31" v="12130"/>
+        <price t="2015-08-03" v="11844"/>
+        <price t="2015-08-04" v="11463"/>
+        <price t="2015-08-05" v="11540"/>
+        <price t="2015-08-06" v="11512"/>
+        <price t="2015-08-07" v="11551"/>
       </prices>
-      <latest t="2015-02-13" v="12708">
-        <high>12728</high>
-        <low>12565</low>
-        <volume>54272220</volume>
-        <previousClose>12646</previousClose>
+      <latest t="2015-08-07" v="11552">
+        <high>11625</high>
+        <low>11450</low>
+        <volume>38670405</volume>
+        <previousClose>11513</previousClose>
       </latest>
       <attributes>
         <map/>
@@ -3124,6 +3245,28 @@
                   </units>
                   <type>BUY</type>
                 </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2015-08-03</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>57760</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>USD</currencyCode>
+                      <amount>57760</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>5000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
               </transactions>
             </portfolio>
             <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
@@ -3148,6 +3291,7 @@
           <shares>0</shares>
           <type>DEPOSIT</type>
         </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/accountTransaction"/>
       </transactions>
     </account>
   </accounts>

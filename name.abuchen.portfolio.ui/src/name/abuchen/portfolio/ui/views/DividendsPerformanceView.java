@@ -263,7 +263,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getFifoCost());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
@@ -277,7 +277,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(), getClient()
+                                .getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
@@ -292,7 +293,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getSumOfDividends());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getSumOfDividends(), getClient()
+                                .getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
@@ -305,7 +307,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getMarketValue());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getMarketValue(), getClient()
+                                .getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
@@ -319,13 +322,13 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getDelta());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getDelta(), getClient().getBaseCurrency());
             }
 
             @Override
             public Color getForeground(Object e)
             {
-                return getColor(((SecurityPerformanceRecord) e).getDelta());
+                return getColor(((SecurityPerformanceRecord) e).getDelta().getAmount());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
@@ -339,7 +342,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getFees());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFees(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fees")); //$NON-NLS-1$
@@ -353,7 +356,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getTaxes());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getTaxes(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "taxes")); //$NON-NLS-1$
@@ -594,7 +597,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public String getText(Object t)
             {
                 if (t instanceof DividendTransaction)
-                    return Values.Amount.format(((DividendTransaction) t).getAmount());
+                    return Values.Money.format(((DividendTransaction) t).getMonetaryAmount(), getClient()
+                                    .getBaseCurrency());
                 else
                     return null;
             }
@@ -639,16 +643,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object t)
             {
-                if (t instanceof PortfolioTransaction)
-                    return Values.Amount.format(((PortfolioTransaction) t).getAmount());
-                else if (t instanceof DividendInitialTransaction)
-                    return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
-                else if (t instanceof DividendFinalTransaction)
-                    return Values.Amount.format(((DividendFinalTransaction) t).getAmount());
-                else if (t instanceof AccountTransaction)
-                    return Values.Amount.format(((AccountTransaction) t).getAmount());
-                else
+                if (t instanceof DividendTransaction)
                     return null;
+                else
+                    return Values.Money.format(((Transaction) t).getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);

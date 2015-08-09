@@ -24,6 +24,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -64,10 +66,10 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 
         // accrued taxes must be 5 (paid 10 on delivery + 5 tax refund):
-        assertThat(record.getTaxes(), is(5L * Values.Amount.factor()));
+        assertThat(record.getTaxes(), is(Money.of(CurrencyUnit.EUR, 5_00L)));
 
         // accrued fees must be 10 (paid 10 on delivery)
-        assertThat(record.getFees(), is(10L * Values.Amount.factor()));
+        assertThat(record.getFees(), is(Money.of(CurrencyUnit.EUR, 10_00L)));
 
         // make sure that tax refund is included in transactions
         assertThat(record.getTransactions(), hasItem(isA(AccountTransaction.class)));
@@ -128,10 +130,10 @@ public class SecurityPerformanceTaxRefundTestCase
 
         // accrued taxes must be 0 (paid 10 on delivery + 5 tax refund + 10
         // taxes on sell):
-        assertThat(record.getTaxes(), is(15L * Values.Amount.factor()));
+        assertThat(record.getTaxes(), is(Money.of(CurrencyUnit.EUR, 15_00L)));
 
         // accrued fees must be 20 (paid 10 on delivery + 10 on sell)
-        assertThat(record.getFees(), is(20L * Values.Amount.factor()));
+        assertThat(record.getFees(), is(Money.of(CurrencyUnit.EUR, 20_00L)));
 
         // make sure that tax refund is included in transactions
         assertThat(record.getTransactions(), hasItem(isA(AccountTransaction.class)));

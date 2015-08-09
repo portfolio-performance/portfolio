@@ -23,6 +23,9 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -137,7 +140,8 @@ public class CurrencyTestCase
     @Test
     public void testClientPerformanceSnapshot()
     {
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"), LocalDate.parse("2015-01-14"));
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"),
+                        LocalDate.parse("2015-01-14"));
         ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter, period);
 
         // calculating the totals is tested with #testClientSnapshot
@@ -156,6 +160,28 @@ public class CurrencyTestCase
 
         // compare with result calculated by Excel's XIRR function
         assertThat(performance.getPerformanceIRR(), IsCloseTo.closeTo(0.505460984, 0.00000001));
+    }
+
+    @Test
+    public void testFIFOPurchasePriceWithForex()
+    {
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.parse("2015-08-09"));
+
+        // 1.1. ........ -> 454.60 EUR
+        // 1.1. 571.90 $ -> 471.05 EUR (exchange rate: 1.2141)
+        // 3.8. 577.60 $ -> 498.45 EUR (exchange rate: 1.1588)
+
+        AssetPosition position = snapshot.getPositionsByVehicle().get(securityUSD);
+        assertThat(position.getPosition().getShares(), is(Values.Share.factorize(15)));
+        assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 454_60 + 471_05 + 498_45)));
+
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-12-31"),
+                        LocalDate.parse("2015-08-10"));
+        SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
+        SecurityPerformanceRecord record = performance.getRecords().stream()
+                        .filter(r -> r.getSecurity() == securityUSD).findAny().get();
+        assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
+        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60 + 471_05 + 498_45)));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

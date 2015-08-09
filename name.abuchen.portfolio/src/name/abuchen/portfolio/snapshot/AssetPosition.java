@@ -46,7 +46,7 @@ public class AssetPosition
 
     public Money getFIFOPurchaseValue()
     {
-        return converter.convert(date, position.getFIFOPurchaseValue());
+        return position.getFIFOPurchaseValue(converter.getTermCurrency());
     }
 
     public Money getProfitLoss()
