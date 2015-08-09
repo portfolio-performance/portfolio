@@ -261,7 +261,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                                 .getBaseCurrency());
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "fees").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
@@ -275,7 +274,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                                 .getBaseCurrency());
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "taxes").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
