@@ -11,38 +11,22 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.AlgorithmParameters;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.io.BlockCipherCryptor;
+import name.abuchen.portfolio.model.io.ClientPersister;
+import name.abuchen.portfolio.model.io.PlainWriter;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.LocalDateConverter;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
@@ -56,7 +40,7 @@ import com.thoughtworks.xstream.converters.basic.DateConverter;
 @SuppressWarnings("deprecation")
 public class ClientFactory
 {
-    private static class XmlSerialization
+    public static class XmlSerialization
     {
         public Client load(Reader input) throws IOException
         {
@@ -78,7 +62,7 @@ public class ClientFactory
             }
         }
 
-        void save(Client client, OutputStream output) throws IOException
+        public void save(Client client, OutputStream output) throws IOException
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
@@ -88,212 +72,11 @@ public class ClientFactory
         }
     }
 
-    private interface ClientPersister
-    {
-        Client load(InputStream input) throws IOException;
-
-        void save(Client client, OutputStream output) throws IOException;
-    }
-
-    private static class PlainWriter implements ClientPersister
-    {
-        @Override
-        public Client load(InputStream input) throws IOException
-        {
-            return new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
-        }
-
-        @Override
-        public void save(Client client, OutputStream output) throws IOException
-        {
-            new XmlSerialization().save(client, output);
-        }
-    }
-
-    private static class Decryptor implements ClientPersister
-    {
-        private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
-
-        private static final byte[] SALT = new byte[] { 112, 67, 103, 107, -92, -125, -112, -95, //
-                        -97, -114, 117, -56, -53, -69, -25, -28 };
-
-        private static final String AES = "AES"; //$NON-NLS-1$
-        private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"; //$NON-NLS-1$
-        private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"; //$NON-NLS-1$
-        private static final int ITERATION_COUNT = 65536;
-        private static final int IV_LENGTH = 16;
-
-        private static final int AES128_KEYLENGTH = 128;
-        private static final int AES256_KEYLENGTH = 256;
-
-        private char[] password;
-        private int keyLength;
-
-        public Decryptor(String method, char[] password)
-        {
-            this.password = password;
-            this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
-        }
-
-        @Override
-        public Client load(final InputStream input) throws IOException
-        {
-            InputStream decrypted = null;
-
-            try
-            {
-                // check signature
-                byte[] signature = new byte[SIGNATURE.length];
-                input.read(signature);
-                if (!Arrays.equals(signature, SIGNATURE))
-                    throw new IOException(Messages.MsgNotAPortflioFile);
-
-                // read encryption method
-                int method = input.read();
-                this.keyLength = method == 1 ? AES256_KEYLENGTH : AES128_KEYLENGTH;
-
-                // check if key length is supported
-                if (!isKeyLengthSupported(this.keyLength))
-                    throw new IOException(Messages.MsgKeyLengthNotSupported);
-
-                // build secret key
-                SecretKey secret = buildSecretKey();
-
-                // read initialization vector
-                byte[] iv = new byte[IV_LENGTH];
-                input.read(iv);
-
-                // build cipher and stream
-                Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-                cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-                decrypted = new CipherInputStream(input, cipher);
-
-                // read version information
-                byte[] bytes = new byte[4];
-                decrypted.read(bytes); // major version number
-                int majorVersion = ByteBuffer.wrap(bytes).getInt();
-                decrypted.read(bytes); // version number
-                int version = ByteBuffer.wrap(bytes).getInt();
-
-                if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
-
-                // wrap with zip input stream
-                ZipInputStream zipin = new ZipInputStream(decrypted);
-                zipin.getNextEntry();
-
-                Client client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
-
-                // save secret key for next save
-                client.setSecret(secret);
-
-                return client;
-            }
-            catch (GeneralSecurityException e)
-            {
-                throw new IOException(MessageFormat.format(Messages.MsgErrorDecrypting, e.getMessage()), e);
-            }
-            finally
-            {
-                try
-                {
-                    if (decrypted != null)
-                        decrypted.close();
-                }
-                catch (IOException ignore)
-                {
-                    // starting with a later jdk 1.8.0 (for example 1.8.0_25), a
-                    // javax.crypto.BadPaddingException
-                    // "Given final block not properly padded" is thrown if the
-                    // we do not read the complete stream
-                }
-            }
-        }
-
-        @Override
-        public void save(Client client, final OutputStream output) throws IOException
-        {
-            try
-            {
-                // check if key length is supported
-                if (!isKeyLengthSupported(this.keyLength))
-                    throw new IOException(Messages.MsgKeyLengthNotSupported);
-
-                // get or build secret key
-                // if password is given, it is used (when the user chooses
-                // "save as" from the menu)
-                SecretKey secret = password != null ? buildSecretKey() : client.getSecret();
-                if (secret == null)
-                    throw new IOException(Messages.MsgPasswordMissing);
-
-                // save secret key for next save
-                client.setSecret(secret);
-
-                // write signature
-                output.write(SIGNATURE);
-
-                // write method
-                output.write(secret.getEncoded().length * 8 == AES256_KEYLENGTH ? 1 : 0);
-
-                // build cipher and stream
-                Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-                cipher.init(Cipher.ENCRYPT_MODE, secret);
-
-                // write initialization vector
-                AlgorithmParameters params = cipher.getParameters();
-                byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-                output.write(iv);
-
-                // encrypted stream
-                OutputStream encrpyted = new CipherOutputStream(output, cipher);
-
-                // write version information
-                encrpyted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
-                encrpyted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
-
-                // wrap with zip output stream
-                ZipOutputStream zipout = new ZipOutputStream(encrpyted);
-                zipout.putNextEntry(new ZipEntry("data.xml")); //$NON-NLS-1$
-
-                new XmlSerialization().save(client, zipout);
-
-                zipout.closeEntry();
-                zipout.flush();
-                zipout.finish();
-                output.flush();
-            }
-            catch (GeneralSecurityException e)
-            {
-                throw new IOException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
-            }
-        }
-
-        private SecretKey buildSecretKey() throws NoSuchAlgorithmException, InvalidKeySpecException
-        {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
-            KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, keyLength);
-            SecretKey tmp = factory.generateSecret(spec);
-            return new SecretKeySpec(tmp.getEncoded(), AES);
-        }
-    }
-
     private static XStream xstream;
 
     public static boolean isEncrypted(File file)
     {
         return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
-    }
-
-    public static boolean isKeyLengthSupported(int keyLength)
-    {
-        try
-        {
-            return keyLength <= Cipher.getMaxAllowedKeyLength(Decryptor.CIPHER_ALGORITHM);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
-        }
     }
 
     public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
@@ -311,7 +94,7 @@ public class ClientFactory
             monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
             input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
 
-            return buildPersister(file, null, password).load(input);
+            return buildPersisterForLoad(file, password).load(input);
         }
         catch (FileNotFoundException e)
         {
@@ -353,7 +136,7 @@ public class ClientFactory
         {
             output = new FileOutputStream(file);
 
-            buildPersister(file, method, password).save(client, output);
+            buildPersisterForSave(file, password).save(client, method == "AES256" ? 1 : 0, output);
         }
         finally
         {
@@ -362,12 +145,30 @@ public class ClientFactory
         }
     }
 
-    private static ClientPersister buildPersister(File file, String method, char[] password)
+    private static ClientPersister buildPersisterForLoad(File file, char[] password)
     {
         if (file != null && isEncrypted(file))
-            return new Decryptor(method, password);
+            return BlockCipherCryptor.buildCryptorFromFileSignature(file, password);
         else
             return new PlainWriter();
+    }
+    
+    private static ClientPersister buildPersisterForSave(File file, char[] password, boolean useExperimentalCryptor)
+    {
+        if (file != null && isEncrypted(file))
+        {
+            if(! useExperimentalCryptor)
+                return BlockCipherCryptor.getLegacy(password);
+            else
+                return BlockCipherCryptor.getLatest(password);
+        }     
+        else
+            return new PlainWriter();
+    }
+        
+    public static boolean isKeyLengthSupportedForSave(int keyLength)
+    {
+        return BlockCipherCryptor.getLatest(null).isKeyLengthSupported(keyLength);
     }
 
     private static void upgradeModel(Client client)
@@ -861,4 +662,5 @@ public class ClientFactory
         }
         return xstream;
     }
+
 }

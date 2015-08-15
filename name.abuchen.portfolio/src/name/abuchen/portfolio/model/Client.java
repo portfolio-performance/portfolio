@@ -18,8 +18,8 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Client
 {
-    /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 28;
+    public static final int MAJOR_VERSION = 1;
+    public static final int CURRENT_VERSION = 28;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -308,12 +308,12 @@ public class Client
         return properties.get(key);
     }
 
-    /* package */SecretKey getSecret()
+    public SecretKey getSecret()
     {
         return secret;
     }
 
-    /* package */void setSecret(SecretKey secret)
+    public void setSecret(SecretKey secret)
     {
         this.secret = secret;
     }
