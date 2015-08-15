@@ -4,6 +4,7 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.SecurityPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -22,6 +23,7 @@ public class OpenPreferenceDialogHandler
         PreferenceManager pm = new PreferenceManager();
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".updates", new UpdatePreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".language", new LanguagePreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".security", new SecurityPreferencePage())); //$NON-NLS-1$
         
         PreferenceDialog dialog = new PreferenceDialog(shell, pm);
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
