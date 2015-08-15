@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
-public class ConsorsbankPDFExctractor extends AbstractExtractor
+public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 {
     public ConsorsbankPDFExctractor(Client client) throws IOException
     {

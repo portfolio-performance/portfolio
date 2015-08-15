@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 
@@ -31,23 +32,45 @@ public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
     @Override
     protected Object doGetValue(Object source)
     {
-        DateTime dateTime = (DateTime) source;
-        Calendar cal = CALENDAR.get();
+        if (source instanceof DateTime)
+        {
+            DateTime dateTime = (DateTime) source;
+            Calendar cal = CALENDAR.get();
 
-        cal.clear();
-        cal.set(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay());
-        return cal.getTime();
+            cal.clear();
+            cal.set(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay());
+            return cal.getTime();
+        }
+        else if (source instanceof CDateTime)
+        {
+            return ((CDateTime) source).getSelection();
+        }
+        else
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
     protected void doSetValue(Object source, Object value)
     {
-        DateTime dateTime = (DateTime) source;
-        Calendar cal = CALENDAR.get();
+        if (source instanceof DateTime)
+        {
+            DateTime dateTime = (DateTime) source;
+            Calendar cal = CALENDAR.get();
 
-        cal.setTime((Date) value);
-        dateTime.setYear(cal.get(Calendar.YEAR));
-        dateTime.setMonth(cal.get(Calendar.MONTH));
-        dateTime.setDay(cal.get(Calendar.DAY_OF_MONTH));
+            cal.setTime((Date) value);
+            dateTime.setYear(cal.get(Calendar.YEAR));
+            dateTime.setMonth(cal.get(Calendar.MONTH));
+            dateTime.setDay(cal.get(Calendar.DAY_OF_MONTH));
+        }
+        else if (source instanceof CDateTime)
+        {
+            ((CDateTime) source).setSelection((Date) value);
+        }
+        else
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 }

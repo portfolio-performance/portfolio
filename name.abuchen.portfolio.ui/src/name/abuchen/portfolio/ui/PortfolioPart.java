@@ -429,7 +429,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         });
     }
 
-    protected void activateView(String target, Object parameter)
+    public void activateView(String target, Object parameter)
     {
         disposeView();
 
@@ -504,7 +504,7 @@ public class PortfolioPart implements LoadClientThread.Callback
                 {
                     answer.add(ReportingPeriod.from(c));
                 }
-                catch (IOException ignore)
+                catch (IOException | RuntimeException ignore)
                 {
                     PortfolioPlugin.log(ignore);
                 }

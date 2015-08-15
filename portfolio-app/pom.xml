@@ -9,7 +9,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.18.1-SNAPSHOT</version>
+	<version>0.19.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -17,8 +17,9 @@
 	<properties>
 		<tycho-version>0.22.0</tycho-version>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
-		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
+		<argLine>-ea</argLine>
 	</properties>
 
 	<modules>
@@ -49,6 +50,11 @@
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/technology/babel/update-site/R0.12.1/luna</url>
+		</repository>
+		<repository>
+			<id>eclipse-nebula</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/technology/nebula/archives/Q12015/release</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
@@ -181,7 +187,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.2.201409121644</version>
+				<version>0.7.4.201502262128</version>
 				<executions>
 					<execution>
 						<goals>
@@ -222,9 +228,6 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
-					<configuration>
-						<argLine>-ea</argLine>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>

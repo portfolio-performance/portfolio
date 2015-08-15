@@ -41,6 +41,7 @@ public class Messages extends NLS
     public static String CSVDefPortfolioTransactions;
     public static String CSVDefSecurities;
     public static String CSVDefSecurityMasterData;
+    public static String CSVFormatDDMMYY;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
     public static String CSVFormatNumberGermany;
@@ -68,6 +69,9 @@ public class Messages extends NLS
     public static String FixDeleteTransaction;
     public static String FixDeleteTransactionDone;
     public static String FixReferenceAccountNameProposal;
+    public static String FixSetSecurity;
+    public static String FixSetSecurityDone;
+    public static String IBXML_Label;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
     public static String IssueInconsistentSharesHeld;
@@ -77,6 +81,7 @@ public class Messages extends NLS
     public static String IssueMissingBuySellInPortfolio;
     public static String IssueMissingPortfolioTransfer;
     public static String IssueMissingReferenceAccount;
+    public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
     public static String LabelDeposits;
     public static String LabelHTMLTable;
@@ -88,6 +93,8 @@ public class Messages extends NLS
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
     public static String LabelSecurity;
+    public static String LabelTransferAccount;
+    public static String LabelTransferPortfolio;
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;

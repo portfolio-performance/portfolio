@@ -239,6 +239,8 @@ public class ClientFactory
             case 25:
                 // incremented precision of shares to 6 digits after the decimal sign
                 incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(client);
+            case 26:
+                // do nothing --> added client settings
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -576,6 +578,8 @@ public class ClientFactory
 
                     xstream.alias("account", Account.class);
                     xstream.alias("client", Client.class);
+                    xstream.alias("settings", ClientSettings.class);
+                    xstream.alias("bookmark", Bookmark.class);
                     xstream.alias("portfolio", Portfolio.class);
                     xstream.alias("account-transaction", AccountTransaction.class);
                     xstream.alias("portfolio-transaction", PortfolioTransaction.class);

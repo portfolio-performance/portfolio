@@ -24,6 +24,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
@@ -32,7 +33,6 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -270,8 +270,13 @@ public final class SecuritiesTable implements ModificationListener
                 SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
 
                 if (!(p1 instanceof LatestSecurityPrice))
-                    return p2 == null ? 0 : -1;
+                    p1 = null;
                 if (!(p2 instanceof LatestSecurityPrice))
+                    p2 = null;
+
+                if (p1 == null)
+                    return p2 == null ? 0 : -1;
+                if (p2 == null)
                     return 1;
 
                 LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
@@ -595,7 +600,7 @@ public final class SecuritiesTable implements ModificationListener
         new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
 
         manager.add(new Separator());
-        manager.add(new WebLocationMenu(security));
+        manager.add(new BookmarkMenu(view.getPart(), security));
 
         manager.add(new Separator());
         if (watchlist == null)

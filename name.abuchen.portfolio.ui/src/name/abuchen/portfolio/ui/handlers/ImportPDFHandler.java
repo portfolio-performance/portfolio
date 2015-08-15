@@ -9,11 +9,13 @@ import java.util.List;
 import javax.inject.Named;
 
 import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.CommerzbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.ConsorsbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.DABPDFExctractor;
 import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.FlatexPDFExctractor;
+import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
@@ -52,6 +54,9 @@ public class ImportPDFHandler
             case "comdirect": //$NON-NLS-1$
                 extractor = new ComdirectPDFExtractor(client);
                 break;
+            case "commerzbank": //$NON-NLS-1$
+                extractor = new CommerzbankPDFExctractor(client);
+                break;
             case "consorsbank": //$NON-NLS-1$
                 extractor = new ConsorsbankPDFExctractor(client);
                 break;
@@ -64,6 +69,9 @@ public class ImportPDFHandler
             case "flatex": //$NON-NLS-1$
                 extractor = new FlatexPDFExctractor(client);
                 break;
+            case "ib": //$NON-NLS-1$
+                extractor = new IBFlexStatementExtractor(client);
+                break;                
             default:
                 throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
         }

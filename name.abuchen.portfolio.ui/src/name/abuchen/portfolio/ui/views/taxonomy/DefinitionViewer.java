@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
@@ -24,9 +25,9 @@ import org.eclipse.swt.widgets.Display;
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
 
-    public DefinitionViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public DefinitionViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        super(model, renderer);
+        super(part, model, renderer);
     }
 
     @Override

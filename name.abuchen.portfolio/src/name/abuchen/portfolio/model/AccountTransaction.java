@@ -51,4 +51,17 @@ public class AccountTransaction extends Transaction
     {
         this.amount = amount;
     }
+
+    @Override
+    public boolean isPotentialDuplicate(Transaction other)
+    {
+        if (!(other instanceof AccountTransaction))
+            return false;
+
+        if (!super.isPotentialDuplicate(other))
+            return false;
+        
+        return type == ((AccountTransaction) other).getType();
+    }
+
 }

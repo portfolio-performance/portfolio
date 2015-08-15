@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class Security implements Attributable, InvestmentVehicle
@@ -206,6 +207,8 @@ public final class Security implements Attributable, InvestmentVehicle
      */
     public boolean addPrice(SecurityPrice price)
     {
+        Objects.requireNonNull(price);
+
         int index = Collections.binarySearch(prices, price);
 
         if (index < 0)

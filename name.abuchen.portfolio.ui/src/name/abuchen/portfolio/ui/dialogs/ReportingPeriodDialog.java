@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import java.util.Calendar;
-
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -15,7 +14,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -32,11 +30,11 @@ public class ReportingPeriodDialog extends Dialog
     private Spinner months;
 
     private Button radioFromXtoY;
-    private DateTime dateFrom;
-    private DateTime dateTo;
+    private DateTimePicker dateFrom;
+    private DateTimePicker dateTo;
 
     private Button radioSinceX;
-    private DateTime dateSince;
+    private DateTimePicker dateSince;
 
     public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
     {
@@ -75,15 +73,15 @@ public class ReportingPeriodDialog extends Dialog
         radioFromXtoY = new Button(editArea, SWT.RADIO);
         Label lblFrom = new Label(editArea, SWT.NONE);
         lblFrom.setText(Messages.LabelReportingDialogFrom);
-        dateFrom = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+        dateFrom = new DateTimePicker(editArea);
         Label lblTo = new Label(editArea, SWT.NONE);
         lblTo.setText(Messages.LabelReportingDialogUntil);
-        dateTo = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+        dateTo = new DateTimePicker(editArea);
 
         radioSinceX = new Button(editArea, SWT.RADIO);
         Label lblSince = new Label(editArea, SWT.NONE);
         lblSince.setText(Messages.LabelReportingDialogSince);
-        dateSince = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+        dateSince = new DateTimePicker(editArea);
 
         //
         // form layout
@@ -132,7 +130,7 @@ public class ReportingPeriodDialog extends Dialog
         dateFrom.setLayoutData(data);
 
         data = new FormData();
-        data.left = new FormAttachment(dateFrom, 5);
+        data.left = new FormAttachment(dateFrom.getControl(), 5);
         data.top = new FormAttachment(radioFromXtoY, 0, SWT.CENTER);
         lblTo.setLayoutData(data);
 
@@ -162,8 +160,8 @@ public class ReportingPeriodDialog extends Dialog
         presetFromTemplate();
 
         listen(radioLast, years, months);
-        listen(radioFromXtoY, dateFrom, dateTo);
-        listen(radioSinceX, dateSince);
+        listen(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
+        listen(radioSinceX, dateSince.getControl());
 
         return composite;
     }
@@ -198,13 +196,10 @@ public class ReportingPeriodDialog extends Dialog
         else
             throw new RuntimeException();
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(template.getStartDate());
-        dateFrom.setDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-        dateSince.setDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dateFrom.setSelection(template.getStartDate());
+        dateSince.setSelection(template.getStartDate());
 
-        cal.setTime(template.getEndDate());
-        dateTo.setDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dateTo.setSelection(template.getEndDate());
 
         int m = Dates.monthsBetween(template.getStartDate(), template.getEndDate());
         years.setSelection(m / 12);
@@ -220,14 +215,19 @@ public class ReportingPeriodDialog extends Dialog
         }
         else if (radioFromXtoY.getSelection())
         {
-            result = new ReportingPeriod.FromXtoY( //
-                            Dates.date(dateFrom.getYear(), dateFrom.getMonth(), dateFrom.getDay()), //
-                            Dates.date(dateTo.getYear(), dateTo.getMonth(), dateTo.getDay()));
+            // prevent null values which can be set via the CDateTime widget
+            if (dateFrom.getSelection() == null || dateTo.getSelection() == null)
+                return;
+
+            result = new ReportingPeriod.FromXtoY(dateFrom.getSelection(), dateTo.getSelection());
         }
         else if (radioSinceX.getSelection())
         {
-            result = new ReportingPeriod.SinceX( //
-                            Dates.date(dateSince.getYear(), dateSince.getMonth(), dateSince.getDay()));
+            // prevent null values which can be set via the CDateTime widget
+            if (dateSince.getSelection() == null)
+                return;
+
+            result = new ReportingPeriod.SinceX(dateSince.getSelection());
         }
         else
         {

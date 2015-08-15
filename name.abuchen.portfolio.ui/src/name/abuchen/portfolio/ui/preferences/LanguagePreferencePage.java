@@ -105,6 +105,10 @@ public class LanguagePreferencePage extends PreferencePage
     @Override
     public boolean performOk()
     {
+        // check if viewer is initialized at all
+        if (viewer == null)
+            return true;
+
         Language language = (Language) ((IStructuredSelection) viewer.getSelection()).getFirstElement();
 
         switch (language)

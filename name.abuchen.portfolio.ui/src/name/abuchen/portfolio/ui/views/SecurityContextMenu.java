@@ -10,7 +10,7 @@ import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
 import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
-import name.abuchen.portfolio.ui.util.WebLocationMenu;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
 import org.eclipse.jface.action.Action;
@@ -168,7 +168,7 @@ public class SecurityContextMenu
         if (security != null)
         {
             manager.add(new Separator());
-            manager.add(new WebLocationMenu(security));
+            manager.add(new BookmarkMenu(owner.getPart(), security));
         }
     }
 }

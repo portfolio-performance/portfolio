@@ -13,7 +13,18 @@ public class Messages extends NLS
     public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
-    public static String AccountMenuTransfer;
+    public static String AccountMenuTransfer;   
+    public static String BookmarksListView_addSeparator;
+    public static String BookmarksListView_insertAfter;
+    public static String BookmarksListView_bookmark;
+    public static String BookmarksListView_delete;
+    public static String BookmarksListView_insertBefore;
+    public static String BookmarksListView_MoveDown;
+    public static String BookmarksListView_MoveUp;
+    public static String BookmarksListView_NewBookmark;
+    public static String BookmarksListView_title;
+    public static String BookmarksListView_tooltip;
+    public static String BookmarksListView_url;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
@@ -255,7 +266,8 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelCopyToClipboard;
     public static String LabelDefaultReferenceAccountName;
-    public static String LabelDelete;
+    public static String LabelDoImport;
+    public static String LabelDoNotImport;
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelExport;
@@ -285,6 +297,7 @@ public class Messages extends NLS
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
+    public static String LabelPotentialDuplicate;
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
@@ -317,6 +330,7 @@ public class Messages extends NLS
     public static String LabelTotalSum;
     public static String LabelTransactions;
     public static String LabelTransferals;
+    public static String LabelTransferTo;
     public static String LabelTTWROR;
     public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
@@ -499,6 +513,7 @@ public class Messages extends NLS
     public static String WatchlistEditDialogMsg;
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
+    public static String BookmarkMenu_EditBookmarks;
     static
     {
         // initialize resource bundle
