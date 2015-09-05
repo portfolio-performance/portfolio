@@ -325,8 +325,11 @@ public class PortfolioPart implements LoadClientThread.Callback
 
         try
         {
+            boolean useExperimentalCryptor = PortfolioPlugin.getDefault().getPreferenceStore()
+                            .getBoolean(PortfolioPlugin.Preferences.CRYPTO_USE_EXPERIMENTAL);
+            
             part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
-            ClientFactory.save(client, clientFile, null, null);
+            ClientFactory.save(client, clientFile, null, null, useExperimentalCryptor);
             dirty.setDirty(false);
 
             storePreferences();
@@ -377,9 +380,12 @@ public class PortfolioPart implements LoadClientThread.Callback
         try
         {
             clientFile = localFile;
+            
+            boolean useExperimentalCryptor = PortfolioPlugin.getDefault().getPreferenceStore()
+                            .getBoolean(PortfolioPlugin.Preferences.CRYPTO_USE_EXPERIMENTAL);
 
             part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
-            ClientFactory.save(client, clientFile, encryptionMethod, password);
+            ClientFactory.save(client, clientFile, encryptionMethod, password, useExperimentalCryptor);
 
             dirty.setDirty(false);
             part.setLabel(clientFile.getName());
