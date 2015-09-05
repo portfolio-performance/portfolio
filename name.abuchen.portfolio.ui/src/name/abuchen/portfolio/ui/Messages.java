@@ -316,6 +316,7 @@ public class Messages extends NLS
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelSemiVolatility;
+    public static String LabelSharpeRatio;
     public static String LabelDividends;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
@@ -503,6 +504,7 @@ public class Messages extends NLS
     public static String TooltipMaxDrawdownDurationFromXtoY;
     public static String TooltipMaxDurationLowToHigh;
     public static String TooltipSemiVolatility;
+    public static String TooltipSharpeRatio;
     public static String TooltipVolatility;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
