@@ -2,6 +2,7 @@ package name.abuchen.portfolio.bootstrap;
 
 import java.util.Collection;
 
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -22,34 +23,53 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
-public class CheckedListSelectionDialog extends Dialog
+public class FilePickerDialog extends Dialog
 {
-    private LabelProvider labelProvider;
+    public static final int SAVE_ALL = 42;
 
-    private String title;
-    private String message = ""; //$NON-NLS-1$
+    private LabelProvider labelProvider;
 
     private Object[] elements;
     private Object[] selected;
 
     private CheckboxTableViewer tableViewer;
 
-    public CheckedListSelectionDialog(Shell parentShell, LabelProvider labelProvider)
+    public FilePickerDialog(Shell parentShell)
     {
         super(parentShell);
-        this.labelProvider = labelProvider;
+        this.labelProvider = new LabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                MPart part = (MPart) element;
+                String tooltip = part.getTooltip();
+                return tooltip != null ? part.getLabel() + " (" + part.getTooltip() + ")" : part.getLabel(); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        };
 
         setShellStyle(getShellStyle() | SWT.SHEET);
     }
 
-    public void setTitle(String title)
+    @Override
+    protected void createButtonsForButtonBar(Composite parent)
     {
-        this.title = title;
+        super.createButtonsForButtonBar(parent);
+        createButton(parent, SAVE_ALL, Messages.LabelSaveAll, false);
     }
 
-    public void setMessage(String message)
+    @Override
+    protected void buttonPressed(int buttonId)
     {
-        this.message = message;
+        if (buttonId == SAVE_ALL)
+        {
+            setReturnCode(SAVE_ALL);
+            close();
+        }
+        else
+        {
+            super.buttonPressed(buttonId);
+        }
     }
 
     public void setElements(Collection<?> elements)
@@ -66,7 +86,7 @@ public class CheckedListSelectionDialog extends Dialog
     protected Control createContents(Composite parent)
     {
         Control contents = super.createContents(parent);
-        getShell().setText(title);
+        getShell().setText(Messages.SaveHandlerTitle);
         return contents;
     }
 
@@ -80,7 +100,7 @@ public class CheckedListSelectionDialog extends Dialog
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
         Label label = new Label(container, SWT.None);
-        label.setText(this.message);
+        label.setText(Messages.SaveHandlerTitle);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(label);
 
         Composite tableArea = new Composite(container, SWT.NONE);
