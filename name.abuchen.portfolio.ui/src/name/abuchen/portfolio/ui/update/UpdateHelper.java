@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
@@ -136,12 +137,14 @@ public class UpdateHelper
     }
 
     private final IWorkbench workbench;
+    private final EPartService partService;
     private final IProvisioningAgent agent;
     private UpdateOperation operation;
 
-    public UpdateHelper(IWorkbench workbench) throws CoreException
+    public UpdateHelper(IWorkbench workbench, EPartService partService) throws CoreException
     {
         this.workbench = workbench;
+        this.partService = partService;
         this.agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
 
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
@@ -222,7 +225,12 @@ public class UpdateHelper
                 int returnCode = dialog.open();
 
                 if (returnCode == 0)
-                    workbench.restart();
+                {
+                    boolean successful = partService.saveAll(true);
+
+                    if (successful)
+                        workbench.restart();
+                }
             }
         });
     }
