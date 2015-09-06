@@ -291,10 +291,11 @@ public class Client
         propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
     }
 
-    public void removeProperty(String key)
+    public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
         propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$
+        return oldValue;
     }
 
     public String getProperty(String key)

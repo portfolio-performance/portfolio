@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -443,6 +444,7 @@ public class ClientFactory
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
+                fixStoredChartConfigurationToSupportMultipleViews(client);
                 break;
             default:
                 break;
@@ -759,6 +761,40 @@ public class ClientFactory
                     account2shares.put(account, shares != null ? shares + delta : delta);
                 }
             }
+        }
+    }
+
+    private static void fixStoredChartConfigurationToSupportMultipleViews(Client client)
+    {
+        @SuppressWarnings("nls")
+        String[] charts = new String[] { "name.abuchen.portfolio.ui.views.DividendsPerformanceView",
+                        "name.abuchen.portfolio.ui.views.StatementOfAssetsViewer",
+                        "name.abuchen.portfolio.ui.views.SecuritiesTable", //
+                        "PerformanceChartView-PICKER", //
+                        "StatementOfAssetsHistoryView-PICKER", //
+                        "ReturnsVolatilityChartView-PICKER" };
+
+        for (String chart : charts)
+        {
+            String config = client.removeProperty(chart);
+            if (config == null) // if other values exist, they are in order
+                continue;
+
+            List<String> values = new ArrayList<>();
+            values.add("Standard:=" + config); //$NON-NLS-1$
+
+            int index = 0;
+            config = client.getProperty(chart + '$' + index);
+            while (config != null)
+            {
+                values.add(config);
+                index++;
+                config = client.getProperty(chart + '$' + index);
+            }
+
+            index = 0;
+            for (String va : values)
+                client.setProperty(chart + '$' + index++, va);
         }
     }
 

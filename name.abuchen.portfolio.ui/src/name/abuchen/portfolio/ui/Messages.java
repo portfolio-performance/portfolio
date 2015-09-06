@@ -31,12 +31,9 @@ public class Messages extends NLS
     public static String ChartSeriesPickerAddBenchmark;
     public static String ChartSeriesPickerAddItem;
     public static String ChartSeriesPickerColor;
-    public static String ChartSeriesPickerDelete;
     public static String ChartSeriesPickerDialogMsg;
-    public static String ChartSeriesPickerDialogTitle;
     public static String ChartSeriesPickerLineStyle;
     public static String ChartSeriesPickerRemove;
-    public static String ChartSeriesPickerSave;
     public static String ChartSeriesPickerShowArea;
     public static String ChartSeriesPickerTitle;
     public static String ClientEditorLabelChart;
@@ -150,6 +147,13 @@ public class Messages extends NLS
     public static String ColumnWeight;
     public static String ColumnWKN;
     public static String ColumnYear;
+    public static String ConfigurationDelete;
+    public static String ConfigurationDuplicate;
+    public static String ConfigurationErrorIllegalCharacters;
+    public static String ConfigurationErrorMissingValue;
+    public static String ConfigurationNew;
+    public static String ConfigurationRename;
+    public static String ConfigurationStandard;
     public static String ConsumerPriceIndexMenuAdd;
     public static String ConsumerPriceIndexMenuDelete;
     public static String CSVImportErrorMissingFields;
