@@ -11,8 +11,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -470,14 +468,16 @@ public class StatementOfAssetsViewer
 
     private void addAttributeColumns()
     {
-        for (final AttributeType attribute : AttributeTypes.available(Security.class))
-        {
-            Column column = new AttributeColumn(attribute);
-            column.setVisible(false);
-            column.setSorter(null);
-            column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-            support.addColumn(column);
-        }
+        client.getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Security.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.setSorter(null);
+                            column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+                            support.addColumn(column);
+                        });
     }
 
     private void addTaxonomyColumns()

@@ -2,15 +2,15 @@ package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ClientSettings
 {
     private List<Bookmark> bookmarks;
+    private List<AttributeType> attributeTypes;
 
     public ClientSettings()
-    {
-        doPostLoadInitialization();
-    }
+    {}
 
     public void setDefaultBookmarks()
     {
@@ -38,10 +38,16 @@ public class ClientSettings
     public void doPostLoadInitialization()
     {
         if (bookmarks == null)
+        {
             this.bookmarks = new ArrayList<Bookmark>();
-
-        if (bookmarks.isEmpty())
             setDefaultBookmarks();
+        }
+
+        if (attributeTypes == null)
+        {
+            this.attributeTypes = new ArrayList<AttributeType>();
+            this.attributeTypes.addAll(AttributeTypes.getDefaultTypes());
+        }
     }
 
     public List<Bookmark> getBookmarks()
@@ -73,5 +79,10 @@ public class ClientSettings
             bookmarks.add(bookmark);
         else
             bookmarks.add(bookmarks.indexOf(after) + 1, bookmark);
+    }
+
+    public Stream<AttributeType> getAttributeTypes()
+    {
+        return attributeTypes.stream();
     }
 }

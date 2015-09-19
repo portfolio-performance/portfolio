@@ -441,10 +441,12 @@ public class ClientFactory
                 incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(client);
             case 26:
                 // do nothing --> added client settings
+            case 27:
+                // client settings include attribute types
+                fixStoredChartConfigurationToSupportMultipleViews(client);
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
-                fixStoredChartConfigurationToSupportMultipleViews(client);
                 break;
             default:
                 break;
@@ -823,6 +825,7 @@ public class ClientFactory
                     xstream.alias("category", Category.class);
                     xstream.alias("watchlist", Watchlist.class);
                     xstream.alias("investment-plan", InvestmentPlan.class);
+                    xstream.alias("attribute-type", AttributeType.class);
 
                     xstream.alias("price", SecurityPrice.class);
                     xstream.useAttributeFor(SecurityPrice.class, "time");

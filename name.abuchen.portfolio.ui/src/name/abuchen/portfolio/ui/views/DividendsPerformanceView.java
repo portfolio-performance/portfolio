@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -503,13 +501,15 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             recordColumns.addColumn(column);
         }
 
-        for (final AttributeType attribute : AttributeTypes.available(Security.class))
-        {
-            Column column = new AttributeColumn(attribute);
-            column.setVisible(false);
-            column.setEditingSupport(null);
-            recordColumns.addColumn(column);
-        }
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Security.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.setEditingSupport(null);
+                            recordColumns.addColumn(column);
+                        });
     }
 
     @Override

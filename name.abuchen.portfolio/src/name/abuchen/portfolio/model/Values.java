@@ -25,6 +25,10 @@ public abstract class Values<E>
         }
     };
 
+    /**
+     * Optionally format values without decimal places. Currently used only for
+     * attributes attached to the security.
+     */
     public static final Values<Long> AmountPlain = new Values<Long>("#,##0.##", 100D, 100) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
@@ -162,7 +166,7 @@ public abstract class Values<E>
     {
         return factor;
     }
-    
+
     public long factorize(double value)
     {
         return Double.valueOf(value * factor).longValue();

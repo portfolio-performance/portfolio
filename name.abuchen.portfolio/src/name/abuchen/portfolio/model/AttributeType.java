@@ -21,7 +21,7 @@ public class AttributeType
         Object fromString(String value);
     }
 
-    /* package */static class StringConverter implements Converter
+    public static class StringConverter implements Converter
     {
 
         @Override
@@ -38,7 +38,7 @@ public class AttributeType
 
     }
 
-    /* package */static class LongConverter implements Converter
+    private static class LongConverter implements Converter
     {
         private final NumberFormat full = new DecimalFormat("#,###"); //$NON-NLS-1$
 
@@ -93,7 +93,15 @@ public class AttributeType
         }
     }
 
-    /* package */static class DoubleConverter implements Converter
+    public static class AmountPlainConverter extends LongConverter
+    {
+        public AmountPlainConverter()
+        {
+            super(Values.AmountPlain);
+        }
+    }
+
+    private static class DoubleConverter implements Converter
     {
         private final NumberFormat full = new DecimalFormat("#,###.##"); //$NON-NLS-1$
 
@@ -131,12 +139,26 @@ public class AttributeType
         }
     }
 
+    public static class PercentPlainConverter extends DoubleConverter
+    {
+        public PercentPlainConverter()
+        {
+            super(Values.PercentPlain);
+        }
+    }
+
     private final String id;
     private String name;
     private String columnLabel;
     private Class<? extends Attributable> target;
     private Class<?> type;
-    private Converter converter;
+
+    /**
+     * Converter. Do not persist (includes formats, etc.) but recreate out of
+     * type and value parameters.
+     */
+    private transient Converter converter;
+    private String converterClass;
 
     public AttributeType(String id)
     {
@@ -167,9 +189,9 @@ public class AttributeType
         return this;
     }
 
-    /* package */AttributeType converter(Converter converter)
+    /* package */AttributeType converter(Class<? extends Converter> converterClass)
     {
-        this.converter = converter;
+        this.converterClass = converterClass.getName();
         return this;
     }
 
@@ -195,6 +217,15 @@ public class AttributeType
 
     public Converter getConverter()
     {
+        try
+        {
+            if (converter == null)
+                converter = (Converter) Class.forName(converterClass).newInstance();
+        }
+        catch (InstantiationException | IllegalAccessException | ClassNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
         return converter;
     }
 

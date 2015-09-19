@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -409,13 +407,15 @@ public final class SecuritiesTable implements ModificationListener
 
     private void addAttributeColumns()
     {
-        for (final AttributeType attribute : AttributeTypes.available(Security.class))
-        {
-            Column column = new AttributeColumn(attribute);
-            column.setVisible(false);
-            column.getEditingSupport().addListener(this);
-            support.addColumn(column);
-        }
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Security.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     public void addSelectionChangedListener(ISelectionChangedListener listener)

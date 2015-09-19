@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -19,13 +17,13 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -379,14 +377,17 @@ import org.eclipse.swt.widgets.Shell;
 
     protected void addAdditionalColumns(ShowHideColumnHelper support)
     {
-        for (final AttributeType attribute : AttributeTypes.available(Security.class))
-        {
-            Column column = new AttributeColumn(attribute);
-            column.setVisible(false);
-            column.setSorter(null);
-            column.getEditingSupport().addListener(this);
-            support.addColumn(column);
-        }
+        getModel().getClient() //
+                        .getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Security.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.setSorter(null);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     private void expandNodes()
@@ -549,7 +550,7 @@ import org.eclipse.swt.widgets.Shell;
             if (security != null)
             {
                 manager.add(new Separator());
-                manager.add(new BookmarkMenu(part, security));                
+                manager.add(new BookmarkMenu(part, security));
             }
         }
     }

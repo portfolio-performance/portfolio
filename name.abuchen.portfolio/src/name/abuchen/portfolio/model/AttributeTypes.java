@@ -1,12 +1,11 @@
 package name.abuchen.portfolio.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
-import name.abuchen.portfolio.model.AttributeType.LongConverter;
+import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
 public final class AttributeTypes
@@ -18,41 +17,33 @@ public final class AttributeTypes
                                     .columnLabel(Messages.AttributesTERColumn) //
                                     .target(Security.class) //
                                     .type(Double.class) //
-                                    .converter(new DoubleConverter(Values.PercentPlain)), //
+                                    .converter(PercentPlainConverter.class), //
 
                     new AttributeType("aum") //$NON-NLS-1$
                                     .name(Messages.AttributesAUMName) //
                                     .columnLabel(Messages.AttributesAUMColumn) //
                                     .target(Security.class) //
                                     .type(Long.class) //
-                                    .converter(new LongConverter(Values.AmountPlain)), //
+                                    .converter(AmountPlainConverter.class), //
 
                     new AttributeType("vendor") //$NON-NLS-1$
                                     .name(Messages.AttributesVendorName) //
                                     .columnLabel(Messages.AttributesVendorColumn) //
                                     .target(Security.class) //
                                     .type(String.class) //
-                                    .converter(new StringConverter()), //
+                                    .converter(StringConverter.class), //
 
                     new AttributeType("acquisitionFee") //$NON-NLS-1$
                                     .name(Messages.AttributesAcquisitionFeeName) //
                                     .columnLabel(Messages.AttributesAcquisitionFeeColumn) //
                                     .target(Security.class) //
                                     .type(Double.class) //
-                                    .converter(new DoubleConverter(Values.PercentPlain)) //
+                                    .converter(PercentPlainConverter.class) //
                     );
 
-    public static List<AttributeType> available(Class<? extends Attributable> target)
+    /* package */static List<AttributeType> getDefaultTypes()
     {
-        List<AttributeType> answer = new ArrayList<AttributeType>();
-
-        for (AttributeType type : TYPES)
-        {
-            if (type.supports(target))
-                answer.add(type);
-        }
-
-        return answer;
+        return TYPES;
     }
 
     private AttributeTypes()
