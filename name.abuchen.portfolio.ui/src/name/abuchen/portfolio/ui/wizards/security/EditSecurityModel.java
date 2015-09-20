@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -213,15 +212,15 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
 
-        Attributes a = security.getAttributes();
-        for (AttributeType attributeType : AttributeTypes.available(Security.class))
-        {
-            if (a.exists(attributeType))
-            {
-                AttributeDesignation designation = new AttributeDesignation(attributeType, a.get(attributeType));
-                attributes.add(designation);
-            }
-        }
+        Attributes securityAttributes = security.getAttributes();
+        client.getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> securityAttributes.exists(a)) //
+                        .filter(a -> a.supports(Security.class)) //
+                        .forEach(a -> {
+                            AttributeDesignation designation = new AttributeDesignation(a, securityAttributes.get(a));
+                            attributes.add(designation);
+                        });
     }
 
     public String getName()
@@ -374,6 +373,21 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     @Override
     public void applyChanges()
     {
+        // set all attributes to the current security
+        setAttributes(security);
+        for (TaxonomyDesignation designation : taxonomies)
+            designation.applyChanges();
+    }
+
+    /**
+     * Sets all currently edited attributes to the given {@link Security}. This
+     * function can also be used to create a temporary copy of a security.
+     * 
+     * @param security
+     *            {@link Security}
+     */
+    public void setAttributes(Security security)
+    {
         security.setName(name);
         security.setCurrencyCode(currencyCode);
         security.setNote(note);
@@ -385,9 +399,6 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setLatestFeed(latestFeed);
         security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
-
-        for (TaxonomyDesignation designation : taxonomies)
-            designation.applyChanges();
 
         Attributes a = new Attributes();
         for (AttributeDesignation attribute : attributes)

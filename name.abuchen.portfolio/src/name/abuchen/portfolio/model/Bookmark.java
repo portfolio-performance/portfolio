@@ -33,6 +33,11 @@ public class Bookmark
         return pattern;
     }
 
+    public boolean isSeparator()
+    {
+        return "-".equals(label); //$NON-NLS-1$
+    }
+
     public String constructURL(Security security)
     {
         String url = pattern.replace("{tickerSymbol}", encode(security.getTickerSymbol())); //$NON-NLS-1$

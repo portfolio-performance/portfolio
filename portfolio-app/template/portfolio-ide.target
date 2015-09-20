@@ -24,7 +24,7 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.4.0.v20141223043836"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.12.1/luna"/>
+<repository location="http://archive.eclipse.org/technology/babel/update-site/R0.12.1/luna"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201501260813"/>

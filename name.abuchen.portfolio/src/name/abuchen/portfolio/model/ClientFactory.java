@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -473,11 +474,15 @@ public class ClientFactory
             case 26:
                 // do nothing --> added client settings
             case 27:
+                // client settings include attribute types
+                fixStoredChartConfigurationToSupportMultipleViews(client);
+            case 28:
                 // added currency support --> designate a default currency (user
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
                 bumpUpCPIMonthValue(client);
                 convertFeesAndTaxesToTransactionUnits(client);
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -800,6 +805,40 @@ public class ClientFactory
                 accountTransaction.setShares(accountTransaction.getShares() * 10);
     }
 
+    private static void fixStoredChartConfigurationToSupportMultipleViews(Client client)
+    {
+        @SuppressWarnings("nls")
+        String[] charts = new String[] { "name.abuchen.portfolio.ui.views.DividendsPerformanceView",
+                        "name.abuchen.portfolio.ui.views.StatementOfAssetsViewer",
+                        "name.abuchen.portfolio.ui.views.SecuritiesTable", //
+                        "PerformanceChartView-PICKER", //
+                        "StatementOfAssetsHistoryView-PICKER", //
+                        "ReturnsVolatilityChartView-PICKER" };
+
+        for (String chart : charts)
+        {
+            String config = client.removeProperty(chart);
+            if (config == null) // if other values exist, they are in order
+                continue;
+
+            List<String> values = new ArrayList<>();
+            values.add("Standard:=" + config); //$NON-NLS-1$
+
+            int index = 0;
+            config = client.getProperty(chart + '$' + index);
+            while (config != null)
+            {
+                values.add(config);
+                index++;
+                config = client.getProperty(chart + '$' + index);
+            }
+
+            index = 0;
+            for (String va : values)
+                client.setProperty(chart + '$' + index++, va);
+        }
+    }
+
     /**
      * Previously, January had the index 0 (in line with java.util.Date). Bump
      * it up by one since we are using new Java 8 Time API.
@@ -880,6 +919,7 @@ public class ClientFactory
                     xstream.alias("category", Category.class);
                     xstream.alias("watchlist", Watchlist.class);
                     xstream.alias("investment-plan", InvestmentPlan.class);
+                    xstream.alias("attribute-type", AttributeType.class);
 
                     xstream.alias("price", SecurityPrice.class);
                     xstream.useAttributeFor(SecurityPrice.class, "time");

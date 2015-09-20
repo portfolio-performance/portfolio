@@ -50,6 +50,8 @@ import name.abuchen.portfolio.util.Interval;
         accumulated = new double[size];
         transferals = new long[size];
         taxes = new long[size];
+        dividends = new long[size];
+        interest = new long[size];
 
         collectTransferalsAndTaxes(size, interval);
 
@@ -134,6 +136,12 @@ import name.abuchen.portfolio.util.Interval;
                                     case TAX_REFUND:
                                         addValue(taxes, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
                                         break;
+                                    case DIVIDENDS:
+                                        addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case INTEREST:
+                                        addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
                                     default:
                                         // do nothing
                                         break;
@@ -169,6 +177,5 @@ import name.abuchen.portfolio.util.Interval;
                             });
 
         }
-
     }
 }

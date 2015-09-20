@@ -277,7 +277,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         this.preferences = preferences;
 
         if (client != null)
-            this.store = new ConfigurationStore(identifier, client, this);
+            this.store = new ConfigurationStore(identifier, client, preferences, this);
 
         this.policy.getViewer().getControl().addDisposeListener(new DisposeListener()
         {
@@ -291,7 +291,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private void widgetDisposed()
     {
-        this.preferences.setValue(identifier, getCurrentConfiguration());
+        if (store != null)
+            store.updateActive(serialize());
+        else
+            preferences.setValue(identifier, serialize());
 
         if (contextMenu != null)
             contextMenu.dispose();
@@ -417,6 +420,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                     policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
                     policy.getViewer().refresh(true);
                 }
+
+                if (store != null)
+                    store.updateActive(serialize());
             }
         };
         action.setChecked(isChecked);
@@ -556,11 +562,25 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private void createFromColumnConfig()
     {
-        String config = this.preferences.getString(identifier);
+        // if a configuration store is used, then migrate the preferences into
+        // the store. This is done once. Unfortunately, if the user then does
+        // not save the file subsequently, the configuration is lost (e.g. the
+        // order and size of the displayed columns). Therefore the key is saved
+        // for manual recovery.
 
-        // fallback to previous store
-        if (config == null || config.trim().length() == 0)
-            config = PortfolioPlugin.getDefault().getPreferenceStore().getString(identifier);
+        // if no configuration store is used (i.e. column configuration cannot
+        // be saved), we continue to use the preferences to store configuration
+
+        String configInPreferences = preferences.getString(identifier);
+
+        if (store != null && !configInPreferences.isEmpty())
+        {
+            preferences.setToDefault(identifier);
+            preferences.setValue("__backup__" + identifier, configInPreferences); //$NON-NLS-1$
+            store.insertMigratedConfiguration(configInPreferences);
+        }
+
+        String config = store != null ? store.getActive() : configInPreferences;
         createFromColumnConfig(config);
     }
 
@@ -637,10 +657,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             policy.getViewer().refresh();
             policy.setRedraw(true);
         }
+
+        if (store != null)
+            store.updateActive(serialize());
     }
 
-    @Override
-    public String getCurrentConfiguration()
+    private String serialize()
     {
         StringBuilder buf = new StringBuilder();
 
@@ -664,15 +686,19 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     @Override
-    public void handleConfigurationReset()
+    public void beforeConfigurationPicked()
     {
-        doResetColumns();
+        store.updateActive(serialize());
     }
 
     @Override
-    public void handleConfigurationPicked(String data)
+    public void onConfigurationPicked(String data)
     {
-        createFromColumnConfig(data);
+        if (data == null)
+            doResetColumns();
+        else
+            createFromColumnConfig(data);
+
         policy.getViewer().refresh();
     }
 }

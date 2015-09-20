@@ -17,6 +17,11 @@ public class Attributes
         return map.get(attribute.getId());
     }
 
+    public Object remove(AttributeType attribute)
+    {
+        return map.remove(attribute.getId());
+    }
+
     public boolean exists(AttributeType attribute)
     {
         return map.containsKey(attribute.getId());

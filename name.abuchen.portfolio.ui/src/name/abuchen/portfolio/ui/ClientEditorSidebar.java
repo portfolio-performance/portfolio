@@ -445,7 +445,7 @@ import org.eclipse.swt.widgets.Menu;
                         .setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction(Messages.LabelCurrencies, "ExchangeRatesList")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction(Messages.BookmarksListView_title, "BookmarksList")) //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(Messages.LabelSettings, "settings.Settings")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$

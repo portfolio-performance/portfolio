@@ -83,4 +83,11 @@ public class SecurityTest
         LatestSecurityPrice same = new LatestSecurityPrice(LocalDate.now(), 2);
         assertThat(security.setLatest(same), is(false));
     }
+
+    @Test(expected = NullPointerException.class)
+    public void testThatNullSecurityPriceIsNotAllowed()
+    {
+        Security security = new Security();
+        security.addPrice(null);
+    }
 }

@@ -580,5 +580,4 @@ public class PortfolioPart implements LoadClientThread.Callback
                 c2.set(param.getClass().getName(), param);
         return ContextInjectionFactory.make(type, this.context, c2);
     }
-
 }

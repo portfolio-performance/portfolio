@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +24,7 @@ public class AttributeType
         Object fromString(String value);
     }
 
-    /* package */static class StringConverter implements Converter
+    public static class StringConverter implements Converter
     {
 
         @Override
@@ -39,7 +41,7 @@ public class AttributeType
 
     }
 
-    /* package */static class LongConverter implements Converter
+    private static class LongConverter implements Converter
     {
         private final NumberFormat full = new DecimalFormat("#,###"); //$NON-NLS-1$
 
@@ -94,7 +96,39 @@ public class AttributeType
         }
     }
 
-    /* package */static class DoubleConverter implements Converter
+    public static class AmountConverter extends LongConverter
+    {
+        public AmountConverter()
+        {
+            super(Values.Amount);
+        }
+    }
+
+    public static class AmountPlainConverter extends LongConverter
+    {
+        public AmountPlainConverter()
+        {
+            super(Values.AmountPlain);
+        }
+    }
+
+    public static class QuoteConverter extends LongConverter
+    {
+        public QuoteConverter()
+        {
+            super(Values.Quote);
+        }
+    }
+
+    public static class ShareConverter extends LongConverter
+    {
+        public ShareConverter()
+        {
+            super(Values.Share);
+        }
+    }
+
+    private static class DoubleConverter implements Converter
     {
         private final NumberFormat full = new DecimalFormat("#,###.##"); //$NON-NLS-1$
 
@@ -132,46 +166,58 @@ public class AttributeType
         }
     }
 
+    public static class PercentPlainConverter extends DoubleConverter
+    {
+        public PercentPlainConverter()
+        {
+            super(Values.PercentPlain);
+        }
+    }
+
+    public static class DateConverter implements Converter
+    {
+        @Override
+        public String toString(Object object)
+        {
+            if (object != null)
+                return ((LocalDate) object).toString();
+            else
+                return ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                if (value.trim().length() == 0)
+                    return null;
+
+                return LocalDate.parse(value);
+            }
+            catch (DateTimeParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
     private final String id;
     private String name;
     private String columnLabel;
     private Class<? extends Attributable> target;
     private Class<?> type;
-    private Converter converter;
+
+    /**
+     * Converter. Do not persist (includes formats, etc.) but recreate out of
+     * type and value parameters.
+     */
+    private transient Converter converter;
+    private String converterClass;
 
     public AttributeType(String id)
     {
         this.id = id;
-    }
-
-    /* package */AttributeType name(String name)
-    {
-        this.name = name;
-        return this;
-    }
-
-    /* package */AttributeType columnLabel(String columnLabel)
-    {
-        this.columnLabel = columnLabel;
-        return this;
-    }
-
-    /* package */AttributeType target(Class<? extends Attributable> target)
-    {
-        this.target = target;
-        return this;
-    }
-
-    /* package */AttributeType type(Class<?> type)
-    {
-        this.type = type;
-        return this;
-    }
-
-    /* package */AttributeType converter(Converter converter)
-    {
-        this.converter = converter;
-        return this;
     }
 
     public String getId()
@@ -184,9 +230,39 @@ public class AttributeType
         return name;
     }
 
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     public String getColumnLabel()
     {
         return columnLabel;
+    }
+
+    public void setColumnLabel(String columnLabel)
+    {
+        this.columnLabel = columnLabel;
+    }
+
+    public Class<?> getType()
+    {
+        return type;
+    }
+
+    public void setType(Class<?> type)
+    {
+        this.type = type;
+    }
+
+    public Class<? extends Attributable> getTarget()
+    {
+        return target;
+    }
+
+    public void setTarget(Class<? extends Attributable> target)
+    {
+        this.target = target;
     }
 
     public boolean supports(Class<? extends Attributable> type)
@@ -194,8 +270,23 @@ public class AttributeType
         return target != null ? target.isAssignableFrom(type) : true;
     }
 
+    public void setConverter(Class<? extends Converter> converterClass)
+    {
+        this.converterClass = converterClass.getName();
+        this.converter = null; // in case it was used before
+    }
+
     public Converter getConverter()
     {
+        try
+        {
+            if (converter == null)
+                converter = (Converter) Class.forName(converterClass).newInstance();
+        }
+        catch (InstantiationException | IllegalAccessException | ClassNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
         return converter;
     }
 

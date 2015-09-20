@@ -27,6 +27,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.service.event.Event;
@@ -72,7 +73,7 @@ public class StartupAddon
     @Inject
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event,
-                    final IWorkbench workbench)
+                    final IWorkbench workbench, final EPartService partService)
     {
         boolean autoUpdate = PortfolioPlugin.getDefault().getPreferenceStore()
                         .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);
@@ -88,7 +89,7 @@ public class StartupAddon
                     try
                     {
                         monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper(workbench);
+                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService);
                         updateHelper.runUpdate(monitor, true);
                     }
                     catch (CoreException e)

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeTypes;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -207,23 +206,26 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         for (AttributeDesignation d : model.getAttributes())
             existing.add(d.getType());
 
-        for (final AttributeType attribute : AttributeTypes.available(Security.class))
-        {
-            // add only if it does not exist yet
-            if (existing.contains(attribute))
-                continue;
+        model.getClient() //
+                        .getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> !existing.contains(a)) //
+                        .filter(a -> a.supports(Security.class)) //
+                        .forEach(attribute -> addMenu(manager, attribute));
+    }
 
-            manager.add(new Action(attribute.getName())
+    private void addMenu(IMenuManager manager, final AttributeType attribute)
+    {
+        manager.add(new Action(attribute.getName())
+        {
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    AttributeDesignation a = new AttributeDesignation(attribute, null);
-                    model.getAttributes().add(a);
-                    addAttributeBlock(attributeContainer, a);
-                    attributeContainer.getParent().layout(true);
-                }
-            });
-        }
+                AttributeDesignation a = new AttributeDesignation(attribute, null);
+                model.getAttributes().add(a);
+                addAttributeBlock(attributeContainer, a);
+                attributeContainer.getParent().layout(true);
+            }
+        });
     }
 }

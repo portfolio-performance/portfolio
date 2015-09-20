@@ -7,6 +7,7 @@ public class Messages extends NLS
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.bootstrap.messages"; //$NON-NLS-1$
     public static String LabelCancel;
     public static String LabelNo;
+    public static String LabelSaveAll;
     public static String LabelYes;
     public static String MsgMinimumRequiredVersion;
     public static String SaveHandlerMsgSelectFileToSave;

@@ -272,6 +272,31 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                                 item.getLabel());
                 item.configure(txSeries);
                 break;
+            case DIVIDENDS:
+                IBarSeries deSeries = chart.addDateBarSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.getDividends(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(deSeries);
+                break;
+            case DIVIDENDS_ACCUMULATED:
+                ILineSeries daSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                accumulateAndToDouble(clientIndex.getDividends(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(daSeries);
+                break;
+            case INTEREST:
+                IBarSeries ieSeries = chart.addDateBarSeries(clientIndex.getDates(), //
+                                toDouble(clientIndex.getInterest(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(ieSeries);
+                break;
+            case INTEREST_ACCUMULATED:
+                ILineSeries iaSeries = chart.addDateSeries(clientIndex.getDates(), //
+                                accumulateAndToDouble(clientIndex.getInterest(), Values.Amount.divider()), //
+                                item.getLabel());
+                item.configure(iaSeries);
+                break;
+
         }
     }
 

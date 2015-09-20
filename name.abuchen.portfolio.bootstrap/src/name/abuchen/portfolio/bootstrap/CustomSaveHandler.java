@@ -10,7 +10,6 @@ import org.eclipse.e4.ui.internal.workbench.PartServiceSaveHandler;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -58,20 +57,7 @@ public class CustomSaveHandler extends PartServiceSaveHandler
 
     private Save[] promptToSaveMultiple(Collection<MPart> dirtyParts)
     {
-        CheckedListSelectionDialog dialog = new CheckedListSelectionDialog(Display.getDefault().getActiveShell(),
-                        new LabelProvider()
-                        {
-                            @Override
-                            public String getText(Object element)
-                            {
-                                MPart part = (MPart) element;
-                                String tooltip = part.getTooltip();
-                                return tooltip != null ? part.getLabel() + " (" + part.getTooltip() + ")" : part.getLabel(); //$NON-NLS-1$ //$NON-NLS-2$
-                            }
-
-                        });
-        dialog.setTitle(Messages.SaveHandlerTitle);
-        dialog.setMessage(Messages.SaveHandlerMsgSelectFileToSave);
+        FilePickerDialog dialog = new FilePickerDialog(Display.getDefault().getActiveShell());
         dialog.setElements(dirtyParts);
 
         int returnCode = dialog.open();
@@ -87,6 +73,10 @@ public class CustomSaveHandler extends PartServiceSaveHandler
                 for (Object toBeSaved : dialog.getResult())
                     answer[parts.indexOf(toBeSaved)] = Save.YES;
             }
+        }
+        else if (returnCode == FilePickerDialog.SAVE_ALL)
+        {
+            Arrays.fill(answer, Save.YES);
         }
         else if (returnCode == Dialog.CANCEL)
         {

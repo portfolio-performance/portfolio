@@ -18,9 +18,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 28;
+    /* package */static final int CURRENT_VERSION = 29;
 
-    public static final int VERSION_WITH_CURRENCY_SUPPORT = 28;
+    public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport;
 
@@ -90,6 +90,8 @@ public class Client
         
         if (settings == null)
             settings = new ClientSettings();
+        else
+            settings.doPostLoadInitialization();
     }
 
     /* package */int getVersion()
@@ -339,10 +341,11 @@ public class Client
         propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
     }
 
-    public void removeProperty(String key)
+    public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
         propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$
+        return oldValue;
     }
 
     public String getProperty(String key)

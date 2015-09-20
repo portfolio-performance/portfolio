@@ -29,20 +29,20 @@ public class BookmarkMenu extends MenuManager
 
     private void addDefaultPages()
     {
-        for (final Bookmark loc : client.getSettings().getBookmarks())
+        for (Bookmark bookmark : client.getSettings().getBookmarks())
         {
-            if (loc.getLabel().equals("-")) //$NON-NLS-1$
+            if (bookmark.isSeparator())
             {
                 add(new Separator());
             }
             else
             {
-                add(new Action(loc.getLabel())
+                add(new Action(bookmark.getLabel())
                 {
                     @Override
                     public void run()
                     {
-                        DesktopAPI.browse(loc.constructURL(security));
+                        DesktopAPI.browse(bookmark.constructURL(security));
                     }
                 });
             }
@@ -53,9 +53,8 @@ public class BookmarkMenu extends MenuManager
             @Override
             public void run()
             {
-                editor.activateView("BookmarksList", null); //$NON-NLS-1$
+                editor.activateView("settings.Settings", Integer.valueOf(0)); //$NON-NLS-1$
             }
         });
     }
-
 }

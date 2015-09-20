@@ -17,7 +17,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -59,7 +58,7 @@ import org.swtchart.LineStyle;
 {
     /* package */static enum ClientDataSeries
     {
-        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA;
+        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED;
     }
 
     /* package */static final class DataSeries
@@ -249,7 +248,6 @@ import org.swtchart.LineStyle;
     private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
 
     private final String identifier;
-    private final PortfolioPart part;
     private final Client client;
     private final Mode mode;
 
@@ -258,7 +256,6 @@ import org.swtchart.LineStyle;
     private final List<DataSeries> availableSeries = new ArrayList<DataSeries>();
     private final List<DataSeries> selectedSeries = new ArrayList<DataSeries>();
 
-    private String currentConfiguration;
     private ConfigurationStore store;
 
     private LocalResourceManager resources;
@@ -269,12 +266,11 @@ import org.swtchart.LineStyle;
         super(parent, SWT.NONE);
 
         this.identifier = view.getClass().getSimpleName() + "-PICKER"; //$NON-NLS-1$
-        this.part = view.getPart();
         this.client = view.getClient();
         this.mode = mode;
         this.resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
-        this.store = new ConfigurationStore(identifier, client, this);
+        this.store = new ConfigurationStore(identifier, client, view.getPreferenceStore(), this);
 
         buildAvailableDataSeries();
         load();
@@ -390,6 +386,25 @@ import org.swtchart.LineStyle;
         series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes, Display
                         .getDefault().getSystemColor(SWT.COLOR_RED));
         availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.DIVIDENDS, Messages.LabelDividends, Display.getDefault()
+                        .getSystemColor(SWT.COLOR_DARK_MAGENTA));
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.DIVIDENDS_ACCUMULATED,
+                        Messages.LabelAccumulatedDividends, Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA));
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.INTEREST, Messages.LabelInterest, Display.getDefault()
+                        .getSystemColor(SWT.COLOR_DARK_GREEN));
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.INTEREST_ACCUMULATED, Messages.LabelAccumulatedInterest,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+        availableSeries.add(series);
+
     }
 
     private void buildPerformanceDataSeries(ColorWheel wheel)
@@ -507,10 +522,7 @@ import org.swtchart.LineStyle;
 
     private void load()
     {
-        String config = client.getProperty(identifier);
-
-        if (config == null || config.trim().length() == 0)
-            config = part.getPreferenceStore().getString(identifier);
+        String config = store.getActive();
 
         if (config != null && config.trim().length() > 0)
             load(config);
@@ -518,7 +530,7 @@ import org.swtchart.LineStyle;
         if (selectedSeries.isEmpty())
         {
             addDefaultDataSeries();
-            persist();
+            store.updateActive(serialize());
         }
     }
 
@@ -547,11 +559,9 @@ import org.swtchart.LineStyle;
                 }
             }
         }
-
-        currentConfiguration = config;
     }
 
-    private void persist()
+    private String serialize()
     {
         StringBuilder buf = new StringBuilder();
         for (DataSeries s : selectedSeries)
@@ -563,8 +573,7 @@ import org.swtchart.LineStyle;
             buf.append(s.getLineStyle().name()).append(';');
             buf.append(s.isShowArea());
         }
-        currentConfiguration = buf.toString();
-        client.setProperty(identifier, currentConfiguration);
+        return buf.toString();
     }
 
     private void widgetDisposed()
@@ -639,7 +648,7 @@ import org.swtchart.LineStyle;
                     paintItem.series.setColor(resources.createColor(newColor));
                     paintItem.redraw();
                     listener.onUpdate();
-                    persist();
+                    store.updateActive(serialize());
                 }
             }
         });
@@ -659,7 +668,7 @@ import org.swtchart.LineStyle;
                     {
                         paintItem.series.setLineStyle(style);
                         listener.onUpdate();
-                        persist();
+                        store.updateActive(serialize());
                     }
                 };
                 action.setChecked(style == paintItem.series.getLineStyle());
@@ -674,7 +683,7 @@ import org.swtchart.LineStyle;
                 {
                     paintItem.series.setShowArea(!paintItem.series.isShowArea());
                     listener.onUpdate();
-                    persist();
+                    store.updateActive(serialize());
                 }
             };
             actionShowArea.setChecked(paintItem.series.isShowArea());
@@ -728,7 +737,7 @@ import org.swtchart.LineStyle;
         getParent().layout();
 
         listener.onUpdate();
-        persist();
+        store.updateActive(serialize());
     }
 
     private void doResetSeries(String config)
@@ -752,7 +761,7 @@ import org.swtchart.LineStyle;
         layout();
         getParent().layout();
         listener.onUpdate();
-        persist();
+        store.updateActive(serialize());
     }
 
     private void doDeleteSeries(DataSeries series)
@@ -766,26 +775,20 @@ import org.swtchart.LineStyle;
                 layout();
                 getParent().layout();
                 listener.onUpdate();
-                persist();
+                store.updateActive(serialize());
                 break;
             }
         }
     }
 
     @Override
-    public String getCurrentConfiguration()
+    public void beforeConfigurationPicked()
     {
-        return currentConfiguration;
+        // do nothing - all configuraiton changes are stored via #updateActive
     }
 
     @Override
-    public void handleConfigurationReset()
-    {
-        this.doResetSeries(null);
-    }
-
-    @Override
-    public void handleConfigurationPicked(String data)
+    public void onConfigurationPicked(String data)
     {
         this.doResetSeries(data);
     }

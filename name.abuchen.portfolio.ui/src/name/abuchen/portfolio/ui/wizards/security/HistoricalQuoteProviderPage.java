@@ -128,9 +128,9 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
-    protected void showSampleQuotes(QuoteFeed feed, Exchange exchange, String feedURL)
+    protected void showSampleQuotes(QuoteFeed feed, Exchange exchange)
     {
-        Object cacheKey = exchange != null ? exchange : feedURL;
+        Object cacheKey = exchange != null ? exchange : getModel().getFeedURL();
 
         List<LatestSecurityPrice> quotes = cacheQuotes.get(cacheKey);
 
@@ -170,12 +170,10 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         {
             try
             {
-                Security s = new Security();
-                s.setIsin(getModel().getIsin());
+                Security s = buildTemporarySecurity();
                 if (exchange != null)
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
-                s.setFeedURL(getModel().getFeedURL());
 
                 // last 2 months as sample
                 LocalDate t = LocalDate.now().minusMonths(2);

@@ -54,7 +54,12 @@ public abstract class ReportingPeriod
 
     public final Interval toInterval()
     {
-        return Interval.of(startDate, endDate);
+        // reported via forum: if the user selects as 'since' date something in
+        // the future
+        if (endDate.isBefore(startDate))
+            return Interval.of(endDate, startDate);
+        else
+            return Interval.of(startDate, endDate);
     }
 
     public abstract void writeTo(StringBuilder buffer);
