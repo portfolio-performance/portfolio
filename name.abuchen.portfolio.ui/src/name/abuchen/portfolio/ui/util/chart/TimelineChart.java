@@ -210,7 +210,7 @@ public class TimelineChart extends Chart
         {
             period = Period.ofMonths(6);
             format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((cursor.getMonthValue() - 1) % 6);
+            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 6);
         }
         else
         {
