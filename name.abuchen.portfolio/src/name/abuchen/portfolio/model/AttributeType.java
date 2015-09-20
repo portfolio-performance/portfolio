@@ -165,36 +165,6 @@ public class AttributeType
         this.id = id;
     }
 
-    /* package */AttributeType name(String name)
-    {
-        this.name = name;
-        return this;
-    }
-
-    /* package */AttributeType columnLabel(String columnLabel)
-    {
-        this.columnLabel = columnLabel;
-        return this;
-    }
-
-    /* package */AttributeType target(Class<? extends Attributable> target)
-    {
-        this.target = target;
-        return this;
-    }
-
-    /* package */AttributeType type(Class<?> type)
-    {
-        this.type = type;
-        return this;
-    }
-
-    /* package */AttributeType converter(Class<? extends Converter> converterClass)
-    {
-        this.converterClass = converterClass.getName();
-        return this;
-    }
-
     public String getId()
     {
         return id;
@@ -205,14 +175,50 @@ public class AttributeType
         return name;
     }
 
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     public String getColumnLabel()
     {
         return columnLabel;
     }
 
+    public void setColumnLabel(String columnLabel)
+    {
+        this.columnLabel = columnLabel;
+    }
+
+    public Class<?> getType()
+    {
+        return type;
+    }
+
+    public void setType(Class<?> type)
+    {
+        this.type = type;
+    }
+
+    public Class<? extends Attributable> getTarget()
+    {
+        return target;
+    }
+
+    public void setTarget(Class<? extends Attributable> target)
+    {
+        this.target = target;
+    }
+
     public boolean supports(Class<? extends Attributable> type)
     {
         return target != null ? target.isAssignableFrom(type) : true;
+    }
+
+    public void setConverter(Class<? extends Converter> converterClass)
+    {
+        this.converterClass = converterClass.getName();
+        this.converter = null; // in case it was used before
     }
 
     public Converter getConverter()

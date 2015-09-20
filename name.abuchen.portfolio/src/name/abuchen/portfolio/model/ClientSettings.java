@@ -10,7 +10,9 @@ public class ClientSettings
     private List<AttributeType> attributeTypes;
 
     public ClientSettings()
-    {}
+    {
+        doPostLoadInitialization();
+    }
 
     public void setDefaultBookmarks()
     {
@@ -84,5 +86,20 @@ public class ClientSettings
     public Stream<AttributeType> getAttributeTypes()
     {
         return attributeTypes.stream();
+    }
+
+    public void removeAttributeType(AttributeType type)
+    {
+        attributeTypes.remove(type);
+    }
+
+    public void addAttributeType(AttributeType type)
+    {
+        attributeTypes.add(type);
+    }
+
+    public void addAttributeType(int index, AttributeType type)
+    {
+        attributeTypes.add(index, type);
     }
 }

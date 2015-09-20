@@ -53,9 +53,8 @@ public class BookmarkMenu extends MenuManager
             @Override
             public void run()
             {
-                editor.activateView("BookmarksList", null); //$NON-NLS-1$
+                editor.activateView("settings.Settings", Integer.valueOf(0)); //$NON-NLS-1$
             }
         });
     }
-
 }

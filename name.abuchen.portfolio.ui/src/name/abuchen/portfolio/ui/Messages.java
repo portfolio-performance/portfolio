@@ -12,7 +12,8 @@ public class Messages extends NLS
     public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteTransaction;
-    public static String AccountMenuTransfer;   
+    public static String AccountMenuTransfer;
+    public static String AttributeTypeTitle;   
     public static String BookmarksListView_addSeparator;
     public static String BookmarksListView_insertAfter;
     public static String BookmarksListView_bookmark;
@@ -22,7 +23,6 @@ public class Messages extends NLS
     public static String BookmarksListView_MoveUp;
     public static String BookmarksListView_NewBookmark;
     public static String BookmarksListView_title;
-    public static String BookmarksListView_tooltip;
     public static String BookmarksListView_url;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
@@ -51,6 +51,7 @@ public class Messages extends NLS
     public static String ColumnAmount;
     public static String ColumnBalance;
     public static String ColumnColor;
+    public static String ColumnColumnLabel;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;
     public static String ColumnDataSeries;
@@ -78,6 +79,7 @@ public class Messages extends NLS
     public static String ColumnExDate;
     public static String ColumnFees;
     public static String ColumnFees_Description;
+    public static String ColumnFieldType;
     public static String ColumnFix;
     public static String ColumnIndex;
     public static String ColumnInterval;
@@ -220,7 +222,6 @@ public class Messages extends NLS
     public static String ImportWizardPasteSourcePasteHere;
     public static String ImportWizardPasteSourceTitle;
     public static String ImportWizardReviewDescription;
-    public static String ImportWizardReviewError;
     public static String ImportWizardReviewTitle;
     public static String IntroLabelActions;
     public static String IntroLabelHelp;
@@ -286,6 +287,7 @@ public class Messages extends NLS
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNewClassification;
+    public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
     public static String LabelNoName;
     public static String LabelNotAvailable;
@@ -315,11 +317,11 @@ public class Messages extends NLS
     public static String LabelReportingYears;
     public static String LabelReportInterval;
     public static String LabelRiskIndicators;
-    public static String LabelSampleData;
     public static String LabelSearch;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelSemiVolatility;
+    public static String LabelSettings;
     public static String LabelDividends;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
@@ -368,6 +370,7 @@ public class Messages extends NLS
     public static String MenuResetColumns;
     public static String MenuSaveChart;
     public static String MenuSaveColumns;
+    public static String MenuSettingsNew;
     public static String MenuShowHideColumns;
     public static String MenuTaxonomyAssignmentRemove;
     public static String MenuTaxonomyClassificationCreate;
