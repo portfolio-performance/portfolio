@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.StringConverter;
+
 public class ClientSettings
 {
     private List<Bookmark> bookmarks;
@@ -14,7 +19,22 @@ public class ClientSettings
         doPostLoadInitialization();
     }
 
-    public void setDefaultBookmarks()
+    public void doPostLoadInitialization()
+    {
+        if (bookmarks == null)
+        {
+            this.bookmarks = new ArrayList<Bookmark>();
+            addDefaultBookmarks();
+        }
+
+        if (attributeTypes == null)
+        {
+            this.attributeTypes = new ArrayList<AttributeType>();
+            addDefaultAttributeTypes();
+        }
+    }
+
+    private void addDefaultBookmarks()
     {
 
         bookmarks.add(new Bookmark(
@@ -37,19 +57,39 @@ public class ClientSettings
                                         + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}")); //$NON-NLS-1$         
     }
 
-    public void doPostLoadInitialization()
+    private void addDefaultAttributeTypes()
     {
-        if (bookmarks == null)
-        {
-            this.bookmarks = new ArrayList<Bookmark>();
-            setDefaultBookmarks();
-        }
+        AttributeType ter = new AttributeType("ter"); //$NON-NLS-1$
+        ter.setName(Messages.AttributesTERName);
+        ter.setColumnLabel(Messages.AttributesTERColumn);
+        ter.setTarget(Security.class);
+        ter.setType(Double.class);
+        ter.setConverter(PercentPlainConverter.class);
+        attributeTypes.add(ter);
 
-        if (attributeTypes == null)
-        {
-            this.attributeTypes = new ArrayList<AttributeType>();
-            this.attributeTypes.addAll(AttributeTypes.getDefaultTypes());
-        }
+        AttributeType aum = new AttributeType("aum"); //$NON-NLS-1$
+        aum.setName(Messages.AttributesAUMName);
+        aum.setColumnLabel(Messages.AttributesAUMColumn);
+        aum.setTarget(Security.class);
+        aum.setType(Long.class);
+        aum.setConverter(AmountPlainConverter.class);
+        attributeTypes.add(aum);
+
+        AttributeType vendor = new AttributeType("vendor"); //$NON-NLS-1$
+        vendor.setName(Messages.AttributesVendorName);
+        vendor.setColumnLabel(Messages.AttributesVendorColumn);
+        vendor.setTarget(Security.class);
+        vendor.setType(String.class);
+        vendor.setConverter(StringConverter.class);
+        attributeTypes.add(vendor);
+
+        AttributeType fee = new AttributeType("acquisitionFee"); //$NON-NLS-1$
+        fee.setName(Messages.AttributesAcquisitionFeeName);
+        fee.setColumnLabel(Messages.AttributesAcquisitionFeeColumn);
+        fee.setTarget(Security.class);
+        fee.setType(Double.class);
+        fee.setConverter(PercentPlainConverter.class);
+        attributeTypes.add(fee);
     }
 
     public List<Bookmark> getBookmarks()
