@@ -36,7 +36,7 @@ public class ClientSettings
 
     private void addDefaultBookmarks()
     {
-
+        bookmarks.add(new Bookmark("Yahoo Finance", "http://de.finance.yahoo.com/q?s={tickerSymbol}")); //$NON-NLS-1$ //$NON-NLS-2$
         bookmarks.add(new Bookmark(
                         "OnVista", "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$ //$NON-NLS-2$
         bookmarks.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
