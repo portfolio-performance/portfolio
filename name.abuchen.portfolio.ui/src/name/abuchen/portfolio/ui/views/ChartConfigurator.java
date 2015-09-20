@@ -58,7 +58,7 @@ import org.swtchart.LineStyle;
 {
     /* package */static enum ClientDataSeries
     {
-        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA;
+        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED;
     }
 
     /* package */static final class DataSeries
@@ -386,6 +386,25 @@ import org.swtchart.LineStyle;
         series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes, Display
                         .getDefault().getSystemColor(SWT.COLOR_RED));
         availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.DIVIDENDS, Messages.LabelDividends, Display.getDefault()
+                        .getSystemColor(SWT.COLOR_DARK_MAGENTA));
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.DIVIDENDS_ACCUMULATED,
+                        Messages.LabelAccumulatedDividends, Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA));
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.INTEREST, Messages.LabelInterest, Display.getDefault()
+                        .getSystemColor(SWT.COLOR_DARK_GREEN));
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(Client.class, ClientDataSeries.INTEREST_ACCUMULATED, Messages.LabelAccumulatedInterest,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+        availableSeries.add(series);
+
     }
 
     private void buildPerformanceDataSeries(ColorWheel wheel)

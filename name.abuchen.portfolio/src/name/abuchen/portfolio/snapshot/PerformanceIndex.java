@@ -37,6 +37,8 @@ public class PerformanceIndex
     protected long[] totals;
     protected long[] transferals;
     protected long[] taxes;
+    protected long[] dividends;
+    protected long[] interest;
     protected double[] accumulated;
     protected double[] delta;
     protected Drawdown drawdown;
@@ -194,6 +196,16 @@ public class PerformanceIndex
     public long[] getTaxes()
     {
         return taxes;
+    }
+
+    public long[] getDividends()
+    {
+        return dividends;
+    }
+
+    public long[] getInterest()
+    {
+        return interest;
     }
 
     public long[] calculateInvestedCapital()

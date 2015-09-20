@@ -44,6 +44,8 @@ import org.joda.time.Interval;
         accumulated = new double[size];
         transferals = new long[size];
         taxes = new long[size];
+        dividends = new long[size];
+        interest = new long[size];
 
         collectTransferalsAndTaxes(size, interval);
 
@@ -121,6 +123,12 @@ import org.joda.time.Interval;
                                     break;
                                 case TAX_REFUND:
                                     addValue(taxes, -t.getAmount(), interval, t.getDateMidnight());
+                                    break;
+                                case DIVIDENDS:
+                                    addValue(dividends, t.getAmount(), interval, t.getDateMidnight());
+                                    break;
+                                case INTEREST:
+                                    addValue(interest, t.getAmount(), interval, t.getDateMidnight());
                                     break;
                                 default:
                                     // do nothing
