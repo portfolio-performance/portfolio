@@ -44,6 +44,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.LocalDateConverter;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -812,6 +813,8 @@ public class ClientFactory
                     xstream = new XStream();
 
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
+
+                    xstream.registerConverter(new LocalDateConverter());
 
                     xstream.alias("account", Account.class);
                     xstream.alias("client", Client.class);

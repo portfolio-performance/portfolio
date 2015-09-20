@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,11 +95,35 @@ public class AttributeType
         }
     }
 
+    public static class AmountConverter extends LongConverter
+    {
+        public AmountConverter()
+        {
+            super(Values.Amount);
+        }
+    }
+
     public static class AmountPlainConverter extends LongConverter
     {
         public AmountPlainConverter()
         {
             super(Values.AmountPlain);
+        }
+    }
+
+    public static class QuoteConverter extends LongConverter
+    {
+        public QuoteConverter()
+        {
+            super(Values.Quote);
+        }
+    }
+
+    public static class ShareConverter extends LongConverter
+    {
+        public ShareConverter()
+        {
+            super(Values.Share);
         }
     }
 
@@ -144,6 +170,34 @@ public class AttributeType
         public PercentPlainConverter()
         {
             super(Values.PercentPlain);
+        }
+    }
+
+    public static class DateConverter implements Converter
+    {
+        @Override
+        public String toString(Object object)
+        {
+            if (object != null)
+                return ((LocalDate) object).toString();
+            else
+                return ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                if (value.trim().length() == 0)
+                    return null;
+
+                return LocalDate.parse(value);
+            }
+            catch (DateTimeParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 
