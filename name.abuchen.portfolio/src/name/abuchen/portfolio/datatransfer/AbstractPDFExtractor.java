@@ -20,6 +20,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 
@@ -81,7 +82,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
             }
             catch (IOException e)
             {
-                errors.add(e);
+                errors.add(new IOException(f.getName() + ": " + e.getMessage(), e)); //$NON-NLS-1$
             }
         }
 
@@ -132,7 +133,12 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
             return items;
         }
-        catch (IllegalArgumentException | UnsupportedOperationException e)
+        catch (IllegalArgumentException e)
+        {
+            errors.add(new IllegalArgumentException(e.getMessage() + " @ " + filename)); //$NON-NLS-1$
+            return Collections.emptyList();
+        }
+        catch (UnsupportedOperationException e)
         {
             errors.add(e);
             return Collections.emptyList();
@@ -179,6 +185,8 @@ import org.apache.pdfbox.util.PDFTextStripper;
         security.setWkn(values.get("wkn")); //$NON-NLS-1$
         security.setFeed(QuoteFeed.MANUAL);
 
+        security.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+
         if (security.getIsin() == null && security.getWkn() == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
 
@@ -198,6 +206,19 @@ import org.apache.pdfbox.util.PDFTextStripper;
         {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    protected String asCurrencyCode(String currencyCode)
+    {
+        // ensure that the security is always created with a valid currency code
+        if (currencyCode != null)
+        {
+            CurrencyUnit unit = CurrencyUnit.getInstance(currencyCode.trim());
+            if (unit == null)
+                currencyCode = null;
+        }
+
+        return currencyCode != null ? currencyCode : CurrencyUnit.EUR;
     }
 
     /* protected */long asAmount(String value)

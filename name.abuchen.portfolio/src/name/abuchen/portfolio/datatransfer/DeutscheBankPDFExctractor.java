@@ -11,7 +11,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
@@ -38,15 +37,14 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
-                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
-                        .section("wkn", "isin", "name")
+                        .section("wkn", "isin", "name", "currency")
                         .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite")
                         .match("^.{15}(?<name>.*)$")
                         .match("^WKN (?<wkn>[^ ]*) (.*)$")
-                        .match("^ISIN (?<isin>[^ ]*) (.*)$")
+                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -55,27 +53,27 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount")
-                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (\\w{3}+) (?<amount>[\\d.]+,\\d+)")
+                        .section("date", "amount", "currency")
+                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
-                        .section("fees")
-                        //
-                        .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)")
-                        //
-                        .assign((t, v) -> {
-                            PortfolioTransaction pt = t.getPortfolioTransaction();
-                            long marketValue = asAmount(v.get("fees"));
-                            long totalAmount = pt.getAmount();
+                        .section("provision", "currency")
+                        .match("Provision( \\([0-9,]* %\\))? (?<currency>\\w{3}+) (?<provision>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
 
-                            long fees = pt.getType() == PortfolioTransaction.Type.BUY ? totalAmount - marketValue
-                                            : marketValue - totalAmount;
+                        .section("additional", "currency")
+                        .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) (?<additional>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 
-                            pt.addUnit(new Unit(Unit.Type.FEE, Money.of(pt.getCurrencyCode(), fees)));
-                        })
+                        .section("xetra", "currency").match("XETRA-Kosten (?<currency>\\w{3}+) (?<xetra>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
@@ -93,15 +91,14 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
-                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
-                        .section("wkn", "isin", "name")
+                        .section("wkn", "isin", "name", "currency")
                         .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite")
                         .match("^.{15}(?<name>.*)$")
                         .match("^WKN (?<wkn>[^ ]*) (.*)$")
-                        .match("^ISIN (?<isin>[^ ]*) (.*)$")
+                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -110,41 +107,40 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount")
-                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (\\w{3}+) (?<amount>[\\d.]+,\\d+)")
+                        .section("date", "amount", "currency")
+                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("tax")
-                        //
-                        .match("Kapitalertragsteuer (\\w{3}+) (?<tax>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
-                                        new Unit(Unit.Type.TAX, //
-                                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(),
-                                                                        asAmount(v.get("tax"))))))
+                        .section("tax", "currency")
+                        .optional()
+                        .match("Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
-                        .section("soli")
-                        .match("Solidaritätszuschlag auf Kapitalertragsteuer (\\w{3}+) (?<soli>[\\d.-]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
-                                        new Unit(Unit.Type.TAX, //
-                                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(),
-                                                                        asAmount(v.get("soli"))))))
+                        .section("soli", "currency")
+                        .optional()
+                        .match("Solidaritätszuschlag auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<soli>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli"))))))
 
-                        .section("fees") //
-                        .match("Kurswert (\\w{3}+) (?<fees>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> {
-                            PortfolioTransaction pt = t.getPortfolioTransaction();
-                            long marketValue = asAmount(v.get("fees"));
-                            long totalAmount = pt.getAmount();
-                            long taxes = pt.getUnitSum(Unit.Type.TAX).getAmount();
+                        .section("provision", "currency")
+                        .match("Provision (?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
 
-                            long fees = pt.getType() == PortfolioTransaction.Type.BUY ? totalAmount - taxes
-                                            - marketValue : marketValue - taxes - totalAmount;
+                        .section("additional", "currency")
+                        .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) -(?<additional>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 
-                            pt.addUnit(new Unit(Unit.Type.FEE, Money.of(pt.getCurrencyCode(), fees)));
-                        })
+                        .section("xetra", "currency")
+                        .match("XETRA-Kosten (?<currency>\\w{3}+) -(?<xetra>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
@@ -162,11 +158,10 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             AccountTransaction transaction = new AccountTransaction();
                             transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            transaction.setCurrencyCode(CurrencyUnit.EUR);
                             return transaction;
                         })
 
-                        .section("wkn", "isin", "name")
+                        .section("wkn", "isin", "name", "currency")
                         //
                         .find("Stück WKN ISIN")
                         //
@@ -174,6 +169,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         //
                         .match("^(?<name>.*)$")
                         //
+                        .match("Bruttoertrag ([\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -183,11 +179,12 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .match("(?<shares>\\d+,\\d*) (\\S*) (\\S*)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount")
-                        .match("Gutschrift mit Wert (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d+) (\\w{3}+)")
+                        .section("date", "amount", "currency")
+                        .match("Gutschrift mit Wert (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(t -> new TransactionItem(t)));

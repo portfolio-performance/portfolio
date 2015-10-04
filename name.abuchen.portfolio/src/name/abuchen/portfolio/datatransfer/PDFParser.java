@@ -178,7 +178,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             if (patternNo < pattern.size())
             {
-                // if section is option, ignore if patterns do not match
+                // if section is optional, ignore if patterns do not match
                 if (isOptional)
                     return;
 

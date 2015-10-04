@@ -1,0 +1,35 @@
+Deutsche Bank Privat- und Geschäftskunden AG
+V 123/456.1.123
+Hans Mustermann Otto Normalverbraucher
+Musterstrasse 1 Telefon (0711) 225516-10
+12345 Musterstadt 24h-Kundenservice (069) 910-10000
+1. Januar 2015
+Abrechnung: Verkauf von Wertpapieren
+Depotinhaber: Hans Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 1234567 00 BASF SE
+WKN BASF11 Nominal ST 8
+ISIN DE000BASF111 Kurs EUR 58,02
+Verwahrart Girosammeldepot
+Geschäft Kommissionsgeschäft im XETRA-Handel
+Börse Frankfurt a.M. - Deutsche Börse - Frankfurter Wertpapierbörse (FWB) - Xetra
+Belegnummer 1234567890 / 123456 Schlusstag/-zeit MEZ 28.01.2015 / 09:00
+Auftragsart Limitauftrag
+Diese Order wurde elektronisch übermittelt.
+Abrechnung Währung Betrag
+Kurswert EUR 464,16
+Provision EUR -7,90
+Weitere Provision der Bank bei der börslichen Orderausführung EUR -2,00
+XETRA-Kosten EUR -0,60
+Gutschrift
+Buchung auf Kontonummer 1234567 40 mit Wertstellung 30.01.2015 EUR 453,66
+Informationen zum Steuerabzug
+- keine Steuerbescheinigung - Währung Betrag
+Veräußerungsverlust EUR 6,90
+Sind die Wertpapiere vermögenswirksam angelegt, so gilt das Pfandrecht gemäß Ziffer 14 Abs. 1 der Allgemeinen Geschäftsbedingungen (AGB) für die
+Dauer der Festlegungsfrist nicht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen und die Sonderbedingungen
+für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen in den Geschäftsräumen
+der Bank oder schriftlich an Deutsche Bank Privat- und Geschäftskunden AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert ausgewiesen
+ist. Umsatzsteuer ID Nr.: Deutsche Bank Privat- und Geschäftskunden AG, 60262 Frankfurt DE811907980
+TR00000001 / 12345678 / 20150128 / A#
