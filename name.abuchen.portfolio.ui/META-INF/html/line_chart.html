@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="${/META-INF/css/lib/rickshaw.min.css}">
+<link type="text/css" rel="stylesheet" href="${/META-INF/css/line_chart.css}">
+
+<script src="${/META-INF/js/lib/jquery-2.1.4.min.js}"></script>
+<script src="${/META-INF/js/lib/hashtable.js}"></script>
+<script src="${/META-INF/js/lib/jquery.numberformatter-1.2.4.min.js}"></script>
+<script src="${/META-INF/js/lib/d3.min.js}"></script>
+<script src="${/META-INF/js/lib/rickshaw.min.js}"></script>
+
+<script src="${/META-INF//js/Rickshaw.Graph.Renderer.DottedLine.js}"></script>
+<script src="${/META-INF//js/Rickshaw.Graph.Renderer.DottedArea.js}"></script>
+<script src="${/META-INF//js/Rickshaw.Graph.Renderer.Range.js}"></script>
+<script src="${/META-INF//js/Rickshaw.Graph.Renderer.VerticalLine.js}"></script>
+<script src="${/META-INF//js/line_chart.js}"></script>
+
+<body>
+	<div id="title"></div>
+	<div id="chart_container">
+		<div id="chart"></div>
+		<div id="y_axis"></div>
+	</div>
+	<div id="legend"></div>
+</body>
+
+<script>
+	var args = JSON.parse(loadData());
+	LineChart(args); 
+</script>
