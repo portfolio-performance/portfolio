@@ -194,7 +194,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         else
         {
-            start.add(Calendar.YEAR, -5);
+            // tk: changed to allow to load historical courses since 1.1.2000
+            start.set(2000, 0, 1, 0, 0);
+/*            start.add(Calendar.YEAR, -5);*/
         }
         return start;
     }
