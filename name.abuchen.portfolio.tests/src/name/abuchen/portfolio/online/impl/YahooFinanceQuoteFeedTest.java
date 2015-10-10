@@ -34,12 +34,8 @@ public class YahooFinanceQuoteFeedTest
         security.setIsin("DE0007100000");
         security.setTickerSymbol("DAI.DE");
 
-        Calendar fiveYearsAgo = Calendar.getInstance();
-        fiveYearsAgo.setTime(Dates.today()); // no milliseconds
-        fiveYearsAgo.add(Calendar.YEAR, -5);
-
         Calendar cal = feed.caculateStart(security);
-        assertThat(cal, equalTo(fiveYearsAgo));
+        assertThat(cal.getTime(), equalTo(Dates.date(1900, Calendar.JANUARY, 1)));
 
         security.addPrice(new SecurityPrice(Dates.today(), 100));
         cal = feed.caculateStart(security);
