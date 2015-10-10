@@ -36,7 +36,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public boolean updateHistoricalQuotes(Security security, List<Exception> errors, String defaultStartDate)
     {
         return false;
     }

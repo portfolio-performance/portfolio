@@ -164,9 +164,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public final boolean updateHistoricalQuotes(Security security, List<Exception> errors, String defaultStartDate)
     {
-        Calendar start = caculateStart(security);
+        Calendar start = caculateStart(security, defaultStartDate);
 
         List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime(), errors);
 
@@ -182,7 +182,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return isUpdated;
     }
 
-    /* package */final Calendar caculateStart(Security security)
+    /* package */final Calendar caculateStart(Security security, String startDate)
     {
         Calendar start = Calendar.getInstance();
         start.setTime(Dates.today());
@@ -194,9 +194,28 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         else
         {
-            // tk: changed to allow to load historical courses since 1.1.2000
-            start.set(2000, 0, 1, 0, 0);
-/*            start.add(Calendar.YEAR, -5);*/
+            // if no historical quote is available use the default/prefs value.
+            String dateParts[] = startDate.split("-");
+            // we support 2 formats.
+            if (dateParts.length == 3)
+            {
+                // absolute date
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]) - 1;
+                int day = Integer.parseInt(dateParts[2]);
+                start.set(year, month, day, 0, 0);
+            }
+            else if (dateParts.length == 1)
+            {
+                // relative date in years.
+                int years = Integer.parseInt(dateParts[0]);
+                start.add(Calendar.YEAR, -years);
+            }
+            else
+            {
+                // the old default value for all other functions.
+                start.add(Calendar.YEAR, -5);
+            }
         }
         return start;
     }

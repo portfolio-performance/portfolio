@@ -38,11 +38,11 @@ public class YahooFinanceQuoteFeedTest
         fiveYearsAgo.setTime(Dates.today()); // no milliseconds
         fiveYearsAgo.add(Calendar.YEAR, -5);
 
-        Calendar cal = feed.caculateStart(security);
+        Calendar cal = feed.caculateStart(security, "");
         assertThat(cal, equalTo(fiveYearsAgo));
 
         security.addPrice(new SecurityPrice(Dates.today(), 100));
-        cal = feed.caculateStart(security);
+        cal = feed.caculateStart(security, "");
         assertThat(cal.getTime(), equalTo(Dates.today()));
     }
 
@@ -133,7 +133,7 @@ public class YahooFinanceQuoteFeedTest
         Security security = new Security();
         security.setTickerSymbol("DAI.DE");
 
-        feed.updateHistoricalQuotes(security, new ArrayList<Exception>());
+        feed.updateHistoricalQuotes(security, new ArrayList<Exception>(), "");
 
         assertThat(security.getPrices().size(), is(2257));
 
@@ -159,7 +159,7 @@ public class YahooFinanceQuoteFeedTest
         Security security = new Security();
         security.setTickerSymbol("DAI.DE");
 
-        feed.updateHistoricalQuotes(security, new ArrayList<Exception>());
+        feed.updateHistoricalQuotes(security, new ArrayList<Exception>(), "");
 
         assertThat(security.getPrices().size(), is(2257));
 

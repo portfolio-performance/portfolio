@@ -234,7 +234,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public boolean updateHistoricalQuotes(Security security, List<Exception> errors, String defaultStartDate)
     {
         List<LatestSecurityPrice> quotes = internalGetQuotes(security, security.getFeedURL(), errors);
 
