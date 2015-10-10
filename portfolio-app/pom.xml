@@ -39,17 +39,17 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository</url>
 		</repository>
 		<repository>
 			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.5/R-4.5.1-201509040015</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.12.1/luna</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.13.0/mars</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
