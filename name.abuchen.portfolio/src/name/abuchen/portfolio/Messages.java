@@ -100,6 +100,8 @@ public class Messages extends NLS
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
+    public static String MsgErrorDuplicateISIN;
+    public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
     public static String MsgErrorsConvertingValue;
     public static String MsgFileNotFound;
