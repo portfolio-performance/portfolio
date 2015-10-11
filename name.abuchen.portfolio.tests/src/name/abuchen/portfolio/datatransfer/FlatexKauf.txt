@@ -56,6 +56,24 @@ Valuta       : 30.01.2014              Endbetrag      :          -5.954,80 EUR
 **  Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
     Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details
     dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 678985130.
+Nr.60797017/1  Verkauf             HANN.RUECK SE NA O.N. (DE0008402215/840221)
+Ordervolumen : 100,00 St.              Handelsplatz   :              Tradegate
+davon ausgef.: 100,00 St.              Schlusstag     :  28.01.2014, 12:58 Uhr
+Kurs         : 59,4890 EUR             Kurswert       :           5.948,90 EUR
+Devisenkurs  :                         Provision      :               5,90 EUR
+Bew-Faktor   : 1,0000                  Eigene Spesen  :
+Verwahrart   : GS-Verwahrung          *Fremde Spesen  :
+Lagerstelle  : Clearstream Nat.
+Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
+Valuta       : 30.01.2014              Endbetrag      :           5.843,00 EUR
+*   Enthalten sind folgende Gebühren   Courtage       :               0,00 EUR
+                                       Tradinggebühr  :               0,00 EUR
+                                       Regulierung    :               0,00 EUR
+                                       Schlussnoten   :               0,00 EUR
+                                       Sonstige       :               0,00 EUR
+**  Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+    Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details
+    dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 678985130.
 Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1000876178
 Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
 dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf

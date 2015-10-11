@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -48,15 +49,19 @@ public class FlatexPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(4));
+        assertThat(results.size(), is(5));
 
         assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
 
-        assertSecondSecurity(results.stream().filter(i -> i instanceof SecurityItem)
-                        .reduce((previous, current) -> current).get());
+        assertSecondSecurity(results.stream().filter(i -> i instanceof SecurityItem) //
+                        .collect(Collectors.toList()).get(1));
         assertSecondTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .reduce((previous, current) -> current).get());
+                        .collect(Collectors.toList()).get(1));
+
+        assertThirdTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem) //
+                        .collect(Collectors.toList()).get(2));
+
     }
 
     private Security assertFirstSecurity(Optional<Item> item)
@@ -108,6 +113,22 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getFees(), is(5_90L));
+        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
+    }
+
+    private void assertThirdTransaction(Item item)
+    {
+        assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(5843_00L));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2014-01-28")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(5_90L));
+        assertThat(entry.getPortfolioTransaction().getTaxes(), is(100_00L));
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
     }
 
