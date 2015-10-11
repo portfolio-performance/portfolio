@@ -9,7 +9,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 {
@@ -34,16 +33,16 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
-        .subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            entry.setCurrencyCode(CurrencyUnit.EUR);
-            return entry;
-        })
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
 
-        .section("wkn", "isin", "name") //
+                        .section("wkn", "isin", "name", "currency") //
                         .find("Wertpapier WKN ISIN") //
                         .match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .match("Kurs (\\d+,\\d+) (?<currency>\\w{3}+) .*")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
@@ -51,11 +50,11 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .match("^ST (?<shares>\\d+(,\\d+)?)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount")
-                        //
-                        .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .section("date", "amount", "currency")
+                        .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDate(asDate(v.get("date")));
                         })
 
@@ -75,26 +74,28 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.DIVIDENDS);
-                            t.setCurrencyCode(CurrencyUnit.EUR);
                             return t;
                         })
 
-                        .section("wkn", "name", "shares")
-                        //
-                        .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *")
-                        //
-                        .match("^(?<name>.*)$").assign((t, v) -> {
+                        .section("amount", "currency") //
+                        .match("BRUTTO *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("wkn", "name", "shares") //
+                        .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *") //
+                        .match("^(?<name>.*)$") //
+                        .assign((t, v) -> {
+                            // reuse currency from transaction when creating a
+                            // new security upon import
+                            v.put("currency", t.getCurrencyCode());
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("amount")
-                        //
-                        .match("BRUTTO *(\\w{3}+) *(?<amount>[\\d.]+,\\d+) *")
-                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
-
-                        .section("date")
-                        //
+                        .section("date") //
                         .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *([\\d.]+,\\d+) *")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
@@ -103,27 +104,24 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         block = new Block("DIVIDENDENGUTSCHRIFT.*");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
-                        //
+
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.TAXES);
-                            t.setCurrencyCode(CurrencyUnit.EUR);
                             return t;
                         })
 
-                        .section("kapst", "solz")
-                        //
-                        .match("KAPST.*(\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *")
-                        .match("SOLZ.*(\\w{3}+) *(?<solz>[\\d.]+,\\d+) *")
-                        //
+                        .section("kapst", "solz", "currency")
+                        .match("KAPST.*(?<currency>\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *")
+                        .match("SOLZ.*(\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
                             long kapst = asAmount(v.get("kapst"));
                             long solz = asAmount(v.get("solz"));
                             t.setAmount(kapst + solz);
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("date")
-                        //
+                        .section("date") //
                         .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *([\\d.]+,\\d+) *")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 

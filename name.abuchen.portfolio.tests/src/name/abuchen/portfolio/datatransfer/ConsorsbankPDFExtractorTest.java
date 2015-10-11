@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -30,8 +32,6 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
-import org.junit.Test;
-
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractorTest
 {
@@ -44,6 +44,7 @@ public class ConsorsbankPDFExtractorTest
             assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
         assertThat(security.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         return security;
     }
@@ -152,7 +153,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(5000_00L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5000_00L)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
@@ -185,7 +186,7 @@ public class ConsorsbankPDFExtractorTest
         // check buy sell transaction
         Item item = results.get(0);
         BuySellEntry entry = (BuySellEntry) item.getSubject();
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(5000_00L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5000_00L)));
     }
 
     private String from(String resource)
