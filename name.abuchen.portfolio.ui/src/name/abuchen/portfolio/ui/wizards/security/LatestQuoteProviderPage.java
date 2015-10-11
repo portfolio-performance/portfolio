@@ -59,7 +59,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         }
 
         @Override
-        public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+        public boolean updateHistoricalQuotes(Security security, List<Exception> errors, String defaultStartDate)
         {
             return false;
         }

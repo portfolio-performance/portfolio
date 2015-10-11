@@ -47,7 +47,7 @@ public interface QuoteFeed
      * @return true if at least one quote was updated.
      * @throws IOException
      */
-    boolean updateHistoricalQuotes(Security security, List<Exception> errors);
+    boolean updateHistoricalQuotes(Security security, List<Exception> errors, String defaultStartDate);
 
     List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors);
 

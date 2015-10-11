@@ -133,7 +133,10 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (feed != null)
             {
                 ArrayList<Exception> exceptions = new ArrayList<Exception>();
-                boolean isUpdated = feed.updateHistoricalQuotes(security, exceptions);
+
+                String startDate = PortfolioPlugin.getDefault().getPreferenceStore().getString(PortfolioPlugin.Preferences.STOCK_PRICE_DATE);
+                
+                boolean isUpdated = feed.updateHistoricalQuotes(security, exceptions, startDate);
 
                 isDirty = isDirty || isUpdated;
 

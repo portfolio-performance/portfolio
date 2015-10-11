@@ -457,6 +457,12 @@ public class Messages extends NLS
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
     public static String PrefUpdateSite;
+    public static String PrefStockPricesTitle;
+    public static String PrefStockPricesHelpText;
+    public static String PrefStockPricesStartDate;
+    public static String PrefStockPricesStartDateSupported1;
+    public static String PrefStockPricesStartDateSupported2;
+    public static String PrefStockPricesStartDateSupported3;
     public static String PrefTitle;
     public static String PrefTitleLanguage;
     public static String SecurityMenuAddNewSecurity;

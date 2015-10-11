@@ -29,6 +29,7 @@ public class PortfolioPlugin implements BundleActivator
     {
         String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
         String AUTO_UPDATE = "AUTO_UPDATE"; //$NON-NLS-1$
+        String STOCK_PRICE_DATE = "STOCK_PRICE_DATE"; //$NON-NLS-1$
     }
 
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
