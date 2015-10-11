@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -28,8 +30,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class DABPDFExtractorTest
@@ -64,6 +64,7 @@ public class DABPDFExtractorTest
         Security security = getSecurity(results);
         assertThat(security.getIsin(), is("LU0360863863"));
         assertThat(security.getName(), is("ARERO - Der Weltfonds Inhaber-Anteile o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -74,7 +75,7 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(150.00)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 150_00L)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.91920)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
@@ -102,6 +103,7 @@ public class DABPDFExtractorTest
         Security security = getSecurity(results);
         assertThat(security.getIsin(), is("LU0274208692"));
         assertThat(security.getName(), is("db x-tr.MSCI World Index ETF Inhaber-Anteile 1C o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -112,7 +114,7 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(60)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 60_00)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-05-04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.42270)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 4_95L)));
@@ -140,6 +142,7 @@ public class DABPDFExtractorTest
         Security security = getSecurity(results);
         assertThat(security.getIsin(), is("DE0005660104"));
         assertThat(security.getName(), is("EUWAX AG Inhaber-Aktien o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -149,7 +152,7 @@ public class DABPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(326)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 326_00)));
         assertThat(transaction.getDate(), is(LocalDate.parse("2014-07-02")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }

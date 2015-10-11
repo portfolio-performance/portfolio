@@ -10,7 +10,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 public class DABPDFExctractor extends AbstractPDFExtractor
@@ -36,37 +35,36 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
-                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
-                        .section("isin", "name")
-                        .find("Gattungsbezeichnung ISIN")
+                        .section("isin", "name", "currency") //
+                        .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$")
+                        .match("Handelstag (\\d+.\\d+.\\d{4}+) Kurswert (?<currency>\\w{3}+) ([\\d.]+,\\d+)-")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
-                        //
-                        .find("Nominal Kurs")
+                        .section("shares") //
+                        .find("Nominal Kurs") //
                         .match("^STK (?<shares>\\d+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("amount")
-                        //
+                        .section("amount", "currency") //
                         .find("Wert Konto-Nr. Betrag zu Ihren Lasten")
-                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
-                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
 
-                        .section("date")
+                        .section("date") //
                         .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                        .section("fees")
-                        .optional()
-                        .match("^.* Provision (\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
-                                        new Unit(Unit.Type.FEE, Money.of(t.getPortfolioTransaction().getCurrencyCode(),
-                                                        asAmount(v.get("fees"))))))
+                        .section("fees", "currency").optional()
+                        .match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
@@ -81,31 +79,30 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-        .subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            entry.setCurrencyCode(CurrencyUnit.EUR);
-            return entry;
-        })
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DIVIDENDS);
+                            return entry;
+                        })
 
-        .section("isin", "name")
-                        .find("Gattungsbezeichnung ISIN")
-                        .match("^(?<name>.*) (?<isin>[^ ]*)$")
+                        .section("isin", "name", "currency") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("^(?<name>.*) (?<isin>[^ ]*)$") //
+                        .match("STK (\\d+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
-                        //
+                        .section("shares") //
                         .find("Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück")
                         .match("^STK (?<shares>\\d+(,\\d+)?) .*$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount")
-                        //
+                        .section("date", "amount", "currency")
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
-                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(t -> new TransactionItem(t)));
