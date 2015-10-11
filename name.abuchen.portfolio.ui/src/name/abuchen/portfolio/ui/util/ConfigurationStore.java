@@ -265,7 +265,8 @@ public class ConfigurationStore
         while (config != null)
         {
             String[] split = config.split(":="); //$NON-NLS-1$
-            configurations.add(new Configuration(split[0], split[1]));
+            if (split.length == 2)
+                configurations.add(new Configuration(split[0], split[1]));
 
             index++;
             config = client.getProperty(identifier + '$' + index);

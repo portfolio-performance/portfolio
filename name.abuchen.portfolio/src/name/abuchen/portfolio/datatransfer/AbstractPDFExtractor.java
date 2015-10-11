@@ -45,13 +45,24 @@ import org.apache.pdfbox.util.PDFTextStripper;
         textStripper = new PDFTextStripper();
         textStripper.setSortByPosition(true);
 
-        this.isin2security = client.getSecurities().stream() //
-                        .filter(s -> s.getIsin() != null && !s.getIsin().isEmpty()) //
-                        .collect(Collectors.toMap(Security::getIsin, s -> s));
+        this.isin2security = client
+                        .getSecurities()
+                        .stream()
+                        .filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
+                        .collect(Collectors.toMap(Security::getIsin, s -> s,
+                                        (l, r) -> failWith(Messages.MsgErrorDuplicateISIN, l.getIsin())));
 
-        this.wkn2security = client.getSecurities().stream() //
-                        .filter(s -> s.getWkn() != null && !s.getWkn().isEmpty()) //
-                        .collect(Collectors.toMap(Security::getWkn, s -> s));
+        this.wkn2security = client
+                        .getSecurities()
+                        .stream()
+                        .filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
+                        .collect(Collectors.toMap(Security::getWkn, s -> s,
+                                        (l, r) -> failWith(Messages.MsgErrorDuplicateWKN, l.getWkn())));
+    }
+
+    protected Security failWith(String message, String parameter)
+    {
+        throw new IllegalArgumentException(MessageFormat.format(message, parameter));
     }
 
     protected final void addDocumentTyp(DocumentType type)
