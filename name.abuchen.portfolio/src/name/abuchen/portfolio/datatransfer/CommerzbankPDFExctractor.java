@@ -35,22 +35,25 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                             return transaction;
                         })
 
+                        .section("date", "amount", "currency") //
+                        .match(".*Zu I h r e n Gunsten.*")
+                        .match("^.* (?<date>\\d \\d . \\d \\d . \\d \\d \\d \\d) (?<currency>\\w{3}+)(?<amount>( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(stripBlanks(v.get("date"))));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                        })
+
                         .section("wkn", "name", "shares", "isin")
                         //
                         .match(".*W e r t p a p i e r - B e z e i c h n u n g.*")
                         .match("p e r \\d \\d . \\d \\d . \\d \\d \\d \\d (?<name>.*) (?<wkn>\\S*)")
                         .match("^STK (?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).* (?<isin>\\S*)$").assign((t, v) -> {
+                            // if necessary, create the security with the
+                            // currency of the transaction
+                            v.put("currency", t.getCurrencyCode());
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(stripBlanks(v.get("shares"))));
-                        })
-
-                        .section("date", "amount")
-                        //
-                        .match(".*Zu I h r e n Gunsten.*")
-                        .match("^.* (?<date>\\d \\d . \\d \\d . \\d \\d \\d \\d) (\\w{3}+)(?<amount>( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
-                        .assign((t, v) -> {
-                            t.setDate(asDate(stripBlanks(v.get("date"))));
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })
 
                         .wrap(t -> new TransactionItem(t)));

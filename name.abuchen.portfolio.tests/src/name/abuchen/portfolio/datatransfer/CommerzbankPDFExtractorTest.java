@@ -15,15 +15,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class CommerzbankPDFExtractorTest
@@ -52,6 +54,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(security.getName(), is("iShs-MSCI N . America UCITS ETF"));
         assertThat(security.getIsin(), is("DE000A0J2060"));
         assertThat(security.getWkn(), is("A0J206"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -61,7 +64,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(LocalDate.parse("2015-06-22")));
-        assertThat(transaction.getAmount(), is(223_45L));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 223_45L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
     
@@ -88,6 +91,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(security.getName(), is("iShares-MSCI Japan UETF DIS"));
         assertThat(security.getIsin(), is("DE000A0DPMW9"));
         assertThat(security.getWkn(), is("A0DPMW"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -97,7 +101,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(LocalDate.parse("2015-07-20")));
-        assertThat(transaction.getAmount(), is(1045_67L));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1045_67L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
     }
 
