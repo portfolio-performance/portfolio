@@ -20,12 +20,12 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBuyTransaction();
+        addBuySellTransaction();
         addDividendTransaction();
     }
 
     @SuppressWarnings("nls")
-    private void addBuyTransaction()
+    private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("Sammelabrechnung (Wertpapierkauf/-verkauf)");
         this.addDocumentTyp(type);
@@ -82,6 +82,46 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(
                                         new Unit(Unit.Type.FEE, Money.of(t.getPortfolioTransaction().getCurrencyCode(),
                                                         asAmount(v.get("fee"))))))
+
+                        .wrap(t -> new BuySellEntryItem(t)));
+
+        block = new Block("Nr.(\\d*)/(\\d*)  Verkauf.*");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("wkn", "isin", "name")
+                        .match("Nr.(\\d*)/(\\d*)  Verkauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("shares", "date")
+                        .match("^davon ausgef.: (?<shares>\\d+,\\d*) St. *Schlusstag *:  (?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setDate(asDate(v.get("date")));
+
+                        })
+
+                        .section("amount").match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+
+                        .section("fee").optional().match(".* Provision *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setFees(asAmount(v.get("fee"))))
+
+                        .section("fee").optional().match(".* Eigene Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
+
+                        .section("fee").optional().match(".* \\*Fremde Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
+
+                        .section("tax").match(".* \\*\\*Einbeh. Steuer *: *(?<tax>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .assign((t, v) -> t.setTaxes(asAmount(v.get("tax"))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
