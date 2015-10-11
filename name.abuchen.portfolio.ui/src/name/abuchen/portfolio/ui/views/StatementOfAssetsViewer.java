@@ -251,6 +251,20 @@ public class StatementOfAssetsViewer
         });
         support.addColumn(column);
 
+        column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                return element.isSecurity() ? Values.Date.format(element.getSecurityPosition().getPrice().getTime())
+                                : null;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("5", Messages.ColumnMarketValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {

@@ -29,6 +29,7 @@
             <parameters xmi:id="_pj33kPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.encryptionmethod" value="AES256"/>
           </children>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_sXrYAG_lEeWs-Og7n4Tz9g" elementId="name.abuchen.portfolio.ui.menu.file.saveAll" label="%command.saveAll.name" mnemonics="" command="_xEtu4G_lEeWs-Og7n4Tz9g"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_Bd9XUBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_B_nS4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.consistencychecks" label="%command.consistencyChecks.name" command="_D9tYMBiPEeOR1rNFCzC82A"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_O_UqkBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.1"/>
@@ -107,6 +108,7 @@
   <handlers xmi:id="_pqCZoLdLEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.handler.preferences" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPreferenceDialogHandler" command="_7aSvMLdLEeO0acAVfaNMbA"/>
   <handlers xmi:id="_EWWbkPOiEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.handler.saveAs" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveAsFileHandler" command="_48Q94POhEeOtWc3KvKMOyw"/>
   <handlers xmi:id="_tnLNkPOkEeOHHf_SGgPLVA" elementId="name.abuchen.portfolio.ui.handler.save" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveFileHandler" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
+  <handlers xmi:id="_1sS-AG_lEeWs-Og7n4Tz9g" elementId="name.abuchen.portfolio.ui.handler.saveAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveAllFileHandler" command="_xEtu4G_lEeWs-Og7n4Tz9g"/>
   <handlers xmi:id="_NCwdIPPFEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.handler.openSample" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenSampleHandler" command="_C_T3sPPEEeOuTsL2OeJEvQ"/>
   <handlers xmi:id="_1bt2MPPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.handler.openPart" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPartHandler" command="_veiGEPPLEeOuTsL2OeJEvQ"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4BjAEeO8gYEHAOvLsA">
@@ -148,6 +150,7 @@
     <parameters xmi:id="_Acnw8POiEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.param.encryptionmethod" name="encryptionmethod"/>
   </commands>
   <commands xmi:id="_rzHrcPOjEeOHHf_SGgPLVA" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
+  <commands xmi:id="_xEtu4G_lEeWs-Og7n4Tz9g" elementId="org.eclipse.ui.file.saveAll" commandName="saveAllCommand"/>
   <commands xmi:id="_C_T3sPPEEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.command.openSample" commandName="openSampleCommand">
     <parameters xmi:id="_F9NzQPPEEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.param.samplefile" name="samplefile" optional="false"/>
   </commands>
