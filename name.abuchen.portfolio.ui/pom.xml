@@ -12,4 +12,14 @@
 
 	<artifactId>name.abuchen.portfolio.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>${jarsigner.plugin.version}</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>
