@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -20,10 +22,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
@@ -70,6 +69,7 @@ public class IBFlexStatementExtractorTest
         assertThat(security.getWkn(), is("80845553"));
         assertThat(security.getName(), is("GRAN COLOMBIA GOLD CORP"));
         assertThat(security.getTickerSymbol(), is("GCM.TO"));
+        assertThat(security.getCurrencyCode(), is("CAD"));
     }
 
     private void assertSecondSecurity(Item item)
@@ -80,6 +80,7 @@ public class IBFlexStatementExtractorTest
         assertThat(security.getWkn(), is("129258970"));
         assertThat(security.getName(),
                         is("GCM(CA38501D2041) SPLIT 1 FOR 25 (GCM, GRAN COLOMBIA GOLD CORP, CA38501D5010)"));
+        assertThat(security.getCurrencyCode(), is("CAD"));
 
         // setting GCM.TO as ticker symbol
         // currently fails because the exchange is empty in corporate actions.
@@ -95,11 +96,11 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("GRAN COLOMBIA GOLD CORP"));
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(1356_75L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("CAD", 1356_75L)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-04-01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 6_75L)));
-        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(27L));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 6_75L)));
+        assertThat(entry.getPortfolioTransaction().getPricePerShare(), is(Money.of("CAD", 27L)));
 
     }
 
@@ -113,10 +114,10 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("URANIUM ONE INC."));
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(232_00L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("CAD", 232_00L)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-01-02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 1_00L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 1_00L)));
     }
 
     @Test

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.money.Money;
 
 public class BuySellEntry implements CrossEntry, Annotated
 {
@@ -80,6 +81,12 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         this.portfolioTransaction.setCurrencyCode(currencyCode);
         this.accountTransaction.setCurrencyCode(currencyCode);
+    }
+
+    public void setMonetaryAmount(Money amount)
+    {
+        this.portfolioTransaction.setMonetaryAmount(amount);
+        this.accountTransaction.setMonetaryAmount(amount);
     }
 
     @Override

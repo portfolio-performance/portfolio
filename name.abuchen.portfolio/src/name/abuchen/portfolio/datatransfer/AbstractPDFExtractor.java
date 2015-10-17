@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.Client;
@@ -23,9 +26,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
 
 /* package */abstract class AbstractPDFExtractor implements Extractor
 {
@@ -208,17 +208,14 @@ import org.apache.pdfbox.util.PDFTextStripper;
         }
     }
 
-    protected String asCurrencyCode(String currencyCode)
+    protected String asCurrencyCode(String currency)
     {
         // ensure that the security is always created with a valid currency code
-        if (currencyCode != null)
-        {
-            CurrencyUnit unit = CurrencyUnit.getInstance(currencyCode.trim());
-            if (unit == null)
-                currencyCode = null;
-        }
+        if (currency == null)
+            return CurrencyUnit.EUR;
 
-        return currencyCode != null ? currencyCode : CurrencyUnit.EUR;
+        CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+        return unit == null ? CurrencyUnit.EUR : unit.getCurrencyCode();
     }
 
     /* protected */long asAmount(String value)
