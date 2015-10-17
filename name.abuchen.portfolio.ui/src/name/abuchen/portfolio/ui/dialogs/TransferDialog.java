@@ -40,7 +40,7 @@ public class TransferDialog extends AbstractDialog
             super(client);
             this.accountFrom = accountFrom;
 
-            for (Account a : client.getAccounts())
+            for (Account a : client.getActiveAccounts())
             {
                 if (a != accountFrom)
                 {
@@ -114,7 +114,7 @@ public class TransferDialog extends AbstractDialog
     {
         GridDataFactory gdf = GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false);
 
-        List<Account> accounts = getModel().getClient().getAccounts();
+        List<Account> accounts = getModel().getClient().getActiveAccounts();
 
         // account from
         Label label = new Label(editArea, SWT.NONE);
