@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -29,8 +31,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class FlatexPDFExtractorTest
@@ -74,6 +74,7 @@ public class FlatexPDFExtractorTest
         assertThat(security.getIsin(), is("DE0005194062"));
         assertThat(security.getWkn(), is("519406"));
         assertThat(security.getName(), is("BAYWA AG VINK.NA. O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         return security;
     }
@@ -87,11 +88,11 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(5893_10L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5893_10L)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(150_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(39_24L));
+        assertThat(entry.getPortfolioTransaction().getPricePerShare(), is(Money.of(CurrencyUnit.EUR, 39_24L)));
     }
 
     private Security assertSecondSecurity(Item item)
@@ -100,6 +101,7 @@ public class FlatexPDFExtractorTest
         assertThat(security.getIsin(), is("DE0008402215"));
         assertThat(security.getWkn(), is("840221"));
         assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         return security;
     }
@@ -112,11 +114,11 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(5954_80L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5954_80L)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
+        assertThat(entry.getPortfolioTransaction().getPricePerShare(), is(Money.of(CurrencyUnit.EUR, 59_48L)));
     }
 
     private void assertThirdTransaction(Item item)
@@ -127,11 +129,11 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(5843_00L));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2014-01-28")));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5843_00L)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
-        assertThat(entry.getPortfolioTransaction().getFees(), is(5_90L));
-        assertThat(entry.getPortfolioTransaction().getTaxes(), is(100_00L));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 100_00L)));
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
     }
 
@@ -160,6 +162,7 @@ public class FlatexPDFExtractorTest
         assertThat(security.getIsin(), is("DE0008402215"));
         assertThat(security.getWkn(), is("840221"));
         assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -169,7 +172,7 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(LocalDate.parse("2014-05-08")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(795.15)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 795_15L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(360)));
     }
 
