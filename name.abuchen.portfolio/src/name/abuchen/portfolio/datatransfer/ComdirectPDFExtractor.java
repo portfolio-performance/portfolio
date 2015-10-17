@@ -16,6 +16,9 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -23,12 +26,10 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
 
 public class ComdirectPDFExtractor implements Extractor
 {
@@ -75,8 +76,8 @@ public class ComdirectPDFExtractor implements Extractor
     {
         if (!text.contains("comdirect bank")) //$NON-NLS-1$
         {
-            errors.add(new UnsupportedOperationException(MessageFormat.format(Messages.PDFcomdirectMsgFileNotSupported,
-                            filename)));
+            errors.add(new UnsupportedOperationException(
+                            MessageFormat.format(Messages.PDFcomdirectMsgFileNotSupported, filename)));
             return Collections.emptyList();
         }
 
@@ -118,7 +119,8 @@ public class ComdirectPDFExtractor implements Extractor
             // is given
             // The difference is whether or not the account is named by the IBAN
             int dateWorkOffset = 9;
-            if (text.contains("Verrechnung über Konto (IBAN)")) { //$NON-NLS-1$
+            if (text.contains("Verrechnung über Konto (IBAN)")) //$NON-NLS-1$
+            {
                 dateWorkOffset = 13;
             }
             int datePos = jumpWord(text, text.indexOf("Valuta"), dateWorkOffset); //$NON-NLS-1$
@@ -138,6 +140,10 @@ public class ComdirectPDFExtractor implements Extractor
             Number pieces = getNextNumber(text, text.indexOf("STK") + 3); //$NON-NLS-1$
             t.setType(AccountTransaction.Type.DIVIDENDS);
             t.setAmount(Math.round(value.doubleValue() * Values.Amount.factor()));
+
+            // FIXME hard-coded use of EUR because it is used as delimiter
+            // during parsing (four lines above)
+            t.setCurrencyCode(CurrencyUnit.EUR);
             t.setShares(Math.round(pieces.doubleValue() * Values.Share.factor()));
             t.setSecurity(security);
             results.add(new TransactionItem(t));
@@ -188,10 +194,8 @@ public class ComdirectPDFExtractor implements Extractor
                 if (provPos > 0)
                 {
                     Number fee = getNextNumber(text, getLastWordInLinePos(text, provPos));
-                    purchase.getPortfolioTransaction().addUnit(
-                                    new Unit(Unit.Type.FEE, Money.of(purchase.getPortfolioTransaction()
-                                                    .getCurrencyCode(), Math.round(fee.doubleValue()
-                                                    * Values.Amount.factor()))));
+                    purchase.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR,
+                                    Math.round(fee.doubleValue() * Values.Amount.factor()))));
                 }
                 int totalEURPos = text.indexOf("EUR", //$NON-NLS-1$
                                 text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3); //$NON-NLS-1$ //$NON-NLS-2$
@@ -201,6 +205,10 @@ public class ComdirectPDFExtractor implements Extractor
                 purchase.setSecurity(security);
                 purchase.setShares(Math.round(shares.doubleValue() * Values.Share.factor()));
                 purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
+
+                // FIXME hard-coded use of EUR because it is used as delimiter
+                // in parsing (see "totalEURPos" variable)
+                purchase.setCurrencyCode(CurrencyUnit.EUR);
                 results.add(new BuySellEntryItem(purchase));
             }
             catch (DateTimeParseException e)
