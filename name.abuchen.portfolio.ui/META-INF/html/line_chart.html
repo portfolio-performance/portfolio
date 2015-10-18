@@ -9,11 +9,11 @@
 <script src="${/META-INF/js/lib/d3.min.js}"></script>
 <script src="${/META-INF/js/lib/rickshaw.min.js}"></script>
 
-<script src="${/META-INF//js/Rickshaw.Graph.Renderer.DottedLine.js}"></script>
-<script src="${/META-INF//js/Rickshaw.Graph.Renderer.DottedArea.js}"></script>
-<script src="${/META-INF//js/Rickshaw.Graph.Renderer.Range.js}"></script>
-<script src="${/META-INF//js/Rickshaw.Graph.Renderer.VerticalLine.js}"></script>
-<script src="${/META-INF//js/line_chart.js}"></script>
+<script src="${/META-INF/js/Rickshaw.Graph.Renderer.DottedLine.js}"></script>
+<script src="${/META-INF/js/Rickshaw.Graph.Renderer.DottedArea.js}"></script>
+<script src="${/META-INF/js/Rickshaw.Graph.Renderer.Range.js}"></script>
+<script src="${/META-INF/js/Rickshaw.Graph.VerticalLine.js}"></script>
+<script src="${/META-INF/js/line_chart.js}"></script>
 
 <body>
 	<div id="title"></div>
@@ -25,6 +25,7 @@
 </body>
 
 <script>
-	var args = JSON.parse(loadData());
-	LineChart(args); 
+	var argsStr = loadData();
+	var args = JSON.parse(argsStr);
+	LineChart(argsStr); 
 </script>

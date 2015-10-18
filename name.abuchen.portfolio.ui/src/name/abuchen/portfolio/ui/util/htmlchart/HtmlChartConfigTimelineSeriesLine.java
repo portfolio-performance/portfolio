@@ -70,9 +70,8 @@ public class HtmlChartConfigTimelineSeriesLine extends HtmlChartConfigTimelineSe
         buffer.append("strokePattern:'").append(strokePattern).append("'");
     };
 
-    public void buildSeries(StringBuilder buffer)
+    public void buildSeriesExtend(StringBuilder buffer)
     {
-        super.buildSeries(buffer);
         if (strokePattern != null && !strokePattern.isEmpty())
         {
             buffer.append(",");

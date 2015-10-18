@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
+import java.util.Locale;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.graphics.RGB;
 
@@ -13,10 +15,13 @@ public abstract class HtmlChartConfigTimelineSeries
     protected double opacity = 1;
     protected int strokeWidth = 2;
     protected boolean noLegend = false;
-    
+
     /**
-     * Derived classes must override the getter by returning a constant that identifies the renderer to be used.
-     * @return The name of the renderer used by Rickshaw (e.g. 'line', 'bar', etc.)
+     * Derived classes must override the getter by returning a constant that
+     * identifies the renderer to be used.
+     * 
+     * @return The name of the renderer used by Rickshaw (e.g. 'line', 'bar',
+     *         etc.)
      */
     protected abstract String getRenderer();
 
@@ -93,13 +98,13 @@ public abstract class HtmlChartConfigTimelineSeries
     private void buildSeriesData(StringBuilder buffer)
     {
         int itemCount = dates.length;
-        buffer.append("[");
+        buffer.append("data:[");
         for (int i = 0; i < itemCount; i++)
         {
             if (i > 0 && itemCount > 1)
                 buffer.append(",");
-            buffer.append("{x:").append(dates[i].getTime()).append(",y:").append(String.format("%.4f", values[i]))
-                            .append("}");
+            buffer.append("{x:").append(dates[i].getTime() / 1000).append(",y:")
+                            .append(String.format(Locale.US, "%.4f", values[i])).append("}");
 
         }
         buffer.append("]");
@@ -108,7 +113,7 @@ public abstract class HtmlChartConfigTimelineSeries
     private void buildSeriesColor(StringBuilder buffer)
     {
         buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",").append(color.blue)
-                        .append(",").append(String.format("%3.2f", opacity)).append(")'");
+                        .append(",").append(String.format(Locale.US, "%3.2f", opacity)).append(")'");
     }
 
     private void buildSeriesStrokeWidth(StringBuilder buffer)
@@ -121,11 +126,7 @@ public abstract class HtmlChartConfigTimelineSeries
         buffer.append("renderer:'").append(getRenderer()).append("'");
     };
 
-    /**
-     * Writes the configuration into the {@code buffer} as Json structure.
-     * @param buffer An instantiated {@link java.lang.StringBuilder} where the Json stream is written to
-     */
-    public void buildSeries(StringBuilder buffer)
+    private void buildSeriesCore(StringBuilder buffer)
     {
         buildSeriesName(buffer);
         buffer.append(",");
@@ -136,6 +137,23 @@ public abstract class HtmlChartConfigTimelineSeries
         buildSeriesStrokeWidth(buffer);
         buffer.append(",");
         buildSeriesRenderer(buffer);
+    }
+
+    protected abstract void buildSeriesExtend(StringBuilder buffer);
+
+    /**
+     * Writes the configuration into the {@code buffer} as Json structure.
+     * 
+     * @param buffer
+     *            An instantiated {@link java.lang.StringBuilder} where the Json
+     *            stream is written to
+     */
+    public void buildSeries(StringBuilder buffer)
+    {
+        buffer.append("{");
+        buildSeriesCore(buffer);
+        buildSeriesExtend(buffer);
+        buffer.append("}");
     }
 
 }

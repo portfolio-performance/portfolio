@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
+import java.util.Locale;
+
 import org.eclipse.swt.graphics.RGB;
 
 /**
@@ -86,7 +88,7 @@ public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSe
      * @param strokeColor
      *            The {@link RGB} color of the area border
      */
-    public void setStrokePattern(RGB strokeColor)
+    public void setStrokeColor(RGB strokeColor)
     {
         this.strokeColor = strokeColor;
     }
@@ -127,13 +129,12 @@ public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSe
     private void buildSeriesStrokeColor(StringBuilder buffer)
     {
         buffer.append("stroke:'rgba(").append(strokeColor.red).append(",").append(strokeColor.green).append(",")
-                        .append(strokeColor.blue).append(",").append(String.format("%3.2f", strokeOpacity))
+                        .append(strokeColor.blue).append(",").append(String.format(Locale.US, "%3.2f", strokeOpacity))
                         .append(")'");
     };
 
-    public void buildSeries(StringBuilder buffer)
+    public void buildSeriesExtend(StringBuilder buffer)
     {
-        super.buildSeries(buffer);
         if (strokePattern != null && !strokePattern.isEmpty())
         {
             buffer.append(",");

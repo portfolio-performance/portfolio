@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.graphics.RGB;
@@ -143,13 +144,13 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
     private void buildJsonColor(StringBuilder buffer)
     {
         buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",").append(color.blue)
-                        .append(",").append(String.format("%3.2f", opacity)).append(")'");
+                        .append(",").append(String.format(Locale.US, "%3.2f", opacity)).append(")'");
     };
 
     private void buildJsonLabelColor(StringBuilder buffer)
     {
         buffer.append("labelColor:'rgba(").append(labelColor.red).append(",").append(labelColor.green).append(",")
-                        .append(labelColor.blue).append(",").append(String.format("%3.2f", labelOpacity)).append(")'");
+                        .append(labelColor.blue).append(",").append(String.format(Locale.US, "%3.2f", labelOpacity)).append(")'");
     };
 
     private void buildJsonShowLabel(StringBuilder buffer)
@@ -171,7 +172,7 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
             }
         });
 
-        buffer.append("[");
+        buffer.append("data : [");
         for (HtmlChartConfigTimelineVerticalMarker marker : this)
         {
             if (isFirst)
@@ -186,7 +187,7 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
 
     public void buildJson(StringBuilder buffer)
     {
-        buffer.append("{");
+        buffer.append("verticalMarker : {");
         buildJsonName(buffer);
         buffer.append(",");
         buildJsonStrokeWidth(buffer);

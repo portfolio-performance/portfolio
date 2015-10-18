@@ -1,10 +1,14 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 // import name.abuchen.portfolio.ui.util.chart.ChartContextMenu;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class HtmlChartConfigTimeline implements HtmlChartConfig
 {
@@ -130,19 +134,19 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
 
     private void buildJsonMinY(StringBuilder buffer)
     {
-        buffer.append("minY:'").append(String.format("%.4f", minY)).append("'");
+        buffer.append("minY:'").append(String.format(Locale.US, "%.4f", minY)).append("'");
     }
 
     private void buildJsonMaxY(StringBuilder buffer)
     {
-        buffer.append("maxY:'").append(String.format("%.4f", maxY)).append("'");
+        buffer.append("maxY:'").append(String.format(Locale.US, "%.4f", maxY)).append("'");
     }
 
     private void buildJsonSeries(StringBuilder buffer)
     {
         boolean isFirst = true;
 
-        buffer.append("[");
+        buffer.append("series : [");
         for (HtmlChartConfigTimelineSeries s : series)
         {
             if (isFirst)
@@ -167,12 +171,13 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         buildJsonNumberFormatLocale(buffer);
         buffer.append(",");
         buildJsonNoLegend(buffer);
-        
-        if (verticalMarker != null) {
+
+        if (verticalMarker != null)
+        {
             buffer.append(",");
             verticalMarker.buildJson(buffer);
         }
-        
+
         if (!Double.isNaN(minY))
         {
             buffer.append(",");
@@ -185,7 +190,7 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         }
         buffer.append(",");
         buildJsonSeries(buffer);
-        buffer.append("}");        
+        buffer.append("}");
     }
 
     public String getJson()

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
-
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 // import name.abuchen.portfolio.ui.util.chart.ChartContextMenu;
@@ -11,38 +10,26 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class HtmlChart extends Composite
+public class HtmlChart
 {
 
     private EmbeddedBrowser browser;
     private HtmlChartConfig args;
 
-    // private final LocalResourceManager resources;
-    // private ChartContextMenu contextMenu;
-
-    public HtmlChart(Composite parent)
-    {
-        super(parent, SWT.NONE);
-
-        // resources = new LocalResourceManager(JFaceResources.getResources(), this);
-
-        // ZoomMouseWheelListener.attachTo(this);
-        // MovePlotKeyListener.attachTo(this);
-        // ZoomInAreaListener.attachTo(this);
-
-        // this.contextMenu = new ChartContextMenu(this);
-    }
-
     /**
      * @param container
-     * @param args 
+     * @param args
      * @return
      */
-    public Control createControl(Composite container, HtmlChartConfig args)
+    public HtmlChart(HtmlChartConfig args)
     {
         this.args = args;
+    }
+
+    public Control createControl(Composite container)
+    {
         browser = new EmbeddedBrowser(args.getHtmlPageUri()); // $NON-NLS-1$
-        return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
+        return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$ ;
     }
 
     public void refreshChart()
@@ -61,7 +48,10 @@ public class HtmlChart extends Composite
         {
             try
             {
-                return args.getJson();
+                String tmp = args.getJson();
+                PortfolioPlugin.log(tmp);
+                return tmp;
+                //return args.getJson();
             }
             catch (Throwable e)
             {

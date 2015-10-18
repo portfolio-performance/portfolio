@@ -1,16 +1,18 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
+import java.util.Locale;
+import java.util.function.DoubleToLongFunction;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.graphics.RGB;
 
 /**
  * Structure holding the configuration of a single Vertical Marker for the
- * {@link HtmlChart}. The data is written to a StringBuffer as Json
- * Object using the {@code buildJson(StringBuilder buffer)} method
+ * {@link HtmlChart}. The data is written to a StringBuffer as Json Object using
+ * the {@code buildJson(StringBuilder buffer)} method
+ * 
  * @author fuchsst
- *
  */
 public class HtmlChartConfigTimelineVerticalMarker
 {
@@ -25,7 +27,7 @@ public class HtmlChartConfigTimelineVerticalMarker
 
     public HtmlChartConfigTimelineVerticalMarker(Date date, String label)
     {
-        this(date, label, null, 1.0, null, 1.0, null);
+        this(date, label, null, Double.NaN, null, Double.NaN, null);
     }
 
     public HtmlChartConfigTimelineVerticalMarker(Date date, String label, RGB color, Double opacity, RGB labelColor,
@@ -119,21 +121,21 @@ public class HtmlChartConfigTimelineVerticalMarker
     {
         this.strokePattern = strokePattern;
     }
-    
+
     private void buildJsonLabel(StringBuilder buffer)
     {
         buffer.append("label:'").append(StringEscapeUtils.escapeJson(label)).append("'");
-    };    
-    
+    };
+
     private void buildJsonDate(StringBuilder buffer)
     {
-        buffer.append("x:'").append(date.getTime()).append("'");
+        buffer.append("x:").append(date.getTime() / 1000);
     };
-    
+
     private void buildJsonColor(StringBuilder buffer)
     {
-        buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",")
-        .append(color.blue).append(",").append(String.format("%3.2f", opacity)).append(")'");
+        buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",").append(color.blue)
+                        .append(",").append(String.format(Locale.US, "%3.2f", opacity)).append(")'");
     };
 
     private void buildJsonSeriesStrokePattern(StringBuilder buffer)
@@ -144,7 +146,8 @@ public class HtmlChartConfigTimelineVerticalMarker
     private void buildJsonLabelColor(StringBuilder buffer)
     {
         buffer.append("labelColor:'rgba(").append(labelColor.red).append(",").append(labelColor.green).append(",")
-                        .append(labelColor.blue).append(",").append(String.format("%3.2f", labelOpacity)).append(")'");
+                        .append(labelColor.blue).append(",").append(String.format(Locale.US, "%3.2f", labelOpacity))
+                        .append(")'");
     };
 
     public void buildJson(StringBuilder buffer)
@@ -158,7 +161,7 @@ public class HtmlChartConfigTimelineVerticalMarker
         {
             buffer.append(",");
             buildJsonColor(buffer);
-        }        
+        }
         if (labelColor != null)
         {
             buffer.append(",");
@@ -170,7 +173,6 @@ public class HtmlChartConfigTimelineVerticalMarker
             buildJsonSeriesStrokePattern(buffer);
         }
 
-        
         buffer.append("}");
     }
 
