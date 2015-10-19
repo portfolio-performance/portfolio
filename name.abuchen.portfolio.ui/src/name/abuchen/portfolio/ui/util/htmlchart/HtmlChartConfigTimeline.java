@@ -1,14 +1,9 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-// import name.abuchen.portfolio.ui.util.chart.ChartContextMenu;
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import name.abuchen.portfolio.ui.PortfolioPlugin;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class HtmlChartConfigTimeline implements HtmlChartConfig
 {
@@ -107,97 +102,43 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return this.series;
     }
 
-    private void buildJsonTitle(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    private void buildJsonSeries(JSONObject json)
     {
-        buffer.append("title:'").append(StringEscapeUtils.escapeJson(title)).append("'");
-    }
-
-    private void buildJsonInterpolation(StringBuilder buffer)
-    {
-        buffer.append("interpolation:'").append(interpolation).append("'");
-    }
-
-    private void buildJsonNumberFormat(StringBuilder buffer)
-    {
-        buffer.append("numberFormat:'").append(numberFormat).append("'");
-    }
-
-    private void buildJsonNumberFormatLocale(StringBuilder buffer)
-    {
-        buffer.append("numberFormatLocale:'").append(numberFormatLocale).append("'");
-    }
-
-    private void buildJsonNoLegend(StringBuilder buffer)
-    {
-        buffer.append("noLegend:'").append(noLegend ? "true" : "false").append("'");
-    }
-
-    private void buildJsonMinY(StringBuilder buffer)
-    {
-        buffer.append("minY:'").append(String.format(Locale.US, "%.4f", minY)).append("'");
-    }
-
-    private void buildJsonMaxY(StringBuilder buffer)
-    {
-        buffer.append("maxY:'").append(String.format(Locale.US, "%.4f", maxY)).append("'");
-    }
-
-    private void buildJsonSeries(StringBuilder buffer)
-    {
-        boolean isFirst = true;
-
-        buffer.append("series : [");
+        JSONArray jsonList = new JSONArray();
         for (HtmlChartConfigTimelineSeries s : series)
         {
-            if (isFirst)
-                isFirst = false;
-            else
-                buffer.append(",");
-
-            s.buildSeries(buffer);
+            jsonList.add(s.getJson());
         }
-        buffer.append("]");
+        json.put("series", jsonList);
     }
 
-    private void buildJson(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    public JSONObject getJson()
     {
-        buffer.append("{");
-        buildJsonTitle(buffer);
-        buffer.append(",");
-        buildJsonInterpolation(buffer);
-        buffer.append(",");
-        buildJsonNumberFormat(buffer);
-        buffer.append(",");
-        buildJsonNumberFormatLocale(buffer);
-        buffer.append(",");
-        buildJsonNoLegend(buffer);
+        JSONObject json = new JSONObject();
+        json.put("title", title);
+        json.put("interpolation", interpolation);
+        json.put("numberFormat", numberFormat);
+        json.put("numberFormatLocale", numberFormatLocale);
+        json.put("noLegend", noLegend);
 
         if (verticalMarker != null)
-        {
-            buffer.append(",");
-            verticalMarker.buildJson(buffer);
-        }
+            json.put("verticalMarker", verticalMarker.getJson());
 
         if (!Double.isNaN(minY))
-        {
-            buffer.append(",");
-            buildJsonMinY(buffer);
-        }
+            json.put("minY", minY);
+
         if (!Double.isNaN(maxY))
-        {
-            buffer.append(",");
-            buildJsonMaxY(buffer);
-        }
-        buffer.append(",");
-        buildJsonSeries(buffer);
-        buffer.append("}");
+            json.put("maxY", maxY);
+
+        buildJsonSeries(json);
+        return json;
     }
 
-    public String getJson()
+    public String getJsonString()
     {
-        StringBuilder buffer = new StringBuilder();
-        buildJson(buffer);
-        return buffer.toString();
+        return this.getJson().toString();
     }
 
     public String getHtmlPageUri()

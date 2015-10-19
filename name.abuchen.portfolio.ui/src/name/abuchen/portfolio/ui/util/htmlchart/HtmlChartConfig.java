@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
+import org.json.simple.JSONObject;
 
 /**
  * Implementation of interface is passed as parameter to
@@ -17,7 +18,13 @@ public interface HtmlChartConfig
      * 
      * @return The chart configuration as Json string
      */
-    public String getJson();
+    public String getJsonString();
+    
+    /**
+     * 
+     * @return The chart configuration as json-simple structure
+     */
+    public JSONObject getJson();
     
     /**
      * The interface implementation returns a constant string that represents

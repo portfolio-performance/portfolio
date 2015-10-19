@@ -4,7 +4,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 // import name.abuchen.portfolio.ui.util.chart.ChartContextMenu;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
@@ -48,10 +47,10 @@ public class HtmlChart
         {
             try
             {
-                String tmp = args.getJson();
-                PortfolioPlugin.log(tmp);
-                return tmp;
-                //return args.getJson();
+                // String tmp = args.getJsonString();
+                // PortfolioPlugin.log(tmp);
+                // return tmp;
+                return args.getJsonString();
             }
             catch (Throwable e)
             {

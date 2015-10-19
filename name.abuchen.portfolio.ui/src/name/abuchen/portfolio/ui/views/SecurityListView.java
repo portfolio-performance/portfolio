@@ -684,10 +684,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         }
 
         HtmlChartConfigTimelineSeriesArea series = new HtmlChartConfigTimelineSeriesArea(security.getName(), dates,
-                        values, new RGB(0, 96, 192), 0.6);
-        series.setStrokeColor(series.getColor());
-        series.setStrokeOpacity(1);
-        series.setStrokeWidth(2);
+                        values, new RGB(0, 96, 192), 0.4, 2, new RGB(0, 96, 192), 1);
         chartConfig.series().add(series);
 
         for (Portfolio portfolio : getClient().getPortfolios())

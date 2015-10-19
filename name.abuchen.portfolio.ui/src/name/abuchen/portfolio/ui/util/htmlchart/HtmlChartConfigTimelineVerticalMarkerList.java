@@ -5,8 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.graphics.RGB;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /***
  * Structure holding the configuration and list of
@@ -136,38 +137,9 @@ public class HtmlChartConfigTimelineVerticalMarkerList
         this.verticalMarker.add(marker);
     }
 
-    private void buildJsonName(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    private void buildJsonVerticalMarker(JSONObject json)
     {
-        buffer.append("name:'").append(StringEscapeUtils.escapeJson(name)).append("'");
-    };
-
-    private void buildJsonStrokeWidth(StringBuilder buffer)
-    {
-        buffer.append("strokeWidth:").append(strokeWidth);
-    }
-
-    private void buildJsonColor(StringBuilder buffer)
-    {
-        buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",").append(color.blue)
-                        .append(",").append(String.format(Locale.US, "%3.2f", opacity)).append(")'");
-    };
-
-    private void buildJsonLabelColor(StringBuilder buffer)
-    {
-        buffer.append("labelColor:'rgba(").append(labelColor.red).append(",").append(labelColor.green).append(",")
-                        .append(labelColor.blue).append(",").append(String.format(Locale.US, "%3.2f", labelOpacity))
-                        .append(")'");
-    };
-
-    private void buildJsonShowLabel(StringBuilder buffer)
-    {
-        buffer.append("showLabel:").append(showLabel ? "true" : "false");
-    }
-
-    private void buildJsonVerticalMarker(StringBuilder buffer)
-    {
-        boolean isFirst = true;
-
         // sort marker by date
         Collections.sort(this.verticalMarker, new Comparator<HtmlChartConfigTimelineVerticalMarker>()
         {
@@ -178,43 +150,32 @@ public class HtmlChartConfigTimelineVerticalMarkerList
             }
         });
 
-        buffer.append("data : [");
+        JSONArray jsonList = new JSONArray();
         for (HtmlChartConfigTimelineVerticalMarker marker : this.verticalMarker)
         {
-            if (isFirst)
-                isFirst = false;
-            else
-                buffer.append(",");
-
-            marker.buildJson(buffer);
+            jsonList.add(marker.getJson());
         }
-        buffer.append("]");
+        json.put("data", jsonList);
     }
 
-    public void buildJson(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    public JSONObject getJson()
     {
-        buffer.append("verticalMarker : {");
-        buildJsonName(buffer);
-        buffer.append(",");
-        buildJsonStrokeWidth(buffer);
-        buffer.append(",");
-        buildJsonVerticalMarker(buffer);
-        buffer.append(",");
-        buildJsonShowLabel(buffer);
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("strokeWidth", strokeWidth);
+        json.put("showLabel", showLabel);
 
         if (color != null)
-        {
-            buffer.append(",");
-            buildJsonColor(buffer);
-        }
+            json.put("color", "rgba(" + color.red + "," + color.green + "," + color.blue + ","
+                            + String.format(Locale.US, "%3.2f", opacity) + ")");
 
         if (labelColor != null)
-        {
-            buffer.append(",");
-            buildJsonLabelColor(buffer);
-        }
+            json.put("labelColor", "rgba(" + labelColor.red + "," + labelColor.green + "," + labelColor.blue + ","
+                            + String.format(Locale.US, "%3.2f", labelOpacity) + ")");
 
-        buffer.append("}");
+        buildJsonVerticalMarker(json);
+        return json;
     }
 
 }

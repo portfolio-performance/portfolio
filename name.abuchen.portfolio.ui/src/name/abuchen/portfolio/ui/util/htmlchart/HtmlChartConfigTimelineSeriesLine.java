@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
 import org.eclipse.swt.graphics.RGB;
+import org.json.simple.JSONObject;
 
 /**
  * Configuration for timeline chart series rendered as line (based on the own
@@ -65,18 +66,14 @@ public class HtmlChartConfigTimelineSeriesLine extends HtmlChartConfigTimelineSe
         this.strokePattern = strokePattern;
     }
 
-    private void buildSeriesStrokePattern(StringBuilder buffer)
-    {
-        buffer.append("strokePattern:'").append(strokePattern).append("'");
-    };
-
-    public void buildSeriesExtend(StringBuilder buffer)
-    {
+    
+    @SuppressWarnings("unchecked")
+    public JSONObject getJson() {
+        JSONObject json = super.getJson();
         if (strokePattern != null && !strokePattern.isEmpty())
-        {
-            buffer.append(",");
-            buildSeriesStrokePattern(buffer);
-        }
+            json.put("strokePattern", strokePattern);
+
+        return json;
     }
 
 }

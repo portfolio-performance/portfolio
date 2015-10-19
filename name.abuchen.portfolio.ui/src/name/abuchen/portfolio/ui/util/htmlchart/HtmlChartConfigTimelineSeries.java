@@ -2,9 +2,9 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
 import java.util.Locale;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.graphics.RGB;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public abstract class HtmlChartConfigTimelineSeries
 {
@@ -90,70 +90,34 @@ public abstract class HtmlChartConfigTimelineSeries
             this.opacity = opacity;
     }
 
-    private void buildSeriesName(StringBuilder buffer)
-    {
-        buffer.append("name:'").append(StringEscapeUtils.escapeJson(name)).append("'");
-    }
-
-    private void buildSeriesData(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    private void buildSeriesData(JSONObject json)
     {
         int itemCount = dates.length;
-        buffer.append("data:[");
+        JSONArray jsonList = new JSONArray();
+        JSONObject jsonDataPoint;
         for (int i = 0; i < itemCount; i++)
         {
-            if (i > 0 && itemCount > 1)
-                buffer.append(",");
-            buffer.append("{x:").append(dates[i].getTime() / 1000).append(",y:")
-                            .append(String.format(Locale.US, "%.4f", values[i])).append("}");
-
+            jsonDataPoint = new JSONObject();
+            jsonDataPoint.put("x", dates[i].getTime() / 1000);
+            jsonDataPoint.put("y", values[i]);
+            jsonList.add(jsonDataPoint);
         }
-        buffer.append("]");
+        json.put("data", jsonList);
     }
 
-    private void buildSeriesColor(StringBuilder buffer)
+    
+    @SuppressWarnings("unchecked")
+    public JSONObject getJson()
     {
-        buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",").append(color.blue)
-                        .append(",").append(String.format(Locale.US, "%3.2f", opacity)).append(")'");
-    }
-
-    private void buildSeriesStrokeWidth(StringBuilder buffer)
-    {
-        buffer.append("strokeWidth:").append(strokeWidth);
-    }
-
-    private void buildSeriesRenderer(StringBuilder buffer)
-    {
-        buffer.append("renderer:'").append(getRenderer()).append("'");
-    };
-
-    private void buildSeriesCore(StringBuilder buffer)
-    {
-        buildSeriesName(buffer);
-        buffer.append(",");
-        buildSeriesData(buffer);
-        buffer.append(",");
-        buildSeriesColor(buffer);
-        buffer.append(",");
-        buildSeriesStrokeWidth(buffer);
-        buffer.append(",");
-        buildSeriesRenderer(buffer);
-    }
-
-    protected abstract void buildSeriesExtend(StringBuilder buffer);
-
-    /**
-     * Writes the configuration into the {@code buffer} as Json structure.
-     * 
-     * @param buffer
-     *            An instantiated {@link java.lang.StringBuilder} where the Json
-     *            stream is written to
-     */
-    public void buildSeries(StringBuilder buffer)
-    {
-        buffer.append("{");
-        buildSeriesCore(buffer);
-        buildSeriesExtend(buffer);
-        buffer.append("}");
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("color", "rgba(" + color.red + "," + color.green + "," + color.blue + ","
+                        + String.format(Locale.US, "%3.2f", opacity) + ")");
+        json.put("strokeWidth", strokeWidth);
+        json.put("renderer", getRenderer());
+        buildSeriesData(json);
+        return json;
     }
 
 }

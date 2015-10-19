@@ -2,10 +2,8 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
 import java.util.Locale;
-import java.util.function.DoubleToLongFunction;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.graphics.RGB;
+import org.json.simple.JSONObject;
 
 /**
  * Structure holding the configuration of a single Vertical Marker for the
@@ -122,58 +120,26 @@ public class HtmlChartConfigTimelineVerticalMarker
         this.strokePattern = strokePattern;
     }
 
-    private void buildJsonLabel(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    public JSONObject getJson()
     {
-        buffer.append("label:'").append(StringEscapeUtils.escapeJson(label)).append("'");
-    };
+        JSONObject json = new JSONObject();
 
-    private void buildJsonDate(StringBuilder buffer)
-    {
-        buffer.append("x:").append(date.getTime() / 1000);
-    };
-
-    private void buildJsonColor(StringBuilder buffer)
-    {
-        buffer.append("color:'rgba(").append(color.red).append(",").append(color.green).append(",").append(color.blue)
-                        .append(",").append(String.format(Locale.US, "%3.2f", opacity)).append(")'");
-    };
-
-    private void buildJsonSeriesStrokePattern(StringBuilder buffer)
-    {
-        buffer.append("strokePattern:'").append(strokePattern).append("'");
-    };
-
-    private void buildJsonLabelColor(StringBuilder buffer)
-    {
-        buffer.append("labelColor:'rgba(").append(labelColor.red).append(",").append(labelColor.green).append(",")
-                        .append(labelColor.blue).append(",").append(String.format(Locale.US, "%3.2f", labelOpacity))
-                        .append(")'");
-    };
-
-    public void buildJson(StringBuilder buffer)
-    {
-        buffer.append("{");
-        buildJsonDate(buffer);
-        buffer.append(",");
-        buildJsonLabel(buffer);
+        json.put("x", date.getTime() / 1000);
+        json.put("label", label);
 
         if (color != null)
-        {
-            buffer.append(",");
-            buildJsonColor(buffer);
-        }
-        if (labelColor != null)
-        {
-            buffer.append(",");
-            buildJsonLabelColor(buffer);
-        }
-        if (strokePattern != null && !strokePattern.isEmpty())
-        {
-            buffer.append(",");
-            buildJsonSeriesStrokePattern(buffer);
-        }
+            json.put("color", "rgba(" + color.red + "," + color.green + "," + color.blue + ","
+                            + String.format(Locale.US, "%3.2f", opacity) + ")");
 
-        buffer.append("}");
+        if (labelColor != null)
+            json.put("labelColor", "rgba(" + labelColor.red + "," + labelColor.green + "," + labelColor.blue + ","
+                            + String.format(Locale.US, "%3.2f", labelOpacity) + ")");
+
+        if (strokePattern != null && !strokePattern.isEmpty())
+            json.put("strokePattern", strokePattern);
+
+        return json;
     }
 
 }

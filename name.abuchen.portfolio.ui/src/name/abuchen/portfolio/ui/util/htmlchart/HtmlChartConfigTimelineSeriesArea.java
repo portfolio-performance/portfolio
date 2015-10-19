@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.eclipse.swt.graphics.RGB;
+import org.json.simple.JSONObject;
 
 /**
  * Configuration for timeline chart series rendered as area (based on the own
@@ -33,11 +34,19 @@ public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSe
      */
     public HtmlChartConfigTimelineSeriesArea(String name, Date[] dates, double[] values, RGB color, double opacity)
     {
+        this(name, dates, values, color, opacity, 0, color, opacity);
+    }
+
+    public HtmlChartConfigTimelineSeriesArea(String name, Date[] dates, double[] values, RGB color, double opacity,
+                    int strokeWidth, RGB strokeColor, double strokeOpacity)
+    {
         this.name = name;
         this.dates = dates;
         this.values = values;
         this.color = color;
         this.opacity = opacity;
+        this.strokeWidth = strokeWidth;
+        this.strokeColor = strokeColor;
         this.strokeOpacity = opacity;
     }
 
@@ -121,30 +130,20 @@ public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSe
             this.strokeOpacity = strokeOpacity;
     }
 
-    private void buildSeriesStrokePattern(StringBuilder buffer)
-    {
-        buffer.append("strokePattern:'").append(strokePattern).append("'");
-    };
 
-    private void buildSeriesStrokeColor(StringBuilder buffer)
+    @SuppressWarnings("unchecked")
+    public JSONObject getJson()
     {
-        buffer.append("stroke:'rgba(").append(strokeColor.red).append(",").append(strokeColor.green).append(",")
-                        .append(strokeColor.blue).append(",").append(String.format(Locale.US, "%3.2f", strokeOpacity))
-                        .append(")'");
-    };
-
-    public void buildSeriesExtend(StringBuilder buffer)
-    {
+        JSONObject json = super.getJson();
+        
         if (strokePattern != null && !strokePattern.isEmpty())
-        {
-            buffer.append(",");
-            buildSeriesStrokePattern(buffer);
-        }
+            json.put("strokePattern", strokePattern);
+        
         if (strokeColor != null)
-        {
-            buffer.append(",");
-            buildSeriesStrokeColor(buffer);
-        }
+            json.put("stroke", "rgba(" + strokeColor.red + "," + strokeColor.green + "," + strokeColor.blue + ","
+                            + String.format(Locale.US, "%3.2f", strokeOpacity) + ")");
+        
+        return json;
     }
 
 }
