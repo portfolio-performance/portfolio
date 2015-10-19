@@ -10,31 +10,31 @@ import org.eclipse.swt.graphics.RGB;
 
 /***
  * Structure holding the configuration and list of
- * {@link HtmlChartConfigTimelineVerticalMarker} for the {@link HtmlChart}.
- * The data is written to a StringBuffer as Json Object using the
+ * {@link HtmlChartConfigTimelineVerticalMarker} for the {@link HtmlChart}. The
+ * data is written to a StringBuffer as Json Object using the
  * {@code buildJson(StringBuilder buffer)} method.
  * 
  * @author fuchsst
  */
-public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlChartConfigTimelineVerticalMarker>
+public class HtmlChartConfigTimelineVerticalMarkerList
 {
-    private static final long serialVersionUID = -3502197888115471366L;
 
     private String name;
     private RGB color;
     private RGB labelColor;
-    protected double opacity = 1;
-    protected double labelOpacity = 1;
+    private double opacity = 1;
+    private double labelOpacity = 1;
     private int strokeWidth;
     private boolean showLabel = true;
+    private ArrayList<HtmlChartConfigTimelineVerticalMarker> verticalMarker = new ArrayList<HtmlChartConfigTimelineVerticalMarker>();
 
     public HtmlChartConfigTimelineVerticalMarkerList(String name, int strokeWidth)
     {
         this(name, strokeWidth, null, 1.0, null, 1.0, true);
     }
 
-    public HtmlChartConfigTimelineVerticalMarkerList(String name, int strokeWidth, RGB color, double opacity, RGB labelColor,
-                    double labelOpacity, boolean showLabel)
+    public HtmlChartConfigTimelineVerticalMarkerList(String name, int strokeWidth, RGB color, double opacity,
+                    RGB labelColor, double labelOpacity, boolean showLabel)
     {
         super();
         this.name = name;
@@ -126,9 +126,14 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
         this.showLabel = showLabel;
     }
 
-    public static long getSerialversionuid()
+    public void clear()
     {
-        return serialVersionUID;
+        this.verticalMarker.clear();
+    }
+
+    public void addMarker(HtmlChartConfigTimelineVerticalMarker marker)
+    {
+        this.verticalMarker.add(marker);
     }
 
     private void buildJsonName(StringBuilder buffer)
@@ -150,7 +155,8 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
     private void buildJsonLabelColor(StringBuilder buffer)
     {
         buffer.append("labelColor:'rgba(").append(labelColor.red).append(",").append(labelColor.green).append(",")
-                        .append(labelColor.blue).append(",").append(String.format(Locale.US, "%3.2f", labelOpacity)).append(")'");
+                        .append(labelColor.blue).append(",").append(String.format(Locale.US, "%3.2f", labelOpacity))
+                        .append(")'");
     };
 
     private void buildJsonShowLabel(StringBuilder buffer)
@@ -163,7 +169,7 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
         boolean isFirst = true;
 
         // sort marker by date
-        Collections.sort(this, new Comparator<HtmlChartConfigTimelineVerticalMarker>()
+        Collections.sort(this.verticalMarker, new Comparator<HtmlChartConfigTimelineVerticalMarker>()
         {
             @Override
             public int compare(HtmlChartConfigTimelineVerticalMarker ml1, HtmlChartConfigTimelineVerticalMarker ml2)
@@ -173,7 +179,7 @@ public class HtmlChartConfigTimelineVerticalMarkerList extends ArrayList<HtmlCha
         });
 
         buffer.append("data : [");
-        for (HtmlChartConfigTimelineVerticalMarker marker : this)
+        for (HtmlChartConfigTimelineVerticalMarker marker : this.verticalMarker)
         {
             if (isFirst)
                 isFirst = false;

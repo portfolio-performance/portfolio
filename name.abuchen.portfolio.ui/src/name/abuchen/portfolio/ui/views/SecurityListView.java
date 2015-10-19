@@ -702,14 +702,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         case BUY:
                         case TRANSFER_IN:
                         case DELIVERY_INBOUND:
-                            chartVMarkerConfig.add(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), label,
+                            chartVMarkerConfig.addMarker(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), label,
                                             new RGB(0, 128, 0), 0.7, new RGB(0, 128, 0), 0.9, ""));
                             break;
                         case SELL:
                         case TRANSFER_OUT:
                         case DELIVERY_OUTBOUND:
-                            chartVMarkerConfig.add(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), "-" + label, //$NON-NLS-1$
-                                            new RGB(128, 0, 0), 0.7, new RGB(128, 0, 0), 0.9, ""));
+                            chartVMarkerConfig.addMarker(
+                                            new HtmlChartConfigTimelineVerticalMarker(t.getDate(), "-" + label, //$NON-NLS-1$
+                                                            new RGB(128, 0, 0), 0.7, new RGB(128, 0, 0), 0.9, ""));
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -721,7 +722,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         for (SecurityEvent event : security.getEvents())
         {
             if (chartPeriod == null || chartPeriod.before(event.getDate()))
-                chartVMarkerConfig.add(new HtmlChartConfigTimelineVerticalMarker(event.getDate(), event.getDetails()));
+                chartVMarkerConfig.addMarker(
+                                new HtmlChartConfigTimelineVerticalMarker(event.getDate(), event.getDetails()));
         }
 
         chart.refreshChart();
