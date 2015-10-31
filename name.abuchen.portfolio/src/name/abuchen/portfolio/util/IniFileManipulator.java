@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
+
 public class IniFileManipulator
 {
     private static final String VM_ARGS = "-vmargs"; //$NON-NLS-1$
@@ -39,7 +41,11 @@ public class IniFileManipulator
         int p = executable.lastIndexOf('.');
         String iniFileName = (p > 0 ? executable.substring(0, p) : executable) + ".ini"; //$NON-NLS-1$
 
-        return path.getParent().resolve(iniFileName);
+        Path directory = path.getParent();
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            directory = directory.getParent().resolve("Eclipse"); //$NON-NLS-1$
+
+        return directory.resolve(iniFileName);
     }
 
     /* for testing */List<String> getLines()
