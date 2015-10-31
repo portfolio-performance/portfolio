@@ -22,7 +22,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -38,6 +37,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+
+import name.abuchen.portfolio.ui.util.Colors;
 
 public final class Sidebar extends Composite
 {
@@ -200,10 +201,7 @@ public final class Sidebar extends Composite
 
     private static final int STEP = 15;
 
-    private Color backgroundColor;
-    private Color selectedColor;
-    private Color lighterSelectedColor;
-    private Color sectionColor;
+    private Color hightlightColor;
 
     private Font regularFont;
     private Font boldFont;
@@ -217,6 +215,7 @@ public final class Sidebar extends Composite
     {
         super(parent, style);
 
+        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         setLayout(new FormLayout());
 
         createColorsAndFonts(parent);
@@ -257,21 +256,7 @@ public final class Sidebar extends Composite
 
     private void registerListeners()
     {
-        addDisposeListener(new DisposeListener()
-        {
-            public void widgetDisposed(DisposeEvent e)
-            {
-                Sidebar.this.widgetDisposed();
-            }
-        });
-
-        addPaintListener(new PaintListener()
-        {
-            public void paintControl(PaintEvent e)
-            {
-                Sidebar.this.paintControl(e);
-            }
-        });
+        addDisposeListener(e -> Sidebar.this.widgetDisposed());
 
         addKeyListener(new KeyListener()
         {
@@ -286,35 +271,16 @@ public final class Sidebar extends Composite
             }
         });
 
-        addTraverseListener(new TraverseListener()
-        {
-            @Override
-            public void keyTraversed(TraverseEvent e)
-            {
-                Sidebar.this.keyTraversed(e);
-            }
-        });
+        addTraverseListener(e -> Sidebar.this.keyTraversed(e));
     }
 
     private void widgetDisposed()
     {
-        backgroundColor.dispose();
-        selectedColor.dispose();
-        lighterSelectedColor.dispose();
-        sectionColor.dispose();
+        hightlightColor.dispose();
 
         regularFont.dispose();
         boldFont.dispose();
         sectionFont.dispose();
-    }
-
-    private void paintControl(PaintEvent e)
-    {
-        GC gc = e.gc;
-        gc.setForeground(backgroundColor);
-        gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        Rectangle r = getClientArea();
-        gc.fillGradientRectangle(0, 0, r.width, r.height, false);
     }
 
     private void keyPressed(KeyEvent e)
@@ -348,10 +314,7 @@ public final class Sidebar extends Composite
 
     private void createColorsAndFonts(Composite parent)
     {
-        backgroundColor = new Color(null, 233, 241, 248);
-        selectedColor = new Color(null, 115, 158, 227);
-        lighterSelectedColor = new Color(null, 189, 208, 241);
-        sectionColor = new Color(null, 149, 165, 180);
+        hightlightColor = new Color(null, Colors.HEADINGS.swt());
 
         FontData fontData = parent.getFont().getFontData()[0];
         regularFont = new Font(Display.getDefault(), fontData);
@@ -566,18 +529,16 @@ public final class Sidebar extends Composite
 
             if (Sidebar.this.selection != null && this == Sidebar.this.selection.item)
             {
-                gc.setForeground(isDragTarget ? selectedColor : lighterSelectedColor);
-                gc.setBackground(selectedColor);
-                gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, true);
+                gc.setBackground(hightlightColor);
+                gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
-                gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+                gc.setForeground(getDisplay().getSystemColor(isDragTarget ? SWT.COLOR_BLACK : SWT.COLOR_WHITE));
                 gc.setFont(boldFont);
             }
             else
             {
-                gc.setForeground(backgroundColor);
                 gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-                gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, false);
+                gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
                 if (indent > 0)
                 {
@@ -586,7 +547,8 @@ public final class Sidebar extends Composite
                 }
                 else
                 {
-                    gc.setForeground(isDragTarget ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : sectionColor);
+                    gc.setForeground(isDragTarget ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK)
+                                    : hightlightColor);
                     gc.setFont(sectionFont);
                 }
             }

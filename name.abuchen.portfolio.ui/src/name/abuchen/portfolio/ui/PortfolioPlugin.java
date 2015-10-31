@@ -5,8 +5,6 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -23,6 +21,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
+
 public class PortfolioPlugin implements BundleActivator
 {
     public interface Preferences
@@ -33,22 +33,22 @@ public class PortfolioPlugin implements BundleActivator
 
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
-    public static final String IMG_LOGO_16 = "pp_16.gif"; //$NON-NLS-1$
-    public static final String IMG_LOGO_32 = "pp_32.gif"; //$NON-NLS-1$
-    public static final String IMG_LOGO_48 = "pp_48.gif"; //$NON-NLS-1$
-    public static final String IMG_LOGO_128 = "pp_128.gif"; //$NON-NLS-1$
-    public static final String IMG_LOGO_256 = "pp_256.gif"; //$NON-NLS-1$
-    public static final String IMG_LOGO_512 = "pp_512.gif"; //$NON-NLS-1$
+    public static final String IMG_LOGO_16 = "pp_16.png"; //$NON-NLS-1$
+    public static final String IMG_LOGO_32 = "pp_32.png"; //$NON-NLS-1$
+    public static final String IMG_LOGO_48 = "pp_48.png"; //$NON-NLS-1$
+    public static final String IMG_LOGO_128 = "pp_128.png"; //$NON-NLS-1$
+    public static final String IMG_LOGO_256 = "pp_256.png"; //$NON-NLS-1$
+    public static final String IMG_LOGO_512 = "pp_512.png"; //$NON-NLS-1$
 
     public static final String IMG_LOGO = IMG_LOGO_128;
     public static final String IMG_LOGO_SMALL = IMG_LOGO_48;
 
-    public static final String IMG_SECURITY = "security.gif"; //$NON-NLS-1$
-    public static final String IMG_ACCOUNT = "account.gif"; //$NON-NLS-1$
-    public static final String IMG_PORTFOLIO = "portfolio.gif"; //$NON-NLS-1$
-    public static final String IMG_WATCHLIST = "watchlist.gif"; //$NON-NLS-1$
-    public static final String IMG_INVESTMENTPLAN = "investmentplan.gif"; //$NON-NLS-1$
-    public static final String IMG_NOTE = "note.gif"; //$NON-NLS-1$
+    public static final String IMG_SECURITY = "security.png"; //$NON-NLS-1$
+    public static final String IMG_ACCOUNT = "account.png"; //$NON-NLS-1$
+    public static final String IMG_PORTFOLIO = "portfolio.png"; //$NON-NLS-1$
+    public static final String IMG_WATCHLIST = "watchlist.png"; //$NON-NLS-1$
+    public static final String IMG_INVESTMENTPLAN = "investmentplan.png"; //$NON-NLS-1$
+    public static final String IMG_NOTE = "note.png"; //$NON-NLS-1$
 
     public static final String IMG_PLUS = "plus.png"; //$NON-NLS-1$
     public static final String IMG_CONFIG = "config.png"; //$NON-NLS-1$
@@ -62,19 +62,19 @@ public class PortfolioPlugin implements BundleActivator
     public static final String IMG_VIEW_REBALANCING = "view_rebalancing.png"; //$NON-NLS-1$
     public static final String IMG_VIEW_STACKEDCHART = "view_stackedchart.png"; //$NON-NLS-1$
 
-    public static final String IMG_CHECK = "check.gif"; //$NON-NLS-1$
-    public static final String IMG_QUICKFIX = "quickfix.gif"; //$NON-NLS-1$
-    public static final String IMG_ADD = "add.gif"; //$NON-NLS-1$
-    public static final String IMG_REMOVE = "remove.gif"; //$NON-NLS-1$
+    public static final String IMG_CHECK = "check.png"; //$NON-NLS-1$
+    public static final String IMG_QUICKFIX = "quickfix.png"; //$NON-NLS-1$
+    public static final String IMG_ADD = "add.png"; //$NON-NLS-1$
+    public static final String IMG_REMOVE = "remove.png"; //$NON-NLS-1$
 
-    public static final String IMG_CATEGORY = "category.gif"; //$NON-NLS-1$
-    public static final String IMG_UNASSIGNED_CATEGORY = "unassigned.gif"; //$NON-NLS-1$
+    public static final String IMG_CATEGORY = "category.png"; //$NON-NLS-1$
+    public static final String IMG_UNASSIGNED_CATEGORY = "unassigned.png"; //$NON-NLS-1$
 
-    public static final String IMG_TEXT = "text.gif"; //$NON-NLS-1$
+    public static final String IMG_TEXT = "text.png"; //$NON-NLS-1$
 
-    public static final String IMG_ERROR = "error.gif"; //$NON-NLS-1$
-    public static final String IMG_WARNING = "warning.gif"; //$NON-NLS-1$
-    public static final String IMG_INFO = "info.gif"; //$NON-NLS-1$
+    public static final String IMG_ERROR = "error.png"; //$NON-NLS-1$
+    public static final String IMG_WARNING = "warning.png"; //$NON-NLS-1$
+    public static final String IMG_INFO = "info.png"; //$NON-NLS-1$
 
     private static PortfolioPlugin instance;
 
@@ -136,6 +136,17 @@ public class PortfolioPlugin implements BundleActivator
 
     private void initializeImageRegistry(ImageRegistry registry)
     {
+        // Enable use of HiDPI icons as described here:
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=459412#c8
+        // But: for now it needs enabling via JFace debug option, which in turn
+        // are only set when using the non-e4 org.eclipse.ui bundle. Alas, we
+        // enable it directly.
+        // On Mac OS X it works, on Linux the wrong images got loaded, on
+        // Windows I could not tell a difference. Therefore I activated it only
+        // for Mac OS X.
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            org.eclipse.jface.internal.InternalPolicy.DEBUG_LOAD_URL_IMAGE_DESCRIPTOR_2x = true;
+
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
         for (String key : new String[] { IMG_LOGO_16, IMG_LOGO_32, IMG_LOGO_48, IMG_LOGO_128, IMG_LOGO_256,

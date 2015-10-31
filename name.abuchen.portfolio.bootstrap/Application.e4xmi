@@ -5,8 +5,8 @@
       <children xsi:type="basic:Part" xmi:id="_gK7-APO8EeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.part.welcome" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.WelcomePart" label="%part.welcome" closeable="true"/>
       <children xsi:type="basic:Part" xmi:id="_SD5U8KE1EeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.part.errorlog" visible="false" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.ErrorLogPart" label="%part.errorlog" closeable="true">
         <toolbar xmi:id="_Xi5poKMJEeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.toolbar.0">
-          <children xsi:type="menu:HandledToolItem" xmi:id="__AfZEKzzEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handledtoolitem.commanderrorlogopenlog" label="%command.errorlog.openlog" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/text.gif" command="_h9fugKz0EeO6qtqDeqiitg"/>
-          <children xsi:type="menu:HandledToolItem" xmi:id="_ZU7n8KMJEeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.handledtoolitem.commanderrorlogclearlog" label="%command.errorlog.clearlog" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/remove.gif" command="_8B-l8KSiEeO6qtqDeqiitg"/>
+          <children xsi:type="menu:HandledToolItem" xmi:id="__AfZEKzzEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handledtoolitem.commanderrorlogopenlog" label="%command.errorlog.openlog" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/text.png" command="_h9fugKz0EeO6qtqDeqiitg"/>
+          <children xsi:type="menu:HandledToolItem" xmi:id="_ZU7n8KMJEeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.handledtoolitem.commanderrorlogclearlog" label="%command.errorlog.clearlog" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/xmark.png" command="_8B-l8KSiEeO6qtqDeqiitg"/>
         </toolbar>
       </children>
     </children>

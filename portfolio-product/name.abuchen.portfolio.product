@@ -16,7 +16,7 @@
    <splash
       location="name.abuchen.portfolio.ui" />
    <launcher name="PortfolioPerformance">
-      <linux icon="icons/pp.xpm"/>
+      <linux icon="icons/icon.xpm"/>
       <macosx icon="icons/pp.icns"/>
       <solaris/>
       <win useIco="true">
