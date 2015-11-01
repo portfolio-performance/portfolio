@@ -10,6 +10,11 @@ import org.json.simple.JSONObject;
  */
 public interface HtmlChartConfig
 {
+    /**
+     * Chart Title
+     * @return 
+     */
+    public String getTitle();
 
     /**
      * The implementation of the interface encodes the chart configuration as a

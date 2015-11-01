@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,6 +13,8 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
     private String numberFormat = "#,##0.00";
     private String numberFormatLocale = "de";
     private boolean noLegend = false;
+    private Date minX = null;
+    private Date maxX = null;
     private Double minY = Double.NaN;
     private Double maxY = Double.NaN;
     private HtmlChartConfigTimelineVerticalMarkerList verticalMarker;
@@ -87,6 +90,106 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         this.maxY = maxY;
     }
 
+    public Date getMinX()
+    {
+        return minX;
+    }
+
+    public void setMinX(Date minX)
+    {
+        this.minX = minX;
+    }
+
+    public Date getMaxX()
+    {
+        return maxX;
+    }
+
+    public void setMaxX(Date maxX)
+    {
+        this.maxX = maxX;
+    }
+
+    public void resetX()
+    {
+        this.minX = null;
+        this.maxX = null;
+    }
+
+    public void resetY()
+    {
+        this.minY = Double.NaN;
+        this.maxY = Double.NaN;
+    }
+
+    public void resetXY()
+    {
+        this.resetX();
+        this.resetY();
+    }
+
+    public void zoomInX()
+    {
+        // TODO: Implement zoomIn (see org.swtchartinternal.axis.AxisSet)
+    };
+
+    public void zoomInX(Double coordinate)
+    {
+        // TODO: Implement zoomIn (see org.swtchartinternal.axis.AxisSet)
+    };
+
+    public void zoomOutX()
+    {
+        // TODO: Implement zoomOut (see org.swtchartinternal.axis.AxisSet)
+    }
+
+    public void zoomInY()
+    {
+        // TODO: Implement zoomIn (see org.swtchartinternal.axis.AxisSet)
+    };
+
+    public void zoomInY(Double coordinate)
+    {
+        // TODO: Implement zoomIn (see org.swtchartinternal.axis.AxisSet)
+    };
+
+    public void zoomOutY()
+    {
+        // TODO: Implement zoomOut (see org.swtchartinternal.axis.AxisSet)
+    }
+
+    public void zoomInXY()
+    {
+        this.zoomInX();
+        this.zoomInY();
+    }
+
+    public void zoomOutXY()
+    {
+        this.zoomOutX();
+        this.zoomOutY();
+    }
+    
+    public void scrollLeft()
+    {
+        // TODO: Implement scrolling
+    }
+
+    public void scrollRight()
+    {
+        // TODO: Implement scrolling
+    }
+
+    public void scrollUp()
+    {
+        // TODO: Implement scrolling
+    }
+
+    public void scrollDown()
+    {
+        //TODO: Implement scrolling
+    }
+
     public HtmlChartConfigTimelineVerticalMarkerList getVerticalMarker()
     {
         return verticalMarker;
@@ -125,6 +228,12 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
 
         if (verticalMarker != null)
             json.put("verticalMarker", verticalMarker.getJson());
+
+        if (minX != null)
+            json.put("minX", minX);
+
+        if (maxX != null)
+            json.put("maxX", maxX);
 
         if (!Double.isNaN(minY))
             json.put("minY", minY);

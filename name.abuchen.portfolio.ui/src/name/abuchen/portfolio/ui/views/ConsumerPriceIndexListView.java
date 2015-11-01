@@ -23,6 +23,13 @@ import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChart;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimeline;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineCSVExporter;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeries;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeriesArea;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeriesLine;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineVerticalMarkerList;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -35,6 +42,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
@@ -43,7 +51,8 @@ import org.swtchart.ISeries;
 public class ConsumerPriceIndexListView extends AbstractListView implements ModificationListener
 {
     private TableViewer indices;
-    private TimelineChart chart;
+    private HtmlChart chart;
+    private HtmlChartConfigTimeline chartConfig;
 
     @Override
     protected String getTitle()
@@ -93,17 +102,16 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             @Override
             public void run()
             {
-                new TimelineChartCSVExporter(chart).export(getTitle() + ".csv"); //$NON-NLS-1$
+                new HtmlChartConfigTimelineCSVExporter(chartConfig).export(getTitle() + ".csv"); //$NON-NLS-1$
             }
         });
         manager.add(new Separator());
-        chart.exportMenuAboutToShow(manager, getTitle());
+        //chart.exportMenuAboutToShow(manager, getTitle());
     }
 
     @Override
     public void setFocus()
     {
-        chart.getAxisSet().adjustRange();
         super.setFocus();
     }
 
@@ -241,16 +249,21 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     @Override
     protected void createBottomTable(Composite parent)
     {
-        chart = new TimelineChart(parent);
-        chart.getTitle().setText(Messages.LabelConsumerPriceIndex);
-        chart.getToolTip().setDateFormat("%1$tB %1$tY"); //$NON-NLS-1$
-        refreshChart();
+//        chart = new TimelineChart(parent);
+//        chart.getTitle().setText(Messages.LabelConsumerPriceIndex);
+//        chart.getToolTip().setDateFormat("%1$tB %1$tY"); //$NON-NLS-1$
+//        refreshChart();
+        
+        chartConfig = new HtmlChartConfigTimeline();
+        chartConfig.setTitle(Messages.LabelConsumerPriceIndex);
+        chartConfig.setNoLegend(true);
+        chart = new HtmlChart(chartConfig);
+        chart.createControl(parent);
     }
 
     private void refreshChart()
     {
-        for (ISeries s : chart.getSeriesSet().getSeries())
-            chart.getSeriesSet().deleteSeries(s.getId());
+        chartConfig.series().clear();
 
         if (getClient().getConsumerPriceIndices() == null || getClient().getConsumerPriceIndices().isEmpty())
             return;
@@ -268,12 +281,11 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             cpis[ii] = (double) index.getIndex() / Values.Index.divider();
             ii++;
         }
-
-        chart.addDateSeries(dates, cpis, Colors.CPI, Messages.LabelConsumerPriceIndex);
-
-        chart.getAxisSet().adjustRange();
-
-        chart.redraw();
+        
+        HtmlChartConfigTimelineSeriesLine series = new HtmlChartConfigTimelineSeriesLine(Messages.LabelConsumerPriceIndex, dates,
+                        cpis, new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
+        chartConfig.series().add(series);
+        chart.refreshChart();
     }
 
 }
