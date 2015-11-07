@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -23,16 +24,18 @@ import org.eclipse.swt.widgets.Control;
 
 public class HtmlChartConfigTimelineCSVExporter extends AbstractCSVExporter
 {
-    private final HtmlChartConfigTimeline config;
+    private final Control chartControl;
+    private final HtmlChartConfigTimeline chartConfig;
 
     private Set<String> discontinousSeries = new HashSet<String>();
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
     private NumberFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
-    public HtmlChartConfigTimelineCSVExporter(HtmlChartConfigTimeline config)
+    public HtmlChartConfigTimelineCSVExporter(Control chartControl, HtmlChartConfigTimeline chartConfig)
     {
-        this.config = config;
+        this.chartControl = chartControl;
+        this.chartConfig = chartConfig;
     }
 
     public void setDateFormat(DateFormat dateFormat)
@@ -53,7 +56,7 @@ public class HtmlChartConfigTimelineCSVExporter extends AbstractCSVExporter
     @Override
     protected Control getControl()
     {
-        return null;
+        return chartControl;
     }
 
     @Override
@@ -63,8 +66,8 @@ public class HtmlChartConfigTimelineCSVExporter extends AbstractCSVExporter
         {
             CSVPrinter printer = new CSVPrinter(writer);
             printer.setStrategy(STRATEGY);
-            
-            List<HtmlChartConfigTimelineSeries> series = config.series();
+
+            List<HtmlChartConfigTimelineSeries> series = chartConfig.series();
 
             // write header
             printer.print(Messages.ColumnDate);
@@ -73,7 +76,7 @@ public class HtmlChartConfigTimelineCSVExporter extends AbstractCSVExporter
             printer.println();
 
             // write body
-            Date[] dateSeries = config.series().get(0).dates;
+            Date[] dateSeries = series.get(0).dates;
 
             SeriesAdapter[] adapters = new SeriesAdapter[series.size()];
             for (int ii = 0; ii < series.size(); ii++)
@@ -93,6 +96,7 @@ public class HtmlChartConfigTimelineCSVExporter extends AbstractCSVExporter
 
                 printer.println();
             }
+
         }
     }
 

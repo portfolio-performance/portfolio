@@ -10,8 +10,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
 
 /* package */class HtmlChartContextMenu
 {
@@ -30,7 +28,7 @@ import org.swtchart.IAxis;
 
         contextMenu = menuMgr.createContextMenu(chart.getBrowserControl());
         chart.getBrowserControl().setMenu(contextMenu);
-        //chart.getPlotArea().addDisposeListener(e -> dispose());
+        chart.getBrowserControl().addDisposeListener(e -> dispose());
     }
 
     private void configMenuAboutToShow(IMenuManager manager)
@@ -40,7 +38,8 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.resetXY();
                     chart.refreshChart();
@@ -67,14 +66,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.zoomInY();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.zoomIn();
-                chart.redraw();*/
             }
         };
         actionYZoomIn.setAccelerator(SWT.MOD1 | SWT.ARROW_UP);
@@ -85,14 +82,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.zoomOutY();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.zoomOut();
-                chart.redraw();*/
             }
         };
         actionYZoomOut.setAccelerator(SWT.MOD1 | SWT.ARROW_DOWN);
@@ -103,14 +98,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.zoomOutX();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getXAxes())
-                    axis.zoomIn();
-                chart.redraw();*/
             }
         };
         actionXZoomOut.setAccelerator(SWT.MOD1 | SWT.ARROW_LEFT);
@@ -121,14 +114,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.zoomInX();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getXAxes())
-                    axis.zoomOut();
-                chart.redraw();*/
             }
         };
         actionXZoomIn.setAccelerator(SWT.MOD1 | SWT.ARROW_RIGHT);
@@ -143,14 +134,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.scrollUp();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.scrollUp();
-                chart.redraw();*/
             }
         };
         actionMoveUp.setAccelerator(SWT.ARROW_UP);
@@ -161,14 +150,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.scrollDown();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getYAxes())
-                    axis.scrollDown();
-                chart.redraw();*/
             }
         };
         actionMoveDown.setAccelerator(SWT.ARROW_DOWN);
@@ -179,14 +166,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.scrollLeft();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getXAxes())
-                    axis.scrollDown();
-                chart.redraw();*/
             }
         };
         actionMoveLeft.setAccelerator(SWT.ARROW_LEFT);
@@ -197,14 +182,12 @@ import org.swtchart.IAxis;
             @Override
             public void run()
             {
-                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline) {
+                if (chart.getChartConfig() instanceof HtmlChartConfigTimeline)
+                {
                     HtmlChartConfigTimeline config = (HtmlChartConfigTimeline) chart.getChartConfig();
                     config.scrollRight();
                     chart.refreshChart();
                 }
-                /*for (IAxis axis : chart.getAxisSet().getXAxes())
-                    axis.scrollUp();
-                chart.redraw();*/
             }
         };
         actionMoveRight.setAccelerator(SWT.ARROW_RIGHT);

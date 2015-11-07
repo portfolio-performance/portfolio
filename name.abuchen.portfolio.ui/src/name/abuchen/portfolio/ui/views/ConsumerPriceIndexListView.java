@@ -21,15 +21,10 @@ import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChart;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimeline;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineCSVExporter;
-import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeries;
-import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeriesArea;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeriesLine;
-import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineVerticalMarkerList;
 import name.abuchen.portfolio.util.Dates;
 
 import org.eclipse.jface.action.Action;
@@ -46,7 +41,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
-import org.swtchart.ISeries;
 
 public class ConsumerPriceIndexListView extends AbstractListView implements ModificationListener
 {
@@ -102,11 +96,12 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             @Override
             public void run()
             {
-                new HtmlChartConfigTimelineCSVExporter(chartConfig).export(getTitle() + ".csv"); //$NON-NLS-1$
+                new HtmlChartConfigTimelineCSVExporter(chart.getBrowserControl(), chartConfig)
+                                .export(getTitle() + ".csv"); //$NON-NLS-1$
             }
         });
         manager.add(new Separator());
-        //chart.exportMenuAboutToShow(manager, getTitle());
+        // chart.exportMenuAboutToShow(manager, getTitle());
     }
 
     @Override
@@ -140,8 +135,9 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
 
         ColumnEditingSupport.prepare(indices);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(ConsumerPriceIndexListView.class.getSimpleName()
-                        + "@bottom", getPreferenceStore(), indices, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(
+                        ConsumerPriceIndexListView.class.getSimpleName() + "@bottom", getPreferenceStore(), indices, //$NON-NLS-1$
+                        layout);
 
         Column column = new Column(Messages.ColumnYear, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -249,11 +245,6 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     @Override
     protected void createBottomTable(Composite parent)
     {
-//        chart = new TimelineChart(parent);
-//        chart.getTitle().setText(Messages.LabelConsumerPriceIndex);
-//        chart.getToolTip().setDateFormat("%1$tB %1$tY"); //$NON-NLS-1$
-//        refreshChart();
-        
         chartConfig = new HtmlChartConfigTimeline();
         chartConfig.setTitle(Messages.LabelConsumerPriceIndex);
         chartConfig.setNoLegend(true);
@@ -281,9 +272,10 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             cpis[ii] = (double) index.getIndex() / Values.Index.divider();
             ii++;
         }
-        
-        HtmlChartConfigTimelineSeriesLine series = new HtmlChartConfigTimelineSeriesLine(Messages.LabelConsumerPriceIndex, dates,
-                        cpis, new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
+
+        HtmlChartConfigTimelineSeriesLine series = new HtmlChartConfigTimelineSeriesLine(
+                        Messages.LabelConsumerPriceIndex, dates, cpis,
+                        new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
         chartConfig.series().add(series);
         chart.refreshChart();
     }
