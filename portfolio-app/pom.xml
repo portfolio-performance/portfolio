@@ -51,7 +51,7 @@
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.12.1/luna</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.13.0/luna</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
