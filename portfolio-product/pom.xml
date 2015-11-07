@@ -64,6 +64,45 @@
 					</products>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>name.abuchen</groupId>
+				<artifactId>fix-info-plist-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>fix-info-plist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>fix-info-plist</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<productId>name.abuchen.portfolio.product</productId>
+					<appName>PortfolioPerformance.app</appName>
+					<properties>
+						<property>
+							<name>CFBundleName</name>
+							<value>Portfolio Performance</value>
+						</property>
+						<property>
+							<name>CFBundleDisplayName</name>
+							<value>Portfolio Performance</value>
+						</property>
+						<property>
+							<name>CFBundleGetInfoString</name>
+							<value>Copyright 2012 - 2015 Andreas Buchen. All rights reserved.</value>
+						</property>
+						<property>
+							<name>CFBundleLocalizations</name>
+							<value>en,de</value>
+						</property>
+						<property>
+							<name>Eclipse</name>
+							<value />
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
