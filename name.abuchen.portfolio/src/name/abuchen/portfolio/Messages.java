@@ -83,10 +83,12 @@ public class Messages extends NLS
     public static String IssueMissingReferenceAccount;
     public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
+    public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
     public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
+    public static String LabelNameReferenceAccountRecovered;
     public static String LabelRemovals;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodMonths;
