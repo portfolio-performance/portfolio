@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -25,6 +27,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -32,6 +35,8 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -62,6 +67,13 @@ public class PerformanceChartView extends AbstractHistoricView
     protected String getTitle()
     {
         return Messages.LabelPerformanceChart;
+    }
+
+    @Inject
+    @Optional
+    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
+    {
+        updateTitle(Messages.LabelPerformanceChart + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
     }
 
     @Override
@@ -132,14 +144,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.PERFORMANCE);
-        picker.setListener(new ChartConfigurator.Listener()
-        {
-            @Override
-            public void onUpdate()
-            {
-                updateChart();
-            }
-        });
+        picker.setListener(() -> updateChart());
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);

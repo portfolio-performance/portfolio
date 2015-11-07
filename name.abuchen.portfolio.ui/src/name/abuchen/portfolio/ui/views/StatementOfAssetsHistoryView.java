@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -14,11 +16,14 @@ import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -46,6 +51,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     protected String getTitle()
     {
         return Messages.LabelStatementOfAssetsHistory;
+    }
+
+    @Inject
+    @Optional
+    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
+    {
+        updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
     }
 
     protected void addButtons(ToolBar toolBar)
@@ -138,14 +150,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart.getTitle().setVisible(false);
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.STATEMENT_OF_ASSETS);
-        picker.setListener(new ChartConfigurator.Listener()
-        {
-            @Override
-            public void onUpdate()
-            {
-                updateChart();
-            }
-        });
+        picker.setListener(() -> updateChart());
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);

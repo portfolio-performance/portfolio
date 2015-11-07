@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
@@ -22,6 +24,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
@@ -29,6 +32,8 @@ import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
 import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -58,6 +63,13 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     protected String getTitle()
     {
         return Messages.LabelHistoricalReturnsAndVolatiltity;
+    }
+
+    @Inject
+    @Optional
+    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
+    {
+        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
     }
 
     @Override
@@ -133,14 +145,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         });
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.RETURN_VOLATILITY);
-        picker.setListener(new ChartConfigurator.Listener()
-        {
-            @Override
-            public void onUpdate()
-            {
-                updateChart();
-            }
-        });
+        picker.setListener(() -> updateChart());
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);

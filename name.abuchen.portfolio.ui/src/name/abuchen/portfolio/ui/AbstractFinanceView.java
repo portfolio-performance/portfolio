@@ -47,6 +47,11 @@ public abstract class AbstractFinanceView
         this.title.setText(getTitle());
     }
 
+    protected final void updateTitle(String title)
+    {
+        this.title.setText(title);
+    }
+
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
     {}
