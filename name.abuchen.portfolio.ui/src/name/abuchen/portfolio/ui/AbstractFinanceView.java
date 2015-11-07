@@ -7,6 +7,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -30,6 +33,7 @@ import org.eclipse.swt.widgets.ToolBar;
 public abstract class AbstractFinanceView
 {
     private PortfolioPart part;
+    private IEclipseContext context;
 
     private Composite top;
     private Label title;
@@ -60,6 +64,16 @@ public abstract class AbstractFinanceView
     public IPreferenceStore getPreferenceStore()
     {
         return part.getPreferenceStore();
+    }
+
+    /* package */void setContext(IEclipseContext context)
+    {
+        this.context = context;
+    }
+
+    /* package */IEclipseContext getContext()
+    {
+        return this.context;
     }
 
     public Client getClient()
@@ -174,5 +188,17 @@ public abstract class AbstractFinanceView
     public void setFocus()
     {
         getControl().setFocus();
+    }
+
+    public <T> T make(Class<T> type, Object... parameters)
+    {
+        if (parameters == null || parameters.length == 0)
+            return ContextInjectionFactory.make(type, this.context);
+
+        IEclipseContext c2 = EclipseContextFactory.create();
+        if (parameters != null)
+            for (Object param : parameters)
+                c2.set(param.getClass().getName(), param);
+        return ContextInjectionFactory.make(type, this.context, c2);
     }
 }

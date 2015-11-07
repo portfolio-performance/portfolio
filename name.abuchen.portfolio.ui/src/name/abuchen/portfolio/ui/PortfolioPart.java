@@ -148,10 +148,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         Control control = sidebar.createSidebarControl(navigationBar);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
 
-        IEclipseContext childContext = context.createChild();
-        childContext.set(Composite.class, navigationBar);
-        childContext.set(Client.class, client);
-        ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, childContext);
+        ClientProgressProvider provider = make(ClientProgressProvider.class, client, navigationBar);
+
         GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
 
         book = new PageBook(sash, SWT.NONE);
@@ -435,7 +433,12 @@ public class PortfolioPart implements LoadClientThread.Callback
             if (clazz == null)
                 return;
 
-            view = (AbstractFinanceView) clazz.newInstance();
+            IEclipseContext viewContext = this.context.createChild();
+            viewContext.set(Client.class, this.client);
+            viewContext.set(PreferenceStore.class, this.preferences);
+
+            view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
+            view.setContext(viewContext);
             view.init(this, parameter);
             view.createViewControl(book);
 
@@ -446,21 +449,16 @@ public class PortfolioPart implements LoadClientThread.Callback
         {
             throw new RuntimeException(e);
         }
-        catch (InstantiationException e)
-        {
-            throw new RuntimeException(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     private void disposeView()
     {
-        if (view != null && !view.getControl().isDisposed())
+        if (view != null)
         {
-            view.getControl().dispose();
+            view.getContext().dispose();
+
+            if (!view.getControl().isDisposed())
+                view.getControl().dispose();
             view = null;
         }
     }
@@ -583,7 +581,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
     }
 
-    public <T> T make(Class<T> type, Object... parameters)
+    private <T> T make(Class<T> type, Object... parameters)
     {
         IEclipseContext c2 = EclipseContextFactory.create();
         if (parameters != null)

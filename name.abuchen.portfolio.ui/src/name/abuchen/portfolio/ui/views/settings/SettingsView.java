@@ -66,11 +66,11 @@ public class SettingsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        Tab tab = getPart().make(BookmarksListTab.class, getClient(), getPreferenceStore());
+        Tab tab = make(BookmarksListTab.class);
         CTabItem item = tab.createTab(folder);
         item.setData(tab);
 
-        tab = getPart().make(AttributeListTab.class, getClient(), getPreferenceStore());
+        tab = make(AttributeListTab.class);
         item = tab.createTab(folder);
         item.setData(tab);
 
