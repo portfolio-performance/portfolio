@@ -24,6 +24,8 @@ import java.util.Map;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.io.AESCbcKdfSha1Cryptor;
+import name.abuchen.portfolio.model.io.AESGcmKdfSha256Cryptor;
 import name.abuchen.portfolio.model.io.BlockCipherCryptor;
 import name.abuchen.portfolio.model.io.ClientPersister;
 import name.abuchen.portfolio.model.io.PlainWriter;
@@ -125,10 +127,28 @@ public class ClientFactory
         return load(new InputStreamReader(input, StandardCharsets.UTF_8));
     }
 
-    public static void save(final Client client, final File file, String method, char[] password) throws IOException
+    /**
+     * Saves client data to file. If an encryptionMethod is given (i.e. chosen
+     * by the user via menu items), it overwrites the property in the Client
+     * itself.
+     */
+    public static void save(final Client client, final File file, String encryptionMethod, char[] password)
+                    throws IOException
     {
-        if (isEncrypted(file) && password == null && client.getSecret() == null)
-            throw new IOException(Messages.MsgPasswordMissing);
+        String method = encryptionMethod != null ? encryptionMethod : client.getEncryptionMethod();
+
+        if (isEncrypted(file))
+        {
+            if (password == null && client.getSecret() == null)
+                throw new IOException(Messages.MsgPasswordMissing);
+
+            if (method == null)
+                throw new IOException(Messages.MsgEncryptionMethodMissing);
+        }
+        else
+        {
+            method = null;
+        }
 
         OutputStream output = null;
 
@@ -136,7 +156,9 @@ public class ClientFactory
         {
             output = new FileOutputStream(file);
 
-            buildPersisterForSave(file, password).save(client, method == "AES256" ? 1 : 0, output);
+            buildPersisterForSave(method, password).save(client, output);
+
+            client.setEncryptionMethod(method);
         }
         finally
         {
@@ -145,30 +167,35 @@ public class ClientFactory
         }
     }
 
-    private static ClientPersister buildPersisterForLoad(File file, char[] password)
+    private static ClientPersister buildPersisterForLoad(File file, char[] password) throws IOException
     {
         if (file != null && isEncrypted(file))
             return BlockCipherCryptor.buildCryptorFromFileSignature(file, password);
         else
             return new PlainWriter();
     }
-    
-    private static ClientPersister buildPersisterForSave(File file, char[] password, boolean useExperimentalCryptor)
+
+    private static ClientPersister buildPersisterForSave(String encryptionMethod, char[] password)
     {
-        if (file != null && isEncrypted(file))
-        {
-            if(! useExperimentalCryptor)
-                return BlockCipherCryptor.getLegacy(password);
-            else
-                return BlockCipherCryptor.getLatest(password);
-        }     
-        else
+        if (encryptionMethod == null)
             return new PlainWriter();
+
+        switch (encryptionMethod)
+        {
+            case AESCbcKdfSha1Cryptor.METHOD_AES128CBC:
+            case AESCbcKdfSha1Cryptor.METHOD_AES256CBC:
+                return new AESCbcKdfSha1Cryptor(encryptionMethod, password);
+            case AESGcmKdfSha256Cryptor.METHOD_AES128GCM:
+            case AESGcmKdfSha256Cryptor.METHOD_AES256GCM:
+                return new AESGcmKdfSha256Cryptor(encryptionMethod, password);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
-        
-    public static boolean isKeyLengthSupportedForSave(int keyLength)
+
+    public static boolean isKeyLengthSupportedForSave(String encryptionMethod)
     {
-        return BlockCipherCryptor.getLatest(null).isKeyLengthSupported(keyLength);
+        return ((BlockCipherCryptor) buildPersisterForSave(encryptionMethod, null)).isKeyLengthSupported();
     }
 
     private static void upgradeModel(Client client)

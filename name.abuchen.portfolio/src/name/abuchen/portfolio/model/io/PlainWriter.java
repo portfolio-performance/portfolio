@@ -18,7 +18,7 @@ public class PlainWriter implements ClientPersister
     }
 
     @Override
-    public void save(Client client, int method, OutputStream output) throws IOException
+    public void save(Client client, OutputStream output) throws IOException
     {
         new XmlSerialization().save(client, output);
     }

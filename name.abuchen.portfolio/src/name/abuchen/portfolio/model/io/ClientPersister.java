@@ -10,5 +10,5 @@ public interface ClientPersister
 {
     Client load(InputStream input) throws IOException;
 
-    void save(Client client, int method, OutputStream output) throws IOException;
+    void save(Client client, OutputStream output) throws IOException;
 }

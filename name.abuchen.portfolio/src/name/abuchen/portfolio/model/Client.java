@@ -45,6 +45,7 @@ public class Client
     @Deprecated
     private Category rootCategory;
 
+    private transient String encryptionMethod;
     private transient SecretKey secret;
 
     public Client()
@@ -306,6 +307,16 @@ public class Client
     public String getProperty(String key)
     {
         return properties.get(key);
+    }
+
+    public String getEncryptionMethod()
+    {
+        return encryptionMethod;
+    }
+
+    public void setEncryptionMethod(String encryptionMethod)
+    {
+        this.encryptionMethod = encryptionMethod;
     }
 
     public SecretKey getSecret()

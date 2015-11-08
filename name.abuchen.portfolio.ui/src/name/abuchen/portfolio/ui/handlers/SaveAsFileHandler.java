@@ -51,7 +51,8 @@ public class SaveAsFileHandler
             throw new IllegalArgumentException("Missing file extension parameter"); //$NON-NLS-1$
 
         // check whether encryption is supported
-        if ("AES256".equals(encryptionMethod) && !ClientFactory.isKeyLengthSupportedForSave(256)) //$NON-NLS-1$
+        if (encryptionMethod != null && encryptionMethod.startsWith("AES256") //$NON-NLS-1$
+                        && !ClientFactory.isKeyLengthSupportedForSave(encryptionMethod))
         {
             new JurisdictionFilesDownloadDialog(shell).open();
             return;

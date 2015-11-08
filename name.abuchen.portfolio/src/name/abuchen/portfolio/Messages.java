@@ -101,6 +101,7 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgEncryptionMethodMissing;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateWKN;
@@ -108,6 +109,7 @@ public class Messages extends NLS
     public static String MsgErrorsConvertingValue;
     public static String MsgFileNotFound;
     public static String MsgKeyLengthNotSupported;
+    public static String MsgMissingCryptorImplementation;
     public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;

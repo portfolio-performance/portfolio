@@ -9,7 +9,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.io.AESGcmKdfSha256Cryptor;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,28 +30,29 @@ public class AESGcmKdfSha256CryptorTest
         Security security = new Security();
         security.setName("Some security"); //$NON-NLS-1$
         client.addSecurity(security);
-    }    
+    }
 
     @Test
-    public void testCryptor() throws IOException 
+    public void testCryptor() throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        //
-        char[] password = new char[]{'p', 'a', 's', 's', 'w', 'o', 'r', 'd'};
-        AESGcmKdfSha256Cryptor saveCryptor = new AESGcmKdfSha256Cryptor(password);
-        //
-        saveCryptor.save(client, 0, baos);
-        //
+
+        char[] password = new char[] { 'p', 'a', 's', 's', 'w', 'o', 'r', 'd' };
+        AESGcmKdfSha256Cryptor saveCryptor = new AESGcmKdfSha256Cryptor(AESGcmKdfSha256Cryptor.METHOD_AES128GCM,
+                        password);
+
+        saveCryptor.save(client, baos);
+
         byte[] crypt = baos.toByteArray();
-        //
-        Assert.assertArrayEquals(Arrays.copyOfRange(crypt, 0, saveCryptor.getSignature().length), saveCryptor.getSignature());
-        //
+
+        Assert.assertArrayEquals(Arrays.copyOfRange(crypt, 0, saveCryptor.getSignature().length),
+                        saveCryptor.getSignature());
+
         AESGcmKdfSha256Cryptor loadCryptor = new AESGcmKdfSha256Cryptor(password);
-        //
+
         Client copyOfClient = loadCryptor.load(new ByteArrayInputStream(crypt));
-        //
+
         Assert.assertNotNull(copyOfClient);
-        
     }
-    
+
 }

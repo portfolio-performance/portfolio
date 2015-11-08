@@ -5,28 +5,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.AlgorithmParameters;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
-import java.text.MessageFormat;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import name.abuchen.portfolio.Messages;
-
 public class AESGcmKdfSha256Cryptor extends BlockCipherCryptor
 {
+    public static final String METHOD_AES128GCM = "AES128/GCM"; //$NON-NLS-1$
+    public static final String METHOD_AES256GCM = "AES256/GCM"; //$NON-NLS-1$
 
     private static final byte[] SIGNATURE = new byte[] { 'X', 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O', '0', '0', '2' };
     
@@ -36,16 +31,24 @@ public class AESGcmKdfSha256Cryptor extends BlockCipherCryptor
     
     private static final int IV_LENGTH = 12;
     
-    public static final String CIPHER_ALGORITHM = "AES/GCM/NoPadding"; //$NON-NLS-1&
+    private static final String CIPHER_ALGORITHM = "AES/GCM/NoPadding"; //$NON-NLS-1$
     
     private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"; //$NON-NLS-1$
     
     private static final int AES128_KEYLENGTH = 128;
     private static final int AES256_KEYLENGTH = 256;
     
+    public AESGcmKdfSha256Cryptor(String encryptionMethod, char[] password)
+    {
+        super(encryptionMethod, password);
+
+        if (!METHOD_AES128GCM.equals(encryptionMethod) && !METHOD_AES256GCM.equalsIgnoreCase(encryptionMethod))
+            throw new IllegalArgumentException();
+    }
+
     public AESGcmKdfSha256Cryptor(char[] password)
     {
-        super(password);
+        this(METHOD_AES128GCM, password);
     }
 
     @Override
@@ -55,37 +58,30 @@ public class AESGcmKdfSha256Cryptor extends BlockCipherCryptor
     }
 
     @Override
-    int resolveMethodToKeylength(int method)
+    int getKeyLength()
     {
-        return method == 1 ? AES256_KEYLENGTH : AES128_KEYLENGTH;
+        return METHOD_AES128GCM.equals(getEncryptionMethod()) ? AES128_KEYLENGTH : AES256_KEYLENGTH;
     }
 
     @Override
-    int resolveKeyLengthToMethod(int keyLength)
+    void setEncryptionMethodFromKeyLengthFlag(int flag)
     {
-        return keyLength == AES256_KEYLENGTH ? 1 : 0;
+        this.setEncryptionMethod(flag == 1 ? METHOD_AES256GCM : METHOD_AES128GCM);
     }
 
     @Override
-    public boolean isKeyLengthSupported(int keyLength)
+    int getKeyLengthFlag()
     {
-        try
-        {
-            return keyLength <= Cipher.getMaxAllowedKeyLength(getCipherAlgorithm());
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
-        }
+        return METHOD_AES128GCM.equals(getEncryptionMethod()) ? 0 : 1;
     }
 
     @Override
-    SecretKey buildSecretKey(int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException
+    SecretKey buildSecretKey() throws NoSuchAlgorithmException, InvalidKeySpecException
     {
         SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
-        KeySpec spec = new PBEKeySpec(getPassword(), SALT, ITERATION_COUNT, keyLength);
+        KeySpec spec = new PBEKeySpec(getPassword(), SALT, ITERATION_COUNT, getKeyLength());
         SecretKey tmp = factory.generateSecret(spec);
-        return new SecretKeySpec(tmp.getEncoded(), "AES");
+        return new SecretKeySpec(tmp.getEncoded(), "AES"); //$NON-NLS-1$
     }
 
     @Override
@@ -101,7 +97,7 @@ public class AESGcmKdfSha256Cryptor extends BlockCipherCryptor
     }
 
     @Override
-    Cipher initCipherFromStream(InputStream input, SecretKey secret) throws IOException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException
+    Cipher initCipherFromStream(InputStream input, SecretKey secret) throws IOException, GeneralSecurityException
     {
         // read initialization vector
         byte[] iv = new byte[getInitializationVectorLength()];
@@ -126,7 +122,7 @@ public class AESGcmKdfSha256Cryptor extends BlockCipherCryptor
     }
 
     @Override
-    void writeCipherParametersToStream(Cipher cipher, OutputStream output) throws InvalidParameterSpecException, IOException
+    void writeCipherParametersToStream(Cipher cipher, OutputStream output) throws IOException, GeneralSecurityException
     {
         AlgorithmParameters params = cipher.getParameters();
         
@@ -138,14 +134,7 @@ public class AESGcmKdfSha256Cryptor extends BlockCipherCryptor
         output.write(ByteBuffer.allocate(4).putInt(tlen).array());
         // init authentication data
         byte[] tag = new byte[tlen];
-        try
-        {
-            SecureRandom.getInstanceStrong().nextBytes(tag);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new RuntimeException("Unexpected : " + e.getMessage(), e);
-        }
+        SecureRandom.getInstanceStrong().nextBytes(tag);
         output.write(tag);
         // update AAD
         cipher.updateAAD(tag);

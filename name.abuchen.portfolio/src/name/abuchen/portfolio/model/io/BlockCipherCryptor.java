@@ -6,16 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +22,6 @@ import java.util.zip.ZipOutputStream;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import name.abuchen.portfolio.Messages;
@@ -36,91 +30,90 @@ import name.abuchen.portfolio.model.ClientFactory.XmlSerialization;
 
 public abstract class BlockCipherCryptor implements ClientPersister
 {
+    abstract String getCipherAlgorithm();
 
     abstract byte[] getSignature();
-    
-    abstract int resolveMethodToKeylength(int method);
-    
-    abstract int resolveKeyLengthToMethod(int keyLength);
-    
-    public abstract boolean isKeyLengthSupported(int keyLength);
-    
-    abstract SecretKey buildSecretKey(int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException;
-    
+
+    abstract int getKeyLength();
+
+    abstract void setEncryptionMethodFromKeyLengthFlag(int flag);
+
+    abstract int getKeyLengthFlag();
+
+    abstract SecretKey buildSecretKey() throws NoSuchAlgorithmException, InvalidKeySpecException;
+
     abstract int getInitializationVectorLength();
-    
-    abstract String getCipherAlgorithm();
-    
-    abstract Cipher initCipherFromStream(InputStream input, SecretKey secret) throws IOException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException;
-    
-    abstract void writeCipherParametersToStream(Cipher cipher, OutputStream output) throws InvalidParameterSpecException, IOException;
-        
-    /**
-     * factory
-     */
-    
-    public static BlockCipherCryptor buildCryptorFromFileSignature(File file, char[] password) 
+
+    abstract Cipher initCipherFromStream(InputStream input, SecretKey secret) throws IOException,
+                    GeneralSecurityException;
+
+    abstract void writeCipherParametersToStream(Cipher cipher, OutputStream output) throws IOException,
+                    GeneralSecurityException;
+
+    public static BlockCipherCryptor buildCryptorFromFileSignature(File file, char[] password) throws IOException
     {
         List<Class<? extends BlockCipherCryptor>> cryptors = new ArrayList<Class<? extends BlockCipherCryptor>>();
         cryptors.add(AESCbcKdfSha1Cryptor.class);
         cryptors.add(AESGcmKdfSha256Cryptor.class);
-        //
-        for(Class<? extends BlockCipherCryptor> cryptorClasss : cryptors)
+
+        for (Class<? extends BlockCipherCryptor> cryptorClasss : cryptors)
         {
             BlockCipherCryptor cryptor;
             try
             {
                 cryptor = cryptorClasss.getConstructor(char[].class).newInstance(password);
             }
-            catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                            | InvocationTargetException | NoSuchMethodException | SecurityException e)
+            catch (ReflectiveOperationException | IllegalArgumentException | SecurityException e)
             {
-                throw new RuntimeException("Could not create BlockCipherCryptor: " + e.getMessage(), e);
+                throw new RuntimeException(e);
             }
-            //
-            try(FileInputStream fis = new FileInputStream(file)) 
+
+            try (FileInputStream fis = new FileInputStream(file))
             {
                 final byte[] signatureBuffer = new byte[cryptor.getSignature().length];
                 fis.read(signatureBuffer);
                 fis.close();
-                if (Arrays.equals(signatureBuffer, cryptor.getSignature()))
-                {
-                    return cryptor;
-                }
-            }
-            catch(IOException ioe) 
-            {
-                throw new RuntimeException("Could not read File: " + ioe.getMessage(), ioe);
+                if (Arrays.equals(signatureBuffer, cryptor.getSignature())) { return cryptor; }
             }
         }
-        //
-        throw new IllegalArgumentException("Could not find Cryptor for file");
+
+        throw new IllegalArgumentException(Messages.MsgMissingCryptorImplementation);
     }
-    
-    public static BlockCipherCryptor getLatest(char[] password)
-    {
-        return new AESGcmKdfSha256Cryptor(password);
-    }
-    
-    public static BlockCipherCryptor getLegacy(char[] password)
-    {
-        return new AESCbcKdfSha1Cryptor(password);
-    }
-    
-    /**
-     * 
-     */
-    
+
+    private String encryptionMethod;
     private final char[] password;
-    
-    public BlockCipherCryptor(char[] password)
+
+    public BlockCipherCryptor(String encryptionMethod, char[] password)
     {
+        this.encryptionMethod = encryptionMethod;
         this.password = password;
     }
-    
-    char[] getPassword() 
+
+    /* package */String getEncryptionMethod()
+    {
+        return encryptionMethod;
+    }
+
+    /* package */void setEncryptionMethod(String encryptionMethod)
+    {
+        this.encryptionMethod = encryptionMethod;
+    }
+
+    /* package */char[] getPassword()
     {
         return password;
+    }
+
+    public final boolean isKeyLengthSupported()
+    {
+        try
+        {
+            return getKeyLength() <= Cipher.getMaxAllowedKeyLength(getCipherAlgorithm());
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
+        }
     }
 
     @Override
@@ -136,23 +129,23 @@ public abstract class BlockCipherCryptor implements ClientPersister
             if (!Arrays.equals(signature, getSignature()))
                 throw new IOException(Messages.MsgNotAPortflioFile);
 
-            // read encryption method
-            int method = input.read();
-            int keyLength = resolveMethodToKeylength(method);
+            // read key length flag (0 = 128, 1 = 256) and set method
+            int flag = input.read();
+            setEncryptionMethodFromKeyLengthFlag(flag);
 
             // check if key length is supported
-            if (!isKeyLengthSupported(keyLength))
+            if (!isKeyLengthSupported())
                 throw new IOException(Messages.MsgKeyLengthNotSupported);
-            
+
             // build secret key
-            SecretKey secret = buildSecretKey(keyLength);
-            
+            SecretKey secret = buildSecretKey();
+
             // init cipher from parameters stored in stream
             Cipher cipher = initCipherFromStream(input, secret);
-            
+
             // build stream
             decrypted = new CipherInputStream(input, cipher);
-            
+
             // read version information
             byte[] bytes = new byte[4];
             decrypted.read(bytes); // major version number
@@ -169,7 +162,8 @@ public abstract class BlockCipherCryptor implements ClientPersister
 
             Client client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
 
-            // save secret key for next save
+            // save encryption method & secret key for next save
+            client.setEncryptionMethod(getEncryptionMethod());
             client.setSecret(secret);
 
             return client;
@@ -195,22 +189,19 @@ public abstract class BlockCipherCryptor implements ClientPersister
         }
     }
 
-
     @Override
-    public void save(Client client, int method, final OutputStream output) throws IOException
+    public void save(Client client, final OutputStream output) throws IOException
     {
         try
         {
-            int keyLength = resolveMethodToKeylength(method);
-            
             // check if key length is supported
-            if (!isKeyLengthSupported(keyLength))
+            if (!isKeyLengthSupported())
                 throw new IOException(Messages.MsgKeyLengthNotSupported);
 
             // get or build secret key
             // if password is given, it is used (when the user chooses
             // "save as" from the menu)
-            SecretKey secret = getPassword() != null ? buildSecretKey(keyLength) : client.getSecret();
+            SecretKey secret = getPassword() != null ? buildSecretKey() : client.getSecret();
             if (secret == null)
                 throw new IOException(Messages.MsgPasswordMissing);
 
@@ -221,12 +212,12 @@ public abstract class BlockCipherCryptor implements ClientPersister
             output.write(getSignature());
 
             // write method
-            output.write(resolveKeyLengthToMethod(secret.getEncoded().length * 8));
+            output.write(getKeyLengthFlag());
 
             // build cipher and stream
             Cipher cipher = Cipher.getInstance(getCipherAlgorithm());
             cipher.init(Cipher.ENCRYPT_MODE, secret);
-            
+
             writeCipherParametersToStream(cipher, output);
 
             // encrypted stream
@@ -245,11 +236,11 @@ public abstract class BlockCipherCryptor implements ClientPersister
             zipout.closeEntry();
             zipout.flush();
             zipout.finish();
-            
+
             // needed for AAD style ciphers
             encrpyted.flush();
             encrpyted.close();
-            
+
             output.flush();
         }
         catch (GeneralSecurityException e)
@@ -257,6 +248,5 @@ public abstract class BlockCipherCryptor implements ClientPersister
             throw new IOException(MessageFormat.format(Messages.MsgErrorEncrypting, e.getMessage()), e);
         }
     }
-
 
 }
