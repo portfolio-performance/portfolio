@@ -8,7 +8,6 @@
 
    <launcherArgs>
       <programArgs>-clearPersistedState</programArgs>
-      <programArgsMac>-os macosx -ws cocoa -arch x86_64</programArgsMac>
       <vmArgs>-Xms40m -Xmx512m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
@@ -38,7 +37,7 @@
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.babel.nls_eclipse_de"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>	
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
@@ -55,6 +54,14 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+      <property name="osgi.configuration.area" value="$LOCALAPPDATA$/PortfolioPerformance/configuration" os="win32" />
+      <property name="osgi.configuration.area" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/configuration" os="macosx" />
+      <property name="osgi.configuration.area" value="@user.home/.PortfolioPerformance/configuration" os="linux" />
+      <property name="osgi.configuration.cascaded" value="true" />
+      <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />
+      <property name="osgi.instance.area.default" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/workspace" os="macosx" />
+      <property name="osgi.instance.area.default" value="@user.home/.PortfolioPerformance/workspace" os="linux" />
+      <property name="osgi.sharedConfiguration.area.readOnly" value="true" />
    </configurations>
 
 </product>
