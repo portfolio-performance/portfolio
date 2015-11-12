@@ -1,4 +1,5 @@
 // Render a times series chart (visualized by line or area series), including title, legend, mouse over tooltip and horizontal marker (e.g. buys/sells)
+// The chart is rendered in a div with the ID "chart"
 // args.title              : Chart Title
 // args.series             : array of objects containing the data series with the follwoing attributes
 //            .name        : label of the series (e.g. used in the legend)
@@ -8,13 +9,17 @@
 //            .linePattern : only applies to 'dottedline', a string with comma separated numbers (e.g. '4, 2') where each number is the length in pixels of a line/gap pattern
 // args.interpolation      : a string constant defining the interpolation style between data points (see D3 documentation), default: 'monotone'
 // args.numberFormat       : Number format for y-axis labels, as interpreted by http://code.google.com/p/jquery-numberformatter/, if omitted, the formatKMBT of Rickshaw is used
-// args.numberFormatLocale : Locale used to fomrat number, default 'us'
+// args.numberFormatLocale : Locale used to format number, default 'us'
 // args.minY               : minimum y-value, default 'auto'
 // args.maxY               : maximum y-value, default 'auto'
 // args.showLegend         : true (default) if the legend should be displayed, when false, the legend will be hidden
+// args.useLogScale        : true if the y-Scale should be a logarithmic scale, false (default) if a linear scale should be used
+// args.allowZoom          : true (default) allow to zoom the chart on Y-scale using the mouse wheel, false to disable Y-zoom
+// args.showSlider         : true shows a slider below the chart that allows to move/zoom along the X-axis, false (default) hides the slider
+// args.allowDrag          : true (default) allow dragging (only meaningful when Zoom and/or horizontal slider is is allowed), false to disable dragging
 function LineChart(args) {
 	'use strict';
-	var mouseDown = [false, false, false, false, false, false, false, false], graph, x_axis, y_axis, legend, highlight, hoverDetail, resize, vmarker;
+	var mouseDown = [false, false, false, false, false, false, false, false], graph, x_axis, y_axis, legend, highlight, zoomBehavior, hoverDetail, resize, vmarker;
 
 	if (args === undefined)
 		return;
@@ -79,7 +84,12 @@ function LineChart(args) {
 				return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
 			}
 		});
-
+	}
+	
+	if (args.allowZoom) {
+		zoomBehavior = new Rickshaw.Graph.Behavior.MouseWheelZoom({
+				graph : graph
+		});
 	}
 
 	hoverDetail = new Rickshaw.Graph.HoverDetail({

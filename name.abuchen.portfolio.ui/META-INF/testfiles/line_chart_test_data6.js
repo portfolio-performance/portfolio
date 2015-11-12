@@ -4,6 +4,10 @@ var args = {
 	numberFormat : '#,##0.00',
 	numberFormatLocale : 'de',
 	noLegend : 'true',
+	useLogScale : false,
+    allowZoom : true,
+    showSlider : true,
+    allowDrag : true,
 	verticalMarker : {
 		name : 'buy\/sell',
 		strokeWidth : 2,

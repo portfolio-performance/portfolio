@@ -1,5 +1,6 @@
 jquery-2.1.4.min.js                 - JavaScript Library to traverse, manipulate, event-handling the DOM (https://github.com/jquery/jquery)
 jquery.numberformatter-1.2.4.min.js - jQuery Plugin to format numbers, supporting locals (https://code.google.com/p/jquery-numberformatter/)
+jquery.mousewheel.min.js            - jQuery Plugin that adds cross-browser mouse wheel support. (https://github.com/jquery/jquery-mousewheel)
 jshashtable.js                      - Used by jquery.numberformatter (https://github.com/timdown/jshashtable)
 rickshaw.min.js                     - JavaScript toolkit for creating interactive time series graphs (https://github.com/shutterstock/rickshaw)
 d3.min.js                           - JavaScript library for manipulating documents based on data.  Used by Rickshaw. (https://github.com/mbostock/d3)
