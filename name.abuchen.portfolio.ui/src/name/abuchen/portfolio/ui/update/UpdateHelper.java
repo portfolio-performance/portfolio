@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.ui.workbench.IWorkbench;
@@ -52,8 +51,6 @@ public class UpdateHelper
         private String version;
         private String description;
         private String minimumJavaVersionRequired;
-        private String updateNotSupportedOSList;
-        private String updateNotSupportedOSMessage;
 
         public NewVersion(String version)
         {
@@ -80,21 +77,6 @@ public class UpdateHelper
             this.minimumJavaVersionRequired = minimumJavaVersionRequired;
         }
 
-        public void setUpdateNotSupportedOSList(String updateNotSupportedOSList)
-        {
-            this.updateNotSupportedOSList = updateNotSupportedOSList;
-        }
-
-        public void setUpdateNotSupportedOSMessage(String updateNotSupportedOSMessage)
-        {
-            this.updateNotSupportedOSMessage = updateNotSupportedOSMessage;
-        }
-
-        public String getUpdateNotSupportedOSMessage()
-        {
-            return updateNotSupportedOSMessage;
-        }
-
         public boolean requiresNewJavaVersion()
         {
             if (minimumJavaVersionRequired == null)
@@ -119,19 +101,6 @@ public class UpdateHelper
             return Double.parseDouble(version.substring(0, pos));
         }
 
-        public boolean isUpdateOnOSSupported()
-        {
-            if (updateNotSupportedOSList == null)
-                return true;
-
-            String[] list = updateNotSupportedOSList.split(","); //$NON-NLS-1$
-            String currentOS = Platform.getOS();
-            for (String os : list)
-                if (currentOS.equals(os))
-                    return false;
-
-            return true;
-        }
     }
 
     private final IWorkbench workbench;
@@ -252,9 +221,6 @@ public class UpdateHelper
             v.setDescription(update.replacement.getProperty("latest.changes.description", null)); //$NON-NLS-1$
             v.setMinimumJavaVersionRequired(update.replacement.getProperty(
                             "latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
-            v.setUpdateNotSupportedOSList(update.replacement.getProperty("latest.changes.notSupportedOSList", null)); //$NON-NLS-1$
-            v.setUpdateNotSupportedOSMessage(update.replacement.getProperty("latest.changes.notSupportedOSMessage", //$NON-NLS-1$
-                            null));
             return v;
         }
     }
@@ -351,21 +317,6 @@ public class UpdateHelper
             return container;
         }
 
-        @Override
-        protected Control createButtonBar(Composite parent)
-        {
-            Control control = super.createButtonBar(parent);
-
-            if (!newVersion.isUpdateOnOSSupported())
-            {
-                Button okButton = getButton(IDialogConstants.OK_ID);
-                if (okButton != null)
-                    okButton.setEnabled(false);
-            }
-
-            return control;
-        }
-
         private void createText(Composite container)
         {
             StyledText text = new StyledText(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
@@ -373,20 +324,6 @@ public class UpdateHelper
             List<StyleRange> ranges = new ArrayList<StyleRange>();
 
             StringBuilder buffer = new StringBuilder();
-            if (!newVersion.isUpdateOnOSSupported())
-            {
-                String message = newVersion.getUpdateNotSupportedOSMessage();
-                StyleRange style = new StyleRange();
-                style.start = buffer.length();
-                style.length = message.length();
-                style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
-                style.fontStyle = SWT.BOLD;
-                ranges.add(style);
-
-                buffer.append(message);
-                buffer.append("\n\n"); //$NON-NLS-1$
-            }
-
             if (newVersion.requiresNewJavaVersion())
             {
                 StyleRange style = new StyleRange();
