@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.update;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -45,7 +44,6 @@ import org.osgi.framework.ServiceReference;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.IniFileManipulator;
 
 public class UpdateHelper
 {
@@ -180,19 +178,7 @@ public class UpdateHelper
 
             if (doUpdate[0])
             {
-                // update operation must
-                // * remember the current local setting (as it will be reset by
-                // the update operation to the default configuration)
-                // * update the bundles using p2
-                // * set the -clearPersistedState flag so that (possible)
-                // changes to the Application.e4xmi are applied
-                // * update the locale setting to what the user previously
-                // selected
-                // * prompt for restart
-
-                String currentLocale = getCurrentLocaleSetting();
                 runUpdateOperation(sub.newChild(100));
-                updateIniFile(currentLocale);
                 promptForRestart();
             }
         }
@@ -233,42 +219,6 @@ public class UpdateHelper
                 }
             }
         });
-    }
-
-    private String getCurrentLocaleSetting()
-    {
-        try
-        {
-            IniFileManipulator m = new IniFileManipulator();
-            m.load();
-            return m.getLanguage();
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-            return null;
-        }
-    }
-
-    private void updateIniFile(String locale)
-    {
-        try
-        {
-            IniFileManipulator m = new IniFileManipulator();
-            m.load();
-
-            if (locale == null)
-                m.clearLanguage();
-            else
-                m.setLanguage(locale);
-
-            if (m.isDirty())
-                m.save();
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-        }
     }
 
     private NewVersion checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException

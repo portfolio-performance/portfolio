@@ -1,12 +1,20 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.Properties;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.IniFileManipulator;
-
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
@@ -20,8 +28,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+
 public class LanguagePreferencePage extends PreferencePage
 {
+    private static final String OSGI_NL = "osgi.nl"; //$NON-NLS-1$
+
     public enum Language
     {
         AUTOMATIC(null, Messages.LabelLanguageAutomatic), //
@@ -65,24 +78,14 @@ public class LanguagePreferencePage extends PreferencePage
         }
     }
 
-    private IniFileManipulator iniFile;
+    private Properties userProperties = new Properties();
     private ComboViewer viewer;
 
     public LanguagePreferencePage()
     {
         setTitle(Messages.PrefTitleLanguage);
         setDescription(Messages.PrefMsgLanguageConfig);
-
-        try
-        {
-            iniFile = new IniFileManipulator();
-            iniFile.load();
-        }
-        catch (IOException e)
-        {
-            if (!PortfolioPlugin.isDevelopmentMode())
-                PortfolioPlugin.log(e);
-        }
+        loadUserPreferences();
     }
 
     @Override
@@ -97,7 +100,7 @@ public class LanguagePreferencePage extends PreferencePage
         viewer = new ComboViewer(area, SWT.READ_ONLY);
         viewer.setContentProvider(ArrayContentProvider.getInstance());
         viewer.setInput(Language.values());
-        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(iniFile.getLanguage())));
+        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(userProperties.getProperty(OSGI_NL))));
 
         return area;
     }
@@ -114,25 +117,14 @@ public class LanguagePreferencePage extends PreferencePage
         switch (language)
         {
             case AUTOMATIC:
-                iniFile.clearLanguage();
+                userProperties.remove(OSGI_NL);
                 break;
             default:
-                iniFile.setLanguage(language.getCode());
+                userProperties.setProperty(OSGI_NL, language.getCode());
                 break;
         }
 
-        if (iniFile.isDirty())
-        {
-            try
-            {
-                iniFile.save();
-            }
-            catch (IOException e)
-            {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.LabelError,
-                                MessageFormat.format(Messages.MsgErrorSavingIniFile, e.getMessage()));
-            }
-        }
+        storeUserPreferences();
 
         return true;
     }
@@ -140,7 +132,53 @@ public class LanguagePreferencePage extends PreferencePage
     @Override
     protected void performDefaults()
     {
-        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(iniFile.getLanguage())));
+        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(userProperties.getProperty(OSGI_NL))));
         super.performDefaults();
     }
+
+    private Path getUserConfigFile() throws URISyntaxException
+    {
+        // path can contain spaces (.../Application Support/...)
+        URL configArea = Platform.getConfigurationLocation().getURL();
+        URI uri = new URI(configArea.toExternalForm().replace(" ", "%20")); //$NON-NLS-1$ //$NON-NLS-2$
+        return Paths.get(uri).resolve("config.ini"); //$NON-NLS-1$
+    }
+
+    private void loadUserPreferences()
+    {
+        try
+        {
+            Path userConfigFile = getUserConfigFile();
+            if (Files.exists(userConfigFile))
+            {
+                try (InputStream input = new FileInputStream(userConfigFile.toFile()))
+                {
+                    userProperties.load(input);
+                }
+            }
+        }
+        catch (IOException | URISyntaxException e)
+        {
+            PortfolioPlugin.log(e);
+        }
+    }
+
+    private void storeUserPreferences()
+    {
+        try
+        {
+            Path userConfigFile = getUserConfigFile();
+
+            try (OutputStream out = new FileOutputStream(userConfigFile.toFile()))
+            {
+                userProperties.store(out, null);
+            }
+        }
+        catch (IOException | URISyntaxException e)
+        {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.LabelError,
+                            MessageFormat.format(Messages.MsgErrorSavingIniFile, e.getMessage()));
+        }
+    }
+
 }
