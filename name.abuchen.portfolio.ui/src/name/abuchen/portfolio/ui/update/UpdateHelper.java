@@ -7,10 +7,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.IniFileManipulator;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,6 +42,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.IniFileManipulator;
 
 public class UpdateHelper
 {
@@ -256,7 +256,6 @@ public class UpdateHelper
         {
             IniFileManipulator m = new IniFileManipulator();
             m.load();
-            m.setClearPersistedState();
 
             if (locale == null)
                 m.clearLanguage();
@@ -265,8 +264,6 @@ public class UpdateHelper
 
             if (m.isDirty())
                 m.save();
-
-            PortfolioPlugin.log("Set -clearPersistedState flag to " + m.getIniFile().toAbsolutePath().toString()); //$NON-NLS-1$
         }
         catch (IOException ignore)
         {

@@ -7,15 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.money.ExchangeRateProvider;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.log.LogEntryCache;
-import name.abuchen.portfolio.ui.update.UpdateHelper;
-import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
-import name.abuchen.portfolio.util.IniFileManipulator;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,6 +23,14 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.service.event.Event;
 
+import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.log.LogEntryCache;
+import name.abuchen.portfolio.ui.update.UpdateHelper;
+import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
+
 public class StartupAddon
 {
     @PostConstruct
@@ -45,29 +44,6 @@ public class StartupAddon
     public void setupLogEntryCache(LogEntryCache cache)
     {
         // force creation of log entry cache
-    }
-
-    @PostConstruct
-    public void unsetPersistedStateFlage()
-    {
-        if (PortfolioPlugin.isDevelopmentMode())
-            return;
-
-        // -clearPersistedState is set *after* installing new software, but must
-        // be cleared for the next runs
-
-        try
-        {
-            IniFileManipulator m = new IniFileManipulator();
-            m.load();
-            m.unsetClearPersistedState();
-            if (m.isDirty())
-                m.save();
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-        }
     }
 
     @Inject

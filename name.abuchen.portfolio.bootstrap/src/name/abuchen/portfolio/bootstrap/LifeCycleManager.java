@@ -1,9 +1,14 @@
 package name.abuchen.portfolio.bootstrap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
@@ -17,18 +22,31 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
+import org.osgi.service.prefs.BackingStoreException;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager
 {
+    private static final String MODEL_VERSION = "model.version"; //$NON-NLS-1$
+
+    @Inject
+    @Preference(nodePath = "name.abuchen.portfolio.bootstrap")
+    IEclipsePreferences preferences;
+
+    @Inject
+    Logger logger;
+
     @PostContextCreate
-    public void doPostContextCreate(IEclipseContext context, Logger logger)
+    public void doPostContextCreate(IEclipseContext context)
     {
         checkForJava8();
-        setupEventLoopAdvisor(context, logger);
+        checkForModelChanges();
+        setupEventLoopAdvisor(context);
     }
 
-    public void checkForJava8()
+    private void checkForJava8()
     {
         // if the java version is < 8, show a message dialog because otherwise
         // the application would silently not start
@@ -43,7 +61,21 @@ public class LifeCycleManager
         }
     }
 
-    public void setupEventLoopAdvisor(final IEclipseContext context, final Logger logger)
+    private void checkForModelChanges()
+    {
+        Version modelVersion = Version.parseVersion(preferences.get(MODEL_VERSION, null));
+        Version programVersion = FrameworkUtil.getBundle(this.getClass()).getVersion();
+
+        if (!modelVersion.equals(programVersion))
+        {
+            logger.info(MessageFormat.format(
+                            "Detected model change from version {0} to version {1}; clearing persisted state", //$NON-NLS-1$
+                            modelVersion.toString(), programVersion.toString()));
+            System.setProperty("clearPersistedState", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+
+    public void setupEventLoopAdvisor(final IEclipseContext context)
     {
         // do not show an error popup if is the annoying NPE on El Capitan
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=434393
@@ -95,7 +127,32 @@ public class LifeCycleManager
     }
 
     @PreSave
-    public void removePortfolioPartsWithoutPersistedFile(MApplication app, EPartService partService,
+    public void doPreSave(MApplication app, EPartService partService, EModelService modelService)
+    {
+        saveModelVersion();
+        removePortfolioPartsWithoutPersistedFile(app, partService, modelService);
+    }
+
+    private void saveModelVersion()
+    {
+        String modelVersion = preferences.get(MODEL_VERSION, Version.emptyVersion.toString());
+        String programVersion = FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+
+        if (!modelVersion.equals(programVersion))
+        {
+            try
+            {
+                preferences.put(MODEL_VERSION, programVersion);
+                preferences.flush();
+            }
+            catch (BackingStoreException e)
+            {
+                logger.error(e);
+            }
+        }
+    }
+
+    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EPartService partService,
                     EModelService modelService)
     {
         MPartStack stack = (MPartStack) modelService.find("name.abuchen.portfolio.ui.partstack.main", app); //$NON-NLS-1$

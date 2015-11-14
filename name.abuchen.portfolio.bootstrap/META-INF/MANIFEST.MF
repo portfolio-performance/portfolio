@@ -5,8 +5,10 @@ Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
 Bundle-Version: 0.20.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: javax.inject;version="1.0.0",
+ org.eclipse.core.runtime.preferences,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.core.services.events,
  org.eclipse.e4.core.services.log,
  org.eclipse.e4.core.services.statusreporter,
@@ -27,4 +29,6 @@ Import-Package: javax.inject;version="1.0.0",
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
- org.osgi.service.event;version="1.3.0"
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.event;version="1.3.0",
+ org.osgi.service.prefs;version="1.1.1"

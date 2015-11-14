@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.util;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -25,77 +23,6 @@ public class IniFileManipulatorTest
                     "-Xmx512m"); // 8
 
     private IniFileManipulator manipulator = new IniFileManipulator();
-
-    @Test
-    public void givenClearPersistedStateFlagDoesNotExists_thenAddFlag()
-    {
-        manipulator.setLines(new ArrayList<String>(LINES));
-        manipulator.setClearPersistedState();
-
-        List<String> result = manipulator.getLines();
-        assertThat(result.size(), is(10));
-        assertThat(result, hasItem("-clearPersistedState"));
-        assertThat(manipulator.isDirty(), is(true));
-    }
-
-    @Test
-    public void givenClearPersistedStateFlagExists_thenDoNotAdd()
-    {
-        List<String> input = new ArrayList<String>(LINES);
-        input.add(6, "-clearPersistedState");
-
-        manipulator.setLines(input);
-        manipulator.setClearPersistedState();
-
-        List<String> result = manipulator.getLines();
-        assertThat(result.size(), is(input.size()));
-        assertThat(result, hasItem("-clearPersistedState"));
-        assertThat(manipulator.isDirty(), is(false));
-    }
-
-    @Test
-    public void givenThatVmArgsFlagDoesNotExists_thenAppendClearPersistedStateFlag()
-    {
-        List<String> input = new ArrayList<String>(LINES);
-        input.remove(6);
-
-        manipulator.setLines(input);
-        manipulator.setClearPersistedState();
-
-        List<String> result = manipulator.getLines();
-        assertThat(result.size(), is(input.size() + 1));
-        assertThat(result, hasItem("-clearPersistedState"));
-        assertThat(manipulator.isDirty(), is(true));
-    }
-
-    @Test
-    public void givenClearPersistedStateExists_thenClearFlag()
-    {
-        List<String> input = new ArrayList<String>(LINES);
-        input.add(6, "-clearPersistedState");
-
-        manipulator.setLines(input);
-        manipulator.unsetClearPersistedState();
-
-        List<String> result = manipulator.getLines();
-        assertThat(result.size(), is(input.size() - 1));
-        assertThat(result, not(hasItem("-clearPersistedState")));
-        assertThat(manipulator.isDirty(), is(true));
-    }
-
-    @Test
-    public void givenClearPeristedStateDoesNotExist_thenDoNothing()
-    {
-        List<String> input = new ArrayList<String>(LINES);
-
-        manipulator.setLines(input);
-        manipulator.unsetClearPersistedState();
-
-        List<String> result = manipulator.getLines();
-        assertThat(result.size(), is(input.size()));
-        assertThat(result, not(hasItem("-clearPersistedState")));
-        assertThat(manipulator.isDirty(), is(false));
-    }
 
     @Test
     public void givenThatLanguageFlagExists_thenUpdateLanguage()

@@ -15,7 +15,6 @@ public class IniFileManipulator
 {
     private static final String VM_ARGS = "-vmargs"; //$NON-NLS-1$
     private static final String NL = "-nl"; //$NON-NLS-1$
-    private static final String CLEAR_PERSISTED_STATE = "-clearPersistedState"; //$NON-NLS-1$
 
     private List<String> lines = new ArrayList<String>();
     private boolean isDirty = false;
@@ -111,43 +110,6 @@ public class IniFileManipulator
                     iterator.next();
                     iterator.remove();
                 }
-                isDirty = true;
-                return;
-            }
-        }
-    }
-
-    public void setClearPersistedState()
-    {
-        for (int ii = 0; ii < lines.size(); ii++)
-        {
-            String line = lines.get(ii);
-            if (line.trim().equals(CLEAR_PERSISTED_STATE))
-            {
-                return; // already set
-            }
-            else if (line.trim().equals(VM_ARGS))
-            {
-                lines.add(ii, CLEAR_PERSISTED_STATE);
-                isDirty = true;
-                return;
-            }
-        }
-
-        // -vmargs not found
-        lines.add(CLEAR_PERSISTED_STATE);
-        isDirty = true;
-    }
-
-    public void unsetClearPersistedState()
-    {
-        Iterator<String> iterator = lines.iterator();
-        while (iterator.hasNext())
-        {
-            String line = iterator.next();
-            if (line.trim().equals(CLEAR_PERSISTED_STATE))
-            {
-                iterator.remove();
                 isDirty = true;
                 return;
             }
