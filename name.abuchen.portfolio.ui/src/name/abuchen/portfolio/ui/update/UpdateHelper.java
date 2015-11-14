@@ -21,8 +21,6 @@ import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
-import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
-import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -192,10 +190,9 @@ public class UpdateHelper
 
     private NewVersion checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
     {
-        loadRepository(agent);
-
         ProvisioningSession session = new ProvisioningSession(agent);
         operation = new UpdateOperation(session);
+        configureUpdateOperation(operation);
 
         IStatus status = operation.resolveModal(monitor);
 
@@ -219,9 +216,27 @@ public class UpdateHelper
         {
             NewVersion v = new NewVersion(update.replacement.getVersion().toString());
             v.setDescription(update.replacement.getProperty("latest.changes.description", null)); //$NON-NLS-1$
-            v.setMinimumJavaVersionRequired(update.replacement.getProperty(
-                            "latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
+            v.setMinimumJavaVersionRequired(
+                            update.replacement.getProperty("latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
             return v;
+        }
+    }
+
+    private void configureUpdateOperation(UpdateOperation operation)
+    {
+        try
+        {
+            String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
+                            .getString(PortfolioPlugin.Preferences.UPDATE_SITE);
+            URI uri = new URI(updateSite);
+
+            operation.getProvisioningContext().setArtifactRepositories(new URI[] { uri });
+            operation.getProvisioningContext().setMetadataRepositories(new URI[] { uri });
+
+        }
+        catch (final URISyntaxException e)
+        {
+            PortfolioPlugin.log(e);
         }
     }
 
@@ -247,37 +262,6 @@ public class UpdateHelper
         return type.cast(result);
     }
 
-    private void loadRepository(IProvisioningAgent agent) throws CoreException
-    {
-        IMetadataRepositoryManager repositoryManager = (IMetadataRepositoryManager) agent
-                        .getService(IMetadataRepositoryManager.SERVICE_NAME);
-
-        IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent
-                        .getService(IArtifactRepositoryManager.SERVICE_NAME);
-
-        // first: remove existing repositories (preferences might have changed)
-        for (URI r : repositoryManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL))
-            repositoryManager.removeRepository(r);
-
-        for (URI r : artifactManager.getKnownRepositories(IArtifactRepositoryManager.REPOSITORIES_ALL))
-            artifactManager.removeRepository(r);
-
-        // second: add repository as configured in preferences
-        try
-        {
-            String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
-                            .getString(PortfolioPlugin.Preferences.UPDATE_SITE);
-            URI repoLocation = new URI(updateSite);
-            repositoryManager.loadRepository(repoLocation, null);
-            artifactManager.loadRepository(repoLocation, null);
-        }
-        catch (URISyntaxException e)
-        {
-            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
-            throw new CoreException(status);
-        }
-    }
-
     private static class ExtendedMessageDialog extends MessageDialog
     {
         private Button checkOnUpdate;
@@ -285,8 +269,8 @@ public class UpdateHelper
 
         public ExtendedMessageDialog(Shell parentShell, String title, String message, NewVersion newVersion)
         {
-            super(parentShell, title, null, message, CONFIRM, new String[] { IDialogConstants.OK_LABEL,
-                            IDialogConstants.CANCEL_LABEL }, 0);
+            super(parentShell, title, null, message, CONFIRM,
+                            new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
             this.newVersion = newVersion;
         }
 
@@ -308,8 +292,8 @@ public class UpdateHelper
                 @Override
                 public void widgetSelected(SelectionEvent e)
                 {
-                    PortfolioPlugin.getDefault().getPreferenceStore()
-                                    .setValue(PortfolioPlugin.Preferences.AUTO_UPDATE, checkOnUpdate.getSelection());
+                    PortfolioPlugin.getDefault().getPreferenceStore().setValue(PortfolioPlugin.Preferences.AUTO_UPDATE,
+                                    checkOnUpdate.getSelection());
                 }
             });
             GridDataFactory.fillDefaults().grab(true, false);
