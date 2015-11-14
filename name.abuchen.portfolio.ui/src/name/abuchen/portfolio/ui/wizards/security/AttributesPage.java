@@ -3,14 +3,6 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
-
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -32,6 +24,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
 
 public class AttributesPage extends AbstractPage implements IMenuListener
 {
@@ -120,7 +120,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         // add button
         final Button addButton = new Button(composite, SWT.PUSH);
-        addButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_ADD));
+        addButton.setImage(Images.ADD.image());
         addButton.addSelectionListener(new SelectionAdapter()
         {
             @Override
@@ -156,7 +156,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         // delete button
         final Button deleteButton = new Button(container, SWT.PUSH);
-        deleteButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_REMOVE));
+        deleteButton.setImage(Images.REMOVE.image());
 
         // model binding
         final Binding binding = bindings.getBindingContext().bindValue(

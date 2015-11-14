@@ -2,15 +2,6 @@ package name.abuchen.portfolio.ui;
 
 import java.util.UUID;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.TaxonomyTemplate;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.ui.Sidebar.Entry;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -32,6 +23,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.ui.Sidebar.Entry;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 
 /* package */class ClientEditorSidebar
 {
@@ -144,7 +144,7 @@ import org.eclipse.swt.widgets.Menu;
     private void createGeneralDataSection(final Sidebar sidebar)
     {
         final Entry section = new Entry(sidebar, Messages.LabelSecurities);
-        section.setAction(new Action(Messages.LabelSecurities, PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        section.setAction(new Action(Messages.LabelSecurities, Images.PLUS.descriptor())
         {
             @Override
             public void run()
@@ -165,7 +165,7 @@ import org.eclipse.swt.widgets.Menu;
         });
 
         allSecurities = new Entry(section, new ActivateViewAction(Messages.LabelAllSecurities, "SecurityList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SECURITY)));
+                        Images.SECURITY.descriptor()));
         allSecurities.setContextMenu(setAsStartPage);
 
         for (Watchlist watchlist : editor.getClient().getWatchlists())
@@ -176,7 +176,7 @@ import org.eclipse.swt.widgets.Menu;
     {
         Entry entry = new Entry(section, watchlist.getName());
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_WATCHLIST)));
+                        Images.WATCHLIST.descriptor()));
 
         entry.setContextMenu(new Sidebar.MenuListener()
         {
@@ -261,11 +261,11 @@ import org.eclipse.swt.widgets.Menu;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelClientMasterData);
         new Entry(section, new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_ACCOUNT))).setContextMenu(setAsStartPage);
+                        Images.ACCOUNT.descriptor())).setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PORTFOLIO))).setContextMenu(setAsStartPage);
+                        Images.PORTFOLIO.descriptor())).setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$
-                        PortfolioPlugin.descriptor(PortfolioPlugin.IMG_INVESTMENTPLAN))).setContextMenu(setAsStartPage);
+                        Images.INVESTMENTPLAN.descriptor())).setContextMenu(setAsStartPage);
     }
 
     private void createPerformanceSection(Sidebar sidebar)
@@ -296,7 +296,7 @@ import org.eclipse.swt.widgets.Menu;
     private void createTaxonomyDataSection(final Sidebar sidebar)
     {
         taxonomies = new Entry(sidebar, Messages.LabelTaxonomies);
-        taxonomies.setAction(new Action(Messages.LabelTaxonomies, PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS))
+        taxonomies.setAction(new Action(Messages.LabelTaxonomies, Images.PLUS.descriptor())
         {
             @Override
             public void run()

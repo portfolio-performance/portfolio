@@ -3,18 +3,18 @@ package name.abuchen.portfolio.ui.views.columns;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.model.Adaptor;
-import name.abuchen.portfolio.model.Annotated;
-import name.abuchen.portfolio.model.Named;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+
+import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.model.Annotated;
+import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
 
 public class NoteColumn extends Column
 {
@@ -39,7 +39,7 @@ public class NoteColumn extends Column
             public Image getImage(Object e)
             {
                 String note = getText(e);
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
 
             @Override

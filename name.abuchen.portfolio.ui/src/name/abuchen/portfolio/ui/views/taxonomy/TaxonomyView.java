@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
@@ -83,11 +83,11 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        addView(toolBar, Messages.LabelViewTaxonomyDefinition, PortfolioPlugin.IMG_VIEW_TABLE, 0);
-        addView(toolBar, Messages.LabelViewReBalancing, PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
-        addView(toolBar, Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART, 2);
-        addView(toolBar, Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
-        addView(toolBar, Messages.LabelViewStackedChart, PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
+        addView(toolBar, Messages.LabelViewTaxonomyDefinition, Images.VIEW_TABLE, 0);
+        addView(toolBar, Messages.LabelViewReBalancing, Images.VIEW_REBALANCING, 1);
+        addView(toolBar, Messages.LabelViewPieChart, Images.VIEW_PIECHART, 2);
+        addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 3);
+        addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 4);
         addConfigButton(toolBar);
     }
 
@@ -103,7 +103,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                     ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
 
         new ActionContributionItem(config).fill(toolBar, -1);
@@ -115,7 +115,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         model.fireTaxonomyModelChange(model.getRootNode());
     }
 
-    private void addView(final ToolBar toolBar, String label, String image, final int index)
+    private void addView(final ToolBar toolBar, String label, Images image, final int index)
     {
         Action showDefinition = new Action()
         {
@@ -125,7 +125,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                 activateView(index);
             }
         };
-        showDefinition.setImageDescriptor(PortfolioPlugin.descriptor(image));
+        showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
         new ActionContributionItem(showDefinition).fill(toolBar, -1);
     }

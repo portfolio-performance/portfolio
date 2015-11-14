@@ -36,6 +36,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -103,7 +104,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 menu.setVisible(true);
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
@@ -135,7 +136,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 picker.showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
@@ -147,7 +148,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 picker.showMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(config).fill(toolBar, -1);
     }

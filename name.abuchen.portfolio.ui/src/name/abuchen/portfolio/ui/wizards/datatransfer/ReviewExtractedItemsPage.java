@@ -5,24 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransferEntry;
-import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.AbstractClientJob;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -55,6 +37,25 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
+
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.AbstractClientJob;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage
 {
@@ -260,17 +261,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
             public Image getImage(Extractor.Item item)
             {
                 if (item.getSubject() instanceof AccountTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                    return Images.ACCOUNT.image();
                 else if (item.getSubject() instanceof PortfolioTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    return Images.PORTFOLIO.image();
                 else if (item.getSubject() instanceof Security)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                    return Images.SECURITY.image();
                 else if (item.getSubject() instanceof BuySellEntry)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    return Images.PORTFOLIO.image();
                 else if (item.getSubject() instanceof AccountTransferEntry)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                    return Images.ACCOUNT.image();
                 else if (item.getSubject() instanceof PortfolioTransferEntry)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    return Images.PORTFOLIO.image();
                 else
                     return null;
             }

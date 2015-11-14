@@ -7,32 +7,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel;
-import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.ListEditingSupport;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -51,6 +25,32 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.ListEditingSupport;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 public class InvestmentPlanListView extends AbstractListView implements ModificationListener
 {
@@ -97,7 +97,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                             markDirty();
                             plans.setInput(getClient().getPlans());
                         });
-        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setImageDescriptor(Images.PLUS.descriptor());
         action.setToolTipText(Messages.InvestmentPlanMenuCreate);
 
         new ActionContributionItem(action).fill(toolBar, -1);
@@ -105,8 +105,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     private void addConfigButton(final ToolBar toolBar)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, //
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_CONFIG), SWT.NONE)
+        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE)
         {
             @Override
             public void menuAboutToShow(IMenuManager manager)
@@ -188,7 +187,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                return Images.SECURITY.image();
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
@@ -209,11 +208,12 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                return Images.PORTFOLIO.image();
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
-        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getActivePortfolios()).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getActivePortfolios()).addListener(this) //$NON-NLS-1$
+                        .attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAccount, SWT.None, 120);
@@ -230,7 +230,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getAccount() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT) : null;
+                return plan.getAccount() != null ? Images.ACCOUNT.image() : null;
             }
         });
         ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$

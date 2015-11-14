@@ -23,8 +23,8 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -97,7 +97,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                                 .export(Messages.LabelStatementOfAssets + ".csv"); //$NON-NLS-1$
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
         new ActionContributionItem(export).fill(toolBar, -1);
 
@@ -109,7 +109,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 assetViewer.showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveColumns);
         new ActionContributionItem(save).fill(toolBar, -1);
 
@@ -121,7 +121,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 assetViewer.showConfigMenu(toolBar.getShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.PLUS.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
         new ActionContributionItem(config).fill(toolBar, -1);
     }

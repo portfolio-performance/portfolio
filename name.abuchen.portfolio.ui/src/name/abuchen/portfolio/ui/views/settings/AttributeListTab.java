@@ -4,22 +4,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientSettings;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.settings.SettingsView.Tab;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -35,6 +19,22 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.settings.SettingsView.Tab;
 
 public class AttributeListTab implements Tab, ModificationListener
 {
@@ -96,7 +96,7 @@ public class AttributeListTab implements Tab, ModificationListener
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_TEXT);
+                return Images.TEXT.image();
             }
         });
         new StringEditingSupport(AttributeType.class, "name").addListener(this).attachTo(column); //$NON-NLS-1$

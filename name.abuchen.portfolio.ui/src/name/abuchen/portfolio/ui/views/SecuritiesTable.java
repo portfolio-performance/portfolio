@@ -5,40 +5,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
-import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -64,6 +30,41 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
 public final class SecuritiesTable implements ModificationListener
 {
@@ -137,7 +138,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Image getImage(Object e)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                return Images.SECURITY.image();
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$

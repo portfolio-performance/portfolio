@@ -43,8 +43,8 @@ import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
 import name.abuchen.portfolio.snapshot.security.DividendTransaction;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
@@ -108,7 +108,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 new TableViewerCSVExporter(records).export(getTitle() + ".csv"); //$NON-NLS-1$
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
@@ -124,7 +124,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 recordColumns.showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(save).fill(toolBar, -1);
     }
@@ -139,7 +139,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 recordColumns.showHideShowColumnsMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
 
         new ActionContributionItem(config).fill(toolBar, -1);
@@ -699,7 +699,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public Image getImage(Object r)
             {
                 String note = ((Transaction) r).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$

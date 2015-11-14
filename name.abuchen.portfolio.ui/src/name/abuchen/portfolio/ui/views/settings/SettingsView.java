@@ -1,10 +1,5 @@
 package name.abuchen.portfolio.ui.views.settings;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
@@ -14,6 +9,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
+
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
 
 public class SettingsView extends AbstractFinanceView
 {
@@ -46,7 +46,7 @@ public class SettingsView extends AbstractFinanceView
                 tab.showAddMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        config.setImageDescriptor(Images.PLUS.descriptor());
         config.setToolTipText(Messages.MenuSettingsNew);
 
         new ActionContributionItem(config).fill(toolBar, -1);

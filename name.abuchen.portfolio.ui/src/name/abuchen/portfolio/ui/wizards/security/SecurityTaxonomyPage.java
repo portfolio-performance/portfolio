@@ -6,15 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
-
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.ValidationStatusProvider;
@@ -46,6 +37,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Spinner;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
 
 public class SecurityTaxonomyPage extends AbstractPage
 {
@@ -347,7 +347,7 @@ public class SecurityTaxonomyPage extends AbstractPage
                     final ClassificationLink link)
     {
         final Button deleteButton = new Button(block, SWT.PUSH);
-        deleteButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_REMOVE));
+        deleteButton.setImage(Images.REMOVE.image());
         deleteButton.addSelectionListener(new SelectionAdapter()
         {
             @Override

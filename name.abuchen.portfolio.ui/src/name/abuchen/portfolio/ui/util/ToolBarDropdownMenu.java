@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.util;
 
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -14,6 +12,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+
+import name.abuchen.portfolio.ui.Images;
 
 public abstract class ToolBarDropdownMenu<E> extends SelectionAdapter
 {
@@ -73,12 +73,12 @@ public abstract class ToolBarDropdownMenu<E> extends SelectionAdapter
         add(data, label, null);
     }
 
-    public final void add(final E data, String label, String imageKey)
+    public final void add(final E data, String label, Images image)
     {
         MenuItem menuItem = new MenuItem(menu, SWT.CHECK);
         menuItem.setText(label);
-        if (imageKey != null)
-            menuItem.setImage(PortfolioPlugin.image(imageKey));
+        if (image != null)
+            menuItem.setImage(image.image());
 
         menuItem.setData(data);
         menuItem.setData(INDEX, Integer.valueOf(menu.getItemCount() - 1));

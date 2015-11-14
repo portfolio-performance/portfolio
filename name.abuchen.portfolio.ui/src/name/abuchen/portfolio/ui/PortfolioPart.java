@@ -177,7 +177,7 @@ public class PortfolioPart implements LoadClientThread.Callback
 
         Label image = new Label(container, SWT.NONE);
         image.setBackground(container.getBackground());
-        image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_SMALL));
+        image.setImage(Images.LOGO_48.image());
 
         FormData data = new FormData();
         data.top = new FormAttachment(50, -50);

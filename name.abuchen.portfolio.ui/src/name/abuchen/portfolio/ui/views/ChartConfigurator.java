@@ -8,21 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.ConfigurationStore;
-import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -53,6 +38,21 @@ import org.eclipse.swt.widgets.Shell;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConsumerPriceIndex;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfigurationStore;
+import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 
 /* package */class ChartConfigurator extends Composite implements ConfigurationStoreOwner
 {
@@ -187,13 +187,13 @@ import org.swtchart.LineStyle;
         public Image getImage()
         {
             if (type == Security.class)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                return Images.SECURITY.image();
             else if (type == Account.class)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return Images.ACCOUNT.image();
             else if (type == Portfolio.class)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                return Images.PORTFOLIO.image();
             else if (type == Classification.class)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
+                return Images.CATEGORY.image();
             else
                 return null;
         }

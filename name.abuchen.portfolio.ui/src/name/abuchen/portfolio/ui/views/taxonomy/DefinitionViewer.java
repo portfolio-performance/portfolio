@@ -1,15 +1,5 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -21,6 +11,16 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Display;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
@@ -65,8 +65,7 @@ import org.eclipse.swt.widgets.Display;
             public Image getImage(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? PortfolioPlugin
-                                .image(PortfolioPlugin.IMG_QUICKFIX) : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
             }
 
         });

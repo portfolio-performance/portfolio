@@ -13,39 +13,6 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityEvent;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionOwner;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
@@ -89,6 +56,39 @@ import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
+
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
 {
@@ -240,7 +240,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 }
             }
         };
-        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setImageDescriptor(Images.PLUS.descriptor());
 
         new ActionContributionItem(action).fill(toolBar, -1);
     }
@@ -256,7 +256,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                                 .export(getTitle() + ".csv"); //$NON-NLS-1$
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
@@ -272,7 +272,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 securities.getColumnHelper().showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(save).fill(toolBar, -1);
     }
@@ -287,7 +287,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 securities.getColumnHelper().showHideShowColumnsMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
 
         new ActionContributionItem(config).fill(toolBar, -1);

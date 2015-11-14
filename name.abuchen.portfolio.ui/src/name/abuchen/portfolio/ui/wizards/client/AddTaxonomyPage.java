@@ -3,12 +3,6 @@ package name.abuchen.portfolio.ui.wizards.client;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.TaxonomyTemplate;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -21,6 +15,12 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class AddTaxonomyPage extends AbstractWizardPage
 {
@@ -75,7 +75,7 @@ public class AddTaxonomyPage extends AbstractWizardPage
                 TaxonomyTemplate t = (TaxonomyTemplate) element;
 
                 if (taxonomiesAdded.contains(t.getId()))
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_CHECK);
+                    return Images.CHECK.image();
                 else
                     return null;
             }

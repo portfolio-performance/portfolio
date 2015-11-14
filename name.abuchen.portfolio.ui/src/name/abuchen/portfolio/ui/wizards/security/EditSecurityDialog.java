@@ -3,12 +3,6 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.validation.IValidator;
@@ -36,6 +30,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public class EditSecurityDialog extends Dialog
 {
@@ -188,7 +188,7 @@ public class EditSecurityDialog extends Dialog
             }
         });
 
-        addPage(new SecurityMasterDataPage(model, bindings), PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY));
+        addPage(new SecurityMasterDataPage(model, bindings), Images.SECURITY.image());
         addPage(new AttributesPage(model, bindings), null);
         addPage(new SecurityTaxonomyPage(model, bindings), null);
         addPage(new HistoricalQuoteProviderPage(model, bindings), null);

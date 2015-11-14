@@ -3,17 +3,6 @@ package name.abuchen.portfolio.ui.wizards.splits;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -33,6 +22,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+
 public class PreviewTransactionsPage extends AbstractWizardPage
 {
     private class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
@@ -44,9 +44,9 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
 
                 if (t instanceof AccountTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                    return Images.ACCOUNT.image();
                 else if (t instanceof PortfolioTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    return Images.PORTFOLIO.image();
             }
             return null;
         }

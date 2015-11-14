@@ -12,33 +12,6 @@ import java.time.format.FormatStyle;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.math.Risk.Drawdown;
-import name.abuchen.portfolio.math.Risk.Volatility;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
-import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.util.Interval;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -73,6 +46,33 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
+
+import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
@@ -462,12 +462,12 @@ public class PerformanceView extends AbstractHistoricView
             {
                 if (element instanceof ClientPerformanceSnapshot.Category)
                 {
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
+                    return Images.CATEGORY.image();
                 }
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
-                    return position.getSecurity() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY) : null;
+                    return position.getSecurity() != null ? Images.SECURITY.image() : null;
                 }
 
                 return null;
@@ -602,8 +602,7 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Transaction transaction = (Transaction) element;
-                return PortfolioPlugin.image(transaction.getSecurity() != null ? PortfolioPlugin.IMG_SECURITY
-                                : PortfolioPlugin.IMG_ACCOUNT);
+                return transaction.getSecurity() != null ? Images.SECURITY.image() : Images.ACCOUNT.image();
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "security")); //$NON-NLS-1$
@@ -622,7 +621,7 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object e)
             {
                 String note = ((Transaction) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
@@ -666,7 +665,7 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return Images.ACCOUNT.image();
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$
@@ -762,7 +761,7 @@ public class PerformanceView extends AbstractHistoricView
     {
         private ExportDropDown(ToolBar toolBar)
         {
-            super(toolBar, Messages.MenuExportData, PortfolioPlugin.image(PortfolioPlugin.IMG_EXPORT), SWT.NONE);
+            super(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE);
         }
 
         @Override

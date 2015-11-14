@@ -4,6 +4,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -13,9 +33,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
@@ -37,26 +57,6 @@ import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSup
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
 
 public class AccountListView extends AbstractListView implements ModificationListener
 {
@@ -117,7 +117,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 accounts.editElement(account, 0);
             }
         };
-        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
+        action.setImageDescriptor(Images.PLUS.descriptor());
         action.setToolTipText(Messages.AccountMenuAdd);
         new ActionContributionItem(action).fill(toolBar, -1);
     }
@@ -135,15 +135,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         };
         filter.setChecked(isFiltered);
-        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_FILTER));
+        filter.setImageDescriptor(Images.FILTER.descriptor());
         filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
         new ActionContributionItem(filter).fill(toolBar, -1);
     }
 
     private void addConfigButton(final ToolBar toolBar)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, //
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_CONFIG), SWT.NONE)
+        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE)
         {
             @Override
             public void menuAboutToShow(IMenuManager manager)
@@ -264,8 +263,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
             {
                 Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
                 transactions.setData(Account.class.toString(), account);
-                transactions.setInput(account != null ? account.getTransactions()
-                                : new ArrayList<AccountTransaction>(0));
+                transactions.setInput(
+                                account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
                 transactions.refresh();
             }
         });
@@ -462,8 +461,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
                     long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider() / t.getShares());
-                    return Values.Money.format(Money.of(t.getCurrencyCode(), dividendPerShare), getClient()
-                                    .getBaseCurrency());
+                    return Values.Money.format(Money.of(t.getCurrencyCode(), dividendPerShare),
+                                    getClient().getBaseCurrency());
                 }
                 else
                 {
@@ -516,7 +515,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public Image getImage(Object e)
             {
                 String note = ((AccountTransaction) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
         ColumnViewerSorter.create(AccountTransaction.class, "note").attachTo(column); //$NON-NLS-1$

@@ -4,15 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.checks.Checker;
-import name.abuchen.portfolio.checks.Issue;
-import name.abuchen.portfolio.checks.QuickFix;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -48,6 +39,15 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+
+import name.abuchen.portfolio.checks.Checker;
+import name.abuchen.portfolio.checks.Issue;
+import name.abuchen.portfolio.checks.QuickFix;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 
 public class ConsistencyChecksJob extends AbstractClientJob
 {
@@ -200,11 +200,11 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 {
                     ReportedIssue issue = (ReportedIssue) element;
                     if (issue.getEntity() instanceof Account)
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                        return Images.ACCOUNT.image();
                     else if (issue.getEntity() instanceof Portfolio)
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                        return Images.PORTFOLIO.image();
                     else if (issue.getEntity() instanceof Client)
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_16);
+                        return Images.LOGO_16.image();
                     else
                         return null;
                 }
@@ -263,9 +263,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 public Image getImage(Object element)
                 {
                     ReportedIssue issue = (ReportedIssue) element;
-
-                    return PortfolioPlugin.image(issue.isFixed() ? PortfolioPlugin.IMG_CHECK
-                                    : PortfolioPlugin.IMG_QUICKFIX);
+                    return issue.isFixed() ? Images.CHECK.image() : Images.QUICKFIX.image();
                 }
             });
             layout.setColumnData(col.getColumn(), new ColumnPixelData(100));

@@ -5,12 +5,6 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -34,6 +28,12 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ImportIndizesPage extends AbstractWizardPage
 {
@@ -171,7 +171,7 @@ public class ImportIndizesPage extends AbstractWizardPage
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                return Images.SECURITY.image();
             }
         });
 
@@ -188,8 +188,7 @@ public class ImportIndizesPage extends AbstractWizardPage
             @Override
             public Image getImage(Object element)
             {
-                return client.getSecurities().contains(element) ? PortfolioPlugin.image(PortfolioPlugin.IMG_CHECK)
-                                : null;
+                return client.getSecurities().contains(element) ? Images.CHECK.image() : null;
             }
         });
 

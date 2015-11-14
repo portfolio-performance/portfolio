@@ -9,10 +9,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -30,6 +26,11 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class AboutDialog extends Dialog
 {
@@ -54,7 +55,7 @@ public class AboutDialog extends Dialog
 
         Label imageLabel = new Label(area, SWT.NONE);
         imageLabel.setBackground(area.getBackground());
-        imageLabel.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO));
+        imageLabel.setImage(Images.LOGO_128.image());
 
         text = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
         text.setText(aboutText);

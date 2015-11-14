@@ -1,15 +1,15 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public class SecurityMasterDataPage extends AbstractPage
 {
@@ -43,7 +43,7 @@ public class SecurityMasterDataPage extends AbstractPage
             info.setLayout(new RowLayout());
 
             Label l = new Label(info, SWT.NONE);
-            l.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_INFO));
+            l.setImage(Images.INFO.image());
 
             l = new Label(info, SWT.NONE);
             l.setText(Messages.MsgInfoChangingCurrencyNotPossible);

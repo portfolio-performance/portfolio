@@ -2,22 +2,6 @@ package name.abuchen.portfolio.ui.views.settings;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.Bookmark;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientSettings;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -33,6 +17,22 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 {
@@ -73,7 +73,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_TEXT);
+                return Images.TEXT.image();
             }
 
         });

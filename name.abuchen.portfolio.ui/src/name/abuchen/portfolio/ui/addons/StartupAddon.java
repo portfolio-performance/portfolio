@@ -26,6 +26,7 @@ import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
@@ -136,11 +137,7 @@ public class StartupAddon
         // setting window images
         // http://www.eclipse.org/forums/index.php/t/440442/
 
-        Window.setDefaultImages(new Image[] { PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_512),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_256),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_128),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_48),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_32),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_16) });
+        Window.setDefaultImages(new Image[] { Images.LOGO_512.image(), Images.LOGO_256.image(), Images.LOGO_128.image(),
+                        Images.LOGO_48.image(), Images.LOGO_32.image(), Images.LOGO_16.image() });
     }
 }

@@ -2,19 +2,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -23,6 +10,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
@@ -67,7 +67,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public Image getImage(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return getModel().hasWeightError(node) ? PortfolioPlugin.image(PortfolioPlugin.IMG_QUICKFIX) : null;
+                return getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
             }
         });
         new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$

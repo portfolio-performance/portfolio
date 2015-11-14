@@ -8,30 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.model.Named;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -57,6 +33,30 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
@@ -311,7 +311,7 @@ import org.eclipse.swt.widgets.Shell;
             public Image getImage(Object e)
             {
                 if (((TaxonomyNode) e).isUnassignedCategory())
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_UNASSIGNED_CATEGORY);
+                    return Images.UNASSIGNED_CATEGORY.image();
                 return super.getImage(e);
             }
         });

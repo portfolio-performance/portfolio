@@ -4,33 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -49,6 +22,33 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
 
 public final class PortfolioTransactionsViewer implements ModificationListener
 {
@@ -314,7 +314,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public Image getImage(Object e)
             {
                 String note = ((PortfolioTransaction) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "note").attachTo(column); //$NON-NLS-1$

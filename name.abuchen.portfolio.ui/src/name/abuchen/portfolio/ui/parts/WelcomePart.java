@@ -6,11 +6,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameter;
 import org.eclipse.core.commands.Parameterization;
@@ -33,6 +28,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class WelcomePart
 {
@@ -76,7 +77,7 @@ public class WelcomePart
         // first column: logo
         Label image = new Label(container, SWT.NONE);
         image.setBackground(container.getBackground());
-        image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO));
+        image.setImage(Images.LOGO_128.image());
 
         // second column: actions
         Composite actions = new Composite(container, SWT.NONE);
