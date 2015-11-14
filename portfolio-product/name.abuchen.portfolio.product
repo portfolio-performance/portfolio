@@ -53,14 +53,9 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
-      <property name="osgi.configuration.area" value="$LOCALAPPDATA$/PortfolioPerformance/configuration" os="win32" />
-      <property name="osgi.configuration.area" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/configuration" os="macosx" />
-      <property name="osgi.configuration.area" value="@user.home/.PortfolioPerformance/configuration" os="linux" />
-      <property name="osgi.configuration.cascaded" value="true" />
       <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />
       <property name="osgi.instance.area.default" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/workspace" os="macosx" />
       <property name="osgi.instance.area.default" value="@user.home/.PortfolioPerformance/workspace" os="linux" />
-      <property name="osgi.sharedConfiguration.area.readOnly" value="true" />
    </configurations>
 
 </product>
