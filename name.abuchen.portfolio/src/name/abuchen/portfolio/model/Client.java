@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
@@ -87,7 +89,7 @@ public class Client
 
         if (taxonomies == null)
             taxonomies = new ArrayList<Taxonomy>();
-        
+
         if (settings == null)
             settings = new ClientSettings();
         else
@@ -232,6 +234,7 @@ public class Client
 
     public void removeAccount(Account account)
     {
+        deleteReferenceAccount(account);
         deleteTransactions(account);
         deleteInvestmentPlans(account);
         deleteTaxonomyAssignments(account);
@@ -329,7 +332,7 @@ public class Client
                         .filter(t -> id.equals(t.getId())) //
                         .findAny().orElse(null);
     }
-    
+
     public ClientSettings getSettings()
     {
         return settings;
@@ -361,6 +364,35 @@ public class Client
     /* package */void setSecret(SecretKey secret)
     {
         this.secret = secret;
+    }
+
+    /**
+     * Removes the given account as reference account from any portfolios. As
+     * the model expects that there is always a reference account, an arbitrary
+     * other account is picked as reference account instead. Or, if no other
+     * account exists, a new account is created and used as reference account.
+     */
+    private void deleteReferenceAccount(Account account)
+    {
+        for (Portfolio portfolio : portfolios)
+        {
+            if (account.equals(portfolio.getReferenceAccount()))
+            {
+                portfolio.setReferenceAccount(null);
+
+                accounts.stream().filter(a -> !account.equals(a)).findAny()
+                                .ifPresent(a -> portfolio.setReferenceAccount(a));
+
+                if (portfolio.getReferenceAccount() == null)
+                {
+                    Account referenceAccount = new Account();
+                    referenceAccount.setName(MessageFormat.format(Messages.LabelDefaultReferenceAccountName,
+                                    portfolio.getName()));
+                    addAccount(referenceAccount);
+                    portfolio.setReferenceAccount(referenceAccount);
+                }
+            }
+        }
     }
 
     /**

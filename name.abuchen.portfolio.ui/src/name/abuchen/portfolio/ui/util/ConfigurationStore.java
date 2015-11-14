@@ -5,6 +5,8 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -202,6 +204,7 @@ public class ConfigurationStore
         preferences.setValue(identifier + ACTIVE, configurations.size() - 1);
 
         listener.onConfigurationPicked(active.getData());
+        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void rename(Configuration config)
@@ -214,6 +217,7 @@ public class ConfigurationStore
 
         config.setName(dlg.getValue());
         client.setProperty(identifier + '$' + configurations.indexOf(config), config.serialize());
+        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void delete(Configuration config)
@@ -228,6 +232,7 @@ public class ConfigurationStore
         active = configurations.get(0);
         storeConfigurations();
         listener.onConfigurationPicked(active.getData());
+        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void activate(Configuration config)
@@ -236,6 +241,7 @@ public class ConfigurationStore
         active = config;
         preferences.setValue(identifier + ACTIVE, configurations.indexOf(config));
         listener.onConfigurationPicked(config.getData());
+        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     public void updateActive(String data)
@@ -265,7 +271,8 @@ public class ConfigurationStore
         while (config != null)
         {
             String[] split = config.split(":="); //$NON-NLS-1$
-            configurations.add(new Configuration(split[0], split[1]));
+            if (split.length == 2)
+                configurations.add(new Configuration(split[0], split[1]));
 
             index++;
             config = client.getProperty(identifier + '$' + index);
@@ -290,6 +297,8 @@ public class ConfigurationStore
         // make sure on configuration is active
         if (active == null)
             active = configurations.get(0);
+
+        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void storeConfigurations()

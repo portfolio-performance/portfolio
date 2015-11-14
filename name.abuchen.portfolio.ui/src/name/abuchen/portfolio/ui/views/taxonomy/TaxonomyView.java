@@ -3,13 +3,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.resource.JFaceResources;
@@ -19,6 +12,13 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
+
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -50,7 +50,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierOrderByTaxonomy = TaxonomyView.class.getSimpleName() + "-ORDERBYTAXONOMY-" + taxonomy.getId(); //$NON-NLS-1$
 
-        this.model = getPart().make(TaxonomyModel.class, taxonomy);
+        this.model = make(TaxonomyModel.class, taxonomy);
         this.model.setExcludeUnassignedCategoryInCharts(part.getPreferenceStore().getBoolean(identifierUnassigned));
         this.model.setOrderByTaxonomyInStackChart(part.getPreferenceStore().getBoolean(identifierOrderByTaxonomy));
 

@@ -12,12 +12,6 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
-import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
-
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -49,6 +43,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class PortfolioPart implements LoadClientThread.Callback
 {
@@ -147,10 +147,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         Control control = sidebar.createSidebarControl(navigationBar);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
 
-        IEclipseContext childContext = context.createChild();
-        childContext.set(Composite.class, navigationBar);
-        childContext.set(Client.class, client);
-        ClientProgressProvider provider = ContextInjectionFactory.make(ClientProgressProvider.class, childContext);
+        ClientProgressProvider provider = make(ClientProgressProvider.class, client, navigationBar);
+
         GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
 
         book = new PageBook(sash, SWT.NONE);
@@ -432,7 +430,12 @@ public class PortfolioPart implements LoadClientThread.Callback
             if (clazz == null)
                 return;
 
-            view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, this.context);
+            IEclipseContext viewContext = this.context.createChild();
+            viewContext.set(Client.class, this.client);
+            viewContext.set(PreferenceStore.class, this.preferences);
+
+            view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
+            view.setContext(viewContext);
             view.init(this, parameter);
             view.createViewControl(book);
 
@@ -447,9 +450,12 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     private void disposeView()
     {
-        if (view != null && !view.getControl().isDisposed())
+        if (view != null)
         {
-            view.getControl().dispose();
+            view.getContext().dispose();
+
+            if (!view.getControl().isDisposed())
+                view.getControl().dispose();
             view = null;
         }
     }
@@ -572,7 +578,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
     }
 
-    public <T> T make(Class<T> type, Object... parameters)
+    private <T> T make(Class<T> type, Object... parameters)
     {
         IEclipseContext c2 = EclipseContextFactory.create();
         if (parameters != null)

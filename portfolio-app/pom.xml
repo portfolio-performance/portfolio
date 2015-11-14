@@ -9,13 +9,15 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.20.1-SNAPSHOT</version>
+	<version>0.20.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
 		<tycho-version>0.24.0</tycho-version>
+		<jarsigner.plugin.version>1.4</jarsigner.plugin.version>
+		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
@@ -236,6 +238,35 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>target-platform-configuration</artifactId>
 					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jarsigner-plugin</artifactId>
+					<version>${jarsigner.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>sign</id>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>verify</id>
+							<goals>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<skip>${jarsigner.skip}</skip>
+						<certs>true</certs>
+						<verbose>true</verbose>
+						<keystore>${keystore}</keystore>
+						<alias>${alias}</alias>
+						<storepass>${storepass}</storepass>
+						<keypass>${keypass}</keypass>
+						<tsa>http://time.certum.pl/</tsa>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

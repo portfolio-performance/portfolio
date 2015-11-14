@@ -26,16 +26,16 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
@@ -192,7 +192,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         else
         {
-            return LocalDate.now().minusYears(5);
+            return LocalDate.of(1900, 1, 1);
         }
     }
 

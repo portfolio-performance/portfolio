@@ -241,7 +241,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:(\\d*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
     private String identifier;
-    private boolean isUserConfigured = false;
 
     private List<Column> columns = new ArrayList<Column>();
     private Map<String, Column> id2column = new HashMap<String, Column>();
@@ -527,11 +526,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
     }
 
-    public boolean isUserConfigured()
-    {
-        return isUserConfigured;
-    }
-
     public void addColumn(Column column)
     {
         // columns used to be identified by index only
@@ -546,11 +540,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     {
         createFromColumnConfig();
 
-        if (policy.getColumnCount() > 0)
-        {
-            isUserConfigured = true;
-        }
-        else
+        if (policy.getColumnCount() == 0)
         {
             for (Column column : columns)
             {

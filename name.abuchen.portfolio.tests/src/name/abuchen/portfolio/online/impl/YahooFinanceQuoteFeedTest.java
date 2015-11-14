@@ -14,11 +14,12 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class YahooFinanceQuoteFeedTest
@@ -33,10 +34,10 @@ public class YahooFinanceQuoteFeedTest
         security.setIsin("DE0007100000");
         security.setTickerSymbol("DAI.DE");
 
-        LocalDate fiveYearsAgo = LocalDate.now().minusYears(5);
+        LocalDate nineteenHundred = LocalDate.of(1900, 1, 1);
 
         LocalDate date = feed.caculateStart(security);
-        assertThat(date, equalTo(fiveYearsAgo));
+        assertThat(date, equalTo(nineteenHundred));
 
         security.addPrice(new SecurityPrice(LocalDate.now(), 100));
         date = feed.caculateStart(security);

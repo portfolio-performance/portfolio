@@ -88,11 +88,13 @@ public class Messages extends NLS
     public static String IssueTransactionMissingCurrencyCode;
     public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
+    public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
     public static String LabelEuropeanCentralBank;
     public static String LabelHTMLTable;
     public static String LabelInterest;
     public static String LabelJointPortfolio;
+    public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
     public static String LabelRemovals;
@@ -108,6 +110,8 @@ public class Messages extends NLS
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
+    public static String MsgErrorDuplicateISIN;
+    public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
     public static String MsgErrorsConvertingValue;
     public static String MsgFileNotFound;

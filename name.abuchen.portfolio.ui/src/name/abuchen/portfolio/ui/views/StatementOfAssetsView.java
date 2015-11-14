@@ -7,6 +7,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ToolBar;
+
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -15,16 +25,9 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
 
 public class StatementOfAssetsView extends AbstractFinanceView
 {
@@ -38,6 +41,13 @@ public class StatementOfAssetsView extends AbstractFinanceView
     protected String getTitle()
     {
         return Messages.LabelStatementOfAssets;
+    }
+
+    @Inject
+    @Optional
+    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
+    {
+        updateTitle(Messages.LabelStatementOfAssets + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
     }
 
     @Override

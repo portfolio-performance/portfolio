@@ -235,6 +235,7 @@ import org.swtchart.LineStyle;
         }
     }
 
+    @FunctionalInterface
     public interface Listener
     {
         void onUpdate();

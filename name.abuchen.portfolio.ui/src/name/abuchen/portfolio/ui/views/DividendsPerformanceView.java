@@ -5,42 +5,8 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendTransaction;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.MarkDirtyListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
-import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
-
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -62,6 +28,43 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
+import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
+import name.abuchen.portfolio.snapshot.security.DividendTransaction;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.Column;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport.MarkDirtyListener;
+import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
+import name.abuchen.portfolio.ui.util.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+
 public class DividendsPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
     @Inject
@@ -77,6 +80,13 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     protected String getTitle()
     {
         return Messages.LabelSecurityPerformance;
+    }
+
+    @Inject
+    @Optional
+    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
+    {
+        updateTitle(Messages.LabelSecurityPerformance + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
     }
 
     @Override

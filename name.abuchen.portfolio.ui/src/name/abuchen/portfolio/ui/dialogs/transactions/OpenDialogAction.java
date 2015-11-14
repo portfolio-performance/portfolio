@@ -3,13 +3,13 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
 
 public class OpenDialogAction extends Action
 {
@@ -85,7 +85,7 @@ public class OpenDialogAction extends Action
     {
         Objects.requireNonNull(type);
 
-        AbstractTransactionDialog dialog = owner.getPart().make(type, parameters);
+        AbstractTransactionDialog dialog = owner.make(type, parameters);
 
         if (prepare != null)
             ((Consumer<AbstractTransactionDialog>) prepare).accept(dialog);
