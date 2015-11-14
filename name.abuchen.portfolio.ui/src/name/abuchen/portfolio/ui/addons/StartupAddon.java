@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -49,11 +50,9 @@ public class StartupAddon
     @Inject
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event,
-                    final IWorkbench workbench, final EPartService partService)
+                    final IWorkbench workbench, final EPartService partService,
+                    @Preference(value = PortfolioPlugin.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
-        boolean autoUpdate = PortfolioPlugin.getDefault().getPreferenceStore()
-                        .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);
-
         if (autoUpdate)
         {
             Job job = new Job(Messages.JobMsgCheckingForUpdates)
