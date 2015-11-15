@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -234,6 +235,18 @@ import name.abuchen.portfolio.online.QuoteFeed;
         try
         {
             return Math.abs(Math.round(numberFormat.parse(value).doubleValue() * Values.Amount.factor()));
+        }
+        catch (ParseException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /* protected */BigDecimal asExchangeRate(String value)
+    {
+        try
+        {
+            return BigDecimal.valueOf(numberFormat.parse(value).doubleValue());
         }
         catch (ParseException e)
         {

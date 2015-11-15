@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
 /* package */final class PDFParser
@@ -182,12 +183,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 if (isOptional)
                     return;
 
-                throw new IllegalArgumentException(MessageFormat.format("Not all pattern matched {0} ", //$NON-NLS-1$
-                                pattern.toString()));
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
+                                patternNo, pattern.size(), pattern.toString()));
             }
 
             if (values.size() != attributes.length)
-                throw new IllegalArgumentException(MessageFormat.format("Detected values {0} but expected {1}", //$NON-NLS-1$
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorMissingValueMatches,
                                 values.keySet().toString(), Arrays.toString(attributes)));
 
             if (assignment == null)

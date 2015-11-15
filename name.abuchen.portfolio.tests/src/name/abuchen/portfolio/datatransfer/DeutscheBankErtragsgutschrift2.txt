@@ -1,0 +1,34 @@
+002950de23. März 2015
+Deutsche Bank Privat- und Geschäftskunden AG
+V 123/456 2 123
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt
+23. März 2015
+Ihr Depot Nr. 123 1234567 00
+Ertragsgutschrift
+Stück WKN ISIN
+123,000000 A0J206 DE000A0J2060
+ISHS-MSCI N. AMERIC.UCITS ETF BE.SH.(DT.ZT.)
+Ausschüttung pro Stück 0,1402000000 USD Zahlbar 19.03.2015
+Thesaurierung pro Stück 0,0038406000 USD Geschäftsjahr 2014 / 2015
+Bruttoertrag 17,38 USD 16,17 EUR
+Umrechnungskurs USD zu EUR 1,0746000000
+Gutschrift mit Wert 24.03.2015 16,17 EUR
+Steuerliche Bemessungsgrundlagen zur Ertragsgutschrift - keine Steuerbescheinigung
+Ausländischer Dividendenanteil,
+Veräußerungsgewinne, Stillhalterprämien und 19,59 EUR
+Termingeschäfte
+Steuerpflichtiger Ertrag Ausland (ohne ausländische 0,55 EUR
+Dividenden)
+Auf Ihren Freistellungsbetrag angerechnet 20,14 EUR
+Anrechenbare ausländische Quellensteuer 3,34 EUR
+Wir überweisen den Betrag von 16,17 EUR auf Ihr Konto 1234567 40.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+Deutsche Bank Privat- und Geschäftskunden Aktiengesellschaft
+mit Sitz in Frankfurt am Main
+Vorsitzender des Aufsichtsrats: Rainer Neske HRB Nr. 47 141 - Amtsgericht Frankfurt am Main
+Vorstand: Wilhelm von Haller (Sprecher), Umsatzsteuer ID Nr.: DE811907980
+Rainer Burmester, Alp Dalkilic, Joachim von Plotho Deutsche Bank Gruppe im Internet: www.deutsche-bank.de
+TRINCM0001 ERTR 12345678 12345678 21.03.2015

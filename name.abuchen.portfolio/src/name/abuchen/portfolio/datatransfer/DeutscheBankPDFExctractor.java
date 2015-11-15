@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.PDFParser.Block;
@@ -41,16 +42,16 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name", "currency")
-                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite")
-                        .match("^.{15}(?<name>.*)$")
-                        .match("^WKN (?<wkn>[^ ]*) (.*)$")
-                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$")
+                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite") //
+                        .match("^.{15}(?<name>.*)$") //
+                        .match("^WKN (?<wkn>[^ ]*) (.*)$") //
+                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("shares")
-                        .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
+                        .section("shares") //
+                        .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -95,15 +96,13 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name", "currency")
-                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite")
-                        .match("^.{15}(?<name>.*)$")
-                        .match("^WKN (?<wkn>[^ ]*) (.*)$")
-                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite") //
+                        .match("^.{15}(?<name>.*)$") //
+                        .match("^WKN (?<wkn>[^ ]*) (.*)$") //
+                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
+                        .section("shares") //
                         .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -115,13 +114,13 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("tax", "currency")
-                        .optional()
+                        .section("tax", "currency") //
+                        .optional() //
                         .match("Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
-                        .section("soli", "currency")
+                        .section("soli", "currency") //
                         .optional()
                         .match("Solidaritätszuschlag auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<soli>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
@@ -137,7 +136,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 
-                        .section("xetra", "currency")
+                        .section("xetra", "currency") //
                         .match("XETRA-Kosten (?<currency>\\w{3}+) -(?<xetra>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
@@ -161,21 +160,16 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                             return transaction;
                         })
 
-                        .section("wkn", "isin", "name", "currency")
-                        //
-                        .find("Stück WKN ISIN")
-                        //
-                        .match("(\\d+,\\d*) (?<wkn>\\S*) (?<isin>\\S*)")
-                        //
-                        .match("^(?<name>.*)$")
-                        //
-                        .match("Bruttoertrag ([\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("Stück WKN ISIN") //
+                        .match("(\\d+,\\d*) (?<wkn>\\S*) (?<isin>\\S*)") //
+                        .match("^(?<name>.*)$") //
+                        .match("Bruttoertrag ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("shares")
-                        //
+                        .section("shares") //
                         .match("(?<shares>\\d+,\\d*) (\\S*) (\\S*)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -184,7 +178,25 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // will match lump sum only if forex data exists
+                        .section("forexSum", "forexCurrency", "lumpSum", "currency", "exchangeRate") //
+                        .optional() //
+                        .match("Bruttoertrag (?<forexSum>[\\d.]+,\\d+) (?<forexCurrency>\\w{3}+) (?<lumpSum>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .match("Umrechnungskurs (\\w{3}+) zu (\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            Money lumpSum = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("lumpSum")));
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexSum")));
+                            BigDecimal exchangeRate = BigDecimal.ONE.divide( //
+                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                            Unit unit = new Unit(Unit.Type.LUMPSUM, lumpSum, forex, exchangeRate);
+
+                            // add lump sum unit only if currency code of
+                            // security actually matches
+                            if (t.getSecurity().getCurrencyCode().equals(unit.getForex().getCurrencyCode()))
+                                t.addUnit(unit);
                         })
 
                         .wrap(t -> new TransactionItem(t)));

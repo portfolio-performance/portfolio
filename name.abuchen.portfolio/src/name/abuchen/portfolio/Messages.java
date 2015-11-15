@@ -113,7 +113,10 @@ public class Messages extends NLS
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
+    public static String MsgErrorMissingValueMatches;
+    public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorsConvertingValue;
+    public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgKeyLengthNotSupported;
     public static String MsgLoadingExchangeRates;

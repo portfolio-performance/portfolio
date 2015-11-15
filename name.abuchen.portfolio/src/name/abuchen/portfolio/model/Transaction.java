@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -226,7 +228,8 @@ public abstract class Transaction implements Annotated
     {
         Objects.requireNonNull(unit.getAmount());
         if (!unit.getAmount().getCurrencyCode().equals(currencyCode))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorUnitCurrencyMismatch,
+                            unit.getType().toString(), unit.getAmount().getCurrencyCode(), currencyCode));
 
         if (units == null)
             units = new ArrayList<Unit>();
@@ -262,8 +265,8 @@ public abstract class Transaction implements Annotated
      */
     public Money getUnitSum(Unit.Type type, CurrencyConverter converter)
     {
-        return getUnits().filter(u -> u.getType() == type).collect(
-                        MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
+        return getUnits().filter(u -> u.getType() == type)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
                             if (converter.getTermCurrency().equals(unit.getAmount().getCurrencyCode()))
                                 return unit.getAmount();
                             else if (unit.getForex() != null)

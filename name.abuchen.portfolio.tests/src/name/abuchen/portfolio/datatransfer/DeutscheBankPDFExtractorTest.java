@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.hamcrest.number.IsCloseTo;
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -28,8 +31,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class DeutscheBankPDFExtractorTest
@@ -127,6 +128,50 @@ public class DeutscheBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) results.get(0).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
+    }
+
+    @Test
+    public void testErtragsgutschrift2() throws IOException
+    {
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("DeutscheBankErtragsgutschrift2.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getName(), is("ISHS-MSCI N. AMERIC.UCITS ETF BE.SH.(DT.ZT.)"));
+        assertThat(security.getIsin(), is("DE000A0J2060"));
+        assertThat(security.getWkn(), is("A0J206"));
+        assertThat(security.getCurrencyCode(), is("USD"));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-03-24")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 16_17L)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
+
+        Optional<Unit> lumpSum = transaction.getUnit(Unit.Type.LUMPSUM);
+        assertThat(lumpSum.isPresent(), is(true));
+        assertThat(lumpSum.get().getAmount(), is(Money.of("EUR", 16_17L)));
+        assertThat(lumpSum.get().getForex(), is(Money.of("USD", 17_38L)));
+        assertThat(lumpSum.get().getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.930578, 0.000001));
     }
 
     @Test
