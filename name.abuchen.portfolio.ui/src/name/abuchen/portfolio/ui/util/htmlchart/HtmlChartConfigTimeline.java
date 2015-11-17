@@ -17,6 +17,7 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
     private String numberFormatLocale = "de";
     private boolean noLegend = false;
     private boolean useLogScale = false;
+    private boolean allowZoom = true;
     private Date minX = null;
     private Date maxX = null;
     private Double minY = Double.NaN;
@@ -82,6 +83,16 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
     public void setUseLogScale(boolean useLogScale)
     {
         this.useLogScale = useLogScale;
+    }
+
+    public boolean isAllowZoom()
+    {
+        return allowZoom;
+    }
+
+    public void setAllowZoom(boolean allowZoom)
+    {
+        this.allowZoom = allowZoom;
     }
 
     public Double getMinY()
@@ -405,6 +416,7 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         json.put("numberFormat", numberFormat);
         json.put("numberFormatLocale", numberFormatLocale);
         json.put("noLegend", noLegend);
+        //json.put("allowZoom", allowZoom);
 
         if (verticalMarker != null)
             json.put("verticalMarker", verticalMarker.getJson());
