@@ -15,7 +15,6 @@
 // args.showLegend         : true (default) if the legend should be displayed, when false, the legend will be hidden
 // args.useLogScale        : true if the y-Scale should be a logarithmic scale, false (default) if a linear scale should be used
 // args.allowZoom          : true (default) allow to zoom the chart on Y-scale using the mouse wheel, false to disable Y-zoom
-// args.showSlider         : true shows a slider below the chart that allows to move/zoom along the X-axis, false (default) hides the slider
 // args.allowDrag          : true (default) allow dragging (only meaningful when Zoom and/or horizontal slider is is allowed), false to disable dragging
 function LineChart(args) {
 	'use strict';
@@ -63,7 +62,7 @@ function LineChart(args) {
 		element : document.getElementById('y_axis')
 	});
 
-	if (!args.noLegend) {
+	if (args.showLegend==undefined || args.showLegend) {
 		legend = new Rickshaw.Graph.Legend({
 			graph : graph,
 			element : document.getElementById('legend')

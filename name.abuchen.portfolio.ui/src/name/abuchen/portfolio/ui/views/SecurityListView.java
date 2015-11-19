@@ -386,7 +386,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         chartVMarkerConfig = new HtmlChartConfigTimelineVerticalMarkerList("buy/sell", 2, new RGB(255, 140, 0), 0.8,
                         new RGB(255, 140, 0), 0.9, true);
         chartConfig.setTitle("...");
-        chartConfig.setNoLegend(true);
+        chartConfig.setShowLegend(false);
         chartConfig.setVerticalMarker(chartVMarkerConfig);
         chart = new HtmlChart(chartConfig);
 

@@ -247,7 +247,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     {
         chartConfig = new HtmlChartConfigTimeline();
         chartConfig.setTitle(Messages.LabelConsumerPriceIndex);
-        chartConfig.setNoLegend(true);
+        chartConfig.setShowLegend(false);
         chart = new HtmlChart(chartConfig);
         chart.createControl(parent);
     }
