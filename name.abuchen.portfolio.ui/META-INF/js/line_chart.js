@@ -18,10 +18,11 @@
 // args.allowDrag          : true (default) allow dragging (only meaningful when Zoom and/or horizontal slider is is allowed), false to disable dragging
 function LineChart(args) {
 	'use strict';
-	var mouseDown = [false, false, false, false, false, false, false, false], graph, x_axis, y_axis, legend, highlight, zoomBehavior, hoverDetail, resize, vmarker;
+	var mouseDown = [false, false, false, false, false, false, false, false], graph, x_axis, y_axis, vline, legend, highlight, zoomBehavior, dragBehavior, hoverDetail, resize, vmarker;
 
-	if (args === undefined)
+	if (args === undefined) {
 		return;
+	}
 
 	graph = new Rickshaw.Graph({
 		element : document.querySelector("#chart"),
@@ -37,10 +38,6 @@ function LineChart(args) {
 	x_axis = new Rickshaw.Graph.Axis.Time({
 		graph : graph
 	});
-
-	if (args !== undefined && args.verticalMarker !== undefined) {
-		var vline = new Rickshaw.Graph.VerticalLine(graph, args.verticalMarker);
-	};
 
 	y_axis = new Rickshaw.Graph.Axis.Y({
 		graph : graph,
@@ -62,7 +59,11 @@ function LineChart(args) {
 		element : document.getElementById('y_axis')
 	});
 
-	if (args.showLegend==undefined || args.showLegend) {
+	if (args !== undefined && args.verticalMarker !== undefined) {
+		vline = new Rickshaw.Graph.VerticalLine(graph, args.verticalMarker);
+	}
+
+	if (args.showLegend === undefined || args.showLegend) {
 		legend = new Rickshaw.Graph.Legend({
 			graph : graph,
 			element : document.getElementById('legend')
@@ -84,10 +85,16 @@ function LineChart(args) {
 			}
 		});
 	}
-	
-	if (args.allowZoom) {
+
+	if (args.allowZoom === undefined || args.allowZoom) {
 		zoomBehavior = new Rickshaw.Graph.Behavior.MouseWheelZoom({
-				graph : graph
+			graph : graph
+		});
+	}
+
+	if (args.allowDrag === undefined || args.allowDrag) {
+		dragBehavior = new Rickshaw.Graph.Behavior.DragZoomedChart({
+			graph : graph
 		});
 	}
 
@@ -110,7 +117,7 @@ function LineChart(args) {
 
 			content = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
 
-			if (mouseDown[0]) {
+			if (mouseDown[2]) {	// 0= left, 1= middle, 2= right
 				series = graph.series;
 				numSeries = series.length;
 				content += '<table id="detail_table">';
