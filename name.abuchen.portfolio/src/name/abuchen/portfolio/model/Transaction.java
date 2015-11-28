@@ -276,26 +276,6 @@ public abstract class Transaction implements Annotated
                         }));
     }
 
-    public boolean isPotentialDuplicate(Transaction other)
-    {
-        if (!other.getDate().equals(date))
-            return false;
-
-        if (!other.getCurrencyCode().equals(currencyCode))
-            return false;
-
-        if (other.getAmount() != getAmount())
-            return false;
-
-        if (other.getShares() != shares)
-            return false;
-
-        if (!Objects.equals(other.getSecurity(), security))
-            return false;
-
-        return true;
-    }
-
     public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
     {
         Collections.sort(transactions, new ByDate());

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.model;
+package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -18,15 +18,26 @@ import java.util.Set;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
-public class TransactionTest
+import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+
+public class DetectDuplicatesActionTest
 {
     @SuppressWarnings("nls")
     @Test
     public void testDuplicateDetection4AccountTransaction() throws Exception
     {
+        DetectDuplicatesAction action = new DetectDuplicatesAction();
+
         new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount")
-                        .before((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(true)))
-                        .after((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(false))) //
+                        .before((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
+                                        is(Code.WARNING)))
+                        .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
                         .run();
     }
 
@@ -34,10 +45,29 @@ public class TransactionTest
     @Test
     public void testDuplicateDetection4PortfolioTransaction() throws Exception
     {
+        DetectDuplicatesAction action = new DetectDuplicatesAction();
+
         new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "forex",
-                        "monetaryAmount").before((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(true)))
-                        .after((name, o, c) -> assertThat(name, o.isPotentialDuplicate(c), is(false))) //
-                        .run();
+                        "monetaryAmount") //
+                                        .before((name, o, c) -> assertThat(name,
+                                                        action.process(o, portfolio(c)).getCode(), is(Code.WARNING)))
+                                        .after((name, o, c) -> assertThat(name,
+                                                        action.process(o, portfolio(c)).getCode(), is(Code.OK)))
+                                        .run();
+    }
+
+    private Account account(AccountTransaction t)
+    {
+        Account a = new Account();
+        a.addTransaction(t);
+        return a;
+    }
+
+    private Portfolio portfolio(PortfolioTransaction t)
+    {
+        Portfolio p = new Portfolio();
+        p.addTransaction(t);
+        return p;
     }
 
     @FunctionalInterface
@@ -104,14 +134,12 @@ public class TransactionTest
                 p.getWriteMethod().invoke(other, argument);
             }
 
-            if (before != null)
-                before.accept(change.getName(), instance, other);
+            before.accept(change.getName(), instance, other);
 
             change.getWriteMethod().invoke(other,
                             alternative(change.getPropertyType(), change.getReadMethod().invoke(other)));
 
-            if (after != null)
-                after.accept(change.getName(), instance, other);
+            after.accept(change.getName(), instance, other);
         }
 
         private Object alternative(Class<?> propertyType, Object value)

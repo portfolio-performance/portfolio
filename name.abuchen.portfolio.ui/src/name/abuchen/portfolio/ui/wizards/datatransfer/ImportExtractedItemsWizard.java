@@ -3,15 +3,14 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.jface.wizard.Wizard;
+
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
-import org.eclipse.jface.wizard.Wizard;
 
 public class ImportExtractedItemsWizard extends Wizard
 {
@@ -42,18 +41,14 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public boolean performFinish()
     {
-        Portfolio primaryPortfolio = page.getPrimaryPortfolio();
-        Account primaryAccount = page.getPrimaryAccount();
-        Portfolio secondaryPortfolio = page.getSecondaryPortfolio();
-        Account secondaryAccount = page.getSecondaryAccount();
+        InsertAction action = new InsertAction(client);
 
         boolean isDirty = false;
-
-        for (Extractor.Item item : page.getItems())
+        for (ExtractedEntry entry : page.getEntries())
         {
-            if (item.isImported() && !item.isDuplicate())
+            if (entry.isImported() && !entry.isDuplicate())
             {
-                item.insert(client, primaryPortfolio, primaryAccount, secondaryPortfolio, secondaryAccount);
+                entry.getItem().apply(action, page);
                 isDirty = true;
             }
         }

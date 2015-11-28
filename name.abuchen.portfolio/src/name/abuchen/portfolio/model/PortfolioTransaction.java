@@ -100,21 +100,4 @@ public class PortfolioTransaction extends Transaction
     {
         return Money.of(getCurrencyCode(), getActualPurchasePrice());
     }
-
-    @Override
-    public boolean isPotentialDuplicate(Transaction other)
-    {
-        if (!(other instanceof PortfolioTransaction))
-            return false;
-
-        if (!super.isPotentialDuplicate(other))
-            return false;
-
-        PortfolioTransaction pother = (PortfolioTransaction) other;
-
-        if (type != pother.getType())
-            return false;
-
-        return true;
-    }
 }

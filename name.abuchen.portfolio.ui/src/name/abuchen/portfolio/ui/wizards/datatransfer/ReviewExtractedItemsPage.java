@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -39,9 +40,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.ImportAction;
+import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -57,7 +61,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
-public class ReviewExtractedItemsPage extends AbstractWizardPage
+public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
     private TableViewer tableViewer;
     private TableViewer errorTableViewer;
@@ -75,7 +79,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
     private final Extractor extractor;
     private List<File> files;
 
-    private List<Extractor.Item> allItems = new ArrayList<Extractor.Item>();
+    private List<ExtractedEntry> allEntries = new ArrayList<ExtractedEntry>();
 
     public ReviewExtractedItemsPage(Client client, Extractor extractor, List<File> files)
     {
@@ -89,26 +93,30 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         setDescription(Messages.PDFImportWizardDescription);
     }
 
-    public List<Extractor.Item> getItems()
+    public List<ExtractedEntry> getEntries()
     {
-        return allItems;
+        return allEntries;
     }
 
-    public Portfolio getPrimaryPortfolio()
+    @Override
+    public Portfolio getPortfolio()
     {
         return (Portfolio) ((IStructuredSelection) primaryPortfolio.getSelection()).getFirstElement();
     }
 
+    @Override
     public Portfolio getSecondaryPortfolio()
     {
         return (Portfolio) ((IStructuredSelection) secondaryPortfolio.getSelection()).getFirstElement();
     }
 
-    public Account getPrimaryAccount()
+    @Override
+    public Account getAccount()
     {
         return (Account) ((IStructuredSelection) primaryAccount.getSelection()).getFirstElement();
     }
 
+    @Override
     public Account getSecondaryAccount()
     {
         return (Account) ((IStructuredSelection) secondaryAccount.getSelection()).getFirstElement();
@@ -130,7 +138,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         primaryAccount = new ComboViewer(cmbAccount);
         primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
         primaryAccount.setInput(client.getActiveAccounts());
-        primaryAccount.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allItems));
+        primaryAccount.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allEntries));
         cmbAccount.select(0);
 
         lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
@@ -149,7 +157,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         primaryPortfolio = new ComboViewer(cmbPortfolio);
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
         primaryPortfolio.setInput(client.getActivePortfolios());
-        primaryPortfolio.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allItems));
+        primaryPortfolio.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allEntries));
         cmbPortfolio.select(0);
 
         lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -239,9 +247,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Extractor.Item item)
+            public String getText(ExtractedEntry entry)
             {
-                LocalDate date = item.getDate();
+                LocalDate date = entry.getItem().getDate();
                 return date != null ? Values.Date.format(date) : null;
             }
         });
@@ -252,25 +260,26 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Extractor.Item item)
+            public String getText(ExtractedEntry entry)
             {
-                return item.getTypeInformation();
+                return entry.getItem().getTypeInformation();
             }
 
             @Override
-            public Image getImage(Extractor.Item item)
+            public Image getImage(ExtractedEntry entry)
             {
-                if (item.getSubject() instanceof AccountTransaction)
+                Annotated subject = entry.getItem().getSubject();
+                if (subject instanceof AccountTransaction)
                     return Images.ACCOUNT.image();
-                else if (item.getSubject() instanceof PortfolioTransaction)
+                else if (subject instanceof PortfolioTransaction)
                     return Images.PORTFOLIO.image();
-                else if (item.getSubject() instanceof Security)
+                else if (subject instanceof Security)
                     return Images.SECURITY.image();
-                else if (item.getSubject() instanceof BuySellEntry)
+                else if (subject instanceof BuySellEntry)
                     return Images.PORTFOLIO.image();
-                else if (item.getSubject() instanceof AccountTransferEntry)
+                else if (subject instanceof AccountTransferEntry)
                     return Images.ACCOUNT.image();
-                else if (item.getSubject() instanceof PortfolioTransferEntry)
+                else if (subject instanceof PortfolioTransferEntry)
                     return Images.PORTFOLIO.image();
                 else
                     return null;
@@ -283,9 +292,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Extractor.Item item)
+            public String getText(ExtractedEntry entry)
             {
-                return Values.Amount.formatNonZero(item.getAmount());
+                return Values.Amount.formatNonZero(entry.getItem().getAmount());
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
@@ -295,9 +304,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Extractor.Item item)
+            public String getText(ExtractedEntry entry)
             {
-                return Values.Share.formatNonZero(item.getShares());
+                return Values.Share.formatNonZero(entry.getItem().getShares());
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
@@ -307,9 +316,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         column.setLabelProvider(new FormattedLabelProvider()
         {
             @Override
-            public String getText(Extractor.Item item)
+            public String getText(ExtractedEntry entry)
             {
-                Security security = item.getSecurity();
+                Security security = entry.getItem().getSecurity();
                 return security != null ? security.getName() : null;
             }
         });
@@ -340,19 +349,19 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
 
         for (Object element : selection.toList())
         {
-            Extractor.Item item = (Extractor.Item) element;
+            ExtractedEntry entry = (ExtractedEntry) element;
 
-            // an item will be imported if it is marked as to be
+            // an entry will be imported if it is marked as to be
             // imported *and* not a duplicate
-            atLeastOneImported = atLeastOneImported || (item.isImported() && !item.isDuplicate());
+            atLeastOneImported = atLeastOneImported || (entry.isImported() && !entry.isDuplicate());
 
-            // an item will not be imported if it marked as not to be
+            // an entry will not be imported if it marked as not to be
             // imported *or* if it is marked as duplicate
-            atLeastOneNotImported = atLeastOneNotImported || (!item.isImported() || item.isDuplicate());
+            atLeastOneNotImported = atLeastOneNotImported || (!entry.isImported() || entry.isDuplicate());
         }
 
-        // provide a hint to the user why the item is struck out
-        if (selection.size() == 1 && ((Extractor.Item) selection.getFirstElement()).isDuplicate())
+        // provide a hint to the user why the entry is struck out
+        if (selection.size() == 1 && ((ExtractedEntry) selection.getFirstElement()).isDuplicate())
         {
             manager.add(new LabelOnly(Messages.LabelPotentialDuplicate));
         }
@@ -365,7 +374,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 public void run()
                 {
                     for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                        ((Extractor.Item) element).setImported(false);
+                        ((ExtractedEntry) element).setImported(false);
 
                     tableViewer.refresh();
                 }
@@ -381,8 +390,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                 {
                     for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
                     {
-                        ((Extractor.Item) element).setImported(true);
-                        ((Extractor.Item) element).setDuplicate(false);
+                        ((ExtractedEntry) element).setImported(true);
+                        ((ExtractedEntry) element).setDuplicate(false);
                     }
 
                     tableViewer.refresh();
@@ -404,12 +413,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
 
                     final List<Exception> errors = new ArrayList<Exception>();
-                    final List<Extractor.Item> items = extractor.extract(files, errors);
+                    List<ExtractedEntry> entries = extractor //
+                                    .extract(files, errors).stream() //
+                                    .map(i -> new ExtractedEntry(i)) //
+                                    .collect(Collectors.toList());
 
                     // Logging them is not a bad idea if the whole method fails
                     PortfolioPlugin.log(errors);
 
-                    Display.getDefault().asyncExec(() -> setResults(items, errors));
+                    Display.getDefault().asyncExec(() -> setResults(entries, errors));
 
                     return Status.OK_STATUS;
                 }
@@ -421,22 +433,22 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         }
     }
 
-    private void setResults(List<Extractor.Item> items, List<Exception> errors)
+    private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
-        markDuplicates(items);
+        markDuplicates(entries);
 
-        allItems.addAll(items);
-        tableViewer.setInput(allItems);
+        allEntries.addAll(entries);
+        tableViewer.setInput(allEntries);
         errorTableViewer.setInput(errors);
 
-        for (Extractor.Item item : items)
+        for (ExtractedEntry entry : entries)
         {
-            if (item instanceof Extractor.AccountTransferItem)
+            if (entry.getItem() instanceof Extractor.AccountTransferItem)
             {
                 lblSecondaryAccount.setVisible(true);
                 secondaryAccount.getControl().setVisible(true);
             }
-            else if (item instanceof Extractor.PortfolioTransferItem)
+            else if (entry.getItem() instanceof Extractor.PortfolioTransferItem)
             {
                 lblSecondaryPortfolio.setVisible(true);
                 secondaryPortfolio.getControl().setVisible(true);
@@ -444,22 +456,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         }
     }
 
-    private void markDuplicatesAndRefresh(List<Extractor.Item> items)
+    private void markDuplicatesAndRefresh(List<ExtractedEntry> entries)
     {
-        markDuplicates(items);
+        markDuplicates(entries);
         tableViewer.refresh();
     }
 
-    private void markDuplicates(List<Extractor.Item> items)
+    private void markDuplicates(List<ExtractedEntry> entries)
     {
-        Account account = getPrimaryAccount();
-        Portfolio portfolio = getPrimaryPortfolio();
-        for (Extractor.Item item : items)
-        {
-            item.setDuplicate(false);
-            item.markDuplicates(AccountTransaction.class, account.getTransactions());
-            item.markDuplicates(PortfolioTransaction.class, portfolio.getTransactions());
-        }
+        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        for (ExtractedEntry entry : entries)
+            entry.setDuplicate(entry.getItem().apply(action, this).getCode() == ImportAction.Status.Code.WARNING);
     }
 
     static class FormattedLabelProvider extends StyledCellLabelProvider
@@ -473,12 +480,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
             }
         };
 
-        public String getText(Extractor.Item element)
+        public String getText(ExtractedEntry element)
         {
             return null;
         }
 
-        public Image getImage(Extractor.Item element)
+        public Image getImage(ExtractedEntry element)
         {
             return null;
         }
@@ -486,17 +493,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage
         @Override
         public void update(ViewerCell cell)
         {
-            Extractor.Item item = (Extractor.Item) cell.getElement();
-            String text = getText(item);
+            ExtractedEntry entry = (ExtractedEntry) cell.getElement();
+            String text = getText(entry);
             if (text == null)
                 text = ""; //$NON-NLS-1$
 
-            boolean strikeout = !item.isImported() || item.isDuplicate();
+            boolean strikeout = !entry.isImported() || entry.isDuplicate();
             StyledString styledString = new StyledString(text, strikeout ? strikeoutStyler : null);
 
             cell.setText(styledString.toString());
             cell.setStyleRanges(styledString.getStyleRanges());
-            cell.setImage(getImage(item));
+            cell.setImage(getImage(entry));
 
             super.update(cell);
         }
