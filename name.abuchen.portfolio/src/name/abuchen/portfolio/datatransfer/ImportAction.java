@@ -26,7 +26,12 @@ public interface ImportAction
     {
         public enum Code
         {
-            OK, WARNING, ERROR
+            OK, WARNING, ERROR;
+
+            public boolean isHigherSeverityAs(Code other)
+            {
+                return ordinal() > other.ordinal();
+            }
         }
 
         public static final Status OK_STATUS = new Status(Code.OK, null);

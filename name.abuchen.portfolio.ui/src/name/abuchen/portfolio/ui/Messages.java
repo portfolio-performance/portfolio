@@ -149,6 +149,7 @@ public class Messages extends NLS
     public static String ColumnSharesOwned;
     public static String ColumnSource;
     public static String ColumnStartDate;
+    public static String ColumnStatus;
     public static String ColumnSubTotal;
     public static String ColumnSymbol;
     public static String ColumnTargetValue;
@@ -327,7 +328,6 @@ public class Messages extends NLS
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
-    public static String LabelPotentialDuplicate;
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;

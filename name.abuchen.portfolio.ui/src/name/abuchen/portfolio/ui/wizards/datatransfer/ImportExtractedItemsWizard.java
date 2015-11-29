@@ -46,7 +46,7 @@ public class ImportExtractedItemsWizard extends Wizard
         boolean isDirty = false;
         for (ExtractedEntry entry : page.getEntries())
         {
-            if (entry.isImported() && !entry.isDuplicate())
+            if (entry.isImported())
             {
                 entry.getItem().apply(action, page);
                 isDirty = true;

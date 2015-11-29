@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.actions;
 import java.util.List;
 import java.util.Objects;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -64,7 +65,7 @@ public class DetectDuplicatesAction implements ImportAction
                 continue;
 
             if (isPotentialDuplicate(subject, t))
-                return new Status(Status.Code.WARNING, null);
+                return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
         }
 
         return Status.OK_STATUS;
@@ -78,7 +79,7 @@ public class DetectDuplicatesAction implements ImportAction
                 continue;
 
             if (isPotentialDuplicate(subject, t))
-                return new Status(Status.Code.WARNING, null);
+                return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
         }
 
         return Status.OK_STATUS;

@@ -243,6 +243,36 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private void addColumns(TableViewer viewer, TableColumnLayout layout)
     {
         TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnStatus);
+        column.setLabelProvider(new FormattedLabelProvider()
+        {
+            @Override
+            public Image getImage(ExtractedEntry element)
+            {
+                Images image = null;
+                switch (element.getMaxCode())
+                {
+                    case WARNING:
+                        image = Images.WARNING;
+                        break;
+                    case ERROR:
+                        image = Images.ERROR;
+                        break;
+                    case OK:
+                    default:
+                }
+                return image != null ? image.image() : null;
+            }
+
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                return ""; //$NON-NLS-1$
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(22, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnDate);
         column.setLabelProvider(new FormattedLabelProvider()
         {
@@ -353,17 +383,24 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
             // an entry will be imported if it is marked as to be
             // imported *and* not a duplicate
-            atLeastOneImported = atLeastOneImported || (entry.isImported() && !entry.isDuplicate());
+            atLeastOneImported = atLeastOneImported || entry.isImported();
 
             // an entry will not be imported if it marked as not to be
             // imported *or* if it is marked as duplicate
-            atLeastOneNotImported = atLeastOneNotImported || (!entry.isImported() || entry.isDuplicate());
+            atLeastOneNotImported = atLeastOneNotImported || !entry.isImported();
         }
 
         // provide a hint to the user why the entry is struck out
-        if (selection.size() == 1 && ((ExtractedEntry) selection.getFirstElement()).isDuplicate())
+        if (selection.size() == 1)
         {
-            manager.add(new LabelOnly(Messages.LabelPotentialDuplicate));
+            ExtractedEntry entry = (ExtractedEntry) selection.getFirstElement();
+            entry.getStatus() //
+                            .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
+                            .forEach(s -> {
+                                Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
+                                                Images.WARNING : Images.ERROR;
+                                manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
+                            });
         }
 
         if (atLeastOneImported)
@@ -389,10 +426,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 public void run()
                 {
                     for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                    {
                         ((ExtractedEntry) element).setImported(true);
-                        ((ExtractedEntry) element).setDuplicate(false);
-                    }
 
                     tableViewer.refresh();
                 }
@@ -466,7 +500,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction();
         for (ExtractedEntry entry : entries)
-            entry.setDuplicate(entry.getItem().apply(action, this).getCode() == ImportAction.Status.Code.WARNING);
+        {
+            entry.clearStatus();
+            entry.addStatus(entry.getItem().apply(action, this));
+        }
     }
 
     static class FormattedLabelProvider extends StyledCellLabelProvider
@@ -498,7 +535,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             if (text == null)
                 text = ""; //$NON-NLS-1$
 
-            boolean strikeout = !entry.isImported() || entry.isDuplicate();
+            boolean strikeout = !entry.isImported();
             StyledString styledString = new StyledString(text, strikeout ? strikeoutStyler : null);
 
             cell.setText(styledString.toString());

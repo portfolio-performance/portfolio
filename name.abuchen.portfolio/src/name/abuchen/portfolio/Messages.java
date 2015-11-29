@@ -97,6 +97,7 @@ public class Messages extends NLS
     public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
+    public static String LabelPotentialDuplicate;
     public static String LabelRemovals;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodMonths;
