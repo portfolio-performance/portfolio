@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.Money;
 
 public interface Extractor
 {
@@ -29,9 +30,9 @@ public interface Extractor
 
         public abstract LocalDate getDate();
 
-        public long getAmount()
+        public Money getAmount()
         {
-            return 0;
+            return null;
         }
 
         public long getShares()
@@ -92,9 +93,9 @@ public interface Extractor
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return transaction.getAmount();
+            return transaction.getMonetaryAmount();
         }
 
         @Override
@@ -149,9 +150,9 @@ public interface Extractor
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return entry.getAccountTransaction().getAmount();
+            return entry.getAccountTransaction().getMonetaryAmount();
         }
 
         @Override
@@ -201,9 +202,9 @@ public interface Extractor
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return entry.getSourceTransaction().getAmount();
+            return entry.getSourceTransaction().getMonetaryAmount();
         }
 
         @Override
@@ -247,9 +248,9 @@ public interface Extractor
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return entry.getSourceTransaction().getAmount();
+            return entry.getSourceTransaction().getMonetaryAmount();
         }
 
         @Override

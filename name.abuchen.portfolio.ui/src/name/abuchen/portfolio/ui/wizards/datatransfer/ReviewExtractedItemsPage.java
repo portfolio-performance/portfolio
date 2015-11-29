@@ -52,6 +52,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractClientJob;
 import name.abuchen.portfolio.ui.Images;
@@ -324,7 +325,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                return Values.Amount.formatNonZero(entry.getItem().getAmount());
+                Money amount = entry.getItem().getAmount();
+                return amount != null ? Values.Money.format(amount) : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
