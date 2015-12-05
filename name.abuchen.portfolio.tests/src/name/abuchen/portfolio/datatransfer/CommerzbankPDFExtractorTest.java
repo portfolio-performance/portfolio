@@ -20,6 +20,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -48,6 +49,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
@@ -85,6 +87,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();

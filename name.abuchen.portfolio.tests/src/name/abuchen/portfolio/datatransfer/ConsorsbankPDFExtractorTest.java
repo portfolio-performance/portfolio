@@ -22,6 +22,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -66,6 +67,7 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         Security security = assertSecurity(results, false);
@@ -121,6 +123,7 @@ public class ConsorsbankPDFExtractorTest
 
         // since taxes are zero, no tax transaction must be created
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
     }
 
     @Test
@@ -140,6 +143,7 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         assertSecurity(results, true);
@@ -182,6 +186,7 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check buy sell transaction
         Item item = results.get(0);

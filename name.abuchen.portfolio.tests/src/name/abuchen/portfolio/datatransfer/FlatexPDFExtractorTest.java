@@ -22,6 +22,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -53,6 +54,7 @@ public class FlatexPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
@@ -154,6 +156,7 @@ public class FlatexPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();

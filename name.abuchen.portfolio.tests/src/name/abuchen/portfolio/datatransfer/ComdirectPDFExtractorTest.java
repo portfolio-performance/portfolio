@@ -17,6 +17,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -61,6 +62,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(2));
         // Should complete without error
         assertThat(errors, is(empty()));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         SecurityItem secItem = null;
         AccountTransaction accItem = null;
@@ -93,6 +95,7 @@ public class ComdirectPDFExtractorTest
         List<Item> results = extractor.extract(gutschrift2, "Gutschrift2", errors);
         assertThat(results.size(), is(2));
         assertThat(errors, is(empty()));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         SecurityItem secItem = null;
         AccountTransaction accItem = null;
@@ -126,6 +129,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(2));
         // Should complete without error
         assertThat(errors, is(empty()));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         SecurityItem secItem = null;
         BuySellEntryItem buyItem = null;
