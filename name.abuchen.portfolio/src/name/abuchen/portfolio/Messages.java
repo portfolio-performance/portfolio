@@ -109,6 +109,17 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String MsgCheckInvalidTransactionType;
+    public static String MsgCheckLumpSumUnitMissing;
+    public static String MsgCheckLumpSumUnitNotValid;
+    public static String MsgCheckLumSumUnitForexMismatch;
+    public static String MsgCheckMissingSecurity;
+    public static String MsgCheckSecurityWithoutCurrency;
+    public static String MsgCheckTaxAndFeesTooHigh;
+    public static String MsgCheckTransactionCurrencyDoesNotMatchAccount;
+    public static String MsgCheckUnitForexMismatch;
+    public static String MsgCheckUnitForexNotValid;
+    public static String MsgCheckUnsupportedCurrency;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDuplicateISIN;

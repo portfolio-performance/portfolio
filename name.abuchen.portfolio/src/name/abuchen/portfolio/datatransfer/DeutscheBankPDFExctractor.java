@@ -195,7 +195,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 
                             // add lump sum unit only if currency code of
                             // security actually matches
-                            if (t.getSecurity().getCurrencyCode().equals(unit.getForex().getCurrencyCode()))
+                            if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                                 t.addUnit(unit);
                         })
 

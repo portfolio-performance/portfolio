@@ -41,6 +41,8 @@ import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -139,7 +141,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         primaryAccount = new ComboViewer(cmbAccount);
         primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
         primaryAccount.setInput(client.getActiveAccounts());
-        primaryAccount.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allEntries));
+        primaryAccount.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
         cmbAccount.select(0);
 
         lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
@@ -158,7 +160,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         primaryPortfolio = new ComboViewer(cmbPortfolio);
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
         primaryPortfolio.setInput(client.getActivePortfolios());
-        primaryPortfolio.addSelectionChangedListener(e -> markDuplicatesAndRefresh(allEntries));
+        primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
         cmbPortfolio.select(0);
 
         lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -471,7 +473,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
-        markDuplicates(entries);
+        checkEntries(entries);
 
         allEntries.addAll(entries);
         tableViewer.setInput(allEntries);
@@ -492,19 +494,24 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
     }
 
-    private void markDuplicatesAndRefresh(List<ExtractedEntry> entries)
+    private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
     {
-        markDuplicates(entries);
+        checkEntries(entries);
         tableViewer.refresh();
     }
 
-    private void markDuplicates(List<ExtractedEntry> entries)
+    private void checkEntries(List<ExtractedEntry> entries)
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        List<ImportAction> actions = new ArrayList<>();
+        actions.add(new CheckValidTypesAction());
+        actions.add(new DetectDuplicatesAction());
+        actions.add(new CheckCurrenciesAction());
+
         for (ExtractedEntry entry : entries)
         {
             entry.clearStatus();
-            entry.addStatus(entry.getItem().apply(action, this));
+            for (ImportAction action : actions)
+                entry.addStatus(entry.getItem().apply(action, this));
         }
     }
 
