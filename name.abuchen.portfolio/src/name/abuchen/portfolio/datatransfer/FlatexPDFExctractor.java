@@ -157,12 +157,12 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         .section("fee")
                         .optional()
                         //
-                        .match(".* Eigene Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .match(".* Eigene Spesen *EUR *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
 
                         .section("fee").optional()
                         //
-                        .match(".* \\*Fremde Spesen *: *(?<fee>[\\d.-]+,\\d+) (\\w{3}+)")
+                        .match(".* \\*Fremde Spesen *EUR *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.setFees(t.getPortfolioTransaction().getFees() + asAmount(v.get("fee"))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
