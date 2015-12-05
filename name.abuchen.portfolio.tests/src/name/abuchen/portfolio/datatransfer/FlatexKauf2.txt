@@ -1,0 +1,51 @@
+biw AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+biw AG -  Hausbroicher Str. 222 -  47877 Willich
+Willich,          04.12.2015
+0303502000000375833380
+Herr Auftragsdatum     03.12.2015n
+Max Mustermann Schlusstag        03.12.2015o
+An den  Ausführungszeit   13:59 Häusern 5
+08150 Berlin Valuta            07.12.2015
+Auftragsnummer    759999999/1
+Ausf.platz/-art   außerbörslich
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  1000000000
+Depotinhaber      Mustermann, Max
+Nr.123441244/1  Kauf            C.S.-MSCI PACIF.T.U.ETF I (LU0392495023/ETF114)
+Ausgeführt     10 St.
+Kurs           4,424000 EUR           Kurswert       EUR             44,24
+Devisenkurs                            Provision      EUR                 5,90
+Verwahrart     GS-Verwahrung           Eigene Spesen
+Lagerstelle    Clearstream Nat.       *Fremde Spesen
+Lagerland      Deutschland
+Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                 0,00
+                                       Endbetrag      EUR               -50,30
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+    Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+    finden Sie im Steuerreport unter der Transaktion-Nr.: 999999999
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1000000000
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf
+Richtigkeit und Vollständigkeit.  Etwaige Einwendungen gegen diese  Abrechnung
+müssen unverzüglich  nach Zugang bei der Bank  erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten  hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese  Mitteilung  ist  maschinell  erstellt  und  wird  nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Andreas Wolf, Bernd Würfel
+2000000375833380 0110999999000101
