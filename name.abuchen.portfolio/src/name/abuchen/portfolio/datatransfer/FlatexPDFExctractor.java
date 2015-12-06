@@ -122,7 +122,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung Kauf Fonds/Zertifikate");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Nr.(\\d*)/(\\d*)  Kauf.*");
+        Block block = new Block(" *biw AG *");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
                         .subject(() -> {
@@ -130,22 +130,23 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
-                        //.section("date")
-                        //.match("Schlusstag *(?<date>\\d+.\\d+.\\d{4})")
-                        //.assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("date")
+                        .match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*)  Kauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .match("Nr.(\\d*)/(\\d*)  Kauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
-                        //
+
                         .section("shares")
-                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\.")
+                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\.") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                        //
-                        .section("amount")
-                        .match(" * Endbetrag *EUR *(?<amount>[\\d.-]+,\\d+)")
+
+                        .section("amount") //
+                        .match(" * Endbetrag *EUR *(?<amount>[\\d.-]+,\\d+)") //
                         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
 
                         .section("fee")
