@@ -1,331 +1,113 @@
 package name.abuchen.portfolio.datatransfer;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringJoiner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.online.QuoteFeed;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-
-public class ComdirectPDFExtractor implements Extractor
+public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
-
-    private PDFTextStripper stripper;
-    private DateFormat df;
-    private Pattern isinPattern;
-    private Matcher isinMatcher;
-    private NumberFormat format;
-    private List<Security> allSecurities;
-
     public ComdirectPDFExtractor(Client client) throws IOException
     {
-        // Parsing formats rely on german style PDFs
-        df = new SimpleDateFormat("dd.MM.yyyy"); //$NON-NLS-1$
-        format = NumberFormat.getInstance(Locale.GERMANY);
+        super(client);
 
-        isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]"); //$NON-NLS-1$
-        allSecurities = new ArrayList<Security>(client.getSecurities());
-        stripper = new PDFTextStripper();
+        addBankIdentifier("comdirect bank"); //$NON-NLS-1$
+
+        addBuyTransaction();
+        addDividendTransaction();
     }
 
-    @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
+    @SuppressWarnings("nls")
+    private void addBuyTransaction()
     {
-        List<Item> results = new ArrayList<Item>();
-        for (File f : files)
-        {
-            try (PDDocument doc = PDDocument.load(f))
-            {
-                String text = stripper.getText(doc);
-                String filename = f.getName();
-                results.addAll(extract(text, filename, errors));
-            }
-            catch (IOException e)
-            {
-                errors.add(e);
-            }
-        }
-        return results;
+        DocumentType type = new DocumentType("Wertpapierkauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Wertpapierkauf *");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+        .subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        }).section("date") //
+                        .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("isin", "name", "wkn") //
+                        .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
+                        .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
+                        .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .match("^St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("amount") //
+                        .find(".*Zu Ihren Lasten vor Steuern *") //
+                        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+
+                        .section("fee") //
+                        .optional().match(".*Summe Entgelte *: *(\\w{3}+) *(?<fee>[\\d.-]+,\\d+) *") //
+                        .assign((t, v) -> t.setFees(asAmount(v.get("fee"))))
+
+                        .wrap(t -> new BuySellEntryItem(t)));
     }
 
-    public List<Item> extract(String text, String filename, List<Exception> errors)
+    @SuppressWarnings("nls")
+    private void addDividendTransaction()
     {
-        if (!text.contains("comdirect bank")) //$NON-NLS-1$
-        {
-            errors.add(new UnsupportedOperationException(MessageFormat.format(Messages.PDFcomdirectMsgFileNotSupported,
-                            filename)));
-            return Collections.emptyList();
-        }
+        DocumentType type = new DocumentType("G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e");
+        this.addDocumentTyp(type);
 
-        List<Item> results = new ArrayList<Item>();
-        // an interest payment is identified by the topic string
-        if (text.contains("Gutschrift fälliger Wertpapier-Erträge")) //$NON-NLS-1$
-        {
-            // No cashflow, no transaction to be generated
-            if (text.contains("Ertragsthesaurierung")) { return results; } //$NON-NLS-1$
-            isinMatcher = isinPattern.matcher(text);
-            // Is to be used to find the security
-            String isin;
-            Security security;
-            isinMatcher.find();
-            isin = isinMatcher.group();
-            security = getSecurityForISIN(isin);
-            // In case the security is not present, we have to
-            // a) store it for future searches
-            // b) Report the creation to the user
-            if (security == null)
-            {
-                int temp = text.indexOf("Wertpapier-Bezeichnung"); //$NON-NLS-1$
-                String nameWKNLine = getNextLine(text, temp);
-                String[] parts = nameWKNLine.substring(14).trim().split(" "); //$NON-NLS-1$
-                String wkn = parts[0];
-                StringJoiner j = new StringJoiner(" "); //$NON-NLS-1$
-                for (int i = 1; i < parts.length; i++)
-                    j.add(parts[i]);
-                String name = j.toString().trim();
-                security = new Security(name, isin, null, QuoteFeed.MANUAL);
-                security.setWkn(wkn);
-                // Store
-                allSecurities.add(security);
-                // add to result
-                SecurityItem item = new SecurityItem(security);
-                results.add(item);
-            }
-            // The representation in the File changes with the way the account
-            // is given
-            // The difference is whether or not the account is named by the IBAN
-            int dateWorkOffset = 9;
-            if (text.contains("Verrechnung über Konto (IBAN)")) { //$NON-NLS-1$
-                dateWorkOffset = 13;
-            }
-            int datePos = jumpWord(text, text.indexOf("Valuta"), dateWorkOffset); //$NON-NLS-1$
-            // Result Transaction
+        Block block = new Block(".*G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e *");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+        .subject(() -> {
             AccountTransaction t = new AccountTransaction();
-            try
-            {
-                Date d = df.parse(getNextWord(text, datePos));
-                t.setDate(d);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-                errors.add(e);
-            }
-            Number value = getNextNumber(text, jumpWord(text, text.indexOf("EUR", datePos), 1)); //$NON-NLS-1$
-            Number pieces = getNextNumber(text, text.indexOf("STK") + 3); //$NON-NLS-1$
             t.setType(AccountTransaction.Type.DIVIDENDS);
-            t.setAmount(Math.round(value.doubleValue() * Values.Amount.factor()));
-            t.setShares(Math.round(pieces.doubleValue() * Values.Share.factor()));
-            t.setSecurity(security);
-            results.add(new TransactionItem(t));
-        }
-        // The buy transaction can be parsed from the name of the file
-        // this requires that the user does not change the name from the
-        // download
-        else if (text.contains("Wertpapierkauf")) //$NON-NLS-1$
-        {
-            try
-            {
-                int tagPosition = text.indexOf("Geschäftstag"); //$NON-NLS-1$
-                String tagString = getNextWord(text, getNextWhitespace(text, tagPosition));
-                Date tag = df.parse(tagString);
-                isinMatcher = isinPattern.matcher(text);
-                String isin;
-                isinMatcher.find();
-                isin = isinMatcher.group();
-                Security security = getSecurityForISIN(isin);
-                if (security == null)
-                {
-                    int temp = text.indexOf("Wertpapier-Bezeichnung"); //$NON-NLS-1$
-                    String nameWKNLine = getNextLine(text, temp);
-                    String wkn = getLastWordInLine(nameWKNLine, 1);
-                    String name = nameWKNLine.substring(0, nameWKNLine.length() - 1).trim();
-                    name = name.substring(0, name.length() - wkn.length()).trim();
-                    security = new Security(name, isin, null, QuoteFeed.MANUAL);
-                    // Store
-                    allSecurities.add(security);
-                    // add to result
-                    SecurityItem item = new SecurityItem(security);
-                    results.add(item);
-                }
-                // Do not use 'Zum Kurs von' as there are tons of other variants ('Zum Preis von', 'Zum comdirect Preis von', ...)
-                int stueckLinePos = text.indexOf('\n', text.indexOf("Nennwert")); //$NON-NLS-1$
-                Number shares = getNextNumber(text, jumpWord(text, stueckLinePos, 1));
-                // Fees need not be present
-                // In case they are a section is present in the file
-                int provPos = -1;
-                provPos = text.indexOf("Summe Entgelte", stueckLinePos); //$NON-NLS-1$
-                // Fallback to 'Provision'; perhaps unneeded, but for backward compatability
-                if (provPos <= 0)
-                    provPos = text.indexOf("Provision", stueckLinePos); //$NON-NLS-1$
+            return t;
+        })
 
-                BuySellEntry purchase = new BuySellEntry();
-                if (provPos > 0)
-                {
-                    Number fee = getNextNumber(text, getLastWordInLinePos(text, provPos));
-                    purchase.setFees(Math.round(fee.doubleValue() * Values.Amount.factor()));
-                }
-                int totalEURPos = text.indexOf("EUR", //$NON-NLS-1$
-                                text.indexOf("EUR", text.indexOf("Zu Ihren Lasten vor Steuern")) + 3); //$NON-NLS-1$ //$NON-NLS-2$
-                Number total = getNextNumber(text, jumpWord(text, totalEURPos, 1));
-                purchase.setType(PortfolioTransaction.Type.BUY);
-                purchase.setDate(tag);
-                purchase.setSecurity(security);
-                purchase.setShares(Math.round(shares.doubleValue() * Values.Share.factor()));
-                purchase.setAmount(Math.round(total.doubleValue() * Values.Amount.factor()));
-                results.add(new BuySellEntryItem(purchase));
-            }
-            catch (ParseException e)
-            {
-                errors.add(e);
-            }
-        }
-        else
-        {
-            errors.add(new Exception(MessageFormat.format(Messages.PDFcomdirectMsgCannotDetermineFileType, filename)));
-        }
-        return results;
+        .section("wkn", "name", "isin", "shares") //
+                        .match("p e r *\\d \\d *. \\d\\d . \\d \\d \\d \\d (?<name>.*)      (?<wkn>.*)") //
+                        .match("^S T K *(?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).*    .* {4}(?<isin>.*)$") //
+                        .assign((t, v) -> {
+                            v.put("isin", stripBlanks(v.get("isin")));
+                            v.put("wkn", stripBlanks(v.get("wkn")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                        })
+
+                        .section("amount", "date") //
+                        .find(".*Zu Ihren Gunsten vor Steuern *") //
+                        .match("^.*(?<date>\\d{2}.\\d{2}.\\d{4}) *EUR *(?<amount>[\\d.]+,\\d+) *$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDate(asDate(v.get("date")));
+                        })
+
+                        .wrap(t -> new TransactionItem(t)));
     }
 
     @Override
     public String getLabel()
     {
-        return Messages.PDFcomdirectLabel;
+        return "comdirect"; //$NON-NLS-1$
     }
 
-    @Override
-    public String getFilterExtension()
+    private String stripBlanks(String input)
     {
-        return "*.pdf"; //$NON-NLS-1$
-    }
-
-    private Security getSecurityForISIN(String isin)
-    {
-        if (isin == null)
-            return null;
-        for (Security security : allSecurities)
-            if (isin.equals(security.getIsin()))
-                return security;
-        return null;
-    }
-
-    private String getNextWord(String text, int position)
-    {
-        while (text.charAt(position) == ' ' || text.charAt(position) == ':')
-        {
-            position++;
-        }
-        int start = position;
-        while (text.charAt(position) != ' ')
-        {
-            position++;
-        }
-        int end = position;
-        return text.substring(start, end);
-    }
-
-    private int getNextWhitespace(String text, int position)
-    {
-        while (text.charAt(position) != ' ')
-        {
-            position++;
-        }
-        return position;
-    }
-
-    private int getNextNonWhitespace(String text, int position)
-    {
-        while (text.charAt(position) == ' ')
-        {
-            position++;
-        }
-        return position;
-    }
-
-    private Number getNextNumber(String text, int position)
-    {
-        String word = getNextWord(text, position);
-        try
-        {
-            return format.parse(word);
-        }
-        catch (ParseException ignore)
-        {
-            return -1;
-        }
-    }
-
-
-    private int jumpWord(String text, int position, int words)
-    {
-        for (int i = 0; i < words; i++)
-        {
-            position = getNextNonWhitespace(text, position);
-            position = getNextWhitespace(text, position);
-        }
-        return position;
-    }
-
-    private int getLastWordInLinePos(String text, int position)
-    {
-        int wordPos;
-
-        wordPos = text.indexOf('\n', position);
-        if (wordPos == 0) // we started at a newline; try again
-            wordPos = text.indexOf('\n', position + 1);
-
-        if (wordPos == 0) // yeah, a bunch of newlines -> just give up
-            return -1;
-
-        if (wordPos < 0) // no newline -> last line
-            wordPos = text.length();
-        
-        wordPos--;
-
-        // possible white space at end of line
-        while (text.charAt(wordPos) == ' ')
-        {
-            wordPos--;
-        }
-
-        // pass over the word
-        wordPos = text.lastIndexOf(' ', wordPos);
-
-        // if wordPos is -1, there was no whitespace, hence 0 is the last word
-        // if wordPos is >=0, then it points to a whitespace -> +1 first char of word
-        return wordPos + 1;
-    }
-
-    private String getLastWordInLine(String text, int position)
-    {
-        return getNextWord(text, getLastWordInLinePos(text, position));
-    }
-
-    private String getNextLine(String text, int position)
-    {
-        position = text.indexOf('\n', position);
-        return text.substring(position + 1, text.indexOf('\n', position + 1) + 1);
+        return input.replaceAll("\\s", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }
