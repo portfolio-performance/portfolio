@@ -113,7 +113,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1413.46)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2011-01-01")));
-        //assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(13.6)));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(13.6)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(42)));
     }
 

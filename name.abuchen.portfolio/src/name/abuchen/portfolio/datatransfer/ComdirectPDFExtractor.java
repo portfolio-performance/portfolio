@@ -55,10 +55,13 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         .find(".*Zu Ihren Lasten vor Steuern *") //
         .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+        
+        .section("fee") //
+        .optional()
+        .match(".*Summe Entgelte *: *(\\w{3}+) *(?<fee>[\\d.-]+,\\d+) *") //
+        .assign((t, v) -> t.setFees(asAmount(v.get("fee"))))
 
         .wrap(t -> new BuySellEntryItem(t)));
-        
-        //FIXME not parsing fees, not present in the test file...
     }
 
     @SuppressWarnings("nls")
