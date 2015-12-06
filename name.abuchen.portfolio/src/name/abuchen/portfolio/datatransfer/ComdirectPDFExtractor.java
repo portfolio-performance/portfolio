@@ -52,7 +52,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
         .section("amount") //
-        .match(".* Kurswert *: (\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+        .find(".*Zu Ihren Lasten vor Steuern *") //
+        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
 
         .wrap(t -> new BuySellEntryItem(t)));
