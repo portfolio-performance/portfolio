@@ -141,8 +141,8 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
                         //
                         .section("shares")
-                        .match("Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) St.")
-                        .assign((t, v) -> t.setAmount(asAmount(v.get("shares"))))
+                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\.")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         //
                         .section("amount")
                         .match(" * Endbetrag *EUR *(?<amount>[\\d.-]+,\\d+)")

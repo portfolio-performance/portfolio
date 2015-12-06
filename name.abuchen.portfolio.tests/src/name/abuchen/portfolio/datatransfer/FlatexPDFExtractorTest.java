@@ -171,8 +171,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50.30)));
         //FIXMEassertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2015-12-04")));
         assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(5.90)));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10_00L)));
-        
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
     }
 
     @Test
