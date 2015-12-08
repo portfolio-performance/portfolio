@@ -67,10 +67,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Gutschrift fälliger Wertpapier-Erträge");
+        DocumentType type = new DocumentType("G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e");
         this.addDocumentTyp(type);
-
-        Block block = new Block("Ertragsgutschrift *");
+    
+        Block block = new Block(".*G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e *");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -80,19 +80,23 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             return t;
         })
 
-        .section("wkn", "name", "isin", "date", "shares") //
-        .match("^per (?<date>\\d+.\\d+.\\d{4}+) *(?<wkn>\\S*) *(?<name>(\\S{1,} )*) *$") //
-        .match("^STK *(?<shares>[\\d.]+,\\d+) *(?<isin>\\S*) .*$") //
+        .section("wkn", "name", "isin", "shares") //
+        .match("p e r *\\d \\d *. \\d\\d . \\d \\d \\d \\d (?<name>.*)      (?<wkn>.*)") //
+        .match("^S T K *(?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).*    .* {4}(?<isin>.*)$") //
         .assign((t, v) -> {
+            v.put("isin", stripBlanks(v.get("isin")));
+            v.put("wkn", stripBlanks(v.get("wkn")));
             t.setSecurity(getOrCreateSecurity(v));
-            t.setShares(asShares(v.get("shares")));
-            t.setDate(asDate(v.get("date")));
+            t.setShares(asShares(stripBlanks(v.get("shares"))));
         })
 
-        .section("amount") //
+        .section("amount", "date") //
         .find(".*Zu Ihren Gunsten vor Steuern *") //
-        .match("^.*\\d+.\\d+.\\d{4}+ *EUR *(?<amount>[\\d.]+,\\d+) *$") //
-        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+        .match("^.*(?<date>\\d{2}.\\d{2}.\\d{4}) *EUR *(?<amount>[\\d.]+,\\d+) *$") //
+        .assign((t, v) -> {
+            t.setAmount(asAmount(v.get("amount")));
+            t.setDate(asDate(v.get("date")));
+        })
 
         .wrap(t -> new TransactionItem(t)));
     }
@@ -101,6 +105,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     public String getLabel()
     {
         return "comdirect"; //$NON-NLS-1$
+    }
+    
+    private String stripBlanks(String input)
+    {
+        return input.replaceAll("\\s", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

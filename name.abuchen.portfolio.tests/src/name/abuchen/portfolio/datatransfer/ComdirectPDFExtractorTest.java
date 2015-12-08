@@ -139,9 +139,9 @@ public class ComdirectPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getName(), is("Name des Wertpapiers"));
-        assertThat(security.getWkn(), is("BASF11"));
+        assertThat(security.getIsin(), is("DE000A9AXXX6"));
+        assertThat(security.getName(), is("i S h a r e s I I I x x x x x x x x x x x x x x x E T F"));
+        assertThat(security.getWkn(), is("A1XXXX"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -150,9 +150,9 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(Dates.date("2000-01-01")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.00)));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getDate(), is(Dates.date("2011-01-08")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(21.99)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
     }
     
     @Test
@@ -177,8 +177,8 @@ public class ComdirectPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getIsin(), is("AT0000123456"));
-        assertThat(security.getName(), is("Bank-Global-Rent"));
+        assertThat(security.getIsin(), is("US0991991039"));
+        assertThat(security.getName(), is("F oo B a r I n c ."));
         assertThat(security.getWkn(), is("123456"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -188,12 +188,11 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(Dates.date("2012-03-30")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.11)));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
-
+        assertThat(transaction.getDate(), is(Dates.date("2011-01-09")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(13.78)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
     }
-  
+   
     private String from(String resource)
     {
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
