@@ -154,7 +154,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TableViewer prices;
     private TableViewer transactions;
     private TableViewer events;
-    // private TimelineChart chart;
     private HtmlChart chart;
     private HtmlChartConfigTimeline chartConfig;
     private HtmlChartConfigTimelineVerticalMarkerList chartVMarkerConfig;
@@ -419,9 +418,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setControl(chartComposite);
 
         chartConfig = new HtmlChartConfigTimeline();
-        chartVMarkerConfig = new HtmlChartConfigTimelineVerticalMarkerList("buy/sell", 2, new RGB(255, 140, 0), 0.8,
-                        new RGB(255, 140, 0), 0.9, true);
-        chartConfig.setTitle("...");
+        chartVMarkerConfig = new HtmlChartConfigTimelineVerticalMarkerList("buy/sell", 2, //$NON-NLS-1$
+                        new RGB(255, 140, 0), 0.8, new RGB(255, 140, 0), 0.9, true);
+        chartConfig.setTitle("..."); //$NON-NLS-1$
         chartConfig.setShowLegend(false);
         chartConfig.setVerticalMarker(chartVMarkerConfig);
         chart = new HtmlChart(chartConfig);
@@ -732,14 +731,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         case TRANSFER_IN:
                         case DELIVERY_INBOUND:
                             chartVMarkerConfig.addMarker(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), label,
-                                            new RGB(0, 128, 0), 0.7, new RGB(0, 128, 0), 0.9, ""));
+                                            new RGB(0, 128, 0), 0.7, new RGB(0, 128, 0), 0.9, "")); //$NON-NLS-1$
                             break;
                         case SELL:
                         case TRANSFER_OUT:
                         case DELIVERY_OUTBOUND:
-                            chartVMarkerConfig.addMarker(
-                                            new HtmlChartConfigTimelineVerticalMarker(t.getDate(), "-" + label, //$NON-NLS-1$
-                                                            new RGB(128, 0, 0), 0.7, new RGB(128, 0, 0), 0.9, ""));
+                            chartVMarkerConfig.addMarker(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), "-" //$NON-NLS-1$
+                                            + label, new RGB(128, 0, 0), 0.7, new RGB(128, 0, 0), 0.9, "")); //$NON-NLS-1$
                             break;
                         default:
                             throw new UnsupportedOperationException();

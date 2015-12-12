@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.swt.graphics.RGB;
@@ -11,11 +12,7 @@ import org.json.simple.JSONObject;
 
 /***
  * Structure holding the configuration and list of
- * {@link HtmlChartConfigTimelineVerticalMarker} for the {@link HtmlChart}. The
- * data is written to a StringBuffer as Json Object using the
- * {@code buildJson(StringBuilder buffer)} method.
- * 
- * @author fuchsst
+ * {@link HtmlChartConfigTimelineVerticalMarker} for the {@link HtmlChart}.
  */
 public class HtmlChartConfigTimelineVerticalMarkerList
 {
@@ -27,7 +24,7 @@ public class HtmlChartConfigTimelineVerticalMarkerList
     private double labelOpacity = 1;
     private int strokeWidth;
     private boolean showLabel = true;
-    private ArrayList<HtmlChartConfigTimelineVerticalMarker> verticalMarker = new ArrayList<HtmlChartConfigTimelineVerticalMarker>();
+    private List<HtmlChartConfigTimelineVerticalMarker> verticalMarker = new ArrayList<>();
 
     public HtmlChartConfigTimelineVerticalMarkerList(String name, int strokeWidth)
     {
@@ -155,10 +152,10 @@ public class HtmlChartConfigTimelineVerticalMarkerList
         {
             jsonList.add(marker.getJson());
         }
-        json.put("data", jsonList);
+        json.put("data", jsonList); //$NON-NLS-1$
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "nls" })
     public JSONObject getJson()
     {
         JSONObject json = new JSONObject();
@@ -167,8 +164,9 @@ public class HtmlChartConfigTimelineVerticalMarkerList
         json.put("showLabel", showLabel);
 
         if (color != null)
-            json.put("color", "rgba(" + color.red + "," + color.green + "," + color.blue + ","
-                            + String.format(Locale.US, "%3.2f", opacity) + ")");
+            json.put("color",
+                            "rgba(" + color.red + "," + color.green + "," + color.blue + ","
+                                            + String.format(Locale.US, "%3.2f", opacity) + ")");
 
         if (labelColor != null)
             json.put("labelColor", "rgba(" + labelColor.red + "," + labelColor.green + "," + labelColor.blue + ","

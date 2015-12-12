@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
-// import name.abuchen.portfolio.ui.util.chart.ChartContextMenu;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.browser.Browser;
@@ -23,11 +22,6 @@ public class HtmlChart
     private HtmlChartConfig args;
     private HtmlChartContextMenu contextMenu;
 
-    /**
-     * @param container
-     * @param args
-     * @return
-     */
     public HtmlChart(HtmlChartConfig args)
     {
         this.args = args;
@@ -36,7 +30,7 @@ public class HtmlChart
     public Control createControl(Composite container)
     {
         browser = new EmbeddedBrowser(args.getHtmlPageUri()); // $NON-NLS-1$
-        browserControl = browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$ ;
+        browserControl = browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
         this.contextMenu = new HtmlChartContextMenu(this);
         return browserControl;
     }
@@ -67,12 +61,9 @@ public class HtmlChart
         {
             try
             {
-                // String tmp = args.getJsonString();
-                // PortfolioPlugin.log(tmp);
-                // return tmp;
                 return args.getJsonString();
             }
-            catch (Throwable e)
+            catch (Exception e)
             {
                 PortfolioPlugin.log(e);
                 return "{}"; //$NON-NLS-1$

@@ -104,12 +104,6 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     }
 
     @Override
-    public void setFocus()
-    {
-        super.setFocus();
-    }
-
-    @Override
     public void notifyModelUpdated()
     {
         indices.setInput(getClient().getConsumerPriceIndices());

@@ -5,16 +5,13 @@ import org.json.simple.JSONObject;
 /**
  * Implementation of interface is passed as parameter to
  * {@link HtmlChart.createControl}, defining the appearance of the chart
- * 
- * @author fuchsst
  */
 public interface HtmlChartConfig
 {
     /**
      * Chart Title
-     * @return 
      */
-    public String getTitle();
+    String getTitle();
 
     /**
      * The implementation of the interface encodes the chart configuration as a
@@ -23,14 +20,13 @@ public interface HtmlChartConfig
      * 
      * @return The chart configuration as Json string
      */
-    public String getJsonString();
-    
+    String getJsonString();
+
     /**
-     * 
      * @return The chart configuration as json-simple structure
      */
-    public JSONObject getJson();
-    
+    JSONObject getJson();
+
     /**
      * The interface implementation returns a constant string that represents
      * the path to the Html that renders the chart (e.g.
@@ -39,5 +35,5 @@ public interface HtmlChartConfig
      * @return The URI (normally an embedded resource) to the Html that renders
      *         the chart
      */
-    public String getHtmlPageUri();
+    String getHtmlPageUri();
 }
