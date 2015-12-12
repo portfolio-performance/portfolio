@@ -2,22 +2,23 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class HtmlChartConfigTimeline implements HtmlChartConfig
 {
-
     private String title;
-    private String interpolation = "monotone";
-    private String numberFormat = "#,##0.00";
-    private String numberFormatLocale = "de";
+    private String interpolation = "monotone"; //$NON-NLS-1$
+    private String numberFormat = "#,##0.00"; //$NON-NLS-1$
+    private String numberFormatLocale = "de"; //$NON-NLS-1$
     private boolean showLegend = true;
     private boolean useLogScale = false;
     private boolean allowZoom = true;
     private HtmlChartConfigTimelineVerticalMarkerList verticalMarker;
-    private List<HtmlChartConfigTimelineSeries> series = new ArrayList<HtmlChartConfigTimelineSeries>();
+    private List<HtmlChartConfigTimelineSeries> series = new ArrayList<>();
 
+    @Override
     public String getTitle()
     {
         return title;
@@ -111,10 +112,11 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         {
             jsonList.add(s.getJson());
         }
-        json.put("series", jsonList);
+        json.put("series", jsonList); //$NON-NLS-1$
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings({ "unchecked", "nls" })
     public JSONObject getJson()
     {
         JSONObject json = new JSONObject();
@@ -129,18 +131,19 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
             json.put("verticalMarker", verticalMarker.getJson());
 
         buildJsonSeries(json);
-        
+
         return json;
     }
 
+    @Override
     public String getJsonString()
     {
         return this.getJson().toString();
     }
 
+    @Override
     public String getHtmlPageUri()
     {
-        return "/META-INF/html/line_chart.html";
-    };
-
+        return "/META-INF/html/line_chart.html"; //$NON-NLS-1$
+    }
 }

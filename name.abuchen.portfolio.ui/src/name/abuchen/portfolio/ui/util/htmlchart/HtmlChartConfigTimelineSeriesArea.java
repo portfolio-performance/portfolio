@@ -10,8 +10,6 @@ import org.json.simple.JSONObject;
  * Configuration for timeline chart series rendered as area (based on the own
  * extended Rickshaw class 'dottedarea', which also supports stroke patterns (if
  * in addition to the area also a line on the area edge is drawn').
- * 
- * @author fuchsst
  */
 public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSeries
 {
@@ -53,7 +51,7 @@ public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSe
     @Override
     protected String getRenderer()
     {
-        return "dottedarea";
+        return "dottedarea"; //$NON-NLS-1$
     }
 
     /**
@@ -130,19 +128,19 @@ public class HtmlChartConfigTimelineSeriesArea extends HtmlChartConfigTimelineSe
             this.strokeOpacity = strokeOpacity;
     }
 
-
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings({ "unchecked", "nls" })
     public JSONObject getJson()
     {
         JSONObject json = super.getJson();
-        
+
         if (strokePattern != null && !strokePattern.isEmpty())
             json.put("strokePattern", strokePattern);
-        
+
         if (strokeColor != null)
             json.put("stroke", "rgba(" + strokeColor.red + "," + strokeColor.green + "," + strokeColor.blue + ","
                             + String.format(Locale.US, "%3.2f", strokeOpacity) + ")");
-        
+
         return json;
     }
 

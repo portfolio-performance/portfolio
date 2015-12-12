@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 
 import org.apache.commons.csv.CSVPrinter;

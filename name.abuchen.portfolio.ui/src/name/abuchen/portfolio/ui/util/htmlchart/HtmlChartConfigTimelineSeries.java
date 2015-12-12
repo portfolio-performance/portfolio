@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
 import java.util.Locale;
+
 import org.eclipse.swt.graphics.RGB;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -90,7 +91,7 @@ public abstract class HtmlChartConfigTimelineSeries
             this.opacity = opacity;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "nls" })
     private void buildSeriesData(JSONObject json)
     {
         int itemCount = dates.length;
@@ -107,7 +108,7 @@ public abstract class HtmlChartConfigTimelineSeries
     }
 
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "nls" })
     public JSONObject getJson()
     {
         JSONObject json = new JSONObject();

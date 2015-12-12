@@ -39,7 +39,6 @@ import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChart;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimeline;
 import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeriesArea;
@@ -88,10 +87,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
 {
@@ -99,7 +94,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TableViewer prices;
     private TableViewer transactions;
     private TableViewer events;
-    // private TimelineChart chart;
     private HtmlChart chart;
     private HtmlChartConfigTimeline chartConfig;
     private HtmlChartConfigTimelineVerticalMarkerList chartVMarkerConfig;
@@ -395,9 +389,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setControl(chartComposite);
 
         chartConfig = new HtmlChartConfigTimeline();
-        chartVMarkerConfig = new HtmlChartConfigTimelineVerticalMarkerList("buy/sell", 2, new RGB(255, 140, 0), 0.8,
-                        new RGB(255, 140, 0), 0.9, true);
-        chartConfig.setTitle("...");
+        chartVMarkerConfig = new HtmlChartConfigTimelineVerticalMarkerList("buy/sell", 2, //$NON-NLS-1$
+                        new RGB(255, 140, 0), 0.8, new RGB(255, 140, 0), 0.9, true);
+        chartConfig.setTitle("..."); //$NON-NLS-1$
         chartConfig.setShowLegend(false);
         chartConfig.setVerticalMarker(chartVMarkerConfig);
         chart = new HtmlChart(chartConfig);
@@ -712,14 +706,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         case TRANSFER_IN:
                         case DELIVERY_INBOUND:
                             chartVMarkerConfig.addMarker(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), label,
-                                            new RGB(0, 128, 0), 0.7, new RGB(0, 128, 0), 0.9, ""));
+                                            new RGB(0, 128, 0), 0.7, new RGB(0, 128, 0), 0.9, "")); //$NON-NLS-1$
                             break;
                         case SELL:
                         case TRANSFER_OUT:
                         case DELIVERY_OUTBOUND:
-                            chartVMarkerConfig.addMarker(
-                                            new HtmlChartConfigTimelineVerticalMarker(t.getDate(), "-" + label, //$NON-NLS-1$
-                                                            new RGB(128, 0, 0), 0.7, new RGB(128, 0, 0), 0.9, ""));
+                            chartVMarkerConfig.addMarker(new HtmlChartConfigTimelineVerticalMarker(t.getDate(), "-" //$NON-NLS-1$
+                                            + label, new RGB(128, 0, 0), 0.7, new RGB(128, 0, 0), 0.9, "")); //$NON-NLS-1$
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -731,8 +724,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         for (SecurityEvent event : security.getEvents())
         {
             if (chartPeriod == null || chartPeriod.before(event.getDate()))
-                chartVMarkerConfig.addMarker(
-                                new HtmlChartConfigTimelineVerticalMarker(event.getDate(), event.getDetails()));
+                chartVMarkerConfig.addMarker(new HtmlChartConfigTimelineVerticalMarker(event.getDate(), event
+                                .getDetails()));
         }
 
         chart.refreshChart();
@@ -751,8 +744,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecurityListView.class.getSimpleName() + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
+                        + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);

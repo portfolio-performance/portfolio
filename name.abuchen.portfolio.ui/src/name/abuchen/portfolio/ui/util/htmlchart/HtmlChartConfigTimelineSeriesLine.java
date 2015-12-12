@@ -1,14 +1,13 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
+
 import org.eclipse.swt.graphics.RGB;
 import org.json.simple.JSONObject;
 
 /**
  * Configuration for timeline chart series rendered as line (based on the own
  * extended Rickshaw class 'dottedline', which also supports stroke patterns').
- * 
- * @author fuchsst
  */
 public class HtmlChartConfigTimelineSeriesLine extends HtmlChartConfigTimelineSeries
 {
@@ -39,7 +38,7 @@ public class HtmlChartConfigTimelineSeriesLine extends HtmlChartConfigTimelineSe
     @Override
     protected String getRenderer()
     {
-        return "dottedline";
+        return "dottedline"; //$NON-NLS-1$
     }
 
     /**
@@ -66,12 +65,13 @@ public class HtmlChartConfigTimelineSeriesLine extends HtmlChartConfigTimelineSe
         this.strokePattern = strokePattern;
     }
 
-    
+    @Override
     @SuppressWarnings("unchecked")
-    public JSONObject getJson() {
+    public JSONObject getJson()
+    {
         JSONObject json = super.getJson();
         if (strokePattern != null && !strokePattern.isEmpty())
-            json.put("strokePattern", strokePattern);
+            json.put("strokePattern", strokePattern); //$NON-NLS-1$
 
         return json;
     }

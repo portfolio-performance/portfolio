@@ -2,15 +2,13 @@ package name.abuchen.portfolio.ui.util.htmlchart;
 
 import java.util.Date;
 import java.util.Locale;
+
 import org.eclipse.swt.graphics.RGB;
 import org.json.simple.JSONObject;
 
 /**
- * Structure holding the configuration of a single Vertical Marker for the
- * {@link HtmlChart}. The data is written to a StringBuffer as Json Object using
- * the {@code buildJson(StringBuilder buffer)} method
- * 
- * @author fuchsst
+ * Structure holding the configuration of a single vertical marker for the
+ * {@link HtmlChart}.
  */
 public class HtmlChartConfigTimelineVerticalMarker
 {
@@ -120,7 +118,7 @@ public class HtmlChartConfigTimelineVerticalMarker
         this.strokePattern = strokePattern;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "nls" })
     public JSONObject getJson()
     {
         JSONObject json = new JSONObject();
@@ -129,8 +127,9 @@ public class HtmlChartConfigTimelineVerticalMarker
         json.put("label", label);
 
         if (color != null)
-            json.put("color", "rgba(" + color.red + "," + color.green + "," + color.blue + ","
-                            + String.format(Locale.US, "%3.2f", opacity) + ")");
+            json.put("color",
+                            "rgba(" + color.red + "," + color.green + "," + color.blue + ","
+                                            + String.format(Locale.US, "%3.2f", opacity) + ")");
 
         if (labelColor != null)
             json.put("labelColor", "rgba(" + labelColor.red + "," + labelColor.green + "," + labelColor.blue + ","
