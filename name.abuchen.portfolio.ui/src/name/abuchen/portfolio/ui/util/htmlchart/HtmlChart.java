@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.util.htmlchart;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.JavaFXBrowser;
+import name.abuchen.portfolio.ui.util.JavaFXBrowser.BrowserFunction;
+import netscape.javascript.JSObject;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -17,8 +17,7 @@ import org.eclipse.swt.widgets.Display;
 public class HtmlChart
 {
 
-    private EmbeddedBrowser browser;
-    private Control browserControl;
+    private JavaFXBrowser browser;
     private HtmlChartConfig args;
     private HtmlChartContextMenu contextMenu;
 
@@ -29,15 +28,15 @@ public class HtmlChart
 
     public Control createControl(Composite container)
     {
-        browser = new EmbeddedBrowser(args.getHtmlPageUri()); // $NON-NLS-1$
-        browserControl = browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
-        this.contextMenu = new HtmlChartContextMenu(this);
-        return browserControl;
+        browser = new JavaFXBrowser(container);
+        browser.registerBrowserFunction("loadData", new LoadDataFunction()); //$NON-NLS-1$
+        browser.load(args.getHtmlPageUri());
+        return browser;
     }
 
     public Control getBrowserControl()
     {
-        return browserControl;
+        return browser;
     }
 
     public HtmlChartConfig getChartConfig()
@@ -47,17 +46,13 @@ public class HtmlChart
 
     public void refreshChart()
     {
-        browser.refresh();
+        browser.load(args.getHtmlPageUri());
     }
 
-    private final class LoadDataFunction extends BrowserFunction
+    public final class LoadDataFunction implements BrowserFunction
     {
-        private LoadDataFunction(Browser browser, String name)
-        {
-            super(browser, name);
-        }
-
-        public Object function(Object[] arguments)
+        @Override
+        public Object function(JSObject arguments)
         {
             try
             {
@@ -82,11 +77,11 @@ public class HtmlChart
         // TODO: Implement Save Chart as Image
         // throw new Exception("Not implemented yet!");
         Display display = new Display();
-        Image image = new Image(display, browserControl.getBounds().width, browserControl.getBounds().height);
+        Image image = new Image(display, browser.getBounds().width, browser.getBounds().height);
         ImageLoader loader = new ImageLoader();
 
         GC gc = new GC(image);
-        browserControl.print(gc);
+        browser.print(gc);
         gc.dispose();
 
         loader.data = new ImageData[] { image.getImageData() };

@@ -30,6 +30,10 @@
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201501260813"/>
 <repository location="http://download.eclipse.org/technology/nebula/archives/Q12015/release/"/>
 </location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.fx.runtime.min.feature.feature.group" version="2.1.0.201508240501"/>
+<repository location="http://download.eclipse.org/efxclipse/updates-released/2.1.0/site"/>
+</location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
 </target>

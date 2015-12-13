@@ -159,4 +159,11 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipse.fx.osgi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

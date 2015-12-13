@@ -10,7 +10,9 @@ See http://buchen.github.com/portfolio/ for more details.
 
 * [Java 8](http://www.java.com)
 * [Maven](http://maven.apache.org)
-* [Eclipse](http://www.eclipse.org)
+* [Eclipse Luna](http://www.eclipse.org/downloads/packages/release/luna/sr2) plus
+  * [PDE Tooling](http://www.eclipse.org/pde/) ("Eclipse Plug-in Development Environment")
+  * [e(fx)eclipse Tooling](https://www.eclipse.org/efxclipse/install.html#for-the-lazy) ("e(fx)clipse - IDE - PDE")
 
 ## Building with Maven
 
