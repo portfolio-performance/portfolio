@@ -87,20 +87,21 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("rate", "forex", "gross", "amount", "currency").optional() //
-                        .match("QUST .*") //
-                        .match(" *(?<forex>\\w{3}+) *(?<gross>[\\d.]+,\\d+) *") //
+                        .section("rate", "amount", "currency").optional() //
                         .match("UMGER.ZUM DEV.-KURS *(?<rate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
-                            // fix amount in case we have a foreign currency
-                            // transaction
+                            // replace BRUTTO (which is in foreign currency)
+                            // with the value in transaction currency
 
                             Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-                            Money forex = Money.of(asCurrencyCode(v.get("forex")), asAmount(v.get("gross")));
-                            BigDecimal exchangeRate = BigDecimal.ONE.divide( //
-                                            asExchangeRate(v.get("rate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                            BigDecimal rate = asExchangeRate(v.get("rate"));
 
-                            Unit lumpSum = new Unit(Unit.Type.LUMPSUM, amount, forex, exchangeRate);
+                            // forex currency has been set above ("BRUTTO")
+                            BigDecimal converted = rate.multiply(BigDecimal.valueOf(amount.getAmount()));
+                            Money forex = Money.of(t.getCurrencyCode(), Math.round(converted.doubleValue()));
+
+                            BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
+                            Unit lumpSum = new Unit(Unit.Type.LUMPSUM, amount, forex, inverseRate);
 
                             t.setMonetaryAmount(amount);
                             t.addUnit(lumpSum);
@@ -133,14 +134,19 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("kapst", "solz", "currency")
+                        .section("kapst", "currency")
                         .match("KAPST.*(?<currency>\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *")
-                        .match("SOLZ.*(\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
-                            long kapst = asAmount(v.get("kapst"));
-                            long solz = asAmount(v.get("solz"));
-                            t.setAmount(kapst + solz);
+                            t.setAmount(asAmount(v.get("kapst")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("solz", "currency").optional()
+                        .match("SOLZ.*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
+                            String currency = asCurrencyCode(v.get("currency"));
+                            if (currency.equals(t.getCurrencyCode()))
+                                t.setAmount(t.getAmount() + asAmount(v.get("solz")));
                         })
 
                         .section("qust", "currency").optional() //
