@@ -127,6 +127,48 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschrift3() throws IOException
+    {
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankErtragsgutschrift3.txt")), errors);
+
+        assertThat(errors, empty());
+
+        // since taxes are zero, no tax transaction must be created
+        assertThat(results.size(), is(3));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getWkn(), is("850866"));
+        assertThat(security.getName(), is("DEERE & CO."));
+
+        // check dividend transaction
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
+                        i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
+                        .findAny().get().getSubject();
+        assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
+        assertThat(t.getShares(), is(Values.Share.factorize(300)));
+        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 138_55)));
+        assertThat(t.getUnit(Unit.Type.LUMPSUM).get().getForex(), is(Money.of("USD", 153_00)));
+
+        // check tax transaction
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.TAXES)
+                        .findAny().get().getSubject();
+        assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
+        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 16_30 + 89 + 24_45)));
+    }
+
+    @Test
     public void testWertpapierKauf() throws IOException
     {
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import name.abuchen.portfolio.datatransfer.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
@@ -9,6 +10,8 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 
 public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 {
@@ -84,6 +87,25 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("rate", "forex", "gross", "amount", "currency").optional() //
+                        .match("QUST .*") //
+                        .match(" *(?<forex>\\w{3}+) *(?<gross>[\\d.]+,\\d+) *") //
+                        .match("UMGER.ZUM DEV.-KURS *(?<rate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
+                            // fix amount in case we have a foreign currency
+                            // transaction
+
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            Money forex = Money.of(asCurrencyCode(v.get("forex")), asAmount(v.get("gross")));
+                            BigDecimal exchangeRate = BigDecimal.ONE.divide( //
+                                            asExchangeRate(v.get("rate")), 10, BigDecimal.ROUND_HALF_DOWN);
+
+                            Unit lumpSum = new Unit(Unit.Type.LUMPSUM, amount, forex, exchangeRate);
+
+                            t.setMonetaryAmount(amount);
+                            t.addUnit(lumpSum);
+                        })
+
                         .section("wkn", "name", "shares") //
                         .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *") //
                         .match("^(?<name>.*)$") //
@@ -119,6 +141,16 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             long solz = asAmount(v.get("solz"));
                             t.setAmount(kapst + solz);
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("qust", "currency").optional() //
+                        .match("QUST [\\d.]+,\\d+ *% *(?<currency>\\w{3}+) *(?<qust>[\\d.]+,\\d+) *\\w{3}+ *[\\d.]+,\\d+ *")
+                        .assign((t, v) -> {
+                            // if it is a foreign currency transaction and has
+                            // quellensteuer, add to transaction
+                            String currency = asCurrencyCode(v.get("currency"));
+                            if (currency.equals(t.getCurrencyCode()))
+                                t.setAmount(t.getAmount() + asAmount(v.get("qust")));
                         })
 
                         .section("date") //
