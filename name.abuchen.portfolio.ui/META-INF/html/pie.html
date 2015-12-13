@@ -16,8 +16,15 @@ text {
 <script src="${/META-INF/js/lib/d3.min.js}"></script>
 <script src="${/META-INF/js/pp.js}"></script>
 <script>
-var data = JSON.parse(loadData());
-var total = d3.sum(data, function(d) {return d.value;} );
+function initPage() {
+	data = JSON.parse(loadData());
+	total = d3.sum(data, function(d) {return d.value;} );
+	thePieChart.build();
+	thePieChart.update(data);
+}
+
+var data = {};
+var total = 0;
 
 pp.onResizeEnd(function() {
     thePieChart.resize();
@@ -239,9 +246,6 @@ var thePieChart = {
           .style("opacity", 0);
     }
 }
-
-thePieChart.build();
-thePieChart.update(data);
 
 // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
 function brightness(rgb) {

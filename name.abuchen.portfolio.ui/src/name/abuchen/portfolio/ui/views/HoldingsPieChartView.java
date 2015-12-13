@@ -9,13 +9,12 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.JavaFXBrowser;
 import name.abuchen.portfolio.util.ColorConversion;
 import name.abuchen.portfolio.util.Dates;
+import netscape.javascript.JSObject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -30,8 +29,10 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        return new EmbeddedBrowser("/META-INF/html/pie.html") //$NON-NLS-1$
-                        .createControl(parent, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
+        JavaFXBrowser browser = new JavaFXBrowser(parent);
+        browser.registerBrowserFunction("loadData", new LoadDataFunction()); //$NON-NLS-1$
+        browser.load("/META-INF/html/pie.html"); //$NON-NLS-1$
+        return browser;
     }
 
     private static final class JSColors
@@ -52,7 +53,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
         }
     }
 
-    private final class LoadDataFunction extends BrowserFunction
+    public final class LoadDataFunction implements JavaFXBrowser.BrowserFunction
     {
         private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
                         + "\"value\":%s," //$NON-NLS-1$
@@ -61,12 +62,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        private LoadDataFunction(Browser browser, String name)
-        {
-            super(browser, name);
-        }
-
-        public Object function(Object[] arguments)
+        @Override
+        public Object function(JSObject arguments)
         {
             try
             {

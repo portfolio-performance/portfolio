@@ -2,17 +2,18 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.JavaFXBrowser;
+import netscape.javascript.JSObject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
-    private EmbeddedBrowser browser;
+    private static final String FLARE_URL = "/META-INF/html/flare_chart.html"; //$NON-NLS-1$
+
+    private JavaFXBrowser browser;
 
     public PieChartViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -22,8 +23,10 @@ import org.eclipse.swt.widgets.Control;
     @Override
     public Control createControl(Composite container)
     {
-        browser = new EmbeddedBrowser("/META-INF/html/flare_chart.html"); //$NON-NLS-1$
-        return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
+        browser = new JavaFXBrowser(container);
+        browser.registerBrowserFunction("loadData", new LoadDataFunction()); //$NON-NLS-1$
+        browser.load(FLARE_URL);
+        return browser;
     }
 
     @Override
@@ -37,23 +40,19 @@ import org.eclipse.swt.widgets.Control;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        browser.refresh();
+        browser.load(FLARE_URL);
     }
 
     @Override
     public void onConfigChanged()
     {
-        browser.refresh();
+        browser.load(FLARE_URL);
     }
 
-    private final class LoadDataFunction extends BrowserFunction
+    public final class LoadDataFunction implements JavaFXBrowser.BrowserFunction
     {
-        private LoadDataFunction(Browser browser, String name)
-        {
-            super(browser, name);
-        }
-
-        public Object function(Object[] arguments)
+        @Override
+        public Object function(JSObject arguments)
         {
             try
             {
