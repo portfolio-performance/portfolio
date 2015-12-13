@@ -115,6 +115,48 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(13.6)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(42)));
     }
+    
+    @Test
+    public void testWertpapierVerkauf() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("comdirectWertpapierabrechnung_Verkauf.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getName(), is("FooBar. ETF"));
+        assertThat(security.getIsin(), is("DE1234567890"));
+        assertThat(security.getWkn(), is("ABC123"));
+        
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(10111.11)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(Dates.date("2010-01-01")));
+        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(11.51)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+    }
 
     @Test
     public void testGutschrift() throws IOException

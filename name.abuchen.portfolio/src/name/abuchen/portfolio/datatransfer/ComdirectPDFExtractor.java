@@ -20,6 +20,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addDividendTransaction();
+        addSellTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -97,6 +98,46 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> new TransactionItem(t)));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addSellTransaction()
+    {
+        DocumentType type = new DocumentType("Wertpapierverkauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Wertpapierverkauf *");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+        .subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        }).section("date") //
+                        .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("isin", "name", "wkn") //
+                        .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
+                        .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
+                        .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .match("^St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("amount") //
+                        .find(".*Zu Ihren Gunsten vor Steuern *") //
+                        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+
+                        .section("fee") //
+                        .optional().match(".*Summe Entgelte *: *(\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.setFees(asAmount(v.get("fee"))))
+
+                        .wrap(t -> new BuySellEntryItem(t)));
     }
 
     @Override
