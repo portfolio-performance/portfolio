@@ -24,6 +24,7 @@ import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.update.NewVersion.ConditionalMessage;
 import name.abuchen.portfolio.ui.update.NewVersion.Release;
 
 /* package */class UpdateMessageDialog extends MessageDialog
@@ -77,7 +78,7 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
             StyleRange style = new StyleRange();
             style.start = buffer.length();
             style.length = Messages.MsgUpdateRequiresLatestJavaVersion.length();
-            style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+            style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_RED);
             style.fontStyle = SWT.BOLD;
             ranges.add(style);
 
@@ -92,7 +93,7 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
         GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
     }
 
-    private void appendReleases(StringBuilder buffer, List<StyleRange> ranges)
+    private void appendReleases(StringBuilder buffer, List<StyleRange> styles)
     {
         Version currentVersion = FrameworkUtil.getBundle(this.getClass()).getVersion();
 
@@ -109,12 +110,35 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
             style.start = buffer.length();
             style.length = heading.length();
             style.fontStyle = SWT.BOLD;
-            ranges.add(style);
+            styles.add(style);
             buffer.append(heading);
             buffer.append("\n\n"); //$NON-NLS-1$
 
+            appendMessages(buffer, styles, release);
+
             for (String line : release.getLines())
                 buffer.append(line).append("\n"); //$NON-NLS-1$
+        }
+    }
+
+    private void appendMessages(StringBuilder buffer, List<StyleRange> styles, Release release)
+    {
+        for (ConditionalMessage msg : release.getMessages())
+        {
+            if (!msg.isApplicable())
+                continue;
+
+            StyleRange style = new StyleRange();
+            style.start = buffer.length();
+            style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_RED);
+            style.fontStyle = SWT.BOLD;
+
+            for (String line : msg.getLines())
+                buffer.append(line).append("\n"); //$NON-NLS-1$
+            style.length = buffer.length() - style.start;
+            styles.add(style);
+
+            buffer.append("\n\n"); //$NON-NLS-1$
         }
     }
 }
