@@ -23,6 +23,7 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -235,12 +236,10 @@ public class PortfolioPart implements LoadClientThread.Callback
                     @Override
                     public void createContainer(Composite parent)
                     {
-                        ProgressBar bar = createContainerWithMessage(
-                                        parent,
-                                        MessageFormat.format(Messages.MsgLoadingFile,
-                                                        PortfolioPart.this.clientFile.getName()), true, false);
-                        new LoadClientThread(new ProgressMonitor(bar), PortfolioPart.this, clientFile, password
-                                        .toCharArray()).start();
+                        ProgressBar bar = createContainerWithMessage(parent, MessageFormat.format(
+                                        Messages.MsgLoadingFile, PortfolioPart.this.clientFile.getName()), true, false);
+                        new LoadClientThread(new ProgressMonitor(bar), PortfolioPart.this, clientFile,
+                                        password.toCharArray()).start();
                     }
                 });
             }
@@ -319,6 +318,21 @@ public class PortfolioPart implements LoadClientThread.Callback
             return;
         }
 
+        // FIXME - remove beta overwrite popup
+        if (client.getFileVersionAfterRead() < Client.CURRENT_VERSION)
+        {
+            boolean confirmOverwrite = MessageDialog.openQuestion(shell, "Beta Version", //$NON-NLS-1$
+                            MessageFormat.format(
+                                            "Die aktuelle Datei {0} wurde mit einer vorherigen (nicht Beta) Version " //$NON-NLS-1$
+                                                            + "von Portfolio Performance erstellt. Überschreiben?", //$NON-NLS-1$
+                                            clientFile.getAbsolutePath()));
+            if (!confirmOverwrite)
+            {
+                doSaveAs(part, shell, null, null);
+                return;
+            }
+        }
+
         try
         {
             part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
@@ -329,8 +343,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
         catch (IOException e)
         {
-            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
     }
 
@@ -385,8 +399,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
         catch (IOException e)
         {
-            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
     }
 
