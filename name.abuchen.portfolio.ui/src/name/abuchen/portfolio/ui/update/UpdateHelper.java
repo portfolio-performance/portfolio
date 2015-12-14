@@ -3,8 +3,7 @@ package name.abuchen.portfolio.ui.update;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,20 +21,8 @@ import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -44,62 +31,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class UpdateHelper
 {
-    private class NewVersion
-    {
-        private String version;
-        private String description;
-        private String minimumJavaVersionRequired;
-
-        public NewVersion(String version)
-        {
-            this.version = version;
-        }
-
-        public String getVersion()
-        {
-            return version;
-        }
-
-        public String getDescription()
-        {
-            return description;
-        }
-
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
-
-        public void setMinimumJavaVersionRequired(String minimumJavaVersionRequired)
-        {
-            this.minimumJavaVersionRequired = minimumJavaVersionRequired;
-        }
-
-        public boolean requiresNewJavaVersion()
-        {
-            if (minimumJavaVersionRequired == null)
-                return false;
-
-            double current = parseJavaVersion(System.getProperty("java.version")); //$NON-NLS-1$
-            double required = parseJavaVersion(minimumJavaVersionRequired);
-
-            return required > current;
-        }
-
-        private double parseJavaVersion(String version)
-        {
-            int pos = 0;
-            for (int count = 0; pos < version.length() && count < 2; pos++)
-                if (version.charAt(pos) == '.')
-                    count++;
-
-            if (pos < version.length()) // exclude second dot from parsing
-                pos--;
-
-            return Double.parseDouble(version.substring(0, pos));
-        }
-
-    }
+    private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
 
     private final IWorkbench workbench;
     private final EPartService partService;
@@ -134,7 +66,7 @@ public class UpdateHelper
             {
                 public void run()
                 {
-                    Dialog dialog = new ExtendedMessageDialog(Display.getDefault().getActiveShell(),
+                    Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
                                     Messages.LabelUpdatesAvailable, //
                                     MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
                                     newVersion);
@@ -215,9 +147,17 @@ public class UpdateHelper
         else
         {
             NewVersion v = new NewVersion(update.replacement.getVersion().toString());
-            v.setDescription(update.replacement.getProperty("latest.changes.description", null)); //$NON-NLS-1$
             v.setMinimumJavaVersionRequired(
                             update.replacement.getProperty("latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
+
+            // try for locale first
+            String history = update.replacement.getProperty( //
+                            VERSION_HISTORY + "_" + Locale.getDefault().getLanguage(), null); //$NON-NLS-1$
+            if (history == null)
+                history = update.replacement.getProperty(VERSION_HISTORY, null);
+            if (history != null)
+                v.setVersionHistory(history);
+
             return v;
         }
     }
@@ -260,71 +200,5 @@ public class UpdateHelper
         Object result = context.getService(reference);
         context.ungetService(reference);
         return type.cast(result);
-    }
-
-    private static class ExtendedMessageDialog extends MessageDialog
-    {
-        private Button checkOnUpdate;
-        private NewVersion newVersion;
-
-        public ExtendedMessageDialog(Shell parentShell, String title, String message, NewVersion newVersion)
-        {
-            super(parentShell, title, null, message, CONFIRM,
-                            new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
-            this.newVersion = newVersion;
-        }
-
-        @Override
-        protected Control createCustomArea(Composite parent)
-        {
-            Composite container = new Composite(parent, SWT.NONE);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
-            GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
-
-            createText(container);
-
-            checkOnUpdate = new Button(container, SWT.CHECK);
-            checkOnUpdate.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
-                            .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE));
-            checkOnUpdate.setText(Messages.PrefCheckOnStartup);
-            checkOnUpdate.addSelectionListener(new SelectionAdapter()
-            {
-                @Override
-                public void widgetSelected(SelectionEvent e)
-                {
-                    PortfolioPlugin.getDefault().getPreferenceStore().setValue(PortfolioPlugin.Preferences.AUTO_UPDATE,
-                                    checkOnUpdate.getSelection());
-                }
-            });
-            GridDataFactory.fillDefaults().grab(true, false);
-
-            return container;
-        }
-
-        private void createText(Composite container)
-        {
-            StyledText text = new StyledText(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
-
-            List<StyleRange> ranges = new ArrayList<StyleRange>();
-
-            StringBuilder buffer = new StringBuilder();
-            if (newVersion.requiresNewJavaVersion())
-            {
-                StyleRange style = new StyleRange();
-                style.start = buffer.length();
-                style.length = Messages.MsgUpdateRequiresLatestJavaVersion.length();
-                style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
-                style.fontStyle = SWT.BOLD;
-                ranges.add(style);
-
-                buffer.append(Messages.MsgUpdateRequiresLatestJavaVersion);
-                buffer.append("\n\n"); //$NON-NLS-1$
-            }
-
-            buffer.append(newVersion.getDescription());
-            text.setText(buffer.toString());
-            text.setStyleRanges(ranges.toArray(new StyleRange[0]));
-            GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
-        }
     }
 }

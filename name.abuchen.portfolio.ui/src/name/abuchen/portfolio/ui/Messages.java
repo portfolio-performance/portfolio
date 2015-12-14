@@ -456,6 +456,7 @@ public class Messages extends NLS
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
     public static String MsgRestartRequired;
+    public static String MsgUpdateNewInVersionX;
     public static String MsgUpdateRequiresLatestJavaVersion;
     public static String MsgUpdatingExchangeRates;
     public static String NewFileWizardAccountDescription;

@@ -9,3 +9,7 @@ properties.2.name  = latest.changes.notSupportedOSList
 properties.2.value = macosx
 properties.3.name  = latest.changes.notSupportedOSMessage
 properties.3.value = Online Aktualisierung f\u00FCr Mac OS X nicht unterst\u00FCtzt.\n\nDiese Version kann nicht per Online Aktualisierung installiert werden\nweil sich der Dateiaufbau strukturell ge\u00E4ndert hat. Bitte neue Version\nhier herunterladen: http://buchen.github.io/portfolio/
+properties.4.name  = version.history
+properties.4.value = -- 0.21.0.beta\nStarting with this version, Portfolio Performance is supporting currencies.\n* New: Currencies #14\n* New: Retina Icons on Mac OS X
+properties.5.name  = version.history_de
+properties.5.value = -- 0.21.0.beta\nMit dieser Version unterst\u00FCtzt Portfolio Performance W\u00E4hrungen.\n* Neu: W\u00E4hrungen #14\n* Neu: Retina Icons unter Mac OS X
