@@ -10,6 +10,16 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -20,16 +30,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
-
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 public class SecurityTransactionDialog extends AbstractTransactionDialog
 {
@@ -113,7 +113,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         DateTime valueDate = new DateTime(editArea, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
 
         context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate),
-                        BeansObservables.observeValue(model, Properties.date.name()));
+                        BeanProperties.value(Properties.date.name()).observe(model));
 
         // other input fields
 
@@ -174,8 +174,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(SWTObservables.observeText(valueNote, SWT.Modify),
-                        BeansObservables.observeValue(model, Properties.note.name()));
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
+                        BeanProperties.value(Properties.note.name()).observe(model));
 
         //
         // form layout
@@ -186,8 +186,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
-                        .suffix(account.value.getControl()).thenBelow(valueDate)
-                        .label(lblDate)
+                        .suffix(account.value.getControl()).thenBelow(valueDate).label(lblDate)
                         // shares - quote - lump sum
                         .thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(width).thenRight(quote.currency).width(width)
@@ -224,20 +223,20 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
             String accountCurrency = model().getAccountCurrencyCode();
 
             // make exchange rate visible if both are set but different
-                        boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
-                                        && !securityCurrency.equals(accountCurrency);
+            boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
+                            && !securityCurrency.equals(accountCurrency);
 
-                        exchangeRate.setVisible(visible);
-                        convertedLumpSum.setVisible(visible);
+            exchangeRate.setVisible(visible);
+            convertedLumpSum.setVisible(visible);
 
-                        forexFees.setVisible(visible);
-                        plusForexFees.setVisible(visible);
-                        fees.label.setVisible(!visible);
+            forexFees.setVisible(visible);
+            plusForexFees.setVisible(visible);
+            fees.label.setVisible(!visible);
 
-                        forexTaxes.setVisible(visible);
-                        plusForexTaxes.setVisible(visible);
-                        taxes.label.setVisible(!visible);
-                    });
+            forexTaxes.setVisible(visible);
+            plusForexTaxes.setVisible(visible);
+            taxes.label.setVisible(!visible);
+        });
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }

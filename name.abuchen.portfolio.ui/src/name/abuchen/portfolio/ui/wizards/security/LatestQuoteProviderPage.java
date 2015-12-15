@@ -9,17 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -35,6 +25,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+
+import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 {
@@ -90,8 +90,8 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
         public LoadLatestQuote(QuoteFeed feed, Exchange exchange)
         {
-            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes, exchange != null ? exchange.getName()
-                            : "")); //$NON-NLS-1$
+            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes,
+                            exchange != null ? exchange.getName() : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
         }
@@ -129,17 +129,17 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                             valueLatestPrices.setText(Values.Amount.format(p.getValue()));
                             valueLatestTrade.setText(Values.Date.format(p.getTime()));
                             long daysHigh = p.getHigh();
-                            valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                            .format(daysHigh));
+                            valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable
+                                            : Values.Amount.format(daysHigh));
                             long daysLow = p.getLow();
-                            valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                            .format(daysLow));
+                            valueDaysLow.setText(
+                                            daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysLow));
                             long volume = p.getVolume();
-                            valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String
-                                            .format("%,d", volume)); //$NON-NLS-1$
+                            valueVolume.setText(
+                                            volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
                             long prevClose = p.getPreviousClose();
-                            valuePreviousClose.setText(prevClose == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                            .format(prevClose));
+                            valuePreviousClose.setText(prevClose == -1 ? Messages.LabelNotAvailable
+                                            : Values.Amount.format(prevClose));
 
                         }
                         else
@@ -188,13 +188,13 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            IObservableValue observable = BeansObservables.observeValue(model, "statusLatestQuotesProvider"); //$NON-NLS-1$
+            IObservableValue observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
             protected IStatus validate()
             {
-                return observable.getValue() == null ? ValidationStatus.ok() : ValidationStatus.error(observable
-                                .getValue().toString());
+                return observable.getValue() == null ? ValidationStatus.ok()
+                                : ValidationStatus.error(observable.getValue().toString());
             }
         });
     }

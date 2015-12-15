@@ -5,20 +5,11 @@ import java.text.MessageFormat;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
-import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
-
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -26,7 +17,8 @@ import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -44,6 +36,15 @@ import org.eclipse.swt.widgets.Text;
 
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
@@ -82,29 +83,30 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                     public IStatus validate(Object value)
                     {
                         Long v = (Long) value;
-                        return v != null && v.longValue() > 0 ? ValidationStatus.ok() : ValidationStatus
-                                        .error(MessageFormat.format(Messages.MsgDialogInputRequired, description));
+                        return v != null && v.longValue() > 0 ? ValidationStatus.ok()
+                                        : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
+                                                        description));
                     }
                 });
             }
 
-            context.bindValue(SWTObservables.observeText(value, SWT.Modify), //
-                            BeansObservables.observeValue(model, property), //
+            context.bindValue(WidgetProperties.text(SWT.Modify).observe(value), //
+                            BeanProperties.value(property).observe(model), //
                             strategy, new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(values)));
         }
 
         public void bindCurrency(String property)
         {
-            context.bindValue(SWTObservables.observeText(currency), BeansObservables.observeValue(model, property));
+            context.bindValue(WidgetProperties.text().observe(currency), //
+                            BeanProperties.value(property).observe(model));
         }
 
         public void bindExchangeRate(String property, String description)
         {
             NumberFormat format = new DecimalFormat("#,##0.0000"); //$NON-NLS-1$
 
-            context.bindValue(
-                            SWTObservables.observeText(value, SWT.Modify), //
-                            BeansObservables.observeValue(model, property), //
+            context.bindValue(WidgetProperties.text(SWT.Modify).observe(value), //
+                            BeanProperties.value(property).observe(model), //
                             new UpdateValueStrategy().setConverter(StringToNumberConverter.toBigDecimal()),
                             new UpdateValueStrategy().setConverter(NumberToStringConverter.fromBigDecimal(format)));
         }
@@ -138,16 +140,17 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public IObservableValue bindValue(String property, String missingValueMessage)
         {
             UpdateValueStrategy strategy = new UpdateValueStrategy();
-            strategy.setAfterConvertValidator(v -> v != null ? ValidationStatus.ok() : ValidationStatus
-                            .error(missingValueMessage));
+            strategy.setAfterConvertValidator(
+                            v -> v != null ? ValidationStatus.ok() : ValidationStatus.error(missingValueMessage));
             IObservableValue observable = ViewersObservables.observeSingleSelection(value);
-            context.bindValue(observable, BeansObservables.observeValue(model, property), strategy, null);
+            context.bindValue(observable, BeanProperties.value(property).observe(model), strategy, null);
             return observable;
         }
 
         public void bindCurrency(String property)
         {
-            context.bindValue(SWTObservables.observeText(currency), BeansObservables.observeValue(model, property));
+            context.bindValue(ViewerProperties.singleSelection().observe(value),
+                            BeanProperties.value(property).observe(model));
         }
     }
 
@@ -191,7 +194,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     {
         this.context.addValidationStatusProvider(new MultiValidator()
         {
-            IObservableValue observable = BeansObservables.observeValue(model, "calculationStatus"); //$NON-NLS-1$
+            IObservableValue observable = BeanProperties.value("calculationStatus").observe(model); //$NON-NLS-1$
 
             @Override
             protected IStatus validate()
@@ -233,7 +236,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         createFormElements(editArea);
 
-        context.bindValue(PojoObservables.observeValue(status, "status"), //$NON-NLS-1$
+        context.bindValue(PojoProperties.value("status").observe(status), //$NON-NLS-1$
                         new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
 
         return editArea;

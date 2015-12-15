@@ -8,6 +8,19 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.MultiValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -17,19 +30,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
-
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.validation.MultiValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 public class SecurityTransferDialog extends AbstractTransactionDialog
 {
@@ -50,8 +50,8 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
             Object from = source.getValue();
             Object to = target.getValue();
 
-            return from != null && to != null && from != to ? ValidationStatus.ok() : ValidationStatus
-                            .error(Messages.MsgPortfolioMustBeDifferent);
+            return from != null && to != null && from != to ? ValidationStatus.ok()
+                            : ValidationStatus.error(Messages.MsgPortfolioMustBeDifferent);
         }
     }
 
@@ -108,7 +108,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         lblDate.setText(Messages.ColumnDate);
         DateTimePicker valueDate = new DateTimePicker(editArea);
         context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeansObservables.observeValue(model, Properties.date.name()));
+                        BeanProperties.value(Properties.date.name()).observe(model));
 
         // amount
 
@@ -128,8 +128,8 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(SWTObservables.observeText(valueNote, SWT.Modify),
-                        BeansObservables.observeValue(model, Properties.note.name()));
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
+                        BeanProperties.value(Properties.note.name()).observe(model));
 
         //
         // form layout
@@ -140,10 +140,8 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(source.value.getControl()).label(source.label).suffix(source.currency)
-                        .thenBelow(target.value.getControl()).label(target.label)
-                        .suffix(target.currency)
-                        .thenBelow(valueDate.getControl())
-                        .label(lblDate)
+                        .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
+                        .thenBelow(valueDate.getControl()).label(lblDate)
                         // shares - quote - amount
                         .thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(amountWidth).thenRight(quote.currency).width(currencyWidth)

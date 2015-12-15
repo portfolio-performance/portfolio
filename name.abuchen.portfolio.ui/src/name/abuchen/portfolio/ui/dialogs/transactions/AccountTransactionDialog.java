@@ -14,6 +14,23 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -30,23 +47,6 @@ import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
-
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog
 {
@@ -93,7 +93,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         lblDate.setText(Messages.ColumnDate);
         DateTimePicker valueDate = new DateTimePicker(editArea);
         context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeansObservables.observeValue(model, Properties.date.name()));
+                        BeanProperties.value(Properties.date.name()).observe(model));
 
         // shares
 
@@ -132,8 +132,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(SWTObservables.observeText(valueNote, SWT.Modify),
-                        BeansObservables.observeValue(model, Properties.note.name()));
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
+                        BeanProperties.value(Properties.note.name()).observe(model));
 
         //
         // form layout

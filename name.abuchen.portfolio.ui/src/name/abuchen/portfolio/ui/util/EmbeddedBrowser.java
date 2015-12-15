@@ -9,10 +9,6 @@ import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.TokenReplacingReader;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -28,6 +24,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TokenReplacingReader;
 
 public class EmbeddedBrowser
 {
@@ -83,10 +83,11 @@ public class EmbeddedBrowser
     private String loadHTML(String htmlpage)
     {
         try (InputStream h = FileLocator.openStream(PortfolioPlugin.getDefault().getBundle(), //
-                        new Path(htmlpage), false))
+                        new Path(htmlpage), false);
+                        Scanner s = new Scanner(new TokenReplacingReader(
+                                        new InputStreamReader(h, StandardCharsets.UTF_8), new PathResolver())))
         {
-            return new Scanner(new TokenReplacingReader(new InputStreamReader(h, StandardCharsets.UTF_8),
-                            new PathResolver())).useDelimiter("\\Z").next(); //$NON-NLS-1$
+            return s.useDelimiter("\\Z").next(); //$NON-NLS-1$
         }
         catch (IOException e)
         {

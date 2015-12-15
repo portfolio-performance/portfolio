@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -155,8 +155,8 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        context.bindValue(SWTObservables.observeSelection(checkbox), //
-                        BeansObservables.observeValue(model, "changeTransactions")); //$NON-NLS-1$
+        context.bindValue(WidgetProperties.selection().observe(checkbox), //
+                        BeanProperties.value("changeTransactions").observe(model)); //$NON-NLS-1$
 
         checkbox.addSelectionListener(new SelectionAdapter()
         {

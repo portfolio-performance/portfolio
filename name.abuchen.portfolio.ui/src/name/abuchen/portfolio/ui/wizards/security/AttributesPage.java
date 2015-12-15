@@ -5,13 +5,13 @@ import java.util.Set;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -159,9 +159,9 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         deleteButton.setImage(Images.REMOVE.image());
 
         // model binding
-        final Binding binding = bindings.getBindingContext().bindValue(
-                        SWTObservables.observeText(value, SWT.Modify),
-                        BeansObservables.observeValue(attribute, "value"), //$NON-NLS-1$
+        final Binding binding = bindings.getBindingContext().bindValue( //
+                        WidgetProperties.text(SWT.Modify).observe(value), //
+                        BeanProperties.value("value").observe(model), //$NON-NLS-1$
                         new UpdateValueStrategy().setConverter(new ToAttributeObjectConverter(attribute)),
                         new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
 

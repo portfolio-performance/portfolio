@@ -12,6 +12,19 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -20,19 +33,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
-
-import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.validation.IValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 public class InvestmentPlanDialog extends AbstractTransactionDialog
 {
@@ -64,11 +64,12 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         Text valueName = new Text(editArea, SWT.BORDER);
         IValidator validator = value -> {
             String v = (String) value;
-            return v != null && v.trim().length() > 0 ? ValidationStatus.ok() : ValidationStatus.error(MessageFormat
-                            .format(Messages.MsgDialogInputRequired, Messages.ColumnName));
+            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                            : ValidationStatus.error(
+                                            MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
         };
-        context.bindValue(SWTObservables.observeText(valueName, SWT.Modify),
-                        BeansObservables.observeValue(model, Properties.name.name()),
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueName),
+                        BeanProperties.value(Properties.name.name()).observe(model),
                         new UpdateValueStrategy().setAfterConvertValidator(validator), null);
 
         // security
@@ -99,7 +100,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         lblDate.setText(Messages.ColumnDate);
         DateTimePicker valueDate = new DateTimePicker(editArea);
         context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeansObservables.observeValue(model, Properties.start.name()));
+                        BeanProperties.value(Properties.start.name()).observe(model));
 
         // interval
 
@@ -140,25 +141,19 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         int amountWidth = amountWidth(amount.value);
         int currencyWidth = currencyWidth(amount.currency);
 
-        startingWith(valueName, lblName)
-                        .width(3 * amountWidth)
+        startingWith(valueName, lblName).width(3 * amountWidth)
                         //
-                        .thenBelow(securities.value.getControl())
-                        .label(securities.label)
+                        .thenBelow(securities.value.getControl()).label(securities.label)
                         .suffix(securities.currency, currencyWidth)
                         //
-                        .thenBelow(portfolio.value.getControl())
-                        .label(portfolio.label)
+                        .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         //
-                        .thenBelow(account.value.getControl())
-                        .label(account.label)
+                        .thenBelow(account.value.getControl()).label(account.label)
                         .suffix(account.currency, currencyWidth)
                         //
-                        .thenBelow(valueDate.getControl())
-                        .label(lblDate)
+                        .thenBelow(valueDate.getControl()).label(lblDate)
                         //
-                        .thenBelow(interval.value.getControl())
-                        .label(interval.label)
+                        .thenBelow(interval.value.getControl()).label(interval.label)
                         //
                         .thenBelow(amount.value).width(amountWidth).label(amount.label)
                         .suffix(amount.currency, currencyWidth)

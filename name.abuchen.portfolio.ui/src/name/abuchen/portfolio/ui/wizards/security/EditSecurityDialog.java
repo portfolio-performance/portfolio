@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -151,8 +151,8 @@ public class EditSecurityDialog extends Dialog
 
         // bind to model
 
-        bindings.getBindingContext().bindValue(SWTObservables.observeText(name, SWT.Modify), //
-                        BeansObservables.observeValue(model, "name"), //$NON-NLS-1$
+        bindings.getBindingContext().bindValue(WidgetProperties.text(SWT.Modify).observe(name), //
+                        BeanProperties.value("name").observe(model), //$NON-NLS-1$
                         new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
                         {
                             @Override
