@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -14,6 +15,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -66,6 +68,10 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
+    private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
+    private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
+    private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
+
     private TableViewer tableViewer;
     private TableViewer errorTableViewer;
 
@@ -80,16 +86,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private final Client client;
     private final Extractor extractor;
+    private final IPreferenceStore preferences;
     private List<File> files;
 
     private List<ExtractedEntry> allEntries = new ArrayList<ExtractedEntry>();
 
-    public ReviewExtractedItemsPage(Client client, Extractor extractor, List<File> files)
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files)
     {
         super("reviewitems"); //$NON-NLS-1$
 
         this.client = client;
         this.extractor = extractor;
+        this.preferences = preferences;
         this.files = files;
 
         setTitle(extractor.getLabel());
@@ -142,7 +150,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
         primaryAccount.setInput(client.getActiveAccounts());
         primaryAccount.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
-        cmbAccount.select(0);
 
         lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
         lblSecondaryAccount.setText(Messages.LabelTransferTo);
@@ -152,7 +159,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
         secondaryAccount.setInput(client.getActiveAccounts());
         secondaryAccount.getControl().setVisible(false);
-        cmbAccountTarget.select(0);
 
         lblPrimaryPortfolio = new Label(targetContainer, SWT.NONE);
         lblPrimaryPortfolio.setText(Messages.ColumnPortfolio);
@@ -161,7 +167,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
         primaryPortfolio.setInput(client.getActivePortfolios());
         primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
-        cmbPortfolio.select(0);
 
         lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
         lblSecondaryPortfolio.setText(Messages.LabelTransferTo);
@@ -171,7 +176,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
         secondaryPortfolio.setInput(client.getActivePortfolios());
         secondaryPortfolio.getControl().setVisible(false);
-        cmbPortfolioTarget.select(0);
+
+        preselectDropDowns();
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
@@ -226,6 +232,33 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         addColumnsExceptionTable(errorTableViewer, layout);
+    }
+
+    private void preselectDropDowns()
+    {
+        // idea: generally one type of document (i.e. from the same bank) will
+        // be imported into the same account
+
+        List<Account> activeAccounts = client.getActiveAccounts();
+        if (!activeAccounts.isEmpty())
+        {
+            String uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getClass().getSimpleName());
+
+            // do not trigger selection listener (-> do not user #setSelection)
+            primaryAccount.getCombo().select(IntStream.range(0, activeAccounts.size())
+                            .filter(i -> activeAccounts.get(i).getUUID().equals(uuid)).findAny().orElse(0));
+            secondaryAccount.getCombo().select(0);
+        }
+
+        List<Portfolio> activePortfolios = client.getActivePortfolios();
+        if (!activePortfolios.isEmpty())
+        {
+            String uuid = preferences.getString(IMPORT_TARGET_PORTFOLIO + extractor.getClass().getSimpleName());
+            // do not trigger selection listener (-> do not user #setSelection)
+            primaryPortfolio.getCombo().select(IntStream.range(0, activePortfolios.size())
+                            .filter(i -> activePortfolios.get(i).getUUID().equals(uuid)).findAny().orElse(0));
+            secondaryPortfolio.getCombo().select(0);
+        }
     }
 
     private void addColumnsExceptionTable(TableViewer viewer, TableColumnLayout layout)
@@ -469,6 +502,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    @Override
+    public void afterPage()
+    {
+        preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getClass().getSimpleName(), getAccount().getUUID());
+        preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getClass().getSimpleName(), getPortfolio().getUUID());
     }
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)

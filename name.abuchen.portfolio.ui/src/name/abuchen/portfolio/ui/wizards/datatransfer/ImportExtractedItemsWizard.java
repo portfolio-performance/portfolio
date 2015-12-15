@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -16,14 +17,17 @@ public class ImportExtractedItemsWizard extends Wizard
 {
     private Client client;
     private Extractor extractor;
+    private IPreferenceStore preferences;
     private List<File> files;
 
     private ReviewExtractedItemsPage page;
 
-    public ImportExtractedItemsWizard(Client client, Extractor extractor, List<File> files)
+    public ImportExtractedItemsWizard(Client client, Extractor extractor, IPreferenceStore preferences,
+                    List<File> files)
     {
         this.client = client;
         this.extractor = extractor;
+        this.preferences = preferences;
         this.files = files;
 
         setWindowTitle(Messages.PDFImportWizardTitle);
@@ -33,7 +37,7 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public void addPages()
     {
-        page = new ReviewExtractedItemsPage(client, extractor, files);
+        page = new ReviewExtractedItemsPage(client, extractor, preferences, files);
         addPage(page);
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }
@@ -41,6 +45,8 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public boolean performFinish()
     {
+        page.afterPage();
+
         InsertAction action = new InsertAction(client);
 
         boolean isDirty = false;
