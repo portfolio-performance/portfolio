@@ -48,6 +48,7 @@ public class ImportExtractedItemsWizard extends Wizard
         page.afterPage();
 
         InsertAction action = new InsertAction(client);
+        action.setConvertBuySellToDelivery(page.doConvertToDelivery());
 
         boolean isDirty = false;
         for (ExtractedEntry entry : page.getEntries())

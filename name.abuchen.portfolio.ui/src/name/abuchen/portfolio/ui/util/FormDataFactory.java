@@ -93,6 +93,20 @@ public final class FormDataFactory
         return this;
     }
 
+    public FormDataFactory height(int height)
+    {
+        FormData data = from(reference);
+        data.height = height;
+        return this;
+    }
+
+    public FormDataFactory top(FormAttachment attachment)
+    {
+        FormData data = from(reference);
+        data.top = attachment;
+        return this;
+    }
+
     public FormDataFactory left(Control control)
     {
         FormData data = from(reference);
@@ -100,10 +114,31 @@ public final class FormDataFactory
         return this;
     }
 
+    public FormDataFactory left(FormAttachment attachment)
+    {
+        FormData data = from(reference);
+        data.left = attachment;
+        return this;
+    }
+
     public FormDataFactory right(Control control)
     {
         FormData data = from(reference);
         data.right = new FormAttachment(control, 0, SWT.RIGHT);
+        return this;
+    }
+
+    public FormDataFactory right(FormAttachment attachment)
+    {
+        FormData data = from(reference);
+        data.right = attachment;
+        return this;
+    }
+
+    public FormDataFactory bottom(FormAttachment attachment)
+    {
+        FormData data = from(reference);
+        data.bottom = attachment;
         return this;
     }
 

@@ -32,8 +32,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -62,6 +62,7 @@ import name.abuchen.portfolio.ui.AbstractClientJob;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
@@ -83,6 +84,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private ComboViewer primaryAccount;
     private Label lblSecondaryAccount;
     private ComboViewer secondaryAccount;
+    private Button cbConvertToDelivery;
 
     private final Client client;
     private final Extractor extractor;
@@ -133,6 +135,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return (Account) ((IStructuredSelection) secondaryAccount.getSelection()).getFirstElement();
     }
 
+    public boolean doConvertToDelivery()
+    {
+        return cbConvertToDelivery.getSelection();
+    }
+
     @Override
     public void createControl(Composite parent)
     {
@@ -179,6 +186,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         preselectDropDowns();
 
+        cbConvertToDelivery = new Button(container, SWT.CHECK);
+        cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
+
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
 
@@ -186,25 +196,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // form layout
         //
 
-        FormData data = new FormData();
-        data.top = new FormAttachment(0, 0);
-        data.left = new FormAttachment(0, 0);
-        data.right = new FormAttachment(100, 0);
-        targetContainer.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(targetContainer, 10);
-        data.left = new FormAttachment(0, 0);
-        data.right = new FormAttachment(100, 0);
-        data.bottom = new FormAttachment(70, 0);
-        compositeTable.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(compositeTable, 10);
-        data.left = new FormAttachment(0, 0);
-        data.right = new FormAttachment(100, 0);
-        data.bottom = new FormAttachment(100, 0);
-        errorTable.setLayoutData(data);
+        FormDataFactory.startingWith(targetContainer) //
+                        .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
+                        .thenBelow(cbConvertToDelivery) //
+                        .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(70, 0)) //
+                        .thenBelow(errorTable).right(targetContainer).bottom(new FormAttachment(100, 0));
 
         //
         // table & columns

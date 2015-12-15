@@ -14,10 +14,16 @@ import name.abuchen.portfolio.model.Security;
 public class InsertAction implements ImportAction
 {
     private final Client client;
+    private boolean convertBuySellToDelivery = false;
 
     public InsertAction(Client client)
     {
         this.client = client;
+    }
+
+    public void setConvertBuySellToDelivery(boolean flag)
+    {
+        this.convertBuySellToDelivery = flag;
     }
 
     @Override
@@ -52,10 +58,30 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(BuySellEntry entry, Account account, Portfolio portfolio)
     {
-        entry.setPortfolio(portfolio);
-        entry.setAccount(account);
-        entry.insert();
-        return Status.OK_STATUS;
+        if (convertBuySellToDelivery)
+        {
+            PortfolioTransaction t = entry.getPortfolioTransaction();
+
+            PortfolioTransaction delivery = new PortfolioTransaction();
+            delivery.setType(t.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
+                            : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+
+            delivery.setDate(t.getDate());
+            delivery.setSecurity(t.getSecurity());
+            delivery.setMonetaryAmount(t.getMonetaryAmount());
+            delivery.setNote(t.getNote());
+            delivery.setShares(t.getShares());
+            delivery.addUnits(t.getUnits());
+
+            return process(delivery, portfolio);
+        }
+        else
+        {
+            entry.setPortfolio(portfolio);
+            entry.setAccount(account);
+            entry.insert();
+            return Status.OK_STATUS;
+        }
     }
 
     @Override
