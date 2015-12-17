@@ -10,12 +10,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
@@ -26,43 +23,22 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.online.QuoteFeed;
 
 /* package */abstract class AbstractPDFExtractor implements Extractor
 {
     private final Client client;
+    private final SecurityCache securityCache;
     private final PDFTextStripper textStripper;
     private final List<String> bankIdentifier = new ArrayList<String>();
     private final List<DocumentType> documentTypes = new ArrayList<DocumentType>();
 
-    private final Map<String, Security> isin2security;
-    private final Map<String, Security> wkn2security;
-
     public AbstractPDFExtractor(Client client) throws IOException
     {
         this.client = client;
+        this.securityCache = new SecurityCache(client);
 
         textStripper = new PDFTextStripper();
         textStripper.setSortByPosition(true);
-
-        this.isin2security = client
-                        .getSecurities()
-                        .stream()
-                        .filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
-                        .collect(Collectors.toMap(Security::getIsin, s -> s,
-                                        (l, r) -> failWith(Messages.MsgErrorDuplicateISIN, l.getIsin())));
-
-        this.wkn2security = client
-                        .getSecurities()
-                        .stream()
-                        .filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
-                        .collect(Collectors.toMap(Security::getWkn, s -> s,
-                                        (l, r) -> failWith(Messages.MsgErrorDuplicateWKN, l.getWkn())));
-    }
-
-    protected Security failWith(String message, String parameter)
-    {
-        throw new IllegalArgumentException(MessageFormat.format(message, parameter));
     }
 
     protected final void addDocumentTyp(DocumentType type)
@@ -98,16 +74,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
             }
         }
 
-        Set<Security> added = new HashSet<Security>();
-        for (Item item : new ArrayList<Item>(results))
-        {
-            Security security = item.getSecurity();
-            if (security != null && !client.getSecurities().contains(security) && !added.contains(security))
-            {
-                added.add(security);
-                results.add(new SecurityItem(security));
-            }
-        }
+        results.addAll(securityCache.createMissingSecurityItems(results));
 
         return results;
     }
@@ -136,8 +103,8 @@ import name.abuchen.portfolio.online.QuoteFeed;
 
             if (items.isEmpty())
             {
-                errors.add(new UnsupportedOperationException(MessageFormat.format(
-                                Messages.PDFdbMsgCannotDetermineFileType, filename)));
+                errors.add(new UnsupportedOperationException(
+                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename)));
             }
 
             for (Item item : items)
@@ -172,36 +139,20 @@ import name.abuchen.portfolio.online.QuoteFeed;
 
     protected Security getOrCreateSecurity(Map<String, String> values)
     {
-        Security security = buildSecurity(values);
+        String isin = values.get("isin"); //$NON-NLS-1$
+        String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
+        String wkn = values.get("wkn"); //$NON-NLS-1$
 
-        Security existing = isin2security.get(security.getIsin());
-        if (existing != null)
-            return existing;
-
-        existing = wkn2security.get(security.getWkn());
-        if (existing != null)
-            return existing;
-
-        if (security.getIsin() != null)
-            isin2security.put(security.getIsin(), security);
-        if (security.getWkn() != null)
-            wkn2security.put(security.getWkn(), security);
-        return security;
-    }
-
-    private Security buildSecurity(Map<String, String> values)
-    {
-        Security security = new Security();
-        security.setName(values.get("name").trim()); //$NON-NLS-1$
-        security.setIsin(values.get("isin")); //$NON-NLS-1$
-        security.setWkn(values.get("wkn")); //$NON-NLS-1$
-        security.setFeed(QuoteFeed.MANUAL);
-
-        security.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
-
-        if (security.getIsin() == null && security.getWkn() == null)
+        Security security = securityCache.lookup(isin, tickerSymbol, wkn, () -> {
+            Security s = new Security();
+            s.setName(values.get("name").trim()); //$NON-NLS-1$
+            s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+            return s;
+        });
+        
+        if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
-
+        
         return security;
     }
 
@@ -224,10 +175,10 @@ import name.abuchen.portfolio.online.QuoteFeed;
     {
         // ensure that the security is always created with a valid currency code
         if (currency == null)
-            return CurrencyUnit.EUR;
+            return client.getBaseCurrency();
 
         CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
-        return unit == null ? CurrencyUnit.EUR : unit.getCurrencyCode();
+        return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
     /* protected */long asAmount(String value)
