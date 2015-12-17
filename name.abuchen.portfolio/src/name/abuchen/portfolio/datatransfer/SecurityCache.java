@@ -39,7 +39,7 @@ public class SecurityCache
         this.ticker2security = client.getSecurities().stream()
                         .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
                         .collect(Collectors.toMap(Security::getTickerSymbol, s -> s,
-                                        (l, r) -> failWith("Ticker {0} exists multiple times", l.getTickerSymbol())));
+                                        (l, r) -> failWith(Messages.MsgErrorDuplicateTicker, l.getTickerSymbol())));
     }
 
     private Security failWith(String message, String parameter)

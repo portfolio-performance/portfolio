@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -13,23 +13,7 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import name.abuchen.portfolio.datatransfer.CSVImportDefinition;
-import name.abuchen.portfolio.datatransfer.CSVImporter;
-import name.abuchen.portfolio.datatransfer.CSVImporter.AmountField;
-import name.abuchen.portfolio.datatransfer.CSVImporter.Column;
-import name.abuchen.portfolio.datatransfer.CSVImporter.DateField;
-import name.abuchen.portfolio.datatransfer.CSVImporter.EnumField;
-import name.abuchen.portfolio.datatransfer.CSVImporter.EnumMapFormat;
-import name.abuchen.portfolio.datatransfer.CSVImporter.Field;
-import name.abuchen.portfolio.datatransfer.CSVImporter.FieldFormat;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupportWrapper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
@@ -55,6 +39,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
@@ -82,7 +67,26 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
-public class ImportDefinitionPage extends AbstractWizardPage implements ISelectionChangedListener
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.csv.CSVExtractor;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.ColumnEditingSupportWrapper;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+
+public class CSVImportDefinitionPage extends AbstractWizardPage implements ISelectionChangedListener
 {
     private static final class Delimiter
     {
@@ -112,19 +116,39 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         }
     }
 
+    private final CSVImporter importer;
+    private final boolean onlySecurityPrices;
+
     private TableViewer tableViewer;
 
-    private final CSVImporter importer;
-    private final Object defaultTarget;
-
-    public ImportDefinitionPage(CSVImporter importer, Object defaultTarget)
+    public CSVImportDefinitionPage(CSVImporter importer, boolean onlySecurityPrices)
     {
         super("importdefinition"); //$NON-NLS-1$
         setTitle(Messages.CSVImportWizardTitle);
         setDescription(Messages.CSVImportWizardDescription);
 
         this.importer = importer;
-        this.defaultTarget = defaultTarget;
+        this.onlySecurityPrices = onlySecurityPrices;
+
+        if (onlySecurityPrices)
+            importer.setExtractor(importer.getSecurityPriceExtractor());
+    }
+
+    public CSVImporter getImporter()
+    {
+        return importer;
+    }
+
+    @Override
+    public IWizardPage getNextPage()
+    {
+        if (onlySecurityPrices)
+            return null;
+
+        if (importer.getExtractor() == importer.getSecurityPriceExtractor())
+            return getWizard().getPage(SelectSecurityPage.PAGE_ID);
+        else
+            return getWizard().getPage(ReviewExtractedItemsPage.PAGE_ID);
     }
 
     @Override
@@ -134,7 +158,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         setControl(container);
         container.setLayout(new FormLayout());
 
-        Label lblTarget = new Label(container, SWT.NONE);
+        Label lblTarget = new Label(container, SWT.RIGHT);
         lblTarget.setText(Messages.CSVImportLabelTarget);
         Combo cmbTarget = new Combo(container, SWT.READ_ONLY);
         ComboViewer target = new ComboViewer(cmbTarget);
@@ -144,13 +168,10 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             @Override
             public String getText(Object element)
             {
-                if (element instanceof CSVImportDefinition)
-                    return element.toString();
-                else
-                    return "     " + element.toString(); //$NON-NLS-1$
+                return ((Extractor) element).getLabel();
             }
         });
-        target.getCombo().setEnabled(defaultTarget == null);
+        target.getCombo().setEnabled(!onlySecurityPrices);
         target.addSelectionChangedListener(this);
 
         Label lblDelimiter = new Label(container, SWT.NONE);
@@ -208,55 +229,18 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         // form layout
         //
 
-        Control biggest = widestWidget(lblTarget, lblDelimiter, lblEncoding);
+        int width = widest(lblTarget, lblDelimiter, lblEncoding);
+
+        FormDataFactory.startingWith(lblTarget).width(width).top(new FormAttachment(0, 5)).thenRight(cmbTarget)
+                        .right(new FormAttachment(50, -5)).thenBelow(cmbDelimiter).label(lblDelimiter)
+                        .right(new FormAttachment(50, -5)).thenBelow(cmbEncoding).label(lblEncoding)
+                        .right(new FormAttachment(50, -5));
+
+        FormDataFactory.startingWith(cmbDelimiter).thenRight(lblSkipLines).suffix(skipLines);
+
+        FormDataFactory.startingWith(cmbEncoding).thenRight(firstLineIsHeader);
 
         FormData data = new FormData();
-        data.top = new FormAttachment(cmbTarget, 0, SWT.CENTER);
-        lblTarget.setLayoutData(data);
-
-        data = new FormData();
-        data.left = new FormAttachment(biggest, 5);
-        data.right = new FormAttachment(100);
-        cmbTarget.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbDelimiter, 0, SWT.CENTER);
-        lblDelimiter.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbTarget, 5);
-        data.left = new FormAttachment(cmbTarget, 0, SWT.LEFT);
-        data.right = new FormAttachment(50, -5);
-        cmbDelimiter.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbEncoding, 0, SWT.CENTER);
-        lblEncoding.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbDelimiter, 5);
-        data.left = new FormAttachment(cmbDelimiter, 0, SWT.LEFT);
-        data.right = new FormAttachment(50, -5);
-        cmbEncoding.setLayoutData(data);
-
-        data = new FormData();
-        data.left = new FormAttachment(50, 5);
-        data.top = new FormAttachment(skipLines, 0, SWT.CENTER);
-        lblSkipLines.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(cmbTarget, 5);
-        data.left = new FormAttachment(lblSkipLines, 5);
-        data.right = new FormAttachment(100, 0);
-        skipLines.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(skipLines, 5);
-        data.left = new FormAttachment(lblSkipLines, 0, SWT.LEFT);
-        data.right = new FormAttachment(100, 0);
-        firstLineIsHeader.setLayoutData(data);
-
-        data = new FormData();
         data.top = new FormAttachment(cmbEncoding, 10);
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
@@ -315,15 +299,9 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         //
         // setup form elements
         //
-        List<Object> targets = new ArrayList<Object>();
-        for (CSVImportDefinition def : importer.getDefinitions())
-        {
-            targets.add(def);
-            targets.addAll(def.getTargets(importer.getClient()));
-        }
-        target.setInput(targets);
-
-        target.setSelection(new StructuredSelection(defaultTarget != null ? defaultTarget : target.getElementAt(0)));
+        target.setInput(importer.getExtractors());
+        target.getCombo().select(importer.getExtractors().indexOf(importer.getExtractor()));
+        doProcessFile();
     }
 
     @Override
@@ -331,9 +309,9 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     {
         Object element = ((IStructuredSelection) event.getSelectionProvider().getSelection()).getFirstElement();
 
-        if (element instanceof CSVImportDefinition)
+        if (element instanceof CSVExtractor)
         {
-            onTargetChanged((CSVImportDefinition) element, null);
+            onTargetChanged((CSVExtractor) element);
         }
         else if (element instanceof Delimiter)
         {
@@ -345,36 +323,14 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             importer.setEncoding((Charset) element);
             doProcessFile();
         }
-        else
-        {
-            // find import definition above selected item
-            ComboViewer comboViewer = (ComboViewer) event.getSelectionProvider();
-            List<?> items = (List<?>) comboViewer.getInput();
-            CSVImportDefinition def = null;
-            for (Object object : items)
-            {
-                if (object instanceof CSVImportDefinition)
-                    def = (CSVImportDefinition) object;
-                if (object == element)
-                    break;
-            }
-            onTargetChanged(def, element);
-        }
-
     }
 
-    private void onTargetChanged(CSVImportDefinition def, Object target)
+    private void onTargetChanged(CSVExtractor def)
     {
-        if (!def.equals(importer.getDefinition()))
+        if (!def.equals(importer.getExtractor()))
         {
-            importer.setDefinition(def);
+            importer.setExtractor(def);
             doProcessFile();
-        }
-
-        if (target != importer.getImportTarget())
-        {
-            importer.setImportTarget(target);
-            doUpdateErrorMessages();
         }
     }
 
@@ -392,7 +348,7 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
     private void onColumnSelected(int columnIndex)
     {
-        ColumnConfigDialog dialog = new ColumnConfigDialog(getShell(), importer.getDefinition(),
+        ColumnConfigDialog dialog = new ColumnConfigDialog(getShell(), importer.getExtractor(),
                         importer.getColumns()[columnIndex]);
         dialog.open();
 
@@ -432,8 +388,8 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
         catch (IOException e)
         {
             PortfolioPlugin.log(e);
-            ErrorDialog.openError(getShell(), Messages.LabelError, e.getMessage(), new Status(Status.ERROR,
-                            PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            ErrorDialog.openError(getShell(), Messages.LabelError, e.getMessage(),
+                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
 
         }
         finally
@@ -470,36 +426,39 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
     private void doUpdateErrorMessages()
     {
-        Set<Field> fieldsToMap = new HashSet<Field>(importer.getDefinition().getFields());
+        Set<Field> fieldsToMap = new HashSet<Field>(importer.getExtractor().getFields());
         for (Column column : importer.getColumns())
             fieldsToMap.remove(column.getField());
 
         if (fieldsToMap.isEmpty())
         {
             setMessage(null);
-            setPageComplete(importer.getImportTarget() != null);
+            setPageComplete(true);
         }
         else
         {
-            boolean onlyOptional = true;
-            StringBuilder message = new StringBuilder();
-            for (Field f : fieldsToMap)
-            {
-                onlyOptional = f.isOptional() && onlyOptional;
+            String required = fieldsToMap.stream().filter(f -> !f.isOptional()).map(Field::getName)
+                            .collect(Collectors.joining(", ")); //$NON-NLS-1$
 
-                if (message.length() > 0)
-                    message.append(", "); //$NON-NLS-1$
-                message.append(f.getName());
-            }
+            String optional = fieldsToMap.stream().filter(Field::isOptional).map(Field::getName)
+                            .collect(Collectors.joining(", ")); //$NON-NLS-1$
 
-            setMessage(MessageFormat.format(Messages.CSVImportErrorMissingFields, message, fieldsToMap.size()),
-                            onlyOptional ? IMessageProvider.WARNING : IMessageProvider.ERROR);
+            boolean onlyOptional = required.length() == 0;
+
             setPageComplete(onlyOptional);
+
+            StringBuilder message = new StringBuilder();
+            if (required.length() > 0)
+                message.append(MessageFormat.format(Messages.CSVImportErrorMissingFields, required)).append("\n"); //$NON-NLS-1$
+            if (optional.length() > 0)
+                message.append(MessageFormat.format(Messages.CSVImportInformationOptionalFields, optional));
+
+            setMessage(message.toString(), onlyOptional ? IMessageProvider.INFORMATION : IMessageProvider.ERROR);
         }
     }
 
-    private static final class ImportLabelProvider extends LabelProvider implements ITableLabelProvider,
-                    ITableColorProvider
+    private static final class ImportLabelProvider extends LabelProvider
+                    implements ITableLabelProvider, ITableColorProvider
     {
         private static final RGB GREEN = new RGB(152, 251, 152);
         private static final RGB RED = new RGB(255, 127, 80);
@@ -586,10 +545,10 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
     {
         private static final Field EMPTY = new Field("---"); //$NON-NLS-1$
 
-        private CSVImportDefinition definition;
+        private CSVExtractor definition;
         private Column column;
 
-        protected ColumnConfigDialog(Shell parentShell, CSVImportDefinition definition, Column column)
+        protected ColumnConfigDialog(Shell parentShell, CSVExtractor definition, Column column)
         {
             super(parentShell);
             setShellStyle(getShellStyle() | SWT.SHEET);
@@ -681,8 +640,8 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
             });
 
             ColumnEditingSupport.prepare(tableViewer);
-            col.setEditingSupport(new ColumnEditingSupportWrapper(tableViewer, new StringEditingSupport(
-                            KeyMappingContentProvider.Entry.class, "value"))); //$NON-NLS-1$
+            col.setEditingSupport(new ColumnEditingSupportWrapper(tableViewer,
+                            new StringEditingSupport(KeyMappingContentProvider.Entry.class, "value"))); //$NON-NLS-1$
 
             layout.topControl = emptyArea;
 
@@ -822,6 +781,8 @@ public class ImportDefinitionPage extends AbstractWizardPage implements ISelecti
 
         @Override
         public void dispose()
-        {}
+        {
+            // nothing to do
+        }
     }
 }

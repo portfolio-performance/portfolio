@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -69,6 +70,8 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
+    /* package */static final String PAGE_ID = "reviewitems"; //$NON-NLS-1$
+
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
@@ -95,7 +98,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files)
     {
-        super("reviewitems"); //$NON-NLS-1$
+        super(PAGE_ID);
 
         this.client = client;
         this.extractor = extractor;
@@ -266,7 +269,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(Object element)
             {
-                return ((Exception) element).getMessage();
+                Exception e = (Exception) element;
+                String text = e.getMessage();
+                return text == null || text.isEmpty() ? e.getClass().getName() : text;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100, true));
@@ -470,6 +475,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void beforePage()
     {
+        setTitle(extractor.getLabel());
+
+        // clear all entries (if embedded into multi-page wizard)
+        allEntries.clear();
+        tableViewer.setInput(allEntries);
+        errorTableViewer.setInput(Collections.emptyList());
+
         try
         {
             new AbstractClientJob(client, extractor.getLabel())

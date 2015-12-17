@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.csv;
 
 import java.io.File;
 import java.io.FileOutputStream;

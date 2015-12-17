@@ -28,6 +28,7 @@ public class Messages extends NLS
     public static String CSVColumn_Fees;
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
+    public static String CSVColumn_SecurityName;
     public static String CSVColumn_Shares;
     public static String CSVColumn_Taxes;
     public static String CSVColumn_TickerSymbol;
@@ -35,7 +36,13 @@ public class Messages extends NLS
     public static String CSVColumn_Value;
     public static String CSVColumn_WKN;
     public static String CSVColumn_CumulatedPerformanceInPercent;
+    public static String CSVColumn_Currency;
+    public static String CSVColumn_CurrencyGrossAmount;
     public static String CSVColumn_DeltaInPercent;
+    public static String CSVColumn_ExchangeRate;
+    public static String CSVColumn_GrossAmount;
+    public static String CSVColumn_Note;
+    public static String CSVColumn_TransactionCurrency;
     public static String CSVColumn_Transferals;
     public static String CSVDefAccountTransactions;
     public static String CSVDefHistoricalQuotes;
@@ -54,6 +61,7 @@ public class Messages extends NLS
     public static String CSVImportSecurityExists;
     public static String CSVImportMissingField;
     public static String CSVImportMissingOneOfManyFields;
+    public static String CSVImportMissingSecurity;
     public static String FixAssignCurrencyCode;
     public static String FixAssignCurrencyCodeDone;
     public static String FixAssignExistingAccount;
@@ -117,6 +125,7 @@ public class Messages extends NLS
     public static String MsgCheckSecurityWithoutCurrency;
     public static String MsgCheckTaxAndFeesTooHigh;
     public static String MsgCheckTransactionCurrencyDoesNotMatchAccount;
+    public static String MsgCheckTransactionMustNotHaveGrossAmount;
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;

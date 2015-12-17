@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.csv;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,6 +10,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVStrategy;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
@@ -20,10 +24,8 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVStrategy;
 
 /* not thread safe */
 public class CSVExporter
@@ -41,19 +43,25 @@ public class CSVExporter
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_TransactionCurrency, //
+                            Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
-                            Messages.CSVColumn_Description });
+                            Messages.CSVColumn_SecurityName, //
+                            Messages.CSVColumn_Note });
 
             for (AccountTransaction t : account.getTransactions())
             {
                 printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
                 printer.print(Values.Amount.format(t.getAmount()));
+                printer.print(t.getCurrencyCode());
+                printer.print(t.getShares() != 0 ? Values.Share.format(t.getShares()) : ""); //$NON-NLS-1$
 
                 printSecurityInfo(printer, t);
 
+                printer.print(escapeNull(t.getNote()));
                 printer.println();
             }
         }
@@ -75,24 +83,49 @@ public class CSVExporter
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
+                            Messages.CSVColumn_TransactionCurrency, //
+                            Messages.CSVColumn_GrossAmount, //
+                            Messages.CSVColumn_CurrencyGrossAmount, //
+                            Messages.CSVColumn_ExchangeRate, //
                             Messages.CSVColumn_Fees, //
                             Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
-                            Messages.CSVColumn_Description });
+                            Messages.CSVColumn_SecurityName, //
+                            Messages.CSVColumn_Note });
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
                 printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
                 printer.print(Values.Amount.format(t.getAmount()));
+                printer.print(t.getCurrencyCode());
+
+                // gross amount
+                Optional<Unit> grossAmount = t.getUnit(Unit.Type.LUMPSUM);
+                if (grossAmount.isPresent())
+                {
+                    Money forex = grossAmount.get().getForex();
+                    printer.print(Values.Amount.format(forex.getAmount()));
+                    printer.print(forex.getCurrencyCode());
+                    printer.print(Values.ExchangeRate.format(grossAmount.get().getExchangeRate()));
+                }
+                else
+                {
+                    printer.print(""); //$NON-NLS-1$
+                    printer.print(""); //$NON-NLS-1$
+                    printer.print(""); //$NON-NLS-1$
+                }
+
                 printer.print(Values.Amount.format(t.getUnitSum(Unit.Type.FEE).getAmount()));
                 printer.print(Values.Amount.format(t.getUnitSum(Unit.Type.TAX).getAmount()));
                 printer.print(Values.Share.format(t.getShares()));
 
                 printSecurityInfo(printer, t);
+
+                printer.print(escapeNull(t.getNote()));
 
                 printer.println();
             }
@@ -134,8 +167,8 @@ public class CSVExporter
             printer.println(new String[] { Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
-                            Messages.CSVColumn_Description, //
-                            Messages.CSVColumn_TickerSymbol });
+                            Messages.CSVColumn_SecurityName, //
+                            Messages.CSVColumn_Currency, Messages.CSVColumn_Note });
 
             for (Security s : securities)
             {
@@ -143,7 +176,8 @@ public class CSVExporter
                 printer.print(escapeNull(s.getWkn()));
                 printer.print(escapeNull(s.getTickerSymbol()));
                 printer.print(escapeNull(s.getName()));
-                printer.print(escapeNull(s.getTickerSymbol()));
+                printer.print(escapeNull(s.getCurrencyCode()));
+                printer.print(escapeNull(s.getNote()));
                 printer.println();
             }
         }

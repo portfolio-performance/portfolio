@@ -181,6 +181,7 @@ public class Messages extends NLS
     public static String ConsumerPriceIndexMenuDelete;
     public static String CSVImportErrorMissingFields;
     public static String CSVImportErrorsDuringImport;
+    public static String CSVImportInformationOptionalFields;
     public static String CSVImportLabelDelimiter;
     public static String CSVImportLabelDoubleClickHere;
     public static String CSVImportLabelEditMapping;
@@ -470,6 +471,8 @@ public class Messages extends NLS
     public static String NewFileWizardSecurityTitle;
     public static String NewFileWizardTaxonomyDescription;
     public static String NewFileWizardTaxonomyTitle;
+    public static String PageDescriptionSelectSecurity;
+    public static String PageTitleSelectSecurity;
     public static String PDFImportDebugTextExtraction;
     public static String PDFImportFilterName;
     public static String PDFImportWizardDescription;

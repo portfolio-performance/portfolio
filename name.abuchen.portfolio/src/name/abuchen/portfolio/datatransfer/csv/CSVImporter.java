@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.csv;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +15,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,10 +28,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.CSVImportDefinition.AccountTransactionDef;
-import name.abuchen.portfolio.datatransfer.CSVImportDefinition.PortfolioTransactionDef;
-import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityDef;
-import name.abuchen.portfolio.datatransfer.CSVImportDefinition.SecurityPriceDef;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
 
 public class CSVImporter
@@ -42,7 +40,7 @@ public class CSVImporter
         private Field field;
         private FieldFormat format;
 
-        /* package */Column(int columnIndex, String label)
+        /* package */ Column(int columnIndex, String label)
         {
             this.columnIndex = columnIndex;
             this.label = label;
@@ -152,7 +150,7 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")) //$NON-NLS-1$
         };
 
-        /* package */DateField(String name)
+        /* package */ DateField(String name)
         {
             super(name);
         }
@@ -191,7 +189,7 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
                         new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)) };
 
-        /* package */AmountField(String name)
+        /* package */ AmountField(String name)
         {
             super(name);
         }
@@ -201,7 +199,7 @@ public class CSVImporter
     {
         private final Class<M> enumType;
 
-        /* package */EnumField(String name, Class<M> enumType)
+        /* package */ EnumField(String name, Class<M> enumType)
         {
             super(name);
             this.enumType = enumType;
@@ -268,11 +266,9 @@ public class CSVImporter
 
     private final Client client;
     private final File inputFile;
-    private final CSVImportDefinition[] definitions = new CSVImportDefinition[] { new AccountTransactionDef(),
-                    new PortfolioTransactionDef(), new SecurityDef(), new SecurityPriceDef() };
+    private final List<CSVExtractor> extractors;
 
-    private CSVImportDefinition importDefinition;
-    private Object importTarget;
+    private CSVExtractor currentExtractor;
 
     private char delimiter = ';';
     private Charset encoding = Charset.defaultCharset();
@@ -286,6 +282,11 @@ public class CSVImporter
     {
         this.client = client;
         this.inputFile = file;
+
+        this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
+                        new CSVPortfolioTransactionExtractor(client), new CSVSecurityExtractor(client),
+                        new CSVSecurityPriceExtractor(client)));
+        this.currentExtractor = extractors.get(0);
     }
 
     public Client getClient()
@@ -293,33 +294,29 @@ public class CSVImporter
         return client;
     }
 
-    public CSVImportDefinition[] getDefinitions()
+    public File getInputFile()
     {
-        return definitions;
+        return inputFile;
     }
 
-    public void setDefinition(CSVImportDefinition target)
+    public List<CSVExtractor> getExtractors()
     {
-        this.importDefinition = target;
-        if (importTarget != null && !this.importDefinition.getTargets(client).contains(importTarget))
-            importTarget = null;
+        return extractors;
     }
 
-    public CSVImportDefinition getDefinition()
+    public void setExtractor(CSVExtractor extractor)
     {
-        return importDefinition;
+        this.currentExtractor = extractor;
     }
 
-    public Object getImportTarget()
+    public CSVExtractor getExtractor()
     {
-        return importTarget;
+        return currentExtractor;
     }
 
-    public void setImportTarget(Object target)
+    public CSVExtractor getSecurityPriceExtractor()
     {
-        if (target != null && !this.importDefinition.getTargets(client).contains(target))
-            throw new IllegalArgumentException();
-        this.importTarget = target;
+        return extractors.get(3);
     }
 
     public void setDelimiter(char delimiter)
@@ -368,7 +365,7 @@ public class CSVImporter
             for (int ii = 0; ii < skipLines; ii++)
                 parser.getLine();
 
-            List<String[]> values = new ArrayList<String[]>();
+            List<String[]> input = new ArrayList<String[]>();
             String[] header = null;
             String[] line = parser.getLine();
             if (isFirstLineHeader)
@@ -380,17 +377,17 @@ public class CSVImporter
                 header = new String[line.length];
                 for (int ii = 0; ii < header.length; ii++)
                     header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
-                values.add(line);
+                input.add(line);
             }
 
             while ((line = parser.getLine()) != null)
-                values.add(line);
+                input.add(line);
 
             this.columns = new CSVImporter.Column[header.length];
             for (int ii = 0; ii < header.length; ii++)
                 this.columns[ii] = new Column(ii, header[ii]);
 
-            this.values = values;
+            this.values = input;
 
             mapToImportDefinition();
         }
@@ -410,7 +407,7 @@ public class CSVImporter
 
     private void mapToImportDefinition()
     {
-        List<Field> list = new LinkedList<Field>(importDefinition.getFields());
+        List<Field> list = new LinkedList<Field>(currentExtractor.getFields());
 
         for (Column column : columns)
         {
@@ -447,30 +444,14 @@ public class CSVImporter
         }
     }
 
-    public void createObjects(List<Exception> errors)
+    public List<Item> createItems(List<Exception> errors)
     {
-        if (importDefinition == null)
-            throw new IllegalArgumentException();
-        if (importTarget == null)
-            throw new IllegalArgumentException();
-
         Map<String, Column> field2column = new HashMap<String, Column>();
         for (Column column : getColumns())
             if (column.getField() != null)
                 field2column.put(column.getField().name, column);
 
-        for (String[] rawValues : values)
-        {
-            try
-            {
-                importDefinition.build(client, importTarget, rawValues, field2column);
-            }
-            catch (ParseException e)
-            {
-                errors.add(new IOException(MessageFormat.format(Messages.CSVImportError, Arrays.toString(rawValues),
-                                e.getMessage()), e));
-            }
-        }
+        return currentExtractor.extract(values, field2column, errors);
     }
 
     /**

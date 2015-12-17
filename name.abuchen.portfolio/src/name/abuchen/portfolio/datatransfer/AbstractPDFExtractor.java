@@ -27,7 +27,7 @@ import name.abuchen.portfolio.money.Values;
 /* package */abstract class AbstractPDFExtractor implements Extractor
 {
     private final Client client;
-    private final SecurityCache securityCache;
+    private SecurityCache securityCache;
     private final PDFTextStripper textStripper;
     private final List<String> bankIdentifier = new ArrayList<String>();
     private final List<DocumentType> documentTypes = new ArrayList<DocumentType>();
@@ -35,7 +35,6 @@ import name.abuchen.portfolio.money.Values;
     public AbstractPDFExtractor(Client client) throws IOException
     {
         this.client = client;
-        this.securityCache = new SecurityCache(client);
 
         textStripper = new PDFTextStripper();
         textStripper.setSortByPosition(true);
@@ -60,6 +59,9 @@ import name.abuchen.portfolio.money.Values;
     @Override
     public List<Item> extract(List<File> files, List<Exception> errors)
     {
+        // careful: security cache makes extractor stateful
+        securityCache = new SecurityCache(client);
+
         List<Item> results = new ArrayList<Item>();
         for (File f : files)
         {
@@ -75,6 +77,8 @@ import name.abuchen.portfolio.money.Values;
         }
 
         results.addAll(securityCache.createMissingSecurityItems(results));
+
+        securityCache = null;
 
         return results;
     }

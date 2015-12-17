@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -22,6 +24,8 @@ import name.abuchen.portfolio.money.Values;
 
 public class CheckCurrenciesAction implements ImportAction
 {
+    private static final Set<AccountTransaction.Type> TRANSACTIONS_WO_UNITS = EnumSet.of(AccountTransaction.Type.BUY,
+                    AccountTransaction.Type.SELL, AccountTransaction.Type.TRANSFER_IN);
 
     @Override
     public Status process(Security security)
@@ -43,9 +47,22 @@ public class CheckCurrenciesAction implements ImportAction
 
         if (transaction.getSecurity() != null)
         {
-            Status status = checkLumpSumAndUnitsAgainstSecurity(transaction);
-            if (status.getCode() != Status.Code.OK)
-                return status;
+            if (TRANSACTIONS_WO_UNITS.contains(transaction.getType()))
+            {
+                // for buy/sell and transfer out transactions, the units are
+                // maintained in the portfolio transaction, not the account
+                // transaction.
+
+                if (transaction.getUnits().findAny().isPresent())
+                    return new Status(Status.Code.ERROR, MessageFormat
+                                    .format(Messages.MsgCheckTransactionMustNotHaveGrossAmount, transaction.getType()));
+            }
+            else
+            {
+                Status status = checkLumpSumAndUnitsAgainstSecurity(transaction);
+                if (status.getCode() != Status.Code.OK)
+                    return status;
+            }
         }
 
         return Status.OK_STATUS;
