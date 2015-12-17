@@ -2,7 +2,6 @@ package name.abuchen.portfolio.snapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,22 +38,9 @@ public class PortfolioSnapshot
         Portfolio portfolio = new Portfolio();
         portfolio.setName(Messages.LabelJointPortfolio);
 
-        Map<Security, SecurityPosition> securities = new HashMap<Security, SecurityPosition>();
-        for (PortfolioSnapshot s : snapshots)
-        {
-            portfolio.addAllTransaction(s.getSource().getTransactions());
-            for (SecurityPosition p : s.getPositions())
-            {
-                SecurityPosition pos = securities.get(p.getSecurity());
-                if (pos == null)
-                    securities.put(p.getSecurity(), p);
-                else
-                    securities.put(p.getSecurity(), SecurityPosition.merge(pos, p));
-            }
-        }
+        snapshots.forEach(s -> portfolio.addAllTransaction(s.getSource().getTransactions()));
 
-        return new PortfolioSnapshot(portfolio, snapshots.get(0).getTime(), new ArrayList<SecurityPosition>(
-                        securities.values()));
+        return create(portfolio, snapshots.get(0).getTime());
     }
 
     // //////////////////////////////////////////////////////////////

@@ -55,6 +55,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_VDIBcALOEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.flatex" label="%command.import.pdf.flatex" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_VDIBcQLOEeW4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="flatex"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.ingdiba" label="%command.import.pdf.ingdiba" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="ingdiba"/>
+          </children>
           <children xsi:type="menu:MenuSeparator" xmi:id="_30NnAAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_24C5sAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-xml" label="%command.import.xml.import-xml" enabled="false"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" command="_pgC00EYREeSRXYVe298mXg">
