@@ -20,11 +20,8 @@ public class Messages extends NLS
     public static String ColumnInitialValue;
     public static String ColumnPaidFees;
     public static String ColumnPaidTaxes;
-    public static String ColumnPerformance;
-    public static String ColumnPerformanceIZF;
     public static String ColumnTransfers;
     public static String CSVColumn_Date;
-    public static String CSVColumn_Description;
     public static String CSVColumn_Fees;
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
@@ -48,7 +45,6 @@ public class Messages extends NLS
     public static String CSVDefHistoricalQuotes;
     public static String CSVDefPortfolioTransactions;
     public static String CSVDefSecurities;
-    public static String CSVDefSecurityMasterData;
     public static String CSVFormatDDMMYY;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
@@ -56,11 +52,9 @@ public class Messages extends NLS
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
     public static String CSVImportedSecurityLabel;
-    public static String CSVImportError;
     public static String CSVImportGenericColumnLabel;
     public static String CSVImportSecurityExists;
     public static String CSVImportMissingField;
-    public static String CSVImportMissingOneOfManyFields;
     public static String CSVImportMissingSecurity;
     public static String CSVLineXwithMsgY;
     public static String FixAssignCurrencyCode;
@@ -154,22 +148,15 @@ public class Messages extends NLS
     public static String MsgNotAPortflioFile;
     public static String MsgPasswordMissing;
     public static String MsgReadingFile;
-    public static String MsgReadingSampleFile;
     public static String MsgResponseContainsNoIndices;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedSymbol;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
-    public static String PDFcomdirectLabel;
-    public static String PDFcomdirectMsgCannotDetermineFileType;
-    public static String PDFcomdirectMsgFileNotSupported;
     public static String PDFdbLabel;
     public static String PDFdbMsgCannotDetermineFileType;
-    public static String PDFdbMsgCannotFindSecurity;
     public static String PDFMsgFileNotSupported;
-    public static String PDFMsgNotAllAttributesDetected;
-    public static String PDFMsgNotAllPatternMatched;
     public static String QuoteFeedManual;
     static
     {

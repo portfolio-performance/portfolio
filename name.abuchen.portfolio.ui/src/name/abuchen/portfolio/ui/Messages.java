@@ -127,10 +127,7 @@ public class Messages extends NLS
     public static String ColumnPersonalDividendYield;
     public static String ColumnPersonalDividendYield_Description;
     public static String ColumnPortfolio;
-    public static String ColumnPortfolioFrom;
-    public static String ColumnPortfolioTo;
     public static String ColumnPreviousClose;
-    public static String ColumnPrice;
     public static String ColumnProfitLoss;
     public static String ColumnProfitLossBaseCurrency;
     public static String ColumnPurchasePrice;
@@ -180,7 +177,6 @@ public class Messages extends NLS
     public static String ConsumerPriceIndexMenuAdd;
     public static String ConsumerPriceIndexMenuDelete;
     public static String CSVImportErrorMissingFields;
-    public static String CSVImportErrorsDuringImport;
     public static String CSVImportInformationOptionalFields;
     public static String CSVImportLabelDelimiter;
     public static String CSVImportLabelDoubleClickHere;
@@ -320,7 +316,6 @@ public class Messages extends NLS
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
-    public static String LabelOther;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
@@ -513,7 +508,6 @@ public class Messages extends NLS
     public static String SecurityMenuNewSecurity;
     public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
-    public static String SecurityMenuSearchYahoo;
     public static String SecurityMenuSell;
     public static String SecurityMenuStockSplit;
     public static String SecurityMenuTransfer;
