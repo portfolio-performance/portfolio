@@ -67,6 +67,7 @@ import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
 import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -142,22 +143,23 @@ public class PerformanceView extends AbstractHistoricView
             delta.setText(Values.Money.format(snapshot.getAbsoluteDelta(), index.getClient().getBaseCurrency()));
 
             ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
-            absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
-                            - index.getTotals()[length - 2]));
+            absoluteChangeLastDay.setText(
+                            Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[length - 2]));
         }
 
         private void setRiskIndicators(PerformanceIndex index)
         {
-            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withZone(
-                            ZoneId.systemDefault());
+            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                            .withZone(ZoneId.systemDefault());
 
             Drawdown drawdown = index.getDrawdown();
             Volatility vola = index.getVolatility();
 
             maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
-            maxDrawdown.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdown,
-                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
-                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
+            InfoToolTip.attach(maxDrawdown,
+                            MessageFormat.format(Messages.TooltipMaxDrawdown,
+                                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
+                                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
 
             // max drawdown duration
             Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
@@ -171,8 +173,8 @@ public class PerformanceView extends AbstractHistoricView
             isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate());
             String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                             : Messages.TooltipMaxDrawdownDurationFromXtoY;
-            maxDrawdownDuration.setToolTipText(Messages.TooltipMaxDrawdownDuration
-                            + "\n\n" //$NON-NLS-1$
+
+            InfoToolTip.attach(maxDrawdownDuration, Messages.TooltipMaxDrawdownDuration + "\n\n" //$NON-NLS-1$
                             + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
                                             formatter.format(maxDDDuration.getEnd()))
                             + "\n\n" //$NON-NLS-1$
@@ -181,10 +183,11 @@ public class PerformanceView extends AbstractHistoricView
                                             formatter.format(recoveryTime.getEnd())));
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
-            volatility.setToolTipText(Messages.TooltipVolatility);
+            InfoToolTip.attach(volatility, Messages.TooltipVolatility);
 
             semiVolatility.setText(Values.Percent2.format(vola.getSemiDeviation()));
-            semiVolatility.setToolTipText(MessageFormat.format(Messages.TooltipSemiVolatility,
+            InfoToolTip.attach(semiVolatility,
+                            MessageFormat.format(Messages.TooltipSemiVolatility,
                             Values.Percent5.format(vola.getExpectedSemiDeviation()),
                             vola.getNormalizedSemiDeviationComparison(),
                             Values.Percent5.format(vola.getStandardDeviation()),
@@ -202,11 +205,11 @@ public class PerformanceView extends AbstractHistoricView
             container.addDisposeListener(this);
 
             // create fonts
-            kpiFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.NORMAL)
-                            .increaseHeight(10));
+            kpiFont = resourceManager.createFont(
+                            FontDescriptor.createFrom(container.getFont()).setStyle(SWT.NORMAL).increaseHeight(10));
 
-            boldFont = resourceManager.createFont(FontDescriptor.createFrom(
-                            JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
+            boldFont = resourceManager.createFont(FontDescriptor
+                            .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
             createIndicators(container);
             createRiskIndicators(container);
@@ -710,8 +713,8 @@ public class PerformanceView extends AbstractHistoricView
             }
             else if (newInput instanceof ClientPerformanceSnapshot)
             {
-                this.categories = ((ClientPerformanceSnapshot) newInput).getCategories().toArray(
-                                new ClientPerformanceSnapshot.Category[0]);
+                this.categories = ((ClientPerformanceSnapshot) newInput).getCategories()
+                                .toArray(new ClientPerformanceSnapshot.Category[0]);
             }
             else
             {
@@ -727,8 +730,8 @@ public class PerformanceView extends AbstractHistoricView
         public Object[] getChildren(Object parentElement)
         {
             if (parentElement instanceof ClientPerformanceSnapshot.Category)
-                return ((ClientPerformanceSnapshot.Category) parentElement).getPositions().toArray(
-                                new ClientPerformanceSnapshot.Position[0]);
+                return ((ClientPerformanceSnapshot.Category) parentElement).getPositions()
+                                .toArray(new ClientPerformanceSnapshot.Position[0]);
             return null;
         }
 
@@ -791,8 +794,8 @@ public class PerformanceView extends AbstractHistoricView
                 @Override
                 public void run()
                 {
-                    new TableViewerCSVExporter(snapshotEnd.getTableViewer()).export(Messages.PerformanceTabAssetsAtEnd
-                                    + ".csv"); //$NON-NLS-1$
+                    new TableViewerCSVExporter(snapshotEnd.getTableViewer())
+                                    .export(Messages.PerformanceTabAssetsAtEnd + ".csv"); //$NON-NLS-1$
                 }
             });
 
@@ -810,8 +813,8 @@ public class PerformanceView extends AbstractHistoricView
                 @Override
                 public void run()
                 {
-                    new TableViewerCSVExporter(earningsByAccount).export(Messages.PerformanceTabEarningsByAccount
-                                    + ".csv"); //$NON-NLS-1$
+                    new TableViewerCSVExporter(earningsByAccount)
+                                    .export(Messages.PerformanceTabEarningsByAccount + ".csv"); //$NON-NLS-1$
                 }
             });
 
