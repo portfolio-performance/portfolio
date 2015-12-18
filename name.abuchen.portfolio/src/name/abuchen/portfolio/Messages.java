@@ -62,6 +62,7 @@ public class Messages extends NLS
     public static String CSVImportMissingField;
     public static String CSVImportMissingOneOfManyFields;
     public static String CSVImportMissingSecurity;
+    public static String CSVLineXwithMsgY;
     public static String FixAssignCurrencyCode;
     public static String FixAssignCurrencyCodeDone;
     public static String FixAssignExistingAccount;

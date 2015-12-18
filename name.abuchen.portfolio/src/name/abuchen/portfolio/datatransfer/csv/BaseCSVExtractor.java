@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -54,13 +55,15 @@ import name.abuchen.portfolio.money.Money;
     }
 
     @Override
-    public List<Item> extract(List<String[]> rawValues, Map<String, Column> field2column, List<Exception> errors)
+    public List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
+                    List<Exception> errors)
     {
         // careful: the security cache makes the extractor stateful because
         // securities extracted during a previous run will not be created again
         securityCache = new SecurityCache(client);
 
         List<Item> results = new ArrayList<>();
+        int lineNo = 1 + skipLines;
         for (String[] strings : rawValues)
         {
             try
@@ -69,9 +72,9 @@ import name.abuchen.portfolio.money.Money;
             }
             catch (ParseException | UnsupportedOperationException e)
             {
-                errors.add(e);
+                errors.add(new IOException(MessageFormat.format(Messages.CSVLineXwithMsgY, lineNo, e.getMessage()), e));
             }
-
+            lineNo++;
         }
 
         results.addAll(securityCache.createMissingSecurityItems(results));

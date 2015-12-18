@@ -40,7 +40,8 @@ import name.abuchen.portfolio.model.SecurityPrice;
     }
 
     @Override
-    public List<Item> extract(List<String[]> rawValues, Map<String, Column> field2column, List<Exception> errors)
+    public List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
+                    List<Exception> errors)
     {
         Security dummy = new Security();
 

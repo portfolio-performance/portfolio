@@ -20,7 +20,7 @@ public abstract class CSVExtractor implements Extractor
 {
     public abstract List<Field> getFields();
 
-    public abstract List<Item> extract(List<String[]> rawValues, Map<String, Column> field2column,
+    public abstract List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors);
 
     public String getFilterExtension()
@@ -48,8 +48,7 @@ public abstract class CSVExtractor implements Extractor
         return value != null && value.trim().length() == 0 ? null : value;
     }
 
-    protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column)
-                    throws ParseException
+    protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         String value = getText(name, rawValues, field2column);
         if (value == null)
@@ -59,8 +58,7 @@ public abstract class CSVExtractor implements Extractor
         return Long.valueOf((long) Math.round(num.doubleValue() * Values.Amount.factor()));
     }
 
-    protected LocalDate getDate(String name, String[] rawValues, Map<String, Column> field2column)
-                    throws ParseException
+    protected LocalDate getDate(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         String value = getText(name, rawValues, field2column);
         if (value == null)
