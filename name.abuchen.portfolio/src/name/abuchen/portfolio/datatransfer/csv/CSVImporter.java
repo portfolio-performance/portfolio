@@ -451,7 +451,8 @@ public class CSVImporter
             if (column.getField() != null)
                 field2column.put(column.getField().name, column);
 
-        return currentExtractor.extract(skipLines, values, field2column, errors);
+        int startingLineNo = skipLines + (isFirstLineHeader ? 1 : 0);
+        return currentExtractor.extract(startingLineNo, values, field2column, errors);
     }
 
     /**

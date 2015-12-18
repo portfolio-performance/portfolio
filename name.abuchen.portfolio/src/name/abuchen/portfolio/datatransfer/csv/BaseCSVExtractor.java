@@ -63,7 +63,7 @@ import name.abuchen.portfolio.money.Money;
         securityCache = new SecurityCache(client);
 
         List<Item> results = new ArrayList<>();
-        int lineNo = 1 + skipLines;
+        int lineNo = 1 + skipLines; // +1 because of end user
         for (String[] strings : rawValues)
         {
             try
