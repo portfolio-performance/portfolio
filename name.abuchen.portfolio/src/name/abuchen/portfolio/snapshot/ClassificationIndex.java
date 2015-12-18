@@ -45,6 +45,11 @@ import name.abuchen.portfolio.money.Money;
 
     private static void addSecurity(Client pseudoClient, Client client, Security security, int weight)
     {
+        // if a security has no currency code, it must be an index and must not
+        // have transactions after all
+        if (security.getCurrencyCode() == null)
+            return;
+
         Account pseudoAccount = new Account();
         pseudoAccount.setName(""); //$NON-NLS-1$
         pseudoAccount.setCurrencyCode(security.getCurrencyCode());
@@ -199,8 +204,8 @@ import name.abuchen.portfolio.money.Money;
         if (weight == Classification.ONE_HUNDRED_PERCENT)
             return unit;
         else
-            return new Unit(unit.getType(), Money.of(unit.getAmount().getCurrencyCode(),
-                            value(unit.getAmount().getAmount(), weight)));
+            return new Unit(unit.getType(),
+                            Money.of(unit.getAmount().getCurrencyCode(), value(unit.getAmount().getAmount(), weight)));
     }
 
     private static long value(long value, int weight)
