@@ -42,6 +42,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
@@ -179,6 +180,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     public AbstractTransactionDialog(Shell parentShell, AbstractModel model)
     {
         super(parentShell);
+        setTitleImage(Images.BANNER.image());
 
         this.model = model;
     }

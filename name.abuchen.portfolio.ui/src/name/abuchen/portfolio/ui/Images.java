@@ -21,6 +21,8 @@ public enum Images
     LOGO_256("pp_256.png"), //$NON-NLS-1$
     LOGO_512("pp_512.png"), //$NON-NLS-1$
 
+    BANNER("banner.png"), //$NON-NLS-1$
+
     SECURITY("security.png"), //$NON-NLS-1$
     ACCOUNT("account.png"), //$NON-NLS-1$
     PORTFOLIO("portfolio.png"), //$NON-NLS-1$

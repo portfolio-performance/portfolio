@@ -1,15 +1,17 @@
 package name.abuchen.portfolio.ui.wizards.client;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.ui.Messages;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
 
 public class ClientMigrationDialog extends WizardDialog
 {
@@ -22,6 +24,12 @@ public class ClientMigrationDialog extends WizardDialog
         public MigrationWizard(Client client)
         {
             this.client = client;
+        }
+
+        @Override
+        public Image getDefaultPageImage()
+        {
+            return Images.BANNER.image();
         }
 
         @Override

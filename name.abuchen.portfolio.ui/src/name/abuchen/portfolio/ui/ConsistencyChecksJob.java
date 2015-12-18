@@ -111,6 +111,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
         public SelectQuickFixDialog(Shell shell, Client client, List<Issue> issues)
         {
             super(shell);
+            setTitleImage(Images.BANNER.image());
 
             this.client = client;
             this.issues = new ArrayList<ReportedIssue>();

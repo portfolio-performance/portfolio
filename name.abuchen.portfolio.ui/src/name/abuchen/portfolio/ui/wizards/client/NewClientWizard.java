@@ -1,12 +1,14 @@
 package name.abuchen.portfolio.ui.wizards.client;
 
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.graphics.Image;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
-import org.eclipse.jface.wizard.Wizard;
 
 public class NewClientWizard extends Wizard
 {
@@ -16,6 +18,12 @@ public class NewClientWizard extends Wizard
     public NewClientWizard()
     {
         client = new Client();
+    }
+
+    @Override
+    public Image getDefaultPageImage()
+    {
+        return Images.BANNER.image();
     }
 
     @Override

@@ -80,7 +80,7 @@ public class CSVImportWizard extends Wizard
     @Override
     public Image getDefaultPageImage()
     {
-        return Images.LOGO_48.image();
+        return Images.BANNER.image();
     }
 
     @Override

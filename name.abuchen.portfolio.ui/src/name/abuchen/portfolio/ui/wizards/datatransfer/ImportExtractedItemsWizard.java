@@ -5,11 +5,13 @@ import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ConsistencyChecksJob;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -32,6 +34,12 @@ public class ImportExtractedItemsWizard extends Wizard
 
         setWindowTitle(Messages.PDFImportWizardTitle);
         setNeedsProgressMonitor(true);
+    }
+
+    @Override
+    public Image getDefaultPageImage()
+    {
+        return Images.BANNER.image();
     }
 
     @Override
