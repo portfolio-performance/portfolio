@@ -131,7 +131,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
             for (DocumentType type : documentTypes)
             {
                 if (type.matches(text))
-                    type.parse(items, text);
+                    type.parse(filename, items, text);
             }
 
             if (items.isEmpty())
