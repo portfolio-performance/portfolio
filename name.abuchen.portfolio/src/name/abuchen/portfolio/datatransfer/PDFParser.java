@@ -42,12 +42,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return blocks;
         }
 
-        public void parse(List<Item> items, String text)
+        public void parse(String filename, List<Item> items, String text)
         {
             String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
 
             for (Block block : blocks)
-                block.parse(items, lines);
+                block.parse(filename, items, lines);
         }
     }
 
@@ -66,13 +66,13 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             this.transaction = transaction;
         }
 
-        public void parse(List<Item> items, String[] lines)
+        public void parse(String filename, List<Item> items, String[] lines)
         {
             for (int ii = 0; ii < lines.length; ii++)
             {
                 Matcher matcher = marker.matcher(lines[ii]);
                 if (matcher.matches())
-                    transaction.parse(items, lines, ii);
+                    transaction.parse(filename, items, lines, ii);
             }
         }
     }
@@ -102,12 +102,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return this;
         }
 
-        public void parse(List<Item> items, String[] lines, int lineNo)
+        public void parse(String filename, List<Item> items, String[] lines, int lineNo)
         {
             T target = supplier.get();
 
             for (Section<T> section : sections)
-                section.parse(items, lines, lineNo, target);
+                section.parse(filename, items, lines, lineNo, target);
 
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
@@ -156,7 +156,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return transaction;
         }
 
-        public void parse(List<Item> items, String[] lines, int lineNo, T target)
+        public void parse(String filename, List<Item> items, String[] lines, int lineNo, T target)
         {
             Map<String, String> values = new HashMap<String, String>();
 
@@ -184,12 +184,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                     return;
 
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
-                                patternNo, pattern.size(), pattern.toString()));
+                                patternNo, pattern.size(), pattern.toString(), filename));
             }
 
             if (values.size() != attributes.length)
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorMissingValueMatches,
-                                values.keySet().toString(), Arrays.toString(attributes)));
+                                values.keySet().toString(), Arrays.toString(attributes), filename));
 
             if (assignment == null)
                 throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$

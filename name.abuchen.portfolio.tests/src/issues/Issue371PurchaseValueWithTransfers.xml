@@ -1,0 +1,119 @@
+<client>
+  <version>28</version>
+  <securities>
+    <security>
+      <uuid>b23ec5dd-c899-4f45-90f9-bfd83ed971ad</uuid>
+      <name>Adidas AG</name>
+      <isin>DE000A1EWWW0</isin>
+      <tickerSymbol>ADS.DE</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2011-12-30" v="4966"/>
+        <price t="2012-01-02" v="5080"/>
+        <price t="2012-01-03" v="5151"/>
+        <price t="2012-01-04" v="5134"/>
+        <price t="2015-11-13" v="8575"/>
+        <price t="2015-11-16" v="8582"/>
+        <price t="2015-11-17" v="8648"/>
+        <price t="2015-11-18" v="8691"/>
+        <price t="2015-11-19" v="8769"/>
+      </prices>
+      <latest t="2015-11-20" v="8809">
+        <high>8847</high>
+        <low>8768</low>
+        <volume>1005259</volume>
+        <previousClose>8769</previousClose>
+      </latest>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces>
+    <cpi y="2012" m="9" i="11330"/>
+  </consumerPriceIndeces>
+  <accounts>
+    <account>
+      <uuid>d18cef06-ebb6-4e14-8cad-fe7410d2e6b6</uuid>
+      <name>Konto 1</name>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2012-01-01</date>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+          <amount>10069268</amount>
+        </account-transaction>
+        <account-transaction>
+          <date>2012-01-02</date>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>c8676f98-3337-4c64-a6c2-0974788790bb</uuid>
+              <name>Portfolio 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>47000000</shares>
+                  <type>BUY</type>
+                  <amount>239760</amount>
+                  <fees>1000</fees>
+                  <taxes>0</taxes>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2015-11-20</date>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="portfolio-transfer">
+                    <portfolioFrom reference="../../../.."/>
+                    <transactionFrom reference="../.."/>
+                    <portfolioTo>
+                      <uuid>32a31290-8cb0-477f-9a4f-19e9730d5e39</uuid>
+                      <name>Portfolio 2</name>
+                      <isRetired>false</isRetired>
+                      <referenceAccount reference="../../../../../../../../.."/>
+                      <transactions>
+                        <portfolio-transaction>
+                          <date reference="../../../../../date"/>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                          <shares>47000000</shares>
+                          <type>TRANSFER_IN</type>
+                          <amount>412810</amount>
+                          <fees>0</fees>
+                          <taxes>0</taxes>
+                        </portfolio-transaction>
+                      </transactions>
+                    </portfolioTo>
+                    <transactionTo reference="../portfolioTo/transactions/portfolio-transaction"/>
+                  </crossEntry>
+                  <shares>47000000</shares>
+                  <type>TRANSFER_OUT</type>
+                  <amount>412810</amount>
+                  <fees>0</fees>
+                  <taxes>0</taxes>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+          <amount>239760</amount>
+        </account-transaction>
+      </transactions>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <properties/>
+</client>

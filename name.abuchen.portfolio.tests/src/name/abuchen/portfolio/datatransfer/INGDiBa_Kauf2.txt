@@ -1,0 +1,40 @@
+ING-DiBa AG   60628 Frankfurt am Main
+Depotinhaber: Vorname Name
+Herrn Direkt-Depot Nr.: 1234567890
+Vorname Name Datum: 12.06.2015
+Straße 99a Seite: 1 von 2
+12345 Stadt
+Wertpapierabrechnung Kauf
+Ordernummer 12345678.001
+ISIN (WKN) DE0002635307 (263530)
+Wertpapierbezeichnung iSh.STOXX Europe 600 U.ETF DE
+Inhaber-Anteile
+Nominale Stück 18,00
+Kurs EUR 40,349
+Handelsplatz Direkthandel
+Ausführungstag / -zeit 11.06.2015 um 16:30:32 Uhr
+Kurswert EUR 726,28
+Zwischensumme EUR 726,28
+Endbetrag zu Ihren Lasten EUR 726,28
+Abrechnungs-IBAN DE12 3456 7890 1234 5678 90
+Valuta 15.06.2015
+Wertpapiere zugunsten Girosammelverwahrung.
+Gebührenfrei kaufen lohnt sich - Depot empfehlen auch: www.ing-diba.de/depot-werben
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+Über 5.000 Fonds & ETFs gebührenfrei kaufen - ohne Orderprovision, Ausgabeaufschlag oder sonstige Kosten.
+Mehr Infos www.ing-diba.de/handeln
+ING-DiBa AG Vorsitzender des Aufsichtsrates: Ben Tellings Sitz: Frankfurt am Main Internet www.ing-diba.de
+Theodor-Heuss-Allee 2 Vorstand: Roland Boekhout (Vorsitzender), AG Frankfurt am Main HRB 7727 E-Mail info@ing-diba.de
+60486 Frankfurt am Main Bernd Geilen, Katharina Herrmann, Steuernummer 047 220 2800 4 BIC: INGDDEFFXXX / BLZ: 500 105 17
+Martin Krebs, Remco Nieland USt-IdNr. DE 114 103 475 Mitglied im Einlagensicherungsfonds
+34WAAD8006630065_T
+Depotinhaber: Vorname Name
+Direkt-Depot Nr.: 1234567890
+Datum: 12.06.2015
+Seite: 2 von 2
+Ordernummer 12345678.001
+ISIN (WKN) DE0002635307 (263530)
+Bereinigte akkumulierte ausschüttungsgleiche Erträge 0,44 EUR
+Akkumulierte ausgeschüttete Altveräußerungsgewinne 0,82 EUR
+Sie haben weitere Fragen? Auf www.ing-diba.de/wertpapiere haben wir alles Wissenswerte für Sie
+zusammengefasst. Oder senden Sie uns eine E-Mail an info@ing-diba.de .

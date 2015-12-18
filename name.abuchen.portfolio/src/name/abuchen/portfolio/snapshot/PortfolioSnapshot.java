@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,23 +63,9 @@ public class PortfolioSnapshot
         referenceAccount.setCurrencyCode(converter.getTermCurrency());
         portfolio.setReferenceAccount(referenceAccount);
 
-        Map<Security, SecurityPosition> securities = new HashMap<Security, SecurityPosition>();
-        for (PortfolioSnapshot snapshot : snapshots)
-        {
-            portfolio.addAllTransaction(snapshot.getSource().getTransactions());
+        snapshots.forEach(s -> portfolio.addAllTransaction(s.getSource().getTransactions()));
 
-            for (SecurityPosition position : snapshot.getPositions())
-            {
-                SecurityPosition existing = securities.get(position.getSecurity());
-                if (existing == null)
-                    securities.put(position.getSecurity(), position);
-                else
-                    securities.put(position.getSecurity(), SecurityPosition.merge(existing, position));
-            }
-        }
-
-        return new PortfolioSnapshot(portfolio, snapshots.get(0).getCurrencyConverter(), snapshots.get(0).getTime(),
-                        new ArrayList<SecurityPosition>(securities.values()));
+        return create(portfolio, snapshots.get(0).getCurrencyConverter(), snapshots.get(0).getTime());
     }
 
     // //////////////////////////////////////////////////////////////

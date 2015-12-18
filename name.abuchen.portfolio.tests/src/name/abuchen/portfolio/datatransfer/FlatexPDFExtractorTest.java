@@ -61,8 +61,8 @@ public class FlatexPDFExtractorTest
 
         assertSecondSecurity(results.stream().filter(i -> i instanceof SecurityItem) //
                         .collect(Collectors.toList()).get(1));
-        assertSecondTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(1));
+        assertSecondTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(1));
 
         assertThirdTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem) //
                         .collect(Collectors.toList()).get(2));
@@ -137,6 +137,49 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 100_00L)));
         assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
+    }
+
+    @Test
+    public void testWertpapierKauf2() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexKauf2.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0392495023"));
+        assertThat(security.getWkn(), is("ETF114"));
+        assertThat(security.getName(), is("C.S.-MSCI PACIF.T.U.ETF I"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50.30)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-12-03")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
     }
 
     @Test

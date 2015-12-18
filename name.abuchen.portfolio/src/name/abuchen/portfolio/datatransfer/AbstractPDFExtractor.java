@@ -102,7 +102,7 @@ import name.abuchen.portfolio.money.Values;
             for (DocumentType type : documentTypes)
             {
                 if (type.matches(text))
-                    type.parse(items, text);
+                    type.parse(filename, items, text);
             }
 
             if (items.isEmpty())

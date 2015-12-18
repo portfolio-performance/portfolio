@@ -168,6 +168,8 @@ public class Messages extends NLS
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFdbMsgCannotFindSecurity;
     public static String PDFMsgFileNotSupported;
+    public static String PDFMsgNotAllAttributesDetected;
+    public static String PDFMsgNotAllPatternMatched;
     public static String QuoteFeedManual;
     static
     {

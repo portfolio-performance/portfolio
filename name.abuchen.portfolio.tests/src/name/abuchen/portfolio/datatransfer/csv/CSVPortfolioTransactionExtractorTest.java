@@ -43,7 +43,7 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "DELIVERY_INBOUND", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -81,7 +81,7 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "TRANSFER_IN", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -121,7 +121,7 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "2013-01-02", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -160,7 +160,7 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "2013-01-02", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "-100", "EUR", "", "12", "110", "USD", "0,9091", "1,9", "SELL", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -197,9 +197,9 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
-                        Arrays.<String[]> asList(new String[] { "2013-01-02", "", "SAP.DE", "", "SAP SE", "-100",
-                                        "EUR", "11", "", "", "", "", "1,9", "", "Notiz" }),
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]> asList(new String[] { "2013-01-02", "", "SAP.DE", "", "SAP SE", "-100", "EUR",
+                                        "11", "", "", "", "", "1,9", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -219,8 +219,9 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(Arrays.<String[]> asList(new String[] { "2013-01-02", "", "", "",
-                        "SAP SE", "100", "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
+        List<Item> results = extractor.extract(
+                        0, Arrays.<String[]> asList(new String[] { "2013-01-02", "", "", "", "SAP SE", "100", "EUR",
+                                        "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));
@@ -235,7 +236,7 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "", "DE0007164600", "", "", "SAP SE", "100", "EUR",
                                         "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -252,7 +253,7 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "2013-01-02", "DE0007164600", "", "", "SAP SE", "",
                                         "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);

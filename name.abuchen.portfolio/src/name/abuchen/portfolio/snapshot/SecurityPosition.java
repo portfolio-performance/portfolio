@@ -270,18 +270,6 @@ public class SecurityPosition
         return calculateValue().subtract(record.getPurchaseValue());
     }
 
-    public static SecurityPosition merge(SecurityPosition p1, SecurityPosition p2)
-    {
-        if (!p1.getSecurity().equals(p2.getSecurity()))
-            throw new UnsupportedOperationException();
-
-        List<PortfolioTransaction> allTransactions = new ArrayList<PortfolioTransaction>();
-        allTransactions.addAll(p1.transactions);
-        allTransactions.addAll(p2.transactions);
-
-        return new SecurityPosition(p1.getSecurity(), p1.converter, p1.price, p1.shares + p2.shares, allTransactions);
-    }
-
     public static SecurityPosition split(SecurityPosition position, int weight)
     {
         List<PortfolioTransaction> splitTransactions = new ArrayList<PortfolioTransaction>(position.transactions.size());

@@ -30,7 +30,7 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -59,7 +59,7 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
@@ -76,7 +76,7 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(
                                         new String[] { "DE0007164600", "716460", "", "SAP SE", "EUR", "Notiz" },
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
@@ -94,7 +94,7 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(0,
                         Arrays.<String[]> asList(new String[] { "", "", "", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
