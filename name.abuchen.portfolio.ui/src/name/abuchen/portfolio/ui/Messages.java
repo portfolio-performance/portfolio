@@ -373,6 +373,8 @@ public class Messages extends NLS
     public static String LabelVolatility;
     public static String LabelWithoutClassification;
     public static String LabelXDays;
+    public static String MarkSecurityPageDescription;
+    public static String MarkSecurityPageTitle;
     public static String MenuAddAll;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;

@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ClientMigrationDialog extends WizardDialog
 {
@@ -19,7 +20,8 @@ public class ClientMigrationDialog extends WizardDialog
     {
         private Client client;
 
-        private BaseCurrencySelectionPage page;
+        private BaseCurrencySelectionPage currencySelectionPage;
+        private MarkSecurityAsIndexPage markSecuritiesPage;
 
         public MigrationWizard(Client client)
         {
@@ -35,20 +37,26 @@ public class ClientMigrationDialog extends WizardDialog
         @Override
         public void addPages()
         {
-            page = new BaseCurrencySelectionPage(Messages.BaseCurrencySelectionPage_Title,
+            currencySelectionPage = new BaseCurrencySelectionPage(Messages.BaseCurrencySelectionPage_Title,
                             Messages.BaseCurrencyMigrationPage_Description,
                             Messages.BaseCurrencyMigrationPage_ExplanationIndividualCurrency);
+            addPage(currencySelectionPage);
 
-            addPage(page);
+            markSecuritiesPage = new MarkSecurityAsIndexPage(client);
+            addPage(markSecuritiesPage);
+
+            AbstractWizardPage.attachPageListenerTo(getContainer());
         }
 
         @Override
         public boolean performFinish()
         {
-            CurrencyUnit currency = page.getSelectedCurrency();
+            CurrencyUnit currency = currencySelectionPage.getSelectedCurrency();
 
             if (!CurrencyUnit.EUR.equals(currency))
                 ClientFactory.setAllCurrencies(client, currency.getCurrencyCode());
+
+            markSecuritiesPage.getSelectedSecurities().forEach(s -> s.setCurrencyCode(null));
 
             return true;
         }
