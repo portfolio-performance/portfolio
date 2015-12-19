@@ -394,6 +394,8 @@ public class Messages extends NLS
     public static String MenuLabelSetAsStartPage;
     public static String MenuOpenSecurityOnSite;
     public static String MenuRemoveAll;
+    public static String MenuReportingPeriodDelete;
+    public static String MenuReportingPeriodManage;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
     public static String MenuSaveChart;
