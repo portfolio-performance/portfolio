@@ -1,0 +1,66 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Wertpapierabrechnung EMAILVERSAND=N
+DEPOTNUMMER=100/000/000
+Kauf DEPOTUNTERBEZEICHNUNG=
+Kommissionsgeschäft VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Vorname Name
+ADRESSZEILE3=Straße Nummer
+Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=PLZ Stadt
+Vorname Name 100/0000/000 10000000 ADRESSZEILE5=
+Straße Nummer ADRESSZEILE6=
+PLZ Stadt BELEGNUMMER=2705
+SEITENNUMMER=1
+Depotinhaber STEUERERSTATTUNG=N
+Vorname Name
+Wiesbaden, 02.10.2014
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+Nominal Kurs
+STK 16,000 EUR 120,4000
+Handelstag 29.09.2014 Kurswert EUR 1.926,40-
+Handelszeit 20:35 Orderentgelt EUR 1,48-
+Börse Stuttgart Börsengebühr EUR 2,29-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+01.10.2014 10/0000/000 EUR 1.930,17
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zwischengewinn EUR 13,28
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 6,12 19,40
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Jahressteuerbescheinigung folgt
+Zwischengewinn pro Anteil: EUR 0,8300 Zwischengewinn Gesamt: EUR 13,28
+Aktiengewinn pro Anteil: 0,0000% vom 29.09.2014 (gilt nur für Betriebsvermögen KStG)
+Es folgt Seite 2
+           
+3.18/ABREABHNHANDKFDI/X200039/002705/031014/002318
+            
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+100/0000/000 10000000 2 DEPOTNUMMER=100/0000/000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Vorname Name
+ADRESSZEILE3=Straße Nummer
+Die Höhe des von der KAG festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie die jährlich zu zahlende Ver- ADRESSZEILE4=PLZ Stadt
+waltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den Vertragsbedingungen zu entnehmen. ADRESSZEILE5=
+Wir werden in Ihrem Depot wie angegeben buchen. ADRESSZEILE6=
+BELEGNUMMER=1000
+SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.18/ABREABHNHANDKFDI/X200039/002705/031014/002318
+            

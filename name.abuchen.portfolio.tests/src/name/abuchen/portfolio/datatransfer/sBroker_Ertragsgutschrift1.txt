@@ -1,0 +1,41 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Erträgnisgutschrift aus Wertpapieren EMAILVERSAND=N
+DEPOTNUMMER=100/0000/000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+Ausschüttung für ADRESSZEILE1=Herrn
+01.04.2014 - 31.03.2015 ADRESSZEILE2=Vorname NameADRESSZEILE3=Straße Nummer
+Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=PLZ Stadt
+Vorname Name 100/0000/000 10000000 ADRESSZEILE5=
+Straße Nummer ADRESSZEILE6=
+PLZ Stadt BELEGNUMMER=54
+SEITENNUMMER=1
+Depotinhaber STEUERERSTATTUNG=N
+Vorname Name
+Erträgnisgutschrift Wiesbaden, 14.11.2014
+Gattungsbezeichnung ISIN
+iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 16,000 17.11.2014 17.11.2014 EUR 0,793806
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+17.11.2014 10/0000/000 EUR 12,70
+Ertrag für 2014/15 EUR 12,70
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 12,70
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 24,08 11,38
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Zahlungstag 17.11.2014
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung     
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.20/ABREEREIERTR/GDBERTRG/000054/151114/003034
+            
