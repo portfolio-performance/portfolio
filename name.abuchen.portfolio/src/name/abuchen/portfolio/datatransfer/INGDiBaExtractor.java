@@ -115,6 +115,36 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
 
                         .wrap(t -> new TransactionItem(t)));
+
+        type = new DocumentType("Zinsgutschrift");
+        this.addDocumentTyp(type);
+
+        block = new Block("Zinsgutschrift");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+        .subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        })
+
+        .section("wkn", "isin", "name")
+                        //
+                        .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
+                        .match("Wertpapierbezeichnung (?<name>.*)").assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("date") //
+                        .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("amount") //
+                        .match("Gesamtbetrag zu Ihren Gunsten (\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+
+                        .wrap(t -> new TransactionItem(t)));
     }
 
 }

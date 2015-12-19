@@ -179,6 +179,41 @@ public class INGDibaPDFExtractorTest
         assertThat(t.getShares(), is(Values.Share.factorize(18)));
     }
 
+    @Test
+    public void testErtragsgutschrift2() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Ertragsgutschrift2.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE000A1PGUT9"));
+        assertThat(security.getWkn(), is("A1PGUT"));
+        assertThat(security.getName(), is("7,25000% posterXXL AG"));
+
+        // check buy sell transaction
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(t.getAmount(), is(Values.Amount.factorize(72.50)));
+        assertThat(t.getDate(), is(Dates.date("2015-12-15")));
+        assertThat(t.getShares(), is(Values.Share.factorize(0)));
+    }
+
     private String from(String resource)
     {
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
