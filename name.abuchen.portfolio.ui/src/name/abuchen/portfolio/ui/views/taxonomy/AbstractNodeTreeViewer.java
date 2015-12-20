@@ -2,10 +2,14 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
@@ -222,6 +226,10 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         this.part = part;
     }
 
+    protected abstract String readExpansionState();
+
+    protected abstract void storeExpansionState(String expanded);
+
     protected final TreeViewer getNodeViewer()
     {
         return nodeViewer;
@@ -279,8 +287,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         nodeViewer.getTree().setLinesVisible(true);
         nodeViewer.setContentProvider(new ItemContentProvider());
 
-        nodeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer(),
-                        SecurityTransfer.getTransfer() }, new NodeDragListener(nodeViewer));
+        nodeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
+                        new Transfer[] { TaxonomyNodeTransfer.getTransfer(), SecurityTransfer.getTransfer() },
+                        new NodeDragListener(nodeViewer));
         nodeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer() },
                         new NodeDropListener(this));
 
@@ -354,8 +363,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 // actual %
                 // --> root is compared to target = total assets
                 long actual = node.getActual().getAmount();
-                long base = node.getParent() == null ? node.getActual().getAmount() : node.getParent().getActual()
-                                .getAmount();
+                long base = node.getParent() == null ? node.getActual().getAmount()
+                                : node.getParent().getActual().getAmount();
 
                 if (base == 0d)
                     return Values.Percent.format(0d);
@@ -412,9 +421,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
-                if (node.isClassification()
-                                || getModel().getCurrencyCode().equals(
-                                                node.getAssignment().getInvestmentVehicle().getCurrencyCode()))
+                if (node.isClassification() || getModel().getCurrencyCode()
+                                .equals(node.getAssignment().getInvestmentVehicle().getCurrencyCode()))
                 {
                     // if it is a classification
                     // *or* it is an assignment, but currency code matches
@@ -429,8 +437,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return Values.Money.format(
                                     getModel().getCurrencyConverter()
                                                     .with(node.getAssignment().getInvestmentVehicle().getCurrencyCode())
-                                                    .convert(LocalDate.now(), node.getActual()), getModel()
-                                                    .getCurrencyCode());
+                                                    .convert(LocalDate.now(), node.getActual()),
+                                    getModel().getCurrencyCode());
                 }
                 else
                 {
@@ -455,16 +463,31 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     private void expandNodes()
     {
-        List<TaxonomyNode> expanded = new ArrayList<TaxonomyNode>();
-        LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
-        stack.push(getModel().getRootNode());
-        while (!stack.isEmpty())
+        List<TaxonomyNode> expanded = new ArrayList<>();
+
+        // check if we have expansion state in preferences
+        String expansion = readExpansionState();
+        if (expansion != null && !expansion.isEmpty())
         {
-            TaxonomyNode node = stack.pop();
-            if (node.isClassification() && !node.getClassification().getChildren().isEmpty())
+            Set<String> uuid = new HashSet<>(Arrays.asList(expansion.split(","))); //$NON-NLS-1$
+            getModel().visitAll(node -> {
+                if (node.isClassification() && uuid.contains(node.getClassification().getId()))
+                    expanded.add(node);
+            });
+        }
+        else
+        {
+            // fall back -> expand all classification nodes with children
+            LinkedList<TaxonomyNode> stack = new LinkedList<>();
+            stack.push(getModel().getRootNode());
+            while (!stack.isEmpty())
             {
-                expanded.add(node);
-                stack.addAll(node.getChildren());
+                TaxonomyNode node = stack.pop();
+                if (node.isClassification() && !node.getClassification().getChildren().isEmpty())
+                {
+                    expanded.add(node);
+                    stack.addAll(node.getChildren());
+                }
             }
         }
 
@@ -505,6 +528,23 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     @Override
     public void afterPage()
     {}
+
+    @Override
+    public void dispose()
+    {
+        // store expansion state to model
+        StringJoiner expansionState = new StringJoiner(","); //$NON-NLS-1$
+        for (Object element : nodeViewer.getExpandedElements())
+        {
+            TaxonomyNode node = (TaxonomyNode) element;
+            if (!node.isClassification())
+                continue;
+            expansionState.add(node.getClassification().getId());
+        }
+        storeExpansionState(expansionState.toString());
+
+        super.dispose();
+    }
 
     protected void fillContextMenu(IMenuManager manager)
     {

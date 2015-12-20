@@ -53,6 +53,8 @@ public final class TaxonomyModel
 
     private boolean excludeUnassignedCategoryInCharts = false;
     private boolean orderByTaxonomyInStackChart = false;
+    private String expansionStateDefinition;
+    private String expansionStateRebalancing;
 
     private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
 
@@ -240,6 +242,26 @@ public final class TaxonomyModel
     public void setOrderByTaxonomyInStackChart(boolean orderByTaxonomyInStackChart)
     {
         this.orderByTaxonomyInStackChart = orderByTaxonomyInStackChart;
+    }
+
+    public String getExpansionStateDefinition()
+    {
+        return expansionStateDefinition;
+    }
+
+    public void setExpansionStateDefinition(String expansionStateDefinition)
+    {
+        this.expansionStateDefinition = expansionStateDefinition;
+    }
+
+    public String getExpansionStateRebalancing()
+    {
+        return expansionStateRebalancing;
+    }
+
+    public void setExpansionStateRebalancing(String expansionStateRebalancing)
+    {
+        this.expansionStateRebalancing = expansionStateRebalancing;
     }
 
     public Taxonomy getTaxonomy()

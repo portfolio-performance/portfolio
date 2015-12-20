@@ -32,6 +32,18 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     }
 
     @Override
+    protected String readExpansionState()
+    {
+        return getModel().getExpansionStateRebalancing();
+    }
+
+    @Override
+    protected void storeExpansionState(String expanded)
+    {
+        getModel().setExpansionStateRebalancing(expanded);
+    }
+
+    @Override
     protected void addColumns(ShowHideColumnHelper support)
     {
         addDimensionColumn(support);

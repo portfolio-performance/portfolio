@@ -31,6 +31,18 @@ import name.abuchen.portfolio.ui.util.ValueEditingSupport;
     }
 
     @Override
+    protected String readExpansionState()
+    {
+        return getModel().getExpansionStateDefinition();
+    }
+
+    @Override
+    protected void storeExpansionState(String expanded)
+    {
+        getModel().setExpansionStateDefinition(expanded);
+    }
+
+    @Override
     protected void addColumns(ShowHideColumnHelper support)
     {
         addDimensionColumn(support);
@@ -49,16 +61,16 @@ import name.abuchen.portfolio.ui.util.ValueEditingSupport;
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(
-                                SWT.COLOR_INFO_FOREGROUND) : null;
+                return node.isAssignment() && getModel().hasWeightError(node)
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(
-                                SWT.COLOR_INFO_BACKGROUND) : null;
+                return node.isAssignment() && getModel().hasWeightError(node)
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
             }
 
             @Override

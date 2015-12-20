@@ -28,6 +28,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String identifierUnassigned;
     /** preference key: order by taxonomy in stack chart */
     private String identifierOrderByTaxonomy;
+    /** preference key: node expansion state in definition viewer */
+    private String expansionStateDefinition;
+    /** preference key: node expansion state in rebalancing viewer */
+    private String expansionStateReblancing;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
@@ -49,10 +53,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierOrderByTaxonomy = TaxonomyView.class.getSimpleName() + "-ORDERBYTAXONOMY-" + taxonomy.getId(); //$NON-NLS-1$
+        this.expansionStateDefinition = TaxonomyView.class.getSimpleName() + "-EXPANSION-DEFINITION-" //$NON-NLS-1$
+                        + taxonomy.getId();
+        this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
+                        + taxonomy.getId();
 
         this.model = make(TaxonomyModel.class, taxonomy);
         this.model.setExcludeUnassignedCategoryInCharts(part.getPreferenceStore().getBoolean(identifierUnassigned));
         this.model.setOrderByTaxonomyInStackChart(part.getPreferenceStore().getBoolean(identifierOrderByTaxonomy));
+        this.model.setExpansionStateDefinition(part.getPreferenceStore().getString(expansionStateDefinition));
+        this.model.setExpansionStateRebalancing(part.getPreferenceStore().getString(expansionStateReblancing));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -66,8 +76,6 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void dispose()
     {
-        getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
-        getPreferenceStore().setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         taxonomy.removePropertyChangeListener(this);
 
         Control[] children = container.getChildren();
@@ -76,6 +84,13 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             Page page = (Page) control.getData();
             page.dispose();
         }
+
+        // store preferences *after* disposing pages -> allow pages to update
+        // the model
+        getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
+        getPreferenceStore().setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
+        getPreferenceStore().setValue(expansionStateDefinition, model.getExpansionStateDefinition());
+        getPreferenceStore().setValue(expansionStateReblancing, model.getExpansionStateRebalancing());
 
         super.dispose();
     }
