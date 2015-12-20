@@ -370,8 +370,8 @@ public final class Sidebar extends Composite
 
     private class Item extends Canvas
     {
-        private static final int MARGIN_X = 5;
-        private static final int MARGIN_Y = 3;
+        private static final int MARGIN_X = 6;
+        private static final int MARGIN_Y = 4;
 
         private final Entry entry;
 
@@ -515,7 +515,7 @@ public final class Sidebar extends Composite
             {
                 width += image.getBounds().width + 5;
             }
-            return new Point(width + 2 + (2 * MARGIN_X) + indent, height + 2 + (2 * MARGIN_Y));
+            return new Point(width + (2 * MARGIN_X) + indent, height + (2 * MARGIN_Y));
         }
 
         private void paintControl(PaintEvent e)
@@ -564,7 +564,10 @@ public final class Sidebar extends Composite
                 }
                 else
                 {
-                    gc.drawImage(image, x, bounds.y + MARGIN_Y);
+                    // center image relative to text
+                    int offset = (imgBounds.height - gc.stringExtent(text).y) / 2;
+
+                    gc.drawImage(image, x, bounds.y + MARGIN_Y - offset);
                     x += imgBounds.width + 5;
                 }
             }
