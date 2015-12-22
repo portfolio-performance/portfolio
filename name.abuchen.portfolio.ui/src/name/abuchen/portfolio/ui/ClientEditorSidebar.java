@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Menu;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
@@ -238,10 +240,57 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                 scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             }
         });
+        manager.add(new Separator());
 
+        addMoveUpAndDownActions(watchlist, entry, manager);
         manager.add(new Separator());
 
         setAsStartPage.menuAboutToShow(entry, manager);
+    }
+
+    private void addMoveUpAndDownActions(Watchlist watchlist, Entry entry, IMenuManager manager)
+    {
+        List<Watchlist> list = editor.getClient().getWatchlists();
+        int size = list.size();
+        int index = list.indexOf(watchlist);
+
+        if (index > 0)
+        {
+            manager.add(new Action(Messages.MenuMoveUp)
+            {
+                @Override
+                public void run()
+                {
+                    Client client = editor.getClient();
+                    List<Watchlist> watchlists = client.getWatchlists();
+                    watchlists.remove(watchlist);
+                    watchlists.add(index - 1, watchlist);
+                    client.markDirty();
+
+                    entry.moveUp();
+                    sidebar.layout();
+                }
+            });
+        }
+
+        if (index < size - 1 && size > 1)
+        {
+            manager.add(new Action(Messages.MenuMoveDown)
+            {
+                @Override
+                public void run()
+                {
+                    Client client = editor.getClient();
+                    List<Watchlist> watchlists = client.getWatchlists();
+                    watchlists.remove(watchlist);
+                    watchlists.add(index + 1, watchlist);
+                    client.markDirty();
+
+                    entry.findNeighbor(SWT.ARROW_DOWN).moveUp();
+                    sidebar.layout();
+                }
+            });
+        }
     }
 
     private String askWatchlistName(String initialValue)
@@ -363,7 +412,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         }
     }
 
-    private void taxonomyContextMenuAboutToShow(final Taxonomy taxonomy, final Entry entry, IMenuManager manager)
+    private void taxonomyContextMenuAboutToShow(Taxonomy taxonomy, Entry entry, IMenuManager manager)
     {
         manager.add(new Action(Messages.MenuTaxonomyRename)
         {
@@ -407,10 +456,55 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                 scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             }
         });
+        manager.add(new Separator());
 
+        addMoveUpAndDownActions(taxonomy, entry, manager);
         manager.add(new Separator());
 
         setAsStartPage.menuAboutToShow(entry, manager);
+    }
+
+    private void addMoveUpAndDownActions(Taxonomy taxonomy, Entry entry, IMenuManager manager)
+    {
+        List<Taxonomy> list = editor.getClient().getTaxonomies();
+        int size = list.size();
+        int index = list.indexOf(taxonomy);
+
+        if (index > 0)
+        {
+            manager.add(new Action(Messages.MenuMoveUp)
+            {
+                @Override
+                public void run()
+                {
+                    Client client = editor.getClient();
+                    client.removeTaxonomy(taxonomy);
+                    client.addTaxonomy(index - 1, taxonomy);
+                    client.markDirty();
+
+                    entry.moveUp();
+                    sidebar.layout();
+                }
+            });
+        }
+
+        if (index < size - 1 && size > 1)
+        {
+            manager.add(new Action(Messages.MenuMoveDown)
+            {
+                @Override
+                public void run()
+                {
+                    Client client = editor.getClient();
+                    client.removeTaxonomy(taxonomy);
+                    client.addTaxonomy(index + 1, taxonomy);
+                    client.markDirty();
+
+                    entry.findNeighbor(SWT.ARROW_DOWN).moveUp();
+                    sidebar.layout();
+                }
+            });
+        }
     }
 
     private void addAndOpenTaxonomy(Taxonomy taxonomy)

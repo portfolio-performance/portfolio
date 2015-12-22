@@ -147,7 +147,7 @@ public class AttributeListTab implements Tab, ModificationListener
 
         if (index > 0)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveUp)
+            manager.add(new Action(Messages.MenuMoveUp)
             {
                 @Override
                 public void run()
@@ -163,7 +163,7 @@ public class AttributeListTab implements Tab, ModificationListener
 
         if (index < tableViewer.getTable().getItemCount() - 1)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveDown)
+            manager.add(new Action(Messages.MenuMoveDown)
             {
                 @Override
                 public void run()

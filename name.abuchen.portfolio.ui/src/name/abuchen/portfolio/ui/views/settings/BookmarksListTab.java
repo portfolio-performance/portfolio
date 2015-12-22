@@ -221,7 +221,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         int index = client.getSettings().getBookmarks().indexOf(bookmark);
         if (index > 0)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveUp)
+            manager.add(new Action(Messages.MenuMoveUp)
             {
                 @Override
                 public void run()
@@ -237,7 +237,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 
         if (index < client.getSettings().getBookmarks().size() - 1)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveDown)
+            manager.add(new Action(Messages.MenuMoveDown)
             {
                 @Override
                 public void run()

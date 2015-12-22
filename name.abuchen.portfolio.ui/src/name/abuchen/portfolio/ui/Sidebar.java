@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
@@ -141,7 +140,11 @@ public final class Sidebar extends Composite
             });
         }
 
-        private Entry findNeighbor(int direction)
+        /**
+         * Finds either the neighbor above (SWT.ARROW_DOWN) or below
+         * (SWT.ARROW_UP) the current entry.
+         */
+        public Entry findNeighbor(int direction)
         {
             int index = bar.entries.indexOf(this);
 
@@ -191,6 +194,23 @@ public final class Sidebar extends Composite
         public void select()
         {
             bar.select(this);
+        }
+
+        /**
+         * Moves the current item one up. Requires the composite to re-layout
+         * afterwards.
+         */
+        public void moveUp()
+        {
+            int index = bar.entries.indexOf(this);
+            if (index == 0)
+                throw new IllegalArgumentException();
+
+            bar.entries.remove(index);
+            bar.entries.add(index - 1, this);
+
+            for (int ii = index - 1; ii <= index + 1 && ii < bar.entries.size(); ii++)
+                bar.setLayoutData(ii, bar.entries.get(ii).item);
         }
     }
 
@@ -335,27 +355,29 @@ public final class Sidebar extends Composite
         l.setText(label);
         l.setIndent(indent);
 
-        // fix layout data
-        FormData data = new FormData();
-        data.left = new FormAttachment(0);
-        data.right = new FormAttachment(100);
-
-        if (index == 0)
-            data.top = new FormAttachment(0, 5);
-        else
-            data.top = new FormAttachment(entries.get(index - 1).item, indent == 0 ? 20 : 0);
-        l.setLayoutData(data);
+        setLayoutData(index, l);
 
         if (index + 1 < entries.size())
         {
+            // cannot use #setLayoutData because entry has no item reference yet
             Item item = entries.get(index + 1).item;
-            data = (FormData) item.getLayoutData();
+            FormData data = (FormData) item.getLayoutData();
             data.top = new FormAttachment(l, item.indent == 0 ? 20 : 0);
         }
 
         this.setTabList(new Control[0]);
 
         return l;
+    }
+
+    private void setLayoutData(int index, Item item)
+    {
+        FormData data = new FormData();
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
+        data.top = index == 0 ? new FormAttachment(0, 5)
+                        : new FormAttachment(entries.get(index - 1).item, item.indent == 0 ? 20 : 0);
+        item.setLayoutData(data);
     }
 
     private void action(Entry entry)
@@ -458,14 +480,7 @@ public final class Sidebar extends Composite
 
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    listener.menuAboutToShow(Item.this.entry, manager);
-                }
-            });
+            menuMgr.addMenuListener(m -> listener.menuAboutToShow(Item.this.entry, m));
 
             contextMenu = menuMgr.createContextMenu(this);
             setMenu(contextMenu);

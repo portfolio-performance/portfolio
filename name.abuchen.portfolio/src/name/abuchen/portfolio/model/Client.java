@@ -321,6 +321,11 @@ public class Client
         taxonomies.add(taxonomy);
     }
 
+    public void addTaxonomy(int index, Taxonomy taxonomy)
+    {
+        taxonomies.add(index, taxonomy);
+    }
+
     public void removeTaxonomy(Taxonomy taxonomy)
     {
         taxonomies.remove(taxonomy);
