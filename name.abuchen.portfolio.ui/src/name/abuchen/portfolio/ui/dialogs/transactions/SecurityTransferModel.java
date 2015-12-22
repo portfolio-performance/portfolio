@@ -52,7 +52,7 @@ public class SecurityTransferModel extends AbstractModel
     @Override
     public String getHeading()
     {
-        return Messages.AccountMenuTransfer;
+        return Messages.LabelSecurityTransfer;
     }
 
     @Override

@@ -345,6 +345,7 @@ public class Messages extends NLS
     public static String LabelSearch;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
+    public static String LabelSecurityTransfer;
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelDividends;
@@ -361,6 +362,7 @@ public class Messages extends NLS
     public static String LabelTotalValuePercent;
     public static String LabelTransactions;
     public static String LabelTransferals;
+    public static String LabelTransfer;
     public static String LabelTransferTo;
     public static String LabelTTWROR;
     public static String LabelTTWROROneDay;
