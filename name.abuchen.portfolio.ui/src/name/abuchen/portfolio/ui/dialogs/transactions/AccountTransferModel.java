@@ -112,7 +112,7 @@ public class AccountTransferModel extends AbstractModel
             sourceTransaction.setAmount(fxAmount);
             t.getTargetTransaction().setAmount(amount);
 
-            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
                             Money.of(sourceAccount.getCurrencyCode(), fxAmount), //
                             Money.of(targetAccount.getCurrencyCode(), amount), //
                             getExchangeRate());
@@ -133,7 +133,7 @@ public class AccountTransferModel extends AbstractModel
         this.fxAmount = entry.getSourceTransaction().getAmount();
         this.amount = entry.getTargetTransaction().getAmount();
 
-        Optional<Transaction.Unit> forex = entry.getSourceTransaction().getUnit(Transaction.Unit.Type.LUMPSUM);
+        Optional<Transaction.Unit> forex = entry.getSourceTransaction().getUnit(Transaction.Unit.Type.GROSS_VALUE);
 
         if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(sourceAccount.getCurrencyCode())
                         && forex.get().getForex().getCurrencyCode().equals(targetAccount.getCurrencyCode()))

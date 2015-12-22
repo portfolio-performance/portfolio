@@ -100,7 +100,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-04-01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 6_75L)));
-        assertThat(entry.getPortfolioTransaction().getPricePerShare(), is(Money.of("CAD", 27L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Money.of("CAD", 27L)));
 
     }
 

@@ -124,17 +124,17 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         quote.bindValue(Properties.quote.name(), Messages.ColumnQuote, Values.Quote, true);
         quote.bindCurrency(Properties.securityCurrencyCode.name());
 
-        Input lumpSum = new Input(editArea, "="); //$NON-NLS-1$
-        lumpSum.bindValue(Properties.lumpSum.name(), Messages.ColumnSubTotal, Values.Amount, true);
-        lumpSum.bindCurrency(Properties.securityCurrencyCode.name());
+        Input grossValue = new Input(editArea, "="); //$NON-NLS-1$
+        grossValue.bindValue(Properties.grossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
+        grossValue.bindCurrency(Properties.securityCurrencyCode.name());
 
         final Input exchangeRate = new Input(editArea, "x " + Messages.ColumnExchangeRate); //$NON-NLS-1$
         exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
         exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
 
-        final Input convertedLumpSum = new Input(editArea, "="); //$NON-NLS-1$
-        convertedLumpSum.bindValue(Properties.convertedLumpSum.name(), Messages.ColumnSubTotal, Values.Amount, true);
-        convertedLumpSum.bindCurrency(Properties.accountCurrencyCode.name());
+        final Input convertedGrossValue = new Input(editArea, "="); //$NON-NLS-1$
+        convertedGrossValue.bindValue(Properties.convertedGrossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
+        convertedGrossValue.bindCurrency(Properties.accountCurrencyCode.name());
 
         // fees
 
@@ -181,24 +181,24 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         // form layout
         //
 
-        int width = amountWidth(lumpSum.value);
-        int currencyWidth = currencyWidth(lumpSum.currency);
+        int width = amountWidth(grossValue.value);
+        int currencyWidth = currencyWidth(grossValue.currency);
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         .suffix(account.value.getControl()).thenBelow(valueDate).label(lblDate)
-                        // shares - quote - lump sum
+                        // shares - quote - gross value
                         .thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(width).thenRight(quote.currency).width(width)
-                        .thenRight(lumpSum.label).thenRight(lumpSum.value).width(width).thenRight(lumpSum.currency);
+                        .thenRight(grossValue.label).thenRight(grossValue.value).width(width).thenRight(grossValue.currency);
 
         startingWith(quote.value).thenBelow(exchangeRate.value).width(width).label(exchangeRate.label)
                         .thenRight(exchangeRate.currency).width(width);
 
-        startingWith(lumpSum.value)
-                        // converted lump sum
-                        .thenBelow(convertedLumpSum.value).width(width).label(convertedLumpSum.label)
-                        .suffix(convertedLumpSum.currency)
+        startingWith(grossValue.value)
+                        // converted gross value
+                        .thenBelow(convertedGrossValue.value).width(width).label(convertedGrossValue.label)
+                        .suffix(convertedGrossValue.currency)
                         // fees
                         .thenBelow(fees.value).width(width).label(fees.label).suffix(fees.currency)
                         // taxes
@@ -227,7 +227,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
                             && !securityCurrency.equals(accountCurrency);
 
             exchangeRate.setVisible(visible);
-            convertedLumpSum.setVisible(visible);
+            convertedGrossValue.setVisible(visible);
 
             forexFees.setVisible(visible);
             plusForexFees.setVisible(visible);

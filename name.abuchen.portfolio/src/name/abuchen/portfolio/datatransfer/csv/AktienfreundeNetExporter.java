@@ -108,7 +108,7 @@ public class AktienfreundeNetExporter
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
         printer.print(type);
-        printer.print(Values.Amount.format(transaction.getActualPurchasePrice()));
+        printer.print(Values.Amount.format(transaction.getGrossPricePerShareAmount()));
         printer.print(Values.Share.format(transaction.getShares()));
         printer.print(Values.Amount.format(transaction.getUnitSum(Unit.Type.FEE).getAmount()));
         printer.print(Values.Amount.format(transaction.getUnitSum(Unit.Type.TAX).getAmount()));

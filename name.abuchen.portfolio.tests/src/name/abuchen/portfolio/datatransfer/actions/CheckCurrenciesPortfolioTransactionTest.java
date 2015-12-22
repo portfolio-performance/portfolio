@@ -37,7 +37,7 @@ public class CheckCurrenciesPortfolioTransactionTest
     }
 
     @Test
-    public void testNoForexLumpSumExistsIfCurrenciesMatch()
+    public void testNoForexGrossValueExistsIfCurrenciesMatch()
     {
         Portfolio portfolio = new Portfolio();
         Security security = new Security("", "EUR");
@@ -46,12 +46,12 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.setType(Type.DELIVERY_INBOUND);
         t.setMonetaryAmount(Money.of("EUR", 1_00));
         t.setSecurity(security);
-        t.addUnit(new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5)));
+        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5)));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
     }
 
     @Test
-    public void testNoForexLumpSumExistsIfCurrenciesMatchEvenIfNoForex()
+    public void testNoForexGrossValueExistsIfCurrenciesMatchEvenIfNoForex()
     {
         Portfolio portfolio = new Portfolio();
         Security security = new Security("", "EUR");
@@ -60,17 +60,17 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.setType(Type.DELIVERY_INBOUND);
         t.setMonetaryAmount(Money.of("EUR", 1_00));
         t.setSecurity(security);
-        t.addUnit(new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00)));
+        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00)));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
     }
 
     @Test
-    public void testTransactionHasLumpSumMatchingSecurityCurrency()
+    public void testTransactionHasGrossValueMatchingSecurityCurrency()
     {
         Portfolio portfolio = new Portfolio();
         Security security = new Security("", "USD");
 
-        Unit unit = new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
+        Unit unit = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
 
         PortfolioTransaction t = new PortfolioTransaction();
         t.setType(Type.DELIVERY_INBOUND);
@@ -82,7 +82,7 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.removeUnit(unit);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
 
-        Unit other = new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00), Money.of("JPY", 2_00), BigDecimal.valueOf(0.5));
+        Unit other = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("JPY", 2_00), BigDecimal.valueOf(0.5));
         t.addUnit(other);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
     }
@@ -128,7 +128,7 @@ public class CheckCurrenciesPortfolioTransactionTest
         Portfolio portfolio = new Portfolio();
         Security security = new Security("", "USD");
 
-        Unit lumpSum = new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 10_00), Money.of("USD", 20_00),
+        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 10_00), Money.of("USD", 20_00),
                         BigDecimal.valueOf(0.5));
         Unit tax = new Unit(Unit.Type.TAX, Money.of("EUR", 5_00), Money.of("USD", 10_00), BigDecimal.valueOf(0.5));
         Unit tax2 = new Unit(Unit.Type.TAX, Money.of("EUR", 1_00));
@@ -139,7 +139,7 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.setMonetaryAmount(Money.of("EUR", 20_00));
         t.setSecurity(security);
 
-        t.addUnit(lumpSum);
+        t.addUnit(grossValue);
         t.addUnit(fee);
         t.addUnit(tax);
         t.addUnit(tax2);

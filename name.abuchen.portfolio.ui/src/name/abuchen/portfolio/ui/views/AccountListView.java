@@ -456,7 +456,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 if (t.getCrossEntry() instanceof BuySellEntry)
                 {
                     PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
-                    return Values.Money.format(pt.getPricePerShare(), getClient().getBaseCurrency());
+                    return Values.Money.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {

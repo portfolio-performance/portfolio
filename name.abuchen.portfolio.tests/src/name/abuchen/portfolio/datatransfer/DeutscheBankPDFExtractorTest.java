@@ -171,11 +171,11 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 16_17L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
 
-        Optional<Unit> lumpSum = transaction.getUnit(Unit.Type.LUMPSUM);
-        assertThat(lumpSum.isPresent(), is(true));
-        assertThat(lumpSum.get().getAmount(), is(Money.of("EUR", 16_17L)));
-        assertThat(lumpSum.get().getForex(), is(Money.of("USD", 17_38L)));
-        assertThat(lumpSum.get().getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.930578, 0.000001));
+        Optional<Unit> grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat(grossValue.isPresent(), is(true));
+        assertThat(grossValue.get().getAmount(), is(Money.of("EUR", 16_17L)));
+        assertThat(grossValue.get().getForex(), is(Money.of("USD", 17_38L)));
+        assertThat(grossValue.get().getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.930578, 0.000001));
     }
 
     @Test

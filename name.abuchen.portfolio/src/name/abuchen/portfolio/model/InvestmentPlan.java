@@ -229,7 +229,7 @@ public class InvestmentPlan implements Named, Adaptable
             Money availableMoney = Money.of(targetCurrencyCode, amount - fees);
             availableAmount = converter.with(security.getCurrencyCode()).convert(tDate, availableMoney).getAmount();
 
-            forex = new Transaction.Unit(Unit.Type.LUMPSUM, //
+            forex = new Transaction.Unit(Unit.Type.GROSS_VALUE, //
                             availableMoney, //
                             Money.of(security.getCurrencyCode(), availableAmount), //
                             converter.with(targetCurrencyCode).getRate(tDate, security.getCurrencyCode()).getValue());

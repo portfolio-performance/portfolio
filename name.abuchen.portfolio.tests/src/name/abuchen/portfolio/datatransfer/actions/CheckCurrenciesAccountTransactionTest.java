@@ -58,7 +58,7 @@ public class CheckCurrenciesAccountTransactionTest
 
         Security security = new Security("", "USD");
 
-        Unit unit = new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
+        Unit unit = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
 
         AccountTransaction t = new AccountTransaction();
         t.setMonetaryAmount(Money.of("EUR", 1_00));
@@ -69,7 +69,7 @@ public class CheckCurrenciesAccountTransactionTest
         t.removeUnit(unit);
         assertThat(action.process(t, account).getCode(), is(Status.Code.ERROR));
 
-        Unit other = new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00), Money.of("JPY", 2_00), BigDecimal.valueOf(0.5));
+        Unit other = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("JPY", 2_00), BigDecimal.valueOf(0.5));
         t.addUnit(other);
         assertThat(action.process(t, account).getCode(), is(Status.Code.ERROR));
     }
@@ -87,7 +87,7 @@ public class CheckCurrenciesAccountTransactionTest
         t.setSecurity(security);
         assertThat(action.process(t, account).getCode(), is(Status.Code.OK));
 
-        Unit unit = new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
+        Unit unit = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
         t.addUnit(unit);
         assertThat(action.process(t, account).getCode(), is(Status.Code.ERROR));
     }

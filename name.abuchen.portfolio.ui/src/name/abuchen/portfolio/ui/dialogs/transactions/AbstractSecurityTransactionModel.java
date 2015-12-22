@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -22,17 +27,12 @@ import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
-
-import com.ibm.icu.text.MessageFormat;
-
 public abstract class AbstractSecurityTransactionModel extends AbstractModel
 {
 
     public enum Properties
     {
-        portfolio, security, account, date, shares, quote, lumpSum, exchangeRate, convertedLumpSum, //
+        portfolio, security, account, date, shares, quote, grossValue, exchangeRate, convertedGrossValue, //
         forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, accountCurrencyCode, //
         securityCurrencyCode, calculationStatus;
     }
@@ -46,9 +46,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected LocalDate date = LocalDate.now();
     protected long shares;
     protected long quote;
-    protected long lumpSum;
+    protected long grossValue;
     protected BigDecimal exchangeRate = BigDecimal.ONE;
-    protected long convertedLumpSum;
+    protected long convertedGrossValue;
     protected long forexFees;
     protected long fees;
     protected long forexTaxes;
@@ -89,10 +89,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         transaction.getUnits().forEach(unit -> {
             switch (unit.getType())
             {
-                case LUMPSUM:
+                case GROSS_VALUE:
                     this.exchangeRate = unit.getExchangeRate();
-                    this.lumpSum = unit.getForex().getAmount();
-                    this.quote = Math.round(this.lumpSum * Values.Share.factor() / (double) this.shares);
+                    this.grossValue = unit.getForex().getAmount();
+                    this.quote = Math.round(this.grossValue * Values.Share.factor() / (double) this.shares);
                     break;
                 case FEE:
                     if (unit.getForex() != null)
@@ -111,13 +111,13 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             }
         });
 
-        this.convertedLumpSum = calculateConvertedLumpSum();
+        this.convertedGrossValue = calculateConvertedGrossValue();
 
         if (exchangeRate.equals(BigDecimal.ONE))
         {
             // units contained no information about forex
-            this.lumpSum = convertedLumpSum;
-            this.quote = transaction.getActualPurchasePrice();
+            this.grossValue = convertedGrossValue;
+            this.quote = transaction.getGrossPricePerShareAmount();
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -152,9 +152,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                                 Money.of(getSecurityCurrencyCode(), forexTaxes), //
                                 exchangeRate));
 
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
-                            Money.of(getAccountCurrencyCode(), convertedLumpSum), //
-                            Money.of(getSecurityCurrencyCode(), lumpSum), //
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
+                            Money.of(getAccountCurrencyCode(), convertedGrossValue), //
+                            Money.of(getSecurityCurrencyCode(), grossValue), //
                             exchangeRate));
         }
 
@@ -169,25 +169,25 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     /**
      * Check whether calculation works out. The separate validation is needed
      * because the model does prevent negative values in methods
-     * {@link #calcLumpSum(long, long, long)} and
+     * {@link #calcGrossValue(long, long, long)} and
      * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
-     * quote (2 digits currently) and the exchange rate (4 digits), the lump sum
-     * and converted lump sum are checked against a range.
+     * quote (2 digits currently) and the exchange rate (4 digits), the gross
+     * value and converted gross value are checked against a range.
      */
     private IStatus calculateStatus()
     {
-        // check whether lump sum is in range
+        // check whether gross value is in range
         long lower = Math.round(shares * (quote - 1) * Values.Amount.factor()
                         / (Values.Share.divider() * Values.Quote.divider()));
         long upper = Math.round(shares * (quote + 1) * Values.Amount.factor()
                         / (Values.Share.divider() * Values.Quote.divider()));
-        if (lumpSum < lower || lumpSum > upper)
+        if (grossValue < lower || grossValue > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
-        // check whether converted lump sum is in range
-        upper = Math.round(lumpSum * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
-        lower = Math.round(lumpSum * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
-        if (convertedLumpSum < lower || convertedLumpSum > upper)
+        // check whether converted gross value is in range
+        upper = Math.round(grossValue * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
+        lower = Math.round(grossValue * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
+        if (convertedGrossValue < lower || convertedGrossValue > upper)
             return ValidationStatus.error(Messages.MsgIncorrectConvertedSubTotal);
 
         // check total
@@ -331,12 +331,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (quote != 0)
         {
-            setLumpSum(Math.round(shares * quote * Values.Amount.factor()
+            setGrossValue(Math.round(shares * quote * Values.Amount.factor()
                             / (Values.Share.divider() * Values.Quote.divider())));
         }
-        else if (lumpSum != 0 && shares != 0)
+        else if (grossValue != 0 && shares != 0)
         {
-            setQuote(Math.round(lumpSum * Values.Share.factor() / shares));
+            setQuote(Math.round(grossValue * Values.Share.factor() / shares));
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -352,25 +352,25 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
 
-        triggerLumpSum(Math.round(shares * quote * Values.Amount.factor()
+        triggerGrossValue(Math.round(shares * quote * Values.Amount.factor()
                         / (Values.Share.divider() * Values.Quote.divider())));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
 
-    public long getLumpSum()
+    public long getGrossValue()
     {
-        return lumpSum;
+        return grossValue;
     }
 
-    public void setLumpSum(long lumpSum)
+    public void setGrossValue(long grossValue)
     {
-        triggerLumpSum(lumpSum);
+        triggerGrossValue(grossValue);
 
         if (shares != 0)
         {
-            long newQuote = Math.round(lumpSum * Values.Share.factor() * Values.Quote.factor()
+            long newQuote = Math.round(grossValue * Values.Share.factor() * Values.Quote.factor()
                             / (shares * Values.Quote.divider()));
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = newQuote);
         }
@@ -379,10 +379,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         this.calculationStatus = calculateStatus());
     }
 
-    public void triggerLumpSum(long lumpSum)
+    public void triggerGrossValue(long grossValue)
     {
-        firePropertyChange(Properties.lumpSum.name(), this.lumpSum, this.lumpSum = lumpSum);
-        triggerConvertedLumpSum(Math.round(exchangeRate.doubleValue() * lumpSum));
+        firePropertyChange(Properties.grossValue.name(), this.grossValue, this.grossValue = grossValue);
+        triggerConvertedGrossValue(Math.round(exchangeRate.doubleValue() * grossValue));
     }
 
     public BigDecimal getExchangeRate()
@@ -396,24 +396,24 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
 
-        triggerConvertedLumpSum(Math.round(newRate.doubleValue() * lumpSum));
+        triggerConvertedGrossValue(Math.round(newRate.doubleValue() * grossValue));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
 
-    public long getConvertedLumpSum()
+    public long getConvertedGrossValue()
     {
-        return convertedLumpSum;
+        return convertedGrossValue;
     }
 
-    public void setConvertedLumpSum(long convertedLumpSum)
+    public void setConvertedGrossValue(long convertedGrossValue)
     {
-        triggerConvertedLumpSum(convertedLumpSum);
+        triggerConvertedGrossValue(convertedGrossValue);
 
-        if (lumpSum != 0)
+        if (grossValue != 0)
         {
-            BigDecimal newExchangeRate = BigDecimal.valueOf(convertedLumpSum).divide(BigDecimal.valueOf(lumpSum), 10,
+            BigDecimal newExchangeRate = BigDecimal.valueOf(convertedGrossValue).divide(BigDecimal.valueOf(grossValue), 10,
                             RoundingMode.HALF_UP);
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
             triggerTotal(calculateTotal()); // forex fees and taxes might change
@@ -423,10 +423,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         this.calculationStatus = calculateStatus());
     }
 
-    public void triggerConvertedLumpSum(long convertedLumpSum)
+    public void triggerConvertedGrossValue(long convertedGrossValue)
     {
-        firePropertyChange(Properties.convertedLumpSum.name(), this.convertedLumpSum,
-                        this.convertedLumpSum = convertedLumpSum);
+        firePropertyChange(Properties.convertedGrossValue.name(), this.convertedGrossValue,
+                        this.convertedGrossValue = convertedGrossValue);
         triggerTotal(calculateTotal());
     }
 
@@ -495,15 +495,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         triggerTotal(total);
 
-        firePropertyChange(Properties.convertedLumpSum.name(), this.convertedLumpSum,
-                        this.convertedLumpSum = calculateConvertedLumpSum());
+        firePropertyChange(Properties.convertedGrossValue.name(), this.convertedGrossValue,
+                        this.convertedGrossValue = calculateConvertedGrossValue());
 
-        firePropertyChange(Properties.lumpSum.name(), this.lumpSum,
-                        this.lumpSum = Math.round(convertedLumpSum / exchangeRate.doubleValue()));
+        firePropertyChange(Properties.grossValue.name(), this.grossValue,
+                        this.grossValue = Math.round(convertedGrossValue / exchangeRate.doubleValue()));
 
         if (shares != 0)
             firePropertyChange(Properties.quote.name(), this.quote,
-                            this.quote = Math.round(lumpSum * Values.Share.factor() / (double) shares));
+                            this.quote = Math.round(grossValue * Values.Share.factor() / (double) shares));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -544,7 +544,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         return type;
     }
 
-    protected long calculateConvertedLumpSum()
+    protected long calculateConvertedGrossValue()
     {
         long totalFees = fees + Math.round(exchangeRate.doubleValue() * forexFees);
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * forexTaxes);
@@ -571,10 +571,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return convertedLumpSum + totalFees + totalTaxes;
+                return convertedGrossValue + totalFees + totalTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                return Math.max(0, convertedLumpSum - totalFees - totalTaxes);
+                return Math.max(0, convertedGrossValue - totalFees - totalTaxes);
             default:
                 throw new UnsupportedOperationException();
         }

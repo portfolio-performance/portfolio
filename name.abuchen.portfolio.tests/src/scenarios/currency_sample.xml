@@ -3140,7 +3140,7 @@
                   </crossEntry>
                   <shares>5000000</shares>
                   <units>
-                    <unit type="LUMPSUM">
+                    <unit type="GROSS_VALUE">
                       <amount currency="EUR" amount="45460"/>
                       <forex currency="USD" amount="55190"/>
                       <exchangeRate>0.8237</exchangeRate>
@@ -3237,7 +3237,7 @@
                   </crossEntry>
                   <shares>10000000</shares>
                   <units>
-                    <unit type="LUMPSUM">
+                    <unit type="GROSS_VALUE">
                       <amount currency="USD" amount="84841"/>
                       <forex currency="EUR" amount="69880"/>
                       <exchangeRate>1.2141</exchangeRate>

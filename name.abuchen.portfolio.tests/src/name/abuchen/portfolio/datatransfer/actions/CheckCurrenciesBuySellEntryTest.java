@@ -36,7 +36,7 @@ public class CheckCurrenciesBuySellEntryTest
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.setSecurity(security);
         entry.setMonetaryAmount(Money.of("EUR", 100_00));
-        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.LUMPSUM, Money.of("EUR", 100_00),
+        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 100_00),
                         Money.of("USD", 120_00), BigDecimal.valueOf(0.8)));
 
         assertThat(action.process(entry, account, portfolio).getCode(), is(Status.Code.OK));

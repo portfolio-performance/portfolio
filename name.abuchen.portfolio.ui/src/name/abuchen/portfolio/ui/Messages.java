@@ -114,7 +114,7 @@ public class Messages extends NLS
     public static String ColumnLatestPrice;
     public static String ColumnLatestTrade;
     public static String ColumnLevels;
-    public static String ColumnLumpSumPrice;
+    public static String ColumnNetValue;
     public static String ColumnMarketValue;
     public static String ColumnMarketValueBaseCurrency;
     public static String ColumnMaxDrawdown;

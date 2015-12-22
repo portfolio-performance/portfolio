@@ -59,7 +59,7 @@ public class CheckCurrenciesAction implements ImportAction
             }
             else
             {
-                Status status = checkLumpSumAndUnitsAgainstSecurity(transaction);
+                Status status = checkGrossValueAndUnitsAgainstSecurity(transaction);
                 if (status.getCode() != Status.Code.OK)
                     return status;
             }
@@ -76,7 +76,7 @@ public class CheckCurrenciesAction implements ImportAction
             return new Status(Status.Code.ERROR,
                             MessageFormat.format(Messages.MsgCheckMissingSecurity, transaction.getType().toString()));
 
-        Status status = checkLumpSumAndUnitsAgainstSecurity(transaction);
+        Status status = checkGrossValueAndUnitsAgainstSecurity(transaction);
         if (status.getCode() != Status.Code.OK)
             return status;
 
@@ -127,7 +127,7 @@ public class CheckCurrenciesAction implements ImportAction
         return process(entry.getTargetTransaction(), target);
     }
 
-    private Status checkLumpSumAndUnitsAgainstSecurity(Transaction transaction)
+    private Status checkGrossValueAndUnitsAgainstSecurity(Transaction transaction)
     {
         String securityCurrency = transaction.getSecurity().getCurrencyCode();
         if (securityCurrency == null)
@@ -135,14 +135,14 @@ public class CheckCurrenciesAction implements ImportAction
 
         if (transaction.getCurrencyCode().equals(securityCurrency))
         {
-            // then lump sum unit must not be set
-            Optional<Unit> lumpSum = transaction.getUnit(Transaction.Unit.Type.LUMPSUM);
-            if (lumpSum.isPresent())
+            // then gross value unit must not be set
+            Optional<Unit> grossValue = transaction.getUnit(Transaction.Unit.Type.GROSS_VALUE);
+            if (grossValue.isPresent())
             {
-                String lumpSumCurrencyCode = lumpSum.get().getForex() != null
-                                ? lumpSum.get().getForex().getCurrencyCode() : ""; //$NON-NLS-1$
-                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckLumpSumUnitNotValid,
-                                lumpSumCurrencyCode, securityCurrency));
+                String grossValueCurrencyCode = grossValue.get().getForex() != null
+                                ? grossValue.get().getForex().getCurrencyCode() : ""; //$NON-NLS-1$
+                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitNotValid,
+                                grossValueCurrencyCode, securityCurrency));
             }
 
             // then other units must not have any forex information
@@ -153,16 +153,16 @@ public class CheckCurrenciesAction implements ImportAction
         }
         else
         {
-            // then lump sum must be set
-            Optional<Unit> lumpSum = transaction.getUnit(Transaction.Unit.Type.LUMPSUM);
-            if (!lumpSum.isPresent())
-                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckLumpSumUnitMissing,
+            // then gross value must be set
+            Optional<Unit> grossValue = transaction.getUnit(Transaction.Unit.Type.GROSS_VALUE);
+            if (!grossValue.isPresent())
+                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitMissing,
                                 transaction.getCurrencyCode(), securityCurrency));
 
-            // then lump sum forex must match security
-            String forex = lumpSum.get().getForex() != null ? lumpSum.get().getForex().getCurrencyCode() : null;
+            // then gross value forex must match security
+            String forex = grossValue.get().getForex() != null ? grossValue.get().getForex().getCurrencyCode() : null;
             if (!securityCurrency.equals(forex))
-                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckLumSumUnitForexMismatch,
+                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitForexMismatch,
                                 forex, securityCurrency));
 
             // then other units must have matching currency (if they have forex)

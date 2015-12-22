@@ -181,19 +181,20 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        // will match lump sum only if forex data exists
-                        .section("forexSum", "forexCurrency", "lumpSum", "currency", "exchangeRate") //
+                        // will match gross value only if forex data exists
+                        .section("forexSum", "forexCurrency", "grossValue", "currency", "exchangeRate") //
                         .optional() //
-                        .match("Bruttoertrag (?<forexSum>[\\d.]+,\\d+) (?<forexCurrency>\\w{3}+) (?<lumpSum>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .match("Bruttoertrag (?<forexSum>[\\d.]+,\\d+) (?<forexCurrency>\\w{3}+) (?<grossValue>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .match("Umrechnungskurs (\\w{3}+) zu (\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
-                            Money lumpSum = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("lumpSum")));
+                            Money grossValue = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("grossValue")));
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexSum")));
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
                                             asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
-                            Unit unit = new Unit(Unit.Type.LUMPSUM, lumpSum, forex, exchangeRate);
+                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate);
 
-                            // add lump sum unit only if currency code of
+                            // add gross value unit only if currency code of
                             // security actually matches
                             if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                                 t.addUnit(unit);

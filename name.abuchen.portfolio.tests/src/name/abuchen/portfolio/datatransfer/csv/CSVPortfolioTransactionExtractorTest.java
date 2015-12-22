@@ -179,7 +179,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 12_00)));
         assertThat(t.getUnit(Unit.Type.FEE).isPresent(), is(false));
 
-        Unit grossAmount = t.getUnit(Unit.Type.LUMPSUM).get();
+        Unit grossAmount = t.getUnit(Unit.Type.GROSS_VALUE).get();
         assertThat(grossAmount.getAmount(), is(Money.of("EUR", 100_00)));
         assertThat(grossAmount.getForex(), is(Money.of("USD", 110_00)));
         assertThat(grossAmount.getExchangeRate(), is(BigDecimal.valueOf(0.9091)));

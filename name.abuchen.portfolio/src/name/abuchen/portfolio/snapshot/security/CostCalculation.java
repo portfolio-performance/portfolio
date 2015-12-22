@@ -48,7 +48,7 @@ import name.abuchen.portfolio.money.Money;
             case BUY:
             case DELIVERY_INBOUND:
                 long grossAmount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
-                long netAmount = converter.convert(t.getDate(), t.getLumpSum()).getAmount();
+                long netAmount = converter.convert(t.getDate(), t.getGrossValue()).getAmount();
                 fifo.add(new LineItem(t.getShares(), grossAmount, netAmount));
                 break;
             case SELL:

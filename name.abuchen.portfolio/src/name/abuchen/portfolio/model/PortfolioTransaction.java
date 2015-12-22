@@ -60,7 +60,11 @@ public class PortfolioTransaction extends Transaction
         this.type = type;
     }
 
-    public long getLumpSumPrice()
+    /**
+     * Returns the gross value, i.e. the value including taxes and fees. See
+     * {@link #getGrossValue()}.
+     */
+    public long getGrossValueAmount()
     {
         long taxAndFees = getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
                         .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
@@ -80,24 +84,35 @@ public class PortfolioTransaction extends Transaction
         }
     }
 
-    public Money getLumpSum()
+    /**
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. In the case of a buy transaction, that are the gross costs, i.e.
+     * before adding additional taxes and fees. In the case of sell
+     * transactions, that are the gross proceeds before the deduction of taxes
+     * and fees.
+     */
+    public Money getGrossValue()
     {
-        return Money.of(getCurrencyCode(), getLumpSumPrice());
+        return Money.of(getCurrencyCode(), getGrossValueAmount());
     }
 
     /**
-     * Returns the purchase price before fees
+     * Returns the gross price per share. See {@link #getGrossPricePerShare()}.
      */
-    public long getActualPurchasePrice()
+    public long getGrossPricePerShareAmount()
     {
         if (getShares() == 0)
             return 0;
 
-        return getLumpSumPrice() * Values.Share.factor() / getShares();
+        return getGrossValueAmount() * Values.Share.factor() / getShares();
     }
 
-    public Money getPricePerShare()
+    /**
+     * Returns the gross price per share, i.e. the gross value divided by the
+     * number of shares bought or sold.
+     */
+    public Money getGrossPricePerShare()
     {
-        return Money.of(getCurrencyCode(), getActualPurchasePrice());
+        return Money.of(getCurrencyCode(), getGrossPricePerShareAmount());
     }
 }

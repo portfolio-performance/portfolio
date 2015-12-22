@@ -81,7 +81,7 @@ import name.abuchen.portfolio.money.Values;
         return MessageFormat.format(Messages.IssueMissingPortfolioTransfer, //
                         transaction.getType().toString(), //
                         Values.Share.format(transaction.getShares()), //
-                        Values.Amount.format(transaction.getActualPurchasePrice()), //
+                        Values.Amount.format(transaction.getGrossPricePerShareAmount()), //
                         transaction.getSecurity().getName());
     }
 

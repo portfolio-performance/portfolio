@@ -230,11 +230,11 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return t.getShares() != 0 ? Values.Money.format(t.getPricePerShare(), owner.getClient()
+                return t.getShares() != 0 ? Values.Money.format(t.getGrossPricePerShare(), owner.getClient()
                                 .getBaseCurrency()) : null;
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "actualPurchasePrice").attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(PortfolioTransaction.class, "grossPricePerShareAmount").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
@@ -243,11 +243,11 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Money.format(((PortfolioTransaction) element).getLumpSum(), owner.getClient()
+                return Values.Money.format(((PortfolioTransaction) element).getGrossValue(), owner.getClient()
                                 .getBaseCurrency());
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "lumpSumPrice").attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(PortfolioTransaction.class, "grossValueAmount").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
@@ -276,7 +276,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnLumpSumPrice, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnNetValue, SWT.RIGHT, 80);
         column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override

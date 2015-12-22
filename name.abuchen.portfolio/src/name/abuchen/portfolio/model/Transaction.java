@@ -23,7 +23,7 @@ public abstract class Transaction implements Annotated
     {
         public enum Type
         {
-            LUMPSUM, TAX, FEE
+            GROSS_VALUE, TAX, FEE
         }
 
         public Unit(Type type, Money amount)

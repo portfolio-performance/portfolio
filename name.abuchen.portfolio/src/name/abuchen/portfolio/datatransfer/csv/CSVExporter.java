@@ -104,7 +104,7 @@ public class CSVExporter
                 printer.print(t.getCurrencyCode());
 
                 // gross amount
-                Optional<Unit> grossAmount = t.getUnit(Unit.Type.LUMPSUM);
+                Optional<Unit> grossAmount = t.getUnit(Unit.Type.GROSS_VALUE);
                 if (grossAmount.isPresent())
                 {
                     Money forex = grossAmount.get().getForex();

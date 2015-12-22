@@ -210,6 +210,6 @@ import name.abuchen.portfolio.money.Money;
         BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
         Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
 
-        return new Unit(Unit.Type.LUMPSUM, converted, forex, exchangeRate);
+        return new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate);
     }
 }

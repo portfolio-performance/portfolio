@@ -2,6 +2,11 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.time.LocalDate;
 
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -15,10 +20,6 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
-
-import com.ibm.icu.text.MessageFormat;
 
 public class SecurityTransferModel extends AbstractModel
 {
@@ -97,7 +98,7 @@ public class SecurityTransferModel extends AbstractModel
 
     private IStatus calculateStatus()
     {
-        // check whether lump sum is in range
+        // check whether gross value is in range
         long lower = Math.round(shares * (quote - 1) * Values.Amount.factor()
                         / (Values.Share.divider() * Values.Quote.divider()));
         long upper = Math.round(shares * (quote + 1) * Values.Amount.factor()
@@ -151,7 +152,7 @@ public class SecurityTransferModel extends AbstractModel
         this.security = entry.getSourceTransaction().getSecurity();
         this.date = entry.getSourceTransaction().getDate();
         this.shares = entry.getSourceTransaction().getShares();
-        this.quote = entry.getSourceTransaction().getActualPurchasePrice();
+        this.quote = entry.getSourceTransaction().getGrossPricePerShareAmount();
         this.amount = entry.getTargetTransaction().getAmount();
         this.note = entry.getSourceTransaction().getNote();
     }

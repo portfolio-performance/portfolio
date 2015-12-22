@@ -94,7 +94,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(150_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getPricePerShare(), is(Money.of(CurrencyUnit.EUR, 39_24L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Money.of(CurrencyUnit.EUR, 39_24L)));
     }
 
     private Security assertSecondSecurity(Item item)
@@ -120,7 +120,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getPricePerShare(), is(Money.of(CurrencyUnit.EUR, 59_48L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Money.of(CurrencyUnit.EUR, 59_48L)));
     }
 
     private void assertThirdTransaction(Item item)
@@ -136,7 +136,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 100_00L)));
-        assertThat(entry.getPortfolioTransaction().getActualPurchasePrice(), is(59_48L));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShareAmount(), is(59_48L));
     }
 
     @Test

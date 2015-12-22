@@ -837,7 +837,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Money.format(((PortfolioTransaction) t).getPricePerShare(), getClient()
+                    return Values.Money.format(((PortfolioTransaction) t).getGrossPricePerShare(), getClient()
                                     .getBaseCurrency());
                 }
                 else if (t instanceof AccountTransaction)

@@ -5,6 +5,11 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -18,11 +23,6 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
-
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
-
-import com.ibm.icu.text.MessageFormat;
 
 public class AccountTransactionModel extends AbstractModel
 {
@@ -128,7 +128,7 @@ public class AccountTransactionModel extends AbstractModel
         String fxCurrencyCode = getFxCurrencyCode();
         if (!fxCurrencyCode.equals(account.getCurrencyCode()))
         {
-            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.LUMPSUM, //
+            Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
                             Money.of(getAccountCurrencyCode(), amount), //
                             Money.of(getSecurityCurrencyCode(), fxAmount), //
                             getExchangeRate());
@@ -162,7 +162,7 @@ public class AccountTransactionModel extends AbstractModel
         this.shares = transaction.getShares();
         this.amount = transaction.getAmount();
 
-        Optional<Transaction.Unit> forex = transaction.getUnit(Transaction.Unit.Type.LUMPSUM);
+        Optional<Transaction.Unit> forex = transaction.getUnit(Transaction.Unit.Type.GROSS_VALUE);
         if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(getAccountCurrencyCode())
                         && forex.get().getForex().getCurrencyCode().equals(getFxCurrencyCode()))
         {
@@ -187,10 +187,10 @@ public class AccountTransactionModel extends AbstractModel
     /**
      * Check whether calculation works out. The separate validation is needed
      * because the model does prevent negative values in methods
-     * {@link #calcLumpSum(long, long, long)} and
+     * {@link #calcGrossValue(long, long, long)} and
      * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
-     * quote (2 digits currently) and the exchange rate (4 digits), the lump sum
-     * and converted lump sum are checked against a range.
+     * quote (2 digits currently) and the exchange rate (4 digits), the gross
+     * value and converted gross value are checked against a range.
      */
     private IStatus calculateStatus()
     {

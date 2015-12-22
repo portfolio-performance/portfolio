@@ -101,10 +101,10 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             Money forex = Money.of(t.getCurrencyCode(), Math.round(converted.doubleValue()));
 
                             BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
-                            Unit lumpSum = new Unit(Unit.Type.LUMPSUM, amount, forex, inverseRate);
+                            Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, inverseRate);
 
                             t.setMonetaryAmount(amount);
-                            t.addUnit(lumpSum);
+                            t.addUnit(grossValue);
                         })
 
                         .section("wkn", "name", "shares") //

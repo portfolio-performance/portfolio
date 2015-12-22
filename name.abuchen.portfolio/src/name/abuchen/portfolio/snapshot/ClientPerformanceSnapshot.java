@@ -244,12 +244,12 @@ public class ClientPerformanceSnapshot
                 case BUY:
                 case DELIVERY_INBOUND:
                 case TRANSFER_IN:
-                    valuation.get(t.getSecurity()).subtract(t.getLumpSum().with(converter.at(t.getDate())));
+                    valuation.get(t.getSecurity()).subtract(t.getGrossValue().with(converter.at(t.getDate())));
                     break;
                 case SELL:
                 case DELIVERY_OUTBOUND:
                 case TRANSFER_OUT:
-                    valuation.get(t.getSecurity()).add(t.getLumpSum().with(converter.at(t.getDate())));
+                    valuation.get(t.getSecurity()).add(t.getGrossValue().with(converter.at(t.getDate())));
                     break;
                 default:
                     throw new UnsupportedOperationException();

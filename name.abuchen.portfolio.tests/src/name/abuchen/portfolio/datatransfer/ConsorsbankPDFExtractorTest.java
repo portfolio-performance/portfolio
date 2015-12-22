@@ -158,7 +158,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
         assertThat(t.getShares(), is(Values.Share.factorize(300)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 138_55)));
-        assertThat(t.getUnit(Unit.Type.LUMPSUM).get().getForex(), is(Money.of("USD", 153_00)));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 153_00)));
 
         // check tax transaction
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -200,7 +200,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDate(), is(LocalDate.parse("2015-07-02")));
         assertThat(t.getShares(), is(Values.Share.factorize(1.0002)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 62)));
-        assertThat(t.getUnit(Unit.Type.LUMPSUM).get().getForex(), is(Money.of("AUD", 93)));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("AUD", 93)));
 
         // check tax transaction
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -242,7 +242,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDate(), is(LocalDate.parse("2015-06-29")));
         assertThat(t.getShares(), is(Values.Share.factorize(0.27072)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 9)));
-        assertThat(t.getUnit(Unit.Type.LUMPSUM).get().getForex(), is(Money.of("USD", 10)));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 10)));
 
         // check tax transaction
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
