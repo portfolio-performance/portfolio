@@ -100,6 +100,8 @@ public class WelcomePart
         addLink(actions, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
 
         addSectionLabel(boldFont, actions, Messages.IntroLabelHelp);
+        addLink(actions, "https://github.com/buchen/portfolio/wiki", //$NON-NLS-1$
+                        Messages.IntroOpenWIKI, Messages.IntroOpenWIKIText);
         addLink(actions, "http://buchen.github.com/portfolio/new_and_noteworthy.html", //$NON-NLS-1$
                         Messages.IntroReadNews, Messages.IntroReadNewsText);
         addLink(actions, "http://www.wertpapier-forum.de/topic/38306-portfolio-performance-mein-neues-programm/", //$NON-NLS-1$

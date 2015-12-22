@@ -254,6 +254,8 @@ public class Messages extends NLS
     public static String IntroOpenForumText;
     public static String IntroOpenSample;
     public static String IntroOpenSampleText;
+    public static String IntroOpenWIKI;
+    public static String IntroOpenWIKIText;
     public static String IntroReadNews;
     public static String IntroReadNewsText;
     public static String InvestmentPlanIntervalLabel;
