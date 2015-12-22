@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
@@ -42,20 +44,6 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         super(parentShell, isBuySell(type) ? new BuySellModel(client, type) : new SecurityDeliveryModel(client, type));
 
         this.client = client;
-
-        switch (type)
-        {
-            case BUY:
-            case SELL:
-                this.model = new BuySellModel(client, type);
-                break;
-            case DELIVERY_INBOUND:
-            case DELIVERY_OUTBOUND:
-                this.model = new SecurityDeliveryModel(client, type);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 
     private static boolean isBuySell(PortfolioTransaction.Type type)
@@ -102,9 +90,19 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
-        ComboInput account = new ComboInput(editArea, null);
-        account.value.setInput(including(client.getActiveAccounts(), model().getAccount()));
-        account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
+        ComboInput comboInput = new ComboInput(editArea, null);
+        if (model() instanceof BuySellModel)
+        {
+            comboInput.value.setInput(including(client.getActiveAccounts(), ((BuySellModel) model()).getAccount()));
+            comboInput.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
+        }
+        else
+        {
+            List<CurrencyUnit> availableCurrencies = CurrencyUnit.getAvailableCurrencyUnits();
+            Collections.sort(availableCurrencies);
+            comboInput.value.setInput(availableCurrencies);
+            comboInput.bindValue(Properties.transactionCurrency.name(), Messages.MsgMissingAccount);
+        }
 
         // date
 
@@ -133,8 +131,9 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
 
         final Input convertedGrossValue = new Input(editArea, "="); //$NON-NLS-1$
-        convertedGrossValue.bindValue(Properties.convertedGrossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
-        convertedGrossValue.bindCurrency(Properties.accountCurrencyCode.name());
+        convertedGrossValue.bindValue(Properties.convertedGrossValue.name(), Messages.ColumnSubTotal, Values.Amount,
+                        true);
+        convertedGrossValue.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // fees
 
@@ -147,7 +146,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
 
         Input fees = new Input(editArea, sign() + Messages.ColumnFees);
         fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
-        fees.bindCurrency(Properties.accountCurrencyCode.name());
+        fees.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // taxes
 
@@ -160,14 +159,14 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
 
         Input taxes = new Input(editArea, sign() + Messages.ColumnTaxes);
         taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
-        taxes.bindCurrency(Properties.accountCurrencyCode.name());
+        taxes.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // total
 
         String label = getTotalLabel();
         Input total = new Input(editArea, "= " + label); //$NON-NLS-1$
         total.bindValue(Properties.total.name(), label, Values.Amount, true);
-        total.bindCurrency(Properties.accountCurrencyCode.name());
+        total.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // note
 
@@ -186,11 +185,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
-                        .suffix(account.value.getControl()).thenBelow(valueDate).label(lblDate)
+                        .suffix(comboInput.value.getControl()).thenBelow(valueDate).label(lblDate)
                         // shares - quote - gross value
                         .thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(width).thenRight(quote.currency).width(width)
-                        .thenRight(grossValue.label).thenRight(grossValue.value).width(width).thenRight(grossValue.currency);
+                        .thenRight(grossValue.label).thenRight(grossValue.value).width(width)
+                        .thenRight(grossValue.currency);
 
         startingWith(quote.value).thenBelow(exchangeRate.value).width(width).label(exchangeRate.label)
                         .thenRight(exchangeRate.currency).width(width);
@@ -220,7 +220,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
 
         model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> {
             String securityCurrency = model().getSecurityCurrencyCode();
-            String accountCurrency = model().getAccountCurrencyCode();
+            String accountCurrency = model().getTransactionCurrencyCode();
 
             // make exchange rate visible if both are set but different
             boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0

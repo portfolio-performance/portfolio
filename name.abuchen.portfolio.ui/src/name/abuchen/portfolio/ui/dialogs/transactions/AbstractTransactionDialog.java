@@ -18,7 +18,6 @@ import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -150,7 +149,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindCurrency(String property)
         {
-            context.bindValue(ViewerProperties.singleSelection().observe(value),
+            context.bindValue(WidgetProperties.text().observe(currency),
                             BeanProperties.value(property).observe(model));
         }
     }

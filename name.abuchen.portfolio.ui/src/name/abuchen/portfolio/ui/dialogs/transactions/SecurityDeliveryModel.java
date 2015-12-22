@@ -5,11 +5,14 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Messages;
 
 public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 {
     private TransactionPair<PortfolioTransaction> source;
+
+    private CurrencyUnit transactionCurrency;
 
     public SecurityDeliveryModel(Client client, Type type)
     {
@@ -17,6 +20,8 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
         if (!accepts(type))
             throw new IllegalArgumentException();
+
+        this.transactionCurrency = CurrencyUnit.getInstance(client.getBaseCurrency());
     }
 
     @Override
@@ -34,7 +39,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
         this.type = source.getTransaction().getType();
         this.portfolio = (Portfolio) source.getOwner();
-        this.account = portfolio.getReferenceAccount();
+        this.transactionCurrency = CurrencyUnit.getInstance(source.getTransaction().getCurrencyCode());
         fillFromTransaction(source.getTransaction());
     }
 
@@ -67,7 +72,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         PortfolioTransaction transaction = entry.getTransaction();
 
         transaction.setDate(date);
-        transaction.setCurrencyCode(getAccountCurrencyCode());
+        transaction.setCurrencyCode(getTransactionCurrencyCode());
         transaction.setSecurity(security);
         transaction.setShares(shares);
         transaction.setAmount(total);
@@ -75,5 +80,32 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         transaction.setNote(note);
 
         writeToTransaction(transaction);
+    }
+
+    @Override
+    public String getTransactionCurrencyCode()
+    {
+        return transactionCurrency.getCurrencyCode();
+    }
+
+    public void setPortfolio(Portfolio portfolio)
+    {
+        setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));
+        super.setPortfolio(portfolio);
+    }
+
+    public CurrencyUnit getTransactionCurrency()
+    {
+        return transactionCurrency;
+    }
+
+    public void setTransactionCurrency(CurrencyUnit currency)
+    {
+        String oldCurrencyCode = getTransactionCurrencyCode();
+        String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        firePropertyChange(Properties.transactionCurrency.name(), transactionCurrency, transactionCurrency = currency);
+        firePropertyChange(Properties.transactionCurrencyCode.name(), oldCurrencyCode, getTransactionCurrencyCode());
+        firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
+                        getExchangeRateCurrencies());
     }
 }

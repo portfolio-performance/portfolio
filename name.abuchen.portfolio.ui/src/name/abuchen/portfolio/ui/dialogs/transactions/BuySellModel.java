@@ -13,6 +13,8 @@ import name.abuchen.portfolio.ui.Messages;
 {
     private BuySellEntry source;
 
+    protected Account account;
+
     public BuySellModel(Client client, PortfolioTransaction.Type type)
     {
         super(client, type);
@@ -76,4 +78,38 @@ import name.abuchen.portfolio.ui.Messages;
 
         writeToTransaction(entry.getPortfolioTransaction());
     }
+
+    public void setPortfolio(Portfolio portfolio)
+    {
+        setAccount(portfolio.getReferenceAccount());
+        super.setPortfolio(portfolio);
+    }
+
+    public Account getAccount()
+    {
+        return account;
+    }
+
+    public void setAccount(Account account)
+    {
+        String oldAccountCurrency = getTransactionCurrencyCode();
+        String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        firePropertyChange(Properties.account.name(), this.account, this.account = account);
+        firePropertyChange(Properties.transactionCurrencyCode.name(), oldAccountCurrency, getTransactionCurrencyCode());
+        firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
+                        getExchangeRateCurrencies());
+
+        if (getSecurity() != null)
+        {
+            updateSharesAndQuote();
+            updateExchangeRate();
+        }
+    }
+
+    @Override
+    public String getTransactionCurrencyCode()
+    {
+        return account != null ? account.getCurrencyCode() : ""; //$NON-NLS-1$
+    }
+
 }

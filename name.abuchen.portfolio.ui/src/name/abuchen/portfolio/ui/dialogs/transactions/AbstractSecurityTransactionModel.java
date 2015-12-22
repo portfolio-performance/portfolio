@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.IStatus;
 
 import com.ibm.icu.text.MessageFormat;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -33,8 +32,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public enum Properties
     {
         portfolio, security, account, date, shares, quote, grossValue, exchangeRate, convertedGrossValue, //
-        forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, accountCurrencyCode, //
-        securityCurrencyCode, calculationStatus;
+        forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, transactionCurrency, //
+        transactionCurrencyCode, securityCurrencyCode, calculationStatus;
     }
 
     protected final Client client;
@@ -42,7 +41,6 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected Portfolio portfolio;
     protected Security security;
-    protected Account account;
     protected LocalDate date = LocalDate.now();
     protected long shares;
     protected long quote;
@@ -130,30 +128,31 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (fees != 0)
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
-                            Money.of(getAccountCurrencyCode(), fees)));
+                            Money.of(getTransactionCurrencyCode(), fees)));
 
         if (taxes != 0)
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
-                            Money.of(getAccountCurrencyCode(), taxes)));
+                            Money.of(getTransactionCurrencyCode(), taxes)));
 
-        boolean hasForex = !getAccountCurrencyCode().equals(getSecurityCurrencyCode());
+        boolean hasForex = !getTransactionCurrencyCode().equals(getSecurityCurrencyCode());
         if (hasForex)
         {
             if (forexFees != 0)
                 transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
-                                Money.of(getAccountCurrencyCode(), Math.round(forexFees * exchangeRate.doubleValue())), //
+                                Money.of(getTransactionCurrencyCode(),
+                                                Math.round(forexFees * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexFees), //
                                 exchangeRate));
 
             if (forexTaxes != 0)
-                transaction.addUnit(new Transaction.Unit(
-                                Transaction.Unit.Type.TAX, //
-                                Money.of(getAccountCurrencyCode(), Math.round(forexTaxes * exchangeRate.doubleValue())), //
+                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+                                Money.of(getTransactionCurrencyCode(),
+                                                Math.round(forexTaxes * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexTaxes), //
                                 exchangeRate));
 
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
-                            Money.of(getAccountCurrencyCode(), convertedGrossValue), //
+                            Money.of(getTransactionCurrencyCode(), convertedGrossValue), //
                             Money.of(getSecurityCurrencyCode(), grossValue), //
                             exchangeRate));
         }
@@ -209,7 +208,6 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public void setPortfolio(Portfolio portfolio)
     {
         firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio);
-        setAccount(portfolio.getReferenceAccount());
 
         if (security != null)
         {
@@ -236,28 +234,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         updateExchangeRate();
     }
 
-    public Account getAccount()
-    {
-        return account;
-    }
-
-    public void setAccount(Account account)
-    {
-        String oldAccountCurrency = getAccountCurrencyCode();
-        String oldExchangeRateCurrencies = getExchangeRateCurrencies();
-        firePropertyChange(Properties.account.name(), this.account, this.account = account);
-        firePropertyChange(Properties.accountCurrencyCode.name(), oldAccountCurrency, getAccountCurrencyCode());
-        firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
-                        getExchangeRateCurrencies());
-
-        if (security != null)
-        {
-            updateSharesAndQuote();
-            updateExchangeRate();
-        }
-    }
-
-    private void updateSharesAndQuote()
+    protected void updateSharesAndQuote()
     {
         if (type == PortfolioTransaction.Type.SELL || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
         {
@@ -291,16 +268,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         }
     }
 
-    private void updateExchangeRate()
+    protected void updateExchangeRate()
     {
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
+        if (getTransactionCurrencyCode().equals(getSecurityCurrencyCode()))
         {
             setExchangeRate(BigDecimal.ONE);
         }
-        else if (!getAccountCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
+        else if (!getTransactionCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
-                            .getTimeSeries(getSecurityCurrencyCode(), getAccountCurrencyCode());
+                            .getTimeSeries(getSecurityCurrencyCode(), getTransactionCurrencyCode());
 
             if (series != null)
                 setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
@@ -352,8 +329,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
 
-        triggerGrossValue(Math.round(shares * quote * Values.Amount.factor()
-                        / (Values.Share.divider() * Values.Quote.divider())));
+        triggerGrossValue(Math.round(
+                        shares * quote * Values.Amount.factor() / (Values.Share.divider() * Values.Quote.divider())));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -413,8 +390,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (grossValue != 0)
         {
-            BigDecimal newExchangeRate = BigDecimal.valueOf(convertedGrossValue).divide(BigDecimal.valueOf(grossValue), 10,
-                            RoundingMode.HALF_UP);
+            BigDecimal newExchangeRate = BigDecimal.valueOf(convertedGrossValue).divide(BigDecimal.valueOf(grossValue),
+                            10, RoundingMode.HALF_UP);
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
             triggerTotal(calculateTotal()); // forex fees and taxes might change
         }
@@ -529,14 +506,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         return security != null ? security.getCurrencyCode() : ""; //$NON-NLS-1$
     }
 
-    public String getAccountCurrencyCode()
-    {
-        return account != null ? account.getCurrencyCode() : ""; //$NON-NLS-1$
-    }
+    public abstract String getTransactionCurrencyCode();
 
     public String getExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getAccountCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getTransactionCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
     }
 
     public PortfolioTransaction.Type getType()
