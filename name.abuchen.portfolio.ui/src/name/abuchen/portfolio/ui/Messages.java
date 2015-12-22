@@ -310,6 +310,7 @@ public class Messages extends NLS
     public static String LabelLanguageAutomatic;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
+    public static String LabelNamePlusCopy;
     public static String LabelNewClassification;
     public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
@@ -408,6 +409,7 @@ public class Messages extends NLS
     public static String MenuTaxonomyColorCascadeToChildren;
     public static String MenuTaxonomyColorEdit;
     public static String MenuTaxonomyColorRandomPalette;
+    public static String MenuTaxonomyCopy;
     public static String MenuTaxonomyCreate;
     public static String MenuTaxonomyDelete;
     public static String MenuTaxonomyMakeAssignment;

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -17,12 +16,12 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+
+import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
@@ -178,44 +177,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
                         Images.WATCHLIST.descriptor()));
 
-        entry.setContextMenu(new Sidebar.MenuListener()
-        {
-            @Override
-            public void menuAboutToShow(final Entry entry, IMenuManager manager)
-            {
-                manager.add(new Action(Messages.WatchlistRename)
-                {
-                    @Override
-                    public void run()
-                    {
-                        String newName = askWatchlistName(watchlist.getName());
-                        if (newName != null)
-                        {
-                            watchlist.setName(newName);
-                            editor.markDirty();
-                            entry.setLabel(newName);
-                        }
-                    }
-                });
-
-                manager.add(new Action(Messages.WatchlistDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        editor.getClient().getWatchlists().remove(watchlist);
-                        editor.markDirty();
-                        entry.dispose();
-                        allSecurities.select();
-                        scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-                    }
-                });
-
-                manager.add(new Separator());
-
-                setAsStartPage.menuAboutToShow(entry, manager);
-            }
-        });
+        entry.setContextMenu((e,m)-> watchlistContextMenuAboutToShow(watchlist, e, m));
 
         entry.addDropSupport(DND.DROP_MOVE, new Transfer[] { SecurityTransfer.getTransfer() }, new DropTargetAdapter()
         {
@@ -247,6 +209,41 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         });
     }
 
+    private void watchlistContextMenuAboutToShow(Watchlist watchlist, Entry entry, IMenuManager manager)
+    {
+        manager.add(new Action(Messages.WatchlistRename)
+        {
+            @Override
+            public void run()
+            {
+                String newName = askWatchlistName(watchlist.getName());
+                if (newName != null)
+                {
+                    watchlist.setName(newName);
+                    editor.markDirty();
+                    entry.setLabel(newName);
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.WatchlistDelete)
+        {
+            @Override
+            public void run()
+            {
+                editor.getClient().getWatchlists().remove(watchlist);
+                editor.markDirty();
+                entry.dispose();
+                allSecurities.select();
+                scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
+
+        manager.add(new Separator());
+
+        setAsStartPage.menuAboutToShow(entry, manager);
+    }
+
     private String askWatchlistName(String initialValue)
     {
         InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.WatchlistEditDialog,
@@ -272,23 +269,24 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelReports);
 
-        statementOfAssets = new Entry(section, new ActivateViewAction(Messages.LabelStatementOfAssets,
-                        "StatementOfAssets")); //$NON-NLS-1$
+        statementOfAssets = new Entry(section,
+                        new ActivateViewAction(Messages.LabelStatementOfAssets, "StatementOfAssets")); //$NON-NLS-1$
         statementOfAssets.setContextMenu(setAsStartPage);
 
         new Entry(statementOfAssets,
                         new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
+                                        .setContextMenu(setAsStartPage);
         new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
 
-        Entry performance = new Entry(section, new ActivateViewAction(Messages.ClientEditorLabelPerformance,
-                        "Performance")); //$NON-NLS-1$
+        Entry performance = new Entry(section,
+                        new ActivateViewAction(Messages.ClientEditorLabelPerformance, "Performance")); //$NON-NLS-1$
         performance.setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility,
-                        "ReturnsVolatilityChart")).setContextMenu(setAsStartPage); //$NON-NLS-1$
+        new Entry(performance,
+                        new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility, "ReturnsVolatilityChart")) //$NON-NLS-1$
+                                        .setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
     }
@@ -313,45 +311,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
     {
         Entry entry = new Entry(section, taxonomy.getName());
         entry.setAction(new ActivateViewAction(taxonomy.getName(), "taxonomy.Taxonomy", taxonomy, null)); //$NON-NLS-1$
-        entry.setContextMenu(new Sidebar.MenuListener()
-        {
-            @Override
-            public void menuAboutToShow(final Entry entry, IMenuManager manager)
-            {
-                manager.add(new Action(Messages.MenuTaxonomyRename)
-                {
-                    @Override
-                    public void run()
-                    {
-                        String newName = askTaxonomyName(taxonomy.getName());
-                        if (newName != null)
-                        {
-                            taxonomy.setName(newName);
-                            editor.markDirty();
-                            entry.setLabel(newName);
-                        }
-                    }
-                });
-
-                manager.add(new Action(Messages.MenuTaxonomyDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        editor.getClient().removeTaxonomy(taxonomy);
-                        editor.markDirty();
-                        entry.dispose();
-                        statementOfAssets.select();
-                        scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-                    }
-                });
-
-                manager.add(new Separator());
-
-                setAsStartPage.menuAboutToShow(entry, manager);
-            }
-        });
-
+        entry.setContextMenu((e, m) -> taxonomyContextMenuAboutToShow(taxonomy, e, m));
         return entry;
     }
 
@@ -361,29 +321,15 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         {
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    taxonomyMenuAboutToShow(manager);
-                }
-            });
+            menuMgr.addMenuListener(manager -> taxonomyCreateMenuAboutToShow(manager));
             taxonomyMenu = menuMgr.createContextMenu(sidebar.getShell());
 
-            sidebar.addDisposeListener(new DisposeListener()
-            {
-                @Override
-                public void widgetDisposed(DisposeEvent e)
-                {
-                    taxonomyMenu.dispose();
-                }
-            });
+            sidebar.addDisposeListener(e -> taxonomyMenu.dispose());
         }
         taxonomyMenu.setVisible(true);
     }
 
-    private void taxonomyMenuAboutToShow(IMenuManager manager)
+    private void taxonomyCreateMenuAboutToShow(IMenuManager manager)
     {
         manager.add(new Action(Messages.MenuTaxonomyCreate)
         {
@@ -394,7 +340,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                 if (name == null)
                     return;
 
-                Taxonomy taxonomy = new Taxonomy(UUID.randomUUID().toString(), name);
+                Taxonomy taxonomy = new Taxonomy(name);
                 taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
 
                 addAndOpenTaxonomy(taxonomy);
@@ -415,6 +361,56 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                 }
             });
         }
+    }
+
+    private void taxonomyContextMenuAboutToShow(final Taxonomy taxonomy, final Entry entry, IMenuManager manager)
+    {
+        manager.add(new Action(Messages.MenuTaxonomyRename)
+        {
+            @Override
+            public void run()
+            {
+                String newName = askTaxonomyName(taxonomy.getName());
+                if (newName != null)
+                {
+                    taxonomy.setName(newName);
+                    editor.markDirty();
+                    entry.setLabel(newName);
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.MenuTaxonomyCopy)
+        {
+            @Override
+            public void run()
+            {
+                String newName = askTaxonomyName(MessageFormat.format(Messages.LabelNamePlusCopy, taxonomy.getName()));
+                if (newName != null)
+                {
+                    Taxonomy copy = taxonomy.copy();
+                    copy.setName(newName);
+                    addAndOpenTaxonomy(copy);
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.MenuTaxonomyDelete)
+        {
+            @Override
+            public void run()
+            {
+                editor.getClient().removeTaxonomy(taxonomy);
+                editor.markDirty();
+                entry.dispose();
+                statementOfAssets.select();
+                scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
+
+        manager.add(new Separator());
+
+        setAsStartPage.menuAboutToShow(entry, manager);
     }
 
     private void addAndOpenTaxonomy(Taxonomy taxonomy)

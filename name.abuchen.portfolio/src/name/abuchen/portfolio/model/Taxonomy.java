@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import name.abuchen.portfolio.model.Classification.Assignment;
 
@@ -32,7 +33,12 @@ public class Taxonomy
         // needed for xstream de-serialization
     }
 
-    public Taxonomy(String id, String name)
+    public Taxonomy(String name)
+    {
+        this(UUID.randomUUID().toString(), name);
+    }
+
+    /* package */ Taxonomy(String id, String name)
     {
         this.id = id;
         this.name = name;
@@ -148,6 +154,18 @@ public class Taxonomy
     public void foreach(Visitor visitor)
     {
         root.accept(visitor);
+    }
+
+    /**
+     * Returns a full copy of the taxonomy including all assignments but with
+     * newly generated UUIDs.
+     */
+    public Taxonomy copy()
+    {
+        Taxonomy copy = new Taxonomy(this.name);
+        copy.setDimensions(new ArrayList<>(this.dimensions));
+        copy.setRootNode(this.root.copy());
+        return copy;
     }
 
     private Object readResolve()
