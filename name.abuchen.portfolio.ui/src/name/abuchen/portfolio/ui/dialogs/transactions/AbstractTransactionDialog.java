@@ -149,8 +149,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindCurrency(String property)
         {
-            context.bindValue(WidgetProperties.text().observe(currency),
-                            BeanProperties.value(property).observe(model));
+            context.bindValue(WidgetProperties.text().observe(currency), BeanProperties.value(property).observe(model));
         }
     }
 
@@ -160,9 +159,12 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         {
             setMessage(status.getSeverity() == IStatus.OK ? "" : status.getMessage()); //$NON-NLS-1$
 
-            Control button = getButton(IDialogConstants.OK_ID);
-            if (button != null)
-                button.setEnabled(status.getSeverity() == IStatus.OK);
+            for (int buttonId : new int[] { IDialogConstants.OK_ID, SAVE_AND_NEW_ID })
+            {
+                Control button = getButton(buttonId);
+                if (button != null)
+                    button.setEnabled(status.getSeverity() == IStatus.OK);
+            }
         }
 
         public IStatus getStatus()
@@ -171,6 +173,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             return ValidationStatus.ok();
         }
     }
+
+    public static final int SAVE_AND_NEW_ID = 4711;
 
     protected AbstractModel model;
     protected DataBindingContext context = new DataBindingContext();
@@ -225,6 +229,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     }
 
     @Override
+    protected void createButtonsForButtonBar(Composite parent)
+    {
+        createButton(parent, IDialogConstants.OK_ID, Messages.LabelSave, true);
+        createButton(parent, SAVE_AND_NEW_ID, Messages.LabelSaveAndNew, false);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    @Override
     protected Control createDialogArea(Composite parent)
     {
         Composite area = (Composite) super.createDialogArea(parent);
@@ -250,6 +262,21 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     {
         model.applyChanges();
         super.okPressed();
+    }
+
+    @Override
+    protected void buttonPressed(int buttonId)
+    {
+        if (buttonId == SAVE_AND_NEW_ID)
+        {
+            model.applyChanges();
+            model.resetToNewTransaction();
+            getDialogArea().setFocus();
+        }
+        else
+        {
+            super.buttonPressed(buttonId);
+        }
     }
 
     public void setAccount(Account account)

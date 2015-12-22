@@ -136,6 +136,18 @@ public class AccountTransactionModel extends AbstractModel
         }
     }
 
+    @Override
+    public void resetToNewTransaction()
+    {
+        this.sourceAccount = null;
+        this.sourceTransaction = null;
+
+        setShares(0);
+        setFxAmount(0);
+        setAmount(0);
+        setNote(null);
+    }
+
     public boolean supportsShares()
     {
         return type == AccountTransaction.Type.DIVIDENDS;

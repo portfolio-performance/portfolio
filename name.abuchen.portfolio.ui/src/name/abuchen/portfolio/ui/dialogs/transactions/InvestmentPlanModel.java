@@ -72,6 +72,16 @@ public class InvestmentPlanModel extends AbstractModel
         plan.setFees(fees);
     }
 
+    @Override
+    public void resetToNewTransaction()
+    {
+        this.source = null;
+
+        setName(null);
+        setAmount(0);
+        setFees(0);
+    }
+
     public void setSource(InvestmentPlan plan)
     {
         this.source = plan;

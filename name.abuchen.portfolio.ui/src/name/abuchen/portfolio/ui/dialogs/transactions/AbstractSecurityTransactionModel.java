@@ -71,6 +71,20 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public abstract void setSource(Object source);
 
+    @Override
+    public void resetToNewTransaction()
+    {
+        setShares(0);
+        setGrossValue(0);
+        setConvertedGrossValue(0);
+        setTotal(0);
+        setFees(0);
+        setTaxes(0);
+        setForexFees(0);
+        setForexTaxes(0);
+        setNote(null);
+    }
+
     protected void fillFromTransaction(PortfolioTransaction transaction)
     {
         this.security = transaction.getSecurity();

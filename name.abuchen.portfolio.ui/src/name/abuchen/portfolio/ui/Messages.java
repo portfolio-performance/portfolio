@@ -340,6 +340,8 @@ public class Messages extends NLS
     public static String LabelReportingYears;
     public static String LabelReportInterval;
     public static String LabelRiskIndicators;
+    public static String LabelSave;
+    public static String LabelSaveAndNew;
     public static String LabelSearch;
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;

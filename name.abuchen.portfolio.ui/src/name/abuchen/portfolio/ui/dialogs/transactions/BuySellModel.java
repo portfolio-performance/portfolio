@@ -79,6 +79,13 @@ import name.abuchen.portfolio.ui.Messages;
         writeToTransaction(entry.getPortfolioTransaction());
     }
 
+    @Override
+    public void resetToNewTransaction()
+    {
+        this.source = null;
+        super.resetToNewTransaction();
+    }
+
     public void setPortfolio(Portfolio portfolio)
     {
         setAccount(portfolio.getReferenceAccount());

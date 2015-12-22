@@ -3,10 +3,10 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 
 public abstract class AbstractModel
 {
@@ -15,7 +15,15 @@ public abstract class AbstractModel
 
     public abstract String getHeading();
 
+    /**
+     * Creates or updates the underlying transaction.
+     */
     public abstract void applyChanges();
+
+    /**
+     * Resets the model so that a new transaction can be entered.
+     */
+    public abstract void resetToNewTransaction();
 
     public IStatus getCalculationStatus()
     {

@@ -5,6 +5,11 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -15,11 +20,6 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.Messages;
-
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
-
-import com.ibm.icu.text.MessageFormat;
 
 public class AccountTransferModel extends AbstractModel
 {
@@ -119,6 +119,16 @@ public class AccountTransferModel extends AbstractModel
 
             sourceTransaction.addUnit(forex);
         }
+    }
+
+    @Override
+    public void resetToNewTransaction()
+    {
+        this.source = null;
+
+        setFxAmount(0);
+        setAmount(0);
+        setNote(null);
     }
 
     public void setSource(AccountTransferEntry entry)

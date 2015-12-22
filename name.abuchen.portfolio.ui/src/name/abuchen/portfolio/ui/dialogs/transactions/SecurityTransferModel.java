@@ -96,6 +96,16 @@ public class SecurityTransferModel extends AbstractModel
         t.setNote(note);
     }
 
+    @Override
+    public void resetToNewTransaction()
+    {
+        this.source = null;
+
+        setShares(0);
+        setAmount(0);
+        setNote(null);
+    }
+
     private IStatus calculateStatus()
     {
         // check whether gross value is in range

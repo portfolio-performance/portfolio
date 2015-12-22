@@ -83,6 +83,13 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     }
 
     @Override
+    public void resetToNewTransaction()
+    {
+        this.source = null;
+        super.resetToNewTransaction();
+    }
+
+    @Override
     public String getTransactionCurrencyCode()
     {
         return transactionCurrency.getCurrencyCode();
