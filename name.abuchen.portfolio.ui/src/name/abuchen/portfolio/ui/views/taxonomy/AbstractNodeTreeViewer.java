@@ -33,9 +33,11 @@ import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Classification;
@@ -55,6 +57,7 @@ import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -276,7 +279,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
 
-        support = new ShowHideColumnHelper(getClass().getSimpleName() + '#' + getModel().getTaxonomy().getId(),
+        support = new ShowHideColumnHelper(getClass().getSimpleName() + '-' + getModel().getTaxonomy().getId(),
                         getPreferenceStore(), nodeViewer, layout);
 
         addColumns(support);
@@ -348,6 +351,68 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         column.getEditingSupport().addListener(this);
         column.setSorter(null);
         column.setVisible(false);
+        support.addColumn(column);
+
+        addWeightColumn(support);
+    }
+
+    private void addWeightColumn(ShowHideColumnHelper support)
+    {
+        Column column;
+        column = new Column("weight", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnWeight_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() ? Values.Weight.format(node.getWeight()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node)
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node)
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
+            }
+
+        });
+        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TaxonomyNode) element).isUnassignedCategory())
+                    return false;
+                if (((TaxonomyNode) element).isClassification())
+                    return false;
+                return super.canEdit(element);
+            }
+        }.addListener(new ModificationListener()
+        {
+            @Override
+            public void onModified(Object element, Object newValue, Object oldValue)
+            {
+                onWeightModified(element, newValue, oldValue);
+            }
+        }).attachTo(column);
         support.addColumn(column);
     }
 
@@ -446,6 +511,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 }
             }
         });
+        column.setVisible(false);
         support.addColumn(column);
 
         getModel().getClient() //

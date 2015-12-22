@@ -76,6 +76,8 @@ public class Messages extends NLS
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
+    public static String ColumnDesiredAllocation;
+    public static String ColumnDesiredAllocation_Description;
     public static String ColumnDetails;
     public static String ColumnDividendPayment;
     public static String ColumnDividendPaymentCount;
@@ -165,6 +167,7 @@ public class Messages extends NLS
     public static String ColumnValue;
     public static String ColumnVolume;
     public static String ColumnWeight;
+    public static String ColumnWeight_Description;
     public static String ColumnWKN;
     public static String ColumnYear;
     public static String ConfigurationDelete;

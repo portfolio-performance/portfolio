@@ -48,61 +48,9 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     {
         addDimensionColumn(support);
 
-        Column column = new Column("weight", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return node.isUnassignedCategory() ? Messages.LabelNotAvailable
-                                : Values.Weight.format(node.getWeight());
-            }
+        addDesiredAllocationColumn(support);
 
-            @Override
-            public Color getForeground(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND)
-                                : null;
-            }
-
-            @Override
-            public Color getBackground(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return getModel().hasWeightError(node) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND)
-                                : null;
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
-            }
-        });
-        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
-        {
-            @Override
-            public boolean canEdit(Object element)
-            {
-                if (((TaxonomyNode) element).isUnassignedCategory())
-                    return false;
-                return super.canEdit(element);
-            }
-
-        }.addListener(new ModificationListener()
-        {
-            @Override
-            public void onModified(Object element, Object newValue, Object oldValue)
-            {
-                onWeightModified(element, newValue, oldValue);
-            }
-        }).attachTo(column);
-        support.addColumn(column);
-
-        column = new Column("targetvalue", Messages.ColumnTargetValue, SWT.RIGHT, 100); //$NON-NLS-1$
+        Column column = new Column("targetvalue", Messages.ColumnTargetValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -127,8 +75,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (node.getTarget() == null)
                     return null;
 
-                return Values.Percent.format(((double) node.getActual().getAmount() / (double) node.getTarget()
-                                .getAmount()) - 1);
+                return Values.Percent.format(
+                                ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1);
             }
 
             @Override
@@ -137,9 +85,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(
-                                node.getActual().isGreaterOrEqualThan(node.getTarget()) ? SWT.COLOR_DARK_GREEN
-                                                : SWT.COLOR_DARK_RED);
+                return Display.getCurrent().getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
+                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
@@ -162,9 +109,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(
-                                node.getActual().isGreaterOrEqualThan(node.getTarget()) ? SWT.COLOR_DARK_GREEN
-                                                : SWT.COLOR_DARK_RED);
+                return Display.getCurrent().getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
+                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
@@ -229,6 +175,65 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         addAdditionalColumns(support);
     }
 
+    private void addDesiredAllocationColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column("desiredAllocation", Messages.ColumnDesiredAllocation, SWT.RIGHT, 70); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnDesiredAllocation_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isClassification() ? Values.Weight.format(node.getWeight())
+                                : node.isUnassignedCategory() ? Messages.LabelNotAvailable : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isClassification() && getModel().hasWeightError(node)
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isClassification() && getModel().hasWeightError(node)
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isClassification() && getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
+            }
+        });
+        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.isAssignment() || node.isUnassignedCategory())
+                    return false;
+                return super.canEdit(element);
+            }
+
+        }.addListener(new ModificationListener()
+        {
+            @Override
+            public void onModified(Object element, Object newValue, Object oldValue)
+            {
+                onWeightModified(element, newValue, oldValue);
+            }
+        }).attachTo(column);
+        support.addColumn(column);
+    }
+
     @Override
     protected void fillContextMenu(IMenuManager manager)
     {
@@ -265,8 +270,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         else
         {
             classification.setWeight(0);
-            int weight = Math.max(0, Classification.ONE_HUNDRED_PERCENT
-                            - classification.getParent().getChildrenWeight());
+            int weight = Math.max(0,
+                            Classification.ONE_HUNDRED_PERCENT - classification.getParent().getChildrenWeight());
             classification.setWeight(weight);
         }
         onTaxnomyNodeEdited(node);

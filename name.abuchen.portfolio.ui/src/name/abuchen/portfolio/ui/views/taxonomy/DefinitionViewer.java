@@ -7,20 +7,14 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
-import org.eclipse.swt.widgets.Display;
 
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
 
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
@@ -47,62 +41,7 @@ import name.abuchen.portfolio.ui.util.ValueEditingSupport;
     {
         addDimensionColumn(support);
 
-        Column column = new Column("weigth", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() ? Values.Weight.format(node.getWeight()) : null;
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
-            }
-
-            @Override
-            public Color getBackground(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
-            }
-
-        });
-        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
-        {
-            @Override
-            public boolean canEdit(Object element)
-            {
-                if (((TaxonomyNode) element).isUnassignedCategory())
-                    return false;
-                if (((TaxonomyNode) element).isClassification())
-                    return false;
-                return super.canEdit(element);
-            }
-        }.addListener(new ModificationListener()
-        {
-            @Override
-            public void onModified(Object element, Object newValue, Object oldValue)
-            {
-                onWeightModified(element, newValue, oldValue);
-            }
-        }).attachTo(column);
-        support.addColumn(column);
-
-        column = new Column("color", Messages.ColumnColor, SWT.LEFT, 60); //$NON-NLS-1$
+        Column column = new Column("color", Messages.ColumnColor, SWT.LEFT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
