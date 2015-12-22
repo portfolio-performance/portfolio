@@ -1,5 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.wizard.WizardDialog;
+
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -12,12 +18,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.wizard.WizardDialog;
 
 public class SecurityContextMenu
 {
@@ -89,7 +89,7 @@ public class SecurityContextMenu
             }
         });
 
-        if (portfolio != null && owner.getClient().getActivePortfolios().size() > 1)
+        if (owner.getClient().getActivePortfolios().size() > 1)
         {
             manager.add(new Separator());
             new OpenDialogAction(owner, Messages.SecurityMenuTransfer) //
@@ -99,23 +99,20 @@ public class SecurityContextMenu
                             .addTo(manager);
         }
 
-        if (portfolio != null)
-        {
-            manager.add(new Separator());
-            new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
-                            .type(SecurityTransactionDialog.class) //
-                            .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                            .with(portfolio) //
-                            .with(security) //
-                            .addTo(manager);
+        manager.add(new Separator());
+        new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
-            new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
-                            .type(SecurityTransactionDialog.class) //
-                            .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
-                            .with(portfolio) //
-                            .with(security) //
-                            .addTo(manager);
-        }
+        new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
         if (security != null)
         {
