@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -37,6 +39,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private Taxonomy taxonomy;
 
     private Composite container;
+    private List<Action> viewActions = new ArrayList<>();
 
     @Override
     protected String getTitle()
@@ -132,7 +135,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addView(final ToolBar toolBar, String label, Images image, final int index)
     {
-        Action showDefinition = new Action()
+        Action showDefinition = new Action(label, Action.AS_CHECK_BOX)
         {
             @Override
             public void run()
@@ -143,6 +146,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
         new ActionContributionItem(showDefinition).fill(toolBar, -1);
+        viewActions.add(showDefinition);
     }
 
     @Override
@@ -197,6 +201,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             layout.topControl = children[index];
             container.layout();
+
+            for (int ii = 0; ii < viewActions.size(); ii++)
+                viewActions.get(ii).setChecked(index == ii);
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }
