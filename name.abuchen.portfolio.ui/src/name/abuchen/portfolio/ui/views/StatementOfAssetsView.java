@@ -121,7 +121,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 assetViewer.showConfigMenu(toolBar.getShell());
             }
         };
-        config.setImageDescriptor(Images.PLUS.descriptor());
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
         new ActionContributionItem(config).fill(toolBar, -1);
     }
