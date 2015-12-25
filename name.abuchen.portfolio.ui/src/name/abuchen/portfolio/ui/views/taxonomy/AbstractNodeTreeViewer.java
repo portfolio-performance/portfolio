@@ -339,6 +339,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             }
         }.setMandatory(true).addListener(this).attachTo(column);
         column.setRemovable(false);
+        // drag & drop sorting does not work well with auto sorting
+        column.setSorter(null);
         support.addColumn(column);
 
         column = new IsinColumn();
