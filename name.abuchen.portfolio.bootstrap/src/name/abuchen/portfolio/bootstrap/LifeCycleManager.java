@@ -114,6 +114,8 @@ public class LifeCycleManager
                     return false;
 
                 StackTraceElement[] stackTrace = exception.getStackTrace();
+                if (stackTrace == null || stackTrace.length == 0)
+                    return false;
 
                 if (!"org.eclipse.swt.widgets.Control".equals(stackTrace[0].getClassName())) //$NON-NLS-1$
                     return false;
