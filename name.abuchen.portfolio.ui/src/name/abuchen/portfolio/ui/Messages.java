@@ -341,6 +341,7 @@ public class Messages extends NLS
     public static String LabelReportingDialogMonths;
     public static String LabelReportingDialogSince;
     public static String LabelReportingDialogUntil;
+    public static String LabelReportingDialogYear;
     public static String LabelReportingDialogYears;
     public static String LabelReportInterval;
     public static String LabelRiskIndicators;

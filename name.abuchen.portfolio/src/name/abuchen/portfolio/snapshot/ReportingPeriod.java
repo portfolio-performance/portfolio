@@ -26,6 +26,8 @@ public abstract class ReportingPeriod
             return new FromXtoY(code);
         else if (type == SinceX.CODE)
             return new SinceX(code);
+        else if (type == YearX.CODE)
+            return new YearX(code);
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -218,4 +220,31 @@ public abstract class ReportingPeriod
 
     }
 
+    public static class YearX extends ReportingPeriod
+    {
+        private static final char CODE = 'Y';
+
+        /* package */ YearX(String code)
+        {
+            super(LocalDate.of(Integer.parseInt(code.substring(1)) - 1, 12, 31),
+                            LocalDate.of(Integer.parseInt(code.substring(1)), 12, 31));
+        }
+
+        public YearX(int year)
+        {
+            super(LocalDate.of(year - 1, 12, 31), LocalDate.of(year, 12, 31));
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE).append(getEndDate().getYear());
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.valueOf(getEndDate().getYear());
+        }
+    }
 }
