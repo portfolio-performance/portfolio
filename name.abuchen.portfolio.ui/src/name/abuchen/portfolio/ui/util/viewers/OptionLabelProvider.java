@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.viewers;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;

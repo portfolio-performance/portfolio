@@ -1,9 +1,10 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.viewers;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
+import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;

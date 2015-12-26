@@ -9,8 +9,8 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 
 import org.eclipse.swt.SWT;
 

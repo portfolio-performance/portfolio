@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.viewers;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,11 +9,6 @@ import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -37,6 +32,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.Widget;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ConfigurationStore;
+import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
 {
@@ -325,26 +326,16 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     @Override
-    public void menuAboutToShow(IMenuManager manager)
+    public void menuAboutToShow(final IMenuManager manager)
     {
         final Map<Column, List<Object>> visible = new HashMap<Column, List<Object>>();
         for (Widget col : policy.getColumns())
         {
             Column column = (Column) col.getData(Column.class.getName());
             if (column.hasOptions())
-            {
-                List<Object> options = visible.get(column);
-                if (options == null)
-                {
-                    options = new ArrayList<Object>();
-                    visible.put(column, options);
-                }
-                options.add(col.getData(OPTIONS_KEY));
-            }
+                visible.computeIfAbsent(column, k -> new ArrayList<Object>()).add(col.getData(OPTIONS_KEY));
             else
-            {
                 visible.put(column, null);
-            }
         }
 
         Map<String, IMenuManager> groups = new HashMap<String, IMenuManager>();
@@ -356,14 +347,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             // create a sub-menu for each group label
             if (column.getGroupLabel() != null)
             {
-                managerToAdd = groups.get(column.getGroupLabel());
-
-                if (managerToAdd == null)
-                {
-                    managerToAdd = new MenuManager(column.getGroupLabel());
-                    groups.put(column.getGroupLabel(), managerToAdd);
-                    manager.add(managerToAdd);
-                }
+                managerToAdd = groups.computeIfAbsent(column.getGroupLabel(), l -> {
+                    MenuManager m = new MenuManager(l);
+                    manager.add(m);
+                    return m;
+                });
             }
 
             if (column.hasOptions())

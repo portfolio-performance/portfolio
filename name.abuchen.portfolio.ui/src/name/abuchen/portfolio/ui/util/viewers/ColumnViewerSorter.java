@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.viewers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

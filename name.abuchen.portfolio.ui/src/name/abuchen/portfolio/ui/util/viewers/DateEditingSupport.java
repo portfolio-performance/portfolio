@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.util.viewers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

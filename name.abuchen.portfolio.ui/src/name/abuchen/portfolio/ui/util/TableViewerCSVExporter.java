@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.jface.viewers.CellLabelProvider;

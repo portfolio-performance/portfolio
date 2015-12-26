@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.ColorDialog;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
