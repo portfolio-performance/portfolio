@@ -6,6 +6,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
@@ -36,48 +66,19 @@ import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.ToolTip;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 
 public class StatementOfAssetsViewer
 {
@@ -197,9 +198,8 @@ public class StatementOfAssetsViewer
             public boolean canEdit(Object element)
             {
                 boolean isCategory = ((Element) element).isCategory();
-                boolean isUnassignedCategory = isCategory
-                                && Classification.UNASSIGNED_ID.equals(((Element) element).getCategory()
-                                                .getClassification().getId());
+                boolean isUnassignedCategory = isCategory && Classification.UNASSIGNED_ID
+                                .equals(((Element) element).getCategory().getClassification().getId());
 
                 return !isUnassignedCategory ? super.canEdit(element) : false;
             }
@@ -249,8 +249,8 @@ public class StatementOfAssetsViewer
                 if (!element.isSecurity())
                     return null;
 
-                Money money = Money.of(element.getSecurity().getCurrencyCode(), element.getSecurityPosition()
-                                .getPrice().getValue());
+                Money money = Money.of(element.getSecurity().getCurrencyCode(),
+                                element.getSecurityPosition().getPrice().getValue());
                 return Values.Money.format(money, client.getBaseCurrency());
             }
         });
@@ -366,8 +366,8 @@ public class StatementOfAssetsViewer
             {
                 Element element = (Element) e;
                 Money profitLoss = element.getProfitLoss();
-                return Display.getCurrent().getSystemColor(
-                                profitLoss.isNegative() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
+                return Display.getCurrent()
+                                .getSystemColor(profitLoss.isNegative() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
             }
 
             @Override
@@ -384,12 +384,12 @@ public class StatementOfAssetsViewer
         column.setSorter(null);
         support.addColumn(column);
 
-        column = new Column("10", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(Messages.LabelReportingYears, Messages.ColumnIRRPerformanceOption, 1, 2, 3, 4, 5, 10);
-        column.setLabelProvider(new OptionLabelProvider()
+        column = new Column("irr", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption));
+        column.setLabelProvider(new OptionLabelProvider<ReportingPeriod>()
         {
             @Override
-            public String getText(Object e, Integer option)
+            public String getText(Object e, ReportingPeriod option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
@@ -402,7 +402,7 @@ public class StatementOfAssetsViewer
             }
 
             @Override
-            public Color getForeground(Object e, Integer option)
+            public Color getForeground(Object e, ReportingPeriod option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
@@ -422,12 +422,12 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("11", Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(Messages.LabelReportingYears, Messages.ColumnTotalProfitLossOption, 1, 2, 3, 4, 5, 10);
-        column.setLabelProvider(new OptionLabelProvider()
+        column = new Column("profitloss", Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTotalProfitLossOption));
+        column.setLabelProvider(new OptionLabelProvider<ReportingPeriod>()
         {
             @Override
-            public String getText(Object e, Integer option)
+            public String getText(Object e, ReportingPeriod option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
@@ -440,7 +440,7 @@ public class StatementOfAssetsViewer
             }
 
             @Override
-            public Color getForeground(Object e, Integer option)
+            public Color getForeground(Object e, ReportingPeriod option)
             {
                 Element element = (Element) e;
                 if (element.isSecurity())
@@ -739,22 +739,17 @@ public class StatementOfAssetsViewer
             return null;
     }
 
-    private void calculatePerformance(Element element, Integer option)
+    private void calculatePerformance(Element element, ReportingPeriod period)
     {
         // already calculated?
-        if (element.getPerformance(option) != null)
+        if (element.getPerformance(period) != null)
             return;
 
         if (clientSnapshot == null && portfolioSnapshot == null)
             return;
 
-        // start date
-        LocalDate endDate = clientSnapshot != null ? clientSnapshot.getTime() : portfolioSnapshot.getTime();
-        LocalDate startDate = endDate.minusYears(option.intValue()).withDayOfMonth(1).minusDays(1);
-
         SecurityPerformanceSnapshot sps = null;
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);
         if (clientSnapshot != null)
         {
             sps = SecurityPerformanceSnapshot.create(client, clientSnapshot.getCurrencyConverter(), period);
@@ -776,7 +771,7 @@ public class StatementOfAssetsViewer
                 {
                     if (r.getSecurity().equals(e.getSecurity()))
                     {
-                        e.setPerformance(option, r);
+                        e.setPerformance(period, r);
                         break;
                     }
                 }
@@ -799,7 +794,7 @@ public class StatementOfAssetsViewer
         private AssetCategory category;
         private AssetPosition position;
 
-        private transient Map<Integer, SecurityPerformanceRecord> performance = new HashMap<Integer, SecurityPerformanceRecord>();
+        private transient Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
 
         private Element(AssetCategory category)
         {
@@ -816,14 +811,14 @@ public class StatementOfAssetsViewer
             this.groupByTaxonomy = groupByTaxonomy;
         }
 
-        public void setPerformance(Integer year, SecurityPerformanceRecord record)
+        public void setPerformance(ReportingPeriod period, SecurityPerformanceRecord record)
         {
-            performance.put(year, record);
+            performance.put(period, record);
         }
 
-        public SecurityPerformanceRecord getPerformance(Integer year)
+        public SecurityPerformanceRecord getPerformance(ReportingPeriod period)
         {
-            return performance.get(year);
+            return performance.get(period);
         }
 
         public boolean isGroupByTaxonomy()

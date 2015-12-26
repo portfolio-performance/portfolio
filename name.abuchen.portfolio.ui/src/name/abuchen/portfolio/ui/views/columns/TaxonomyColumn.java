@@ -1,8 +1,12 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Classification;
@@ -12,11 +16,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 
-import org.eclipse.swt.SWT;
-
 public class TaxonomyColumn extends Column
 {
-    public static final class TaxonomyLabelProvider extends OptionLabelProvider
+    public static final class TaxonomyLabelProvider extends OptionLabelProvider<Integer>
     {
         private final Taxonomy taxonomy;
 
@@ -71,48 +73,73 @@ public class TaxonomyColumn extends Column
 
     private void prepareOptions(final Taxonomy taxonomy)
     {
-        List<String> labels = taxonomy.getDimensions();
-
-        List<Integer> options = new ArrayList<Integer>();
-
-        StringBuilder menuLabels = new StringBuilder("{0,choice,"); //$NON-NLS-1$
-        StringBuilder columnLabels = new StringBuilder("{0,choice,"); //$NON-NLS-1$
-
-        int heigth = taxonomy.getHeigth();
-        for (int ii = 1; ii < heigth; ii++) // 1 --> skip taxonomy root node
+        setOptions(new Options<Integer>()
         {
-            options.add(ii);
-
-            if (ii > 1)
+            @Override
+            public List<Integer> getElements()
             {
-                menuLabels.append('|');
-                columnLabels.append('|');
+                // 1 --> skip taxonomy root node
+                List<Integer> elements = IntStream.range(1, taxonomy.getHeigth()) //
+                                .boxed().collect(Collectors.toList());
+                elements.add(100); // full classification
+                return elements;
             }
 
-            String label = null;
-            if (labels != null && ii <= labels.size())
-                label = labels.get(ii - 1);
-
-            menuLabels.append(ii).append('#');
-            columnLabels.append(ii).append('#');
-
-            if (label != null)
+            @Override
+            public Integer valueOf(String s)
             {
-                menuLabels.append(label);
-                columnLabels.append(label);
+                return Integer.parseInt(s);
             }
-            else
+
+            @Override
+            public String toString(Integer element)
             {
-                menuLabels.append(MessageFormat.format(Messages.LabelLevelNumber, ii));
-                columnLabels.append(MessageFormat.format(Messages.LabelLevelNameNumber, taxonomy.getName(), ii));
+                return element.toString();
             }
-        }
 
-        options.add(100);
+            @Override
+            public String getColumnLabel(Integer element)
+            {
+                int index = element;
 
-        menuLabels.append("|100#" + Messages.LabelFullClassification + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-        columnLabels.append("|100#").append(taxonomy.getName()).append("}"); //$NON-NLS-1$ //$NON-NLS-2$
+                if (index == 100)
+                    return taxonomy.getName();
 
-        setOptions(menuLabels.toString(), columnLabels.toString(), options.toArray(new Integer[0]));
+                List<String> labels = taxonomy.getDimensions();
+                return labels != null && index < labels.size() ? labels.get(index - 1)
+                                : MessageFormat.format(Messages.LabelLevelNameNumber, taxonomy.getName(), element);
+            }
+
+            @Override
+            public String getMenuLabel(Integer element)
+            {
+                int index = element;
+
+                if (index == 100)
+                    return Messages.LabelFullClassification;
+
+                List<String> labels = taxonomy.getDimensions();
+                return labels != null && index <= labels.size() ? labels.get(index - 1)
+                                : MessageFormat.format(Messages.LabelLevelNumber, element);
+            }
+
+            @Override
+            public String getDescription(Integer element)
+            {
+                return null;
+            }
+
+            @Override
+            public boolean canCreateNewElements()
+            {
+                return false;
+            }
+
+            @Override
+            public Integer createNewElement(Shell shell)
+            {
+                throw new UnsupportedOperationException();
+            }
+        });
     }
 }

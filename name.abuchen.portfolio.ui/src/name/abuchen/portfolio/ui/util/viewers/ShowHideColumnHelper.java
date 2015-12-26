@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
@@ -73,7 +74,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             }
 
             if (column.getEditingSupport() != null)
-                viewerColumn.setEditingSupport(new ColumnEditingSupportWrapper(getViewer(), column.getEditingSupport()));
+                viewerColumn.setEditingSupport(
+                                new ColumnEditingSupportWrapper(getViewer(), column.getEditingSupport()));
         }
 
         void setRedraw(boolean redraw)
@@ -147,12 +149,22 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             TableViewerColumn col = new TableViewerColumn(table, column.getStyle());
 
             TableColumn tableColumn = col.getColumn();
-            tableColumn.setText(column.getText(option));
-            tableColumn.setToolTipText(column.getToolTipText());
             tableColumn.setMoveable(true);
             tableColumn.setWidth(width);
             tableColumn.setData(Column.class.getName(), column);
-            tableColumn.setData(OPTIONS_KEY, option);
+
+            if (option == null)
+            {
+                tableColumn.setText(column.getLabel());
+                tableColumn.setToolTipText(column.getToolTipText());
+            }
+            else
+            {
+                tableColumn.setText(column.getOptions().getColumnLabel(option));
+                String description = column.getOptions().getDescription(option);
+                tableColumn.setToolTipText(description != null ? description : column.getToolTipText());
+                tableColumn.setData(OPTIONS_KEY, option);
+            }
 
             layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
@@ -225,12 +237,22 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             TreeViewerColumn col = new TreeViewerColumn(tree, column.getStyle());
 
             TreeColumn treeColumn = col.getColumn();
-            treeColumn.setText(column.getText(option));
-            treeColumn.setToolTipText(column.getToolTipText());
             treeColumn.setMoveable(true);
             treeColumn.setWidth(width);
             treeColumn.setData(Column.class.getName(), column);
-            treeColumn.setData(OPTIONS_KEY, option);
+
+            if (option == null)
+            {
+                treeColumn.setText(column.getLabel());
+                treeColumn.setToolTipText(column.getToolTipText());
+            }
+            else
+            {
+                treeColumn.setText(column.getOptions().getColumnLabel(option));
+                String description = column.getOptions().getDescription(option);
+                treeColumn.setToolTipText(description != null ? description : column.getToolTipText());
+                treeColumn.setData(OPTIONS_KEY, option);
+            }
 
             layout.setColumnData(treeColumn, new ColumnPixelData(width));
 
@@ -239,7 +261,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
-    private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:(\\d*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
+    private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:([^\\|]*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
     private String identifier;
 
@@ -332,10 +354,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         for (Widget col : policy.getColumns())
         {
             Column column = (Column) col.getData(Column.class.getName());
-            if (column.hasOptions())
-                visible.computeIfAbsent(column, k -> new ArrayList<Object>()).add(col.getData(OPTIONS_KEY));
-            else
-                visible.put(column, null);
+            visible.computeIfAbsent(column, k -> new ArrayList<Object>()).add(col.getData(OPTIONS_KEY));
         }
 
         Map<String, IMenuManager> groups = new HashMap<String, IMenuManager>();
@@ -356,16 +375,28 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             if (column.hasOptions())
             {
-                List<Object> options = visible.get(column);
+                List<Object> options = visible.getOrDefault(column, Collections.emptyList());
 
                 MenuManager subMenu = new MenuManager(column.getMenuLabel());
 
-                for (final Object option : column.getOptions())
+                for (Object option : column.getOptions().getElements())
                 {
-                    boolean isVisible = options != null && options.contains(option);
-                    String label = MessageFormat.format(column.getOptionsMenuLabel(), option);
+                    boolean isVisible = options.contains(option);
+                    String label = column.getOptions().getMenuLabel(option);
                     addShowHideAction(subMenu, column, label, isVisible, option);
+
+                    if (isVisible)
+                        options.remove(option);
                 }
+
+                for (Object option : options)
+                {
+                    String label = column.getOptions().getMenuLabel(option);
+                    addShowHideAction(subMenu, column, label, true, option);
+                }
+
+                if (column.getOptions().canCreateNewElements())
+                    addCreateOptionAction(subMenu, column);
 
                 managerToAdd.add(subMenu);
             }
@@ -385,6 +416,27 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             public void run()
             {
                 doResetColumns();
+            }
+        });
+    }
+
+    private void addCreateOptionAction(MenuManager manager, Column column)
+    {
+        manager.add(new Separator());
+        manager.add(new Action(Messages.MenuCreateColumnConfig)
+        {
+            @Override
+            public void run()
+            {
+                Object option = column.getOptions().createNewElement(Display.getCurrent().getActiveShell());
+                if (option != null)
+                {
+                    policy.create(column, option, column.getDefaultSortDirection(),
+                                    column.getDefaultWidth());
+                    policy.getViewer().refresh(true);
+                    if (store != null)
+                        store.updateActive(serialize());
+                }
             }
         });
     }
@@ -478,8 +530,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 if (column.hasOptions())
                 {
-                    for (Integer option : column.getOptions())
-                        policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
+                    for (Object element : column.getOptions().getElements())
+                        policy.create(column, element, column.getDefaultSortDirection(), column.getDefaultWidth());
                 }
                 else
                 {
@@ -575,35 +627,45 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
             while (tokens.hasMoreTokens())
             {
-                Matcher matcher = CONFIG_PATTERN.matcher(tokens.nextToken());
-                if (!matcher.matches())
-                    continue;
+                try
+                {
+                    Matcher matcher = CONFIG_PATTERN.matcher(tokens.nextToken());
+                    if (!matcher.matches())
+                        continue;
 
-                // index
-                Column col = id2column.get(matcher.group(1));
-                if (col == null)
-                    continue;
+                    // index
+                    Column col = id2column.get(matcher.group(1));
+                    if (col == null)
+                        continue;
 
-                // option
-                String o = matcher.group(2);
-                Integer option = o != null ? Integer.parseInt(o) : null;
+                    // option
+                    Object option = null;
 
-                // direction
-                String d = matcher.group(3);
-                Integer direction = d != null ? Integer.parseInt(d) : null;
+                    if (col.hasOptions())
+                    {
+                        String o = matcher.group(2);
+                        option = col.getOptions().valueOf(o);
+                        if (option == null)
+                            continue;
+                    }
 
-                // width
-                int width = Integer.parseInt(matcher.group(4));
+                    // direction
+                    String d = matcher.group(3);
+                    Integer direction = d != null ? Integer.parseInt(d) : null;
 
-                policy.create(col, option, direction, width);
+                    // width
+                    int width = Integer.parseInt(matcher.group(4));
+
+                    policy.create(col, option, direction, width);
+                }
+                catch (RuntimeException e)
+                {
+                    PortfolioPlugin.log(e);
+                }
             }
 
             for (int ii = 0; ii < count; ii++)
                 policy.getColumn(0).dispose();
-        }
-        catch (NumberFormatException e)
-        {
-            PortfolioPlugin.log(e);
         }
         finally
         {
@@ -623,7 +685,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             for (Column column : columns)
             {
-                if (column.isVisible())
+                // columns w/ options are not created by default
+                if (column.isVisible() && !column.hasOptions())
                     policy.create(column, null, column.getDefaultSortDirection(), column.getDefaultWidth());
             }
 
@@ -652,9 +715,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             Column column = (Column) col.getData(Column.class.getName());
             buf.append(column.getId()).append('=');
 
-            Object option = col.getData(OPTIONS_KEY);
-            if (option != null)
-                buf.append(option).append('|');
+            if (column.hasOptions())
+                buf.append(column.getOptions().toString(col.getData(OPTIONS_KEY))).append('|');
             if (col.equals(sortedColumn))
                 buf.append(policy.getSortDirection()).append('$');
 

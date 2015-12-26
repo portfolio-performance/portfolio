@@ -342,7 +342,6 @@ public class Messages extends NLS
     public static String LabelReportingDialogSince;
     public static String LabelReportingDialogUntil;
     public static String LabelReportingDialogYears;
-    public static String LabelReportingYears;
     public static String LabelReportInterval;
     public static String LabelRiskIndicators;
     public static String LabelSave;
@@ -397,6 +396,7 @@ public class Messages extends NLS
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
     public static String MenuConfigureChart;
+    public static String MenuCreateColumnConfig;
     public static String MenuEditInvestmentPlan;
     public static String MenuEditTransaction;
     public static String MenuExportChartData;

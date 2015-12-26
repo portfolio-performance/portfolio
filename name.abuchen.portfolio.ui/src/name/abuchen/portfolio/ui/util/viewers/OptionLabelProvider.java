@@ -5,14 +5,14 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Table;
 
-public class OptionLabelProvider extends CellLabelProvider
+public class OptionLabelProvider<O> extends CellLabelProvider
 {
-    public String getText(Object element, Integer option)
+    public String getText(Object element, O option)
     {
         return null;
     }
 
-    public Color getForeground(Object element, Integer option)
+    public Color getForeground(Object element, O option)
     {
         return null;
     }
@@ -22,7 +22,8 @@ public class OptionLabelProvider extends CellLabelProvider
     {
         Table table = (Table) cell.getControl();
         int columnIndex = cell.getColumnIndex();
-        Integer option = (Integer) table.getColumn(columnIndex).getData(ShowHideColumnHelper.OPTIONS_KEY);
+        @SuppressWarnings("unchecked")
+        O option = (O) table.getColumn(columnIndex).getData(ShowHideColumnHelper.OPTIONS_KEY);
 
         Object element = cell.getElement();
         cell.setText(getText(element, option));

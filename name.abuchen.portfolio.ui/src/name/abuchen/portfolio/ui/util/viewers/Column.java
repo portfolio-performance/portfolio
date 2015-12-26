@@ -1,11 +1,31 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.text.MessageFormat;
+import java.util.List;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.swt.widgets.Shell;
 
 public class Column
 {
+    public interface Options<E>
+    {
+        List<E> getElements();
+
+        E valueOf(String s);
+
+        String toString(E element);
+
+        String getColumnLabel(E element);
+
+        String getMenuLabel(E element);
+
+        String getDescription(E element);
+
+        boolean canCreateNewElements();
+
+        E createNewElement(Shell shell);
+    }
+
     /**
      * Uniquely identifies a column to store/load a configuration
      */
@@ -20,9 +40,7 @@ public class Column
     private Integer defaultSortDirection;
     private CellLabelProvider labelProvider;
 
-    private String optionsMenuLabel;
-    private String optionsColumnLabel;
-    private Integer[] options;
+    private Options<Object> options;
 
     private String groupLabel;
     private String menuLabel;
@@ -79,11 +97,10 @@ public class Column
         this.labelProvider = labelProvider;
     }
 
-    public void setOptions(String menuPattern, String columnPattern, Integer... options)
+    @SuppressWarnings("unchecked")
+    public void setOptions(Options<?> options)
     {
-        this.optionsMenuLabel = menuPattern;
-        this.optionsColumnLabel = columnPattern;
-        this.options = options;
+        this.options = (Options<Object>) options;
     }
 
     public void setGroupLabel(String groupLabel)
@@ -161,19 +178,9 @@ public class Column
         return options != null;
     }
 
-    /* package */Integer[] getOptions()
+    /* package */Options<Object> getOptions()
     {
         return options;
-    }
-
-    /* package */String getOptionsColumnLabel()
-    {
-        return optionsColumnLabel;
-    }
-
-    /* package */String getOptionsMenuLabel()
-    {
-        return optionsMenuLabel;
     }
 
     /* package */String getGroupLabel()
@@ -184,11 +191,6 @@ public class Column
     public ColumnEditingSupport getEditingSupport()
     {
         return editingSupport;
-    }
-
-    /* package */String getText(Object option)
-    {
-        return option == null ? getLabel() : MessageFormat.format(getOptionsColumnLabel(), option);
     }
 
     /* package */String getToolTipText()

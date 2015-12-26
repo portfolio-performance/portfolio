@@ -64,6 +64,13 @@ public abstract class ReportingPeriod
 
     public abstract void writeTo(StringBuilder buffer);
 
+    public String getCode()
+    {
+        StringBuilder buf = new StringBuilder();
+        writeTo(buf);
+        return buf.toString();
+    }
+
     public static class LastX extends ReportingPeriod
     {
         private static final char CODE = 'L';
