@@ -34,8 +34,14 @@ public abstract class ReportingPeriod
         throw new IOException(code);
     }
 
-    protected LocalDate startDate;
-    protected LocalDate endDate;
+    protected final LocalDate startDate;
+    protected final LocalDate endDate;
+
+    public ReportingPeriod(LocalDate startDate, LocalDate endDate)
+    {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 
     public final LocalDate getStartDate()
     {
@@ -71,6 +77,43 @@ public abstract class ReportingPeriod
         return buf.toString();
     }
 
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+        result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ReportingPeriod other = (ReportingPeriod) obj;
+        if (endDate == null)
+        {
+            if (other.endDate != null)
+                return false;
+        }
+        else if (!endDate.equals(other.endDate))
+            return false;
+        if (startDate == null)
+        {
+            if (other.startDate != null)
+                return false;
+        }
+        else if (!startDate.equals(other.startDate))
+            return false;
+        return true;
+    }
+
     public static class LastX extends ReportingPeriod
     {
         private static final char CODE = 'L';
@@ -78,7 +121,7 @@ public abstract class ReportingPeriod
         private final int years;
         private final int months;
 
-        /* package */LastX(String code)
+        /* package */ LastX(String code)
         {
             this(Integer.parseInt(code.substring(1, code.indexOf('Y'))), //
                             Integer.parseInt(code.substring(code.indexOf('Y') + 1)));
@@ -86,11 +129,10 @@ public abstract class ReportingPeriod
 
         public LastX(int years, int months)
         {
+            super(LocalDate.now().minusYears(years).minusMonths(months), LocalDate.now());
+
             this.years = years;
             this.months = months;
-
-            endDate = LocalDate.now();
-            startDate = endDate.minusYears(years).minusMonths(months);
         }
 
         @Override
@@ -122,17 +164,15 @@ public abstract class ReportingPeriod
     {
         private static final char CODE = 'F';
 
-        /* package */FromXtoY(String code)
+        /* package */ FromXtoY(String code)
         {
-            int u = code.indexOf('_');
-            this.startDate = LocalDate.parse(code.substring(1, u));
-            this.endDate = LocalDate.parse(code.substring(u + 1));
+            super(LocalDate.parse(code.substring(1, code.indexOf('_'))),
+                            LocalDate.parse(code.substring(code.indexOf('_') + 1)));
         }
 
         public FromXtoY(LocalDate startDate, LocalDate endDate)
         {
-            this.startDate = startDate;
-            this.endDate = endDate;
+            super(startDate, endDate);
         }
 
         @Override
@@ -154,16 +194,14 @@ public abstract class ReportingPeriod
     {
         private static final char CODE = 'S';
 
-        /* package */SinceX(String code)
+        /* package */ SinceX(String code)
         {
-            this.startDate = LocalDate.parse(code.substring(1));
-            this.endDate = LocalDate.now();
+            super(LocalDate.parse(code.substring(1)), LocalDate.now());
         }
 
         public SinceX(LocalDate startDate)
         {
-            this.startDate = startDate;
-            this.endDate = LocalDate.now();
+            super(startDate, LocalDate.now());
         }
 
         @Override
