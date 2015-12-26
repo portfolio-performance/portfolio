@@ -14,7 +14,6 @@ public class Column
     private String label;
     private int style;
     private int defaultWidth;
-    private boolean isMoveable = true;
     private boolean isVisible = true;
     private boolean isRemovable = true;
     private ColumnViewerSorter sorter;
@@ -57,11 +56,6 @@ public class Column
     public void setVisible(boolean isVisible)
     {
         this.isVisible = isVisible;
-    }
-
-    public void setMoveable(boolean isMoveable)
-    {
-        this.isMoveable = isMoveable;
     }
 
     public void setRemovable(boolean isRemovable)
@@ -185,11 +179,6 @@ public class Column
     /* package */String getGroupLabel()
     {
         return groupLabel;
-    }
-
-    /* package */boolean isMoveable()
-    {
-        return isMoveable;
     }
 
     public ColumnEditingSupport getEditingSupport()

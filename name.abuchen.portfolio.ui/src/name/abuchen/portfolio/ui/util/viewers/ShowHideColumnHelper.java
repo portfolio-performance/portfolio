@@ -149,7 +149,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             TableColumn tableColumn = col.getColumn();
             tableColumn.setText(column.getText(option));
             tableColumn.setToolTipText(column.getToolTipText());
-            tableColumn.setMoveable(column.isMoveable());
+            tableColumn.setMoveable(true);
             tableColumn.setWidth(width);
             tableColumn.setData(Column.class.getName(), column);
             tableColumn.setData(OPTIONS_KEY, option);
@@ -227,7 +227,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             TreeColumn treeColumn = col.getColumn();
             treeColumn.setText(column.getText(option));
             treeColumn.setToolTipText(column.getToolTipText());
-            treeColumn.setMoveable(column.isMoveable());
+            treeColumn.setMoveable(true);
             treeColumn.setWidth(width);
             treeColumn.setData(Column.class.getName(), column);
             treeColumn.setData(OPTIONS_KEY, option);
