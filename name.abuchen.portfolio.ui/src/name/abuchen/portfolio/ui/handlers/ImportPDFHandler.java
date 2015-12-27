@@ -29,6 +29,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.FlatexPDFExctractor;
 import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
 import name.abuchen.portfolio.datatransfer.INGDiBaExtractor;
+import name.abuchen.portfolio.datatransfer.SBrokerPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -106,6 +107,8 @@ public class ImportPDFHandler
                 return new FlatexPDFExctractor(client);
             case "ingdiba": //$NON-NLS-1$
                 return new INGDiBaExtractor(client);
+            case "sbroker": //$NON-NLS-1$
+                return new SBrokerPDFExtractor(client);
             case "ib": //$NON-NLS-1$
                 return new IBFlexStatementExtractor(client);
             default:
