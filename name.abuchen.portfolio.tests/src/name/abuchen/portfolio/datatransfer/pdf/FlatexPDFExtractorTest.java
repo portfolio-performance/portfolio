@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.pdf;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;

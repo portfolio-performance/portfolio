@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

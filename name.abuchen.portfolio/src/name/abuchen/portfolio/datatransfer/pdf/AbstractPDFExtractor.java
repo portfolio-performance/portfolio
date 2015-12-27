@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;

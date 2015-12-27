@@ -34,7 +34,7 @@ public class IBFlexStatementExtractorTest
     public IBFlexStatementExtractorTest()
     {
         activityStatement = getClass().getResourceAsStream("IBActivityStatement.xml");
-        otherFile = getClass().getResourceAsStream("comdirectGutschrift.txt");
+        otherFile = getClass().getResourceAsStream("pdf/comdirectGutschrift.txt");
     }
 
     @Test

@@ -1,10 +1,10 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 
-import name.abuchen.portfolio.datatransfer.PDFParser.Block;
-import name.abuchen.portfolio.datatransfer.PDFParser.DocumentType;
-import name.abuchen.portfolio.datatransfer.PDFParser.Transaction;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
