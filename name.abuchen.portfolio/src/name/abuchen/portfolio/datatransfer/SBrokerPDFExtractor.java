@@ -10,7 +10,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 public class SBrokerPDFExtractor extends AbstractPDFExtractor
@@ -44,38 +43,36 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
-                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
-                        .section("isin", "name")
-                        //
-                        .find("Gattungsbezeichnung ISIN").match("(?<name>.*) Inhaber-Anteile (?<isin>.*)")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .section("isin", "name") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("(?<name>.*) Inhaber-Anteile (?<isin>.*)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
-                        //
-                        .match("^STK (?<shares>\\d+,\\d+?) .*").assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .section("fee").optional() //
-                        .match(".* Orderentgelt .* (?<fee>[\\d.]+,\\d+)-") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(CurrencyUnit.EUR, asAmount(v.get("fee"))))))
-
-                        .section("fee").optional() //
-                        .match(".* Börsengebühr .* (?<fee>[\\d.]+,\\d+)-") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(CurrencyUnit.EUR, asAmount(v.get("fee"))))))
-
-                        .section("date", "amount") //
+                        .section("date", "amount", "currency") //
                         .find("Wert Konto-Nr. Betrag zu Ihren Lasten")
-                        .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} .+ (?<amount>[\\d.]+,\\d+)") //
+                        .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+
+                        .section("shares") //
+                        .match("^STK (?<shares>\\d+,\\d+?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* Orderentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)-") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* Börsengebühr (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)-") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
@@ -93,38 +90,36 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
-                            entry.setCurrencyCode(CurrencyUnit.EUR);
                             return entry;
                         })
 
-                        .section("isin", "name")
-                        //
-                        .find("Gattungsbezeichnung ISIN").match("(?<name>.*) Inhaber-Anteile (?<isin>.*)")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .section("isin", "name") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("(?<name>.*) Inhaber-Anteile (?<isin>.*)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
-                        //
-                        .match("^STK (?<shares>\\d+,\\d+?) .*").assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .section("fee").optional() //
-                        .match(".* Orderentgelt .* (?<fee>[\\d.]+,\\d+)-") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(CurrencyUnit.EUR, asAmount(v.get("fee"))))))
-
-                        .section("fee").optional() //
-                        .match(".* Börsengebühr .* (?<fee>[\\d.]+,\\d+)-") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(CurrencyUnit.EUR, asAmount(v.get("fee"))))))
-
-                        .section("date", "amount") //
+                        .section("date", "amount", "currency") //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
-                        .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} .+ (?<amount>[\\d.]+,\\d+)") //
+                        .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+
+                        .section("shares") //
+                        .match("^STK (?<shares>\\d+,\\d+?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* Orderentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)-") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* Börsengebühr (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)-") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
@@ -142,27 +137,25 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> {
                             AccountTransaction transaction = new AccountTransaction();
                             transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            transaction.setCurrencyCode(CurrencyUnit.EUR);
                             return transaction;
                         })
 
-                        .section("isin", "name")
-                        //
-                        .find("Gattungsbezeichnung ISIN").match("(?<name>.*) Inhaber-Anteile (?<isin>.*)")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .section("isin", "name") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("(?<name>.*) Inhaber-Anteile (?<isin>.*)") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
-                        //
-                        .match("^STK (?<shares>\\d+,\\d+?) .*").assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .section("shares") //
+                        .match("^STK (?<shares>\\d+,\\d+?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount") //
+                        .section("date", "amount", "currency") //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
-                        .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} .+ (?<amount>[\\d.]+,\\d+)") //
+                        .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(t -> new TransactionItem(t)));

@@ -66,7 +66,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1930.17)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1930_17)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-10-01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 377L)));
@@ -104,7 +104,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(5648.24)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5648_24)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-06-04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(47)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 821L)));
@@ -139,7 +139,7 @@ public class SBrokerPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(t.getAmount(), is(Values.Amount.factorize(12.70)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 12_70)));
         assertThat(t.getDate(), is(LocalDate.parse("2014-11-17")));
         assertThat(t.getShares(), is(Values.Share.factorize(16)));
     }
