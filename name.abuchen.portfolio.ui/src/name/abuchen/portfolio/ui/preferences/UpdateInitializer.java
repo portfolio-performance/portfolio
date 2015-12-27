@@ -16,7 +16,8 @@ public class UpdateInitializer extends AbstractPreferenceInitializer
     {
         IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
         store.setDefault(PortfolioPlugin.Preferences.AUTO_UPDATE, true);
-        store.setDefault(PortfolioPlugin.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio"); //$NON-NLS-1$
+        // FIXME beta update site
+        store.setDefault(PortfolioPlugin.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio-beta"); //$NON-NLS-1$
     }
 
 }
