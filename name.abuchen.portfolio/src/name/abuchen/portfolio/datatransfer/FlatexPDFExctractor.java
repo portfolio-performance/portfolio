@@ -172,11 +172,14 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
-        this.addDocumentTyp(type);
+        DocumentType type1 = new DocumentType("Dividendengutschrift");
+        DocumentType type2 = new DocumentType("Ertragsmitteilung");
+        this.addDocumentTyp(type1);
+        this.addDocumentTyp(type2);
 
-        Block block = new Block("Dividendengutschrift.*");
-        type.addBlock(block);
+        Block block = new Block("Ihre Depotnummer.*");
+        type1.addBlock(block);
+        type2.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
                         //
                         .subject(() -> {
@@ -193,7 +196,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
 
                         .section("shares")
                         //
-                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?)")
+                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount")
@@ -203,7 +206,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
 
                         .section("date")
                         //
-                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+) *")
+                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
