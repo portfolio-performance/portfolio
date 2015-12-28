@@ -222,6 +222,44 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getShares(), is(Values.Share.factorize(360)));
     }
 
+    @Test
+    public void testErtragsgutschrift2() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexErtragsgutschrift2.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE1234567890"));
+        assertThat(security.getWkn(), is("AB1234"));
+        assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2014-01-15")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(55.55)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(99)));
+    }
+
     private String from(String resource)
     {
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))

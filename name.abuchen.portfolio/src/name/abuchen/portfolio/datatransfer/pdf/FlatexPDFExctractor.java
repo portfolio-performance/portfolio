@@ -136,15 +136,13 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
 
         Block block = new Block(" *biw AG *");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
+        block.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        })
 
-                        .section("date")
-                        .match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .section("date").match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
@@ -153,8 +151,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("shares")
-                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\.") //
+                        .section("shares").match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\.") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
@@ -164,15 +161,13 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section("fee", "currency")
-                        .optional()
+                        .section("fee", "currency").optional()
                         //
                         .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
-                        .section("fee", "currency")
-                        .optional()
+                        .section("fee", "currency").optional()
                         //
                         .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
@@ -190,11 +185,14 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
-        this.addDocumentTyp(type);
+        DocumentType type1 = new DocumentType("Dividendengutschrift");
+        DocumentType type2 = new DocumentType("Ertragsmitteilung");
+        this.addDocumentTyp(type1);
+        this.addDocumentTyp(type2);
 
-        Block block = new Block("Dividendengutschrift.*");
-        type.addBlock(block);
+        Block block = new Block("Ihre Depotnummer.*");
+        type1.addBlock(block);
+        type2.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
                         //
                         .subject(() -> {
@@ -209,7 +207,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("shares") //
-                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?)")
+                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
@@ -220,7 +218,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+) *")
+                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
