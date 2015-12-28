@@ -158,7 +158,7 @@ public class Column
         return isRemovable;
     }
 
-    /* package */ColumnViewerSorter getSorter()
+    public ColumnViewerSorter getSorter()
     {
         return sorter;
     }

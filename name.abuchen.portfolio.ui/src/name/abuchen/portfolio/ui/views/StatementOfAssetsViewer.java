@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,8 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.DirectionAwareComparator;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -205,7 +208,7 @@ public class StatementOfAssetsViewer
             }
 
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
-        column.setSorter(null);
+        column.getSorter().wrap(c -> new ElementComparator(c));
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
@@ -286,6 +289,7 @@ public class StatementOfAssetsViewer
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
+        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("6", Messages.ColumnShareInPercent, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -309,6 +313,7 @@ public class StatementOfAssetsViewer
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
+        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
@@ -348,6 +353,8 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(Element.class, "FIFOPurchaseValue") //$NON-NLS-1$
+                        .wrap(c -> new ElementComparator(c)));
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -377,6 +384,7 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(Element.class, "profitLoss").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new NoteColumn();
@@ -788,27 +796,43 @@ public class StatementOfAssetsViewer
             contextMenu.dispose();
     }
 
-    private static class Element implements Adaptable
+    public static class Element implements Adaptable
     {
+        /**
+         * The sortOrder is used to separate asset categories and asset
+         * positions and thereby sort positions only within a category even
+         * though there is a flat list of elements. See
+         * {@link ElementComparator}.
+         */
+        private final int sortOrder;
+
         private GroupByTaxonomy groupByTaxonomy;
         private AssetCategory category;
         private AssetPosition position;
 
         private transient Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
 
-        private Element(AssetCategory category)
+        private Element(AssetCategory category, int sortOrder)
         {
             this.category = category;
+            this.sortOrder = sortOrder;
         }
 
-        private Element(AssetPosition position)
+        private Element(AssetPosition position, int sortOrder)
         {
             this.position = position;
+            this.sortOrder = sortOrder;
         }
 
-        private Element(GroupByTaxonomy groupByTaxonomy)
+        private Element(GroupByTaxonomy groupByTaxonomy, int sortOrder)
         {
             this.groupByTaxonomy = groupByTaxonomy;
+            this.sortOrder = sortOrder;
+        }
+
+        public int getSortOrder()
+        {
+            return sortOrder;
         }
 
         public void setPerformance(ReportingPeriod period, SecurityPerformanceRecord record)
@@ -939,6 +963,29 @@ public class StatementOfAssetsViewer
         }
     }
 
+    public static class ElementComparator implements DirectionAwareComparator
+    {
+        private Comparator<Object> comparator;
+
+        public ElementComparator(Comparator<Object> wrapped)
+        {
+            this.comparator = wrapped;
+        }
+
+        @Override
+        public int compare(int direction, Object o1, Object o2)
+        {
+            int a = ((Element) o1).getSortOrder();
+            int b = ((Element) o2).getSortOrder();
+
+            if (a != b)
+                return a - b;
+
+            int dir = direction == SWT.DOWN ? 1 : -1;
+            return dir * comparator.compare(o1, o2);
+        }
+    }
+
     private static class StatementOfAssetsContentProvider implements IStructuredContentProvider
     {
         private Element[] elements;
@@ -962,14 +1009,21 @@ public class StatementOfAssetsViewer
 
         private Element[] flatten(GroupByTaxonomy categories)
         {
+            // when flattening, assign sortOrder to keep the tree structure for
+            // sorting (only positions within a category are sorted)
+            int sortOrder = 0;
+
             List<Element> answer = new ArrayList<Element>();
             for (AssetCategory cat : categories.asList())
             {
-                answer.add(new Element(cat));
+                answer.add(new Element(cat, sortOrder));
+                sortOrder++;
+
                 for (AssetPosition p : cat.getPositions())
-                    answer.add(new Element(p));
+                    answer.add(new Element(p, sortOrder));
+                sortOrder++;
             }
-            answer.add(new Element(categories));
+            answer.add(new Element(categories, ++sortOrder));
             return answer.toArray(new Element[0]);
         }
 

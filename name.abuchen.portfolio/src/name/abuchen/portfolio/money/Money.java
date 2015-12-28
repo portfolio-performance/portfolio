@@ -2,7 +2,7 @@ package name.abuchen.portfolio.money;
 
 import java.util.Objects;
 
-public final class Money
+public final class Money implements Comparable<Money>
 {
     private final String currencyCode;
     private final long amount;
@@ -104,6 +104,15 @@ public final class Money
         if (amount != other.amount)
             return false;
         return Objects.equals(currencyCode, other.currencyCode);
+    }
+
+    @Override
+    public int compareTo(Money other)
+    {
+        int compare = getCurrencyCode().compareTo(other.getCurrencyCode());
+        if (compare != 0)
+            return compare;
+        return Long.compare(getAmount(), other.getAmount());
     }
 
     @Override

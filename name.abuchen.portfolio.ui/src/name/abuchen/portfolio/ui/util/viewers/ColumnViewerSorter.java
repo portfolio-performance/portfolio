@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import name.abuchen.portfolio.model.Adaptor;
+import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -22,8 +21,21 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.Widget;
 
+import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.money.Money;
+
 public final class ColumnViewerSorter extends ViewerComparator
 {
+    public interface DirectionAwareComparator extends Comparator<Object>
+    {
+        int compare(int order, Object o1, Object o2);
+
+        default int compare(Object o1, Object o2)
+        {
+            return compare(SWT.DOWN, o1, o2);
+        }
+    }
+
     private static class ChainedComparator implements Comparator<Object>
     {
         private final List<Comparator<Object>> comparators;
@@ -94,6 +106,8 @@ public final class ColumnViewerSorter extends ViewerComparator
                 type = 6;
             else if (returnType.isAssignableFrom(Boolean.class) || returnType.isAssignableFrom(boolean.class))
                 type = 7;
+            else if (returnType.isAssignableFrom(Money.class))
+                type = 8;
             else
                 type = 0;
         }
@@ -139,6 +153,8 @@ public final class ColumnViewerSorter extends ViewerComparator
                         return ((Long) attribute1).compareTo((Long) attribute2);
                     case 7:
                         return ((Boolean) attribute1).compareTo((Boolean) attribute2);
+                    case 8:
+                        return ((Money) attribute1).compareTo((Money) attribute2);
                     default:
                         return String.valueOf(attribute1).compareTo(String.valueOf(attribute2));
                 }
@@ -161,7 +177,8 @@ public final class ColumnViewerSorter extends ViewerComparator
         for (String attribute : attributes)
             comparators.add(new BeanComparator(clazz, attribute));
 
-        return new ColumnViewerSorter(comparators.size() == 1 ? comparators.get(0) : new ChainedComparator(comparators));
+        return new ColumnViewerSorter(
+                        comparators.size() == 1 ? comparators.get(0) : new ChainedComparator(comparators));
     }
 
     public static ColumnViewerSorter create(Comparator<Object> comparator)
@@ -169,7 +186,7 @@ public final class ColumnViewerSorter extends ViewerComparator
         return new ColumnViewerSorter(comparator);
     }
 
-    private final Comparator<Object> comparator;
+    private Comparator<Object> comparator;
 
     private ColumnViewer columnViewer;
     private ViewerColumn viewerColumn;
@@ -178,6 +195,12 @@ public final class ColumnViewerSorter extends ViewerComparator
     private ColumnViewerSorter(Comparator<Object> comparator)
     {
         this.comparator = comparator;
+    }
+
+    public ColumnViewerSorter wrap(Function<Comparator<Object>, Comparator<Object>> provider)
+    {
+        this.comparator = provider.apply(this.comparator);
+        return this;
     }
 
     public int compare(Viewer viewer, Object element1, Object element2)
@@ -189,7 +212,10 @@ public final class ColumnViewerSorter extends ViewerComparator
         if (element2 == null)
             return dir * -1;
 
-        return dir * comparator.compare(element1, element2);
+        if (comparator instanceof DirectionAwareComparator)
+            return ((DirectionAwareComparator) comparator).compare(direction, element1, element2);
+        else
+            return dir * comparator.compare(element1, element2);
     }
 
     public void attachTo(Column column)
