@@ -12,12 +12,14 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
+import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
+import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -126,6 +128,21 @@ public class LifeCycleManager
                 return true;
             }
         });
+    }
+
+    @ProcessRemovals
+    public void removeDnDAddon(MApplication app)
+    {
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=394231#c3
+        for (MAddon addon : new ArrayList<MAddon>(app.getAddons()))
+        {
+            String contributionURI = addon.getContributionURI();
+            if (contributionURI.contains("ui.workbench.addons.minmax.MinMaxAddon") //$NON-NLS-1$
+                            || contributionURI.contains("ui.workbench.addons.splitteraddon.SplitterAddon")) //$NON-NLS-1$
+            {
+                app.getAddons().remove(addon);
+            }
+        }
     }
 
     @PreSave
