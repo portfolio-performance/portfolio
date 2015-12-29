@@ -19,6 +19,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         super(client);
 
         addBuyTransaction();
+        addSellTransaction();
         addDividendTransaction();
     }
 
@@ -63,6 +64,68 @@ public class DABPDFExctractor extends AbstractPDFExtractor
 
                         .section("fees", "currency").optional()
                         .match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .wrap(t -> new BuySellEntryItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addSellTransaction()
+    {
+        DocumentType type = new DocumentType("Verkauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Verkauf .*$");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("isin", "name", "currency") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("^(?<name>.*) (?<isin>[^ ]*)$")
+                        .match("STK \\d+(,\\d+)? (?<currency>\\w{3}+) ([\\d.]+,\\d+)$")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .find("Nominal Kurs") //
+                        .match("^STK (?<shares>\\d+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("amount", "currency") //
+                        .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
+                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("date") //
+                        .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("fees", "currency").optional()
+                        .match("^.*Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .section("fees", "currency").optional()
+                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .section("fees", "currency").optional()
+                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .section("fees", "currency").optional()
+                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
 

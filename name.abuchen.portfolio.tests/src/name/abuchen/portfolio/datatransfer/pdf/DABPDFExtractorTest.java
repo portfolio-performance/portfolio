@@ -124,6 +124,47 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABVerkauf.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("LU0392495700"));
+        assertThat(security.getName(), is("ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1994_12)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-12-23")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(43)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, 10_09 + 45_88 + 2_52 + 4_12)));
+    }
+
+    @Test
     public void testDividend() throws IOException
     {
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
