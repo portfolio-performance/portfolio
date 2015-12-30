@@ -42,13 +42,12 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
@@ -142,8 +141,6 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         plans.getTable().setLinesVisible(true);
         plans.setContentProvider(ArrayContentProvider.getInstance());
         plans.setInput(getClient().getPlans());
-
-        ViewerHelper.pack(plans);
 
         plans.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -355,7 +352,5 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
         if (!getClient().getPlans().isEmpty())
             plans.setSelection(new StructuredSelection(plans.getElementAt(0)), true);
-
-        transactions.pack();
     }
 }

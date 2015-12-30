@@ -72,7 +72,6 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
 import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
@@ -375,7 +374,6 @@ public class PerformanceView extends AbstractHistoricView
             calculation.getTree().setRedraw(false);
             calculation.setInput(snapshot);
             calculation.expandAll();
-            ViewerHelper.pack(calculation);
             calculation.getTree().getParent().layout();
         }
         finally
@@ -384,9 +382,7 @@ public class PerformanceView extends AbstractHistoricView
         }
 
         snapshotStart.setInput(snapshot.getStartClientSnapshot());
-        snapshotStart.pack();
         snapshotEnd.setInput(snapshot.getEndClientSnapshot());
-        snapshotEnd.pack();
 
         earnings.setInput(snapshot.getEarnings());
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
@@ -522,8 +518,6 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation.setContentProvider(new PerformanceContentProvider());
 
-        ViewerHelper.pack(calculation);
-
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
@@ -637,8 +631,6 @@ public class PerformanceView extends AbstractHistoricView
 
         earnings.setContentProvider(new SimpleListContentProvider());
 
-        ViewerHelper.pack(earnings);
-
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
@@ -693,8 +685,6 @@ public class PerformanceView extends AbstractHistoricView
         earningsByAccount.getTable().setLinesVisible(true);
 
         earningsByAccount.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(earningsByAccount);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);

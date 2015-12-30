@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -50,8 +51,6 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -255,7 +254,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accounts.setContentProvider(new SimpleListContentProvider());
         resetInput();
         accounts.refresh();
-        ViewerHelper.pack(accounts);
 
         accounts.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -539,8 +537,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
-
-        ViewerHelper.pack(transactions);
     }
 
     private Color colorFor(AccountTransaction t)

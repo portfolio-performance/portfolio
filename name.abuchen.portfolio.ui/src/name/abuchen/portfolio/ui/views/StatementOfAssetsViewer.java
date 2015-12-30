@@ -74,7 +74,6 @@ import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -489,8 +488,6 @@ public class StatementOfAssetsViewer
 
         assets.setContentProvider(new StatementOfAssetsContentProvider());
 
-        ViewerHelper.pack(assets);
-
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(assets));
@@ -648,11 +645,6 @@ public class StatementOfAssetsViewer
             Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getSource() : null;
             new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), portfolio);
         }
-    }
-
-    public void pack()
-    {
-        ViewerHelper.pack(assets);
     }
 
     public TableViewer getTableViewer()

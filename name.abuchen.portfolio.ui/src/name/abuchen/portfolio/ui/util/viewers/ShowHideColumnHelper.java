@@ -422,8 +422,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 Object option = column.getOptions().createNewElement(Display.getCurrent().getActiveShell());
                 if (option != null)
                 {
-                    policy.create(column, option, column.getDefaultSortDirection(),
-                                    column.getDefaultWidth());
+                    policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
                     policy.getViewer().refresh(true);
                     if (store != null)
                         store.updateActive(serialize());
@@ -573,11 +572,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         if (policy.getColumnCount() == 0)
         {
-            for (Column column : columns)
-            {
-                if (column.isVisible())
-                    policy.create(column, null, column.getDefaultSortDirection(), column.getDefaultWidth());
-            }
+            columns.stream().filter(c -> c.isVisible())
+                            .forEach(c -> policy.create(c, null, c.getDefaultSortDirection(), c.getDefaultWidth()));
         }
     }
 

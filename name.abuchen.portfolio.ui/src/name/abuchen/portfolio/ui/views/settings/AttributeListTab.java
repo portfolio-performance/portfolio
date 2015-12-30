@@ -30,10 +30,9 @@ import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.settings.SettingsView.Tab;
 
 public class AttributeListTab implements Tab, ModificationListener
@@ -68,8 +67,6 @@ public class AttributeListTab implements Tab, ModificationListener
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
         tableViewer.setContentProvider(new ArrayContentProvider());
-
-        ViewerHelper.pack(tableViewer);
 
         tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
         tableViewer.refresh();

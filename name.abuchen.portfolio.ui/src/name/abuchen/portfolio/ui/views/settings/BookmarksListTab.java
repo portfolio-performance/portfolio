@@ -28,11 +28,10 @@ import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 
 public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 {
@@ -101,8 +100,6 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         bookmarks.getTable().setLinesVisible(true);
 
         bookmarks.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(bookmarks);
 
         bookmarks.setInput(client.getSettings().getBookmarks());
         bookmarks.refresh();

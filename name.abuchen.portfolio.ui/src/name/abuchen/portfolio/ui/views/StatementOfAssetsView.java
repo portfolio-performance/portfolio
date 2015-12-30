@@ -138,7 +138,6 @@ public class StatementOfAssetsView extends AbstractFinanceView
             }
         });
         notifyModelUpdated();
-        assetViewer.pack();
 
         return assetViewer.getControl();
     }

@@ -32,13 +32,12 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MonthEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 
 public class ConsumerPriceIndexListView extends AbstractListView implements ModificationListener
 {
@@ -181,8 +180,6 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         indices.getTable().setLinesVisible(true);
 
         indices.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(indices);
 
         indices.setInput(getClient().getConsumerPriceIndices());
         indices.refresh();

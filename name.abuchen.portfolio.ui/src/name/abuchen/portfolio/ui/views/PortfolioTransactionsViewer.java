@@ -47,7 +47,6 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
 
 public final class PortfolioTransactionsViewer implements ModificationListener
 {
@@ -130,11 +129,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
     public void markTransactions(List<PortfolioTransaction> transactions)
     {
         marked.addAll(transactions);
-    }
-
-    public void pack()
-    {
-        ViewerHelper.pack(tableViewer);
     }
 
     public void setInput(Portfolio portfolio, List<PortfolioTransaction> transactions)

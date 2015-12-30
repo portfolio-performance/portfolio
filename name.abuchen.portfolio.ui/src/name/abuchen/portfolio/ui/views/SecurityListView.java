@@ -79,14 +79,13 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
@@ -515,8 +514,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         prices.setContentProvider(new SimpleListContentProvider(true));
 
-        ViewerHelper.pack(prices);
-
         hookContextMenu(prices.getTable(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
@@ -921,8 +918,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
 
-        ViewerHelper.pack(transactions);
-
         return container;
     }
 
@@ -980,8 +975,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         events.getTable().setLinesVisible(true);
 
         events.setContentProvider(new SimpleListContentProvider(true));
-
-        ViewerHelper.pack(events);
 
         return container;
     }

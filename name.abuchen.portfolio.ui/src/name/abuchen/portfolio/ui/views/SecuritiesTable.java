@@ -58,7 +58,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -124,7 +123,6 @@ public final class SecuritiesTable implements ModificationListener
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(securities));
 
-        ViewerHelper.pack(securities);
         securities.refresh();
 
         hookContextMenu();

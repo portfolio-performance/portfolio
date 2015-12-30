@@ -37,12 +37,11 @@ import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -230,7 +229,6 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         portfolios.setContentProvider(new SimpleListContentProvider());
         setInput();
-        ViewerHelper.pack(portfolios);
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()
         {
@@ -326,9 +324,6 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         item.setControl(transactions.getControl());
 
         folder.setSelection(0);
-
-        statementOfAssets.pack();
-        transactions.pack();
 
         if (!getClient().getActivePortfolios().isEmpty())
             portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
