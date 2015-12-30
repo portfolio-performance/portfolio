@@ -20,9 +20,9 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
@@ -194,15 +194,14 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             {
                 TaxonomyNode node = (TaxonomyNode) element;
                 return node.isClassification() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isClassification() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+                return node.isClassification() && getModel().hasWeightError(node) ? getWarningColor() : null;
             }
 
             @Override

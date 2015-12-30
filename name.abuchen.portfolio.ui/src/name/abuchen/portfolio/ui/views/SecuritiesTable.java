@@ -13,6 +13,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -50,14 +52,15 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -76,6 +79,8 @@ public final class SecuritiesTable implements ModificationListener
     private TableViewer securities;
 
     private ShowHideColumnHelper support;
+    private LocalResourceManager resources;
+    private Color warningColor;
 
     public SecuritiesTable(Composite parent, AbstractFinanceView view)
     {
@@ -84,6 +89,9 @@ public final class SecuritiesTable implements ModificationListener
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
+
+        this.resources = new LocalResourceManager(JFaceResources.getResources(), container);
+        this.warningColor = resources.createColor(Colors.WARNING.swt());
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION);
 
@@ -248,8 +256,8 @@ public final class SecuritiesTable implements ModificationListener
 
                 LatestSecurityPrice latest = (LatestSecurityPrice) price;
                 return String.format("%,.2f %%", //$NON-NLS-1$
-                                ((double) (latest.getValue() - latest.getPreviousClose()) / (double) latest
-                                                .getPreviousClose()) * 100);
+                                ((double) (latest.getValue() - latest.getPreviousClose())
+                                                / (double) latest.getPreviousClose()) * 100);
             }
 
             @Override
@@ -260,8 +268,9 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 LatestSecurityPrice latest = (LatestSecurityPrice) price;
-                return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
-                                SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                return latest.getValue() >= latest.getPreviousClose()
+                                ? Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN)
+                                : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
             }
         });
         column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
@@ -307,24 +316,13 @@ public final class SecuritiesTable implements ModificationListener
             }
 
             @Override
-            public Color getForeground(Object element)
-            {
-                return getColor(element, SWT.COLOR_INFO_FOREGROUND);
-            }
-
-            @Override
             public Color getBackground(Object element)
-            {
-                return getColor(element, SWT.COLOR_INFO_BACKGROUND);
-            }
-
-            private Color getColor(Object element, int colorId)
             {
                 SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
 
                 LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
                 if (latest != null && latest.getTime().isBefore(sevenDaysAgo))
-                    return Display.getDefault().getSystemColor(colorId);
+                    return warningColor;
                 else
                     return null;
             }
@@ -365,18 +363,7 @@ public final class SecuritiesTable implements ModificationListener
             }
 
             @Override
-            public Color getForeground(Object element)
-            {
-                return getColor(element, SWT.COLOR_INFO_FOREGROUND);
-            }
-
-            @Override
             public Color getBackground(Object element)
-            {
-                return getColor(element, SWT.COLOR_INFO_BACKGROUND);
-            }
-
-            private Color getColor(Object element, int colorId)
             {
                 List<SecurityPrice> prices = ((Security) element).getPrices();
                 if (prices.isEmpty())
@@ -384,7 +371,7 @@ public final class SecuritiesTable implements ModificationListener
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
                 if (latest.getTime().isBefore(LocalDate.now().minusDays(7)))
-                    return Display.getDefault().getSystemColor(colorId);
+                    return warningColor;
                 else
                     return null;
             }
@@ -571,8 +558,8 @@ public final class SecuritiesTable implements ModificationListener
                 {
                     if (!security.getTransactions(getClient()).isEmpty())
                     {
-                        MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
-                                        MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
+                        MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible, MessageFormat
+                                        .format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
                     }
                     else
                     {

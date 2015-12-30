@@ -38,8 +38,10 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -48,17 +50,18 @@ import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 
 public final class PortfolioTransactionsViewer implements ModificationListener
 {
     private class TransactionLabelProvider extends ColumnLabelProvider
     {
+        private Color warningColor = new Color(Display.getDefault(), Colors.WARNING.swt());
+
         @Override
         public Color getForeground(Object element)
         {
             if (marked.contains(element))
-                return Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+                return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
             PortfolioTransaction t = (PortfolioTransaction) element;
 
@@ -71,7 +74,14 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         @Override
         public Color getBackground(Object element)
         {
-            return marked.contains(element) ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+            return marked.contains(element) ? warningColor : null;
+        }
+
+        @Override
+        public void dispose()
+        {
+            warningColor.dispose();
+            super.dispose();
         }
     }
 

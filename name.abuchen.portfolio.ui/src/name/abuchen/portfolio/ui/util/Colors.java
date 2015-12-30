@@ -21,7 +21,10 @@ public enum Colors
     IRR(0, 0, 0), //
 
     HEADINGS(149, 165, 180), // 95A5B4
-    OTHER_CATEGORY(180, 180, 180);
+    OTHER_CATEGORY(180, 180, 180), //
+    INFO_TOOLTIP_BACKGROUND(236, 235, 236),
+
+    WARNING(254, 223, 107);
 
     private final int red;
     private final int green;

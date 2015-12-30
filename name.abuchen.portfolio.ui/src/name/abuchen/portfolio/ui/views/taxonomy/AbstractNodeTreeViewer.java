@@ -52,13 +52,14 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ViewerHelper;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -220,6 +221,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
     private PortfolioPart part;
+    private Color warningColor;
 
     private boolean isFirstView = true;
 
@@ -236,6 +238,11 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     protected final TreeViewer getNodeViewer()
     {
         return nodeViewer;
+    }
+
+    public Color getWarningColor()
+    {
+        return warningColor;
     }
 
     @Override
@@ -273,6 +280,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         Composite container = new Composite(parent, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
+
+        warningColor = new Color(container.getDisplay(), Colors.WARNING.swt());
+        container.addDisposeListener(e -> warningColor.dispose());
 
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION);
 
@@ -377,15 +387,14 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
                 return node.isAssignment() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND) : null;
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND) : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? warningColor : null;
             }
 
             @Override

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,11 +35,15 @@ public final class InfoToolTip extends ToolTip
     protected Composite createToolTipContentArea(Event event, Composite parent)
     {
         Composite result = new Composite(parent, SWT.NONE);
-        result.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        Color background = new Color(result.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
+        result.addDisposeListener(e -> background.dispose());
+
+        result.setBackground(background);
         result.setLayout(new GridLayout());
+
         Text text = new Text(result, SWT.WRAP);
-        text.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        text.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+        text.setBackground(background);
+        text.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
         text.setText(message);
         GridData gridData = new GridData();
         gridData.widthHint = control.getSize().x * 2;

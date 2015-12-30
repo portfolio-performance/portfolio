@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import name.abuchen.portfolio.ui.util.Colors;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -15,6 +13,8 @@ import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
+
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class ScatterChartToolTip extends AbstractChartToolTip
 {
@@ -56,9 +56,11 @@ public class ScatterChartToolTip extends AbstractChartToolTip
         container.setBackgroundMode(SWT.INHERIT_FORCE);
         GridLayoutFactory.swtDefaults().numColumns(3).applyTo(container);
 
-        Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+        Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
         container.setForeground(foregroundColor);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        Color backgroundColor = new Color(container.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
+        container.addDisposeListener(e -> backgroundColor.dispose());
+        container.setBackground(backgroundColor);
 
         IAxis xAxis = getChart().getAxisSet().getXAxis(0);
         IAxis yAxis = getChart().getAxisSet().getYAxis(0);
