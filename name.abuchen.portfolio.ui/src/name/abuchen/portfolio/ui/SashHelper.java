@@ -7,8 +7,6 @@ import java.util.StringJoiner;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -50,14 +48,7 @@ public class SashHelper
             }
         });
 
-        sash.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                save(sash);
-            }
-        });
+        sash.addDisposeListener(e -> save(sash));
 
         applyWeights(sash);
     }

@@ -24,8 +24,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -505,14 +503,9 @@ public final class SecuritiesTable implements ModificationListener
         contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
 
-        securities.getTable().addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (contextMenu != null)
-                    contextMenu.dispose();
-            }
+        securities.getTable().addDisposeListener(e -> {
+            if (contextMenu != null)
+                contextMenu.dispose();
         });
     }
 

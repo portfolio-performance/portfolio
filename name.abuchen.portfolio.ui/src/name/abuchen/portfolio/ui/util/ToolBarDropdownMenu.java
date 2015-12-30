@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -32,14 +30,9 @@ public abstract class ToolBarDropdownMenu<E> extends SelectionAdapter
 
         menu = new Menu(dropdown.getParent().getShell());
 
-        toolBar.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (!menu.isDisposed())
-                    menu.dispose();
-            }
+        toolBar.addDisposeListener(e -> {
+            if (!menu.isDisposed())
+                menu.dispose();
         });
     }
 

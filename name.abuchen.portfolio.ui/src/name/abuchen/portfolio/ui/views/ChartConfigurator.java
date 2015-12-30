@@ -18,8 +18,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -287,14 +285,7 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
         for (DataSeries series : selectedSeries)
             new PaintItem(this, series);
 
-        parent.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                ChartConfigurator.this.widgetDisposed();
-            }
-        });
+        parent.addDisposeListener(e -> ChartConfigurator.this.widgetDisposed());
     }
 
     public void setListener(ChartConfigurator.Listener listener)

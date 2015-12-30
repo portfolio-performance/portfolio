@@ -25,8 +25,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -301,14 +299,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (client != null)
             this.store = new ConfigurationStore(identifier, client, preferences, this);
 
-        this.policy.getViewer().getControl().addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                ShowHideColumnHelper.this.widgetDisposed();
-            }
-        });
+        this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
     }
 
     private void widgetDisposed()

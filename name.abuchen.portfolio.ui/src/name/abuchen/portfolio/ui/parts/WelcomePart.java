@@ -17,8 +17,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -64,14 +62,9 @@ public class WelcomePart
         fD[0].setHeight(fD[0].getHeight() * 2);
         final Font bigFont = new Font(container.getDisplay(), fD[0]);
 
-        container.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                boldFont.dispose();
-                bigFont.dispose();
-            }
+        container.addDisposeListener(e -> {
+            boldFont.dispose();
+            bigFont.dispose();
         });
 
         // first column: logo

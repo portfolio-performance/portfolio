@@ -14,8 +14,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -352,14 +350,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         contextMenu = menuMgr.createContextMenu(parent.getShell());
         tableViewer.getTable().setMenu(contextMenu);
 
-        tableViewer.getTable().addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                PortfolioTransactionsViewer.this.widgetDisposed();
-            }
-        });
+        tableViewer.getTable().addDisposeListener(e -> PortfolioTransactionsViewer.this.widgetDisposed());
     }
 
     private void widgetDisposed()

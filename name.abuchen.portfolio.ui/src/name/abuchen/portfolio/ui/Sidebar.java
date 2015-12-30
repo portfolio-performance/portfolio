@@ -12,14 +12,11 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -227,7 +224,7 @@ public final class Sidebar extends Composite
     private Font boldFont;
     private Font sectionFont;
 
-    private List<Entry> entries = new ArrayList<Entry>();
+    private List<Entry> entries = new ArrayList<>();
 
     private Entry selection = null;
 
@@ -410,21 +407,9 @@ public final class Sidebar extends Composite
             super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
             this.entry = entry;
 
-            addDisposeListener(new DisposeListener()
-            {
-                public void widgetDisposed(DisposeEvent e)
-                {
-                    Item.this.widgetDisposed();
-                }
-            });
+            addDisposeListener(e -> Item.this.widgetDisposed());
 
-            addPaintListener(new PaintListener()
-            {
-                public void paintControl(PaintEvent e)
-                {
-                    Item.this.paintControl(e);
-                }
-            });
+            addPaintListener(e -> Item.this.paintControl(e));
 
             addKeyListener(new KeyListener()
             {

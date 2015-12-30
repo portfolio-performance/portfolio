@@ -1,14 +1,12 @@
 package name.abuchen.portfolio.ui.views;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Sash;
+
+import name.abuchen.portfolio.ui.AbstractFinanceView;
 
 /* package */abstract class AbstractListView extends AbstractFinanceView
 {
@@ -74,20 +72,15 @@ import org.eclipse.swt.widgets.Sash;
 
     private void attachDisposeListener(final SashForm sash)
     {
-        sash.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
+        sash.addDisposeListener(e -> {
+            StringBuilder buf = new StringBuilder();
+            for (Control child : sash.getChildren())
             {
-                StringBuilder buf = new StringBuilder();
-                for (Control child : sash.getChildren())
-                {
-                    if (child instanceof Sash)
-                        continue;
-                    buf.append(child.getBounds().height).append(',');
-                }
-                getPart().getPreferenceStore().putValue(identifier, buf.toString());
+                if (child instanceof Sash)
+                    continue;
+                buf.append(child.getBounds().height).append(',');
             }
+            getPart().getPreferenceStore().putValue(identifier, buf.toString());
         });
     }
 

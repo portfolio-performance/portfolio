@@ -180,42 +180,30 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
                 final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, t, new ArrayList<Exception>());
 
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
+                Display.getDefault().asyncExec(() -> {
+                    if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
+                                    && !tableSampleData.getControl().isDisposed())
                     {
-                        if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
-                                        && !tableSampleData.getControl().isDisposed())
+                        HistoricalQuoteProviderPage.this.currentJob = null;
+                        cacheQuotes.put(exchange, quotes);
+                        if (!tableSampleData.getControl().isDisposed())
                         {
-                            HistoricalQuoteProviderPage.this.currentJob = null;
-                            cacheQuotes.put(exchange, quotes);
-                            if (!tableSampleData.getControl().isDisposed())
-                            {
-                                tableSampleData.setInput(quotes);
-                                tableSampleData.refresh();
-                            }
+                            tableSampleData.setInput(quotes);
+                            tableSampleData.refresh();
                         }
                     }
-
                 });
             }
             catch (Exception e)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
+                Display.getDefault().asyncExec(() -> {
+                    if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
+                                    && !tableSampleData.getControl().isDisposed())
                     {
-                        if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
-                                        && !tableSampleData.getControl().isDisposed())
-                        {
-                            currentJob = null;
-                            tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
-                            tableSampleData.refresh();
-                        }
+                        currentJob = null;
+                        tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
+                        tableSampleData.refresh();
                     }
-
                 });
 
                 PortfolioPlugin.log(e);

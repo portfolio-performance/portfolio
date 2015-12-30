@@ -6,8 +6,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -35,14 +33,7 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
 
         getToolItem().setText(periods.getFirst().toString());
 
-        toolBar.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                part.storeReportingPeriods(periods);
-            }
-        });
+        toolBar.addDisposeListener(e -> part.storeReportingPeriods(periods));
     }
 
     @Override

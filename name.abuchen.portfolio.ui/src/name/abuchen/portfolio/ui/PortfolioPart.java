@@ -421,15 +421,11 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     public void notifyModelUpdated()
     {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-            public void run()
-            {
-                markDirty();
+        Display.getDefault().asyncExec(() -> {
+            markDirty();
 
-                if (view != null && view.getControl() != null && !view.getControl().isDisposed())
-                    view.notifyModelUpdated();
-            }
+            if (view != null && view.getControl() != null && !view.getControl().isDisposed())
+                view.notifyModelUpdated();
         });
     }
 

@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
@@ -69,28 +68,17 @@ public class ConsistencyChecksJob extends AbstractClientJob
         {
             if (reportSuccess)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                                        Messages.MsgNoIssuesFound);
-                    }
-                });
+                Display.getDefault()
+                                .asyncExec(() -> MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+                                                Messages.LabelInfo, Messages.MsgNoIssuesFound));
             }
         }
         else
         {
-            Display.getDefault().asyncExec(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    SelectQuickFixDialog dialog = new SelectQuickFixDialog(Display.getCurrent().getActiveShell(),
-                                    getClient(), issues);
-                    dialog.open();
-                }
+            Display.getDefault().asyncExec(() -> {
+                SelectQuickFixDialog dialog = new SelectQuickFixDialog(Display.getCurrent().getActiveShell(),
+                                getClient(), issues);
+                dialog.open();
             });
 
         }
@@ -146,14 +134,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
         {
             Composite composite = (Composite) super.createDialogArea(parent);
 
-            composite.addDisposeListener(new DisposeListener()
-            {
-                @Override
-                public void widgetDisposed(DisposeEvent e)
-                {
-                    SelectQuickFixDialog.this.widgetDisposed(e);
-                }
-            });
+            composite.addDisposeListener(e -> SelectQuickFixDialog.this.widgetDisposed(e));
 
             Composite tableArea = new Composite(composite, SWT.NONE);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(tableArea);

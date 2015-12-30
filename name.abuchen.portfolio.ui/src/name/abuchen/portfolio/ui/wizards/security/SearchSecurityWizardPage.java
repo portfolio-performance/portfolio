@@ -4,15 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -37,6 +28,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class SearchSecurityWizardPage extends WizardPage
 {
@@ -116,20 +116,16 @@ public class SearchSecurityWizardPage extends WizardPage
             @Override
             public void widgetDefaultSelected(SelectionEvent event)
             {
-                BusyIndicator.showWhile(getContainer().getShell().getDisplay(), new Runnable()
-                {
-                    public void run()
+                BusyIndicator.showWhile(getContainer().getShell().getDisplay(), () -> {
+                    try
                     {
-                        try
-                        {
-                            SecuritySearchProvider provider = Factory.getSearchProvider().get(0);
-                            resultTable.setInput(provider.search(searchBox.getText()));
-                        }
-                        catch (IOException e)
-                        {
-                            setErrorMessage(e.getMessage());
-                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-                        }
+                        SecuritySearchProvider provider = Factory.getSearchProvider().get(0);
+                        resultTable.setInput(provider.search(searchBox.getText()));
+                    }
+                    catch (IOException e)
+                    {
+                        setErrorMessage(e.getMessage());
+                        PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
                     }
                 });
             }

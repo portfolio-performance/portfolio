@@ -3,9 +3,6 @@ package name.abuchen.portfolio.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.util.Colors;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
@@ -19,8 +16,6 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -30,6 +25,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.util.Colors;
+
 public abstract class AbstractFinanceView
 {
     private PortfolioPart part;
@@ -38,7 +36,7 @@ public abstract class AbstractFinanceView
     private Composite top;
     private Label title;
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
-    private List<Menu> contextMenus = new ArrayList<Menu>();
+    private List<Menu> contextMenus = new ArrayList<>();
 
     protected abstract String getTitle();
 
@@ -110,14 +108,7 @@ public abstract class AbstractFinanceView
         Control body = createBody(top);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(body);
 
-        top.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                dispose();
-            }
-        });
+        top.addDisposeListener(e -> dispose());
     }
 
     protected abstract Control createBody(Composite parent);
@@ -127,8 +118,8 @@ public abstract class AbstractFinanceView
         Composite header = new Composite(parent, SWT.NONE);
         header.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
-        Font boldFont = resourceManager.createFont(FontDescriptor.createFrom(
-                        JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
+        Font boldFont = resourceManager.createFont(FontDescriptor
+                        .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
         title = new Label(header, SWT.NONE);
         title.setText(getTitle());

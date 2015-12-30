@@ -6,8 +6,6 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -80,14 +78,9 @@ public class ViewerHelper
         final Menu contextMenu = menuMgr.createContextMenu(viewer.getControl());
         viewer.getControl().setMenu(contextMenu);
 
-        viewer.getControl().addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (!contextMenu.isDisposed())
-                    contextMenu.dispose();
-            }
+        viewer.getControl().addDisposeListener(e -> {
+            if (!contextMenu.isDisposed())
+                contextMenu.dispose();
         });
     }
 }

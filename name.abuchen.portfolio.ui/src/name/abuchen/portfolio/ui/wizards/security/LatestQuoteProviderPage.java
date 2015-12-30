@@ -114,53 +114,38 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
                 feed.updateLatestQuotes(list, new ArrayList<Exception>());
 
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
+                Display.getDefault().asyncExec(() -> {
+                    if (valueLatestPrices == null || valueLatestPrices.isDisposed())
+                        return;
+
+                    if (s.getLatest() != null)
                     {
-                        if (valueLatestPrices == null || valueLatestPrices.isDisposed())
-                            return;
+                        LatestSecurityPrice p = s.getLatest();
 
-                        if (s.getLatest() != null)
-                        {
-                            LatestSecurityPrice p = s.getLatest();
+                        valueLatestPrices.setText(Values.Amount.format(p.getValue()));
+                        valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                        long daysHigh = p.getHigh();
+                        valueDaysHigh.setText(
+                                        daysHigh == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysHigh));
+                        long daysLow = p.getLow();
+                        valueDaysLow.setText(
+                                        daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysLow));
+                        long volume = p.getVolume();
+                        valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
+                        long prevClose = p.getPreviousClose();
+                        valuePreviousClose.setText(
+                                        prevClose == -1 ? Messages.LabelNotAvailable : Values.Amount.format(prevClose));
 
-                            valueLatestPrices.setText(Values.Amount.format(p.getValue()));
-                            valueLatestTrade.setText(Values.Date.format(p.getTime()));
-                            long daysHigh = p.getHigh();
-                            valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable
-                                            : Values.Amount.format(daysHigh));
-                            long daysLow = p.getLow();
-                            valueDaysLow.setText(
-                                            daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysLow));
-                            long volume = p.getVolume();
-                            valueVolume.setText(
-                                            volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
-                            long prevClose = p.getPreviousClose();
-                            valuePreviousClose.setText(prevClose == -1 ? Messages.LabelNotAvailable
-                                            : Values.Amount.format(prevClose));
-
-                        }
-                        else
-                        {
-                            clearSampleQuotes();
-                        }
                     }
-
+                    else
+                    {
+                        clearSampleQuotes();
+                    }
                 });
             }
             catch (Exception e)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        clearSampleQuotes();
-                    }
-
-                });
+                Display.getDefault().asyncExec(() -> clearSampleQuotes());
 
                 PortfolioPlugin.log(e);
             }

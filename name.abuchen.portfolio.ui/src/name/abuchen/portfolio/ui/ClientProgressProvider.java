@@ -68,14 +68,9 @@ public class ClientProgressProvider extends ProgressProvider
 
         private void internalSetText(final String text)
         {
-            sync.asyncExec(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    if (!label.isDisposed())
-                        label.setText(text);
-                }
+            sync.asyncExec(() -> {
+                if (!label.isDisposed())
+                    label.setText(text);
             });
         }
     }

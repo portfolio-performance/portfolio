@@ -16,16 +16,11 @@ public class ProgressMonitor implements IProgressMonitor
     @Override
     public void beginTask(final String name, final int totalWork)
     {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-            @Override
-            public void run()
+        Display.getDefault().asyncExec(() -> {
+            if (!bar.isDisposed())
             {
-                if (!bar.isDisposed())
-                {
-                    bar.setMaximum(totalWork);
-                    bar.setToolTipText(name);
-                }
+                bar.setMaximum(totalWork);
+                bar.setToolTipText(name);
             }
         });
     }
@@ -33,14 +28,9 @@ public class ProgressMonitor implements IProgressMonitor
     @Override
     public void worked(final int work)
     {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (!bar.isDisposed())
-                    bar.setSelection(bar.getSelection() + work);
-            }
+        Display.getDefault().asyncExec(() -> {
+            if (!bar.isDisposed())
+                bar.setSelection(bar.getSelection() + work);
         });
     }
 

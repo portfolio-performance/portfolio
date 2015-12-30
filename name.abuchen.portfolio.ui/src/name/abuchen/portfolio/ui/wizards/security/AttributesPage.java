@@ -15,8 +15,6 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -132,14 +130,9 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(addButton);
 
-        parent.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (menu != null && !menu.isDisposed())
-                    menu.dispose();
-            }
+        parent.addDisposeListener(e -> {
+            if (menu != null && !menu.isDisposed())
+                menu.dispose();
         });
     }
 

@@ -42,7 +42,7 @@ public class UpdateHelper
     {
         this.workbench = workbench;
         this.partService = partService;
-        this.agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        this.agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
 
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
 
@@ -62,17 +62,13 @@ public class UpdateHelper
         if (newVersion != null)
         {
             final boolean[] doUpdate = new boolean[1];
-            Display.getDefault().syncExec(new Runnable()
-            {
-                public void run()
-                {
-                    Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
-                                    Messages.LabelUpdatesAvailable, //
-                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
-                                    newVersion);
+            Display.getDefault().syncExec(() -> {
+                Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
+                                Messages.LabelUpdatesAvailable, //
+                                MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
+                                newVersion);
 
-                    doUpdate[0] = dialog.open() == 0;
-                }
+                doUpdate[0] = dialog.open() == 0;
             });
 
             if (doUpdate[0])
@@ -85,37 +81,28 @@ public class UpdateHelper
         {
             if (!silent)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                        Messages.MsgNoUpdatesAvailable);
-                    }
-                });
+                Display.getDefault()
+                                .asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                                                Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
             }
         }
     }
 
     private void promptForRestart()
     {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-            public void run()
+        Display.getDefault().asyncExec(() -> {
+            MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo, null,
+                            Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
+                            new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
+
+            int returnCode = dialog.open();
+
+            if (returnCode == 0)
             {
-                MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                null, Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
-                                new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
+                boolean successful = partService.saveAll(true);
 
-                int returnCode = dialog.open();
-
-                if (returnCode == 0)
-                {
-                    boolean successful = partService.saveAll(true);
-
-                    if (successful)
-                        workbench.restart();
-                }
+                if (successful)
+                    workbench.restart();
             }
         });
     }
