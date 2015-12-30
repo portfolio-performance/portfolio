@@ -65,6 +65,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
@@ -168,6 +169,8 @@ public class StatementOfAssetsViewer
                 return element.isSecurity() ? Values.Share.format(element.getSecurityPosition().getShares()) : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getShares() : null)));
         support.addColumn(column);
 
         column = new NameColumn("1"); //$NON-NLS-1$
@@ -221,6 +224,8 @@ public class StatementOfAssetsViewer
                 return element.isSecurity() ? element.getSecurity().getTickerSymbol() : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurity().getTickerSymbol() : null)));
         support.addColumn(column);
 
         column = new Column("12", Messages.ColumnWKN, SWT.None, 60); //$NON-NLS-1$
@@ -233,12 +238,14 @@ public class StatementOfAssetsViewer
                 return element.isSecurity() ? element.getSecurity().getWkn() : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurity().getWkn() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new IsinColumn("3"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setSorter(null);
+        column.getSorter().wrap(c -> new ElementComparator(c));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -257,6 +264,14 @@ public class StatementOfAssetsViewer
                 return Values.Money.format(money, client.getBaseCurrency());
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> {
+            Element element = (Element) e;
+            if (!element.isSecurity())
+                return null;
+
+            return Money.of(element.getSecurity().getCurrencyCode(),
+                            element.getSecurityPosition().getPrice().getValue());
+        })));
         support.addColumn(column);
 
         column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
@@ -270,6 +285,8 @@ public class StatementOfAssetsViewer
                                 : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isSecurity()
+                        ? ((Element) e).getSecurityPosition().getPrice().getTime() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -332,6 +349,8 @@ public class StatementOfAssetsViewer
                 return null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isSecurity()
+                        ? ((Element) e).getSecurityPosition().getFIFOPurchasePrice() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -389,7 +408,7 @@ public class StatementOfAssetsViewer
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setSorter(null);
+        column.getSorter().wrap(c -> new ElementComparator(c));
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -497,7 +516,8 @@ public class StatementOfAssetsViewer
                         .forEach(attribute -> {
                             Column column = new AttributeColumn(attribute);
                             column.setVisible(false);
-                            column.setSorter(null);
+                            if (column.getSorter() != null)
+                                column.getSorter().wrap(c -> new ElementComparator(c));
                             column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
                             support.addColumn(column);
                         });
@@ -509,7 +529,8 @@ public class StatementOfAssetsViewer
         {
             Column column = new TaxonomyColumn(taxonomy);
             column.setVisible(false);
-            column.setSorter(null);
+            if (column.getSorter() != null)
+                column.getSorter().wrap(c -> new ElementComparator(c));
             support.addColumn(column);
         }
     }
@@ -530,6 +551,8 @@ public class StatementOfAssetsViewer
                 return element.getPosition().getInvestmentVehicle().getCurrencyCode();
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getInvestmentVehicle().getCurrencyCode() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -569,6 +592,8 @@ public class StatementOfAssetsViewer
                                 client.getBaseCurrency());
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getPosition().calculateValue() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -589,6 +614,8 @@ public class StatementOfAssetsViewer
                                 client.getBaseCurrency());
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getPosition().getFIFOPurchaseValue() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -609,6 +636,8 @@ public class StatementOfAssetsViewer
                                 client.getBaseCurrency());
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getPosition().getProfitLoss() : null)));
         column.setVisible(false);
         support.addColumn(column);
     }

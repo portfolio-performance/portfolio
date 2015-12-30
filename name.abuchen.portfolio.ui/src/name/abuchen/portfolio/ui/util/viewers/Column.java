@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -84,6 +85,11 @@ public class Column
     public void setSorter(ColumnViewerSorter sorter)
     {
         this.sorter = sorter;
+    }
+
+    public void setComparator(Comparator<Object> comparator)
+    {
+        this.sorter = ColumnViewerSorter.create(comparator);
     }
 
     public void setSorter(ColumnViewerSorter sorter, int direction)
