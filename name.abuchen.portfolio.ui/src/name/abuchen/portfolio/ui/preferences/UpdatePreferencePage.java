@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.preferences;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 
 public class UpdatePreferencePage extends FieldEditorPreferencePage
 {
@@ -20,9 +20,9 @@ public class UpdatePreferencePage extends FieldEditorPreferencePage
 
     public void createFieldEditors()
     {
-        addField(new StringFieldEditor(PortfolioPlugin.Preferences.UPDATE_SITE, //
+        addField(new StringFieldEditor(UIConstants.Preferences.UPDATE_SITE, //
                         Messages.PrefUpdateSite, getFieldEditorParent()));
-        addField(new BooleanFieldEditor(PortfolioPlugin.Preferences.AUTO_UPDATE, //
+        addField(new BooleanFieldEditor(UIConstants.Preferences.AUTO_UPDATE, //
                         Messages.PrefCheckOnStartup, getFieldEditorParent()));
     }
 }

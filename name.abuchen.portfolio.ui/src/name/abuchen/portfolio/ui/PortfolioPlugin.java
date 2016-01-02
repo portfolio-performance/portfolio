@@ -25,12 +25,6 @@ import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
 
 public class PortfolioPlugin implements BundleActivator
 {
-    public interface Preferences
-    {
-        String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
-        String AUTO_UPDATE = "AUTO_UPDATE"; //$NON-NLS-1$
-    }
-
     public static final String PLUGIN_ID = "name.abuchen.portfolio.ui"; //$NON-NLS-1$
 
     private static PortfolioPlugin instance;

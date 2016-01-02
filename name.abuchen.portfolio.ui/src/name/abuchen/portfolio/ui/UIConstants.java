@@ -41,4 +41,10 @@ public interface UIConstants
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
     }
+
+    interface Preferences
+    {
+        String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
+        String AUTO_UPDATE = "AUTO_UPDATE"; //$NON-NLS-1$
+    }
 }

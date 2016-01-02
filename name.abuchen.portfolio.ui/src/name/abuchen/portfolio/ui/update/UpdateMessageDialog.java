@@ -24,6 +24,7 @@ import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.update.NewVersion.ConditionalMessage;
 import name.abuchen.portfolio.ui.update.NewVersion.Release;
 
@@ -50,14 +51,14 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
 
         checkOnUpdate = new Button(container, SWT.CHECK);
         checkOnUpdate.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
-                        .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE));
+                        .getBoolean(UIConstants.Preferences.AUTO_UPDATE));
         checkOnUpdate.setText(Messages.PrefCheckOnStartup);
         checkOnUpdate.addSelectionListener(new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                PortfolioPlugin.getDefault().getPreferenceStore().setValue(PortfolioPlugin.Preferences.AUTO_UPDATE,
+                PortfolioPlugin.getDefault().getPreferenceStore().setValue(UIConstants.Preferences.AUTO_UPDATE,
                                 checkOnUpdate.getSelection());
             }
         });

@@ -29,6 +29,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
@@ -52,7 +53,7 @@ public class StartupAddon
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event,
                     final IWorkbench workbench, final EPartService partService,
-                    @Preference(value = PortfolioPlugin.Preferences.AUTO_UPDATE) boolean autoUpdate)
+                    @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
         if (autoUpdate)
         {

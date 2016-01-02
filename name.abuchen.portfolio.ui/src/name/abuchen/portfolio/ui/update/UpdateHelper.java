@@ -28,6 +28,7 @@ import org.osgi.framework.ServiceReference;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 
 public class UpdateHelper
 {
@@ -154,7 +155,7 @@ public class UpdateHelper
         try
         {
             String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
-                            .getString(PortfolioPlugin.Preferences.UPDATE_SITE);
+                            .getString(UIConstants.Preferences.UPDATE_SITE);
             URI uri = new URI(updateSite);
 
             operation.getProvisioningContext().setArtifactRepositories(new URI[] { uri });
