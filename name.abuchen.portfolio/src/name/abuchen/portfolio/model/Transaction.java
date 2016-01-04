@@ -16,6 +16,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Values;
 
 public abstract class Transaction implements Annotated
 {
@@ -28,15 +29,29 @@ public abstract class Transaction implements Annotated
 
         public Unit(Type type, Money amount)
         {
-            this(type, amount, null, null);
+            this.type = Objects.requireNonNull(type);
+            this.amount = Objects.requireNonNull(amount);
+            this.forex = null;
+            this.exchangeRate = null;
         }
 
         public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
         {
-            this.type = type;
-            this.amount = amount;
-            this.forex = forex;
-            this.exchangeRate = exchangeRate;
+            this.type = Objects.requireNonNull(type);
+            this.amount = Objects.requireNonNull(amount);
+            this.forex = Objects.requireNonNull(forex);
+            this.exchangeRate = Objects.requireNonNull(exchangeRate);
+
+            // check whether given amount is in range of converted amount
+            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.0001))
+                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.0001))
+                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+
+            if (amount.getAmount() < lower || amount.getAmount() > upper)
+                throw new IllegalArgumentException(
+                                MessageFormat.format(Messages.MsgErrorIllegalForexUnit, type.toString(),
+                                                Values.Money.format(forex), exchangeRate, Values.Money.format(amount)));
         }
 
         /**

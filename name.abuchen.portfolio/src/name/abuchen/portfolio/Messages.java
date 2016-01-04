@@ -130,6 +130,7 @@ public class Messages extends NLS
     public static String MsgErrorDuplicateTicker;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
+    public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorMissingValueMatches;
     public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorsConvertingValue;
