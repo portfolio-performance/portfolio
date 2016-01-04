@@ -2,11 +2,13 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 
 public abstract class AbstractModel
 {
@@ -63,5 +65,21 @@ public abstract class AbstractModel
     public ExchangeRateProviderFactory getExchangeRateProviderFactory()
     {
         return factory;
+    }
+
+    /**
+     * Creates a tool tip text that includes exchange rate plus inverse exchange
+     * rate for informational purposes.
+     */
+    /* package */ static String createCurrencyToolTip(BigDecimal exchangeRate, String term, String base)
+    {
+        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+
+        StringBuilder tooltip = new StringBuilder();
+        tooltip.append(Values.ExchangeRate.format(exchangeRate)) //
+                        .append(" ").append(term).append("/").append(base).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tooltip.append(Values.ExchangeRate.format(inverseRate)) //
+                        .append(" ").append(base).append("/").append(term); //$NON-NLS-1$ //$NON-NLS-2$
+        return tooltip.toString();
     }
 }

@@ -124,6 +124,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
         exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
 
+        model().addPropertyChangeListener(Properties.exchangeRate.name(),
+                        e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
+                                        model().getExchangeRate(), model().getAccountCurrencyCode(),
+                                        model().getSecurityCurrencyCode())));
+
         Input amount = new Input(editArea, "="); //$NON-NLS-1$
         amount.bindValue(Properties.amount.name(), totalLabel, Values.Amount, true);
         amount.bindCurrency(Properties.accountCurrencyCode.name());

@@ -52,8 +52,8 @@ public class AccountTransferDialog extends AbstractTransactionDialog
             Object from = source.getValue();
             Object to = target.getValue();
 
-            return from != null && to != null && from != to ? ValidationStatus.ok() : ValidationStatus
-                            .error(Messages.MsgAccountMustBeDifferent);
+            return from != null && to != null && from != to ? ValidationStatus.ok()
+                            : ValidationStatus.error(Messages.MsgAccountMustBeDifferent);
         }
     }
 
@@ -114,6 +114,11 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         Input exchangeRate = new Input(editArea, "x "); //$NON-NLS-1$
         exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
         exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
+
+        model().addPropertyChangeListener(Properties.exchangeRate.name(),
+                        e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
+                                        model().getExchangeRate(), model().getTargetAccountCurrency(),
+                                        model().getSourceAccountCurrency())));
 
         Input amount = new Input(editArea, "="); //$NON-NLS-1$
         amount.bindValue(Properties.amount.name(), Messages.ColumnAmount, Values.Amount, true);

@@ -130,6 +130,11 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
         exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
 
+        model().addPropertyChangeListener(Properties.exchangeRate.name(),
+                        e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
+                                        model().getExchangeRate(), model().getTransactionCurrencyCode(),
+                                        model().getSecurityCurrencyCode())));
+
         final Input convertedGrossValue = new Input(editArea, "="); //$NON-NLS-1$
         convertedGrossValue.bindValue(Properties.convertedGrossValue.name(), Messages.ColumnSubTotal, Values.Amount,
                         true);
