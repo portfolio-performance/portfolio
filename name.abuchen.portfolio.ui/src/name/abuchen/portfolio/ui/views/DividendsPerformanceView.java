@@ -85,7 +85,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     @Optional
     private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
     {
-        updateTitle(Messages.LabelSecurityPerformance + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        updateTitle(Messages.LabelSecurityPerformance + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -159,6 +159,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         createCommonColumns();
         createDividendColumns();
+        addPerformanceColumns();
         createRiskColumns();
         createAdditionalColumns();
 
@@ -220,46 +221,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column = new NameColumn();
         recordColumns.addColumn(column);
 
-        // True time-weighted rate of return
-        column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 50); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // internal rate of return
-        column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 50); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getIrr());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
         // cost value - fifo
         column = new Column("pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValue_Description);
@@ -268,7 +229,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(), getClient().getBaseCurrency());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(),
+                                getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
@@ -282,27 +244,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(), getClient()
-                                .getBaseCurrency());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
+                                getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Gesamtsumme der erhaltenen Dividenden
-        column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
-        column.setGroupLabel(Messages.GroupLabelDividends);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getSumOfDividends(), getClient()
-                                .getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // market value
@@ -312,31 +258,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getMarketValue(), getClient()
-                                .getBaseCurrency());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getMarketValue(),
+                                getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // delta
-        column = new Column("delta", Messages.ColumnDelta, SWT.RIGHT, 100); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnDelta_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getDelta(), getClient().getBaseCurrency());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getDelta().getAmount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // fees paid
@@ -381,10 +307,156 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
     }
 
+    private void addPerformanceColumns()
+    {
+        Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnTWROR_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // internal rate of return
+        column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getIrr());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGains_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(),
+                                getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings().getAmount());
+            }
+        });
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
+            }
+        });
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // delta
+        column = new Column("delta", Messages.ColumnAbsolutePerformance, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnAbsolutePerformance_Description);
+        column.setMenuLabel(Messages.ColumnAbsolutePerformance_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) r).getDelta(), getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getDelta().getAmount());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // delta percent
+        column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
+        column.setMenuLabel(Messages.ColumnAbsolutePerformancePercent_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getDeltaPercent());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getDeltaPercent());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+    }
+
     private void createDividendColumns()
     {
+        // Gesamtsumme der erhaltenen Dividenden
+        Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) r).getSumOfDividends(),
+                                getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
         // Rendite insgesamt
-        Column column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
         column.setVisible(false);
@@ -539,8 +611,9 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(DividendsPerformanceView.class.getSimpleName()
-                        + "@bottom3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(
+                        DividendsPerformanceView.class.getSimpleName() + "@bottom3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        layout);
 
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -604,8 +677,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public String getText(Object t)
             {
                 if (t instanceof DividendTransaction)
-                    return Values.Money.format(((DividendTransaction) t).getMonetaryAmount(), getClient()
-                                    .getBaseCurrency());
+                    return Values.Money.format(((DividendTransaction) t).getMonetaryAmount(),
+                                    getClient().getBaseCurrency());
                 else
                     return null;
             }

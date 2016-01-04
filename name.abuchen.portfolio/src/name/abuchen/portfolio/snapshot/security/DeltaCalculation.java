@@ -9,18 +9,22 @@ import name.abuchen.portfolio.money.MutableMoney;
 /* package */class DeltaCalculation extends Calculation
 {
     private MutableMoney delta;
+    private MutableMoney cost;
 
     @Override
     public void setTermCurrency(String termCurrency)
     {
         super.setTermCurrency(termCurrency);
         this.delta = MutableMoney.of(termCurrency);
+        this.cost = MutableMoney.of(termCurrency);
     }
 
     @Override
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
-        delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        Money amount = t.getMonetaryAmount().with(converter.at(t.getDate()));
+        delta.subtract(amount);
+        cost.add(amount);
     }
 
     @Override
@@ -48,7 +52,9 @@ import name.abuchen.portfolio.money.MutableMoney;
         {
             case BUY:
             case DELIVERY_INBOUND:
-                delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                Money amount = t.getMonetaryAmount().with(converter.at(t.getDate()));
+                delta.subtract(amount);
+                cost.add(amount);
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
@@ -63,9 +69,13 @@ import name.abuchen.portfolio.money.MutableMoney;
         }
     }
 
-
     public Money getDelta()
     {
         return delta.toMoney();
+    }
+
+    public double getDeltaPercent()
+    {
+        return delta.getAmount() / (double) cost.getAmount();
     }
 }

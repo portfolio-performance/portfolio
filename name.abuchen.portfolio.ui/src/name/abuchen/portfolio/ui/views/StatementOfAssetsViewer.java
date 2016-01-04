@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -345,6 +346,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnPurchaseValue_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -401,82 +403,7 @@ public class StatementOfAssetsViewer
         column.getSorter().wrap(c -> new ElementComparator(c));
         support.addColumn(column);
 
-        column = new Column("irr", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption));
-        column.setLabelProvider(new OptionLabelProvider<ReportingPeriod>()
-        {
-            @Override
-            public String getText(Object e, ReportingPeriod option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    return Values.Percent.format(record.getIrr());
-                }
-                return null;
-            }
-
-            @Override
-            public Color getForeground(Object e, ReportingPeriod option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    double irr = record.getIrr();
-
-                    if (irr < 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                    else if (irr > 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                }
-                return null;
-            }
-        });
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("profitloss", Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTotalProfitLossOption));
-        column.setLabelProvider(new OptionLabelProvider<ReportingPeriod>()
-        {
-            @Override
-            public String getText(Object e, ReportingPeriod option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    return Values.Money.format(record.getDelta(), client.getBaseCurrency());
-                }
-                return null;
-            }
-
-            @Override
-            public Color getForeground(Object e, ReportingPeriod option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    Money delta = record.getDelta();
-
-                    if (delta.isNegative())
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                    else if (delta.isPositive())
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                }
-                return null;
-            }
-        });
-        column.setVisible(false);
-        support.addColumn(column);
-
+        addPerformanceColumns();
         addTaxonomyColumns();
         addAttributeColumns();
         addCurrencyColumns();
@@ -494,6 +421,57 @@ public class StatementOfAssetsViewer
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
+    }
+
+    private void addPerformanceColumns()
+    {
+        Column column = new Column("ttwror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnTWROR_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getTrueTimeWeightedRateOfReturn()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption));
+        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getIrr()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGains_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldingsPercent()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnAbsolutePerformance_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDelta()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDeltaPercent()));
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private void addAttributeColumns()
@@ -1048,5 +1026,63 @@ public class StatementOfAssetsViewer
         @Override
         public void dispose()
         {}
+    }
+
+    private final class ReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    {
+        private Function<SecurityPerformanceRecord, Object> valueProvider;
+
+        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider)
+        {
+            this.valueProvider = valueProvider;
+        }
+
+        private Object getValue(Object e, ReportingPeriod option)
+        {
+            Element element = (Element) e;
+            if (element.isSecurity())
+            {
+                calculatePerformance(element, option);
+                SecurityPerformanceRecord record = element.getPerformance(option);
+                return valueProvider.apply(record);
+            }
+            return null;
+        }
+
+        @Override
+        public String getText(Object e, ReportingPeriod option)
+        {
+            Object value = getValue(e, option);
+            if (value == null)
+                return null;
+
+            if (value instanceof Money)
+                return Values.Money.format((Money) value, client.getBaseCurrency());
+            else if (value instanceof Double)
+                return Values.Percent.format((Double) value);
+
+            return null;
+        }
+
+        @Override
+        public Color getForeground(Object e, ReportingPeriod option)
+        {
+            Object value = getValue(e, option);
+            if (value == null)
+                return null;
+
+            double doubleValue = 0;
+            if (value instanceof Money)
+                doubleValue = ((Money) value).getAmount();
+            else if (value instanceof Double)
+                doubleValue = (Double) value;
+
+            if (doubleValue < 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+            else if (doubleValue > 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            else
+                return null;
+        }
     }
 }

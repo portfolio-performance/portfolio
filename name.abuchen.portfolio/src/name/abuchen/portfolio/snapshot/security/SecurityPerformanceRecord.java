@@ -70,6 +70,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     private Money delta;
 
     /**
+     * deltaPercent = delta / purchase costs + buy {@link #calculateDelta()}
+     */
+    private double deltaPercent;
+
+    /**
      * market value of holdings at end of period
      * {@link #addTransaction(Transaction)}
      */
@@ -176,6 +181,11 @@ public final class SecurityPerformanceRecord implements Adaptable
         return delta;
     }
 
+    public double getDeltaPercent()
+    {
+        return deltaPercent;
+    }
+
     public Money getMarketValue()
     {
         return marketValue;
@@ -184,6 +194,16 @@ public final class SecurityPerformanceRecord implements Adaptable
     public Money getFifoCost()
     {
         return fifoCost;
+    }
+
+    public Money getCapitalGainsOnHoldings()
+    {
+        return marketValue.subtract(fifoCost);
+    }
+
+    public double getCapitalGainsOnHoldingsPercent()
+    {
+        return ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
     }
 
     public Money getFees()
@@ -271,7 +291,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         {
             calculateMarketValue(converter);
             calculateIRR(converter);
-            calculatePerformance(client, converter, period);
+            calculateTTWROR(client, converter, period);
             calculateDelta(converter);
             calculateFifoCosts(converter);
             calculateDividends(converter);
@@ -292,7 +312,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.irr = Calculation.perform(IRRCalculation.class, converter, transactions).getIRR();
     }
 
-    private void calculatePerformance(Client client, CurrencyConverter converter, ReportingPeriod period)
+    private void calculateTTWROR(Client client, CurrencyConverter converter, ReportingPeriod period)
     {
         PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, security, period,
                         new ArrayList<Exception>());
@@ -303,7 +323,9 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateDelta(CurrencyConverter converter)
     {
-        this.delta = Calculation.perform(DeltaCalculation.class, converter, transactions).getDelta();
+        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, transactions);
+        this.delta = calculation.getDelta();
+        this.deltaPercent = calculation.getDeltaPercent();
     }
 
     private void calculateFifoCosts(CurrencyConverter converter)

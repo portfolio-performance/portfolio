@@ -49,6 +49,10 @@ public class Messages extends NLS
     public static String ClientEditorLabelPerformance;
     public static String ClientEditorLabelReports;
     public static String ClientEditorLabelReturnsVolatility;
+    public static String ColumnAbsolutePerformancePercent_MenuLabel;
+    public static String ColumnAbsolutePerformancePercent_Description;
+    public static String ColumnAbsolutePerformancePercent;
+    public static String ColumnAbsolutePerformancePercent_Option;
     public static String ColumnAccount;
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
@@ -58,6 +62,12 @@ public class Messages extends NLS
     public static String ColumnAmount;
     public static String ColumnBalance;
     public static String ColumnBaseCurrency;
+    public static String ColumnCapitalGains;
+    public static String ColumnCapitalGains_Description;
+    public static String ColumnCapitalGains_Option;
+    public static String ColumnCapitalGainsPercent;
+    public static String ColumnCapitalGainsPercent_Description;
+    public static String ColumnCapitalGainsPercent_Option;
     public static String ColumnColor;
     public static String ColumnCreditNote;
     public static String ColumnColumnLabel;
@@ -71,8 +81,10 @@ public class Messages extends NLS
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
     public static String ColumnDebitNote;
-    public static String ColumnDelta;
-    public static String ColumnDelta_Description;
+    public static String ColumnAbsolutePerformance_MenuLabel;
+    public static String ColumnAbsolutePerformance_Description;
+    public static String ColumnAbsolutePerformance;
+    public static String ColumnAbsolutePerformance_Option;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
@@ -157,9 +169,8 @@ public class Messages extends NLS
     public static String ColumnTermCurrency;
     public static String ColumnTicker;
     public static String ColumnTotal;
-    public static String ColumnTotalProfitLoss;
-    public static String ColumnTotalProfitLossOption;
     public static String ColumnTransactionType;
+    public static String ColumnTTWROR_Option;
     public static String ColumnTWROR;
     public static String ColumnTWROR_Description;
     public static String ColumnUpdatedQuote;
@@ -238,6 +249,7 @@ public class Messages extends NLS
     public static String ExportWizardUnsupportedExport;
     public static String GroupLabelAttributes;
     public static String GroupLabelDividends;
+    public static String GroupLabelPerformance;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;
