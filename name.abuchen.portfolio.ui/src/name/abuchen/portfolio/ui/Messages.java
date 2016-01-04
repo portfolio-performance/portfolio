@@ -68,9 +68,14 @@ public class Messages extends NLS
     public static String ColumnCapitalGainsPercent;
     public static String ColumnCapitalGainsPercent_Description;
     public static String ColumnCapitalGainsPercent_Option;
+    public static String ColumnChangeOnPrevious;
+    public static String ColumnChangeOnPrevious_MenuLabel;
     public static String ColumnColor;
     public static String ColumnCreditNote;
     public static String ColumnColumnLabel;
+    public static String ColumnLatest_MenuLabel;
+    public static String ColumnLatestDate_MenuLabel;
+    public static String ColumnLatestHistoricalDate_MenuLabel;
     public static String ColumnCurrency;
     public static String ColumnCurrencyProvider;
     public static String ColumnCurrentQuote;

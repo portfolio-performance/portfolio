@@ -207,6 +207,7 @@ public final class SecuritiesTable implements ModificationListener
     {
         Column column;
         column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnLatest_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -240,7 +241,8 @@ public final class SecuritiesTable implements ModificationListener
     private void addDeltaColumn()
     {
         Column column;
-        column = new Column("5", Messages.ColumnDelta, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -302,6 +304,7 @@ public final class SecuritiesTable implements ModificationListener
     {
         Column column;
         column = new Column("9", Messages.ColumnLatestDate, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnLatestDate_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -345,6 +348,7 @@ public final class SecuritiesTable implements ModificationListener
     private void addColumnDateOfLatestHistoricalPrice()
     {
         Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnLatestHistoricalDate_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
