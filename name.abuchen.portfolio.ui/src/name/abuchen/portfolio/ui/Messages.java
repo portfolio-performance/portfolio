@@ -537,6 +537,7 @@ public class Messages extends NLS
     public static String SecurityMenuDeleteSecurity;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
+    public static String SecurityMenuExportCSV;
     public static String SecurityMenuImportCSV;
     public static String SecurityMenuImportHTML;
     public static String SecurityMenuNewSecurity;

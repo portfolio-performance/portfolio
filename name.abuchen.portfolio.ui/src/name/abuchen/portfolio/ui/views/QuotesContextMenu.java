@@ -1,21 +1,25 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
+import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
@@ -74,7 +78,8 @@ public class QuotesContextMenu
             public void run()
             {
                 FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
-                fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
+                fileDialog.setFilterNames(
+                                new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
                 fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
                 String fileName = fileDialog.open();
 
@@ -123,6 +128,32 @@ public class QuotesContextMenu
 
                 owner.markDirty();
                 owner.notifyModelUpdated();
+            }
+        });
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.SecurityMenuExportCSV)
+        {
+            @Override
+            public void run()
+            {
+                FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+                fileDialog.setFileName(security.getName() + ".csv"); //$NON-NLS-1$
+                String fileName = fileDialog.open();
+
+                if (fileName == null)
+                    return;
+
+                try
+                {
+                    new CSVExporter().exportSecurityPrices(new File(fileName), security);
+                }
+                catch (IOException e)
+                {
+                    PortfolioPlugin.log(e);
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+                }
             }
         });
     }

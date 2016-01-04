@@ -139,15 +139,15 @@ public class ExportSelectionPage extends AbstractWizardPage
             if (parentElement instanceof Class)
             {
                 if (parentElement == AccountTransaction.class)
-                    return client.getAccounts().toArray();
+                    return client.getAccounts().stream().sorted(new Account.ByName()).toArray();
                 else if (parentElement == PortfolioTransaction.class)
-                    return client.getPortfolios().toArray();
+                    return client.getPortfolios().stream().sorted(new Portfolio.ByName()).toArray();
                 else if (parentElement == Security.class)
                     return new String[] { Messages.ExportWizardSecurityMasterData,
                                     Messages.ExportWizardMergedSecurityPrices,
                                     Messages.ExportWizardAllTransactionsAktienfreundeNet };
                 else if (parentElement == SecurityPrice.class)
-                    return client.getSecurities().toArray();
+                    return client.getSecurities().stream().sorted(new Security.ByName()).toArray();
             }
 
             return null;
