@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
@@ -14,16 +13,18 @@ import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 public class ReportingPeriodColumnOptions implements Column.Options<ReportingPeriod>
 {
     private String columnLabel;
+    private List<ReportingPeriod> defaultOptions;
 
-    public ReportingPeriodColumnOptions(String columnLabel)
+    public ReportingPeriodColumnOptions(String columnLabel, List<ReportingPeriod> defaultOptions)
     {
         this.columnLabel = columnLabel;
+        this.defaultOptions = defaultOptions;
     }
 
     @Override
     public List<ReportingPeriod> getElements()
     {
-        return new ArrayList<>();
+        return defaultOptions;
     }
 
     @Override
@@ -74,7 +75,11 @@ public class ReportingPeriodColumnOptions implements Column.Options<ReportingPer
     {
         ReportingPeriodDialog dialog = new ReportingPeriodDialog(shell, null);
         if (dialog.open() == ReportingPeriodDialog.OK)
-            return dialog.getReportingPeriod();
+        {
+            ReportingPeriod p = dialog.getReportingPeriod();
+            defaultOptions.add(p);
+            return p;
+        }
         return null;
     }
 }

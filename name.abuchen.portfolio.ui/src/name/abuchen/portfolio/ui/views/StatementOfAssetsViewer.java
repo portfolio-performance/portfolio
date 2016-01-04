@@ -425,8 +425,12 @@ public class StatementOfAssetsViewer
 
     private void addPerformanceColumns()
     {
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().loadReportingPeriods());
+
         Column column = new Column("ttwror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option));
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnTWROR_Description);
         column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getTrueTimeWeightedRateOfReturn()));
@@ -434,7 +438,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption));
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getIrr()));
@@ -442,7 +446,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option));
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
         column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings()));
@@ -450,7 +454,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option));
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
         column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldingsPercent()));
@@ -458,7 +462,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option));
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
         column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDelta()));
@@ -466,7 +470,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option));
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
         column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDeltaPercent()));
