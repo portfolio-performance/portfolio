@@ -223,7 +223,7 @@ public class AccountTransferModel extends AbstractModel
         else
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
-                            .getTimeSeries(getTargetAccountCurrency(), getSourceAccountCurrency());
+                            .getTimeSeries(getSourceAccountCurrency(), getTargetAccountCurrency());
 
             if (series != null)
                 setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
