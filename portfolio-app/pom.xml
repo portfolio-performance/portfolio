@@ -19,6 +19,7 @@
 		<jarsigner.plugin.version>1.4</jarsigner.plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
+		<sonar.exclusions>**/Messages.java</sonar.exclusions>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
 		<argLine>-ea</argLine>
