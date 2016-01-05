@@ -91,6 +91,13 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_7e784PPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.menu.help.welcome" label="%part.welcome" command="_veiGEPPLEeOuTsL2OeJEvQ">
           <parameters xmi:id="_E-53QPPMEeOuTsL2OeJEvQ" elementId="" name="name.abuchen.portfolio.ui.param.part" value="name.abuchen.portfolio.ui.part.welcome"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_mRCKILOiEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="WIKI" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <parameters xmi:id="_pMDJwLOiEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/buchen/portfolio/wiki"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_H7TFULOjEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="FAQ" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <parameters xmi:id="_H7TFUbOjEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/buchen/portfolio/wiki/FAQ"/>
+        </children>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_NbNDkLOjEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menuseparator.11"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_SQAUsKHtEeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.menu.help.errorlog" label="%command.showErrorView.label" command="_veiGEPPLEeOuTsL2OeJEvQ">
           <parameters xmi:id="_XQxsIPPMEeOuTsL2OeJEvQ" elementId="" name="name.abuchen.portfolio.ui.param.part" value="name.abuchen.portfolio.ui.part.errorlog"/>
         </children>
@@ -117,6 +124,7 @@
   <handlers xmi:id="_1sS-AG_lEeWs-Og7n4Tz9g" elementId="name.abuchen.portfolio.ui.handler.saveAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveAllFileHandler" command="_xEtu4G_lEeWs-Og7n4Tz9g"/>
   <handlers xmi:id="_NCwdIPPFEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.handler.openSample" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenSampleHandler" command="_C_T3sPPEEeOuTsL2OeJEvQ"/>
   <handlers xmi:id="_1bt2MPPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.handler.openPart" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPartHandler" command="_veiGEPPLEeOuTsL2OeJEvQ"/>
+  <handlers xmi:id="_qwqMkLOhEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.handler.openBrowser" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenBrowserHandler" command="_dYDXQLOiEeWe1a5u3oOf1Q"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4BjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -162,6 +170,9 @@
   </commands>
   <commands xmi:id="_veiGEPPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.command.openPart" commandName="openPartCommand">
     <parameters xmi:id="_xxEwcPPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.param.part" name="part" optional="false"/>
+  </commands>
+  <commands xmi:id="_dYDXQLOiEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.command.openBrowser" commandName="openBrowserCommand">
+    <parameters xmi:id="_gWpPULOiEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.param.url" name="url"/>
   </commands>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>

@@ -6,21 +6,24 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+
 /**
- * Utility class to launch the default browser to open an URL.
+ * Utility class to launch the default browser to open an URI.
  * <p/>
  * Basically, the problem is that {@link java.awt.Desktop} integration doesn't
  * work well on Linux. Based on http://stackoverflow.com/a/18004334/1158146.
  */
 public class DesktopAPI
 {
+    /**
+     * Launches the default browser with the given URI.
+     */
     public static void browse(String uri)
     {
         try
