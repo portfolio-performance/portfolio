@@ -243,6 +243,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
             taxes.label.setVisible(!visible);
         });
 
+        StockSplitWarningListener stockSplits = new StockSplitWarningListener(this);
+        model.addPropertyChangeListener(Properties.security.name(),
+                        e -> stockSplits.check(model().getSecurity(), model().getDate()));
+        model.addPropertyChangeListener(Properties.date.name(),
+                        e -> stockSplits.check(model().getSecurity(), model().getDate()));
+
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }
 

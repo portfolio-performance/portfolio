@@ -157,7 +157,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     {
         public void setStatus(IStatus status)
         {
-            setMessage(status.getSeverity() == IStatus.OK ? "" : status.getMessage()); //$NON-NLS-1$
+            setErrorMessage(status.getSeverity() == IStatus.OK ? null : status.getMessage());
 
             for (int buttonId : new int[] { IDialogConstants.OK_ID, SAVE_AND_NEW_ID })
             {

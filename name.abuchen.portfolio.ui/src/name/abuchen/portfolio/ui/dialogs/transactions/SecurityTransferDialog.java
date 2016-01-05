@@ -153,6 +153,12 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         int widest = widest(securities.label, source.label, target.label, lblDate, amount.label, lblNote);
         startingWith(securities.label).width(widest);
+
+        StockSplitWarningListener stockSplits = new StockSplitWarningListener(this);
+        model.addPropertyChangeListener(Properties.security.name(),
+                        e -> stockSplits.check(model().getSecurity(), model().getDate()));
+        model.addPropertyChangeListener(Properties.date.name(),
+                        e -> stockSplits.check(model().getSecurity(), model().getDate()));
     }
 
     @Override
