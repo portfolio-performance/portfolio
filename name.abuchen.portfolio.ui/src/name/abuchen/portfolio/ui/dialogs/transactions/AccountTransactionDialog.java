@@ -274,7 +274,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         if (position != null)
         {
             Action action = new Action(MessageFormat.format(Messages.DividendsDialogLabelPortfolioSharesHeld,
-                            Values.Share.format(position.getShares()), label, portfolio.getTime()))
+                            Values.Share.format(position.getShares()), label, Values.Date.format(portfolio.getTime())))
             {
                 @Override
                 public void run()
