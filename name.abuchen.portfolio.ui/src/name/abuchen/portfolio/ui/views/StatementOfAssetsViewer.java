@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -84,7 +86,6 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
 public class StatementOfAssetsViewer
 {
-    private Composite container;
     private TableViewer assets;
 
     private Font boldFont;
@@ -98,16 +99,22 @@ public class StatementOfAssetsViewer
     private PortfolioSnapshot portfolioSnapshot;
     private Taxonomy taxonomy;
 
-    public StatementOfAssetsViewer(Composite parent, AbstractFinanceView owner, Client client)
+    @Inject
+    public StatementOfAssetsViewer(AbstractFinanceView owner, Client client)
     {
         this.owner = owner;
         this.client = client;
 
         loadTaxonomy(client);
+    }
 
-        createColumns(parent);
+    public Control createControl(Composite parent)
+    {
+        Control control = createColumns(parent);
 
         this.assets.getTable().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
+
+        return control;
     }
 
     private void loadTaxonomy(Client client)
@@ -130,9 +137,9 @@ public class StatementOfAssetsViewer
             this.taxonomy = client.getTaxonomies().get(0);
     }
 
-    private void createColumns(Composite parent)
+    private Control createColumns(Composite parent)
     {
-        container = new Composite(parent, SWT.NONE);
+        Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
@@ -421,6 +428,8 @@ public class StatementOfAssetsViewer
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
+
+        return container;
     }
 
     private void addPerformanceColumns()
@@ -632,11 +641,6 @@ public class StatementOfAssetsViewer
     public TableViewer getTableViewer()
     {
         return assets;
-    }
-
-    public Control getControl()
-    {
-        return container;
     }
 
     public void showConfigMenu(Shell shell)

@@ -445,6 +445,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             viewContext.set(PreferenceStore.class, this.preferences);
 
             view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
+            viewContext.set(AbstractFinanceView.class, view);
             view.setContext(viewContext);
             view.init(this, parameter);
             view.createViewControl(book);

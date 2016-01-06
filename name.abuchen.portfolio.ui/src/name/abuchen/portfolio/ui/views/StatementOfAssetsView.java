@@ -129,7 +129,9 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        assetViewer = new StatementOfAssetsViewer(parent, this, getClient());
+        assetViewer = make(StatementOfAssetsViewer.class);
+        Control control = assetViewer.createControl(parent);
+
         hookContextMenu(assetViewer.getTableViewer().getControl(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
@@ -139,7 +141,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         });
         notifyModelUpdated();
 
-        return assetViewer.getControl();
+        return control;
     }
 
     @Override

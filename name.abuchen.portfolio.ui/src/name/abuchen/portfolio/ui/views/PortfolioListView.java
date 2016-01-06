@@ -307,8 +307,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.LabelStatementOfAssets);
-        statementOfAssets = new StatementOfAssetsViewer(folder, this, getClient());
-        item.setControl(statementOfAssets.getControl());
+        statementOfAssets = make(StatementOfAssetsViewer.class);
+        item.setControl(statementOfAssets.createControl(folder));
 
         hookContextMenu(statementOfAssets.getTableViewer().getControl(), new IMenuListener()
         {
