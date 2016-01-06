@@ -35,6 +35,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -74,6 +75,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -88,9 +90,66 @@ import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
 {
+    private class CreateSecurityDropDown extends AbstractDropDown
+    {
+        public CreateSecurityDropDown(ToolBar toolBar)
+        {
+            super(toolBar, Messages.SecurityMenuAddNewSecurity, Images.PLUS.image(), SWT.NONE);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new Action(Messages.SecurityMenuNewSecurity)
+            {
+                @Override
+                public void run()
+                {
+                    Security newSecurity = new Security();
+                    newSecurity.setFeed(QuoteFeed.MANUAL);
+                    openEditDialog(newSecurity);
+                }
+            });
+
+            manager.add(new Action(Messages.SecurityMenuSearchYahoo)
+            {
+                @Override
+                public void run()
+                {
+                    SearchYahooWizard wizard = new SearchYahooWizard(getClient());
+                    Dialog dialog = new WizardDialog(getToolBar().getShell(), wizard);
+
+                    if (dialog.open() == Dialog.OK)
+                    {
+                        Security newSecurity = wizard.getSecurity();
+                        openEditDialog(newSecurity);
+                    }
+                }
+            });
+        }
+
+        private void openEditDialog(Security newSecurity)
+        {
+            Dialog dialog = new EditSecurityDialog(getToolBar().getShell(), getClient(), newSecurity);
+
+            if (dialog.open() == Dialog.OK)
+            {
+                markDirty();
+                getClient().addSecurity(newSecurity);
+
+                if (watchlist != null)
+                    watchlist.getSecurities().add(newSecurity);
+
+                setSecurityTableInput();
+                securities.updateQuotes(newSecurity);
+            }
+        }
+    }
+
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
@@ -119,7 +178,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Optional
     private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
     {
-        updateTitle(getTitle() + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        updateTitle(getTitle() + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+                                                     // );
     }
 
     @Override
@@ -178,7 +238,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         new ToolItem(toolBar, SWT.SEPARATOR | SWT.VERTICAL).setWidth(20);
 
-        addCreateButton(toolBar);
+        new CreateSecurityDropDown(toolBar);
         addExportButton(toolBar);
         addSaveButton(toolBar);
         addConfigButton(toolBar);
@@ -212,36 +272,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 }
             }
         });
-    }
-
-    private void addCreateButton(ToolBar toolBar)
-    {
-        Action action = new Action(Messages.SecurityMenuNewSecurity)
-        {
-            @Override
-            public void run()
-            {
-                Security newSecurity = new Security();
-                newSecurity.setFeed(QuoteFeed.MANUAL);
-
-                Dialog dialog = new EditSecurityDialog(toolBar.getShell(), getClient(), newSecurity);
-
-                if (dialog.open() == Dialog.OK)
-                {
-                    markDirty();
-                    getClient().addSecurity(newSecurity);
-
-                    if (watchlist != null)
-                        watchlist.getSecurities().add(newSecurity);
-
-                    setSecurityTableInput();
-                    securities.updateQuotes(newSecurity);
-                }
-            }
-        };
-        action.setImageDescriptor(Images.PLUS.descriptor());
-
-        new ActionContributionItem(action).fill(toolBar, -1);
     }
 
     private void addExportButton(ToolBar toolBar)
@@ -735,8 +765,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
-                        + "@transactions3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(
+                        SecurityListView.class.getSimpleName() + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -834,8 +865,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Money.format(((PortfolioTransaction) t).getGrossPricePerShare(), getClient()
-                                    .getBaseCurrency());
+                    return Values.Money.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                                    getClient().getBaseCurrency());
                 }
                 else if (t instanceof AccountTransaction)
                 {
