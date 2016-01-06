@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -39,7 +38,6 @@ import com.ibm.icu.text.NumberFormat;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -180,18 +178,15 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     protected DataBindingContext context = new DataBindingContext();
     protected ModelStatusListener status = new ModelStatusListener();
 
-    public AbstractTransactionDialog(Shell parentShell, AbstractModel model)
+    public AbstractTransactionDialog(Shell parentShell)
     {
         super(parentShell);
         setTitleImage(Images.BANNER.image());
-
-        this.model = model;
     }
 
-    @Inject
-    public void setExchangeRateProviderFactory(ExchangeRateProviderFactory factory)
+    protected void setModel(AbstractModel model)
     {
-        model.setExchangeRateProviderFactory(factory);
+        this.model = model;
     }
 
     @PostConstruct

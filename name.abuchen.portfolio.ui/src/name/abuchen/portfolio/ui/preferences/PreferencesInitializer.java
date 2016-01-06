@@ -8,10 +8,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 
 public class PreferencesInitializer extends AbstractPreferenceInitializer
 {
-
-    public PreferencesInitializer()
-    {}
-
     @Override
     public void initializeDefaultPreferences()
     {
@@ -19,6 +15,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
         // FIXME beta update site
         store.setDefault(UIConstants.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio-beta"); //$NON-NLS-1$
-    }
 
+        store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
+    }
 }

@@ -11,17 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.snapshot.Aggregation.Period;
-import name.abuchen.portfolio.snapshot.AssetPosition;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
-import name.abuchen.portfolio.util.Interval;
+import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -36,6 +26,18 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.ISeries;
 import org.swtchart.Range;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.snapshot.Aggregation;
+import name.abuchen.portfolio.snapshot.Aggregation.Period;
+import name.abuchen.portfolio.snapshot.AssetPosition;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
+import name.abuchen.portfolio.util.Interval;
 
 public class StackedChartViewer extends AbstractChartPage
 {
@@ -117,6 +119,7 @@ public class StackedChartViewer extends AbstractChartPage
 
     private List<LocalDate> dates;
 
+    @Inject
     public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);

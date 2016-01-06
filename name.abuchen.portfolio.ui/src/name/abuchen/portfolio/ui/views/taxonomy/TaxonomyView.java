@@ -160,15 +160,14 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        Page[] pages = new Page[] { new DefinitionViewer(getPart(), model, renderer), //
-                        new ReBalancingViewer(getPart(), model, renderer), //
-                        new PieChartViewer(model, renderer), //
-                        new TreeMapViewer(model, renderer), //
-                        new StackedChartViewer(getPart(), model, renderer) };
+        Page[] pages = new Page[] { make(DefinitionViewer.class, model, renderer), //
+                        make(ReBalancingViewer.class, model, renderer), //
+                        make(PieChartViewer.class, model, renderer), //
+                        make(TreeMapViewer.class, model, renderer), //
+                        make(StackedChartViewer.class, model, renderer) };
 
         for (Page page : pages)
         {
-            page.setPreferenceStore(getPreferenceStore());
             Control control = page.createControl(container);
             control.setData(page);
         }

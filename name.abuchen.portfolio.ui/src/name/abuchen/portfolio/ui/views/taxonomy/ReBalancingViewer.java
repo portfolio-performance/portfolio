@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -18,7 +20,6 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -26,9 +27,10 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
-    public ReBalancingViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    @Inject
+    public ReBalancingViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        super(part, model, renderer);
+        super(model, renderer);
     }
 
     @Override

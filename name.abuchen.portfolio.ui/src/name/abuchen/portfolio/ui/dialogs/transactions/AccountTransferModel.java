@@ -25,8 +25,9 @@ public class AccountTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        sourceAccount, targetAccount, date, fxAmount, exchangeRate, amount, //
-        note, sourceAccountCurrency, targetAccountCurrency, exchangeRateCurrencies, calculationStatus;
+        sourceAccount, targetAccount, date, fxAmount, exchangeRate, inverseExchangeRate, amount, //
+        note, sourceAccountCurrency, targetAccountCurrency, exchangeRateCurrencies, //
+        inverseExchangeRateCurrencies, calculationStatus;
     }
 
     private final Client client;
@@ -76,8 +77,8 @@ public class AccountTransferModel extends AbstractModel
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
-                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source.getOwner(source
-                                .getSourceTransaction());
+                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source
+                                .getOwner(source.getSourceTransaction());
                 owner.deleteTransaction(source.getSourceTransaction(), client);
                 source = null;
             }
@@ -189,10 +190,15 @@ public class AccountTransferModel extends AbstractModel
     {
         String oldCurrencyCode = getSourceAccountCurrency();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.sourceAccount.name(), this.sourceAccount, this.sourceAccount = account);
+
         firePropertyChange(Properties.sourceAccountCurrency.name(), oldCurrencyCode, getSourceAccountCurrency());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
 
         updateExchangeRate();
     }
@@ -206,10 +212,15 @@ public class AccountTransferModel extends AbstractModel
     {
         String oldCurrencyCode = getTargetAccountCurrency();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.targetAccount.name(), this.targetAccount, this.targetAccount = account);
+
         firePropertyChange(Properties.targetAccountCurrency.name(), oldCurrencyCode, getTargetAccountCurrency());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
 
         updateExchangeRate();
     }
@@ -266,13 +277,25 @@ public class AccountTransferModel extends AbstractModel
     public void setExchangeRate(BigDecimal exchangeRate)
     {
         BigDecimal newRate = exchangeRate == null ? BigDecimal.ZERO : exchangeRate;
+        BigDecimal oldInverseRate = getInverseExchangeRate();
 
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
+        firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
         triggerAmount(Math.round(newRate.doubleValue() * fxAmount));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
+    }
+
+    public BigDecimal getInverseExchangeRate()
+    {
+        return BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+    }
+
+    public void setInverseExchangeRate(BigDecimal exchnageRate)
+    {
+        setExchangeRate(BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN));
     }
 
     public long getAmount()
@@ -288,7 +311,9 @@ public class AccountTransferModel extends AbstractModel
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxAmount), 10,
                             RoundingMode.HALF_UP);
+            BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
+            firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -323,5 +348,10 @@ public class AccountTransferModel extends AbstractModel
     public String getExchangeRateCurrencies()
     {
         return String.format("%s/%s", getTargetAccountCurrency(), getSourceAccountCurrency()); //$NON-NLS-1$
+    }
+
+    public String getInverseExchangeRateCurrencies()
+    {
+        return String.format("%s/%s", getSourceAccountCurrency(), getTargetAccountCurrency()); //$NON-NLS-1$
     }
 }

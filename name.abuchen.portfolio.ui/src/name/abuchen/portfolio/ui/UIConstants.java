@@ -49,5 +49,11 @@ public interface UIConstants
 
         String PROXY_HOST = "PROXY_HOST"; //$NON-NLS-1$
         String PROXY_PORT = "PROXY_PORT"; //$NON-NLS-1$
+
+        /**
+         * Preference key to use indirect quotation ("Mengennotierung") when
+         * displaying exchange rates.
+         */
+        String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
     }
 }

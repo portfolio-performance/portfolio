@@ -11,10 +11,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -37,11 +39,13 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -50,16 +54,27 @@ import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog
 {
+    @Inject
     private Client client;
+
+    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION)
+    @Inject
+    private boolean useIndirectQuotation = false;
 
     private Menu contextMenu;
 
     @Inject
-    public AccountTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
-                    AccountTransaction.Type type)
+    public AccountTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell)
     {
-        super(parentShell, new AccountTransactionModel(client, type));
-        this.client = client;
+        super(parentShell);
+    }
+
+    @PostConstruct
+    private void createModel(ExchangeRateProviderFactory factory, AccountTransaction.Type type)
+    {
+        AccountTransactionModel m = new AccountTransactionModel(client, type);
+        m.setExchangeRateProviderFactory(factory);
+        setModel(m);
     }
 
     private AccountTransactionModel model()
@@ -120,9 +135,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         fxAmount.bindValue(Properties.fxAmount.name(), totalLabel, Values.Amount, true);
         fxAmount.bindCurrency(Properties.fxCurrencyCode.name());
 
-        Input exchangeRate = new Input(editArea, "x "); //$NON-NLS-1$
-        exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
-        exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
+        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        exchangeRate.bindExchangeRate(
+                        useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
+                        Messages.ColumnExchangeRate);
+        exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
+                        : Properties.exchangeRateCurrencies.name());
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(

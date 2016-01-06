@@ -31,9 +31,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public enum Properties
     {
-        portfolio, security, account, date, shares, quote, grossValue, exchangeRate, convertedGrossValue, //
-        forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, transactionCurrency, //
-        transactionCurrencyCode, securityCurrencyCode, calculationStatus;
+        portfolio, security, account, date, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
+        convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
+        inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
+        calculationStatus;
     }
 
     protected final Client client;
@@ -239,10 +240,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         String oldCurrencyCode = getSecurityCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.security.name(), this.security, this.security = security);
+
         firePropertyChange(Properties.securityCurrencyCode.name(), oldCurrencyCode, getSecurityCurrencyCode());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
 
         updateSharesAndQuote();
         updateExchangeRate();
@@ -385,12 +391,24 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         BigDecimal newRate = exchangeRate == null ? BigDecimal.ZERO : exchangeRate;
 
+        BigDecimal oldInverseRate = getInverseExchangeRate();
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
+        firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
         triggerConvertedGrossValue(Math.round(newRate.doubleValue() * grossValue));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
+    }
+
+    public BigDecimal getInverseExchangeRate()
+    {
+        return BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+    }
+
+    public void setInverseExchangeRate(BigDecimal exchnageRate)
+    {
+        setExchangeRate(BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN));
     }
 
     public long getConvertedGrossValue()
@@ -406,7 +424,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(convertedGrossValue).divide(BigDecimal.valueOf(grossValue),
                             10, RoundingMode.HALF_UP);
+            BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
+            firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
+
             triggerTotal(calculateTotal()); // forex fees and taxes might change
         }
 
@@ -525,6 +546,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public String getExchangeRateCurrencies()
     {
         return String.format("%s/%s", getTransactionCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
+    }
+
+    public String getInverseExchangeRateCurrencies()
+    {
+        return String.format("%s/%s", getSecurityCurrencyCode(), getTransactionCurrencyCode()); //$NON-NLS-1$
     }
 
     public PortfolioTransaction.Type getType()

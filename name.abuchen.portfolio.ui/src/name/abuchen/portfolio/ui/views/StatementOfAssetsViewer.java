@@ -8,14 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -50,6 +53,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetCategory;
@@ -63,6 +67,7 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
@@ -86,6 +91,11 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
 public class StatementOfAssetsViewer
 {
+    @Inject
+    private IPreferenceStore preference;
+
+    private boolean useIndirectQuotation = false;
+
     private TableViewer assets;
 
     private Font boldFont;
@@ -104,8 +114,16 @@ public class StatementOfAssetsViewer
     {
         this.owner = owner;
         this.client = client;
+    }
 
-        loadTaxonomy(client);
+    @Inject
+    public void setUseIndirectQuotation(
+                    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
+    {
+        this.useIndirectQuotation = useIndirectQuotation;
+
+        if (assets != null)
+            assets.refresh();
     }
 
     public Control createControl(Composite parent)
@@ -117,9 +135,10 @@ public class StatementOfAssetsViewer
         return control;
     }
 
-    private void loadTaxonomy(Client client)
+    @PostConstruct
+    private void loadTaxonomy()
     {
-        String taxonomyId = owner.getPart().getPreferenceStore().getString(this.getClass().getSimpleName());
+        String taxonomyId = preference.getString(this.getClass().getSimpleName());
 
         if (taxonomyId != null)
         {
@@ -147,8 +166,7 @@ public class StatementOfAssetsViewer
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
 
-        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, owner.getPreferenceStore(),
-                        assets, layout);
+        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
@@ -548,7 +566,25 @@ public class StatementOfAssetsViewer
 
                 String baseCurrency = element.getPosition().getInvestmentVehicle().getCurrencyCode();
                 CurrencyConverter converter = getCurrencyConverter();
-                return Values.ExchangeRate.format(converter.getRate(getDate(), baseCurrency).getValue());
+                ExchangeRate rate = converter.getRate(getDate(), baseCurrency);
+
+                if (useIndirectQuotation)
+                    rate = rate.inverse();
+
+                return Values.ExchangeRate.format(rate.getValue());
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                String text = getText(e);
+                if (text == null)
+                    return null;
+
+                String term = getCurrencyConverter().getTermCurrency();
+                String base = ((Element) e).getPosition().getInvestmentVehicle().getCurrencyCode();
+
+                return text + ' ' + (useIndirectQuotation ? base + '/' + term : term + '/' + base);
             }
         });
         column.setVisible(false);
@@ -788,7 +824,7 @@ public class StatementOfAssetsViewer
     private void widgetDisposed()
     {
         if (taxonomy != null)
-            owner.getPart().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
+            preference.setValue(this.getClass().getSimpleName(), taxonomy.getId());
 
         if (contextMenu != null)
             contextMenu.dispose();

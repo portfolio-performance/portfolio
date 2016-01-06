@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -16,6 +17,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
@@ -27,8 +29,10 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
@@ -57,13 +61,25 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         }
     }
 
+    @Inject
     private Client client;
 
+    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION)
     @Inject
-    public AccountTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
+    private boolean useIndirectQuotation = false;
+
+    @Inject
+    public AccountTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell)
     {
-        super(parentShell, new AccountTransferModel(client));
-        this.client = client;
+        super(parentShell);
+    }
+
+    @PostConstruct
+    private void createModel(ExchangeRateProviderFactory factory)
+    {
+        AccountTransferModel m = new AccountTransferModel(client);
+        m.setExchangeRateProviderFactory(factory);
+        setModel(m);
     }
 
     private AccountTransferModel model()
@@ -111,9 +127,12 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         fxAmount.bindValue(Properties.fxAmount.name(), Messages.ColumnAmount, Values.Amount, true);
         fxAmount.bindCurrency(Properties.sourceAccountCurrency.name());
 
-        Input exchangeRate = new Input(editArea, "x "); //$NON-NLS-1$
-        exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
-        exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
+        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        exchangeRate.bindExchangeRate(
+                        useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
+                        Messages.ColumnExchangeRate);
+        exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
+                        : Properties.exchangeRateCurrencies.name());
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(

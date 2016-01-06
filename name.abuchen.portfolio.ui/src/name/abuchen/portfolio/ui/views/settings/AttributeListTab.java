@@ -8,7 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -41,7 +41,7 @@ public class AttributeListTab implements Tab, ModificationListener
     private Client client;
 
     @Inject
-    private PreferenceStore preferences;
+    private IPreferenceStore preferences;
 
     private TableViewer tableViewer;
     private ContextMenu contextMenuAdd;

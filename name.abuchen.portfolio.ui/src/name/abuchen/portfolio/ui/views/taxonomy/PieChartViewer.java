@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 {
     private EmbeddedBrowser browser;
 
+    @Inject
     public PieChartViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);

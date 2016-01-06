@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
@@ -28,46 +29,51 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
 public class SecurityTransactionDialog extends AbstractTransactionDialog
 {
+    @Inject
     private Client client;
 
+    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION)
     @Inject
-    public SecurityTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
-                    PortfolioTransaction.Type type)
-    {
-        super(parentShell, isBuySell(type) ? new BuySellModel(client, type) : new SecurityDeliveryModel(client, type));
+    private boolean useIndirectQuotation = false;
 
-        this.client = client;
+    @Inject
+    public SecurityTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell)
+    {
+        super(parentShell);
     }
 
-    private static boolean isBuySell(PortfolioTransaction.Type type)
+    @PostConstruct
+    private void createModel(ExchangeRateProviderFactory factory, PortfolioTransaction.Type type)
     {
-        return type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
+        boolean isBuySell = type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
+        AbstractSecurityTransactionModel model = isBuySell ? new BuySellModel(client, type)
+                        : new SecurityDeliveryModel(client, type);
+        model.setExchangeRateProviderFactory(factory);
+        setModel(model);
+
+        // set portfolio only if exactly one exists
+        // (otherwise force user to choose)
+        List<Portfolio> activePortfolios = client.getActivePortfolios();
+        if (activePortfolios.size() == 1)
+            model.setPortfolio(activePortfolios.get(0));
+
+        List<Security> activeSecurities = client.getActiveSecurities();
+        if (!activeSecurities.isEmpty())
+            model.setSecurity(activeSecurities.get(0));
     }
 
     private AbstractSecurityTransactionModel model()
     {
         return (AbstractSecurityTransactionModel) this.model;
-    }
-
-    @PostConstruct
-    public void preselectPorfolioAndSecurity()
-    {
-        // set portfolio only if exactly one exists
-        // (otherwise force user to choose)
-        List<Portfolio> activePortfolios = client.getActivePortfolios();
-        if (activePortfolios.size() == 1)
-            model().setPortfolio(activePortfolios.get(0));
-
-        List<Security> activeSecurities = client.getActiveSecurities();
-        if (!activeSecurities.isEmpty())
-            model().setSecurity(activeSecurities.get(0));
     }
 
     @Override
@@ -126,9 +132,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         grossValue.bindValue(Properties.grossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
         grossValue.bindCurrency(Properties.securityCurrencyCode.name());
 
-        final Input exchangeRate = new Input(editArea, "x " + Messages.ColumnExchangeRate); //$NON-NLS-1$
-        exchangeRate.bindExchangeRate(Properties.exchangeRate.name(), Messages.ColumnExchangeRate);
-        exchangeRate.bindCurrency(Properties.exchangeRateCurrencies.name());
+        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        exchangeRate.bindExchangeRate(
+                        useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
+                        Messages.ColumnExchangeRate);
+        exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
+                        : Properties.exchangeRateCurrencies.name());
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(

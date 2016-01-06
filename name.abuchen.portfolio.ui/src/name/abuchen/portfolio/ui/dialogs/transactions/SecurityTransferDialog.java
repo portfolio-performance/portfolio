@@ -60,8 +60,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
     @Inject
     public SecurityTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
     {
-        super(parentShell, new SecurityTransferModel(client));
+        super(parentShell);
         this.client = client;
+        setModel(new SecurityTransferModel(client));
     }
 
     private SecurityTransferModel model()

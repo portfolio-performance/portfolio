@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
 
@@ -24,7 +25,8 @@ public class OpenPreferenceDialogHandler
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".updates", new UpdatePreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".language", new LanguagePreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".proxy", new ProxyPreferencePage())); //$NON-NLS-1$
-        
+        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".presentation", new PresentationPreferencePage())); //$NON-NLS-1$
+
         PreferenceDialog dialog = new PreferenceDialog(shell, pm);
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
         dialog.create();

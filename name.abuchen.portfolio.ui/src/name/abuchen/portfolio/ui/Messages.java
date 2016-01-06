@@ -523,13 +523,17 @@ public class Messages extends NLS
     public static String PortfolioMenuDelete;
     public static String PrefCheckOnStartup;
     public static String PrefDescriptionProxy;
+    public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
+    public static String PrefLabelUseIndirectQuotation;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefNoteIndirectQuotation;
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleLanguage;
+    public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;

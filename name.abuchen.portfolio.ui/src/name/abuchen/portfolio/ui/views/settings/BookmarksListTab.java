@@ -7,7 +7,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -43,7 +43,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
     private Client client;
 
     @Inject
-    private PreferenceStore preferences;
+    private IPreferenceStore preferences;
 
     @Override
     public CTabItem createTab(CTabFolder folder)
@@ -56,8 +56,8 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 
         ColumnEditingSupport.prepare(bookmarks);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        BookmarksListTab.class.getSimpleName() + "@bottom", preferences, bookmarks, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(BookmarksListTab.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+                        preferences, bookmarks, layout);
 
         // Create Column for Bookmark
         Column column = new Column(Messages.BookmarksListView_bookmark, SWT.None, 150);

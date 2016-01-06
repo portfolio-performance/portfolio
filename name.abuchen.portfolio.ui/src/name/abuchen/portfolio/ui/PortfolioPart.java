@@ -442,7 +442,8 @@ public class PortfolioPart implements LoadClientThread.Callback
 
             IEclipseContext viewContext = this.context.createChild();
             viewContext.set(Client.class, this.client);
-            viewContext.set(PreferenceStore.class, this.preferences);
+            viewContext.set(IPreferenceStore.class, this.preferences);
+            viewContext.set(PortfolioPart.class, this);
 
             view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
             viewContext.set(AbstractFinanceView.class, view);

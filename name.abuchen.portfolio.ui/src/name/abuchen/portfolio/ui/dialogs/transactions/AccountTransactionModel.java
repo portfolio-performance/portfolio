@@ -28,8 +28,9 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, shares, fxAmount, exchangeRate, amount, //
-        note, exchangeRateCurrencies, accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus;
+        security, account, date, shares, fxAmount, exchangeRate, inverseExchangeRate, amount, //
+        note, exchangeRateCurrencies, inverseExchangeRateCurrencies, accountCurrencyCode, //
+        securityCurrencyCode, fxCurrencyCode, calculationStatus;
     }
 
     public static final Security EMPTY_SECURITY = new Security("", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -229,11 +230,16 @@ public class AccountTransactionModel extends AbstractModel
         String oldCurrencyCode = getAccountCurrencyCode();
         String oldFxCurrencyCode = getFxCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.account.name(), this.account, this.account = account);
+
         firePropertyChange(Properties.accountCurrencyCode.name(), oldCurrencyCode, getAccountCurrencyCode());
         firePropertyChange(Properties.fxCurrencyCode.name(), oldFxCurrencyCode, getFxCurrencyCode());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
 
         updateExchangeRate();
     }
@@ -251,11 +257,16 @@ public class AccountTransactionModel extends AbstractModel
         String oldCurrencyCode = getSecurityCurrencyCode();
         String oldFxCurrencyCode = getFxCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.security.name(), this.security, this.security = security);
+
         firePropertyChange(Properties.securityCurrencyCode.name(), oldCurrencyCode, getSecurityCurrencyCode());
         firePropertyChange(Properties.fxCurrencyCode.name(), oldFxCurrencyCode, getFxCurrencyCode());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
 
         updateExchangeRate();
         updateShares();
@@ -336,13 +347,25 @@ public class AccountTransactionModel extends AbstractModel
     public void setExchangeRate(BigDecimal exchangeRate)
     {
         BigDecimal newRate = exchangeRate == null ? BigDecimal.ZERO : exchangeRate;
+        BigDecimal oldInverseRate = getInverseExchangeRate();
 
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
+        firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
         triggerAmount(Math.round(newRate.doubleValue() * fxAmount));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
+    }
+
+    public BigDecimal getInverseExchangeRate()
+    {
+        return BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+    }
+
+    public void setInverseExchangeRate(BigDecimal exchnageRate)
+    {
+        setExchangeRate(BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN));
     }
 
     public long getAmount()
@@ -358,7 +381,9 @@ public class AccountTransactionModel extends AbstractModel
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxAmount), 10,
                             RoundingMode.HALF_UP);
+            BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
+            firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -399,6 +424,11 @@ public class AccountTransactionModel extends AbstractModel
     public String getExchangeRateCurrencies()
     {
         return String.format("%s/%s", getAccountCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
+    }
+
+    public String getInverseExchangeRateCurrencies()
+    {
+        return String.format("%s/%s", getSecurityCurrencyCode(), getAccountCurrencyCode()); //$NON-NLS-1$
     }
 
     public AccountTransaction.Type getType()

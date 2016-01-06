@@ -12,6 +12,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -45,10 +48,12 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -217,17 +222,30 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
+    @Inject
+    private PortfolioPart part;
+
+    private boolean useIndirectQuotation = false;
+
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
-    private PortfolioPart part;
     private Color warningColor;
 
     private boolean isFirstView = true;
 
-    public AbstractNodeTreeViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
-        this.part = part;
+    }
+
+    @Inject
+    public void setUseIndirectQuotation(
+                    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
+    {
+        this.useIndirectQuotation = useIndirectQuotation;
+
+        if (nodeViewer != null)
+            nodeViewer.refresh();
     }
 
     protected abstract String readExpansionState();
@@ -471,7 +489,25 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return null;
 
                 CurrencyConverter converter = getModel().getCurrencyConverter();
-                return Values.ExchangeRate.format(converter.getRate(LocalDate.now(), baseCurrency).getValue());
+                ExchangeRate rate = converter.getRate(LocalDate.now(), baseCurrency);
+
+                if (useIndirectQuotation)
+                    rate = rate.inverse();
+
+                return Values.ExchangeRate.format(rate.getValue());
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                String text = getText(e);
+                if (text == null)
+                    return null;
+
+                String term = getModel().getCurrencyConverter().getTermCurrency();
+                String base = ((TaxonomyNode) e).getAssignment().getInvestmentVehicle().getCurrencyCode();
+
+                return text + ' ' + (useIndirectQuotation ? base + '/' + term : term + '/' + base);
             }
         });
         column.setVisible(false);

@@ -3,10 +3,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
+import javax.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -30,12 +27,17 @@ import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
 /* package */class TreeMapViewer extends AbstractChartPage
 {
     private TreeMap<TaxonomyNode> treeMap;
     private TreeMapLegend legend;
 
+    @Inject
     public TreeMapViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);

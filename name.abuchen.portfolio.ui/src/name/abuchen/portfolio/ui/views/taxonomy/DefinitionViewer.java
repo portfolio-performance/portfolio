@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -11,7 +13,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
 
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -19,9 +20,10 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
 
-    public DefinitionViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    @Inject
+    public DefinitionViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        super(part, model, renderer);
+        super(model, renderer);
     }
 
     @Override

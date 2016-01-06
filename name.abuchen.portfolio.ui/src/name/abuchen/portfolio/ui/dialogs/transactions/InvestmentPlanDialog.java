@@ -41,8 +41,9 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
     @Inject
     public InvestmentPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
     {
-        super(parentShell, new InvestmentPlanModel(client));
+        super(parentShell);
         this.client = client;
+        setModel(new InvestmentPlanModel(client));
     }
 
     private InvestmentPlanModel model()
