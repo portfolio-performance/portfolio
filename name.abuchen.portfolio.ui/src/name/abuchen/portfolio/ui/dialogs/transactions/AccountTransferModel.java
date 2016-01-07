@@ -116,7 +116,7 @@ public class AccountTransferModel extends AbstractModel
             Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
                             Money.of(sourceAccount.getCurrencyCode(), fxAmount), //
                             Money.of(targetAccount.getCurrencyCode(), amount), //
-                            getExchangeRate());
+                            getInverseExchangeRate());
 
             sourceTransaction.addUnit(forex);
         }
@@ -149,7 +149,7 @@ public class AccountTransferModel extends AbstractModel
         if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(sourceAccount.getCurrencyCode())
                         && forex.get().getForex().getCurrencyCode().equals(targetAccount.getCurrencyCode()))
         {
-            this.exchangeRate = forex.get().getExchangeRate();
+            this.exchangeRate = ExchangeRate.inverse(forex.get().getExchangeRate());
         }
         else
         {

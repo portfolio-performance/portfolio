@@ -96,4 +96,9 @@ public class ExchangeRate implements Comparable<ExchangeRate>
     {
         return String.format("%tF %,.10f", time, value); //$NON-NLS-1$
     }
+
+    public static BigDecimal inverse(BigDecimal rate)
+    {
+        return BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
+    }
 }
