@@ -34,8 +34,9 @@ public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
         }
         else if (source instanceof CDateTime)
         {
-            Date d = ((CDateTime) source).getSelection();
-            return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()).toLocalDate();
+            Date date = ((CDateTime) source).getSelection();
+            return date == null ? null
+                            : LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
         }
         else
         {
