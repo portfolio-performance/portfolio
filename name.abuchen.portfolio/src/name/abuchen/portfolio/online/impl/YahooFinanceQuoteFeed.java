@@ -51,7 +51,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // v = volume
     // Source = http://cliffngan.net/a/13
 
-    private static final String SEARCH_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback"; //$NON-NLS-1$
+    private static final String SEARCH_URL = "https://s.yimg.com/aq/autoc?query={0}&region=DE&lang=de-DE&callback=YAHOO.util.ScriptNodeDataSource.callbacks"; //$NON-NLS-1$
 
     @SuppressWarnings("nls")
     private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/table.csv?ignore=.csv" //
@@ -320,8 +320,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 
             // strip away java script call back method
-            p = html.indexOf('(');
-            html = html.substring(p + 1, html.length() - 1);
+            int start = html.indexOf('(');
+            int end = html.lastIndexOf(')');
+            html = html.substring(start + 1, end);
 
             JSONObject response = (JSONObject) JSONValue.parse(html);
             if (response != null)
