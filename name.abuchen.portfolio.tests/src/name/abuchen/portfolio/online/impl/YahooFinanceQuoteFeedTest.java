@@ -169,45 +169,12 @@ public class YahooFinanceQuoteFeedTest
     }
 
     @Test
-    public void testParsingExchanges() throws IOException
-    {
-        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
-        {
-            @Override
-            protected InputStream openStream(String url) throws IOException
-            {
-                return new ByteArrayInputStream(
-                                ("YAHOO.Finance.SymbolSuggest.ssCallback({\"ResultSet\":{"
-                                                + "\"Query\":\"bas.\","
-                                                + "\"Result\":[{\"symbol\":\"BAS.DE\",\"name\": \"BASF SE\",\"exch\": \"GER\",\"type\": \"S\",\"exchDisp\":\"XETRA\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.F\",\"name\": \"BASF N\",\"exch\": \"FRA\",\"type\": \"S\",\"exchDisp\":\"Frankfurt\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.AX\",\"name\": \"Bass Strait Oil Company Ltd\",\"exch\": \"ASX\",\"type\": \"S\",\"exchDisp\":\"Australian\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.HM\",\"name\": \"BASF N\",\"exch\": \"HAM\",\"type\": \"S\",\"exchDisp\":\"Hamburg\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.SG\",\"name\": \"BASF N\",\"exch\": \"STU\",\"type\": \"S\",\"exchDisp\":\"Stuttgart\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.SW\",\"name\": \"BASF N\",\"exch\": \"EBS\",\"type\": \"S\",\"exchDisp\":\"Swiss\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.HA\",\"name\": \"BASF N\",\"exch\": \"HAN\",\"type\": \"S\",\"exchDisp\":\"Hanover\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.MU\",\"name\": \"BASF N\",\"exch\": \"MUN\",\"type\": \"S\",\"exchDisp\":\"Munich\",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.BR\",\"name\": \"BASILIX\",\"exch\": \"BRU\",\"type\": \"S\",\"exchDisp\":\"Brussels Stock Exchange \",\"typeDisp\":\"Equity\"},"
-                                                + "{\"symbol\":\"BAS.BE\",\"name\": \"BASF N\",\"exch\": \"BER\",\"type\": \"S\",\"exchDisp\":\"Berlin\",\"typeDisp\":\"Equity\"}]}})")
-                                                .getBytes(StandardCharsets.UTF_8));
-            }
-        };
-
-        Security s = new Security();
-        s.setTickerSymbol("BAS.DE");
-        List<Exchange> exchanges = feed.getExchanges(s, new ArrayList<Exception>());
-
-        assertThat(exchanges.size(), is(10));
-        assertThat(exchanges.get(0).getId(), is("BAS.DE"));
-    }
-
-    @Test
     public void testThatAtLeastTheGivenExchangeIsReturned() throws IOException
     {
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
         {
             @Override
-            protected InputStream openStream(String url) throws IOException
+            protected void searchSymbols(List<Exchange> answer, String query) throws IOException
             {
                 throw new IOException();
             }

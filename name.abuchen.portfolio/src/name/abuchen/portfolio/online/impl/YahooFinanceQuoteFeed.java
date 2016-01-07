@@ -23,12 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
@@ -50,8 +45,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     // p = previous close
     // v = volume
     // Source = http://cliffngan.net/a/13
-
-    private static final String SEARCH_URL = "https://s.yimg.com/aq/autoc?query={0}&region=DE&lang=de-DE&callback=YAHOO.util.ScriptNodeDataSource.callbacks"; //$NON-NLS-1$
 
     @SuppressWarnings("nls")
     private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/table.csv?ignore=.csv" //
@@ -300,7 +293,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
-        List<Exchange> answer = new ArrayList<Exchange>();
+        List<Exchange> answer = new ArrayList<>();
 
         String symbol = subject.getTickerSymbol();
 
@@ -312,32 +305,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         int p = symbol.indexOf('.');
         String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
 
-        // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
-        String searchUrl = MessageFormat.format(SEARCH_URL, prefix);
-
-        try (Scanner scanner = new Scanner(openStream(searchUrl)))
+        try
         {
-            String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-
-            // strip away java script call back method
-            int start = html.indexOf('(');
-            int end = html.lastIndexOf(')');
-            html = html.substring(start + 1, end);
-
-            JSONObject response = (JSONObject) JSONValue.parse(html);
-            if (response != null)
-            {
-                JSONObject resultSet = (JSONObject) response.get("ResultSet"); //$NON-NLS-1$
-                if (resultSet != null)
-                {
-                    JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
-                    if (result != null)
-                    {
-                        for (int ii = 0; ii < result.size(); ii++)
-                            answer.add(createExchange(((JSONObject) result.get(ii)).get("symbol").toString())); //$NON-NLS-1$
-                    }
-                }
-            }
+            searchSymbols(answer, prefix);
         }
         catch (IOException e)
         {
@@ -364,6 +334,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return answer;
     }
 
+
     private Exchange createExchange(String symbol)
     {
         int e = symbol.indexOf('.');
@@ -389,5 +360,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     protected InputStream openStream(String wknUrl) throws IOException
     {
         return new URL(wknUrl).openStream();
+    }
+
+    /* enable testing */
+    protected void searchSymbols(List<Exchange> answer, String query) throws IOException
+    {
+        new YahooSymbolSearch().search(query).map(r -> createExchange(r.getSymbol())).forEach(e -> answer.add(e));
     }
 }
