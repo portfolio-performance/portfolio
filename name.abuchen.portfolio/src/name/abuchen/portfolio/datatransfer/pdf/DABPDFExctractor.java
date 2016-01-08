@@ -174,7 +174,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DAB Bank AG"; //$NON-NLS-1$
+        return "DAB Bank"; //$NON-NLS-1$
     }
 
 }
