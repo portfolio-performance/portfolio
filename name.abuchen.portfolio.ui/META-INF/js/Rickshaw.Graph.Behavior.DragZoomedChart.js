@@ -143,17 +143,14 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 	$(self.graph.element).mousemove(function(event) {
 		if (self.isMouseDown && !self.isMoving) {
 			self.isMoving = true;
-			var chartElement, parentOffset, x, y, relX, relY;
-			chartElement = $(self.graph.element);
-			parentOffset = chartElement.parent().offset();
-			x = (event.pageX - parentOffset.left);
-			y = (event.pageY - parentOffset.top);
-			relX = (x - self.mouseDownPos.x) * -1;
-			relY = (y - self.mouseDownPos.y);
+			var parentOffset, chartXY, relX, relY;
+			chartXY = self.getMouseXYonChart(event.pageX, event.pageY);
+			relX = (chartXY.x - self.mouseDownPos.x) * -1;
+			relY = (chartXY.y - self.mouseDownPos.y);
 			if (Math.abs(relX) > self.MIN_MOUSEMOVE_DELTA || Math.abs(relY) > self.MIN_MOUSEMOVE_DELTA) {
 				self.MoveChartViewPort(relX, relY);
-				self.mouseDownPos.x = x;
-				self.mouseDownPos.y = y;
+				self.mouseDownPos.x = chartXY.x;
+				self.mouseDownPos.y = chartXY.y;
 			}
 			self.isMoving = false;
 		}
@@ -167,16 +164,22 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 	});
 
 	$(self.graph.element).mouseout(function(event) {
-		var chartElement, parentOffset, x, y, relX, relY;
-		chartElement = $(self.graph.element);
-		parentOffset = chartElement.parent().offset();
-		x = (event.pageX - parentOffset.left);
-		y = (event.pageY - parentOffset.top);
-
-		if (x < 0 || x > chartElement.parent().width() || y < 0 || y > chartElement.parent().height()) {
+		var chartElementParent, chartXY;
+		chartElementParent = $(self.graph.element).parent();
+		chartXY = self.getMouseXYonChart(event.pageX, event.pageY);
+		if (chartXY.x < 0 || chartXY.x > chartElementParent.width() || chartXY.y < 0 || chartXY.y > chartElementParent.height()) {
 			$(this).mouseup();
 		}
-
 	});
+
+	this.getMouseXYonChart = function(pageX, pageY) {
+		var chartElement, parentOffset;
+		chartElement = $(self.graph.element);
+		parentOffset = chartElement.parent().offset();
+		return {
+			x : (event.pageX - parentOffset.left),
+			y : (event.pageY - parentOffset.top)
+		};
+	};
 
 };
