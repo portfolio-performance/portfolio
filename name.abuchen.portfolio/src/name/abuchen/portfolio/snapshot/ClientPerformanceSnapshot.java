@@ -65,11 +65,13 @@ public class ClientPerformanceSnapshot
         private List<Position> positions = new ArrayList<Position>();
 
         private String label;
+        private String sign;
         private Money valuation;
 
-        public Category(String label, Money valuation)
+        public Category(String label, String sign, Money valuation)
         {
             this.label = label;
+            this.sign = sign;
             this.valuation = valuation;
         }
 
@@ -81,6 +83,11 @@ public class ClientPerformanceSnapshot
         public String getLabel()
         {
             return label;
+        }
+
+        public String getSign()
+        {
+            return sign;
         }
 
         public List<Position> getPositions()
@@ -195,20 +202,20 @@ public class ClientPerformanceSnapshot
     private void calculate()
     {
         categories.put(CategoryType.INITIAL_VALUE,
-                        new Category(String.format(Messages.ColumnInitialValue, snapshotStart.getTime()), //
+                        new Category(String.format(Messages.ColumnInitialValue, snapshotStart.getTime()), "", //$NON-NLS-1$
                                         snapshotStart.getMonetaryAssets()));
 
         Money zero = Money.of(converter.getTermCurrency(), 0);
 
-        categories.put(CategoryType.CAPITAL_GAINS, new Category(Messages.ColumnCapitalGains, zero));
-        categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, zero));
-        categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, zero));
-        categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, zero));
-        categories.put(CategoryType.CURRENCY_GAINS, new Category(Messages.ColumnCurrencyGains, zero));
-        categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, zero));
+        categories.put(CategoryType.CAPITAL_GAINS, new Category(Messages.ColumnCapitalGains, "+", zero)); //$NON-NLS-1$
+        categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, "+", zero)); //$NON-NLS-1$
+        categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, "-", zero)); //$NON-NLS-1$
+        categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, "-", zero)); //$NON-NLS-1$
+        categories.put(CategoryType.CURRENCY_GAINS, new Category(Messages.ColumnCurrencyGains, "+", zero)); //$NON-NLS-1$
+        categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, "+", zero)); //$NON-NLS-1$
 
         categories.put(CategoryType.FINAL_VALUE,
-                        new Category(String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), //
+                        new Category(String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), "=", //$NON-NLS-1$
                                         snapshotEnd.getMonetaryAssets()));
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();

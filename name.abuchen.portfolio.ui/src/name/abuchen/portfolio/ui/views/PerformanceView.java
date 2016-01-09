@@ -101,6 +101,7 @@ public class PerformanceView extends AbstractHistoricView
         private Label semiVolatility;
 
         private Label[] labels;
+        private Label[] signs;
         private Label[] values;
 
         public void setInput(ClientPerformanceSnapshot snapshot)
@@ -124,6 +125,7 @@ public class PerformanceView extends AbstractHistoricView
             for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
             {
                 labels[ii].setText(category.getLabel());
+                signs[ii].setText(category.getSign());
                 values[ii].setText(Values.Money.format(category.getValuation(), index.getClient().getBaseCurrency()));
 
                 if (++ii >= labels.length)
@@ -305,21 +307,23 @@ public class PerformanceView extends AbstractHistoricView
         private void createCalculation(Composite container)
         {
             Composite composite = new Composite(container, SWT.NONE);
-            GridLayoutFactory.fillDefaults().numColumns(2).applyTo(composite);
+            GridLayoutFactory.fillDefaults().numColumns(3).applyTo(composite);
             composite.setBackground(container.getBackground());
 
             Label heading = new Label(composite, SWT.NONE);
             heading.setText(Messages.PerformanceTabCalculation);
             heading.setFont(boldFont);
             heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
-            GridDataFactory.fillDefaults().span(2, 1).applyTo(heading);
+            GridDataFactory.fillDefaults().span(3, 1).applyTo(heading);
 
             labels = new Label[ClientPerformanceSnapshot.CategoryType.values().length];
+            signs = new Label[labels.length];
             values = new Label[labels.length];
 
             for (int ii = 0; ii < labels.length; ii++)
             {
                 labels[ii] = new Label(composite, SWT.NONE);
+                signs[ii] = new Label(composite, SWT.NONE);
                 values[ii] = new Label(composite, SWT.RIGHT);
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
             }
