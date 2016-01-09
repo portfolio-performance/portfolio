@@ -35,8 +35,10 @@ function LineChart(args) {
 		series : args.series
 	});
 
+	
 	x_axis = new Rickshaw.Graph.Axis.Time({
-		graph : graph
+		graph       : graph,
+		timeFixture : new Rickshaw.Fixtures.PortfolioTime()
 	});
 
 	y_axis = new Rickshaw.Graph.Axis.Y({
