@@ -63,34 +63,37 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 		}
 	};
 
-	this.initRange = {
-		x : {
-			min : undefined,
-			max : undefined
-		},
-		y : {
-			min : undefined,
-			max : undefined
-		}
-	};
-
 	this.graph.onConfigure(function() {
 		self.graph.series.forEach(function(series) {
 			if (series.disabled) {
 				return;
 			}
 			var domain = self.graph.renderer.domain(series);
-			if (self.initRange.x.min === undefined || domain.x[0] < initRange.x.min) {
-				self.initRange.x.min = domain.x[0];
-			}
-			if (self.initRange.x.max === undefined || domain.x[1] > initRange.x.max) {
-				self.initRange.x.max = domain.x[1];
-			}
-			if (self.initRange.y.min === undefined || domain.y[0] < initRange.y.min) {
-				self.initRange.y.min = domain.y[0];
-			}
-			if (self.initRange.y.max === undefined || domain.y[1] > initRange.y.max) {
-				self.initRange.y.max = domain.y[1];
+
+			if (self.initRange === undefined) {
+				self.initRange = {
+					x : {
+						min : domain.x[0],
+						max : domain.x[1]
+					},
+					y : {
+						min : domain.y[0],
+						max : domain.y[1]
+					}
+				};
+			} else {
+				if (self.initRange.x.min === undefined || domain.x[0] < self.initRange.x.min) {
+					self.initRange.x.min = domain.x[0];
+				}
+				if (self.initRange.x.max === undefined || domain.x[1] > self.initRange.x.max) {
+					self.initRange.x.max = domain.x[1];
+				}
+				if (self.initRange.y.min === undefined || domain.y[0] < self.initRange.y.min) {
+					self.initRange.y.min = domain.y[0];
+				}
+				if (self.initRange.y.max === undefined || domain.y[1] > self.initRange.y.max) {
+					self.initRange.y.max = domain.y[1];
+				}
 			}
 		});
 	});
@@ -139,7 +142,8 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 
 	$(self.graph.element).mousemove(function(event) {
 		if (self.isMouseDown && !self.isMoving) {
-			var chartElement, x, y, relX, relY;
+			self.isMoving = true;
+			var chartElement, parentOffset, x, y, relX, relY;
 			chartElement = $(self.graph.element);
 			parentOffset = chartElement.parent().offset();
 			x = (event.pageX - parentOffset.left);
@@ -147,12 +151,11 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 			relX = (x - self.mouseDownPos.x) * -1;
 			relY = (y - self.mouseDownPos.y);
 			if (Math.abs(relX) > self.MIN_MOUSEMOVE_DELTA || Math.abs(relY) > self.MIN_MOUSEMOVE_DELTA) {
-				self.isMoving = true;
 				self.MoveChartViewPort(relX, relY);
 				self.mouseDownPos.x = x;
 				self.mouseDownPos.y = y;
-				self.isMoving = false;
 			}
+			self.isMoving = false;
 		}
 	});
 
@@ -164,7 +167,16 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 	});
 
 	$(self.graph.element).mouseout(function(event) {
-		$(this).mouseup();
+		var chartElement, parentOffset, x, y, relX, relY;
+		chartElement = $(self.graph.element);
+		parentOffset = chartElement.parent().offset();
+		x = (event.pageX - parentOffset.left);
+		y = (event.pageY - parentOffset.top);
+
+		if (x < 0 || x > chartElement.parent().width() || y < 0 || y > chartElement.parent().height()) {
+			$(this).mouseup();
+		}
+
 	});
 
 };
