@@ -9,7 +9,7 @@
    <launcherArgs>
       <programArgsLin>--launcher.GTK_version 2
       </programArgsLin>
-      <vmArgs>-Xms40m -Xmx512m
+      <vmArgs>-Xms256m -Xmx768m
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
