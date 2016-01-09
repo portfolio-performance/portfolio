@@ -173,7 +173,6 @@ public class EditSecurityDialog extends Dialog
     {
         tabFolder = new CTabFolder(container, SWT.TOP | SWT.FLAT);
         tabFolder.setBorderVisible(true);
-        tabFolder.setTabHeight(20);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
         tabFolder.addSelectionListener(new SelectionAdapter()
