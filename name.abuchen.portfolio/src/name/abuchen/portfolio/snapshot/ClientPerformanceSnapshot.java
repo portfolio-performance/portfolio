@@ -228,11 +228,8 @@ public class ClientPerformanceSnapshot
         for (Security s : client.getSecurities())
             valuation.put(s, MutableMoney.of(converter.getTermCurrency()));
 
-        snapshotStart.getJointPortfolio()
-                        .getPositions()
-                        .stream()
-                        .forEach(p -> valuation.get(p.getInvestmentVehicle()).subtract(
-                                        p.calculateValue().with(converter.at(snapshotStart.getTime()))));
+        snapshotStart.getJointPortfolio().getPositions().stream().forEach(p -> valuation.get(p.getInvestmentVehicle())
+                        .subtract(p.calculateValue().with(converter.at(snapshotStart.getTime()))));
 
         for (PortfolioTransaction t : snapshotStart.getJointPortfolio().getSource().getTransactions())
         {
@@ -256,18 +253,13 @@ public class ClientPerformanceSnapshot
             }
         }
 
-        snapshotEnd.getJointPortfolio()
-                        .getPositions()
-                        .stream()
-                        .forEach(p -> valuation.get(p.getInvestmentVehicle()).add(
-                                        p.calculateValue().with(converter.at(snapshotEnd.getTime()))));
+        snapshotEnd.getJointPortfolio().getPositions().stream().forEach(p -> valuation.get(p.getInvestmentVehicle())
+                        .add(p.calculateValue().with(converter.at(snapshotEnd.getTime()))));
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
 
         // add securities w/ capital gains to the positions
-        capitalGains.positions = valuation.entrySet()
-                        .stream()
-                        //
+        capitalGains.positions = valuation.entrySet().stream() //
                         .filter(entry -> !entry.getValue().isZero())
                         .map(entry -> new Position(entry.getKey(), entry.getValue().toMoney()))
                         .sorted((p1, p2) -> p1.getLabel().compareTo(p2.getLabel())) //
@@ -305,8 +297,9 @@ public class ClientPerformanceSnapshot
                         earnings.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         if (t.getSecurity() != null)
                         {
-                            earningsBySecurity.computeIfAbsent(t.getSecurity(),
-                                            k -> MutableMoney.of(converter.getTermCurrency())) //
+                            earningsBySecurity
+                                            .computeIfAbsent(t.getSecurity(),
+                                                            k -> MutableMoney.of(converter.getTermCurrency())) //
                                             .add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         }
                         else
@@ -371,8 +364,7 @@ public class ClientPerformanceSnapshot
 
         Category earningsCategory = categories.get(CategoryType.EARNINGS);
         earningsCategory.valuation = earnings.toMoney();
-        earningsCategory.positions = earningsBySecurity.entrySet()
-                        .stream()
+        earningsCategory.positions = earningsBySecurity.entrySet().stream()
                         //
                         .filter(entry -> !entry.getValue().isZero())
                         .map(entry -> new Position(entry.getKey(), entry.getValue().toMoney()))
@@ -418,7 +410,6 @@ public class ClientPerformanceSnapshot
                     case INTEREST:
                     case DEPOSIT:
                     case TAX_REFUND:
-                    case TRANSFER_IN:
                     case SELL:
                         value.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
@@ -426,8 +417,13 @@ public class ClientPerformanceSnapshot
                     case FEES:
                     case TAXES:
                     case BUY:
-                    case TRANSFER_OUT:
                         value.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        break;
+                    case TRANSFER_IN:
+                        value.subtract(determineTransferAmount(t));
+                        break;
+                    case TRANSFER_OUT:
+                        value.add(determineTransferAmount(t));
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -452,5 +448,28 @@ public class ClientPerformanceSnapshot
             currencyGains.positions.add(new Position(currency, money.toMoney()));
         });
         Collections.sort(currencyGains.positions, (p1, p2) -> p1.getLabel().compareTo(p2.getLabel()));
+    }
+
+    /**
+     * Determine the monetary amount when transferring cash between accounts.
+     * Because the actual exchange rate of the transferal might differ from the
+     * historical rate given by the exchange rate provider (e.g. ECB), we would
+     * get rounding differences if we do not take the original amount. If the
+     * transferal does not involve the term currency at all, we calculate the
+     * average value out of both converted amounts.
+     */
+    private Money determineTransferAmount(AccountTransaction t)
+    {
+        if (converter.getTermCurrency().equals(t.getCurrencyCode()))
+            return t.getMonetaryAmount();
+
+        Transaction other = t.getCrossEntry().getCrossTransaction(t);
+        if (converter.getTermCurrency().equals(other.getCurrencyCode()))
+            return other.getMonetaryAmount();
+
+        MutableMoney m = MutableMoney.of(converter.getTermCurrency());
+        m.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        m.add(other.getMonetaryAmount().with(converter.at(t.getDate())));
+        return m.divide(2).toMoney();
     }
 }

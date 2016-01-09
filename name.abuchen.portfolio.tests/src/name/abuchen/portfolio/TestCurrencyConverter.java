@@ -64,8 +64,9 @@ public class TestCurrencyConverter implements CurrencyConverter
         if (amount.isZero())
             return Money.of(termCurrency, 0);
 
+        // testing: any other currency will be converted 1:1
         if (!amount.getCurrencyCode().equals(series.getBaseCurrency()))
-            throw new MonetaryException();
+            return Money.of(termCurrency, amount.getAmount());
 
         ExchangeRate rate = getRate(date, amount.getCurrencyCode());
         BigDecimal converted = rate.getValue().multiply(BigDecimal.valueOf(amount.getAmount()));

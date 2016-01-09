@@ -75,6 +75,12 @@ public final class MutableMoney
         return this;
     }
 
+    public MutableMoney divide(double divisor)
+    {
+        this.amount = Math.round(this.amount / divisor);
+        return this;
+    }
+
     public Money toMoney()
     {
         return Money.of(currencyCode, amount);

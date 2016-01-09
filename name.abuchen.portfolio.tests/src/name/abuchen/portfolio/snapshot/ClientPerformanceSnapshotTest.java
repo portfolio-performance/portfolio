@@ -5,10 +5,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Test;
 
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
@@ -16,19 +19,20 @@ import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class ClientPerformanceSnapshotTest
@@ -201,10 +205,10 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction("2010-01-01", CurrencyUnit.EUR, 1_00, security, Values.Share
-                        .factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction("2011-01-15", CurrencyUnit.EUR, 99_00, security, Values.Share
-                        .factorize(1), PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction("2010-01-01", CurrencyUnit.EUR, 1_00, security,
+                        Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction("2011-01-15", CurrencyUnit.EUR, 99_00, security,
+                        Values.Share.factorize(1), PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -319,4 +323,50 @@ public class ClientPerformanceSnapshotTest
                                         .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
     }
 
+    @Test
+    public void testCurrencyGainsWithTransferalInOtherCurrencies()
+    {
+        Client client = new Client();
+
+        Account usd = new AccountBuilder("USD") //
+                        .deposit_("2015-01-01", 1000_00) //
+                        .addTo(client);
+
+        Account cad = new AccountBuilder("CAD") //
+                        .deposit_("2015-01-01", 1000_00) //
+                        .addTo(client);
+        
+        // insert account transfer
+
+        AccountTransferEntry entry = new AccountTransferEntry(usd, cad);
+        entry.setDate(LocalDate.parse("2015-01-10"));
+
+        AccountTransaction source = entry.getSourceTransaction();
+        AccountTransaction target = entry.getTargetTransaction();
+
+        source.setMonetaryAmount(Money.of("USD", 500_00));
+        target.setMonetaryAmount(Money.of("CAD", 1000_00));
+
+        source.addUnit(new Unit(Unit.Type.GROSS_VALUE, source.getMonetaryAmount(), target.getMonetaryAmount(),
+                        BigDecimal.valueOf(.5)));
+
+        entry.insert();
+
+        // check currency gain calculation of client performance snapshot
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, //
+                        LocalDate.parse("2015-01-01"), LocalDate.parse("2015-01-15"));
+
+        MutableMoney currencyGains = MutableMoney.of(converter.getTermCurrency());
+        currencyGains.subtract(snapshot.getValue(CategoryType.INITIAL_VALUE));
+        currencyGains.subtract(snapshot.getValue(CategoryType.CAPITAL_GAINS));
+        currencyGains.subtract(snapshot.getValue(CategoryType.EARNINGS));
+        currencyGains.add(snapshot.getValue(CategoryType.FEES));
+        currencyGains.add(snapshot.getValue(CategoryType.TAXES));
+        currencyGains.add(snapshot.getValue(CategoryType.TRANSFERS));
+        currencyGains.add(snapshot.getValue(CategoryType.FINAL_VALUE));
+
+        assertThat(snapshot.getCategoryByType(CategoryType.CURRENCY_GAINS).getValuation(), is(currencyGains.toMoney()));
+    }
 }

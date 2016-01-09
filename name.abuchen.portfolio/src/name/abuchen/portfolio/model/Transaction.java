@@ -284,8 +284,8 @@ public abstract class Transaction implements Annotated
                         .collect(MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
                             if (converter.getTermCurrency().equals(unit.getAmount().getCurrencyCode()))
                                 return unit.getAmount();
-                            else if (unit.getForex() != null)
-                                return unit.getForex().with(converter.at(date));
+                            // else if (unit.getForex() != null)
+                            // return unit.getForex().with(converter.at(date));
                             else
                                 return unit.getAmount().with(converter.at(date));
                         }));
