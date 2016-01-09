@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -37,6 +38,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
 {
@@ -154,19 +156,27 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (option == null)
             {
                 tableColumn.setText(column.getLabel());
-                tableColumn.setToolTipText(column.getToolTipText());
+                tableColumn.setToolTipText(wordwrap(column.getToolTipText()));
             }
             else
             {
                 tableColumn.setText(column.getOptions().getColumnLabel(option));
                 String description = column.getOptions().getDescription(option);
-                tableColumn.setToolTipText(description != null ? description : column.getToolTipText());
+                tableColumn.setToolTipText(wordwrap(description != null ? description : column.getToolTipText()));
+
                 tableColumn.setData(OPTIONS_KEY, option);
             }
 
             layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
             setCommonParameters(column, col, direction);
+        }
+
+        private String wordwrap(String text)
+        {
+            // other platforms such as Mac and Linux natively wrap tool tip
+            // labels, but not Windows
+            return Platform.OS_WIN32.equals(Platform.getOS()) ? TextUtil.wordwrap(text) : text;
         }
     }
 
