@@ -522,6 +522,7 @@ public class Messages extends NLS
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PrefCheckOnStartup;
+    public static String PrefCreateBackupBeforeSaving;
     public static String PrefDescriptionProxy;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
@@ -532,6 +533,7 @@ public class Messages extends NLS
     public static String PrefNoteIndirectQuotation;
     public static String PrefUpdateSite;
     public static String PrefTitle;
+    public static String PrefTitleGeneral;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;

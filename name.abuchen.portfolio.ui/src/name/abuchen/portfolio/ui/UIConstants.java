@@ -55,5 +55,11 @@ public interface UIConstants
          * displaying exchange rates.
          */
         String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to create a backup of the original file before
+         * saving. The backup file has the postfix ".backup".
+         */
+        String CREATE_BACKUP_BEFORE_SAVING = "CREATE_BACKUP_BEFORE_SAVING"; //$NON-NLS-1$
     }
 }

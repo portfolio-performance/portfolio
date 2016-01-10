@@ -2,6 +2,9 @@ package name.abuchen.portfolio.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -14,15 +17,18 @@ import javax.inject.Named;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -80,7 +86,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     private File clientFile;
     private Client client;
 
-    private PreferenceStore preferences = new PreferenceStore();
+    private PreferenceStore preferenceStore = new PreferenceStore();
     private Job regularQuoteUpdateJob;
 
     private Composite container;
@@ -94,6 +100,10 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     @Inject
     IEclipseContext context;
+
+    @Inject
+    @Preference
+    IEclipsePreferences preferences;
 
     @PostConstruct
     public void createComposite(Composite parent, MPart part) throws IOException
@@ -320,6 +330,10 @@ public class PortfolioPart implements LoadClientThread.Callback
         try
         {
             part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
+
+            if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+                createBackup(shell, clientFile);
+
             ClientFactory.save(client, clientFile, null, null);
             dirty.setDirty(false);
 
@@ -329,6 +343,27 @@ public class PortfolioPart implements LoadClientThread.Callback
         {
             ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
                             new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+        }
+    }
+
+    private void createBackup(Shell shell, File file)
+    {
+        try
+        {
+            // keep original extension in order to be able to open the backup
+            // file directly from within PP
+            String filename = file.getName();
+            int l = filename.lastIndexOf('.');
+            String suffix = ".backup"; //$NON-NLS-1$
+            String backupName = l > 0 ? filename.substring(0, l) + suffix + filename.substring(l) : filename + suffix;
+
+            Path sourceFile = file.toPath();
+            Path backupFile = sourceFile.resolveSibling(backupName);
+            Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (IOException e)
+        {
+            MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
         }
     }
 
@@ -395,7 +430,7 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     public IPreferenceStore getPreferenceStore()
     {
-        return preferences;
+        return preferenceStore;
     }
 
     /* package */void markDirty()
@@ -426,7 +461,7 @@ public class PortfolioPart implements LoadClientThread.Callback
 
             IEclipseContext viewContext = this.context.createChild();
             viewContext.set(Client.class, this.client);
-            viewContext.set(IPreferenceStore.class, this.preferences);
+            viewContext.set(IPreferenceStore.class, this.preferenceStore);
             viewContext.set(PortfolioPart.class, this);
 
             view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
@@ -520,12 +555,12 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     private void storePreferences()
     {
-        if (clientFile != null && preferences.needsSaving())
+        if (clientFile != null && preferenceStore.needsSaving())
         {
             try
             {
-                preferences.setFilename(getPreferenceStoreFile(clientFile).getAbsolutePath());
-                preferences.save();
+                preferenceStore.setFilename(getPreferenceStoreFile(clientFile).getAbsolutePath());
+                preferenceStore.save();
             }
             catch (IOException ignore)
             {
@@ -541,10 +576,10 @@ public class PortfolioPart implements LoadClientThread.Callback
             try
             {
                 File preferenceFile = getPreferenceStoreFile(clientFile);
-                preferences.setFilename(preferenceFile.getAbsolutePath());
+                preferenceStore.setFilename(preferenceFile.getAbsolutePath());
                 if (preferenceFile.exists())
                 {
-                    preferences.load();
+                    preferenceStore.load();
                 }
             }
             catch (IOException ignore)

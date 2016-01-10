@@ -15,5 +15,6 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
         store.setDefault(UIConstants.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
+        store.setDefault(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true);
     }
 }
