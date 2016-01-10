@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -14,6 +13,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -114,6 +115,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         tableViewer.setContentProvider(new SimpleListContentProvider());
 
         hookContextMenu(parent);
+        hookKeyListener();
     }
 
     public void setFullContextMenu(boolean fullContextMenu)
@@ -232,8 +234,9 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return t.getShares() != 0 ? Values.Money.format(t.getGrossPricePerShare(), owner.getClient()
-                                .getBaseCurrency()) : null;
+                return t.getShares() != 0
+                                ? Values.Money.format(t.getGrossPricePerShare(), owner.getClient().getBaseCurrency())
+                                : null;
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "grossPricePerShareAmount").attachTo(column); //$NON-NLS-1$
@@ -245,8 +248,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Money.format(((PortfolioTransaction) element).getGrossValue(), owner.getClient()
-                                .getBaseCurrency());
+                return Values.Money.format(((PortfolioTransaction) element).getGrossValue(),
+                                owner.getClient().getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "grossValueAmount").attachTo(column); //$NON-NLS-1$
@@ -259,8 +262,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.FEE), owner.getClient()
-                                .getBaseCurrency());
+                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.FEE),
+                                owner.getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -272,8 +275,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient()
-                                .getBaseCurrency());
+                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.TAX),
+                                owner.getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -333,18 +336,31 @@ public final class PortfolioTransactionsViewer implements ModificationListener
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillTransactionsContextMenu(manager);
-            }
-        });
+        menuMgr.addMenuListener(manager -> fillTransactionsContextMenu(manager));
 
         contextMenu = menuMgr.createContextMenu(parent.getShell());
         tableViewer.getTable().setMenu(contextMenu);
 
         tableViewer.getTable().addDisposeListener(e -> PortfolioTransactionsViewer.this.widgetDisposed());
+    }
+
+    private void hookKeyListener()
+    {
+        tableViewer.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+                {
+                    PortfolioTransaction transaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
+                                    .getSelection()).getFirstElement();
+
+                    if (transaction != null)
+                        createEditAction(transaction).run();
+                }
+            }
+        });
     }
 
     private void widgetDisposed()
@@ -363,30 +379,9 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
         if (firstTransaction != null)
         {
-            // buy / sell
-            if (firstTransaction.getCrossEntry() instanceof BuySellEntry)
-            {
-                BuySellEntry entry = (BuySellEntry) firstTransaction.getCrossEntry();
-                new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
-                                .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                                .parameters(entry.getPortfolioTransaction().getType()) //
-                                .addTo(manager);
-            }
-            else if (firstTransaction.getCrossEntry() instanceof PortfolioTransferEntry)
-            {
-                PortfolioTransferEntry entry = (PortfolioTransferEntry) firstTransaction.getCrossEntry();
-                new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                                .type(SecurityTransferDialog.class, d -> d.setEntry(entry)) //
-                                .addTo(manager);
-            }
-            else
-            {
-                TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio, firstTransaction);
-                new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                                .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
-                                .parameters(firstTransaction.getType()) //
-                                .addTo(manager);
-            }
+            Action editAction = createEditAction(firstTransaction);
+            editAction.setAccelerator(SWT.MOD1 | 'e');
+            manager.add(editAction);
             manager.add(new Separator());
         }
 
@@ -413,6 +408,31 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                     owner.notifyModelUpdated();
                 }
             });
+        }
+    }
+
+    private Action createEditAction(PortfolioTransaction transaction)
+    {
+        // buy / sell
+        if (transaction.getCrossEntry() instanceof BuySellEntry)
+        {
+            BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (transaction.getCrossEntry() instanceof PortfolioTransferEntry)
+        {
+            PortfolioTransferEntry entry = (PortfolioTransferEntry) transaction.getCrossEntry();
+            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
+                            .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
+        }
+        else
+        {
+            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio, transaction);
+            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
+                            .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
+                            .parameters(transaction.getType());
         }
     }
 }

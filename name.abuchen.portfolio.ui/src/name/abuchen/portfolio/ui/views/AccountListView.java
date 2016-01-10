@@ -6,7 +6,6 @@ import java.util.EnumSet;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -18,6 +17,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -267,13 +268,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
 
-        hookContextMenu(accounts.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillAccountsContextMenu(manager);
-            }
-        });
+        hookContextMenu(accounts.getTable(), manager -> fillAccountsContextMenu(manager));
     }
 
     private void fillAccountsContextMenu(IMenuManager manager)
@@ -527,13 +522,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         transactions.setContentProvider(new SimpleListContentProvider());
 
-        hookContextMenu(transactions.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillTransactionsContextMenu(manager);
-            }
-        });
+        hookContextMenu(transactions.getTable(), manager -> fillTransactionsContextMenu(manager));
+
+        hookKeyListener();
 
         if (!getClient().getAccounts().isEmpty())
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
@@ -547,6 +538,26 @@ public class AccountListView extends AbstractListView implements ModificationLis
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
+    private void hookKeyListener()
+    {
+        transactions.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+                {
+                    Account account = (Account) transactions.getData(Account.class.toString());
+                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+
+                    if (account != null && transaction != null)
+                        createEditAction(account, transaction).run();
+                }
+            }
+        });
+    }
+
     private void fillTransactionsContextMenu(IMenuManager manager)
     {
         Account account = (Account) transactions.getData(Account.class.toString());
@@ -558,29 +569,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         if (transaction != null)
         {
-            // buy / sell
-            if (transaction.getCrossEntry() instanceof BuySellEntry)
-            {
-                BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
-                new OpenDialogAction(this, Messages.MenuEditTransaction)
-                                .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                                .parameters(entry.getPortfolioTransaction().getType()) //
-                                .addTo(manager);
-            }
-            else if (transaction.getCrossEntry() instanceof AccountTransferEntry)
-            {
-                AccountTransferEntry entry = (AccountTransferEntry) transaction.getCrossEntry();
-                new OpenDialogAction(this, Messages.MenuEditTransaction) //
-                                .type(AccountTransferDialog.class, d -> d.setEntry(entry)) //
-                                .addTo(manager);
-            }
-            else
-            {
-                new OpenDialogAction(this, Messages.MenuEditTransaction) //
-                                .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
-                                .parameters(transaction.getType()) //
-                                .addTo(manager);
-            }
+            Action action = createEditAction(account, transaction);
+            action.setAccelerator(SWT.MOD1 | 'e');
+            manager.add(action);
             manager.add(new Separator());
         }
 
@@ -608,6 +599,30 @@ public class AccountListView extends AbstractListView implements ModificationLis
                     transactions.setInput(account.getTransactions());
                 }
             });
+        }
+    }
+
+    private Action createEditAction(Account account, AccountTransaction transaction)
+    {
+        // buy / sell
+        if (transaction.getCrossEntry() instanceof BuySellEntry)
+        {
+            BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (transaction.getCrossEntry() instanceof AccountTransferEntry)
+        {
+            AccountTransferEntry entry = (AccountTransferEntry) transaction.getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(AccountTransferDialog.class, d -> d.setEntry(entry));
+        }
+        else
+        {
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
+                            .parameters(transaction.getType());
         }
     }
 }

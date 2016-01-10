@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -24,6 +23,8 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -122,6 +123,8 @@ public final class SecuritiesTable implements ModificationListener
         securities.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(securities));
+
+        hookKeyListener();
 
         securities.refresh();
 
@@ -490,17 +493,24 @@ public final class SecuritiesTable implements ModificationListener
         view.markDirty();
     }
 
+    private void hookKeyListener()
+    {
+        securities.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+                    new EditSecurityAction().run();
+            }
+        });
+    }
+
     private void hookContextMenu()
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillContextMenu(manager);
-            }
-        });
+        menuMgr.addMenuListener(manager -> fillContextMenu(manager));
 
         contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
@@ -521,21 +531,7 @@ public final class SecuritiesTable implements ModificationListener
         if (security.getCurrencyCode() != null)
             fillTransactionContextMenu(manager, security);
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new EditSecurityDialog(getShell(), getClient(), security);
-            }
-
-            @Override
-            protected void performFinish(Security security)
-            {
-                super.performFinish(security);
-                updateQuotes(security);
-            }
-        });
+        manager.add(new EditSecurityAction());
 
         manager.add(new Separator());
         new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
@@ -668,5 +664,27 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         abstract Dialog createDialog(Security security);
+    }
+
+    private final class EditSecurityAction extends AbstractDialogAction
+    {
+        private EditSecurityAction()
+        {
+            super(Messages.SecurityMenuEditSecurity);
+            setAccelerator(SWT.MOD1 | 'e');
+        }
+
+        @Override
+        Dialog createDialog(Security security)
+        {
+            return new EditSecurityDialog(getShell(), getClient(), security);
+        }
+
+        @Override
+        protected void performFinish(Security security)
+        {
+            super.performFinish(security);
+            updateQuotes(security);
+        }
     }
 }
