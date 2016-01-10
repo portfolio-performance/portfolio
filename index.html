@@ -8,7 +8,7 @@
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.lightbox-0.5.pack.js"></script>
 
-    <link rel="icon" type="image/gif" href="images/pp_16.gif" />
+    <link rel="icon" type="image/png" href="images/pp_32.png" />
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.lightbox-0.5.css" media="screen" />
 
@@ -37,23 +37,23 @@
 
 <div id="content">
 
-<h1><img src="images/pp_48.gif" width="48" height="48" alt="logo" valign="bottom"/> Portfolio Performance</h1>
+<h1><img src="images/pp_128.png" width="64" height="64" alt="logo" valign="bottom"/> Portfolio Performance</h1>
 
 <p>Berechne die Performance eines Portfolios anhand aller Transaktionen und über alle Konten hinweg
 inklusive internen Zinsfuß.</p>
 
 <p><ul>
-<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.20.3/PortfolioPerformance-0.20.3-win32.win32.x86.zip">Windows 32bit</a> /
-<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.20.3/PortfolioPerformance-0.20.3-win32.win32.x86_64.zip">64bit</a>
+<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.21.1/PortfolioPerformance-0.21.1-win32.win32.x86.zip">Windows 32bit</a> /
+<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.21.1/PortfolioPerformance-0.21.1-win32.win32.x86_64.zip">64bit</a>
 <a id="popup">[?]<span>Portfolio Performance ist in Java programmiert. Darum kommt es darauf an, ob die Java Virtual Machine (JVM) in der 32bit oder 64bit Version installiert ist. Das kann man mit dem Befehl <code>java -version</code> auf der Kommandozeile feststellen.</span></a>
 </li>
-<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.20.3/PortfolioPerformance-0.20.3-macosx.cocoa.x86_64.tar.gz">Mac OS X</a> (benötigt  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a> <a id="popup">[?]<span>Portfolio Performance ist in Java programmiert und benötigt mindestens Java 8. Es reicht nicht die JRE (Java Runtime Environment / Laufzeitumgebung) zu installieren, sondern man muss das JDK (Java Development Kit / Entwicklungsumgebung) installieren. Das JDK kann über den nebenstehenden Link heruntergeladen werden.</span></a>)</li>
-<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.20.3/PortfolioPerformance-0.20.3-linux.gtk.x86.tar.gz">Linux 32bit</a> /
-<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.20.3/PortfolioPerformance-0.20.3-linux.gtk.x86_64.tar.gz">64bit</a></li>
+<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.21.1/PortfolioPerformance-0.21.1-macosx.cocoa.x86_64.tar.gz">Mac OS X</a> (benötigt  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a> <a id="popup">[?]<span>Portfolio Performance ist in Java programmiert und benötigt mindestens Java 8. Es reicht nicht die JRE (Java Runtime Environment / Laufzeitumgebung) zu installieren, sondern man muss das JDK (Java Development Kit / Entwicklungsumgebung) installieren. Das JDK kann über den nebenstehenden Link heruntergeladen werden.</span></a>)</li>
+<li><a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.21.1/PortfolioPerformance-0.21.1-linux.gtk.x86.tar.gz">Linux 32bit</a> /
+<a href="https://s3.amazonaws.com/name.abuchen.portfolio/0.21.1/PortfolioPerformance-0.21.1-linux.gtk.x86_64.tar.gz">64bit</a></li>
 </ul>
 </p>
 
-Aktuelle Version 0.20.3 (via Online Aktualisierung & Download) - <a href="new_and_noteworthy.html">was ist neu?</a>
+Aktuelle Version 0.21.1 (via Online Aktualisierung & Download) - <a href="new_and_noteworthy.html">was ist neu?</a>
 
 <h2>Features</h2>
 
@@ -156,6 +156,7 @@ Aktuelle Version 0.20.3 (via Online Aktualisierung & Download) - <a href="new_an
 
 <h2>Links</h2>
 <ul>
+    <li><a href="https://github.com/buchen/portfolio/wiki/FAQ">FAQ</a></li>
     <li><a href="http://www.wertpapier-forum.de/topic/38306-portfolio-performance-mein-neues-programm/">Forum / Fragen</a></li>
 	<li><a href="https://github.com/buchen/portfolio/issues">Bug Tracker / Features Requests</a></li>
 	<li><a href="https://github.com/buchen/portfolio">Source Code</a></li>
@@ -170,6 +171,28 @@ Aktuelle Version 0.20.3 (via Online Aktualisierung & Download) - <a href="new_an
 
 <div id="versions">
 <a href="new_and_noteworthy.html">Was ist neu?</a>
+
+<h3>0.21.1 / 10. Januar 2016</h3>
+
+<p>Mit dieser Version können Konten und Wertpapiere mit unterschiedlichen
+Währungen anlegt werden. Zusätzlich wurde das Eclipse Framework auf
+Version 4.5.1 aktualisiert.</p>
+
+<p>Weitere Neuerungen:</p>
+<ul>
+<li>CSV/PDF Import: Käufe/Verkäufe in Einlieferungen/Auslieferungen umwandeln <a href="https://github.com/buchen/portfolio/issues/275">#275</a></li>
+<li>CSV Import überarbeitet: Währungen <a href="https://github.com/buchen/portfolio/issues/322">#322</a>, Notizfeld importieren <a href="https://github.com/buchen/portfolio/issues/295">#295</a>, Wertpapiere mit Namen anlegen <a href="https://github.com/buchen/portfolio/issues/350">#350</a>, Gegenbuchungen generieren <a href="https://github.com/buchen/portfolio/issues/351">#351</a></li>
+<li>Klassifizierungen: Kopieren <a href="https://github.com/buchen/portfolio/issues/374">#374</a>, Zustand aufgeklappt/zugeklappt merken <a href="https://github.com/buchen/portfolio/issues/376">#376</a>, Reihenfolge in der Seitennavigation ändern</li>
+<li>Verbesserung: Vermögensaufstellung kann nach allen Spalten sortiert werden</li>
+<li>Neu: DAB Verkäufe per PDF importieren <a href="https://github.com/buchen/portfolio/issues/384">#384</a></li>
+<li>Neu: Proxy-Server über die Einstellung konfigurieren</li>
+<li>Verbesserung: zusätzlich Performance-Spalten in Vermögensaufstellung wählbar</li>
+<li>Wieder da: Auf Yahoo Finance nach Wertpapiere suchen</li>
+</ul>
+
+<h3>0.21.0</h3>
+
+(Beta Versionen)
 
 <h3>0.20.3 / 22. Dezember 2015</h3>
 
