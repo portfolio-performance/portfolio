@@ -1,0 +1,82 @@
+body {
+	font-family: Lucida Grande, Segoe UI, Arial;
+	font-size: 11px;
+	margin: 0px 0px 0px 0px;
+	overflow: hidden;
+	-webkit-user-select: none;  
+	-moz-user-select: none;    
+	-ms-user-select: none;      
+	user-select: none;
+}
+
+#title {
+	text-align : center;
+	font-size: 150%;
+	font-weight: bold;
+}
+
+#chart_container {
+	float: left;
+	position: relative;
+	/*font-family: Lucida Grande, Segoe UI, Arial;*/
+	padding: 2px;
+}
+
+#chart {
+	float: left;
+	position: relative;
+}
+
+#legend {
+	display: inline-block;
+	position: relative;
+	padding: 8px;
+	background-color : transparent;
+}
+
+#legend li
+{
+    display: inline;
+}
+
+#legend .label 
+{
+    color: black;
+}
+
+#detail_table {
+	white-space: nowrap;
+	font-size: 11px;
+}
+
+#detail_table  td.detail_value {
+	padding-left: 25px;
+	text-align: right;
+}
+
+div.x_label {
+	opacity : 0.8 !important;
+}
+
+.vlinetext {
+	font-size : 12px;
+	font-weight: bold;
+}
+
+#y_axis {
+	float: left;
+	width: 80px;
+}
+
+.detail_swatch { 
+	float: left; 
+	display: inline-block; 
+	width: 10px; 
+	height: 10px; 
+	margin: 0 4px 0 0 
+}
+
+.rickshaw_graph .detail .item.active {
+	opacity: 1;
+	display:none;
+}
