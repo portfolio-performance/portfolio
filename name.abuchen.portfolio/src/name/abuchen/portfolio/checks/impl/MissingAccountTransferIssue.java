@@ -60,6 +60,7 @@ import name.abuchen.portfolio.model.Client;
             AccountTransferEntry entry = new AccountTransferEntry(from, to);
             entry.setDate(transaction.getDate());
             entry.setAmount(transaction.getAmount());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
             entry.insert();
 
             account.getTransactions().remove(transaction);

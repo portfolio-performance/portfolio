@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
@@ -48,7 +48,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
         return null;
     }

@@ -1,22 +1,26 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 
 public class GroupEarningsByAccount
 {
     public static class Item
     {
-        private Account account;
-        private long sum;
+        private final Account account;
+        private final Money sum;
 
-        public Item(Account account)
+        public Item(Account account, Money sum)
         {
             this.account = account;
+            this.sum = sum;
         }
 
         public Account getAccount()
@@ -24,7 +28,7 @@ public class GroupEarningsByAccount
             return account;
         }
 
-        public long getSum()
+        public Money getSum()
         {
             return sum;
         }
@@ -35,22 +39,22 @@ public class GroupEarningsByAccount
     public GroupEarningsByAccount(ClientPerformanceSnapshot snapshot)
     {
         Client client = snapshot.getEndClientSnapshot().getClient();
-        long startDate = snapshot.getStartClientSnapshot().getTime().getTime();
-        long endDate = snapshot.getEndClientSnapshot().getTime().getTime();
+        LocalDate startDate = snapshot.getStartClientSnapshot().getTime();
+        LocalDate endDate = snapshot.getEndClientSnapshot().getTime();
 
         for (Account account : client.getAccounts())
         {
-            Item item = new Item(account);
+            MutableMoney sum = MutableMoney.of(account.getCurrencyCode());
 
             for (AccountTransaction t : account.getTransactions())
             {
-                if (t.getDate().getTime() > startDate && t.getDate().getTime() <= endDate)
+                if (t.getDate().isAfter(startDate) && !t.getDate().isAfter(endDate))
                 {
                     switch (t.getType())
                     {
                         case DIVIDENDS:
                         case INTEREST:
-                            item.sum += t.getAmount();
+                            sum.add(t.getMonetaryAmount());
                             break;
                         case DEPOSIT:
                         case REMOVAL:
@@ -70,8 +74,11 @@ public class GroupEarningsByAccount
 
             }
 
-            if (item.getSum() != 0)
+            if (!sum.isZero())
+            {
+                Item item = new Item(account, sum.toMoney());
                 items.add(item);
+            }
         }
     }
 

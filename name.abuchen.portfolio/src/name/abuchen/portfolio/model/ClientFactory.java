@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
@@ -21,7 +22,6 @@ import java.security.spec.KeySpec;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,6 +43,9 @@ import javax.crypto.spec.SecretKeySpec;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.LocalDateConverter;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
@@ -51,11 +54,36 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
-import com.thoughtworks.xstream.converters.basic.DateConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
 {
+    private static class PortfolioTransactionConverter extends ReflectionConverter
+    {
+        public PortfolioTransactionConverter(Mapper mapper, ReflectionProvider reflectionProvider)
+        {
+            super(mapper, reflectionProvider);
+        }
+
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type == PortfolioTransaction.class;
+        }
+
+        @Override
+        protected boolean shouldUnmarshalField(Field field)
+        {
+            if ("fees".equals(field.getName()) || "taxes".equals(field.getName())) //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+            return super.shouldUnmarshalField(field);
+        }
+
+    }
+
     private static class XmlSerialization
     {
         public Client load(Reader input) throws IOException
@@ -374,6 +402,8 @@ public class ClientFactory
     {
         client.doPostLoadInitialization();
 
+        client.setFileVersionAfterRead(client.getVersion());
+
         switch (client.getVersion())
         {
             case 1:
@@ -438,13 +468,21 @@ public class ClientFactory
             case 24:
                 // do nothing --> added 'TAX_REFUND' as account transaction
             case 25:
-                // incremented precision of shares to 6 digits after the decimal sign
+                // incremented precision of shares to 6 digits after the decimal
+                // sign
                 incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(client);
             case 26:
                 // do nothing --> added client settings
             case 27:
                 // client settings include attribute types
                 fixStoredChartConfigurationToSupportMultipleViews(client);
+            case 28:
+                // added currency support --> designate a default currency (user
+                // will get a dialog to change)
+                setAllCurrencies(client, CurrencyUnit.EUR);
+                bumpUpCPIMonthValue(client);
+                convertFeesAndTaxesToTransactionUnits(client);
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -452,16 +490,6 @@ public class ClientFactory
             default:
                 break;
         }
-    }
-
-    private static void incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(Client client)
-    {
-        for(Portfolio portfolio : client.getPortfolios())
-            for(PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
-                portfolioTransaction.setShares(portfolioTransaction.getShares() * 10);
-        for(Account account : client.getAccounts())
-            for(AccountTransaction accountTransaction : account.getTransactions())
-                accountTransaction.setShares(accountTransaction.getShares() * 10);
     }
 
     private static void fixAssetClassTypes(Client client)
@@ -736,7 +764,7 @@ public class ClientFactory
                         case BUY:
                         case SELL:
                             if (portfolioTransaction.getCrossEntry() != null)
-                                account = (Account) portfolioTransaction.getCrossEntry().getCrossEntity(
+                                account = (Account) portfolioTransaction.getCrossEntry().getCrossOwner(
                                                 portfolioTransaction);
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
@@ -765,6 +793,16 @@ public class ClientFactory
                 }
             }
         }
+    }
+
+    private static void incrementSharesPrecisionFromFiveToSixDigitsAfterDecimalSign(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 10);
+        for (Account account : client.getAccounts())
+            for (AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 10);
     }
 
     private static void fixStoredChartConfigurationToSupportMultipleViews(Client client)
@@ -801,6 +839,51 @@ public class ClientFactory
         }
     }
 
+    /**
+     * Previously, January had the index 0 (in line with java.util.Date). Bump
+     * it up by one since we are using new Java 8 Time API.
+     */
+    private static void bumpUpCPIMonthValue(Client client)
+    {
+        for (ConsumerPriceIndex i : client.getConsumerPriceIndices())
+            i.setMonth(i.getMonth() + 1);
+    }
+
+    /**
+     * Sets all currency codes of accounts, securities, and transactions to the
+     * given currency code.
+     */
+    public static void setAllCurrencies(Client client, String currencyCode)
+    {
+        client.setBaseCurrency(currencyCode);
+        client.getAccounts().stream().forEach(a -> a.setCurrencyCode(currencyCode));
+        client.getSecurities().stream().forEach(s -> s.setCurrencyCode(currencyCode));
+
+        client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
+                        .forEach(t -> t.setCurrencyCode(currencyCode));
+        client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .forEach(t -> t.setCurrencyCode(currencyCode));
+    }
+
+    private static void convertFeesAndTaxesToTransactionUnits(Client client)
+    {
+        for (Portfolio p : client.getPortfolios())
+        {
+            for (PortfolioTransaction t : p.getTransactions())
+            {
+                long fees = t.fees;
+                if (fees != 0)
+                    t.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of(t.getCurrencyCode(), fees)));
+                t.fees = 0;
+
+                long taxes = t.taxes;
+                if (taxes != 0)
+                    t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(t.getCurrencyCode(), taxes)));
+                t.taxes = 0;
+            }
+        }
+    }
+
     @SuppressWarnings("nls")
     private static XStream xstream()
     {
@@ -815,12 +898,20 @@ public class ClientFactory
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
                     xstream.registerConverter(new LocalDateConverter());
+                    xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(), xstream
+                                    .getReflectionProvider()));
+
+                    xstream.useAttributeFor(Money.class, "amount");
+                    xstream.useAttributeFor(Money.class, "currencyCode");
+                    xstream.aliasAttribute(Money.class, "currencyCode", "currency");
 
                     xstream.alias("account", Account.class);
                     xstream.alias("client", Client.class);
                     xstream.alias("settings", ClientSettings.class);
                     xstream.alias("bookmark", Bookmark.class);
                     xstream.alias("portfolio", Portfolio.class);
+                    xstream.alias("unit", Transaction.Unit.class);
+                    xstream.useAttributeFor(Transaction.Unit.class, "type");
                     xstream.alias("account-transaction", AccountTransaction.class);
                     xstream.alias("portfolio-transaction", PortfolioTransaction.class);
                     xstream.alias("security", Security.class);
@@ -843,9 +934,6 @@ public class ClientFactory
                     xstream.aliasField("m", ConsumerPriceIndex.class, "month");
                     xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
                     xstream.aliasField("i", ConsumerPriceIndex.class, "index");
-
-                    xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[] { "yyyy-MM-dd" }, Calendar
-                                    .getInstance().getTimeZone()));
 
                     xstream.alias("buysell", BuySellEntry.class);
                     xstream.alias("account-transfer", AccountTransferEntry.class);

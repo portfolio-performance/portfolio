@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class PortfolioTransferEntry implements CrossEntry, Annotated
 {
@@ -47,7 +47,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         this.portfolioTo = portfolio;
     }
 
-    public void setDate(Date date)
+    public void setDate(LocalDate date)
     {
         this.transactionFrom.setDate(date);
         this.transactionTo.setDate(date);
@@ -69,6 +69,12 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     {
         this.transactionFrom.setAmount(amount);
         this.transactionTo.setAmount(amount);
+    }
+
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.transactionFrom.setCurrencyCode(currencyCode);
+        this.transactionTo.setCurrencyCode(currencyCode);
     }
 
     @Override
@@ -93,11 +99,6 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     @Override
     public void updateFrom(Transaction t)
     {
-        // fees are not supported for transfers
-        // -> needs separate transaction on account
-        transactionTo.setFees(0);
-        transactionFrom.setFees(0);
-
         if (t.equals(transactionFrom))
             copyAttributesOver(transactionFrom, transactionTo);
         else if (t.equals(transactionTo))
@@ -112,11 +113,12 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         target.setSecurity(source.getSecurity());
         target.setShares(source.getShares());
         target.setAmount(source.getAmount());
+        target.setCurrencyCode(source.getCurrencyCode());
         target.setNote(source.getNote());
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getOwner(Transaction t)
     {
         if (t.equals(transactionFrom))
             return portfolioFrom;
@@ -138,7 +140,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossOwner(Transaction t)
     {
         if (t.equals(transactionFrom))
             return portfolioTo;

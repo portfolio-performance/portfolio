@@ -172,13 +172,13 @@ public class CrossEntryCheck implements Check
                 else
                 {
                     BuySellEntry entry = new BuySellEntry(match.portfolio, suspect.account);
+                    entry.setCurrencyCode(match.transaction.getCurrencyCode());
                     entry.setType(match.transaction.getType());
                     entry.setDate(match.transaction.getDate());
                     entry.setSecurity(match.transaction.getSecurity());
                     entry.setShares(match.transaction.getShares());
-                    entry.setFees(match.transaction.getFees());
-                    entry.setTaxes(match.transaction.getTaxes());
                     entry.setAmount(match.transaction.getAmount());
+                    entry.getPortfolioTransaction().addUnits(match.transaction.getUnits());
                     entry.insert();
 
                     match.portfolio.getTransactions().remove(match.transaction);
@@ -260,6 +260,7 @@ public class CrossEntryCheck implements Check
 
                     crossentry.setDate(match.transaction.getDate());
                     crossentry.setAmount(match.transaction.getAmount());
+                    crossentry.setCurrencyCode(match.transaction.getCurrencyCode());
                     crossentry.insert();
 
                     suspect.account.getTransactions().remove(suspect.transaction);
@@ -337,6 +338,7 @@ public class CrossEntryCheck implements Check
                     crossentry.setSecurity(match.transaction.getSecurity());
                     crossentry.setShares(match.transaction.getShares());
                     crossentry.setAmount(match.transaction.getAmount());
+                    crossentry.setCurrencyCode(match.transaction.getCurrencyCode());
                     crossentry.insert();
 
                     suspect.portfolio.getTransactions().remove(suspect.transaction);

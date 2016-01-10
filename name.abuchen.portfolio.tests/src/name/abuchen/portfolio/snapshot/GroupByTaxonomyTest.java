@@ -6,19 +6,21 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
-
-import org.joda.time.DateTime;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -56,17 +58,18 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(d, "2010-01-01", Values.Share.factorize(10), 12000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        LocalDate date = LocalDate.parse("2010-01-01");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
 
         AssetCategory debt = grouping.byClassification(taxonomy.getClassificationById("debt"));
-        assertThat(debt.getValuation(), is(10000L));
+        assertThat(debt.getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(debt.getPositions().size(), is(1));
 
         AssetCategory stocks = grouping.byClassification(taxonomy.getClassificationById("equity"));
-        assertThat(stocks.getValuation(), is(24000L));
+        assertThat(stocks.getValuation(), is(Money.of(CurrencyUnit.EUR, 240_00)));
         assertThat(stocks.getPositions().size(), is(2));
 
         AssetCategory realEstate = grouping.byClassification(taxonomy.getClassificationById("realestate"));
@@ -93,17 +96,18 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        LocalDate date = LocalDate.parse("2010-01-01");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
 
         AssetCategory debt = grouping.byClassification(taxonomy.getClassificationById("debt"));
-        assertThat(debt.getValuation(), is(5000L));
+        assertThat(debt.getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
         assertThat(debt.getPositions().size(), is(1));
 
         AssetCategory equity = grouping.byClassification(taxonomy.getClassificationById("equity"));
-        assertThat(equity.getValuation(), is(5000L));
+        assertThat(equity.getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
         assertThat(equity.getPositions().size(), is(1));
     }
 
@@ -128,7 +132,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        LocalDate date = LocalDate.parse("2010-01-01");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -139,7 +144,7 @@ public class GroupByTaxonomyTest
 
         assertThat(debt.getPositions().size(), is(1));
 
-        assertThat(debt.getValuation(), is(10000L));
+        assertThat(debt.getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
     }
 
     @Test
@@ -159,7 +164,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        LocalDate date = LocalDate.parse("2010-01-01");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -171,7 +177,7 @@ public class GroupByTaxonomyTest
         assertThat(categories.size(), is(1));
 
         AssetCategory unassigned = categories.get(0);
-        assertThat(unassigned.getValuation(), is(10000L));
+        assertThat(unassigned.getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(unassigned.getPositions().size(), is(1));
     }
 
@@ -193,7 +199,8 @@ public class GroupByTaxonomyTest
                         .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-01").toDate());
+        LocalDate date = LocalDate.parse("2010-01-01");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 
         GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
@@ -201,7 +208,7 @@ public class GroupByTaxonomyTest
         assertThat(grouping.asList().size(), is(2));
 
         AssetCategory debt = grouping.byClassification(taxonomy.getClassificationById("debt"));
-        assertThat(debt.getValuation(), is(5000L));
+        assertThat(debt.getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
         assertThat(debt.getPositions().size(), is(1));
 
         AssetCategory unassigned = null;
@@ -210,7 +217,7 @@ public class GroupByTaxonomyTest
                 unassigned = category;
 
         assertThat(unassigned, notNullValue());
-        assertThat(unassigned.getValuation(), is(5000L));
+        assertThat(unassigned.getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
         assertThat(unassigned.getPositions().size(), is(1));
     }
 

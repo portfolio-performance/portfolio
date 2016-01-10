@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.graphics.Image;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
-import org.eclipse.jface.wizard.Wizard;
 
 public class StockSplitWizard extends Wizard
 {
@@ -13,6 +15,12 @@ public class StockSplitWizard extends Wizard
     public StockSplitWizard(Client client, Security security)
     {
         this.model = new StockSplitModel(client, security);
+    }
+
+    @Override
+    public Image getDefaultPageImage()
+    {
+        return Images.BANNER.image();
     }
 
     public void addPages()

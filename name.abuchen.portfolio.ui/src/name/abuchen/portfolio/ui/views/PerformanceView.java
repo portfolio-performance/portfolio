@@ -10,29 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import name.abuchen.portfolio.math.Risk.Drawdown;
-import name.abuchen.portfolio.math.Risk.Volatility;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
-import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.util.Interval;
+import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -69,6 +47,33 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
+import name.abuchen.portfolio.util.Interval;
+
 public class PerformanceView extends AbstractHistoricView
 {
     private static class OverviewTab implements DisposeListener
@@ -96,6 +101,7 @@ public class PerformanceView extends AbstractHistoricView
         private Label semiVolatility;
 
         private Label[] labels;
+        private Label[] signs;
         private Label[] values;
 
         public void setInput(ClientPerformanceSnapshot snapshot)
@@ -119,7 +125,8 @@ public class PerformanceView extends AbstractHistoricView
             for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
             {
                 labels[ii].setText(category.getLabel());
-                values[ii].setText(Values.Amount.format(category.getValuation()));
+                signs[ii].setText(category.getSign());
+                values[ii].setText(Values.Money.format(category.getValuation(), index.getClient().getBaseCurrency()));
 
                 if (++ii >= labels.length)
                     break;
@@ -132,43 +139,43 @@ public class PerformanceView extends AbstractHistoricView
         {
             int length = index.getTotals().length;
             ttwror.setText(Values.Percent2.format(index.getFinalAccumulatedPercentage()));
-            irr.setText(Values.Amount.format(snapshot.getPerformanceIRR()) + "%"); //$NON-NLS-1$
+            irr.setText(Values.Percent2.format(snapshot.getPerformanceIRR()));
             absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
-            delta.setText(Values.Amount.format(snapshot.getAbsoluteDelta()));
+            delta.setText(Values.Money.format(snapshot.getAbsoluteDelta(), index.getClient().getBaseCurrency()));
 
             ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
-            absoluteChangeLastDay.setText(Values.Amount.format(index.getTotals()[length - 1]
-                            - index.getTotals()[length - 2]));
+            absoluteChangeLastDay.setText(
+                            Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[length - 2]));
         }
 
         private void setRiskIndicators(PerformanceIndex index)
         {
-            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withZone(
-                            ZoneId.systemDefault());
+            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                            .withZone(ZoneId.systemDefault());
 
             Drawdown drawdown = index.getDrawdown();
             Volatility vola = index.getVolatility();
 
             maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
-            maxDrawdown.setToolTipText(MessageFormat.format(Messages.TooltipMaxDrawdown,
-                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
-                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
+            InfoToolTip.attach(maxDrawdown,
+                            MessageFormat.format(Messages.TooltipMaxDrawdown,
+                                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
+                                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
 
             // max drawdown duration
             Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
             maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
-            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(
-                            index.getReportInterval().getEndDate().toInstant());
+            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(index.getReportInterval().getEndDate());
             String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                             : Messages.TooltipMaxDrawdownDurationFromXtoY;
 
             // recovery time
             Interval recoveryTime = drawdown.getLongestRecoveryTime();
-            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate().toInstant());
+            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate());
             String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                             : Messages.TooltipMaxDrawdownDurationFromXtoY;
-            maxDrawdownDuration.setToolTipText(Messages.TooltipMaxDrawdownDuration
-                            + "\n\n" //$NON-NLS-1$
+
+            InfoToolTip.attach(maxDrawdownDuration, Messages.TooltipMaxDrawdownDuration + "\n\n" //$NON-NLS-1$
                             + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
                                             formatter.format(maxDDDuration.getEnd()))
                             + "\n\n" //$NON-NLS-1$
@@ -177,10 +184,11 @@ public class PerformanceView extends AbstractHistoricView
                                             formatter.format(recoveryTime.getEnd())));
 
             volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
-            volatility.setToolTipText(Messages.TooltipVolatility);
+            InfoToolTip.attach(volatility, Messages.TooltipVolatility);
 
             semiVolatility.setText(Values.Percent2.format(vola.getSemiDeviation()));
-            semiVolatility.setToolTipText(MessageFormat.format(Messages.TooltipSemiVolatility,
+            InfoToolTip.attach(semiVolatility,
+                            MessageFormat.format(Messages.TooltipSemiVolatility,
                             Values.Percent5.format(vola.getExpectedSemiDeviation()),
                             vola.getNormalizedSemiDeviationComparison(),
                             Values.Percent5.format(vola.getStandardDeviation()),
@@ -198,11 +206,11 @@ public class PerformanceView extends AbstractHistoricView
             container.addDisposeListener(this);
 
             // create fonts
-            kpiFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.NORMAL)
-                            .increaseHeight(10));
+            kpiFont = resourceManager.createFont(
+                            FontDescriptor.createFrom(container.getFont()).setStyle(SWT.NORMAL).increaseHeight(10));
 
-            boldFont = resourceManager.createFont(FontDescriptor.createFrom(
-                            JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
+            boldFont = resourceManager.createFont(FontDescriptor
+                            .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
             createIndicators(container);
             createRiskIndicators(container);
@@ -299,21 +307,23 @@ public class PerformanceView extends AbstractHistoricView
         private void createCalculation(Composite container)
         {
             Composite composite = new Composite(container, SWT.NONE);
-            GridLayoutFactory.fillDefaults().numColumns(2).applyTo(composite);
+            GridLayoutFactory.fillDefaults().numColumns(3).applyTo(composite);
             composite.setBackground(container.getBackground());
 
             Label heading = new Label(composite, SWT.NONE);
             heading.setText(Messages.PerformanceTabCalculation);
             heading.setFont(boldFont);
             heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
-            GridDataFactory.fillDefaults().span(2, 1).applyTo(heading);
+            GridDataFactory.fillDefaults().span(3, 1).applyTo(heading);
 
-            labels = new Label[7];
-            values = new Label[7];
+            labels = new Label[ClientPerformanceSnapshot.CategoryType.values().length];
+            signs = new Label[labels.length];
+            values = new Label[labels.length];
 
             for (int ii = 0; ii < labels.length; ii++)
             {
                 labels[ii] = new Label(composite, SWT.NONE);
+                signs[ii] = new Label(composite, SWT.NONE);
                 values[ii] = new Label(composite, SWT.RIGHT);
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
             }
@@ -330,6 +340,9 @@ public class PerformanceView extends AbstractHistoricView
             return snapshot;
         }
     }
+
+    @Inject
+    private ExchangeRateProviderFactory factory;
 
     private OverviewTab overview;
     private TreeViewer calculation;
@@ -355,7 +368,8 @@ public class PerformanceView extends AbstractHistoricView
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), period);
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), converter, period);
 
         overview.setInput(snapshot);
 
@@ -364,7 +378,6 @@ public class PerformanceView extends AbstractHistoricView
             calculation.getTree().setRedraw(false);
             calculation.setInput(snapshot);
             calculation.expandAll();
-            ViewerHelper.pack(calculation);
             calculation.getTree().getParent().layout();
         }
         finally
@@ -373,9 +386,7 @@ public class PerformanceView extends AbstractHistoricView
         }
 
         snapshotStart.setInput(snapshot.getStartClientSnapshot());
-        snapshotStart.pack();
         snapshotEnd.setInput(snapshot.getEndClientSnapshot());
-        snapshotEnd.pack();
 
         earnings.setInput(snapshot.getEarnings());
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
@@ -411,10 +422,12 @@ public class PerformanceView extends AbstractHistoricView
 
     private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
     {
-        StatementOfAssetsViewer viewer = new StatementOfAssetsViewer(folder, this, getClient());
+        StatementOfAssetsViewer viewer = make(StatementOfAssetsViewer.class);
+        Control control = viewer.createControl(folder);
+
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
-        item.setControl(viewer.getControl());
+        item.setControl(control);
 
         return viewer;
     }
@@ -454,12 +467,12 @@ public class PerformanceView extends AbstractHistoricView
             {
                 if (element instanceof ClientPerformanceSnapshot.Category)
                 {
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
+                    return Images.CATEGORY.image();
                 }
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
-                    return position.getSecurity() != null ? PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY) : null;
+                    return position.getSecurity() != null ? Images.SECURITY.image() : null;
                 }
 
                 return null;
@@ -485,12 +498,12 @@ public class PerformanceView extends AbstractHistoricView
                 if (element instanceof ClientPerformanceSnapshot.Category)
                 {
                     ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
-                    return Values.Amount.format(cat.getValuation());
+                    return Values.Money.format(cat.getValuation(), getClient().getBaseCurrency());
                 }
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-                    return Values.Amount.format(pos.getValuation());
+                    return Values.Money.format(pos.getValuation(), getClient().getBaseCurrency());
                 }
                 return null;
             }
@@ -510,8 +523,6 @@ public class PerformanceView extends AbstractHistoricView
         calculation.getTree().setLinesVisible(true);
 
         calculation.setContentProvider(new PerformanceContentProvider());
-
-        ViewerHelper.pack(calculation);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -565,7 +576,7 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.format(((Transaction) element).getAmount());
+                return Values.Money.format(((Transaction) element).getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "amount")); //$NON-NLS-1$
@@ -594,8 +605,7 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Transaction transaction = (Transaction) element;
-                return PortfolioPlugin.image(transaction.getSecurity() != null ? PortfolioPlugin.IMG_SECURITY
-                                : PortfolioPlugin.IMG_ACCOUNT);
+                return transaction.getSecurity() != null ? Images.SECURITY.image() : Images.ACCOUNT.image();
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "security")); //$NON-NLS-1$
@@ -614,7 +624,7 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object e)
             {
                 String note = ((Transaction) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
@@ -626,8 +636,6 @@ public class PerformanceView extends AbstractHistoricView
         earnings.getTable().setLinesVisible(true);
 
         earnings.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(earnings);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -658,7 +666,7 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return Images.ACCOUNT.image();
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$
@@ -671,7 +679,7 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
-                return Values.Amount.format(item.getSum());
+                return Values.Money.format(item.getSum(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "sum")); //$NON-NLS-1$
@@ -683,8 +691,6 @@ public class PerformanceView extends AbstractHistoricView
         earningsByAccount.getTable().setLinesVisible(true);
 
         earningsByAccount.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(earningsByAccount);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -703,8 +709,8 @@ public class PerformanceView extends AbstractHistoricView
             }
             else if (newInput instanceof ClientPerformanceSnapshot)
             {
-                this.categories = ((ClientPerformanceSnapshot) newInput).getCategories().toArray(
-                                new ClientPerformanceSnapshot.Category[0]);
+                this.categories = ((ClientPerformanceSnapshot) newInput).getCategories()
+                                .toArray(new ClientPerformanceSnapshot.Category[0]);
             }
             else
             {
@@ -720,8 +726,8 @@ public class PerformanceView extends AbstractHistoricView
         public Object[] getChildren(Object parentElement)
         {
             if (parentElement instanceof ClientPerformanceSnapshot.Category)
-                return ((ClientPerformanceSnapshot.Category) parentElement).getPositions().toArray(
-                                new ClientPerformanceSnapshot.Position[0]);
+                return ((ClientPerformanceSnapshot.Category) parentElement).getPositions()
+                                .toArray(new ClientPerformanceSnapshot.Position[0]);
             return null;
         }
 
@@ -754,7 +760,7 @@ public class PerformanceView extends AbstractHistoricView
     {
         private ExportDropDown(ToolBar toolBar)
         {
-            super(toolBar, Messages.MenuExportData, PortfolioPlugin.image(PortfolioPlugin.IMG_EXPORT), SWT.NONE);
+            super(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE);
         }
 
         @Override
@@ -784,8 +790,8 @@ public class PerformanceView extends AbstractHistoricView
                 @Override
                 public void run()
                 {
-                    new TableViewerCSVExporter(snapshotEnd.getTableViewer()).export(Messages.PerformanceTabAssetsAtEnd
-                                    + ".csv"); //$NON-NLS-1$
+                    new TableViewerCSVExporter(snapshotEnd.getTableViewer())
+                                    .export(Messages.PerformanceTabAssetsAtEnd + ".csv"); //$NON-NLS-1$
                 }
             });
 
@@ -803,8 +809,8 @@ public class PerformanceView extends AbstractHistoricView
                 @Override
                 public void run()
                 {
-                    new TableViewerCSVExporter(earningsByAccount).export(Messages.PerformanceTabEarningsByAccount
-                                    + ".csv"); //$NON-NLS-1$
+                    new TableViewerCSVExporter(earningsByAccount)
+                                    .export(Messages.PerformanceTabEarningsByAccount + ".csv"); //$NON-NLS-1$
                 }
             });
 

@@ -12,14 +12,17 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 /* package */final class ClassificationIndex
 {
     private ClassificationIndex()
     {}
 
-    /* package */static PerformanceIndex calculate(final Client client, Classification classification,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+    /* package */static PerformanceIndex calculate(final Client client, CurrencyConverter converter,
+                    Classification classification, ReportingPeriod reportInterval, List<Exception> warnings)
     {
         final Client pseudoClient = new Client();
 
@@ -37,13 +40,19 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
             }
         });
 
-        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     private static void addSecurity(Client pseudoClient, Client client, Security security, int weight)
     {
+        // if a security has no currency code, it must be an index and must not
+        // have transactions after all
+        if (security.getCurrencyCode() == null)
+            return;
+
         Account pseudoAccount = new Account();
         pseudoAccount.setName(""); //$NON-NLS-1$
+        pseudoAccount.setCurrencyCode(security.getCurrencyCode());
         pseudoClient.addAccount(pseudoAccount);
 
         Portfolio pseudoPortfolio = new Portfolio();
@@ -56,34 +65,34 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
         {
             for (PortfolioTransaction t : p.getTransactions())
             {
-                if (t.getSecurity().equals(security))
-                {
-                    long shares = value(t.getShares(), weight);
-                    long amount = value(t.getAmount(), weight);
-                    long fees = value(t.getFees(), weight);
-                    long taxes = value(t.getTaxes(), weight);
+                if (!security.equals(t.getSecurity()))
+                    continue;
 
-                    switch (t.getType())
-                    {
-                        case BUY:
-                        case TRANSFER_IN:
-                        case DELIVERY_INBOUND:
-                        {
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_INBOUND, shares, amount - taxes, fees, 0));
-                            break;
-                        }
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DELIVERY_OUTBOUND:
-                            pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                            PortfolioTransaction.Type.DELIVERY_OUTBOUND, shares, amount + taxes, fees,
-                                            0));
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
+                PortfolioTransaction pseudo = new PortfolioTransaction();
+                pseudo.setDate(t.getDate());
+                pseudo.setCurrencyCode(t.getCurrencyCode());
+                pseudo.setSecurity(security);
+                pseudo.setShares(value(t.getShares(), weight));
+
+                // convert type to the appropriate delivery type (either inbound
+                // or outbound delivery)
+
+                pseudo.setType(convertTypeToDelivery(t.getType()));
+
+                // calculation is without taxes -> remove any taxes & adapt
+                // total accordingly
+
+                long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
+                long amount = value(t.getAmount(), weight);
+
+                pseudo.setAmount(pseudo.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND ? amount - taxes
+                                : amount + taxes);
+
+                // copy all units (except for taxes) over to the pseudo
+                // transaction
+                t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> pseudo.addUnit(value(u, weight)));
+
+                pseudoPortfolio.addTransaction(pseudo);
             }
         }
 
@@ -97,10 +106,10 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     {
                         case DIVIDENDS:
                             long amount = value(t.getAmount(), weight);
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(), //
-                                            t.getType(), amount));
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getSecurity(),
-                                            AccountTransaction.Type.REMOVAL, amount));
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                            amount, t.getSecurity(), t.getType()));
+                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                            amount, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                             break;
                         case TAX_REFUND:
                             // ignore taxes when calculating performance of
@@ -125,9 +134,27 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
         }
     }
 
+    private static PortfolioTransaction.Type convertTypeToDelivery(PortfolioTransaction.Type type)
+    {
+        switch (type)
+        {
+            case BUY:
+            case TRANSFER_IN:
+            case DELIVERY_INBOUND:
+                return PortfolioTransaction.Type.DELIVERY_INBOUND;
+            case SELL:
+            case TRANSFER_OUT:
+            case DELIVERY_OUTBOUND:
+                return PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
     private static void addAccount(Client pseudoClient, Account account, int weight)
     {
         Account pseudoAccount = new Account();
+        pseudoAccount.setCurrencyCode(account.getCurrencyCode());
         pseudoAccount.setName(account.getName());
         pseudoClient.addAccount(pseudoAccount);
 
@@ -139,19 +166,19 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                 case SELL:
                 case TRANSFER_IN:
                 case DIVIDENDS:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.DEPOSIT, amount));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount, null,
+                                    AccountTransaction.Type.DEPOSIT));
                     break;
                 case BUY:
                 case TRANSFER_OUT:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.REMOVAL, amount));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount, null,
+                                    AccountTransaction.Type.REMOVAL));
                     break;
                 case TAX_REFUND:
                     if (t.getSecurity() != null)
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.DEPOSIT, amount));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount,
+                                        null, AccountTransaction.Type.DEPOSIT));
                         break;
                     }
                     // fall through if tax refund applies to account
@@ -161,7 +188,8 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                 case TAXES:
                 case FEES:
                     if (weight != Classification.ONE_HUNDRED_PERCENT)
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null, t.getType(), amount));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount,
+                                        null, t.getType()));
                     else
                         pseudoAccount.addTransaction(t);
                     break;
@@ -169,6 +197,15 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
                     throw new UnsupportedOperationException();
             }
         }
+    }
+
+    private static Unit value(Unit unit, int weight)
+    {
+        if (weight == Classification.ONE_HUNDRED_PERCENT)
+            return unit;
+        else
+            return new Unit(unit.getType(),
+                            Money.of(unit.getAmount().getCurrencyCode(), value(unit.getAmount().getAmount(), weight)));
     }
 
     private static long value(long value, int weight)

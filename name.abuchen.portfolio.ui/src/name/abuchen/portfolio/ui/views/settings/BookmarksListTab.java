@@ -2,28 +2,12 @@ package name.abuchen.portfolio.ui.views.settings;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.Bookmark;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientSettings;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -33,6 +17,21 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 
 public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 {
@@ -44,7 +43,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
     private Client client;
 
     @Inject
-    private PreferenceStore preferences;
+    private IPreferenceStore preferences;
 
     @Override
     public CTabItem createTab(CTabFolder folder)
@@ -57,8 +56,8 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 
         ColumnEditingSupport.prepare(bookmarks);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        BookmarksListTab.class.getSimpleName() + "@bottom", preferences, bookmarks, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(BookmarksListTab.class.getSimpleName() + "@bottom", //$NON-NLS-1$
+                        preferences, bookmarks, layout);
 
         // Create Column for Bookmark
         Column column = new Column(Messages.BookmarksListView_bookmark, SWT.None, 150);
@@ -73,7 +72,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_TEXT);
+                return Images.TEXT.image();
             }
 
         });
@@ -101,8 +100,6 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         bookmarks.getTable().setLinesVisible(true);
 
         bookmarks.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(bookmarks);
 
         bookmarks.setInput(client.getSettings().getBookmarks());
         bookmarks.refresh();
@@ -221,7 +218,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         int index = client.getSettings().getBookmarks().indexOf(bookmark);
         if (index > 0)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveUp)
+            manager.add(new Action(Messages.MenuMoveUp)
             {
                 @Override
                 public void run()
@@ -237,7 +234,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 
         if (index < client.getSettings().getBookmarks().size() - 1)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveDown)
+            manager.add(new Action(Messages.MenuMoveDown)
             {
                 @Override
                 public void run()

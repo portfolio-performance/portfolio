@@ -6,17 +6,19 @@ import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
@@ -34,7 +36,7 @@ public class AccountPerformanceTaxRefundTestCase
                         .getResourceAsStream("account_performance_tax_refund.xml"));
 
         Account account = client.getAccounts().get(0);
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2013-12-06"), Dates.date("2014-12-06"));
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
 
         AccountTransaction deposit = account.getTransactions().get(0);
 
@@ -44,7 +46,8 @@ public class AccountPerformanceTaxRefundTestCase
         double ttwror = (endValue / startValue) - 1;
 
         List<Exception> warnings = new ArrayList<Exception>();
-        PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, account, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
         assertThat(accountPerformance.getFinalAccumulatedPercentage(), closeTo(ttwror, 0.0001));
 
@@ -53,7 +56,7 @@ public class AccountPerformanceTaxRefundTestCase
         AccountTransaction tax_refund = account.getTransactions().get(2);
         tax_refund.setSecurity(new Security());
 
-        accountPerformance = PerformanceIndex.forAccount(client, account, period, warnings);
+        accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
         assertThat(accountPerformance.getFinalAccumulatedPercentage(), lessThan(ttwror));
     }

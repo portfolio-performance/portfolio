@@ -11,13 +11,14 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 
 public class SecurityPerformanceSnapshot
 {
-    public static SecurityPerformanceSnapshot create(Client client, ReportingPeriod period)
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, ReportingPeriod period)
     {
         Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
 
@@ -26,13 +27,14 @@ public class SecurityPerformanceSnapshot
         for (Portfolio portfolio : client.getPortfolios())
         {
             extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
-            addPseudoValuationTansactions(portfolio, period, transactions);
+            addPseudoValuationTansactions(portfolio, converter, period, transactions);
         }
 
-        return doCreateSnapshot(client, transactions, period);
+        return doCreateSnapshot(client, converter, transactions, period);
     }
 
-    public static SecurityPerformanceSnapshot create(Client client, Portfolio portfolio, ReportingPeriod period)
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Portfolio portfolio,
+                    ReportingPeriod period)
     {
         // FIXME create pseudo client --> transferals must add up
         Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
@@ -40,9 +42,9 @@ public class SecurityPerformanceSnapshot
         if (portfolio.getReferenceAccount() != null)
             extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), period, transactions);
         extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
-        addPseudoValuationTansactions(portfolio, period, transactions);
+        addPseudoValuationTansactions(portfolio, converter, period, transactions);
 
-        return doCreateSnapshot(client, transactions, period);
+        return doCreateSnapshot(client, converter, transactions, period);
     }
 
     private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
@@ -54,7 +56,7 @@ public class SecurityPerformanceSnapshot
         return records;
     }
 
-    private static SecurityPerformanceSnapshot doCreateSnapshot(Client client,
+    private static SecurityPerformanceSnapshot doCreateSnapshot(Client client, CurrencyConverter converter,
                     Map<Security, SecurityPerformanceRecord> records, ReportingPeriod period)
     {
         List<SecurityPerformanceRecord> list = new ArrayList<SecurityPerformanceRecord>(records.values());
@@ -71,7 +73,7 @@ public class SecurityPerformanceSnapshot
             else
             {
                 // calculate values for each security
-                record.calculate(client, period);
+                record.calculate(client, converter, period);
             }
         }
 
@@ -96,6 +98,7 @@ public class SecurityPerformanceSnapshot
                 dt.setDate(t.getDate());
                 dt.setSecurity(t.getSecurity());
                 dt.setAccount(account);
+                dt.setCurrencyCode(t.getCurrencyCode());
                 dt.setAmount(t.getAmount());
                 dt.setShares(t.getShares());
                 dt.setNote(t.getNote());
@@ -116,17 +119,17 @@ public class SecurityPerformanceSnapshot
                         .forEach(t -> records.get(t.getSecurity()).addTransaction(t));
     }
 
-    private static void addPseudoValuationTansactions(Portfolio portfolio, ReportingPeriod period,
-                    Map<Security, SecurityPerformanceRecord> records)
+    private static void addPseudoValuationTansactions(Portfolio portfolio, CurrencyConverter converter,
+                    ReportingPeriod period, Map<Security, SecurityPerformanceRecord> records)
     {
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, period.getStartDate());
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, period.getStartDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity()).addTransaction(
                             new DividendInitialTransaction(position, period.getStartDate()));
         }
 
-        snapshot = PortfolioSnapshot.create(portfolio, period.getEndDate());
+        snapshot = PortfolioSnapshot.create(portfolio, converter, period.getEndDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity()).addTransaction(

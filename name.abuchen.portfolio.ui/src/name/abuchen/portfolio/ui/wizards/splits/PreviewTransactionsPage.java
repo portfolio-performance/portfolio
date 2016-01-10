@@ -3,20 +3,9 @@ package name.abuchen.portfolio.ui.wizards.splits;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -33,6 +22,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+
 public class PreviewTransactionsPage extends AbstractWizardPage
 {
     private class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
@@ -44,9 +44,9 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
 
                 if (t instanceof AccountTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                    return Images.ACCOUNT.image();
                 else if (t instanceof PortfolioTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    return Images.PORTFOLIO.image();
             }
             return null;
         }
@@ -69,7 +69,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 2:
                     return Values.Share.format(t.getShares());
                 case 3:
-                    if (model.isChangeTransactions() && t.getDate().before(model.getExDate()))
+                    if (model.isChangeTransactions() && t.getDate().isBefore(model.getExDate()))
                     {
                         long shares = t.getShares() * model.getNewShares() / model.getOldShares();
                         return Values.Share.format(shares);
@@ -155,8 +155,8 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        context.bindValue(SWTObservables.observeSelection(checkbox), //
-                        BeansObservables.observeValue(model, "changeTransactions")); //$NON-NLS-1$
+        context.bindValue(WidgetProperties.selection().observe(checkbox), //
+                        BeanProperties.value("changeTransactions").observe(model)); //$NON-NLS-1$
 
         checkbox.addSelectionListener(new SelectionAdapter()
         {

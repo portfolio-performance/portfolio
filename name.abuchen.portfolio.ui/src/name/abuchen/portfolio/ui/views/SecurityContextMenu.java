@@ -1,22 +1,23 @@
 package name.abuchen.portfolio.ui.views;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.wizard.WizardDialog;
+
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityDeliveryDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.wizard.WizardDialog;
 
 public class SecurityContextMenu
 {
@@ -37,65 +38,41 @@ public class SecurityContextMenu
         if (owner.getClient().getSecurities().isEmpty())
             return;
 
-        manager.add(new Action(Messages.SecurityMenuBuy)
+        // if the security has no currency code, e.g. is an index, then show now
+        // menus to create transactions
+        if (security != null && security.getCurrencyCode() == null)
         {
-            @Override
-            public void run()
-            {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(),
-                                portfolio, security, PortfolioTransaction.Type.BUY);
-                if (dialog.open() == BuySellSecurityDialog.OK)
-                {
-                    owner.markDirty();
-                    owner.notifyModelUpdated();
-                }
-            }
-        });
+            new BookmarkMenu(owner.getPart(), security);
+            return;
+        }
 
-        manager.add(new Action(Messages.SecurityMenuSell)
-        {
-            @Override
-            public void run()
-            {
-                BuySellSecurityDialog dialog = new BuySellSecurityDialog(owner.getActiveShell(), owner.getClient(),
-                                portfolio, security, PortfolioTransaction.Type.SELL);
-                if (dialog.open() == BuySellSecurityDialog.OK)
-                {
-                    owner.markDirty();
-                    owner.notifyModelUpdated();
-                }
-            }
-        });
+        new OpenDialogAction(owner, Messages.SecurityMenuBuy) //
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.BUY) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
-        manager.add(new Action(Messages.SecurityMenuDividends)
-        {
-            @Override
-            public void run()
-            {
-                SecurityAccountTransactionDialog dialog = new SecurityAccountTransactionDialog(owner.getActiveShell(),
-                                AccountTransaction.Type.DIVIDENDS, owner.getClient(), null, security);
-                if (dialog.open() == SecurityAccountTransactionDialog.OK)
-                {
-                    owner.markDirty();
-                    owner.notifyModelUpdated();
-                }
-            }
-        });
+        new OpenDialogAction(owner, Messages.SecurityMenuSell) //
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.SELL) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
-        manager.add(new Action(AccountTransaction.Type.TAX_REFUND.toString() + "...") //$NON-NLS-1$
-        {
-            @Override
-            public void run()
-            {
-                SecurityAccountTransactionDialog dialog = new SecurityAccountTransactionDialog(owner.getActiveShell(),
-                                AccountTransaction.Type.TAX_REFUND, owner.getClient(), null, security);
-                if (dialog.open() == SecurityAccountTransactionDialog.OK)
-                {
-                    owner.markDirty();
-                    owner.notifyModelUpdated();
-                }
-            }
-        });
+        new OpenDialogAction(owner, Messages.SecurityMenuDividends) //
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.DIVIDENDS) //
+                        .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(owner, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAX_REFUND) //
+                        .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
+                        .with(security) //
+                        .addTo(manager);
 
         manager.add(new Action(Messages.SecurityMenuStockSplit)
         {
@@ -104,7 +81,7 @@ public class SecurityContextMenu
             {
                 StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
                 WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
-                if (dialog.open() == SecurityAccountTransactionDialog.OK)
+                if (dialog.open() == Dialog.OK)
                 {
                     owner.markDirty();
                     owner.notifyModelUpdated();
@@ -112,58 +89,30 @@ public class SecurityContextMenu
             }
         });
 
-        if (portfolio != null && owner.getClient().getActivePortfolios().size() > 1)
+        if (owner.getClient().getActivePortfolios().size() > 1)
         {
             manager.add(new Separator());
-            manager.add(new Action(Messages.SecurityMenuTransfer)
-            {
-                @Override
-                public void run()
-                {
-                    SecurityTransferDialog dialog = new SecurityTransferDialog(owner.getActiveShell(), owner
-                                    .getClient(), portfolio);
-                    if (dialog.open() == SecurityAccountTransactionDialog.OK)
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
+            new OpenDialogAction(owner, Messages.SecurityMenuTransfer) //
+                            .type(SecurityTransferDialog.class) //
+                            .with(portfolio) //
+                            .with(security) //
+                            .addTo(manager);
         }
 
-        if (portfolio != null)
-        {
-            manager.add(new Separator());
-            manager.add(new Action(PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                public void run()
-                {
-                    SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getActiveShell(), owner
-                                    .getClient(), portfolio, PortfolioTransaction.Type.DELIVERY_INBOUND);
-                    if (dialog.open() == SecurityDeliveryDialog.OK)
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
+        manager.add(new Separator());
+        new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
-            manager.add(new Action(PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
-            {
-                @Override
-                public void run()
-                {
-                    SecurityDeliveryDialog dialog = new SecurityDeliveryDialog(owner.getActiveShell(), owner
-                                    .getClient(), portfolio, PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                    if (dialog.open() == SecurityDeliveryDialog.OK)
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
-        }
+        new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
         if (security != null)
         {

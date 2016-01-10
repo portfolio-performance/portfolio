@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -9,17 +9,12 @@ public class DividendFinalTransaction extends Transaction
 {
     private SecurityPosition position;
 
-    public DividendFinalTransaction(SecurityPosition position, Date time)
+    public DividendFinalTransaction(SecurityPosition position, LocalDate time)
     {
         this.position = position;
-        this.setSecurity(position.getSecurity());
         this.setDate(time);
-    }
-
-    @Override
-    public long getAmount()
-    {
-        return position.calculateValue();
+        this.setSecurity(position.getSecurity());
+        this.setMonetaryAmount(position.calculateValue());
     }
 
     public SecurityPosition getPosition()

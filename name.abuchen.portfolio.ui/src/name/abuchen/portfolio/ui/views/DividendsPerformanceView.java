@@ -1,43 +1,9 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 
 import javax.inject.Inject;
-
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendTransaction;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.MarkDirtyListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
-import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -62,8 +28,47 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
+import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
+import name.abuchen.portfolio.snapshot.security.DividendTransaction;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+
 public class DividendsPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     private ShowHideColumnHelper recordColumns;
 
     private TableViewer records;
@@ -80,7 +85,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     @Optional
     private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
     {
-        updateTitle(Messages.LabelSecurityPerformance + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        updateTitle(Messages.LabelSecurityPerformance + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -102,7 +107,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 new TableViewerCSVExporter(records).export(getTitle() + ".csv"); //$NON-NLS-1$
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
@@ -118,7 +123,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 recordColumns.showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(save).fill(toolBar, -1);
     }
@@ -133,7 +138,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 recordColumns.showHideShowColumnsMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
 
         new ActionContributionItem(config).fill(toolBar, -1);
@@ -154,6 +159,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         createCommonColumns();
         createDividendColumns();
+        addPerformanceColumns();
         createRiskColumns();
         createAdditionalColumns();
 
@@ -163,8 +169,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         records.getTable().setLinesVisible(true);
 
         records.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(records);
 
         records.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
@@ -217,46 +221,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         column = new NameColumn();
         recordColumns.addColumn(column);
 
-        // True time-weighted rate of return
-        column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 50); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // internal rate of return
-        column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 50); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getIrr());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
         // cost value - fifo
         column = new Column("pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValue_Description);
@@ -265,7 +229,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getFifoCost());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(),
+                                getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
@@ -279,25 +244,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
+                                getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // Gesamtsumme der erhaltenen Dividenden
-        column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
-        column.setGroupLabel(Messages.GroupLabelDividends);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getSumOfDividends());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // market value
@@ -307,30 +258,11 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getMarketValue());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getMarketValue(),
+                                getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // delta
-        column = new Column("delta", Messages.ColumnDelta, SWT.RIGHT, 100); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnDelta_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getDelta());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getDelta());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // fees paid
@@ -341,7 +273,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getFees());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getFees(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fees")); //$NON-NLS-1$
@@ -355,7 +287,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                return Values.Amount.format(((SecurityPerformanceRecord) r).getTaxes());
+                return Values.Money.format(((SecurityPerformanceRecord) r).getTaxes(), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "taxes")); //$NON-NLS-1$
@@ -375,10 +307,156 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         recordColumns.addColumn(column);
     }
 
+    private void addPerformanceColumns()
+    {
+        Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnTWROR_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // internal rate of return
+        column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getIrr());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGains_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(),
+                                getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings().getAmount());
+            }
+        });
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
+            }
+        });
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // delta
+        column = new Column("delta", Messages.ColumnAbsolutePerformance, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnAbsolutePerformance_Description);
+        column.setMenuLabel(Messages.ColumnAbsolutePerformance_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) r).getDelta(), getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getDelta().getAmount());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // delta percent
+        column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
+        column.setMenuLabel(Messages.ColumnAbsolutePerformancePercent_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.format(((SecurityPerformanceRecord) r).getDeltaPercent());
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return getColor(((SecurityPerformanceRecord) e).getDeltaPercent());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+    }
+
     private void createDividendColumns()
     {
+        // Gesamtsumme der erhaltenen Dividenden
+        Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) r).getSumOfDividends(),
+                                getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
         // Rendite insgesamt
-        Column column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
         column.setVisible(false);
@@ -419,7 +497,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object r)
             {
-                Date date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
+                LocalDate date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
                 return date != null ? Values.Date.format(date) : null;
             }
         });
@@ -533,8 +611,9 @@ public class DividendsPerformanceView extends AbstractListView implements Report
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(DividendsPerformanceView.class.getSimpleName()
-                        + "@bottom3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(
+                        DividendsPerformanceView.class.getSimpleName() + "@bottom3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        layout);
 
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -598,7 +677,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public String getText(Object t)
             {
                 if (t instanceof DividendTransaction)
-                    return Values.Amount.format(((DividendTransaction) t).getAmount());
+                    return Values.Money.format(((DividendTransaction) t).getMonetaryAmount(),
+                                    getClient().getBaseCurrency());
                 else
                     return null;
             }
@@ -643,16 +723,10 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             @Override
             public String getText(Object t)
             {
-                if (t instanceof PortfolioTransaction)
-                    return Values.Amount.format(((PortfolioTransaction) t).getAmount());
-                else if (t instanceof DividendInitialTransaction)
-                    return Values.Amount.format(((DividendInitialTransaction) t).getAmount());
-                else if (t instanceof DividendFinalTransaction)
-                    return Values.Amount.format(((DividendFinalTransaction) t).getAmount());
-                else if (t instanceof AccountTransaction)
-                    return Values.Amount.format(((AccountTransaction) t).getAmount());
-                else
+                if (t instanceof DividendTransaction)
                     return null;
+                else
+                    return Values.Money.format(((Transaction) t).getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -667,7 +741,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 if (t instanceof PortfolioTransaction)
                 {
                     PortfolioTransaction p = (PortfolioTransaction) t;
-                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossEntity(p).toString() : null;
+                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossOwner(p).toString() : null;
                 }
                 else if (t instanceof DividendTransaction)
                 {
@@ -695,7 +769,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
             public Image getImage(Object r)
             {
                 String note = ((Transaction) r).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
@@ -707,8 +781,6 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         transactions.getTable().setLinesVisible(true);
 
         transactions.setContentProvider(new SimpleListContentProvider());
-
-        ViewerHelper.pack(transactions);
     }
 
     @Override
@@ -721,7 +793,8 @@ public class DividendsPerformanceView extends AbstractListView implements Report
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = dropDown.getPeriods().getFirst();
-        records.setInput(SecurityPerformanceSnapshot.create(getClient(), period).getRecords());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        records.setInput(SecurityPerformanceSnapshot.create(getClient(), converter, period).getRecords());
         records.refresh();
     }
 

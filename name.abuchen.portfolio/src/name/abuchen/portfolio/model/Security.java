@@ -1,13 +1,16 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public final class Security implements Attributable, InvestmentVehicle
 {
@@ -27,6 +30,8 @@ public final class Security implements Attributable, InvestmentVehicle
     private String uuid;
 
     private String name;
+    private String currencyCode = CurrencyUnit.EUR;
+
     private String note;
 
     private String isin;
@@ -61,6 +66,13 @@ public final class Security implements Attributable, InvestmentVehicle
         this.uuid = UUID.randomUUID().toString();
     }
 
+    public Security(String name, String currencyCode)
+    {
+        this();
+        this.name = name;
+        this.currencyCode = currencyCode;
+    }
+
     public Security(String name, String isin, String tickerSymbol, String feed)
     {
         this();
@@ -92,6 +104,18 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public String getCurrencyCode()
+    {
+        return currencyCode;
+    }
+
+    @Override
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.currencyCode = currencyCode;
     }
 
     @Override
@@ -243,7 +267,7 @@ public final class Security implements Attributable, InvestmentVehicle
         prices.clear();
     }
 
-    public SecurityPrice getSecurityPrice(Date requestedTime)
+    public SecurityPrice getSecurityPrice(LocalDate requestedTime)
     {
         // assumption: prefer historic quote over latest if there are more
         // up-to-date historic quotes
@@ -259,16 +283,16 @@ public final class Security implements Attributable, InvestmentVehicle
 
         if (latest != null //
                         && (lastHistoric == null //
-                        || (requestedTime.getTime() >= latest.getTime().getTime() && //
-                        latest.getTime().getTime() >= lastHistoric.getTime().getTime()) //
-                        ))
+                        || (!requestedTime.isBefore(latest.getTime()) && //
+                        !latest.getTime().isBefore(lastHistoric.getTime()) //
+                        )))
             return latest;
 
         if (lastHistoric == null)
             return new SecurityPrice(requestedTime, 0);
 
         // avoid binary search if last historic quote <= requested date
-        if (lastHistoric.getTime().getTime() <= requestedTime.getTime())
+        if (!lastHistoric.getTime().isAfter(requestedTime))
             return lastHistoric;
 
         SecurityPrice p = new SecurityPrice(requestedTime, 0);
@@ -370,57 +394,49 @@ public final class Security implements Attributable, InvestmentVehicle
 
         for (Account account : client.getAccounts())
         {
-            for (AccountTransaction t : account.getTransactions())
-            {
-                if (t.getSecurity() == null || !t.getSecurity().equals(this))
-                    continue;
-
-                switch (t.getType())
-                {
-                    case INTEREST:
-                    case DIVIDENDS:
-                    case TAX_REFUND:
-                        answer.add(new TransactionPair<AccountTransaction>(account, t));
-                        break;
-                    case FEES:
-                    case TAXES:
-                    case DEPOSIT:
-                    case REMOVAL:
-                    case BUY:
-                    case SELL:
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
+            account.getTransactions()
+                            .stream()
+                            .filter(t -> this.equals(t.getSecurity()))
+                            .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
+                                            || t.getType() == AccountTransaction.Type.DIVIDENDS
+                                            || t.getType() == AccountTransaction.Type.TAX_REFUND)
+                            .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
+                            .forEach(p -> answer.add(p));
         }
 
         for (Portfolio portfolio : client.getPortfolios())
         {
-            for (PortfolioTransaction t : portfolio.getTransactions())
-            {
-                if (!t.getSecurity().equals(this))
-                    continue;
-
-                switch (t.getType())
-                {
-                    case TRANSFER_IN:
-                    case TRANSFER_OUT:
-                    case BUY:
-                    case SELL:
-                    case DELIVERY_INBOUND:
-                    case DELIVERY_OUTBOUND:
-                        answer.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }
+            portfolio.getTransactions().stream()
+                            //
+                            .filter(t -> this.equals(t.getSecurity()))
+                            .map(t -> new TransactionPair<PortfolioTransaction>(portfolio, t)) //
+                            .forEach(p -> answer.add(p));
         }
 
         return answer;
+    }
+
+    public boolean hasTransactions(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+        {
+            Optional<PortfolioTransaction> transaction = portfolio.getTransactions().stream()
+                            .filter(t -> this.equals(t.getSecurity())).findAny();
+
+            if (transaction.isPresent())
+                return true;
+        }
+
+        for (Account account : client.getAccounts())
+        {
+            Optional<AccountTransaction> transaction = account.getTransactions().stream()
+                            .filter(t -> this.equals(t.getSecurity())).findAny();
+
+            if (transaction.isPresent())
+                return true;
+        }
+
+        return false;
     }
 
     public Security deepCopy()
@@ -428,6 +444,8 @@ public final class Security implements Attributable, InvestmentVehicle
         Security answer = new Security();
 
         answer.name = name;
+        answer.currencyCode = currencyCode;
+
         answer.note = note;
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;

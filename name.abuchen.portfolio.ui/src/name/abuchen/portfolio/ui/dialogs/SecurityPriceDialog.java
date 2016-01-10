@@ -1,14 +1,12 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.util.Dates;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -17,7 +15,7 @@ public class SecurityPriceDialog extends AbstractDialog
     static class Model extends BindingHelper.Model
     {
         private Security security;
-        private Date date = Dates.today();
+        private LocalDate date = LocalDate.now();
         private long price;
 
         public Model(Client client, Security security)
@@ -37,12 +35,12 @@ public class SecurityPriceDialog extends AbstractDialog
             firePropertyChange("price", this.price, this.price = price); //$NON-NLS-1$
         }
 
-        public Date getDate()
+        public LocalDate getDate()
         {
             return date;
         }
 
-        public void setDate(Date date)
+        public void setDate(LocalDate date)
         {
             firePropertyChange("date", this.date, this.date = date); //$NON-NLS-1$
         }

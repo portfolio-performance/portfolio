@@ -4,20 +4,22 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
+import org.junit.Test;
+
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.util.Dates;
-
-import org.junit.Test;
 
 public class Issue371PurchaseValueWithTransfers
 {
@@ -30,7 +32,8 @@ public class Issue371PurchaseValueWithTransfers
         Security adidas = client.getSecurities().get(0);
         assertThat(adidas.getName(), is("Adidas AG")); //$NON-NLS-1$
 
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(Dates.date("2010-11-20"), Dates.date("2015-11-20")); //$NON-NLS-1$ //$NON-NLS-2$
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2010-11-20"), //$NON-NLS-1$
+                        LocalDate.parse("2015-11-20")); //$NON-NLS-1$
 
         // make sure that the transfer entry exists
         assertThat(client.getPortfolios().size(), is(2));
@@ -40,10 +43,11 @@ public class Issue371PurchaseValueWithTransfers
                         .filter(t -> t.getType() == PortfolioTransaction.Type.TRANSFER_IN).findAny().isPresent(),
                         is(true));
 
-        ClientSnapshot snapshot = ClientSnapshot.create(client, period.getEndDate());
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, period.getEndDate());
         SecurityPosition securityPosition = snapshot.getPositionsByVehicle().get(adidas).getPosition();
 
-        SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, period);
+        SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(adidas));
 

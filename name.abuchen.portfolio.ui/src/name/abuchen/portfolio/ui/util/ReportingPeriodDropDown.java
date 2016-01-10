@@ -2,18 +2,17 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.LinkedList;
 
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.ToolBar;
+
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.dialogs.EditReportingPeriodsDialog;
+import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 
 public final class ReportingPeriodDropDown extends AbstractDropDown
 {
@@ -34,14 +33,7 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
 
         getToolItem().setText(periods.getFirst().toString());
 
-        toolBar.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                part.storeReportingPeriods(periods);
-            }
-        });
+        toolBar.addDisposeListener(e -> part.storeReportingPeriods(periods));
     }
 
     @Override
@@ -89,6 +81,34 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
 
                     if (periods.size() > 20)
                         periods.removeLast();
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.MenuReportingPeriodManage)
+        {
+            @Override
+            public void run()
+            {
+                EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(getToolBar().getShell());
+                dialog.setReportingPeriods(periods);
+
+                if (dialog.open() == Dialog.OK)
+                {
+                    ReportingPeriod currentSelection = periods.getFirst();
+
+                    periods.clear();
+                    periods.addAll(dialog.getReportingPeriods());
+
+                    // make sure at least one entry exists
+                    if (periods.isEmpty())
+                        periods.add(currentSelection);
+
+                    if (listener != null && !currentSelection.equals(periods.getFirst()))
+                    {
+                        setLabel(periods.getFirst().toString());
+                        listener.reportingPeriodUpdated();
+                    }
                 }
             }
         });

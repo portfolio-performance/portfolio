@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
 
-<target name="portfolio-ide" sequenceNumber="9">
+<target name="portfolio-ide" sequenceNumber="10">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.rcp.feature.group" version="1.3.101.v20150204-1353"/>
-<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.3.101.v20150204-1353"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.102.v20150204-1316"/>
-<unit id="org.eclipse.platform.ide" version="4.4.2.M20150204-1700"/>
-<unit id="org.eclipse.platform.source.feature.group" version="4.4.2.v20150204-1700"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700"/>
+<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.4.0.v20150903-1804"/>
+<unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
+<unit id="org.eclipse.platform.ide" version="4.5.1.M20150904-0015"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.5.1.v20150904-0015"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.5/R-4.5.1-201509040015"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.hamcrest.core.source" version="1.3.0.v201303031735"/>
 <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
 <unit id="org.hamcrest.text" version="1.1.0.v20090501071000"/>
-<unit id="org.junit" version="4.11.0.v201303080030"/>
 <unit id="org.mockito" version="1.9.5.v201311280930"/>
+<unit id="org.junit" version="4.12.0.v201504281640"/>
 <unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
 <unit id="org.hamcrest.text.source" version="1.1.0.v20090501071000"/>
-<unit id="org.junit.source" version="4.11.0.v201303080030"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
+<unit id="org.junit.source" version="4.12.0.v201504281640"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.4.0.v20150804100819"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.13.0/luna"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20150804081228"/>
+<repository location="http://archive.eclipse.org/technology/babel/update-site/R0.13.0/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201501260813"/>

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,14 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 
 public final class GroupByTaxonomy
 {
@@ -30,30 +33,32 @@ public final class GroupByTaxonomy
     }
 
     private final Taxonomy taxonomy;
-    private final long valuation;
+    private final CurrencyConverter converter;
+    private final LocalDate date;
+    private final Money valuation;
     private final List<AssetCategory> categories = new ArrayList<AssetCategory>();
 
-    private GroupByTaxonomy(Taxonomy taxonomy, long valuation)
+    private GroupByTaxonomy(Taxonomy taxonomy, CurrencyConverter converter, LocalDate date, Money valuation)
     {
         this.taxonomy = taxonomy;
+        this.converter = converter;
+        this.date = date;
         this.valuation = valuation;
     }
 
     /* package */GroupByTaxonomy(Taxonomy taxonomy, ClientSnapshot snapshot)
     {
-        this(taxonomy, snapshot.getAssets());
+        this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getMonetaryAssets());
 
         Map<InvestmentVehicle, Item> vehicle2position = new HashMap<InvestmentVehicle, Item>();
 
         // cash
-        for (AccountSnapshot a : snapshot.getAccounts())
+        for (AccountSnapshot account : snapshot.getAccounts())
         {
-            if (a.getFunds() == 0)
+            if (account.getFunds().isZero())
                 continue;
 
-            SecurityPosition sp = new SecurityPosition(new SecurityPrice(snapshot.getTime(), a.getFunds()),
-                            Values.Share.factor());
-            vehicle2position.put(a.getAccount(), new Item(sp));
+            vehicle2position.put(account.getAccount(), new Item(new SecurityPosition(account)));
         }
 
         // portfolio
@@ -68,7 +73,7 @@ public final class GroupByTaxonomy
 
     /* package */public GroupByTaxonomy(Taxonomy taxonomy, PortfolioSnapshot snapshot)
     {
-        this(taxonomy, snapshot.getValue());
+        this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getValue());
 
         Map<InvestmentVehicle, Item> vehicle2position = new HashMap<InvestmentVehicle, Item>();
 
@@ -136,7 +141,7 @@ public final class GroupByTaxonomy
 
             if (!vehicle2item.isEmpty())
             {
-                AssetCategory category = new AssetCategory(classification, valuation);
+                AssetCategory category = new AssetCategory(classification, converter, date, valuation);
                 categories.add(category);
 
                 for (Entry<InvestmentVehicle, Item> entry : vehicle2item.entrySet())
@@ -146,7 +151,7 @@ public final class GroupByTaxonomy
                     if (item.weight != Classification.ONE_HUNDRED_PERCENT)
                         position = SecurityPosition.split(position, item.weight);
 
-                    category.addPosition(new AssetPosition(entry.getKey(), position, getValuation()));
+                    category.addPosition(new AssetPosition(position, converter, date, getValuation()));
                 }
 
                 // sort positions by name
@@ -173,7 +178,7 @@ public final class GroupByTaxonomy
     {
         Classification classification = new Classification(null, Classification.UNASSIGNED_ID,
                         Messages.LabelWithoutClassification);
-        AssetCategory unassigned = new AssetCategory(classification, getValuation());
+        AssetCategory unassigned = new AssetCategory(classification, converter, date, getValuation());
 
         for (Entry<InvestmentVehicle, Item> entry : vehicle2position.entrySet())
         {
@@ -185,7 +190,7 @@ public final class GroupByTaxonomy
                 if (item.weight != 0)
                     position = SecurityPosition.split(position, Classification.ONE_HUNDRED_PERCENT - item.weight);
 
-                unassigned.addPosition(new AssetPosition(entry.getKey(), position, getValuation()));
+                unassigned.addPosition(new AssetPosition(position, converter, date, getValuation()));
             }
         }
 
@@ -193,30 +198,36 @@ public final class GroupByTaxonomy
             categories.add(unassigned);
     }
 
-    public long getValuation()
+    public LocalDate getDate()
+    {
+        return date;
+    }
+
+    public Money getValuation()
     {
         return valuation;
     }
 
-    public long getFIFOPurchaseValue()
+    public Money getFIFOPurchaseValue()
     {
-        long purchaseValue = 0;
-        for (AssetCategory category : categories)
-            purchaseValue += category.getFIFOPurchaseValue();
-        return purchaseValue;
+        return categories.stream().map(AssetCategory::getFIFOPurchaseValue)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
-    public long getProfitLoss()
+    public Money getProfitLoss()
     {
-        long profitLoss = 0;
-        for (AssetCategory category : categories)
-            profitLoss += category.getProfitLoss();
-        return profitLoss;
+        return categories.stream().map(AssetCategory::getProfitLoss)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
     public List<AssetCategory> asList()
     {
         return categories;
+    }
+
+    public Stream<AssetCategory> getCategories()
+    {
+        return categories.stream();
     }
 
     /* package */AssetCategory byClassification(Classification classification)

@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
@@ -10,12 +10,11 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.util.Dates;
 
 public class StockSplitModel extends BindingHelper.Model
 {
     private Security security;
-    private Date exDate = Dates.today();
+    private LocalDate exDate = LocalDate.now();
     private int newShares = 1;
     private int oldShares = 1;
 
@@ -39,12 +38,12 @@ public class StockSplitModel extends BindingHelper.Model
         firePropertyChange("security", this.security, this.security = security); //$NON-NLS-1$
     }
 
-    public Date getExDate()
+    public LocalDate getExDate()
     {
         return exDate;
     }
 
-    public void setExDate(Date exDate)
+    public void setExDate(LocalDate exDate)
     {
         firePropertyChange("exDate", this.exDate, this.exDate = exDate); //$NON-NLS-1$
     }
@@ -103,7 +102,7 @@ public class StockSplitModel extends BindingHelper.Model
             for (TransactionPair<?> pair : transactions)
             {
                 Transaction t = pair.getTransaction();
-                if (t.getDate().before(exDate))
+                if (t.getDate().isBefore(exDate))
                     t.setShares(t.getShares() * newShares / oldShares);
             }
         }
@@ -113,7 +112,7 @@ public class StockSplitModel extends BindingHelper.Model
             List<SecurityPrice> quotes = security.getPrices();
             for (SecurityPrice p : quotes)
             {
-                if (p.getTime().before(exDate))
+                if (p.getTime().isBefore(exDate))
                     p.setValue(p.getValue() * oldShares / newShares);
             }
         }

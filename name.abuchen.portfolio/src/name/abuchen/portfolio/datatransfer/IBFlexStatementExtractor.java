@@ -5,11 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +20,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -27,14 +33,11 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractor implements Extractor
@@ -61,18 +64,16 @@ public class IBFlexStatementExtractor implements Extractor
         this.exchanges.put("VENTURE", "V");
     }
 
-    private Date convertDate(String date) throws ParseException
+    private LocalDate convertDate(String date) throws DateTimeParseException
     {
 
         if (date.length() > 8)
         {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            return df.parse(date);
+            return LocalDate.parse(date);
         }
         else
         {
-            DateFormat df = new SimpleDateFormat("yyyyMMdd");
-            return df.parse(date);
+            return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
     }
 
@@ -87,6 +88,7 @@ public class IBFlexStatementExtractor implements Extractor
         String tickerSymbol = eElement.getAttribute("symbol");
         String yahooSymbol = tickerSymbol;
         String exchange = eElement.getAttribute("exchange");
+        String currency = asCurrencyUnit(eElement.getAttribute("currency"));
         String isin = eElement.getAttribute("isin");
         String cusip = eElement.getAttribute("cusip");
         // Store cusip in isin if isin is not available
@@ -120,6 +122,7 @@ public class IBFlexStatementExtractor implements Extractor
         Security security = new Security(description, isin, yahooSymbol, QuoteFeed.MANUAL);
         // We use the Wkn to store the IB conID as a unique identifier
         security.setWkn(conID);
+        security.setCurrencyCode(currency);
         security.setNote(description);
 
         // Store
@@ -163,19 +166,27 @@ public class IBFlexStatementExtractor implements Extractor
         }
         transaction.setDate(convertDate(d));
 
+        // transaction currency
+        String currency = asCurrencyUnit(eElement.getAttribute("currency"));
+
+        // Set the Amount which is "cost"
+        transaction.setCurrencyCode(currency);
+        transaction.setAmount(Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("cost"))));
+
         // Share Quantity
         Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
         transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-        Double fees = Math.abs(Double.parseDouble(eElement.getAttribute("ibCommission")));
-        transaction.setFees(Math.round(fees.doubleValue() * Values.Amount.factor()));
+        // fees
+        double fees = Math.abs(Double.parseDouble(eElement.getAttribute("ibCommission")));
+        String feesCurrency = asCurrencyUnit(eElement.getAttribute("ibCommissionCurrency"));
+        Unit unit = new Unit(Unit.Type.FEE, Money.of(feesCurrency, Values.Amount.factorize(fees)));
+        transaction.getPortfolioTransaction().addUnit(unit);
 
-        Double taxes = Math.abs(Double.parseDouble(eElement.getAttribute("taxes")));
-        transaction.setTaxes(Math.round(taxes.doubleValue() * Values.Amount.factor()));
-
-        // Set the Amount which is ( tradePrice * qty ) + Fees + Taxes
-        Double amount = Double.parseDouble(eElement.getAttribute("tradePrice")) * qty + fees + taxes;
-        transaction.setAmount(Math.abs(Math.round(amount.doubleValue() * Values.Amount.factor())));
+        // taxes
+        double taxes = Math.abs(Double.parseDouble(eElement.getAttribute("taxes")));
+        unit = new Unit(Unit.Type.TAX, Money.of(currency, Values.Amount.factorize(taxes)));
+        transaction.getPortfolioTransaction().addUnit(unit);
 
         transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
@@ -191,8 +202,10 @@ public class IBFlexStatementExtractor implements Extractor
      */
     private void buildCorporateTransaction(Client client, Element eElement) throws ParseException
     {
-        Double amount = Double.parseDouble(eElement.getAttribute("proceeds"));
-        if (amount != 0)
+        Money proceeds = Money.of(asCurrencyUnit(eElement.getAttribute("currency")),
+                        Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
+
+        if (!proceeds.isZero())
         {
             BuySellEntry transaction = new BuySellEntry();
 
@@ -206,13 +219,13 @@ public class IBFlexStatementExtractor implements Extractor
             }
             transaction.setDate(convertDate(eElement.getAttribute("reportDate")));
             // Share Quantity
-            Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
-            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
+            double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
+            transaction.setShares(Values.Share.factorize(qty));
 
             transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
             transaction.setNote(eElement.getAttribute("description"));
 
-            transaction.setAmount(Math.abs(Math.round(amount.doubleValue() * Values.Amount.factor())));
+            transaction.setMonetaryAmount(proceeds);
 
             results.add(new BuySellEntryItem(transaction));
 
@@ -273,6 +286,7 @@ public class IBFlexStatementExtractor implements Extractor
 
         transaction.setDate(convertDate(eElement.getAttribute("dateTime")));
         Double amount = Double.parseDouble(eElement.getAttribute("amount"));
+        String currency = asCurrencyUnit(eElement.getAttribute("currency"));
 
         // Set Transaction Type
         if (eElement.getAttribute("type").equals("Deposits")
@@ -299,15 +313,16 @@ public class IBFlexStatementExtractor implements Extractor
             this.calculateShares(transaction, eElement);
         }
         else if (eElement.getAttribute("type").equals("Withholding Tax"))
-        {             
+        {
             // Set the Symbol
             if (eElement.getAttribute("symbol").length() > 0)
                 transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
-            
+
             transaction.setType(AccountTransaction.Type.TAXES);
-            
-            //Temporary until the model supports negative interest rates and dividends see #310
-            throw new ParseException( eElement.getAttribute("dateTime") + " Witholding Tax is not supported", 0);               
+
+            // Temporary until the model supports negative interest rates and
+            // dividends see #310
+            throw new ParseException(eElement.getAttribute("dateTime") + " Witholding Tax is not supported", 0);
         }
         else if (eElement.getAttribute("type").equals("Broker Interest Received"))
         {
@@ -315,8 +330,8 @@ public class IBFlexStatementExtractor implements Extractor
         }
         else if (eElement.getAttribute("type").equals("Broker Interest Paid"))
         {
-            //Temporary until the model supports negative interest see #310
-            throw new ParseException( eElement.getAttribute("dateTime") + " Broker Interest Paid is not supported", 0);  
+            // Temporary until the model supports negative interest see #310
+            throw new ParseException(eElement.getAttribute("dateTime") + " Broker Interest Paid is not supported", 0);
         }
         else if (eElement.getAttribute("type").equals("Other Fees"))
         {
@@ -329,6 +344,7 @@ public class IBFlexStatementExtractor implements Extractor
 
         amount = Math.abs(amount);
         transaction.setAmount(Math.round(amount.doubleValue() * Values.Amount.factor()));
+        transaction.setCurrencyCode(currency);
 
         transaction.setNote(eElement.getAttribute("description"));
 
@@ -401,6 +417,19 @@ public class IBFlexStatementExtractor implements Extractor
         {
             errors.add(e);
         }
+    }
+
+    /**
+     * Return currency as valid currency code (in the sense that PP is
+     * supporting this currency code)
+     */
+    private String asCurrencyUnit(String currency)
+    {
+        if (currency == null)
+            return CurrencyUnit.EUR;
+
+        CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+        return unit == null ? CurrencyUnit.EUR : unit.getCurrencyCode();
     }
 
     /* package */List<Item> getResults()

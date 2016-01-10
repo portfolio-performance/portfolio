@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
@@ -10,15 +12,6 @@ import org.eclipse.swt.widgets.DateTime;
 
 public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
 {
-    private static final ThreadLocal<Calendar> CALENDAR = new ThreadLocal<Calendar>()
-    {
-        @Override
-        protected Calendar initialValue()
-        {
-            return Calendar.getInstance();
-        };
-    };
-
     public SimpleDateTimeSelectionProperty()
     {
         super(SWT.Selection);
@@ -26,7 +19,7 @@ public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
 
     public Object getValueType()
     {
-        return Date.class;
+        return LocalDate.class;
     }
 
     @Override
@@ -35,15 +28,15 @@ public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
         if (source instanceof DateTime)
         {
             DateTime dateTime = (DateTime) source;
-            Calendar cal = CALENDAR.get();
 
-            cal.clear();
-            cal.set(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay());
-            return cal.getTime();
+            // DateTime widget has zero-based months
+            return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
         }
         else if (source instanceof CDateTime)
         {
-            return ((CDateTime) source).getSelection();
+            Date date = ((CDateTime) source).getSelection();
+            return date == null ? null
+                            : LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
         }
         else
         {
@@ -56,17 +49,16 @@ public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
     {
         if (source instanceof DateTime)
         {
+            LocalDate date = (LocalDate) value;
             DateTime dateTime = (DateTime) source;
-            Calendar cal = CALENDAR.get();
-
-            cal.setTime((Date) value);
-            dateTime.setYear(cal.get(Calendar.YEAR));
-            dateTime.setMonth(cal.get(Calendar.MONTH));
-            dateTime.setDay(cal.get(Calendar.DAY_OF_MONTH));
+            // DateTime widget has zero-based months
+            dateTime.setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
         }
         else if (source instanceof CDateTime)
         {
-            ((CDateTime) source).setSelection((Date) value);
+            LocalDate date = (LocalDate) value;
+            CDateTime dateTime = (CDateTime) source;
+            dateTime.setSelection(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
         }
         else
         {

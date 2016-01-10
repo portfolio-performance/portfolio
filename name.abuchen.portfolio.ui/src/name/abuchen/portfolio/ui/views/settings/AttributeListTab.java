@@ -4,27 +4,11 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientSettings;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.settings.SettingsView.Tab;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -36,13 +20,28 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.views.settings.SettingsView.Tab;
+
 public class AttributeListTab implements Tab, ModificationListener
 {
     @Inject
     private Client client;
 
     @Inject
-    private PreferenceStore preferences;
+    private IPreferenceStore preferences;
 
     private TableViewer tableViewer;
     private ContextMenu contextMenuAdd;
@@ -69,8 +68,6 @@ public class AttributeListTab implements Tab, ModificationListener
         tableViewer.getTable().setLinesVisible(true);
         tableViewer.setContentProvider(new ArrayContentProvider());
 
-        ViewerHelper.pack(tableViewer);
-
         tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
         tableViewer.refresh();
 
@@ -96,7 +93,7 @@ public class AttributeListTab implements Tab, ModificationListener
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_TEXT);
+                return Images.TEXT.image();
             }
         });
         new StringEditingSupport(AttributeType.class, "name").addListener(this).attachTo(column); //$NON-NLS-1$
@@ -147,7 +144,7 @@ public class AttributeListTab implements Tab, ModificationListener
 
         if (index > 0)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveUp)
+            manager.add(new Action(Messages.MenuMoveUp)
             {
                 @Override
                 public void run()
@@ -163,7 +160,7 @@ public class AttributeListTab implements Tab, ModificationListener
 
         if (index < tableViewer.getTable().getItemCount() - 1)
         {
-            manager.add(new Action(Messages.BookmarksListView_MoveDown)
+            manager.add(new Action(Messages.MenuMoveDown)
             {
                 @Override
                 public void run()

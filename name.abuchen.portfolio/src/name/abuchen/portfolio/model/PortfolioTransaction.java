@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-import org.joda.time.DateMidnight;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Values;
 
 public class PortfolioTransaction extends Transaction
 {
@@ -20,26 +22,32 @@ public class PortfolioTransaction extends Transaction
     }
 
     private Type type;
-    private long amount;
-    private long fees;
-    private long taxes;
+
+    @Deprecated
+    /* package */transient long fees;
+
+    @Deprecated
+    /* package */transient long taxes;
 
     public PortfolioTransaction()
     {}
 
-    public PortfolioTransaction(Date date, Security security, Type type, long shares, long amount, long fees, long taxes)
+    public PortfolioTransaction(LocalDate date, String currencyCode, long amount, Security security, long shares,
+                    Type type, long fees, long taxes)
     {
-        super(date, security, shares);
+        super(date, currencyCode, amount, security, shares, null);
         this.type = type;
-        this.amount = amount;
-        this.fees = fees;
-        this.taxes = taxes;
+
+        if (fees != 0)
+            addUnit(new Unit(Unit.Type.FEE, Money.of(currencyCode, fees)));
+        if (taxes != 0)
+            addUnit(new Unit(Unit.Type.TAX, Money.of(currencyCode, taxes)));
     }
 
-    public PortfolioTransaction(String date, Security security, Type type, long shares, long amount, long fees,
-                    long taxes)
+    public PortfolioTransaction(String date, String currencyCode, long amount, Security security, long shares,
+                    Type type, long fees, long taxes)
     {
-        this(new DateMidnight(date).toDate(), security, type, shares, amount, fees, taxes);
+        this(LocalDate.parse(date), currencyCode, amount, security, shares, type, fees, taxes);
     }
 
     public Type getType()
@@ -52,85 +60,59 @@ public class PortfolioTransaction extends Transaction
         this.type = type;
     }
 
-    @Override
-    public long getAmount()
+    /**
+     * Returns the gross value, i.e. the value including taxes and fees. See
+     * {@link #getGrossValue()}.
+     */
+    public long getGrossValueAmount()
     {
-        return amount;
-    }
+        long taxAndFees = getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
 
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
-    }
-
-    public long getFees()
-    {
-        return fees;
-    }
-
-    public void setFees(long fees)
-    {
-        this.fees = fees;
-    }
-
-    public long getTaxes()
-    {
-        return taxes;
-    }
-
-    public void setTaxes(long taxes)
-    {
-        this.taxes = taxes;
-    }
-
-    public long getLumpSumPrice()
-    {
         switch (this.type)
         {
             case BUY:
             case TRANSFER_IN:
             case DELIVERY_INBOUND:
-                return amount - fees - taxes;
+                return getAmount() - taxAndFees;
             case SELL:
             case TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                return amount + fees + taxes;
+                return getAmount() + taxAndFees;
             default:
                 throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
         }
     }
 
     /**
-     * Returns the purchase price before fees
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. In the case of a buy transaction, that are the gross costs, i.e.
+     * before adding additional taxes and fees. In the case of sell
+     * transactions, that are the gross proceeds before the deduction of taxes
+     * and fees.
      */
-    public long getActualPurchasePrice()
+    public Money getGrossValue()
+    {
+        return Money.of(getCurrencyCode(), getGrossValueAmount());
+    }
+
+    /**
+     * Returns the gross price per share. See {@link #getGrossPricePerShare()}.
+     */
+    public long getGrossPricePerShareAmount()
     {
         if (getShares() == 0)
             return 0;
 
-        return getLumpSumPrice() * Values.Share.factor() / getShares();
+        return getGrossValueAmount() * Values.Share.factor() / getShares();
     }
 
-    @Override
-    public boolean isPotentialDuplicate(Transaction other)
+    /**
+     * Returns the gross price per share, i.e. the gross value divided by the
+     * number of shares bought or sold.
+     */
+    public Money getGrossPricePerShare()
     {
-        if (!(other instanceof PortfolioTransaction))
-            return false;
-
-        if (!super.isPotentialDuplicate(other))
-            return false;
-
-        PortfolioTransaction pother = (PortfolioTransaction) other;
-
-        if (type != pother.getType())
-            return false;
-
-        if (fees != pother.getFees())
-            return false;
-
-        if (taxes != pother.getTaxes())
-            return false;
-
-        return true;
+        return Money.of(getCurrencyCode(), getGrossPricePerShareAmount());
     }
 }

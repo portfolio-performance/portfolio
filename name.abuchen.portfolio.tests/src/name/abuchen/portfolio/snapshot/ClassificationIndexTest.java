@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,21 +12,22 @@ import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Values;
 
-import org.joda.time.DateMidnight;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class ClassificationIndexTest
 {
     private ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY( //
-                    new DateMidnight("2011-12-31").toDate(), new DateMidnight("2012-01-08").toDate());
+                    LocalDate.parse("2011-12-31"), LocalDate.parse("2012-01-08"));
 
     private Client createClient(int weight)
     {
@@ -79,8 +81,10 @@ public class ClassificationIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
+                        period, warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -103,8 +107,10 @@ public class ClassificationIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
+                        period, warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -123,8 +129,10 @@ public class ClassificationIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        PerformanceIndex iClient = PerformanceIndex.forClient(client, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, classification, period, warnings);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
+                        period, warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 

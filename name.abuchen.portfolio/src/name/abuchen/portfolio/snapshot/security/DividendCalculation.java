@@ -1,24 +1,34 @@
 package name.abuchen.portfolio.snapshot.security;
 
-import java.util.Date;
+import java.time.LocalDate;
 
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
 
 /* package */class DividendCalculation extends Calculation
 {
-    private long sum;
+    private MutableMoney sum;
     private int numOfEvents;
 
-    private Date firstPayment;
-    private Date lastPayment;
+    private LocalDate firstPayment;
+    private LocalDate lastPayment;
 
     private int regularEvents;
 
     @Override
-    public void visit(DividendTransaction t)
+    public void setTermCurrency(String termCurrency)
     {
-        sum += t.getAmount();
+        super.setTermCurrency(termCurrency);
+        this.sum = MutableMoney.of(termCurrency);
+    }
+
+    @Override
+    public void visit(CurrencyConverter converter, DividendTransaction t)
+    {
+        sum.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
         numOfEvents++;
 
         if (t.getShares() > 0 && (lastPayment == null || Dates.daysBetween(lastPayment, t.getDate()) > 30))
@@ -31,9 +41,9 @@ import name.abuchen.portfolio.util.Dates;
         lastPayment = t.getDate();
     }
 
-    public long getSum()
+    public Money getSum()
     {
-        return sum;
+        return sum.toMoney();
     }
 
     public int getNumOfEvents()
@@ -41,7 +51,7 @@ import name.abuchen.portfolio.util.Dates;
         return numOfEvents;
     }
 
-    public Date getLastDividendPayment()
+    public LocalDate getLastDividendPayment()
     {
         return lastPayment;
     }

@@ -4,8 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import name.abuchen.portfolio.datatransfer.AktienfreundeNetExporter;
-import name.abuchen.portfolio.datatransfer.CSVExporter;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
+
+import name.abuchen.portfolio.datatransfer.csv.AktienfreundeNetExporter;
+import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -13,15 +20,10 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 
 public class ExportWizard extends Wizard
 {
@@ -32,6 +34,12 @@ public class ExportWizard extends Wizard
     public ExportWizard(Client client)
     {
         this.client = client;
+    }
+
+    @Override
+    public Image getDefaultPageImage()
+    {
+        return Images.BANNER.image();
     }
 
     @Override

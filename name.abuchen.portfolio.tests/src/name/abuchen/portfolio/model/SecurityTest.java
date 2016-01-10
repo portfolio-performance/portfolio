@@ -10,9 +10,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.UUID;
-
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Test;
 
@@ -71,17 +70,17 @@ public class SecurityTest
         Security security = new Security();
         assertThat(security.setLatest(null), is(false));
 
-        LatestSecurityPrice latest = new LatestSecurityPrice(Dates.today(), 1);
+        LatestSecurityPrice latest = new LatestSecurityPrice(LocalDate.now(), 1);
         assertThat(security.setLatest(latest), is(true));
         assertThat(security.setLatest(latest), is(false));
         assertThat(security.setLatest(null), is(true));
         assertThat(security.setLatest(null), is(false));
 
-        LatestSecurityPrice second = new LatestSecurityPrice(Dates.today(), 2);
+        LatestSecurityPrice second = new LatestSecurityPrice(LocalDate.now(), 2);
         assertThat(security.setLatest(latest), is(true));
         assertThat(security.setLatest(second), is(true));
 
-        LatestSecurityPrice same = new LatestSecurityPrice(Dates.today(), 2);
+        LatestSecurityPrice same = new LatestSecurityPrice(LocalDate.now(), 2);
         assertThat(security.setLatest(same), is(false));
     }
 

@@ -6,25 +6,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
-
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.ValidationStatusProvider;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -46,6 +37,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Spinner;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
 
 public class SecurityTaxonomyPage extends AbstractPage
 {
@@ -119,8 +119,8 @@ public class SecurityTaxonomyPage extends AbstractPage
         @Override
         public IStatus validate(Object value)
         {
-            return value != null ? ValidationStatus.ok() : ValidationStatus
-                            .error(Messages.EditWizardMasterDataMsgClassificationMissing);
+            return value != null ? ValidationStatus.ok()
+                            : ValidationStatus.error(Messages.EditWizardMasterDataMsgClassificationMissing);
         }
     }
 
@@ -130,8 +130,8 @@ public class SecurityTaxonomyPage extends AbstractPage
         public IStatus validate(Object value)
         {
             int weight = (Integer) value;
-            return weight > 0 ? ValidationStatus.ok() : ValidationStatus
-                            .error(Messages.EditWizardMasterDataMsgWeightEqualsZero);
+            return weight > 0 ? ValidationStatus.ok()
+                            : ValidationStatus.error(Messages.EditWizardMasterDataMsgWeightEqualsZero);
         }
     }
 
@@ -229,7 +229,8 @@ public class SecurityTaxonomyPage extends AbstractPage
             // add summary
             sumOfWeights = new Label(taxonomyPicker, SWT.NONE);
             sumOfWeights.setText(""); //$NON-NLS-1$
-            GridDataFactory.fillDefaults().span(2, 1).indent(0, 5).align(SWT.BEGINNING, SWT.CENTER).applyTo(sumOfWeights);
+            GridDataFactory.fillDefaults().span(2, 1).indent(0, 5).align(SWT.BEGINNING, SWT.CENTER)
+                            .applyTo(sumOfWeights);
         }
 
         setupWeightMultiValidator(sumOfWeights, designation, weightObservables);
@@ -299,7 +300,7 @@ public class SecurityTaxonomyPage extends AbstractPage
             strategy.setAfterConvertValidator(new GreaterThanZeroValidator());
 
             validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
-                            BeansObservables.observeValue(link, "weight"), strategy, null)); //$NON-NLS-1$
+                            BeanProperties.value("weight").observe(link), strategy, null)); //$NON-NLS-1$
         }
     }
 
@@ -320,7 +321,7 @@ public class SecurityTaxonomyPage extends AbstractPage
             strategy.setAfterConvertValidator(new NotNullValidator());
 
             validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
-                            BeansObservables.observeValue(link, "classification"), strategy, null)); //$NON-NLS-1$
+                            BeanProperties.value("classification").observe(link), strategy, null)); //$NON-NLS-1$
         }
     }
 
@@ -347,7 +348,7 @@ public class SecurityTaxonomyPage extends AbstractPage
                     final ClassificationLink link)
     {
         final Button deleteButton = new Button(block, SWT.PUSH);
-        deleteButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_REMOVE));
+        deleteButton.setImage(Images.REMOVE.image());
         deleteButton.addSelectionListener(new SelectionAdapter()
         {
             @Override
@@ -367,7 +368,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         spinner.setValues(link.getWeight(), 0, Classification.ONE_HUNDRED_PERCENT, 2, 100, 1000);
         GridDataFactory.fillDefaults().applyTo(spinner);
 
-        observables.add(SWTObservables.observeSelection(spinner));
+        observables.add(WidgetProperties.selection().observe(spinner));
     }
 
     private void createTaxonomyPicker(Composite container)

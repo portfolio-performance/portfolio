@@ -5,49 +5,64 @@ import java.util.List;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */abstract class Calculation
 {
-    public void visit(DividendInitialTransaction t)
+    private String termCurrency;
+
+    public String getTermCurrency()
+    {
+        return termCurrency;
+    }
+
+    public void setTermCurrency(String termCurrency)
+    {
+        this.termCurrency = termCurrency;
+    }
+
+    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {}
 
-    public void visit(DividendFinalTransaction t)
+    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
     {}
 
-    public void visit(DividendTransaction t)
+    public void visit(CurrencyConverter converter, DividendTransaction t)
     {}
 
-    public void visit(PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, PortfolioTransaction t)
     {}
 
-    public void visit(AccountTransaction t)
+    public void visit(CurrencyConverter converter, AccountTransaction t)
     {}
 
-    public final void visitAll(List<? extends Transaction> transactions)
+    public final void visitAll(CurrencyConverter converter, List<? extends Transaction> transactions)
     {
         for (Transaction t : transactions)
         {
             if (t instanceof DividendInitialTransaction)
-                visit((DividendInitialTransaction) t);
+                visit(converter, (DividendInitialTransaction) t);
             else if (t instanceof DividendFinalTransaction)
-                visit((DividendFinalTransaction) t);
+                visit(converter, (DividendFinalTransaction) t);
             else if (t instanceof DividendTransaction)
-                visit((DividendTransaction) t);
+                visit(converter, (DividendTransaction) t);
             else if (t instanceof PortfolioTransaction)
-                visit((PortfolioTransaction) t);
+                visit(converter, (PortfolioTransaction) t);
             else if (t instanceof AccountTransaction)
-                visit((AccountTransaction) t);
+                visit(converter, (AccountTransaction) t);
             else
                 throw new UnsupportedOperationException();
         }
     }
 
-    public static <T extends Calculation> T perform(Class<T> type, List<? extends Transaction> transactions)
+    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter,
+                    List<? extends Transaction> transactions)
     {
         try
         {
             T thing = type.newInstance();
-            thing.visitAll(transactions);
+            thing.setTermCurrency(converter.getTermCurrency());
+            thing.visitAll(converter, transactions);
             return thing;
         }
         catch (Exception e)

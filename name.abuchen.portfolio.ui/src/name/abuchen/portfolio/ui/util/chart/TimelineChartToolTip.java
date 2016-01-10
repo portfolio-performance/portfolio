@@ -6,9 +6,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -22,6 +19,9 @@ import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
 {
@@ -125,9 +125,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         container.setBackgroundMode(SWT.INHERIT_FORCE);
         GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
 
-        Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+        Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
         container.setForeground(foregroundColor);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        Color backgroundColor = new Color(container.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
+        container.addDisposeListener(e -> backgroundColor.dispose());
+        container.setBackground(backgroundColor);
 
         Label left = new Label(container, SWT.NONE);
         left.setForeground(foregroundColor);

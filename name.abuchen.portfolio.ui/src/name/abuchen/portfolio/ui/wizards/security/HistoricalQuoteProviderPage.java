@@ -1,23 +1,13 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.QuotesTableViewer;
-
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -29,6 +19,16 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+
+import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.QuotesTableViewer;
 
 public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
@@ -49,13 +49,13 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            IObservableValue observable = BeansObservables.observeValue(model, "statusHistoricalQuotesProvider"); //$NON-NLS-1$
+            IObservableValue observable = BeanProperties.value("statusHistoricalQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
             protected IStatus validate()
             {
-                return observable.getValue() == null ? ValidationStatus.ok() : ValidationStatus.error(observable
-                                .getValue().toString());
+                return observable.getValue() == null ? ValidationStatus.ok()
+                                : ValidationStatus.error(observable.getValue().toString());
             }
         });
 
@@ -157,8 +157,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
         public LoadHistoricalQuotes(QuoteFeed feed, Exchange exchange)
         {
-            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes, exchange != null ? exchange.getName()
-                            : "")); //$NON-NLS-1$
+            super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes,
+                            exchange != null ? exchange.getName() : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
 
@@ -176,48 +176,34 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                 s.setFeed(feed.getId());
 
                 // last 2 months as sample
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.MONTH, -2);
+                LocalDate t = LocalDate.now().minusMonths(2);
 
-                final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, cal.getTime(),
-                                new ArrayList<Exception>());
+                final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, t, new ArrayList<Exception>());
 
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
+                Display.getDefault().asyncExec(() -> {
+                    if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
+                                    && !tableSampleData.getControl().isDisposed())
                     {
-                        if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
-                                        && !tableSampleData.getControl().isDisposed())
+                        HistoricalQuoteProviderPage.this.currentJob = null;
+                        cacheQuotes.put(exchange, quotes);
+                        if (!tableSampleData.getControl().isDisposed())
                         {
-                            HistoricalQuoteProviderPage.this.currentJob = null;
-                            cacheQuotes.put(exchange, quotes);
-                            if (!tableSampleData.getControl().isDisposed())
-                            {
-                                tableSampleData.setInput(quotes);
-                                tableSampleData.refresh();
-                            }
+                            tableSampleData.setInput(quotes);
+                            tableSampleData.refresh();
                         }
                     }
-
                 });
             }
             catch (Exception e)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
+                Display.getDefault().asyncExec(() -> {
+                    if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
+                                    && !tableSampleData.getControl().isDisposed())
                     {
-                        if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
-                                        && !tableSampleData.getControl().isDisposed())
-                        {
-                            currentJob = null;
-                            tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
-                            tableSampleData.refresh();
-                        }
+                        currentJob = null;
+                        tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
+                        tableSampleData.refresh();
                     }
-
                 });
 
                 PortfolioPlugin.log(e);

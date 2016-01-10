@@ -1,17 +1,8 @@
 package name.abuchen.portfolio.ui;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import name.abuchen.portfolio.checks.Checker;
-import name.abuchen.portfolio.checks.Issue;
-import name.abuchen.portfolio.checks.QuickFix;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -20,6 +11,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -33,7 +25,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
@@ -47,6 +38,15 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+
+import name.abuchen.portfolio.checks.Checker;
+import name.abuchen.portfolio.checks.Issue;
+import name.abuchen.portfolio.checks.QuickFix;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 
 public class ConsistencyChecksJob extends AbstractClientJob
 {
@@ -68,28 +68,17 @@ public class ConsistencyChecksJob extends AbstractClientJob
         {
             if (reportSuccess)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                                        Messages.MsgNoIssuesFound);
-                    }
-                });
+                Display.getDefault()
+                                .asyncExec(() -> MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+                                                Messages.LabelInfo, Messages.MsgNoIssuesFound));
             }
         }
         else
         {
-            Display.getDefault().asyncExec(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    SelectQuickFixDialog dialog = new SelectQuickFixDialog(Display.getCurrent().getActiveShell(),
-                                    getClient(), issues);
-                    dialog.open();
-                }
+            Display.getDefault().asyncExec(() -> {
+                SelectQuickFixDialog dialog = new SelectQuickFixDialog(Display.getCurrent().getActiveShell(),
+                                getClient(), issues);
+                dialog.open();
             });
 
         }
@@ -110,6 +99,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
         public SelectQuickFixDialog(Shell shell, Client client, List<Issue> issues)
         {
             super(shell);
+            setTitleImage(Images.BANNER.image());
 
             this.client = client;
             this.issues = new ArrayList<ReportedIssue>();
@@ -144,14 +134,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
         {
             Composite composite = (Composite) super.createDialogArea(parent);
 
-            composite.addDisposeListener(new DisposeListener()
-            {
-                @Override
-                public void widgetDisposed(DisposeEvent e)
-                {
-                    SelectQuickFixDialog.this.widgetDisposed(e);
-                }
-            });
+            composite.addDisposeListener(e -> SelectQuickFixDialog.this.widgetDisposed(e));
 
             Composite tableArea = new Composite(composite, SWT.NONE);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(tableArea);
@@ -172,7 +155,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 @Override
                 public String getText(Object element)
                 {
-                    Date date = ((ReportedIssue) element).getDate();
+                    LocalDate date = ((ReportedIssue) element).getDate();
                     return date != null ? Values.Date.format(date) : null;
                 }
             });
@@ -186,7 +169,12 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 @Override
                 public String getText(Object element)
                 {
-                    return ((ReportedIssue) element).getEntity().toString();
+                    Object entity = ((ReportedIssue) element).getEntity();
+
+                    if (entity instanceof Client)
+                        return Messages.LabelPortfolioPerformanceFile;
+                    else
+                        return entity.toString();
                 }
 
                 @Override
@@ -194,9 +182,11 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 {
                     ReportedIssue issue = (ReportedIssue) element;
                     if (issue.getEntity() instanceof Account)
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                        return Images.ACCOUNT.image();
                     else if (issue.getEntity() instanceof Portfolio)
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                        return Images.PORTFOLIO.image();
+                    else if (issue.getEntity() instanceof Client)
+                        return Images.LOGO_16.image();
                     else
                         return null;
                 }
@@ -255,9 +245,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 public Image getImage(Object element)
                 {
                     ReportedIssue issue = (ReportedIssue) element;
-
-                    return PortfolioPlugin.image(issue.isFixed() ? PortfolioPlugin.IMG_CHECK
-                                    : PortfolioPlugin.IMG_QUICKFIX);
+                    return issue.isFixed() ? Images.CHECK.image() : Images.QUICKFIX.image();
                 }
             });
             layout.setColumnData(col.getColumn(), new ColumnPixelData(100));
@@ -303,18 +291,25 @@ public class ConsistencyChecksJob extends AbstractClientJob
                     {
                         for (final QuickFix fix : currentIssue.getAvailableFixes())
                         {
-                            manager.add(new Action(fix.getLabel())
+                            if (fix == QuickFix.SEPARATOR)
                             {
-                                @Override
-                                public void run()
+                                manager.add(new Separator());
+                            }
+                            else
+                            {
+                                manager.add(new Action(fix.getLabel())
                                 {
-                                    fix.execute();
-                                    currentIssue.setFixedMessage(fix.getDoneLabel());
-                                    if (client != null)
-                                        client.markDirty();
-                                    tableViewer.refresh(currentIssue);
-                                }
-                            });
+                                    @Override
+                                    public void run()
+                                    {
+                                        fix.execute();
+                                        currentIssue.setFixedMessage(fix.getDoneLabel());
+                                        if (client != null)
+                                            client.markDirty();
+                                        tableViewer.refresh(currentIssue);
+                                    }
+                                });
+                            }
                         }
                     }
                 });
@@ -356,7 +351,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             this.fixes = delegate.getAvailableFixes();
         }
 
-        public Date getDate()
+        public LocalDate getDate()
         {
             return delegate.getDate();
         }

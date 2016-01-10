@@ -54,10 +54,10 @@ public class Bookmark
         {
             return s == null ? "" : URLEncoder.encode(s, StandardCharsets.UTF_8.name()); //$NON-NLS-1$
         }
-        catch (UnsupportedEncodingException ignore)
+        catch (UnsupportedEncodingException e)
         {
-            // UTF-8 is always supported
-            return s;
+            // should not happen as UTF-8 is always supported
+            throw new UnsupportedOperationException(e);
         }
     }
 }

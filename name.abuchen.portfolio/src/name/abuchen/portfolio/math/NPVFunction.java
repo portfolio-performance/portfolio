@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.math;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import name.abuchen.portfolio.math.NewtonGoalSeek.Function;
@@ -12,7 +12,7 @@ import name.abuchen.portfolio.util.Dates;
     private final int[] days;
     private final double[] values;
 
-    public NPVFunction(List<Date> dates, List<Double> values)
+    public NPVFunction(List<LocalDate> dates, List<Double> values)
     {
         if (dates == null || values == null)
             throw new NullPointerException("dates and/or values are null");

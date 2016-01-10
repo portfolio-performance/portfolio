@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
@@ -13,16 +12,12 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -38,6 +33,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+
+import name.abuchen.portfolio.ui.util.Colors;
 
 public final class Sidebar extends Composite
 {
@@ -140,7 +137,11 @@ public final class Sidebar extends Composite
             });
         }
 
-        private Entry findNeighbor(int direction)
+        /**
+         * Finds either the neighbor above (SWT.ARROW_DOWN) or below
+         * (SWT.ARROW_UP) the current entry.
+         */
+        public Entry findNeighbor(int direction)
         {
             int index = bar.entries.indexOf(this);
 
@@ -191,6 +192,23 @@ public final class Sidebar extends Composite
         {
             bar.select(this);
         }
+
+        /**
+         * Moves the current item one up. Requires the composite to re-layout
+         * afterwards.
+         */
+        public void moveUp()
+        {
+            int index = bar.entries.indexOf(this);
+            if (index == 0)
+                throw new IllegalArgumentException();
+
+            bar.entries.remove(index);
+            bar.entries.add(index - 1, this);
+
+            for (int ii = index - 1; ii <= index + 1 && ii < bar.entries.size(); ii++)
+                bar.setLayoutData(ii, bar.entries.get(ii).item);
+        }
     }
 
     public interface MenuListener
@@ -200,16 +218,13 @@ public final class Sidebar extends Composite
 
     private static final int STEP = 15;
 
-    private Color backgroundColor;
-    private Color selectedColor;
-    private Color lighterSelectedColor;
-    private Color sectionColor;
+    private Color hightlightColor;
 
     private Font regularFont;
     private Font boldFont;
     private Font sectionFont;
 
-    private List<Entry> entries = new ArrayList<Entry>();
+    private List<Entry> entries = new ArrayList<>();
 
     private Entry selection = null;
 
@@ -217,6 +232,7 @@ public final class Sidebar extends Composite
     {
         super(parent, style);
 
+        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         setLayout(new FormLayout());
 
         createColorsAndFonts(parent);
@@ -257,21 +273,7 @@ public final class Sidebar extends Composite
 
     private void registerListeners()
     {
-        addDisposeListener(new DisposeListener()
-        {
-            public void widgetDisposed(DisposeEvent e)
-            {
-                Sidebar.this.widgetDisposed();
-            }
-        });
-
-        addPaintListener(new PaintListener()
-        {
-            public void paintControl(PaintEvent e)
-            {
-                Sidebar.this.paintControl(e);
-            }
-        });
+        addDisposeListener(e -> Sidebar.this.widgetDisposed());
 
         addKeyListener(new KeyListener()
         {
@@ -286,35 +288,16 @@ public final class Sidebar extends Composite
             }
         });
 
-        addTraverseListener(new TraverseListener()
-        {
-            @Override
-            public void keyTraversed(TraverseEvent e)
-            {
-                Sidebar.this.keyTraversed(e);
-            }
-        });
+        addTraverseListener(e -> Sidebar.this.keyTraversed(e));
     }
 
     private void widgetDisposed()
     {
-        backgroundColor.dispose();
-        selectedColor.dispose();
-        lighterSelectedColor.dispose();
-        sectionColor.dispose();
+        hightlightColor.dispose();
 
         regularFont.dispose();
         boldFont.dispose();
         sectionFont.dispose();
-    }
-
-    private void paintControl(PaintEvent e)
-    {
-        GC gc = e.gc;
-        gc.setForeground(backgroundColor);
-        gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        Rectangle r = getClientArea();
-        gc.fillGradientRectangle(0, 0, r.width, r.height, false);
     }
 
     private void keyPressed(KeyEvent e)
@@ -348,10 +331,7 @@ public final class Sidebar extends Composite
 
     private void createColorsAndFonts(Composite parent)
     {
-        backgroundColor = new Color(null, 233, 241, 248);
-        selectedColor = new Color(null, 115, 158, 227);
-        lighterSelectedColor = new Color(null, 189, 208, 241);
-        sectionColor = new Color(null, 149, 165, 180);
+        hightlightColor = new Color(null, Colors.HEADINGS.swt());
 
         FontData fontData = parent.getFont().getFontData()[0];
         regularFont = new Font(Display.getDefault(), fontData);
@@ -372,27 +352,29 @@ public final class Sidebar extends Composite
         l.setText(label);
         l.setIndent(indent);
 
-        // fix layout data
-        FormData data = new FormData();
-        data.left = new FormAttachment(0);
-        data.right = new FormAttachment(100);
-
-        if (index == 0)
-            data.top = new FormAttachment(0, 5);
-        else
-            data.top = new FormAttachment(entries.get(index - 1).item, indent == 0 ? 20 : 0);
-        l.setLayoutData(data);
+        setLayoutData(index, l);
 
         if (index + 1 < entries.size())
         {
+            // cannot use #setLayoutData because entry has no item reference yet
             Item item = entries.get(index + 1).item;
-            data = (FormData) item.getLayoutData();
+            FormData data = (FormData) item.getLayoutData();
             data.top = new FormAttachment(l, item.indent == 0 ? 20 : 0);
         }
 
         this.setTabList(new Control[0]);
 
         return l;
+    }
+
+    private void setLayoutData(int index, Item item)
+    {
+        FormData data = new FormData();
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
+        data.top = index == 0 ? new FormAttachment(0, 5)
+                        : new FormAttachment(entries.get(index - 1).item, item.indent == 0 ? 20 : 0);
+        item.setLayoutData(data);
     }
 
     private void action(Entry entry)
@@ -407,8 +389,8 @@ public final class Sidebar extends Composite
 
     private class Item extends Canvas
     {
-        private static final int MARGIN_X = 5;
-        private static final int MARGIN_Y = 3;
+        private static final int MARGIN_X = 6;
+        private static final int MARGIN_Y = 4;
 
         private final Entry entry;
 
@@ -425,21 +407,9 @@ public final class Sidebar extends Composite
             super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
             this.entry = entry;
 
-            addDisposeListener(new DisposeListener()
-            {
-                public void widgetDisposed(DisposeEvent e)
-                {
-                    Item.this.widgetDisposed();
-                }
-            });
+            addDisposeListener(e -> Item.this.widgetDisposed());
 
-            addPaintListener(new PaintListener()
-            {
-                public void paintControl(PaintEvent e)
-                {
-                    Item.this.paintControl(e);
-                }
-            });
+            addPaintListener(e -> Item.this.paintControl(e));
 
             addKeyListener(new KeyListener()
             {
@@ -495,14 +465,7 @@ public final class Sidebar extends Composite
 
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    listener.menuAboutToShow(Item.this.entry, manager);
-                }
-            });
+            menuMgr.addMenuListener(m -> listener.menuAboutToShow(Item.this.entry, m));
 
             contextMenu = menuMgr.createContextMenu(this);
             setMenu(contextMenu);
@@ -552,7 +515,7 @@ public final class Sidebar extends Composite
             {
                 width += image.getBounds().width + 5;
             }
-            return new Point(width + 2 + (2 * MARGIN_X) + indent, height + 2 + (2 * MARGIN_Y));
+            return new Point(width + (2 * MARGIN_X) + indent, height + (2 * MARGIN_Y));
         }
 
         private void paintControl(PaintEvent e)
@@ -566,18 +529,16 @@ public final class Sidebar extends Composite
 
             if (Sidebar.this.selection != null && this == Sidebar.this.selection.item)
             {
-                gc.setForeground(isDragTarget ? selectedColor : lighterSelectedColor);
-                gc.setBackground(selectedColor);
-                gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, true);
+                gc.setBackground(hightlightColor);
+                gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
-                gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+                gc.setForeground(getDisplay().getSystemColor(isDragTarget ? SWT.COLOR_BLACK : SWT.COLOR_WHITE));
                 gc.setFont(boldFont);
             }
             else
             {
-                gc.setForeground(backgroundColor);
                 gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-                gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, false);
+                gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
                 if (indent > 0)
                 {
@@ -586,7 +547,8 @@ public final class Sidebar extends Composite
                 }
                 else
                 {
-                    gc.setForeground(isDragTarget ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : sectionColor);
+                    gc.setForeground(isDragTarget ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK)
+                                    : hightlightColor);
                     gc.setFont(sectionFont);
                 }
             }
@@ -602,7 +564,10 @@ public final class Sidebar extends Composite
                 }
                 else
                 {
-                    gc.drawImage(image, x, bounds.y + MARGIN_Y);
+                    // center image relative to text
+                    int offset = (imgBounds.height - gc.stringExtent(text).y) / 2;
+
+                    gc.drawImage(image, x, bounds.y + MARGIN_Y - offset);
                     x += imgBounds.width + 5;
                 }
             }

@@ -28,6 +28,9 @@ public final class SWTHelper
 
         for (int ii = 0; ii < widgets.length; ii++)
         {
+            if (widgets[ii] == null)
+                continue;
+
             int w = widgets[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
             if (w >= width)
             {
@@ -40,6 +43,26 @@ public final class SWTHelper
     }
 
     /**
+     * Returns the widest control. Used when layouting dialogs.
+     */
+    public static int widest(Control... widgets)
+    {
+        int width = 0;
+
+        for (int ii = 0; ii < widgets.length; ii++)
+        {
+            if (widgets[ii] == null)
+                continue;
+
+            int w = widgets[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+            if (w >= width)
+                width = w;
+        }
+
+        return width;
+    }
+
+    /**
      * Returns the width needed to display a date. Used when layouting dialogs.
      */
     public static int dateWidth(Drawable drawable)
@@ -48,6 +71,34 @@ public final class SWTHelper
         Point extentText = gc.stringExtent("YYYY-MM-DD"); //$NON-NLS-1$
         gc.dispose();
         return extentText.x;
+    }
+
+    /**
+     * Returns the width needed to display the sample string. Used when
+     * layouting dialogs.
+     */
+    public static int stringWidth(Drawable drawable, String sample)
+    {
+        GC gc = new GC(drawable);
+        Point extentText = gc.stringExtent(sample);
+        gc.dispose();
+        return extentText.x;
+    }
+
+    /**
+     * Returns the width needed to display a currency.
+     */
+    public static int amountWidth(Drawable drawable)
+    {
+        return stringWidth(drawable, "12345678,00"); //$NON-NLS-1$
+    }
+
+    /**
+     * Returns the width needed to display a currency.
+     */
+    public static int currencyWidth(Drawable drawable)
+    {
+        return stringWidth(drawable, "XXXX"); //$NON-NLS-1$
     }
 
     /**

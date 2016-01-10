@@ -5,3 +5,5 @@ name.abuchen.portfolio.checks.impl.SharesHeldConsistencyCheck
 name.abuchen.portfolio.checks.impl.PortfolioTransactionWithoutSecurityCheck
 name.abuchen.portfolio.checks.impl.NullSecurityPricesCheck
 name.abuchen.portfolio.checks.impl.DanglingAccountsCheck
+name.abuchen.portfolio.checks.impl.MissingCurrencyCheck
+name.abuchen.portfolio.checks.impl.TransactionCurrencyCheck

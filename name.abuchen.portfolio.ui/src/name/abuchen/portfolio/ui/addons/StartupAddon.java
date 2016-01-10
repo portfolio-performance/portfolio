@@ -1,24 +1,21 @@
 package name.abuchen.portfolio.ui.addons;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.log.LogEntryCache;
-import name.abuchen.portfolio.ui.update.UpdateHelper;
-import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
-import name.abuchen.portfolio.util.IniFileManipulator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -26,6 +23,16 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.service.event.Event;
+
+import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.log.LogEntryCache;
+import name.abuchen.portfolio.ui.update.UpdateHelper;
+import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 
 public class StartupAddon
 {
@@ -42,37 +49,12 @@ public class StartupAddon
         // force creation of log entry cache
     }
 
-    @PostConstruct
-    public void unsetPersistedStateFlage()
-    {
-        if (PortfolioPlugin.isDevelopmentMode())
-            return;
-
-        // -clearPersistedState is set *after* installing new software, but must
-        // be cleared for the next runs
-
-        try
-        {
-            IniFileManipulator m = new IniFileManipulator();
-            m.load();
-            m.unsetClearPersistedState();
-            if (m.isDirty())
-                m.save();
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-        }
-    }
-
     @Inject
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event,
-                    final IWorkbench workbench, final EPartService partService)
+                    final IWorkbench workbench, final EPartService partService,
+                    @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
-        boolean autoUpdate = PortfolioPlugin.getDefault().getPreferenceStore()
-                        .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE);
-
         if (autoUpdate)
         {
             Job job = new Job(Messages.JobMsgCheckingForUpdates)
@@ -101,16 +83,62 @@ public class StartupAddon
     }
 
     @PostConstruct
+    public void updateExchangeRates(ExchangeRateProviderFactory factory)
+    {
+        for (final ExchangeRateProvider provider : factory.getProviders())
+        {
+            new Job(MessageFormat.format(Messages.MsgUpdatingExchangeRates, provider.getName()))
+            {
+                @Override
+                protected IStatus run(IProgressMonitor monitor)
+                {
+                    try
+                    {
+                        provider.load(monitor);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+                    }
+
+                    try
+                    {
+                        provider.update(monitor);
+                    }
+                    catch (IOException e)
+                    {
+                        PortfolioPlugin.log(e);
+                    }
+
+                    return Status.OK_STATUS;
+                }
+            }.schedule();
+        }
+    }
+
+    @PreDestroy
+    public void storeExchangeRates(ExchangeRateProviderFactory factory)
+    {
+        for (ExchangeRateProvider provider : factory.getProviders())
+        {
+            try
+            {
+                provider.save(new NullProgressMonitor());
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+            }
+        }
+    }
+
+    @PostConstruct
     public void setMultipleWindowImages()
     {
         // setting window images
         // http://www.eclipse.org/forums/index.php/t/440442/
 
-        Window.setDefaultImages(new Image[] { PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_512),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_256),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_128),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_48),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_32),
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO_16) });
+        Window.setDefaultImages(new Image[] { Images.LOGO_512.image(), Images.LOGO_256.image(), Images.LOGO_128.image(),
+                        Images.LOGO_48.image(), Images.LOGO_32.image(), Images.LOGO_16.image() });
     }
 }

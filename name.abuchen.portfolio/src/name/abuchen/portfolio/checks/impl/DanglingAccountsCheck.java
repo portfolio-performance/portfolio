@@ -41,7 +41,7 @@ public class DanglingAccountsCheck implements Check
                 if (!(entry instanceof BuySellEntry))
                     continue;
 
-                Account account = (Account) entry.getCrossEntity(transaction);
+                Account account = (Account) entry.getCrossOwner(transaction);
                 check(client, accounts, account);
             }
         }

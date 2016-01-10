@@ -1,13 +1,16 @@
 package name.abuchen.portfolio.snapshot;
 
 import static org.junit.Assert.assertTrue;
+
+import java.time.LocalDate;
+
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -29,7 +32,8 @@ public class PortfolioSnapshotTest
                         .sell(a, "2010-01-03", 300000, 12000) //
                         .addTo(client);
 
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new DateTime("2010-01-31").toDate());
+        LocalDate date = LocalDate.parse("2010-01-31");
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(), date);
 
         assertTrue(snapshot.getPositions().isEmpty());
     }

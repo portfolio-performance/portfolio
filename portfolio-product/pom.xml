@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.20.4-SNAPSHOT</version>
+		<version>0.21.1</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -64,6 +64,88 @@
 					</products>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>name.abuchen</groupId>
+				<artifactId>fix-info-plist-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>fix-info-plist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>fix-info-plist</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<productId>name.abuchen.portfolio.product</productId>
+					<appName>PortfolioPerformance.app</appName>
+					<properties>
+						<property>
+							<name>CFBundleName</name>
+							<value>Portfolio Performance</value>
+						</property>
+						<property>
+							<name>CFBundleDisplayName</name>
+							<value>Portfolio Performance</value>
+						</property>
+						<property>
+							<name>CFBundleGetInfoString</name>
+							<value>Copyright 2012 - 2016 Andreas Buchen. All rights reserved.</value>
+						</property>
+						<property>
+							<name>CFBundleLocalizations</name>
+							<value>en,de</value>
+						</property>
+						<property>
+							<name>Eclipse</name>
+							<value />
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<property>
+					<name>dmg-distro</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>exec-maven-plugin</artifactId>
+						<groupId>org.codehaus.mojo</groupId>
+						<executions>
+							<execution>
+								<id>dmg-distro</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>/usr/bin/hdiutil</executable>
+									<arguments>
+										<argument>create</argument>
+										<argument>-srcfolder</argument>
+										<argument>target/products/name.abuchen.portfolio.product/macosx/cocoa/x86_64</argument>
+										<argument>-ov</argument>
+										<argument>-format</argument>
+										<argument>UDZO</argument>
+										<argument>-volname</argument>
+										<argument>PortfolioPerformance-${project.version}</argument>
+										<argument>target/products/PortfolioPerformance-${project.version}.dmg</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

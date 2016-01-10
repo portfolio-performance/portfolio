@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
@@ -15,13 +12,13 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.jobs.ProgressProvider;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 
 public class ClientProgressProvider extends ProgressProvider
 {
@@ -71,14 +68,9 @@ public class ClientProgressProvider extends ProgressProvider
 
         private void internalSetText(final String text)
         {
-            sync.asyncExec(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    if (!label.isDisposed())
-                        label.setText(text);
-                }
+            sync.asyncExec(() -> {
+                if (!label.isDisposed())
+                    label.setText(text);
             });
         }
     }
@@ -92,7 +84,7 @@ public class ClientProgressProvider extends ProgressProvider
     @Inject
     private UISynchronize sync;
 
-    private CLabel label;
+    private Label label;
 
     @PostConstruct
     public void setup()
@@ -108,23 +100,12 @@ public class ClientProgressProvider extends ProgressProvider
     @PostConstruct
     public void createComposite(Composite parent) throws IOException
     {
-        final Color backgroundColor = new Color(null, 233, 241, 248);
-
-        label = new CLabel(parent, SWT.LEFT);
+        label = new Label(parent, SWT.LEFT);
         label.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
-        label.setBackground(new Color[] { backgroundColor, Display.getDefault().getSystemColor(SWT.COLOR_WHITE) },
-                        new int[] { 100 });
+        label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         label.setText(""); //$NON-NLS-1$
 
-        parent.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                disposed();
-                backgroundColor.dispose();
-            }
-        });
+        parent.addDisposeListener(e -> disposed());
     }
 
     @Override

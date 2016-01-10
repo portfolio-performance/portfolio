@@ -14,18 +14,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Taxonomy.Visitor;
-import name.abuchen.portfolio.model.TaxonomyTemplate;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.util.ProgressMonitorInputStream;
-import name.abuchen.portfolio.util.TokenReplacingReader;
-import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -39,6 +27,18 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.TokenReplacingReader;
+import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
 
 public class OpenSampleHandler
 {
@@ -72,20 +72,15 @@ public class OpenSampleHandler
 
                         fixTaxonomyLabels(client);
 
-                        sync.asyncExec(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
-                                part.setLabel(sampleFile.substring(sampleFile.lastIndexOf('/') + 1));
-                                part.getTransientData().put(Client.class.getName(), client);
+                        sync.asyncExec(() -> {
+                            MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
+                            part.setLabel(sampleFile.substring(sampleFile.lastIndexOf('/') + 1));
+                            part.getTransientData().put(Client.class.getName(), client);
 
-                                MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
-                                stack.getChildren().add(part);
+                            MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
+                            stack.getChildren().add(part);
 
-                                partService.showPart(part, PartState.ACTIVATE);
-                            }
+                            partService.showPart(part, PartState.ACTIVATE);
                         });
                     }
                     catch (IOException ignore)

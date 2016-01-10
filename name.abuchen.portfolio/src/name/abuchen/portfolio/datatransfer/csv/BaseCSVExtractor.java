@@ -1,0 +1,151 @@
+package name.abuchen.portfolio.datatransfer.csv;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+
+/* package */ abstract class BaseCSVExtractor extends CSVExtractor
+{
+    private Client client;
+    private SecurityCache securityCache;
+    private String label;
+    private List<Field> fields;
+
+    /* package */ BaseCSVExtractor(Client client, String label)
+    {
+        this.client = client;
+        this.label = label;
+        this.fields = new ArrayList<>();
+    }
+
+    @Override
+    public final String getLabel()
+    {
+        return label;
+    }
+
+    @Override
+    public final List<Field> getFields()
+    {
+        return fields;
+    }
+
+    @Override
+    public final String toString()
+    {
+        return label;
+    }
+
+    public Client getClient()
+    {
+        return client;
+    }
+
+    @Override
+    public List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
+                    List<Exception> errors)
+    {
+        // careful: the security cache makes the extractor stateful because
+        // securities extracted during a previous run will not be created again
+        securityCache = new SecurityCache(client);
+
+        List<Item> results = new ArrayList<>();
+        int lineNo = 1 + skipLines; // +1 because of end user
+        for (String[] strings : rawValues)
+        {
+            try
+            {
+                extract(results, strings, field2column);
+            }
+            catch (ParseException | UnsupportedOperationException e)
+            {
+                errors.add(new IOException(MessageFormat.format(Messages.CSVLineXwithMsgY, lineNo, e.getMessage()), e));
+            }
+            lineNo++;
+        }
+
+        results.addAll(securityCache.createMissingSecurityItems(results));
+
+        securityCache = null;
+
+        return results;
+    }
+
+    /* package */ abstract void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException;
+
+    protected Security getSecurity(String[] rawValues, Map<String, Column> field2column,
+                    Consumer<Security> onSecurityCreated)
+    {
+        Security security = null;
+
+        String isin = getText(Messages.CSVColumn_ISIN, rawValues, field2column);
+        String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+        String wkn = getText(Messages.CSVColumn_WKN, rawValues, field2column);
+
+        if (isin != null || tickerSymbol != null || wkn != null)
+        {
+            String name = getText(Messages.CSVColumn_SecurityName, rawValues, field2column);
+
+            security = securityCache.lookup(isin, tickerSymbol, wkn, () -> {
+                Security s = new Security();
+                s.setCurrencyCode(client.getBaseCurrency());
+                s.setName(constructName(isin, tickerSymbol, wkn, name));
+                s.setIsin(isin);
+                s.setTickerSymbol(tickerSymbol);
+                s.setWkn(wkn);
+
+                onSecurityCreated.accept(s);
+
+                return s;
+            });
+        }
+
+        return security;
+    }
+
+    private String constructName(String isin, String tickerSymbol, String wkn, String name)
+    {
+        if (name != null && !name.isEmpty())
+        {
+            return name;
+        }
+        else
+        {
+            String key = isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn;
+            return MessageFormat.format(Messages.CSVImportedSecurityLabel, key);
+        }
+    }
+
+    protected String getCurrencyCode(String name, String[] rawValues, Map<String, Column> field2column)
+    {
+        String value = getText(name, rawValues, field2column);
+        if (value == null)
+            return client.getBaseCurrency();
+
+        CurrencyUnit unit = CurrencyUnit.getInstance(value.trim());
+        return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
+    }
+
+    protected Money getMoney(String[] rawValues, Map<String, Column> field2column) throws ParseException
+    {
+        Long amount = getAmount(Messages.CSVColumn_Value, rawValues, field2column);
+        if (amount == null)
+            throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Value), 0);
+        String currencyCode = getCurrencyCode(Messages.CSVColumn_TransactionCurrency, rawValues, field2column);
+        return Money.of(currencyCode, amount);
+    }
+}

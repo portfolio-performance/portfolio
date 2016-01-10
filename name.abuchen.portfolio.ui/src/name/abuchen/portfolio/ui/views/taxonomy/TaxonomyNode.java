@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
@@ -213,8 +214,8 @@ public abstract class TaxonomyNode implements Adaptable
     private TaxonomyNode parent;
 
     private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
-    private long actual;
-    private long target;
+    private Money actual;
+    private Money target;
 
     /* package */TaxonomyNode(TaxonomyNode parent)
     {
@@ -271,22 +272,22 @@ public abstract class TaxonomyNode implements Adaptable
         return false;
     }
 
-    public long getActual()
+    public Money getActual()
     {
         return actual;
     }
 
-    public void setActual(long actual)
+    public void setActual(Money actual)
     {
         this.actual = actual;
     }
 
-    public long getTarget()
+    public Money getTarget()
     {
         return target;
     }
 
-    public void setTarget(long target)
+    public void setTarget(Money target)
     {
         this.target = target;
     }

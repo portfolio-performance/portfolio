@@ -5,6 +5,9 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 /* package */class CostCalculation extends Calculation
 {
@@ -28,22 +31,25 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     private long taxes;
 
     @Override
-    public void visit(DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
-        fifo.add(new LineItem(t.getPosition().getShares(), t.getAmount(), t.getAmount()));
+        long amount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+        fifo.add(new LineItem(t.getPosition().getShares(), amount, amount));
     }
 
     @Override
-    public void visit(PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, PortfolioTransaction t)
     {
-        fees += t.getFees();
-        taxes += t.getTaxes();
+        fees += t.getUnitSum(Unit.Type.FEE, converter).getAmount();
+        taxes += t.getUnitSum(Unit.Type.TAX, converter).getAmount();
 
         switch (t.getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
-                fifo.add(new LineItem(t.getShares(), t.getAmount(), t.getLumpSumPrice()));
+                long grossAmount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                long netAmount = converter.convert(t.getDate(), t.getGrossValue()).getAmount();
+                fifo.add(new LineItem(t.getShares(), grossAmount, netAmount));
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
@@ -81,14 +87,14 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     }
 
     @Override
-    public void visit(AccountTransaction t)
+    public void visit(CurrencyConverter converter, AccountTransaction t)
     {
         if (t.getType() == AccountTransaction.Type.TAX_REFUND)
-            taxes -= t.getAmount();
+            taxes -= converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
     }
 
     @Override
-    public void visit(DividendTransaction t)
+    public void visit(CurrencyConverter converter, DividendTransaction t)
     {
         t.setFifoCost(getFifoCost());
         t.setTotalShares(getSharesHeld());
@@ -97,23 +103,23 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
     /**
      * gross investment
      */
-    public long getFifoCost()
+    public Money getFifoCost()
     {
         long cost = 0;
         for (LineItem entry : fifo)
             cost += entry.grossAmount;
-        return cost;
+        return Money.of(getTermCurrency(), cost);
     }
 
     /**
      * net investment, i.e. without fees and taxes
      */
-    public long getNetFifoCost()
+    public Money getNetFifoCost()
     {
         long cost = 0;
         for (LineItem entry : fifo)
             cost += entry.netAmount;
-        return cost;
+        return Money.of(getTermCurrency(), cost);
     }
 
     public long getSharesHeld()
@@ -124,14 +130,14 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
         return shares;
     }
 
-    public long getFees()
+    public Money getFees()
     {
-        return fees;
+        return Money.of(getTermCurrency(), fees);
     }
 
-    public long getTaxes()
+    public Money getTaxes()
     {
-        return taxes;
+        return Money.of(getTermCurrency(), taxes);
     }
 
 }

@@ -8,31 +8,33 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.ConsorsbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.DABPDFExctractor;
-import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.FlatexPDFExctractor;
-import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
-import name.abuchen.portfolio.datatransfer.INGDiBaExtractor;
-import name.abuchen.portfolio.datatransfer.SBrokerPDFExtractor;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
 public class ImportPDFHandler
 {
@@ -75,8 +77,9 @@ public class ImportPDFHandler
                 files.add(new File(fileDialog.getFilterPath(), file));
 
             // open wizard dialog
-
-            Dialog wizwardDialog = new WizardDialog(shell, new ImportExtractedItemsWizard(client, extractor, files));
+            IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
+            Dialog wizwardDialog = new WizardDialog(shell,
+                            new ImportExtractedItemsWizard(client, extractor, preferences, files));
             wizwardDialog.open();
         }
         catch (IllegalArgumentException e)

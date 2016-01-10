@@ -1,25 +1,28 @@
 package name.abuchen.portfolio.snapshot;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Month;
 
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class PortfolioMergeTest
 {
-    private final Date referenceDate = Dates.date(2010, Calendar.JANUARY, 31);
+    private final LocalDate referenceDate = LocalDate.of(2010, Month.JANUARY, 31);
 
     private Client client;
 
@@ -36,69 +39,70 @@ public class PortfolioMergeTest
         client = new Client();
 
         securityA = new Security();
-        securityA.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1000));
+        securityA.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1000));
         client.addSecurity(securityA);
 
         securityB = new Security();
-        securityB.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1100));
+        securityB.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1100));
         client.addSecurity(securityB);
 
         securityX = new Security();
-        securityX.addPrice(new SecurityPrice(Dates.date(2010, Calendar.JANUARY, 1), 1200));
+        securityX.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1200));
         client.addSecurity(securityX);
 
         Portfolio portfolioA = new Portfolio();
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityA,
-                        PortfolioTransaction.Type.BUY, Values.Share.factorize(10), 10000, 0, 0));
-        portfolioA.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, Values.Share.factorize(10), 12100, 100, 0));
+        portfolioA.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
+                        100_00, securityA, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolioA.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
+                        121_00, securityX, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 100, 0));
         client.addPortfolio(portfolioA);
 
         Portfolio portfolioB = new Portfolio();
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityB,
-                        PortfolioTransaction.Type.BUY, Values.Share.factorize(10), 11000, 0, 0));
-        portfolioB.addTransaction(new PortfolioTransaction(Dates.date(2010, Calendar.JANUARY, 1), securityX,
-                        PortfolioTransaction.Type.BUY, Values.Share.factorize(10), 10000, 0, 0));
+        portfolioB.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
+                        110_00, securityB, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolioB.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR,
+                        100_00, securityX, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolioB);
     }
 
     @Test
     public void testMergingPortfolioSnapshots()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, referenceDate);
+        ClientSnapshot snapshot = ClientSnapshot.create(client, new TestCurrencyConverter(), referenceDate);
         assertNotNull(snapshot);
 
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
 
         SecurityPosition positionA = jointPortfolio.getPositionsBySecurity().get(securityA);
-        assertEquals(Values.Share.factorize(10), positionA.getShares());
-        assertEquals(10000, positionA.calculateValue());
+        assertThat(positionA.getShares(), is(Values.Share.factorize(10)));
+        assertThat(positionA.calculateValue(), is(Money.of(CurrencyUnit.EUR, 100_00)));
 
         SecurityPosition positionB = jointPortfolio.getPositionsBySecurity().get(securityB);
-        assertEquals(Values.Share.factorize(10), positionB.getShares());
-        assertEquals(11000, positionB.calculateValue());
+        assertThat(positionB.getShares(), is(Values.Share.factorize(10)));
+        assertThat(positionB.calculateValue(), is(Money.of(CurrencyUnit.EUR, 110_00)));
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertEquals(Values.Share.factorize(10) * 2, positionX.getShares());
-        assertEquals(24000, positionX.calculateValue());
+        assertThat(positionX.getShares(), is(Values.Share.factorize(10 * 2)));
+        assertThat(positionX.calculateValue(), is(Money.of(CurrencyUnit.EUR, 240_00)));
     }
 
     @Test
     public void testThatTransactionsAreMergedOnSecurityPosition()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, referenceDate);
+        ClientSnapshot snapshot = ClientSnapshot.create(client, new TestCurrencyConverter(), referenceDate);
         assertNotNull(snapshot);
 
         PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
 
         SecurityPosition positionX = jointPortfolio.getPositionsBySecurity().get(securityX);
-        assertEquals(Values.Share.factorize(10) * 2, positionX.getShares());
-        assertEquals(24000, positionX.calculateValue());
+
+        assertThat(positionX.getShares(), is(Values.Share.factorize(20)));
+        assertThat(positionX.calculateValue(), is(Money.of(CurrencyUnit.EUR, 240_00)));
         // calculate purchase price w/o costs
-        assertEquals(1100, positionX.getFIFOPurchasePrice());
+        assertThat(positionX.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 11_00)));
         // calculate purchase value w/ costs
-        assertEquals(22100, positionX.getFIFOPurchaseValue());
-        assertEquals(1900, positionX.getProfitLoss());
+        assertThat(positionX.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 221_00)));
+        assertThat(positionX.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 19_00)));
     }
 
 }

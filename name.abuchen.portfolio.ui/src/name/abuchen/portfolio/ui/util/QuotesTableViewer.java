@@ -2,11 +2,8 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.List;
 
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -17,6 +14,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Widget;
+
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 
 public class QuotesTableViewer
 {
@@ -57,7 +58,7 @@ public class QuotesTableViewer
         layout.setColumnData(column, new ColumnPixelData(80, true));
 
         tableViewer.setLabelProvider(new PriceLabelProvider());
-        tableViewer.setContentProvider(new SimpleListContentProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
     }
 
     public void setInput(List<LatestSecurityPrice> quotes)

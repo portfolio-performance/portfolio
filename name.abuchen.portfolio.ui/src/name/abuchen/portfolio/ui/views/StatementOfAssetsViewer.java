@@ -1,59 +1,24 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Adaptable;
-import name.abuchen.portfolio.model.Annotated;
-import name.abuchen.portfolio.model.Attributable;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.model.Named;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.AssetCategory;
-import name.abuchen.portfolio.snapshot.AssetPosition;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.MarkDirtyListener;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.OptionLabelProvider;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -67,8 +32,6 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -78,9 +41,61 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Annotated;
+import name.abuchen.portfolio.model.Attributable;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.AssetCategory;
+import name.abuchen.portfolio.snapshot.AssetPosition;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
+import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.AttributeComparator;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.DirectionAwareComparator;
+import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+
 public class StatementOfAssetsViewer
 {
-    private Composite container;
+    @Inject
+    private IPreferenceStore preference;
+
+    private boolean useIndirectQuotation = false;
+
     private TableViewer assets;
 
     private Font boldFont;
@@ -94,28 +109,36 @@ public class StatementOfAssetsViewer
     private PortfolioSnapshot portfolioSnapshot;
     private Taxonomy taxonomy;
 
-    public StatementOfAssetsViewer(Composite parent, AbstractFinanceView owner, Client client)
+    @Inject
+    public StatementOfAssetsViewer(AbstractFinanceView owner, Client client)
     {
         this.owner = owner;
         this.client = client;
-
-        loadTaxonomy(client);
-
-        createColumns(parent);
-
-        this.assets.getTable().addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                StatementOfAssetsViewer.this.widgetDisposed();
-            }
-        });
     }
 
-    private void loadTaxonomy(Client client)
+    @Inject
+    public void setUseIndirectQuotation(
+                    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
     {
-        String taxonomyId = owner.getPart().getPreferenceStore().getString(this.getClass().getSimpleName());
+        this.useIndirectQuotation = useIndirectQuotation;
+
+        if (assets != null)
+            assets.refresh();
+    }
+
+    public Control createControl(Composite parent)
+    {
+        Control control = createColumns(parent);
+
+        this.assets.getTable().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
+
+        return control;
+    }
+
+    @PostConstruct
+    private void loadTaxonomy()
+    {
+        String taxonomyId = preference.getString(this.getClass().getSimpleName());
 
         if (taxonomyId != null)
         {
@@ -133,9 +156,9 @@ public class StatementOfAssetsViewer
             this.taxonomy = client.getTaxonomies().get(0);
     }
 
-    private void createColumns(Composite parent)
+    private Control createColumns(Composite parent)
     {
-        container = new Composite(parent, SWT.NONE);
+        Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
@@ -143,8 +166,7 @@ public class StatementOfAssetsViewer
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
 
-        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, owner.getPreferenceStore(),
-                        assets, layout);
+        support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
@@ -163,6 +185,8 @@ public class StatementOfAssetsViewer
                 return element.isSecurity() ? Values.Share.format(element.getSecurityPosition().getShares()) : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getShares() : null)));
         support.addColumn(column);
 
         column = new NameColumn("1"); //$NON-NLS-1$
@@ -196,15 +220,14 @@ public class StatementOfAssetsViewer
             public boolean canEdit(Object element)
             {
                 boolean isCategory = ((Element) element).isCategory();
-                boolean isUnassignedCategory = isCategory
-                                && Classification.UNASSIGNED_ID.equals(((Element) element).getCategory()
-                                                .getClassification().getId());
+                boolean isUnassignedCategory = isCategory && Classification.UNASSIGNED_ID
+                                .equals(((Element) element).getCategory().getClassification().getId());
 
                 return !isUnassignedCategory ? super.canEdit(element) : false;
             }
 
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
-        column.setSorter(null);
+        column.getSorter().wrap(c -> new ElementComparator(c));
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
@@ -217,6 +240,8 @@ public class StatementOfAssetsViewer
                 return element.isSecurity() ? element.getSecurity().getTickerSymbol() : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurity().getTickerSymbol() : null)));
         support.addColumn(column);
 
         column = new Column("12", Messages.ColumnWKN, SWT.None, 60); //$NON-NLS-1$
@@ -229,12 +254,14 @@ public class StatementOfAssetsViewer
                 return element.isSecurity() ? element.getSecurity().getWkn() : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurity().getWkn() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new IsinColumn("3"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setSorter(null);
+        column.getSorter().wrap(c -> new ElementComparator(c));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -245,10 +272,22 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                return element.isSecurity() ? Values.Quote.format(element.getSecurityPosition().getPrice().getValue())
-                                : null;
+                if (!element.isSecurity())
+                    return null;
+
+                Money money = Money.of(element.getSecurity().getCurrencyCode(),
+                                element.getSecurityPosition().getPrice().getValue());
+                return Values.Money.format(money, client.getBaseCurrency());
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> {
+            Element element = (Element) e;
+            if (!element.isSecurity())
+                return null;
+
+            return Money.of(element.getSecurity().getCurrencyCode(),
+                            element.getSecurityPosition().getPrice().getValue());
+        })));
         support.addColumn(column);
 
         column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
@@ -262,6 +301,8 @@ public class StatementOfAssetsViewer
                                 : null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isSecurity()
+                        ? ((Element) e).getSecurityPosition().getPrice().getTime() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -272,7 +313,7 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                return Values.Amount.format(element.getValuation());
+                return Values.Money.format(element.getValuation(), client.getBaseCurrency());
             }
 
             @Override
@@ -281,6 +322,7 @@ public class StatementOfAssetsViewer
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
+        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("6", Messages.ColumnShareInPercent, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -304,6 +346,7 @@ public class StatementOfAssetsViewer
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
+        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
@@ -316,24 +359,27 @@ public class StatementOfAssetsViewer
                 Element element = (Element) e;
                 if (element.isSecurity())
                 {
-                    long purchasePrice = element.getSecurityPosition().getFIFOPurchasePrice();
-                    return purchasePrice == 0 ? null : Values.Amount.format(purchasePrice);
+                    Money purchasePrice = element.getSecurityPosition().getFIFOPurchasePrice();
+                    return Values.Money.formatNonZero(purchasePrice, client.getBaseCurrency());
                 }
                 return null;
             }
         });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isSecurity()
+                        ? ((Element) e).getSecurityPosition().getFIFOPurchasePrice() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnPurchaseValue_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                long purchaseValue = element.getFIFOPurchaseValue();
-                return purchaseValue == 0 ? null : Values.Amount.format(purchaseValue);
+                Money purchaseValue = element.getFIFOPurchaseValue();
+                return Values.Money.formatNonZero(purchaseValue, client.getBaseCurrency());
             }
 
             @Override
@@ -343,6 +389,8 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(Element.class, "FIFOPurchaseValue") //$NON-NLS-1$
+                        .wrap(c -> new ElementComparator(c)));
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -352,22 +400,17 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                long profitLoss = element.getProfitLoss();
-                return profitLoss == 0 ? null : Values.Amount.format(profitLoss);
+                Money profitLoss = element.getProfitLoss();
+                return Values.Money.formatNonZero(profitLoss, client.getBaseCurrency());
             }
 
             @Override
             public Color getForeground(Object e)
             {
                 Element element = (Element) e;
-                long profitLoss = element.getProfitLoss();
-
-                if (profitLoss < 0)
-                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                else if (profitLoss > 0)
-                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                else
-                    return null;
+                Money profitLoss = element.getProfitLoss();
+                return Display.getCurrent()
+                                .getSystemColor(profitLoss.isNegative() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
             }
 
             @Override
@@ -377,91 +420,18 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(Element.class, "profitLoss").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.setSorter(null);
+        column.getSorter().wrap(c -> new ElementComparator(c));
         support.addColumn(column);
 
-        column = new Column("10", Messages.ColumnIRRPerformance, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(Messages.LabelReportingYears, Messages.ColumnIRRPerformanceOption, 1, 2, 3, 4, 5, 10);
-        column.setLabelProvider(new OptionLabelProvider()
-        {
-            @Override
-            public String getText(Object e, Integer option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    return Values.Percent.format(record.getIrr());
-                }
-                return null;
-            }
-
-            @Override
-            public Color getForeground(Object e, Integer option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    double irr = record.getIrr();
-
-                    if (irr < 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                    else if (irr > 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                }
-                return null;
-            }
-        });
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("11", Messages.ColumnTotalProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(Messages.LabelReportingYears, Messages.ColumnTotalProfitLossOption, 1, 2, 3, 4, 5, 10);
-        column.setLabelProvider(new OptionLabelProvider()
-        {
-            @Override
-            public String getText(Object e, Integer option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    return Values.Amount.format(record.getDelta());
-                }
-                return null;
-            }
-
-            @Override
-            public Color getForeground(Object e, Integer option)
-            {
-                Element element = (Element) e;
-                if (element.isSecurity())
-                {
-                    calculatePerformance(element, option);
-                    SecurityPerformanceRecord record = element.getPerformance(option);
-                    long delta = record.getDelta();
-
-                    if (delta < 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                    else if (delta > 0)
-                        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-                }
-                return null;
-            }
-        });
-        column.setVisible(false);
-        support.addColumn(column);
-
+        addPerformanceColumns();
         addTaxonomyColumns();
         addAttributeColumns();
+        addCurrencyColumns();
 
         support.createColumns();
 
@@ -470,14 +440,69 @@ public class StatementOfAssetsViewer
 
         assets.setContentProvider(new StatementOfAssetsContentProvider());
 
-        ViewerHelper.pack(assets);
-
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(assets));
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
+
+        return container;
+    }
+
+    private void addPerformanceColumns()
+    {
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().loadReportingPeriods());
+
+        Column column = new Column("ttwror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnTWROR_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getTrueTimeWeightedRateOfReturn()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
+        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getIrr()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGains_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldingsPercent()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnAbsolutePerformance_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDelta()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDeltaPercent()));
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private void addAttributeColumns()
@@ -488,7 +513,8 @@ public class StatementOfAssetsViewer
                         .forEach(attribute -> {
                             Column column = new AttributeColumn(attribute);
                             column.setVisible(false);
-                            column.setSorter(null);
+                            if (column.getSorter() != null)
+                                column.getSorter().wrap(c -> new ElementComparator(c));
                             column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
                             support.addColumn(column);
                         });
@@ -500,9 +526,135 @@ public class StatementOfAssetsViewer
         {
             Column column = new TaxonomyColumn(taxonomy);
             column.setVisible(false);
-            column.setSorter(null);
+            if (column.getSorter() != null)
+                column.getSorter().wrap(c -> new ElementComparator(c));
             support.addColumn(column);
         }
+    }
+
+    private void addCurrencyColumns()
+    {
+        Column column = new Column("baseCurrency", Messages.ColumnCurrency, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return element.getPosition().getInvestmentVehicle().getCurrencyCode();
+            }
+        });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getInvestmentVehicle().getCurrencyCode() : null)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("exchangeRate", Messages.ColumnExchangeRate, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                String baseCurrency = element.getPosition().getInvestmentVehicle().getCurrencyCode();
+                CurrencyConverter converter = getCurrencyConverter();
+                ExchangeRate rate = converter.getRate(getDate(), baseCurrency);
+
+                if (useIndirectQuotation)
+                    rate = rate.inverse();
+
+                return Values.ExchangeRate.format(rate.getValue());
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                String text = getText(e);
+                if (text == null)
+                    return null;
+
+                String term = getCurrencyConverter().getTermCurrency();
+                String base = ((Element) e).getPosition().getInvestmentVehicle().getCurrencyCode();
+
+                return text + ' ' + (useIndirectQuotation ? base + '/' + term : term + '/' + base);
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("marketValueBaseCurrency", //$NON-NLS-1$
+                        Messages.ColumnMarketValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnMarketValueBaseCurrency);
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return Values.Money.format(element.getPosition().getPosition().calculateValue(),
+                                client.getBaseCurrency());
+            }
+        });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getPosition().calculateValue() : null)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("purchaseValueBaseCurrency", //$NON-NLS-1$
+                        Messages.ColumnPurchaseValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnPurchaseValueBaseCurrency);
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return Values.Money.formatNonZero(element.getPosition().getPosition().getFIFOPurchaseValue(),
+                                client.getBaseCurrency());
+            }
+        });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getPosition().getFIFOPurchaseValue() : null)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("profitLossBaseCurrency", //$NON-NLS-1$
+                        Messages.ColumnProfitLoss + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnProfitLossBaseCurrency);
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isPosition())
+                    return null;
+
+                return Values.Money.formatNonZero(element.getPosition().getPosition().getProfitLoss(),
+                                client.getBaseCurrency());
+            }
+        });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isPosition()
+                        ? ((Element) e).getPosition().getPosition().getProfitLoss() : null)));
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
@@ -513,7 +665,7 @@ public class StatementOfAssetsViewer
 
         if (element.isAccount())
         {
-            new AccountContextMenu(view).menuAboutToShow(manager, element.getAccount());
+            new AccountContextMenu(view).menuAboutToShow(manager, element.getAccount(), null);
         }
         else if (element.isSecurity())
         {
@@ -522,19 +674,9 @@ public class StatementOfAssetsViewer
         }
     }
 
-    public void pack()
-    {
-        ViewerHelper.pack(assets);
-    }
-
     public TableViewer getTableViewer()
     {
         return assets;
-    }
-
-    public Control getControl()
-    {
-        return container;
     }
 
     public void showConfigMenu(Shell shell)
@@ -619,30 +761,46 @@ public class StatementOfAssetsViewer
         }
     }
 
-    private void calculatePerformance(Element element, Integer option)
+    private CurrencyConverter getCurrencyConverter()
+    {
+        if (clientSnapshot != null)
+            return clientSnapshot.getCurrencyConverter();
+        else if (portfolioSnapshot != null)
+            return portfolioSnapshot.getCurrencyConverter();
+        else
+            return null;
+    }
+
+    private LocalDate getDate()
+    {
+        if (clientSnapshot != null)
+            return clientSnapshot.getTime();
+        else if (portfolioSnapshot != null)
+            return portfolioSnapshot.getTime();
+        else
+            return null;
+    }
+
+    private void calculatePerformance(Element element, ReportingPeriod period)
     {
         // already calculated?
-        if (element.getPerformance(option) != null)
+        if (element.getPerformance(period) != null)
             return;
 
         if (clientSnapshot == null && portfolioSnapshot == null)
             return;
 
-        // start date
-        Date endDate = clientSnapshot != null ? clientSnapshot.getTime() : portfolioSnapshot.getTime();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endDate);
-        cal.add(Calendar.YEAR, -option.intValue());
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.add(Calendar.DATE, -1);
-
         SecurityPerformanceSnapshot sps = null;
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(cal.getTime(), endDate);
         if (clientSnapshot != null)
-            sps = SecurityPerformanceSnapshot.create(client, period);
+        {
+            sps = SecurityPerformanceSnapshot.create(client, clientSnapshot.getCurrencyConverter(), period);
+        }
         else
-            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getSource(), period);
+        {
+            sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getCurrencyConverter(),
+                            portfolioSnapshot.getSource(), period);
+        }
 
         StatementOfAssetsContentProvider contentProvider = (StatementOfAssetsContentProvider) assets
                         .getContentProvider();
@@ -655,7 +813,7 @@ public class StatementOfAssetsViewer
                 {
                     if (r.getSecurity().equals(e.getSecurity()))
                     {
-                        e.setPerformance(option, r);
+                        e.setPerformance(period, r);
                         break;
                     }
                 }
@@ -666,43 +824,59 @@ public class StatementOfAssetsViewer
     private void widgetDisposed()
     {
         if (taxonomy != null)
-            owner.getPart().getPreferenceStore().setValue(this.getClass().getSimpleName(), taxonomy.getId());
+            preference.setValue(this.getClass().getSimpleName(), taxonomy.getId());
 
         if (contextMenu != null)
             contextMenu.dispose();
     }
 
-    private static class Element implements Adaptable
+    public static class Element implements Adaptable
     {
+        /**
+         * The sortOrder is used to separate asset categories and asset
+         * positions and thereby sort positions only within a category even
+         * though there is a flat list of elements. See
+         * {@link ElementComparator}.
+         */
+        private final int sortOrder;
+
         private GroupByTaxonomy groupByTaxonomy;
         private AssetCategory category;
         private AssetPosition position;
 
-        private transient Map<Integer, SecurityPerformanceRecord> performance = new HashMap<Integer, SecurityPerformanceRecord>();
+        private transient Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
 
-        private Element(AssetCategory category)
+        private Element(AssetCategory category, int sortOrder)
         {
             this.category = category;
+            this.sortOrder = sortOrder;
         }
 
-        private Element(AssetPosition position)
+        private Element(AssetPosition position, int sortOrder)
         {
             this.position = position;
+            this.sortOrder = sortOrder;
         }
 
-        private Element(GroupByTaxonomy groupByTaxonomy)
+        private Element(GroupByTaxonomy groupByTaxonomy, int sortOrder)
         {
             this.groupByTaxonomy = groupByTaxonomy;
+            this.sortOrder = sortOrder;
         }
 
-        public void setPerformance(Integer year, SecurityPerformanceRecord record)
+        public int getSortOrder()
         {
-            performance.put(year, record);
+            return sortOrder;
         }
 
-        public SecurityPerformanceRecord getPerformance(Integer year)
+        public void setPerformance(ReportingPeriod period, SecurityPerformanceRecord record)
         {
-            return performance.get(year);
+            performance.put(period, record);
+        }
+
+        public SecurityPerformanceRecord getPerformance(ReportingPeriod period)
+        {
+            return performance.get(period);
         }
 
         public boolean isGroupByTaxonomy()
@@ -713,6 +887,11 @@ public class StatementOfAssetsViewer
         public boolean isCategory()
         {
             return category != null;
+        }
+
+        public boolean isPosition()
+        {
+            return position != null;
         }
 
         public boolean isSecurity()
@@ -750,7 +929,7 @@ public class StatementOfAssetsViewer
             return isAccount() ? (Account) position.getInvestmentVehicle() : null;
         }
 
-        public Long getValuation()
+        public Money getValuation()
         {
             if (position != null)
                 return position.getValuation();
@@ -760,7 +939,7 @@ public class StatementOfAssetsViewer
                 return groupByTaxonomy.getValuation();
         }
 
-        public long getFIFOPurchaseValue()
+        public Money getFIFOPurchaseValue()
         {
             if (position != null)
                 return position.getFIFOPurchaseValue();
@@ -770,7 +949,7 @@ public class StatementOfAssetsViewer
                 return groupByTaxonomy.getFIFOPurchaseValue();
         }
 
-        public long getProfitLoss()
+        public Money getProfitLoss()
         {
             if (position != null)
                 return position.getProfitLoss();
@@ -818,6 +997,29 @@ public class StatementOfAssetsViewer
         }
     }
 
+    public static class ElementComparator implements DirectionAwareComparator
+    {
+        private Comparator<Object> comparator;
+
+        public ElementComparator(Comparator<Object> wrapped)
+        {
+            this.comparator = wrapped;
+        }
+
+        @Override
+        public int compare(int direction, Object o1, Object o2)
+        {
+            int a = ((Element) o1).getSortOrder();
+            int b = ((Element) o2).getSortOrder();
+
+            if (a != b)
+                return a - b;
+
+            int dir = direction == SWT.DOWN ? 1 : -1;
+            return dir * comparator.compare(o1, o2);
+        }
+    }
+
     private static class StatementOfAssetsContentProvider implements IStructuredContentProvider
     {
         private Element[] elements;
@@ -841,14 +1043,21 @@ public class StatementOfAssetsViewer
 
         private Element[] flatten(GroupByTaxonomy categories)
         {
+            // when flattening, assign sortOrder to keep the tree structure for
+            // sorting (only positions within a category are sorted)
+            int sortOrder = 0;
+
             List<Element> answer = new ArrayList<Element>();
             for (AssetCategory cat : categories.asList())
             {
-                answer.add(new Element(cat));
+                answer.add(new Element(cat, sortOrder));
+                sortOrder++;
+
                 for (AssetPosition p : cat.getPositions())
-                    answer.add(new Element(p));
+                    answer.add(new Element(p, sortOrder));
+                sortOrder++;
             }
-            answer.add(new Element(categories));
+            answer.add(new Element(categories, ++sortOrder));
             return answer.toArray(new Element[0]);
         }
 
@@ -861,5 +1070,63 @@ public class StatementOfAssetsViewer
         @Override
         public void dispose()
         {}
+    }
+
+    private final class ReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    {
+        private Function<SecurityPerformanceRecord, Object> valueProvider;
+
+        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider)
+        {
+            this.valueProvider = valueProvider;
+        }
+
+        private Object getValue(Object e, ReportingPeriod option)
+        {
+            Element element = (Element) e;
+            if (element.isSecurity())
+            {
+                calculatePerformance(element, option);
+                SecurityPerformanceRecord record = element.getPerformance(option);
+                return valueProvider.apply(record);
+            }
+            return null;
+        }
+
+        @Override
+        public String getText(Object e, ReportingPeriod option)
+        {
+            Object value = getValue(e, option);
+            if (value == null)
+                return null;
+
+            if (value instanceof Money)
+                return Values.Money.format((Money) value, client.getBaseCurrency());
+            else if (value instanceof Double)
+                return Values.Percent.format((Double) value);
+
+            return null;
+        }
+
+        @Override
+        public Color getForeground(Object e, ReportingPeriod option)
+        {
+            Object value = getValue(e, option);
+            if (value == null)
+                return null;
+
+            double doubleValue = 0;
+            if (value instanceof Money)
+                doubleValue = ((Money) value).getAmount();
+            else if (value instanceof Double)
+                doubleValue = (Double) value;
+
+            if (doubleValue < 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+            else if (doubleValue > 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            else
+                return null;
+        }
     }
 }

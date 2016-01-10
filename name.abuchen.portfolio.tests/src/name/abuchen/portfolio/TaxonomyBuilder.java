@@ -13,7 +13,7 @@ public class TaxonomyBuilder
     public TaxonomyBuilder()
     {
         String uuid = UUID.randomUUID().toString();
-        this.taxonomy = new Taxonomy(uuid, uuid);
+        this.taxonomy = new Taxonomy(uuid);
 
         Classification root = new Classification(uuid, uuid);
         taxonomy.setRootNode(root);

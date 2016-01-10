@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
-Bundle-Version: 0.20.4.qualifier
+Bundle-Version: 0.21.1
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
@@ -14,8 +14,12 @@ Import-Package: de.engehausen.treemap,
  javax.inject;version="1.0.0",
  name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
+ name.abuchen.portfolio.datatransfer.actions,
+ name.abuchen.portfolio.datatransfer.csv,
+ name.abuchen.portfolio.datatransfer.pdf,
  name.abuchen.portfolio.math,
  name.abuchen.portfolio.model,
+ name.abuchen.portfolio.money,
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,
  name.abuchen.portfolio.snapshot,
@@ -34,12 +38,15 @@ Import-Package: de.engehausen.treemap,
  org.eclipse.core.databinding.observable.value,
  org.eclipse.core.databinding.property.value,
  org.eclipse.core.databinding.validation,
+ org.eclipse.core.net.proxy,
  org.eclipse.core.runtime;version="3.4.0",
  org.eclipse.core.runtime.jobs,
  org.eclipse.core.runtime.preferences;version="3.3.0",
  org.eclipse.e4.core.commands,
  org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.core.services.events,
  org.eclipse.e4.core.services.log,
  org.eclipse.e4.ui.di,
@@ -65,6 +72,7 @@ Import-Package: de.engehausen.treemap,
  org.eclipse.jface.databinding.swt,
  org.eclipse.jface.databinding.viewers,
  org.eclipse.jface.dialogs,
+ org.eclipse.jface.internal,
  org.eclipse.jface.layout,
  org.eclipse.jface.operation,
  org.eclipse.jface.preference,
@@ -85,11 +93,9 @@ Import-Package: de.engehausen.treemap,
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
- org.joda.time,
- org.joda.time.base;version="2.1.0",
- org.joda.time.format;version="2.1.0",
  org.osgi.framework;version="1.7.0",
  org.osgi.service.event;version="1.3.0",
  org.osgi.service.prefs;version="1.1.1",
  org.swtchart
-Require-Bundle: org.eclipse.core.expressions
+Require-Bundle: org.eclipse.core.expressions,
+ com.ibm.icu;bundle-version="52.1.0"

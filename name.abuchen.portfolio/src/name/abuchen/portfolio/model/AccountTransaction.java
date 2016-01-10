@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class AccountTransaction extends Transaction
@@ -19,16 +19,13 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
-    private long amount;
-
     public AccountTransaction()
     {}
 
-    public AccountTransaction(Date date, Security security, Type type, long amount)
+    public AccountTransaction(LocalDate date, String currencyCode, long amount, Security security, Type type)
     {
-        super(date, security);
+        super(date, currencyCode, amount, security, 0, null);
         this.type = type;
-        this.amount = amount;
     }
 
     public Type getType()
@@ -40,28 +37,4 @@ public class AccountTransaction extends Transaction
     {
         this.type = type;
     }
-
-    @Override
-    public long getAmount()
-    {
-        return amount;
-    }
-
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
-    }
-
-    @Override
-    public boolean isPotentialDuplicate(Transaction other)
-    {
-        if (!(other instanceof AccountTransaction))
-            return false;
-
-        if (!super.isPotentialDuplicate(other))
-            return false;
-        
-        return type == ((AccountTransaction) other).getType();
-    }
-
 }

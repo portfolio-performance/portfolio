@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.util;
 
-import name.abuchen.portfolio.util.ColorConversion;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+
+import name.abuchen.portfolio.util.ColorConversion;
 
 public enum Colors
 {
@@ -20,8 +20,11 @@ public enum Colors
     CPI(120, 120, 120), //
     IRR(0, 0, 0), //
 
-    HEADINGS(149, 165, 180), //
-    OTHER_CATEGORY(180, 180, 180);
+    HEADINGS(149, 165, 180), // 95A5B4
+    OTHER_CATEGORY(180, 180, 180), //
+    INFO_TOOLTIP_BACKGROUND(236, 235, 236),
+
+    WARNING(254, 223, 107);
 
     private final int red;
     private final int green;

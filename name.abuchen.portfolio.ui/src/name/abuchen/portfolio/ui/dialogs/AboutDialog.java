@@ -2,16 +2,14 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
@@ -31,6 +29,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
+
 public class AboutDialog extends Dialog
 {
     private StyledText text;
@@ -44,8 +47,8 @@ public class AboutDialog extends Dialog
     @Override
     protected Control createDialogArea(Composite parent)
     {
-        String aboutText = MessageFormat.format(Messages.AboutText, PortfolioPlugin.getDefault().getBundle()
-                        .getVersion().toString());
+        String aboutText = MessageFormat.format(Messages.AboutText,
+                        PortfolioPlugin.getDefault().getBundle().getVersion().toString());
 
         Composite area = new Composite(parent, SWT.NONE);
 
@@ -54,15 +57,25 @@ public class AboutDialog extends Dialog
 
         Label imageLabel = new Label(area, SWT.NONE);
         imageLabel.setBackground(area.getBackground());
-        imageLabel.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO));
+        imageLabel.setImage(Images.LOGO_128.image());
+
+        List<StyleRange> styles = new ArrayList<StyleRange>();
+        aboutText = addContributorHyperlinks(aboutText, styles);
+        addBoldFirstLine(aboutText, styles);
+        addHyperlinks(aboutText, styles);
+
+        Collections.sort(styles, new Comparator<StyleRange>()
+        {
+            @Override
+            public int compare(StyleRange o1, StyleRange o2)
+            {
+                return Integer.compare(o1.start, o2.start);
+            }
+        });
 
         text = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
         text.setText(aboutText);
-
-        List<StyleRange> ranges = new ArrayList<StyleRange>();
-        addBoldFirstLine(aboutText, ranges);
-        addHyperlinks(aboutText, ranges);
-        text.setStyleRanges(ranges.toArray(new StyleRange[0]));
+        text.setStyleRanges(styles.toArray(new StyleRange[0]));
 
         text.addListener(SWT.MouseDown, new Listener()
         {
@@ -74,7 +87,7 @@ public class AboutDialog extends Dialog
 
         // layout
 
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).spacing(3, 3).applyTo(area);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(10, 3).applyTo(area);
         GridDataFactory.fillDefaults().grab(false, false).align(SWT.CENTER, SWT.TOP).applyTo(imageLabel);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
 
@@ -86,6 +99,42 @@ public class AboutDialog extends Dialog
     {
         Button b = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         b.setFocus();
+    }
+
+    private String addContributorHyperlinks(String aboutText, List<StyleRange> styles)
+    {
+        Pattern pattern = Pattern.compile("\\[([\\w]*)\\]"); //$NON-NLS-1$
+        Matcher matcher = pattern.matcher(aboutText);
+
+        StringBuilder answer = new StringBuilder(aboutText.length());
+        int pointer = 0;
+        int found = 0;
+
+        while (matcher.find())
+        {
+            int start = matcher.start();
+            int end = matcher.end();
+
+            StyleRange styleRange = new StyleRange();
+            styleRange.underline = true;
+            styleRange.underlineStyle = SWT.UNDERLINE_LINK;
+            styleRange.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
+            styleRange.data = "https://github.com/" + matcher.group(1); //$NON-NLS-1$
+            styleRange.start = start - (2 * found);
+            styleRange.length = end - start - 2;
+            styles.add(styleRange);
+
+            answer.append(aboutText.substring(pointer, start));
+            answer.append(aboutText.substring(start + 1, end - 1));
+
+            pointer = end;
+            found++;
+        }
+
+        if (pointer < aboutText.length())
+            answer.append(aboutText.substring(pointer));
+
+        return answer.toString();
     }
 
     private void addBoldFirstLine(String aboutText, List<StyleRange> ranges)

@@ -2,16 +2,15 @@ package name.abuchen.portfolio.snapshot.security;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class DividendTransaction extends Transaction
 {
     private Account account;
 
-    private long amount;
-
     private long totalShares;
-    private long fifoCost;
+    private Money fifoCost;
 
     public DividendTransaction()
     {}
@@ -26,28 +25,17 @@ public class DividendTransaction extends Transaction
         this.account = account;
     }
 
-    @Override
-    public long getAmount()
-    {
-        return amount;
-    }
-
-    /* package */void setAmount(long amount)
-    {
-        this.amount = amount;
-    }
-
     public long getDividendPerShare()
     {
-        return amountFractionPerShare(amount, getShares());
+        return amountFractionPerShare(getAmount(), getShares());
     }
 
-    public long getFifoCost()
+    public Money getFifoCost()
     {
         return fifoCost;
     }
 
-    /* package */void setFifoCost(long fifoCost)
+    /* package */void setFifoCost(Money fifoCost)
     {
         this.fifoCost = fifoCost;
     }
@@ -59,15 +47,15 @@ public class DividendTransaction extends Transaction
 
     public double getPersonalDividendYield()
     {
-        if (fifoCost <= 0)
+        if (fifoCost.getAmount() <= 0)
             return 0;
 
-        double cost = fifoCost;
+        double cost = fifoCost.getAmount();
 
         if (getShares() > 0)
-            cost = fifoCost * (getShares() / (double) totalShares);
+            cost = fifoCost.getAmount() * (getShares() / (double) totalShares);
 
-        return amount / cost;
+        return getAmount() / cost;
     }
 
     static long amountFractionPerShare(long amount, long shares)

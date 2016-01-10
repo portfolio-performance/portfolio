@@ -3,29 +3,28 @@ package name.abuchen.portfolio.ui.util;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
-
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.util.Isin;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -38,8 +37,56 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.Isin;
+
 public class BindingHelper
 {
+    private static final class StringToCurrencyUnitConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return CurrencyUnit.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return fromObject == null ? CurrencyUnit.EMPTY : CurrencyUnit.getInstance((String) fromObject);
+        }
+    }
+
+    private static final class CurrencyUnitToStringConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return CurrencyUnit.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return CurrencyUnit.EMPTY.equals(fromObject) ? null : ((CurrencyUnit) fromObject).getCurrencyCode();
+        }
+    }
+
     public abstract static class Model
     {
         private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -135,7 +182,7 @@ public class BindingHelper
         this.model = model;
         this.context = new DataBindingContext();
 
-        context.bindValue(PojoObservables.observeValue(listener, "status"), //$NON-NLS-1$
+        context.bindValue(PojoProperties.value("status").observe(listener), //$NON-NLS-1$
                         new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
     }
 
@@ -154,7 +201,7 @@ public class BindingHelper
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(errorLabel);
 
         // error label
-        context.bindValue(SWTObservables.observeText(errorLabel), //
+        context.bindValue(WidgetProperties.text().observe(errorLabel), //
                         new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY), //
                         null, //
                         new UpdateValueStrategy().setConverter(new StatusTextConverter()));
@@ -170,7 +217,7 @@ public class BindingHelper
     public final void bindLabel(Composite editArea, String property)
     {
         Label label = new Label(editArea, SWT.NONE);
-        context.bindValue(SWTObservables.observeText(label), BeansObservables.observeValue(model, property));
+        context.bindValue(WidgetProperties.text().observe(label), BeanProperties.value(property).observe(model));
         GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(label);
     }
 
@@ -185,7 +232,7 @@ public class BindingHelper
         spinner.setSelection(selection);
         spinner.setIncrement(increment);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(spinner);
-        context.bindValue(SWTObservables.observeSelection(spinner), BeansObservables.observeValue(model, property));
+        context.bindValue(WidgetProperties.selection().observe(spinner), BeanProperties.value(property).observe(model));
     }
 
     public final ComboViewer bindComboViewer(Composite editArea, String label, String property,
@@ -210,7 +257,32 @@ public class BindingHelper
             strategy.setAfterConvertValidator(validator);
 
         context.bindValue(ViewersObservables.observeSingleSelection(combo), //
-                        BeansObservables.observeValue(model, property), strategy, null);
+                        BeanProperties.value(property).observe(model), strategy, null);
+        return combo;
+    }
+
+    public final ComboViewer bindCurrencyCodeCombo(Composite editArea, String label, String property)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
+        combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new LabelProvider());
+
+        List<CurrencyUnit> currencies = new ArrayList<CurrencyUnit>();
+        currencies.add(CurrencyUnit.EMPTY);
+        currencies.addAll(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
+        combo.setInput(currencies);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+
+        UpdateValueStrategy targetToModel = new UpdateValueStrategy();
+        targetToModel.setConverter(new CurrencyUnitToStringConverter());
+
+        UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
+        modelToTarget.setConverter(new StringToCurrencyUnitConverter());
+
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), //
+                        BeanProperties.value(property).observe(model), targetToModel, modelToTarget);
         return combo;
     }
 
@@ -222,24 +294,22 @@ public class BindingHelper
         DateTimePicker boxDate = new DateTimePicker(editArea);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(boxDate.getControl());
 
-        context.bindValue(
-                        new SimpleDateTimeSelectionProperty().observe(boxDate.getControl()),
-                        BeansObservables.observeValue(model, property),
-                        new UpdateValueStrategy() //
+        context.bindValue(new SimpleDateTimeSelectionProperty().observe(boxDate.getControl()),
+                        BeanProperties.value(property).observe(model), new UpdateValueStrategy() //
                                         .setAfterConvertValidator(value -> {
-                                            return value != null ? ValidationStatus.ok() : ValidationStatus
-                                                            .error(MessageFormat.format(
+                                            return value != null ? ValidationStatus.ok()
+                                                            : ValidationStatus.error(MessageFormat.format(
                                                                             Messages.MsgDialogInputRequired, label));
-                                        }), null);
+                                        }),
+                        null);
     }
 
     public final void bindAmountInput(Composite editArea, String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
 
-        context.bindValue(
-                        SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
+                        BeanProperties.value(property).observe(model), //
                         new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Amount)),
                         new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Amount)));
     }
@@ -267,8 +337,8 @@ public class BindingHelper
 
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
-        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
+                        BeanProperties.value(property).observe(model), //
                         new UpdateValueStrategy() //
                                         .setConverter(new StringToCurrencyConverter(type)) //
                                         .setAfterConvertValidator(new IValidator()
@@ -279,7 +349,8 @@ public class BindingHelper
                                                 Long v = (Long) value;
                                                 return v != null && v.longValue() > 0 ? ValidationStatus.ok()
                                                                 : ValidationStatus.error(MessageFormat.format(
-                                                                                Messages.MsgDialogInputRequired, label));
+                                                                                Messages.MsgDialogInputRequired,
+                                                                                label));
                                             }
                                         }), // ,
                         new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(type)));
@@ -319,16 +390,17 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label);
 
-        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
+                        BeanProperties.value(property).observe(model), //
                         new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
                         {
                             @Override
                             public IStatus validate(Object value)
                             {
                                 Long v = (Long) value;
-                                return v != null && v.longValue() > 0 ? ValidationStatus.ok() : ValidationStatus
-                                                .error(MessageFormat.format(Messages.MsgDialogInputRequired, label));
+                                return v != null && v.longValue() > 0 ? ValidationStatus.ok()
+                                                : ValidationStatus.error(MessageFormat
+                                                                .format(Messages.MsgDialogInputRequired, label));
                             }
                         }), //
                         null);
@@ -350,8 +422,8 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
 
-        ISWTObservableValue observeText = SWTObservables.observeText(txtValue, SWT.Modify);
-        context.bindValue(observeText, BeansObservables.observeValue(model, property));
+        ISWTObservableValue observeText = WidgetProperties.text(SWT.Modify).observe(txtValue);
+        context.bindValue(observeText, BeanProperties.value(property).observe(model));
 
         return observeText;
     }
@@ -360,16 +432,17 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label);
 
-        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
+                        BeanProperties.value(property).observe(model), //
                         new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
                         {
                             @Override
                             public IStatus validate(Object value)
                             {
                                 String v = (String) value;
-                                return v != null && v.trim().length() > 0 ? ValidationStatus.ok() : ValidationStatus
-                                                .error(MessageFormat.format(Messages.MsgDialogInputRequired, label));
+                                return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                                                : ValidationStatus.error(MessageFormat
+                                                                .format(Messages.MsgDialogInputRequired, label));
                             }
                         }), //
                         null);
@@ -381,8 +454,8 @@ public class BindingHelper
         Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
         txtValue.setTextLimit(12);
 
-        context.bindValue(SWTObservables.observeText(txtValue, SWT.Modify), //
-                        BeansObservables.observeValue(model, property), //
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
+                        BeanProperties.value(property).observe(model), //
                         new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
                         {
                             @Override
@@ -390,8 +463,8 @@ public class BindingHelper
                             {
                                 String v = (String) value;
                                 return v == null || v.trim().length() == 0 || Isin.isValid(v) ? ValidationStatus.ok()
-                                                : ValidationStatus.error(MessageFormat.format(
-                                                                Messages.MsgDialogNotAValidISIN, label));
+                                                : ValidationStatus.error(MessageFormat
+                                                                .format(Messages.MsgDialogNotAValidISIN, label));
                             }
                         }), //
                         null);
@@ -406,8 +479,8 @@ public class BindingHelper
         final Button btnCheckbox = new Button(editArea, SWT.CHECK);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(btnCheckbox);
 
-        context.bindValue(SWTObservables.observeSelection(btnCheckbox), //
-                        BeansObservables.observeValue(model, property));
+        context.bindValue(WidgetProperties.selection().observe(btnCheckbox), //
+                        BeanProperties.value(property).observe(model));
         return btnCheckbox;
     }
 

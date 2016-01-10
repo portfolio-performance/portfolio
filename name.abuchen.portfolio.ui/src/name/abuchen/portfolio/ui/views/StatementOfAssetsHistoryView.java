@@ -5,22 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -40,12 +26,39 @@ import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
+import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
+
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
+    private CurrencyConverter converter;
+
     private TimelineChart chart;
     private ChartConfigurator picker;
 
     private Map<Object, Object> dataCache = new HashMap<Object, Object>();
+
+    @PostConstruct
+    private void setupCurrencyConverter(Client client, ExchangeRateProviderFactory factory)
+    {
+        converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+    }
 
     @Override
     protected String getTitle()
@@ -57,7 +70,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Optional
     private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
     {
-        updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                 // );
     }
 
     protected void addButtons(ToolBar toolBar)
@@ -90,7 +104,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 menu.setVisible(true);
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
         new ActionContributionItem(export).fill(toolBar, -1);
@@ -122,7 +136,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 picker.showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
@@ -134,7 +148,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                 picker.showMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(config).fill(toolBar, -1);
     }
@@ -228,7 +242,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex clientIndex = (PerformanceIndex) dataCache.get(Client.class);
         if (clientIndex == null)
         {
-            clientIndex = PerformanceIndex.forClient(getClient(), getReportingPeriod(), warnings);
+            clientIndex = PerformanceIndex.forClient(getClient(), converter, getReportingPeriod(), warnings);
             dataCache.put(Client.class, clientIndex);
         }
 
@@ -298,7 +312,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex securityIndex = (PerformanceIndex) dataCache.get(security);
         if (securityIndex == null)
         {
-            securityIndex = PerformanceIndex.forInvestment(getClient(), security, getReportingPeriod(), warnings);
+            securityIndex = PerformanceIndex.forInvestment(getClient(), converter, security, getReportingPeriod(),
+                            warnings);
             dataCache.put(security, securityIndex);
         }
 
@@ -317,8 +332,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         if (portfolioIndex == null)
         {
             portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
-                            .forPortfolioPlusAccount(getClient(), portfolio, getReportingPeriod(), warnings)
-                            : PerformanceIndex.forPortfolio(getClient(), portfolio, getReportingPeriod(), warnings);
+                            .forPortfolioPlusAccount(getClient(), converter, portfolio, getReportingPeriod(), warnings)
+                            : PerformanceIndex.forPortfolio(getClient(), converter, portfolio, getReportingPeriod(),
+                                            warnings);
             dataCache.put(cacheKey, portfolioIndex);
         }
 
@@ -334,7 +350,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex accountIndex = (PerformanceIndex) dataCache.get(account);
         if (accountIndex == null)
         {
-            accountIndex = PerformanceIndex.forAccount(getClient(), account, getReportingPeriod(), warnings);
+            accountIndex = PerformanceIndex.forAccount(getClient(), converter, account, getReportingPeriod(), warnings);
             dataCache.put(account, accountIndex);
         }
 
@@ -350,7 +366,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         PerformanceIndex index = (PerformanceIndex) dataCache.get(classification);
         if (index == null)
         {
-            index = PerformanceIndex.forClassification(getClient(), classification, getReportingPeriod(), warnings);
+            index = PerformanceIndex.forClassification(getClient(), converter, classification, getReportingPeriod(),
+                            warnings);
             dataCache.put(classification, index);
         }
 

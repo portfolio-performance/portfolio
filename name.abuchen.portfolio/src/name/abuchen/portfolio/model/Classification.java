@@ -7,8 +7,10 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class Classification implements Named
@@ -35,15 +37,15 @@ public class Classification implements Named
             // needed for xstream de-serialization
         }
 
-        public Assignment(InvestmentVehicle account)
+        public Assignment(InvestmentVehicle vehicle)
         {
-            this(account, ONE_HUNDRED_PERCENT);
+            this(vehicle, ONE_HUNDRED_PERCENT);
         }
 
-        public Assignment(InvestmentVehicle investmentVehicle, int weight)
+        public Assignment(InvestmentVehicle vehicle, int weight)
         {
             this.weight = weight;
-            this.investmentVehicle = investmentVehicle;
+            this.investmentVehicle = vehicle;
         }
 
         public int getWeight()
@@ -82,8 +84,8 @@ public class Classification implements Named
     private String color;
 
     private Classification parent;
-    private List<Classification> children = new ArrayList<Classification>();
-    private List<Assignment> assignments = new ArrayList<Assignment>();
+    private List<Classification> children = new ArrayList<>();
+    private List<Assignment> assignments = new ArrayList<>();
 
     private int weight;
     private int rank;
@@ -423,5 +425,33 @@ public class Classification implements Named
     public String toString()
     {
         return name;
+    }
+
+    /**
+     * Recursively creates a copy of the classification including all
+     * assignments with newly generated UUIDs.
+     */
+    public Classification copy()
+    {
+        Classification copy = new Classification(null, UUID.randomUUID().toString(), this.name, this.color);
+        copy.rank = this.rank;
+        copy.weight = this.weight;
+
+        for (Classification classification : children)
+        {
+            Classification c = classification.copy();
+            c.setParent(copy);
+            copy.addChild(c);
+        }
+
+        for (Assignment assignment : assignments)
+        {
+            Assignment a = new Assignment(assignment.getInvestmentVehicle());
+            a.setWeight(assignment.getWeight());
+            a.setRank(assignment.getRank());
+            copy.addAssignment(a);
+        }
+
+        return copy;
     }
 }

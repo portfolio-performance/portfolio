@@ -1,61 +1,38 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.datatransfer.ImportAction.Context;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.Money;
 
 public interface Extractor
 {
     public abstract static class Item
     {
-        private boolean isImported = true;
-        private boolean isDuplicate = false;
-
-        public boolean isImported()
-        {
-            return isImported;
-        }
-
-        public void setImported(boolean isImported)
-        {
-            this.isImported = isImported;
-        }
-
-        public boolean isDuplicate()
-        {
-            return isDuplicate;
-        }
-
-        public void setDuplicate(boolean isDuplicate)
-        {
-            this.isDuplicate = isDuplicate;
-        }
-
         public abstract Annotated getSubject();
 
         public abstract Security getSecurity();
 
         public abstract String getTypeInformation();
 
-        public abstract Date getDate();
+        public abstract LocalDate getDate();
 
-        public long getAmount()
+        public Money getAmount()
         {
-            return 0;
+            return null;
         }
 
         public long getShares()
@@ -63,23 +40,7 @@ public interface Extractor
             return 0;
         }
 
-        public abstract void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
-                        Portfolio secondaryPortfolio, Account secondaryAccount);
-
-        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
-        {}
-
-        protected <T extends Transaction> void check(Transaction transaction, List<T> transactions)
-        {
-            for (T t : transactions)
-            {
-                if (transaction.isPotentialDuplicate(t))
-                {
-                    this.setDuplicate(true);
-                    break;
-                }
-            }
-        }
+        public abstract Status apply(ImportAction action, Context context);
     }
 
     static class TransactionItem extends Item
@@ -126,15 +87,15 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return transaction.getDate();
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return transaction.getAmount();
+            return transaction.getMonetaryAmount();
         }
 
         @Override
@@ -150,30 +111,14 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
-                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        public Status apply(ImportAction action, Context context)
         {
-            // ensure consistency (in case the user deleted the creation of the
-            // security via the dialog)
-            Security security = transaction.getSecurity();
-            if (security != null && !client.getSecurities().contains(security))
-                client.addSecurity(security);
-
             if (transaction instanceof AccountTransaction)
-                primaryAccount.addTransaction((AccountTransaction) transaction);
+                return action.process((AccountTransaction) transaction, context.getAccount());
             else if (transaction instanceof PortfolioTransaction)
-                primaryPortfolio.addTransaction((PortfolioTransaction) transaction);
+                return action.process((PortfolioTransaction) transaction, context.getPortfolio());
             else
                 throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
-        {
-            if (type != transaction.getClass())
-                return;
-
-            check(transaction, transactions);
         }
     }
 
@@ -199,15 +144,15 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return entry.getAccountTransaction().getDate();
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return entry.getAccountTransaction().getAmount();
+            return entry.getAccountTransaction().getMonetaryAmount();
         }
 
         @Override
@@ -223,21 +168,9 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
-                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        public Status apply(ImportAction action, Context context)
         {
-            entry.setPortfolio(primaryPortfolio);
-            entry.setAccount(primaryAccount);
-            entry.insert();
-        }
-
-        @Override
-        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
-        {
-            Transaction transaction = type == AccountTransaction.class ? entry.getAccountTransaction() : entry
-                            .getPortfolioTransaction();
-
-            check(transaction, transactions);
+            return action.process(entry, context.getAccount(), context.getPortfolio());
         }
     }
 
@@ -263,15 +196,15 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return entry.getSourceTransaction().getDate();
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return entry.getSourceTransaction().getAmount();
+            return entry.getSourceTransaction().getMonetaryAmount();
         }
 
         @Override
@@ -281,20 +214,9 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
-                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        public Status apply(ImportAction action, Context context)
         {
-            entry.setSourceAccount(primaryAccount);
-            entry.setTargetAccount(secondaryAccount);
-            entry.insert();
-        }
-
-        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
-        {
-            if (type != AccountTransaction.class)
-                return;
-
-            check(entry.getSourceTransaction(), transactions);
+            return action.process(entry, context.getAccount(), context.getSecondaryAccount());
         }
     }
 
@@ -320,15 +242,15 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return entry.getSourceTransaction().getDate();
         }
 
         @Override
-        public long getAmount()
+        public Money getAmount()
         {
-            return entry.getSourceTransaction().getAmount();
+            return entry.getSourceTransaction().getMonetaryAmount();
         }
 
         @Override
@@ -344,20 +266,9 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
-                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        public Status apply(ImportAction action, Context context)
         {
-            entry.setSourcePortfolio(primaryPortfolio);
-            entry.setTargetPortfolio(secondaryPortfolio);
-            entry.insert();
-        }
-
-        public <T extends Transaction> void markDuplicates(Class<T> type, List<T> transactions)
-        {
-            if (type != PortfolioTransaction.class)
-                return;
-
-            check(entry.getSourceTransaction(), transactions);
+            return action.process(entry, context.getPortfolio(), context.getSecondaryPortfolio());
         }
     }
 
@@ -383,7 +294,7 @@ public interface Extractor
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return null;
         }
@@ -395,12 +306,9 @@ public interface Extractor
         }
 
         @Override
-        public void insert(Client client, Portfolio primaryPortfolio, Account primaryAccount,
-                        Portfolio secondaryPortfolio, Account secondaryAccount)
+        public Status apply(ImportAction action, Context context)
         {
-            // might have been added via a transaction
-            if (!client.getSecurities().contains(security))
-                client.addSecurity(security);
+            return action.process(security);
         }
     }
 

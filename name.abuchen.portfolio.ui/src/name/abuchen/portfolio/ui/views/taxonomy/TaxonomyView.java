@@ -2,13 +2,8 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -20,6 +15,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
+
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
     /** preference key: store last active view as index */
@@ -28,11 +30,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String identifierUnassigned;
     /** preference key: order by taxonomy in stack chart */
     private String identifierOrderByTaxonomy;
+    /** preference key: node expansion state in definition viewer */
+    private String expansionStateDefinition;
+    /** preference key: node expansion state in rebalancing viewer */
+    private String expansionStateReblancing;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
 
     private Composite container;
+    private List<Action> viewActions = new ArrayList<>();
 
     @Override
     protected String getTitle()
@@ -49,10 +56,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierOrderByTaxonomy = TaxonomyView.class.getSimpleName() + "-ORDERBYTAXONOMY-" + taxonomy.getId(); //$NON-NLS-1$
+        this.expansionStateDefinition = TaxonomyView.class.getSimpleName() + "-EXPANSION-DEFINITION-" //$NON-NLS-1$
+                        + taxonomy.getId();
+        this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
+                        + taxonomy.getId();
 
-        this.model = new TaxonomyModel(getClient(), taxonomy);
+        this.model = make(TaxonomyModel.class, taxonomy);
         this.model.setExcludeUnassignedCategoryInCharts(part.getPreferenceStore().getBoolean(identifierUnassigned));
         this.model.setOrderByTaxonomyInStackChart(part.getPreferenceStore().getBoolean(identifierOrderByTaxonomy));
+        this.model.setExpansionStateDefinition(part.getPreferenceStore().getString(expansionStateDefinition));
+        this.model.setExpansionStateRebalancing(part.getPreferenceStore().getString(expansionStateReblancing));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -66,8 +79,6 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void dispose()
     {
-        getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
-        getPreferenceStore().setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         taxonomy.removePropertyChangeListener(this);
 
         Control[] children = container.getChildren();
@@ -77,17 +88,24 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             page.dispose();
         }
 
+        // store preferences *after* disposing pages -> allow pages to update
+        // the model
+        getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
+        getPreferenceStore().setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
+        getPreferenceStore().setValue(expansionStateDefinition, model.getExpansionStateDefinition());
+        getPreferenceStore().setValue(expansionStateReblancing, model.getExpansionStateRebalancing());
+
         super.dispose();
     }
 
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
-        addView(toolBar, Messages.LabelViewTaxonomyDefinition, PortfolioPlugin.IMG_VIEW_TABLE, 0);
-        addView(toolBar, Messages.LabelViewReBalancing, PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
-        addView(toolBar, Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART, 2);
-        addView(toolBar, Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
-        addView(toolBar, Messages.LabelViewStackedChart, PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
+        addView(toolBar, Messages.LabelViewTaxonomyDefinition, Images.VIEW_TABLE, 0);
+        addView(toolBar, Messages.LabelViewReBalancing, Images.VIEW_REBALANCING, 1);
+        addView(toolBar, Messages.LabelViewPieChart, Images.VIEW_PIECHART, 2);
+        addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 3);
+        addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 4);
         addConfigButton(toolBar);
     }
 
@@ -103,7 +121,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                     ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
 
         new ActionContributionItem(config).fill(toolBar, -1);
@@ -115,9 +133,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         model.fireTaxonomyModelChange(model.getRootNode());
     }
 
-    private void addView(final ToolBar toolBar, String label, String image, final int index)
+    private void addView(final ToolBar toolBar, String label, Images image, final int index)
     {
-        Action showDefinition = new Action()
+        Action showDefinition = new Action(label, Action.AS_CHECK_BOX)
         {
             @Override
             public void run()
@@ -125,9 +143,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                 activateView(index);
             }
         };
-        showDefinition.setImageDescriptor(PortfolioPlugin.descriptor(image));
+        showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
         new ActionContributionItem(showDefinition).fill(toolBar, -1);
+        viewActions.add(showDefinition);
     }
 
     @Override
@@ -141,15 +160,14 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        Page[] pages = new Page[] { new DefinitionViewer(getPart(), model, renderer), //
-                        new ReBalancingViewer(getPart(), model, renderer), //
-                        new PieChartViewer(model, renderer), //
-                        new TreeMapViewer(model, renderer), //
-                        new StackedChartViewer(getPart(), model, renderer) };
+        Page[] pages = new Page[] { make(DefinitionViewer.class, model, renderer), //
+                        make(ReBalancingViewer.class, model, renderer), //
+                        make(PieChartViewer.class, model, renderer), //
+                        make(TreeMapViewer.class, model, renderer), //
+                        make(StackedChartViewer.class, model, renderer) };
 
         for (Page page : pages)
         {
-            page.setPreferenceStore(getPreferenceStore());
             Control control = page.createControl(container);
             control.setData(page);
         }
@@ -182,6 +200,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             layout.topControl = children[index];
             container.layout();
+
+            for (int ii = 0; ii < viewActions.size(); ii++)
+                viewActions.get(ii).setChecked(index == ii);
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }

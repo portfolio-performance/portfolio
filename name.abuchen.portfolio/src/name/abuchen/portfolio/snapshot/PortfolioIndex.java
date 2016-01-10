@@ -10,14 +10,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */final class PortfolioIndex
 {
     private PortfolioIndex()
     {}
 
-    /* package */static PerformanceIndex calculate(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    /* package */static PerformanceIndex calculate(Client client, CurrencyConverter converter, Portfolio portfolio,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new Client();
 
@@ -32,7 +33,7 @@ import name.abuchen.portfolio.model.Security;
         adaptPortfolioTransactions(portfolio, pseudoClient, pseudoPortfolio);
         collectDividends(portfolio, pseudoClient, pseudoAccount);
 
-        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     private static void adaptPortfolioTransactions(Portfolio portfolio, Client pseudoClient, Portfolio pseudoPortfolio)
@@ -48,17 +49,31 @@ import name.abuchen.portfolio.model.Security;
                 case BUY:
                 case TRANSFER_IN:
                 {
-                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                    PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
-                                                    .getFees(), t.getTaxes()));
+                    PortfolioTransaction clone = new PortfolioTransaction();
+                    clone.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                    clone.setDate(t.getDate());
+                    clone.setCurrencyCode(t.getCurrencyCode());
+                    clone.setSecurity(t.getSecurity());
+                    clone.setAmount(t.getAmount());
+                    clone.setShares(t.getShares());
+                    clone.addUnits(t.getUnits());
+                    pseudoPortfolio.addTransaction(clone);
                     break;
                 }
                 case SELL:
                 case TRANSFER_OUT:
-                    pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                    PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(), t
-                                                    .getFees(), t.getTaxes()));
+                {
+                    PortfolioTransaction clone = new PortfolioTransaction();
+                    clone.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                    clone.setDate(t.getDate());
+                    clone.setCurrencyCode(t.getCurrencyCode());
+                    clone.setSecurity(t.getSecurity());
+                    clone.setAmount(t.getAmount());
+                    clone.setShares(t.getShares());
+                    clone.addUnits(t.getUnits());
+                    pseudoPortfolio.addTransaction(clone);
                     break;
+                }
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
                     pseudoPortfolio.addTransaction(t);
@@ -92,8 +107,8 @@ import name.abuchen.portfolio.model.Security;
                     // performance of security
                 case DIVIDENDS:
                     pseudoAccount.addTransaction(t);
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.REMOVAL, t.getAmount()));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case BUY:
                 case TRANSFER_IN:

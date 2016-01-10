@@ -1,61 +1,65 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class IRRCalculation extends Calculation
 {
-    private List<Date> dates = new ArrayList<Date>();
+    private List<LocalDate> dates = new ArrayList<LocalDate>();
     private List<Double> values = new ArrayList<Double>();
 
     @Override
-    public void visit(DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
         dates.add(t.getDate());
-        values.add(-t.getAmount() / Values.Amount.divider());
+        values.add(-t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount() / Values.Amount.divider());
     }
 
     @Override
-    public void visit(DividendFinalTransaction t)
+    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
     {
         dates.add(t.getDate());
-        values.add(t.getAmount() / Values.Amount.divider());
+        values.add(t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount() / Values.Amount.divider());
     }
 
     @Override
-    public void visit(DividendTransaction t)
+    public void visit(CurrencyConverter converter, DividendTransaction t)
     {
         dates.add(t.getDate());
-        values.add(t.getAmount() / Values.Amount.divider());
+        values.add(t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount() / Values.Amount.divider());
     }
 
     @Override
-    public void visit(AccountTransaction t)
+    public void visit(CurrencyConverter converter, AccountTransaction t)
     {
         // ignore tax refunds when calculating the irr for a single security
     }
 
     @Override
-    public void visit(PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, PortfolioTransaction t)
     {
         dates.add(t.getDate());
+        long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
+        long amount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
         switch (t.getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
             case TRANSFER_IN:
-                values.add((-t.getAmount() + t.getTaxes()) / Values.Amount.divider());
+                values.add((-amount + taxes) / Values.Amount.divider());
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
-                values.add((t.getAmount() + t.getTaxes()) / Values.Amount.divider());
+                values.add((amount + taxes) / Values.Amount.divider());
                 break;
             default:
                 throw new UnsupportedOperationException();

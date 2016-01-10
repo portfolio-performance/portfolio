@@ -1,0 +1,440 @@
+<client>
+  <version>29</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>7b4aa944-a614-4f38-b2d9-6e62680995e6</uuid>
+      <name>Caterpillar Inc</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>US1491231015</isin>
+      <tickerSymbol>CAT1.F</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>f87dfcf1-6139-444c-a4d5-5b0c116743fa</uuid>
+      <name>Monster Beverage Corporation</name>
+      <currencyCode>USD</currencyCode>
+      <note></note>
+      <isin></isin>
+      <tickerSymbol>MNST</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>04a05ce4-cead-48bd-92bc-ce1b74f707eb</uuid>
+      <name>Lithia Motors Inc.</name>
+      <currencyCode>USD</currencyCode>
+      <note></note>
+      <isin></isin>
+      <tickerSymbol>LAD</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>30333a56-906e-44ac-ade1-c797c562f0b6</uuid>
+      <name>Cash €</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2011-07-12</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1553121</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2011-07-13</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>131423</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>4194dde4-795a-4ed3-a03c-aa669d345914</uuid>
+              <name>Depot</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>131423</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>17000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="999"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2011-07-28</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>118596</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>118596</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>SELL</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>17000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="999"/>
+                    </unit>
+                  </units>
+                  <type>SELL</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2014-12-01</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>421944</amount>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account>
+                      <uuid>d3261db5-a5ba-4c59-aab0-2413709b8c87</uuid>
+                      <name>Dollar</name>
+                      <currencyCode>USD</currencyCode>
+                      <isRetired>false</isRetired>
+                      <transactions>
+                        <account-transaction>
+                          <date>2011-08-24</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>585</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <shares>17000000</shares>
+                          <units>
+                            <unit type="GROSS_VALUE">
+                              <amount currency="USD" amount="585"/>
+                              <forex currency="EUR" amount="405"/>
+                              <exchangeRate>1.4433</exchangeRate>
+                            </unit>
+                          </units>
+                          <type>DIVIDENDS</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2014-12-01</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>422994</amount>
+                          <crossEntry class="account-transfer">
+                            <accountFrom reference="../../../../../../../../../../../.."/>
+                            <transactionFrom>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>340027</amount>
+                              <crossEntry class="account-transfer" reference="../.."/>
+                              <shares>0</shares>
+                              <units>
+                                <unit type="GROSS_VALUE">
+                                  <amount currency="EUR" amount="340027"/>
+                                  <forex currency="USD" amount="422994"/>
+                                  <exchangeRate>1.244</exchangeRate>
+                                </unit>
+                              </units>
+                              <type>TRANSFER_OUT</type>
+                            </transactionFrom>
+                            <accountTo reference="../../../.."/>
+                            <transactionTo reference="../.."/>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>TRANSFER_IN</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2014-12-01</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>1050</amount>
+                          <shares>0</shares>
+                          <note>Konvertierung</note>
+                          <type>FEES</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date reference="../../../../../date"/>
+                          <currencyCode>USD</currencyCode>
+                          <amount>421944</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[2]"/>
+                          <crossEntry class="buysell" reference="../../../.."/>
+                          <shares>0</shares>
+                          <type>BUY</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2014-12-03</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>404358</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[2]"/>
+                          <crossEntry class="buysell">
+                            <portfolio reference="../../../../../../../.."/>
+                            <portfolioTransaction>
+                              <date reference="../../../date"/>
+                              <currencyCode>USD</currencyCode>
+                              <amount>404358</amount>
+                              <security reference="../../../../../../../../../../../../../../../securities/security[2]"/>
+                              <crossEntry class="buysell" reference="../.."/>
+                              <shares>38000000</shares>
+                              <units>
+                                <unit type="FEE">
+                                  <amount currency="USD" amount="2090"/>
+                                </unit>
+                              </units>
+                              <type>SELL</type>
+                            </portfolioTransaction>
+                            <account reference="../../../.."/>
+                            <accountTransaction reference="../.."/>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>SELL</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-03-06</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>523986</amount>
+                          <crossEntry class="account-transfer">
+                            <accountFrom reference="../../../../../../../../../../../.."/>
+                            <transactionFrom>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>484902</amount>
+                              <crossEntry class="account-transfer" reference="../.."/>
+                              <shares>0</shares>
+                              <units>
+                                <unit type="GROSS_VALUE">
+                                  <amount currency="EUR" amount="484902"/>
+                                  <forex currency="USD" amount="523986"/>
+                                  <exchangeRate>1.0806018536</exchangeRate>
+                                </unit>
+                              </units>
+                              <type>TRANSFER_OUT</type>
+                            </transactionFrom>
+                            <accountTo reference="../../../.."/>
+                            <transactionTo reference="../.."/>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>TRANSFER_IN</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-03-06</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>1302</amount>
+                          <shares>0</shares>
+                          <note>Konvertierung</note>
+                          <type>FEES</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-03-06</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>522684</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[3]"/>
+                          <crossEntry class="buysell">
+                            <portfolio reference="../../../../../../../.."/>
+                            <portfolioTransaction>
+                              <date reference="../../../date"/>
+                              <currencyCode>USD</currencyCode>
+                              <amount>522684</amount>
+                              <security reference="../../../../../../../../../../../../../../../securities/security[3]"/>
+                              <crossEntry class="buysell" reference="../.."/>
+                              <shares>58000000</shares>
+                              <units>
+                                <unit type="FEE">
+                                  <amount currency="USD" amount="1844"/>
+                                </unit>
+                              </units>
+                              <type>BUY</type>
+                            </portfolioTransaction>
+                            <account reference="../../../.."/>
+                            <accountTransaction reference="../.."/>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>BUY</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-03-27</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>693</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[3]"/>
+                          <shares>58000000</shares>
+                          <type>DIVIDENDS</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-04-08</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>404621</amount>
+                          <crossEntry class="account-transfer">
+                            <accountFrom reference="../../../.."/>
+                            <transactionFrom reference="../.."/>
+                            <accountTo reference="../../../../../../../../../../../.."/>
+                            <transactionTo>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>370905</amount>
+                              <crossEntry class="account-transfer" reference="../.."/>
+                              <shares>0</shares>
+                              <type>TRANSFER_IN</type>
+                            </transactionTo>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <units>
+                            <unit type="GROSS_VALUE">
+                              <amount currency="USD" amount="404621"/>
+                              <forex currency="EUR" amount="370905"/>
+                              <exchangeRate>0.9166726393</exchangeRate>
+                            </unit>
+                          </units>
+                          <type>TRANSFER_OUT</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-04-08</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>1015</amount>
+                          <shares>0</shares>
+                          <note>Konvertierung</note>
+                          <type>FEES</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-05-29</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>867</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[3]"/>
+                          <shares>58000000</shares>
+                          <type>DIVIDENDS</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-08-21</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>867</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[3]"/>
+                          <shares>58000000</shares>
+                          <type>DIVIDENDS</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-08-21</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>605941</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[3]"/>
+                          <crossEntry class="buysell">
+                            <portfolio reference="../../../../../../../.."/>
+                            <portfolioTransaction>
+                              <date reference="../../../date"/>
+                              <currencyCode>USD</currencyCode>
+                              <amount>605941</amount>
+                              <security reference="../../../../../../../../../../../../../../../securities/security[3]"/>
+                              <crossEntry class="buysell" reference="../.."/>
+                              <shares>58000000</shares>
+                              <units>
+                                <unit type="FEE">
+                                  <amount currency="USD" amount="3059"/>
+                                </unit>
+                              </units>
+                              <type>SELL</type>
+                            </portfolioTransaction>
+                            <account reference="../../../.."/>
+                            <accountTransaction reference="../.."/>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>SELL</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-09-18</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>606156</amount>
+                          <crossEntry class="account-transfer">
+                            <accountFrom reference="../../../.."/>
+                            <transactionFrom reference="../.."/>
+                            <accountTo reference="../../../../../../../../../../../.."/>
+                            <transactionTo>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>530738</amount>
+                              <crossEntry class="account-transfer" reference="../.."/>
+                              <shares>0</shares>
+                              <type>TRANSFER_IN</type>
+                            </transactionTo>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <units>
+                            <unit type="GROSS_VALUE">
+                              <amount currency="USD" amount="606156"/>
+                              <forex currency="EUR" amount="530738"/>
+                              <exchangeRate>0.87558</exchangeRate>
+                            </unit>
+                          </units>
+                          <type>TRANSFER_OUT</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2015-09-18</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>1519</amount>
+                          <shares>0</shares>
+                          <note>Konvertierung</note>
+                          <type>FEES</type>
+                        </account-transaction>
+                      </transactions>
+                    </account>
+                    <accountTransaction reference="../account/transactions/account-transaction[4]"/>
+                  </crossEntry>
+                  <shares>38000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="USD" amount="2120"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[5]/crossEntry/portfolioTransaction"/>
+                <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[8]/crossEntry/portfolioTransaction"/>
+                <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[14]/crossEntry/portfolioTransaction"/>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[2]/crossEntry/transactionFrom"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[6]/crossEntry/transactionFrom"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[10]/crossEntry/transactionTo"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[15]/crossEntry/transactionTo"/>
+      </transactions>
+    </account>
+    <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account"/>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+</client>

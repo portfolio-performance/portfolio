@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -15,7 +15,10 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
@@ -64,28 +67,33 @@ public final class SecurityPerformanceRecord implements Adaptable
      * delta = market value + sells + dividends - purchase costs
      * {@link #calculateDelta()}
      */
-    private long delta;
+    private Money delta;
+
+    /**
+     * deltaPercent = delta / purchase costs + buy {@link #calculateDelta()}
+     */
+    private double deltaPercent;
 
     /**
      * market value of holdings at end of period
      * {@link #addTransaction(Transaction)}
      */
-    private long marketValue;
+    private Money marketValue;
 
     /**
      * fifo cost of shares held {@link #calculateFifoCosts()}
      */
-    private long fifoCost;
+    private Money fifoCost;
 
     /**
      * fees paid
      */
-    private long fees;
+    private Money fees;
 
     /**
      * taxes paid
      */
-    private long taxes;
+    private Money taxes;
 
     /**
      * shares held {@link #calculateFifoCosts()}
@@ -95,12 +103,12 @@ public final class SecurityPerformanceRecord implements Adaptable
     /**
      * cost per shares held {@link #calculateFifoCosts()}
      */
-    private long fifoCostPerSharesHeld;
+    private Money fifoCostPerSharesHeld;
 
     /**
      * sum of all dividend payments {@link #calculateDividends()}
      */
-    private long sumOfDividends;
+    private Money sumOfDividends;
 
     /**
      * number of dividend events during reporting period
@@ -111,7 +119,7 @@ public final class SecurityPerformanceRecord implements Adaptable
     /**
      * last dividend payment in reporting period {@link #calculateDividends()}
      */
-    private Date lastDividendPayment;
+    private LocalDate lastDividendPayment;
 
     /**
      * periodicity of dividend payments {@link #calculateDividends()}
@@ -168,27 +176,42 @@ public final class SecurityPerformanceRecord implements Adaptable
         return volatility.getSemiDeviation();
     }
 
-    public long getDelta()
+    public Money getDelta()
     {
         return delta;
     }
 
-    public long getMarketValue()
+    public double getDeltaPercent()
+    {
+        return deltaPercent;
+    }
+
+    public Money getMarketValue()
     {
         return marketValue;
     }
 
-    public long getFifoCost()
+    public Money getFifoCost()
     {
         return fifoCost;
     }
 
-    public long getFees()
+    public Money getCapitalGainsOnHoldings()
+    {
+        return marketValue.subtract(fifoCost);
+    }
+
+    public double getCapitalGainsOnHoldingsPercent()
+    {
+        return ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
+    }
+
+    public Money getFees()
     {
         return fees;
     }
 
-    public long getTaxes()
+    public Money getTaxes()
     {
         return taxes;
     }
@@ -198,12 +221,12 @@ public final class SecurityPerformanceRecord implements Adaptable
         return sharesHeld;
     }
 
-    public long getFifoCostPerSharesHeld()
+    public Money getFifoCostPerSharesHeld()
     {
         return fifoCostPerSharesHeld;
     }
 
-    public long getSumOfDividends()
+    public Money getSumOfDividends()
     {
         return sumOfDividends;
     }
@@ -213,7 +236,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         return dividendEventCount;
     }
 
-    public Date getLastDividendPayment()
+    public LocalDate getLastDividendPayment()
     {
         return lastDividendPayment;
     }
@@ -230,7 +253,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     public double getTotalRateOfReturnDiv()
     {
-        return sharesHeld > 0 ? (double) sumOfDividends / (double) fifoCost : 0;
+        return sharesHeld > 0 ? (double) sumOfDividends.getAmount() / (double) fifoCost.getAmount() : 0;
     }
 
     public List<Transaction> getTransactions()
@@ -258,56 +281,70 @@ public final class SecurityPerformanceRecord implements Adaptable
     /* package */void addTransaction(Transaction t)
     {
         transactions.add(t);
-
-        if (t instanceof DividendFinalTransaction)
-            marketValue += t.getAmount();
     }
 
-    /* package */void calculate(Client client, ReportingPeriod period)
+    /* package */void calculate(Client client, CurrencyConverter converter, ReportingPeriod period)
     {
         Collections.sort(transactions, new TransactionComparator());
 
         if (!transactions.isEmpty())
         {
-            calculateIRR();
-            calculatePerformance(client, period);
-            calculateDelta();
-            calculateFifoCosts();
-            calculateDividends();
+            calculateMarketValue(converter);
+            calculateIRR(converter);
+            calculateTTWROR(client, converter, period);
+            calculateDelta(converter);
+            calculateFifoCosts(converter);
+            calculateDividends(converter);
         }
     }
 
-    private void calculateIRR()
+    private void calculateMarketValue(CurrencyConverter converter)
     {
-        this.irr = Calculation.perform(IRRCalculation.class, transactions).getIRR();
+        MutableMoney mv = MutableMoney.of(converter.getTermCurrency());
+        for (Transaction t : transactions)
+            if (t instanceof DividendFinalTransaction)
+                mv.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        this.marketValue = mv.toMoney();
     }
 
-    private void calculatePerformance(Client client, ReportingPeriod period)
+    private void calculateIRR(CurrencyConverter converter)
     {
-        PerformanceIndex index = PerformanceIndex.forInvestment(client, security, period, new ArrayList<Exception>());
+        this.irr = Calculation.perform(IRRCalculation.class, converter, transactions).getIRR();
+    }
+
+    private void calculateTTWROR(Client client, CurrencyConverter converter, ReportingPeriod period)
+    {
+        PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, security, period,
+                        new ArrayList<Exception>());
         this.twror = index.getFinalAccumulatedPercentage();
         this.drawdown = index.getDrawdown();
         this.volatility = index.getVolatility();
     }
 
-    private void calculateDelta()
+    private void calculateDelta(CurrencyConverter converter)
     {
-        this.delta = Calculation.perform(DeltaCalculation.class, transactions).getDelta();
+        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, transactions);
+        this.delta = calculation.getDelta();
+        this.deltaPercent = calculation.getDeltaPercent();
     }
 
-    private void calculateFifoCosts()
+    private void calculateFifoCosts(CurrencyConverter converter)
     {
-        CostCalculation cost = Calculation.perform(CostCalculation.class, transactions);
+        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, transactions);
         this.fifoCost = cost.getFifoCost();
         this.sharesHeld = cost.getSharesHeld();
-        this.fifoCostPerSharesHeld = Math.round(cost.getNetFifoCost() * Values.Share.factor() / (double) sharesHeld);
+
+        Money netFifoCost = cost.getNetFifoCost();
+        this.fifoCostPerSharesHeld = Money.of(netFifoCost.getCurrencyCode(),
+                        Math.round(netFifoCost.getAmount() * Values.Share.factor() / (double) sharesHeld));
+
         this.fees = cost.getFees();
         this.taxes = cost.getTaxes();
     }
 
-    private void calculateDividends()
+    private void calculateDividends(CurrencyConverter converter)
     {
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, transactions);
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();

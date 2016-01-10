@@ -1,14 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
-import javax.inject.Inject;
+import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.util.Dates;
+import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -20,9 +17,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+
 public class StatementOfAssetsView extends AbstractFinanceView
 {
     private StatementOfAssetsViewer assetViewer;
+    private PropertyChangeListener currencyChangeListener;
+
+    @Inject
+    private ExchangeRateProviderFactory factory;
 
     @Override
     protected String getTitle()
@@ -40,7 +53,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, LocalDate.now());
 
         assetViewer.setInput(snapshot);
     }
@@ -48,6 +62,32 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected void addButtons(final ToolBar toolBar)
     {
+        AbstractDropDown dropdown = new AbstractDropDown(toolBar, getClient().getBaseCurrency())
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
+                Collections.sort(available);
+                for (final CurrencyUnit unit : available)
+                {
+                    Action action = new Action(unit.getLabel())
+                    {
+                        @Override
+                        public void run()
+                        {
+                            setLabel(unit.getCurrencyCode());
+                            getClient().setBaseCurrency(unit.getCurrencyCode());
+                        }
+                    };
+                    action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
+                    manager.add(action);
+                }
+            }
+        };
+        currencyChangeListener = e -> dropdown.setLabel(e.getNewValue().toString());
+        getClient().addPropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
+
         Action export = new Action()
         {
             @Override
@@ -57,7 +97,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                                 .export(Messages.LabelStatementOfAssets + ".csv"); //$NON-NLS-1$
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
         new ActionContributionItem(export).fill(toolBar, -1);
 
@@ -69,7 +109,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 assetViewer.showSaveMenu(getActiveShell());
             }
         };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
+        save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveColumns);
         new ActionContributionItem(save).fill(toolBar, -1);
 
@@ -81,7 +121,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 assetViewer.showConfigMenu(toolBar.getShell());
             }
         };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
+        config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
         new ActionContributionItem(config).fill(toolBar, -1);
     }
@@ -89,7 +129,9 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        assetViewer = new StatementOfAssetsViewer(parent, this, getClient());
+        assetViewer = make(StatementOfAssetsViewer.class);
+        Control control = assetViewer.createControl(parent);
+
         hookContextMenu(assetViewer.getTableViewer().getControl(), new IMenuListener()
         {
             public void menuAboutToShow(IMenuManager manager)
@@ -98,9 +140,14 @@ public class StatementOfAssetsView extends AbstractFinanceView
             }
         });
         notifyModelUpdated();
-        assetViewer.pack();
 
-        return assetViewer.getControl();
+        return control;
     }
 
+    @Override
+    public void dispose()
+    {
+        if (currencyChangeListener != null)
+            getClient().removePropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
+    }
 }

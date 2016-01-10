@@ -5,21 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -31,6 +24,13 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
+
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.DateTimePicker;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class SelectSplitPage extends AbstractWizardPage
 {
@@ -153,23 +153,24 @@ public class SelectSplitPage extends AbstractWizardPage
 
         DataBindingContext context = bindings.getBindingContext();
         context.bindValue(ViewersObservables.observeSingleSelection(comboSecurity),
-                        BeansObservables.observeValue(model, "security"), null, null); //$NON-NLS-1$
+                        BeanProperties.value("security").observe(model), null, null); //$NON-NLS-1$
 
         context.bindValue(new SimpleDateTimeSelectionProperty().observe(boxExDate.getControl()), //
-                        BeansObservables.observeValue(model, "exDate"), //$NON-NLS-1$
+                        BeanProperties.value("exDate").observe(model), //$NON-NLS-1$
                         new UpdateValueStrategy() //
                                         .setAfterConvertValidator(value -> {
-                                            return value != null ? ValidationStatus.ok() : ValidationStatus
-                                                            .error(MessageFormat.format(
+                                            return value != null ? ValidationStatus.ok()
+                                                            : ValidationStatus.error(MessageFormat.format(
                                                                             Messages.MsgDialogInputRequired,
                                                                             Messages.ColumnExDate));
-                                        }), null);
+                                        }),
+                        null);
 
-        final ISWTObservableValue observeNewShares = SWTObservables.observeSelection(spinnerNewShares);
-        context.bindValue(observeNewShares, BeansObservables.observeValue(model, "newShares")); //$NON-NLS-1$
+        final ISWTObservableValue observeNewShares = WidgetProperties.selection().observe(spinnerNewShares);
+        context.bindValue(observeNewShares, BeanProperties.value("newShares").observe(model)); //$NON-NLS-1$
 
-        final ISWTObservableValue observeOldShares = SWTObservables.observeSelection(spinnerOldShares);
-        context.bindValue(observeOldShares, BeansObservables.observeValue(model, "oldShares")); //$NON-NLS-1$
+        final ISWTObservableValue observeOldShares = WidgetProperties.selection().observe(spinnerOldShares);
+        context.bindValue(observeOldShares, BeanProperties.value("oldShares").observe(model)); //$NON-NLS-1$
 
         MultiValidator validator = new MultiValidator()
         {
@@ -180,8 +181,9 @@ public class SelectSplitPage extends AbstractWizardPage
                 Object newShares = observeNewShares.getValue();
                 Object oldShares = observeOldShares.getValue();
 
-                return newShares.equals(oldShares) ? ValidationStatus
-                                .error(Messages.SplitWizardErrorNewAndOldMustNotBeEqual) : ValidationStatus.ok();
+                return newShares.equals(oldShares)
+                                ? ValidationStatus.error(Messages.SplitWizardErrorNewAndOldMustNotBeEqual)
+                                : ValidationStatus.ok();
             }
 
         };

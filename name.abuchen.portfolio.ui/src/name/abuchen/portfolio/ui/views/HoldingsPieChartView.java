@@ -1,17 +1,20 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.Comparator;
+import java.time.LocalDate;
 import java.util.StringJoiner;
 
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.snapshot.AssetPosition;
+import javax.inject.Inject;
+
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.util.ColorConversion;
-import name.abuchen.portfolio.util.Dates;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.browser.Browser;
@@ -21,6 +24,9 @@ import org.eclipse.swt.widgets.Control;
 
 public class HoldingsPieChartView extends AbstractFinanceView
 {
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     @Override
     protected String getTitle()
     {
@@ -70,21 +76,23 @@ public class HoldingsPieChartView extends AbstractFinanceView
         {
             try
             {
-                ClientSnapshot snapshot = ClientSnapshot.create(getClient(), Dates.today());
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+                ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, LocalDate.now());
 
                 StringJoiner joiner = new StringJoiner(",", "[", "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 JSColors colors = new JSColors();
 
-                snapshot.getAssetPositions() //
-                                .filter(p -> p.getValuation() > 0) //
-                                .sorted(Comparator.comparing(AssetPosition::getValuation).reversed())
+                snapshot.getAssetPositions()
+                                .filter(p -> p.getValuation().getAmount() > 0)
+                                .sorted((l, r) -> Long.compare(r.getValuation().getAmount(), l.getValuation()
+                                                .getAmount())) //
                                 .forEach(p -> {
                                     String name = StringEscapeUtils.escapeJson(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
                                     joiner.add(String.format(ENTRY, name, //
-                                                    p.getValuation(), //
+                                                    p.getValuation().getAmount(), //
                                                     colors.next(), //
-                                                    name, Values.Amount.format(p.getValuation()), percentage, //
+                                                    name, Values.Money.format(p.getValuation()), percentage, //
                                                     percentage));
                                 });
 

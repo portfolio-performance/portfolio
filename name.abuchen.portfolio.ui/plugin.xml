@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="name.abuchen.portfolio.ui.preferences.UpdateInitializer">
+            class="name.abuchen.portfolio.ui.preferences.PreferencesInitializer">
       </initializer>
    </extension>
 

@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.checks.impl;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
@@ -30,7 +30,7 @@ public class PortfolioTransactionWithoutSecurityCheck implements Check
         }
 
         @Override
-        public Date getDate()
+        public LocalDate getDate()
         {
             return transaction.getDate();
         }

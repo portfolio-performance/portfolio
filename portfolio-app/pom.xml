@@ -9,16 +9,17 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.20.4-SNAPSHOT</version>
+	<version>0.21.1</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>0.22.0</tycho-version>
+		<tycho-version>0.24.0</tycho-version>
 		<jarsigner.plugin.version>1.4</jarsigner.plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
+		<sonar.exclusions>**/Messages.java</sonar.exclusions>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
 		<argLine>-ea</argLine>
@@ -33,6 +34,14 @@
 		<module>../portfolio-product</module>
 	</modules>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>portfolio-non-maven-dependencies</id>
+			<url>http://buchen.github.io/maven-repo</url>
+			<layout>default</layout>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<repositories>
 		<repository>
 			<id>portfolio-non-maven-dependencies</id>
@@ -41,17 +50,17 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository</url>
 		</repository>
 		<repository>
 			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.5/R-4.5.1-201509040015</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.13.0/luna</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.13.0/mars</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
@@ -107,11 +116,6 @@
 			<groupId>de.engehausen</groupId>
 			<artifactId>de.engehausen.treemap.swt</artifactId>
 			<version>0.0.5</version>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -279,6 +283,16 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>name.abuchen</groupId>
+					<artifactId>fix-info-plist-maven-plugin</artifactId>
+					<version>1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.4.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -20,20 +20,21 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
 
 public class PerformanceIndex
 {
     private final Client client;
+    private final CurrencyConverter converter;
     private final ReportingPeriod reportInterval;
 
-    protected Date[] dates;
+    protected LocalDate[] dates;
     protected long[] totals;
     protected long[] transferals;
     protected long[] taxes;
@@ -44,63 +45,67 @@ public class PerformanceIndex
     protected Drawdown drawdown;
     protected Volatility volatility;
 
-    /* package */PerformanceIndex(Client client, ReportingPeriod reportInterval)
+    /* package */PerformanceIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
         this.client = client;
+        this.converter = converter;
         this.reportInterval = reportInterval;
     }
 
-    public static ClientIndex forClient(Client client, ReportingPeriod reportInterval, List<Exception> warnings)
+    public static ClientIndex forClient(Client client, CurrencyConverter converter, ReportingPeriod reportInterval,
+                    List<Exception> warnings)
     {
-        ClientIndex index = new ClientIndex(client, reportInterval);
+        ClientIndex index = new ClientIndex(client, converter, reportInterval);
         index.calculate(warnings);
         return index;
     }
 
-    public static PerformanceIndex forAccount(Client client, Account account, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    public static PerformanceIndex forAccount(Client client, CurrencyConverter converter, Account account,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
         Classification classification = new Classification(null, null);
         classification.addAssignment(new Assignment(account));
-        return forClassification(client, classification, reportInterval, warnings);
+        return forClassification(client, converter, classification, reportInterval, warnings);
     }
 
-    public static PerformanceIndex forPortfolio(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
-    {
-        return PortfolioIndex.calculate(client, portfolio, reportInterval, warnings);
-    }
-
-    public static PerformanceIndex forPortfolioPlusAccount(Client client, Portfolio portfolio,
+    public static PerformanceIndex forPortfolio(Client client, CurrencyConverter converter, Portfolio portfolio,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        return PortfolioPlusIndex.calculate(client, portfolio, reportInterval, warnings);
+        return PortfolioIndex.calculate(client, converter, portfolio, reportInterval, warnings);
     }
 
-    public static PerformanceIndex forClassification(Client client, Classification classification,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+    public static PerformanceIndex forPortfolioPlusAccount(Client client, CurrencyConverter converter,
+                    Portfolio portfolio, ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        return ClassificationIndex.calculate(client, classification, reportInterval, warnings);
+        return PortfolioPlusIndex.calculate(client, converter, portfolio, reportInterval, warnings);
     }
 
-    public static PerformanceIndex forInvestment(Client client, Security security, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    public static PerformanceIndex forClassification(Client client, CurrencyConverter converter,
+                    Classification classification, ReportingPeriod reportInterval, List<Exception> warnings)
+    {
+        return ClassificationIndex.calculate(client, converter, classification, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forInvestment(Client client, CurrencyConverter converter, Security security,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
         Classification classification = new Classification(null, null);
         classification.addAssignment(new Assignment(security));
-        return forClassification(client, classification, reportInterval, warnings);
+        return forClassification(client, converter, classification, reportInterval, warnings);
     }
 
     public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security, List<Exception> warnings)
     {
-        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getReportInterval());
+        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
+                        clientIndex.getReportInterval());
         index.calculate(clientIndex, security);
         return index;
     }
 
     public static PerformanceIndex forConsumerPriceIndex(PerformanceIndex clientIndex, List<Exception> warnings)
     {
-        CPIIndex index = new CPIIndex(clientIndex.getClient(), clientIndex.getReportInterval());
+        CPIIndex index = new CPIIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
+                        clientIndex.getReportInterval());
         index.calculate(clientIndex);
         return index;
     }
@@ -115,6 +120,11 @@ public class PerformanceIndex
         return reportInterval;
     }
 
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
     /**
      * Returns the interval for which data exists. Might be different from
      * {@link #getReportInterval()} if the reporting interval extends into the
@@ -122,10 +132,10 @@ public class PerformanceIndex
      */
     public Interval getActualInterval()
     {
-        return new Interval(dates[0].getTime(), dates[dates.length - 1].getTime());
+        return Interval.of(dates[0], dates[dates.length - 1]);
     }
 
-    public Date[] getDates()
+    public LocalDate[] getDates()
     {
         return dates;
     }
@@ -229,12 +239,12 @@ public class PerformanceIndex
         return answer;
     }
 
-    public Optional<DateTime> getFirstDataPoint()
+    public Optional<LocalDate> getFirstDataPoint()
     {
         for (int ii = 0; ii < totals.length; ii++)
         {
             if (totals[ii] != 0)
-                return Optional.of(new DateTime(dates[ii]));
+                return Optional.of(dates[ii]);
         }
 
         return Optional.empty();

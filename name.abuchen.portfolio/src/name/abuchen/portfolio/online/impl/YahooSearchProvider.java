@@ -15,16 +15,19 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.impl.YahooSymbolSearch.Result;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
@@ -47,6 +50,16 @@ public class YahooSearchProvider implements SecuritySearchProvider
             super.applyTo(security);
             security.setFeed(YahooFinanceQuoteFeed.ID);
         }
+
+        public static ResultItem from(Result r)
+        {
+            YahooResultItem item = new YahooResultItem();
+            item.setSymbol(r.getSymbol());
+            item.setName(r.getName());
+            item.setExchange(r.getExchange());
+            item.setType(r.getType());
+            return item;
+        }
     }
 
     @Override
@@ -58,10 +71,12 @@ public class YahooSearchProvider implements SecuritySearchProvider
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
+        // search both the HTML page as well as the symbol search
         String url = String.format(SEARCH_URL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
         Document document = Jsoup.connect(url).get();
 
         List<ResultItem> answer = extractFrom(document);
+        addSymbolSearchResults(answer, query);
 
         if (answer.isEmpty())
         {
@@ -75,7 +90,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
             answer.add(item);
         }
-        else if (answer.size() == 20)
+        else if (answer.size() >= 20)
         {
             ResultItem item = new YahooResultItem();
             item.setName(Messages.MsgMoreResultsAvailable);
@@ -83,6 +98,15 @@ public class YahooSearchProvider implements SecuritySearchProvider
         }
 
         return answer;
+    }
+
+    private void addSymbolSearchResults(List<ResultItem> answer, String query) throws IOException
+    {
+        Set<String> existingSymbols = answer.stream().map(r -> r.getSymbol()).collect(Collectors.toSet());
+
+        new YahooSymbolSearch().search(query)//
+                        .filter(r -> !existingSymbols.contains(r.getSymbol()))
+                        .forEach(r -> answer.add(YahooResultItem.from(r)));
     }
 
     /* protected */List<ResultItem> extractFrom(Document document) throws IOException

@@ -3,8 +3,8 @@ package name.abuchen.portfolio.online.impl;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 /* package */class YahooHelper
@@ -14,22 +14,6 @@ import java.util.Locale;
         protected DecimalFormat initialValue()
         {
             return new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
-        }
-    };
-
-    static final ThreadLocal<SimpleDateFormat> FMT_TRADE_DATE = new ThreadLocal<SimpleDateFormat>()
-    {
-        protected SimpleDateFormat initialValue()
-        {
-            return new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
-        }
-    };
-
-    static final ThreadLocal<SimpleDateFormat> FMT_QUOTE_DATE = new ThreadLocal<SimpleDateFormat>()
-    {
-        protected SimpleDateFormat initialValue()
-        {
-            return new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
         }
     };
 
@@ -47,16 +31,15 @@ import java.util.Locale;
         return FMT_PRICE.get().parse(s).intValue();
     }
 
-    static Date asDate(String s) throws ParseException
+    static LocalDate asDate(String s)
     {
         if ("\"N/A\"".equals(s)) //$NON-NLS-1$
             return null;
-        return FMT_TRADE_DATE.get().parse(s);
+        return LocalDate.parse(s, DateTimeFormatter.ofPattern("\"M/d/yyyy\"")); //$NON-NLS-1$
     }
 
     static String stripQuotes(String s)
     {
         return s.substring(1, s.length() - 1);
     }
-
 }

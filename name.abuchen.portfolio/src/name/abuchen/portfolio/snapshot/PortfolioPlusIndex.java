@@ -10,14 +10,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */final class PortfolioPlusIndex
 {
     private PortfolioPlusIndex()
     {}
 
-    /* package */static PerformanceIndex calculate(Client client, Portfolio portfolio, ReportingPeriod reportInterval,
-                    List<Exception> warnings)
+    /* package */static PerformanceIndex calculate(Client client, CurrencyConverter converter, Portfolio portfolio,
+                    ReportingPeriod reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new Client();
 
@@ -32,7 +33,7 @@ import name.abuchen.portfolio.model.Security;
         adaptPortfolioTransactions(portfolio, pseudoClient, pseudoPortfolio);
         adaptAccountTransactions(portfolio, pseudoClient, pseudoAccount);
 
-        return PerformanceIndex.forClient(pseudoClient, reportInterval, warnings);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     private static void adaptPortfolioTransactions(Portfolio portfolio, Client pseudoClient, Portfolio pseudoPortfolio)
@@ -47,28 +48,40 @@ import name.abuchen.portfolio.model.Security;
             {
                 case BUY:
                 case TRANSFER_IN:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio.getReferenceAccount()))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio.getReferenceAccount()))
                     {
                         pseudoPortfolio.addTransaction(t);
                     }
                     else
                     {
-                        pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                        PortfolioTransaction.Type.DELIVERY_INBOUND, t.getShares(), t.getAmount(), t
-                                                        .getFees(), t.getTaxes()));
+                        PortfolioTransaction clone = new PortfolioTransaction();
+                        clone.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                        clone.setDate(t.getDate());
+                        clone.setCurrencyCode(t.getCurrencyCode());
+                        clone.setSecurity(t.getSecurity());
+                        clone.setAmount(t.getAmount());
+                        clone.setShares(t.getShares());
+                        clone.addUnits(t.getUnits());
+                        pseudoPortfolio.addTransaction(clone);
                     }
                     break;
                 case SELL:
                 case TRANSFER_OUT:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio.getReferenceAccount()))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio.getReferenceAccount()))
                     {
                         pseudoPortfolio.addTransaction(t);
                     }
                     else
                     {
-                        pseudoPortfolio.addTransaction(new PortfolioTransaction(t.getDate(), t.getSecurity(),
-                                        PortfolioTransaction.Type.DELIVERY_OUTBOUND, t.getShares(), t.getAmount(), t
-                                                        .getFees(), t.getTaxes()));
+                        PortfolioTransaction clone = new PortfolioTransaction();
+                        clone.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        clone.setDate(t.getDate());
+                        clone.setCurrencyCode(t.getCurrencyCode());
+                        clone.setSecurity(t.getSecurity());
+                        clone.setAmount(t.getAmount());
+                        clone.setShares(t.getShares());
+                        clone.addUnits(t.getUnits());
+                        pseudoPortfolio.addTransaction(clone);
                     }
                     break;
                 case DELIVERY_INBOUND:
@@ -94,34 +107,34 @@ import name.abuchen.portfolio.model.Security;
             switch (t.getType())
             {
                 case BUY:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio))
                     {
                         pseudoAccount.addTransaction(t);
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.REMOVAL, t.getAmount()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), null, AccountTransaction.Type.REMOVAL));
                     }
                     break;
                 case SELL:
-                    if (t.getCrossEntry().getCrossEntity(t).equals(portfolio))
+                    if (t.getCrossEntry().getCrossOwner(t).equals(portfolio))
                     {
                         pseudoAccount.addTransaction(t);
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     }
                     break;
                 case TRANSFER_IN:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case TRANSFER_OUT:
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                    AccountTransaction.Type.REMOVAL, t.getAmount()));
+                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:
                 case TAX_REFUND:
@@ -131,8 +144,8 @@ import name.abuchen.portfolio.model.Security;
                     }
                     else
                     {
-                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), null,
-                                        AccountTransaction.Type.DEPOSIT, t.getAmount()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), t
+                                        .getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     }
                     break;
                 case DEPOSIT:

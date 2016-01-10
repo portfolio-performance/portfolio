@@ -1,19 +1,11 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,7 +18,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
@@ -37,6 +28,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class SearchSecurityWizardPage extends WizardPage
 {
@@ -116,22 +116,7 @@ public class SearchSecurityWizardPage extends WizardPage
             @Override
             public void widgetDefaultSelected(SelectionEvent event)
             {
-                BusyIndicator.showWhile(getContainer().getShell().getDisplay(), new Runnable()
-                {
-                    public void run()
-                    {
-                        try
-                        {
-                            SecuritySearchProvider provider = Factory.getSearchProvider().get(0);
-                            resultTable.setInput(provider.search(searchBox.getText()));
-                        }
-                        catch (IOException e)
-                        {
-                            setErrorMessage(e.getMessage());
-                            PortfolioPlugin.log(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-                        }
-                    }
-                });
+                doSearch(searchBox.getText(), resultTable);
             }
         });
 
@@ -141,7 +126,8 @@ public class SearchSecurityWizardPage extends WizardPage
             public void selectionChanged(SelectionChangedEvent event)
             {
                 item = (ResultItem) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                setPageComplete(item != null && item.getSymbol() != null && !existingSymbols.contains(item.getSymbol()));
+                setPageComplete(item != null && item.getSymbol() != null
+                                && !existingSymbols.contains(item.getSymbol()));
             }
         });
 
@@ -153,8 +139,32 @@ public class SearchSecurityWizardPage extends WizardPage
         return item;
     }
 
-    private static class ResultItemLabelProvider extends LabelProvider implements ITableLabelProvider,
-                    ITableColorProvider
+    private void doSearch(String query, TableViewer resultTable)
+    {
+        try
+        {
+            getContainer().run(true, false, m -> {
+                try
+                {
+                    SecuritySearchProvider provider = Factory.getSearchProvider().get(0);
+                    List<ResultItem> result = provider.search(query);
+                    Display.getDefault().asyncExec(() -> resultTable.setInput(result));
+                }
+                catch (IOException e)
+                {
+                    PortfolioPlugin.log(e);
+                    Display.getDefault().asyncExec(() -> setErrorMessage(e.getMessage()));
+                }
+            });
+        }
+        catch (InvocationTargetException | InterruptedException e)
+        {
+            PortfolioPlugin.log(e);
+        }
+    }
+
+    private static class ResultItemLabelProvider extends LabelProvider
+                    implements ITableLabelProvider, ITableColorProvider
     {
         private final Set<String> symbols;
 

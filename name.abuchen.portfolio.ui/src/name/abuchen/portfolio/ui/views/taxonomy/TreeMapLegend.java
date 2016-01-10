@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.swt.SWT;
@@ -90,7 +90,9 @@ import de.engehausen.treemap.swt.TreeMap;
             @Override
             public int compare(TaxonomyNode o1, TaxonomyNode o2)
             {
-                return o1.getActual() > o2.getActual() ? -1 : o1.getActual() == o2.getActual() ? 0 : 1;
+                long v1 = o1.getActual().getAmount();
+                long v2 = o2.getActual().getAmount();
+                return v1 > v2 ? -1 : v1 == v2 ? 0 : 1;
             }
         });
         for (TaxonomyNode child : children)
@@ -180,8 +182,9 @@ import de.engehausen.treemap.swt.TreeMap;
 
         private String getInfo()
         {
-            return String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format((double) item.getActual() / (double) model.getRootNode().getActual()));
+            return String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
+                            Values.Percent.format((double) item.getActual().getAmount()
+                                            / (double) model.getRootNode().getActual().getAmount()));
         }
 
     }

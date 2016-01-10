@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.math;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -17,12 +16,12 @@ public final class Risk
         private Interval intervalMaxDD;
         private Interval recoveryTime;
 
-        public Drawdown(double[] values, Date[] dates)
+        public Drawdown(double[] values, LocalDate[] dates)
         {
             double peak = values[0] + 1;
             double bottom = values[0] + 1;
-            Instant lastPeakDate = dates[0].toInstant();
-            Instant lastBottomDate = dates[0].toInstant();
+            LocalDate lastPeakDate = dates[0];
+            LocalDate lastBottomDate = dates[0];
 
             maxDD = 0;
             intervalMaxDD = Interval.of(lastPeakDate, lastPeakDate);
@@ -34,13 +33,13 @@ public final class Risk
             for (int ii = 0; ii < values.length; ii++)
             {
                 double value = values[ii] + 1;
-                currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii].toInstant());
-                currentRecoveryTime = Interval.of(lastBottomDate, dates[ii].toInstant());
+                currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii]);
+                currentRecoveryTime = Interval.of(lastBottomDate, dates[ii]);
 
                 if (value > peak)
                 {
                     peak = value;
-                    lastPeakDate = dates[ii].toInstant();
+                    lastPeakDate = dates[ii];
 
                     if (currentDrawdownDuration.isLongerThan(maxDDDuration))
                         maxDDDuration = currentDrawdownDuration;
@@ -49,7 +48,7 @@ public final class Risk
                         recoveryTime = currentRecoveryTime;
                     // Reset the recovery time calculation, as the recovery is
                     // now complete
-                    lastBottomDate = dates[ii].toInstant();
+                    lastBottomDate = dates[ii];
                     bottom = value;
                 }
                 else
@@ -58,13 +57,13 @@ public final class Risk
                     if (drawdown > maxDD)
                     {
                         maxDD = drawdown;
-                        intervalMaxDD = Interval.of(lastPeakDate, dates[ii].toInstant());
+                        intervalMaxDD = Interval.of(lastPeakDate, dates[ii]);
                     }
                 }
                 if (value < bottom)
                 {
                     bottom = value;
-                    lastBottomDate = dates[ii].toInstant();
+                    lastBottomDate = dates[ii];
                 }
             }
 

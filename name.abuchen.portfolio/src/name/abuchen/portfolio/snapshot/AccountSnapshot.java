@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 public class AccountSnapshot
 {
@@ -11,13 +13,13 @@ public class AccountSnapshot
     // factory methods
     // //////////////////////////////////////////////////////////////
 
-    public static AccountSnapshot create(Account account, Date time)
+    public static AccountSnapshot create(Account account, CurrencyConverter converter, LocalDate date)
     {
         long funds = 0;
 
         for (AccountTransaction t : account.getTransactions())
         {
-            if (t.getDate().getTime() <= time.getTime())
+            if (!t.getDate().isAfter(date))
             {
                 switch (t.getType())
                 {
@@ -42,21 +44,23 @@ public class AccountSnapshot
             }
         }
 
-        return new AccountSnapshot(account, time, funds);
+        return new AccountSnapshot(account, date, converter, Money.of(account.getCurrencyCode(), funds));
     }
 
     // //////////////////////////////////////////////////////////////
     // instance impl
     // //////////////////////////////////////////////////////////////
 
-    private Account account;
-    private Date time;
-    private long funds;
+    private final Account account;
+    private final LocalDate date;
+    private final CurrencyConverter converter;
+    private final Money funds;
 
-    private AccountSnapshot(Account account, Date time, long funds)
+    private AccountSnapshot(Account account, LocalDate date, CurrencyConverter converter, Money funds)
     {
         this.account = account;
-        this.time = time;
+        this.date = date;
+        this.converter = converter;
         this.funds = funds;
     }
 
@@ -65,12 +69,22 @@ public class AccountSnapshot
         return account;
     }
 
-    public Date getTime()
+    public LocalDate getTime()
     {
-        return time;
+        return date;
     }
 
-    public long getFunds()
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
+    public Money getFunds()
+    {
+        return funds.with(converter.at(date));
+    }
+
+    public Money getUnconvertedFunds()
     {
         return funds;
     }

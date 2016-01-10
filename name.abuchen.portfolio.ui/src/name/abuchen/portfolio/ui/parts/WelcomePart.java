@@ -6,11 +6,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameter;
 import org.eclipse.core.commands.Parameterization;
@@ -22,8 +17,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -33,6 +26,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class WelcomePart
 {
@@ -63,20 +62,15 @@ public class WelcomePart
         fD[0].setHeight(fD[0].getHeight() * 2);
         final Font bigFont = new Font(container.getDisplay(), fD[0]);
 
-        container.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                boldFont.dispose();
-                bigFont.dispose();
-            }
+        container.addDisposeListener(e -> {
+            boldFont.dispose();
+            bigFont.dispose();
         });
 
         // first column: logo
         Label image = new Label(container, SWT.NONE);
         image.setBackground(container.getBackground());
-        image.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_LOGO));
+        image.setImage(Images.LOGO_128.image());
 
         // second column: actions
         Composite actions = new Composite(container, SWT.NONE);
@@ -99,6 +93,8 @@ public class WelcomePart
         addLink(actions, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
 
         addSectionLabel(boldFont, actions, Messages.IntroLabelHelp);
+        addLink(actions, "https://github.com/buchen/portfolio/wiki", //$NON-NLS-1$
+                        Messages.IntroOpenWIKI, Messages.IntroOpenWIKIText);
         addLink(actions, "http://buchen.github.com/portfolio/new_and_noteworthy.html", //$NON-NLS-1$
                         Messages.IntroReadNews, Messages.IntroReadNewsText);
         addLink(actions, "http://www.wertpapier-forum.de/topic/38306-portfolio-performance-mein-neues-programm/", //$NON-NLS-1$

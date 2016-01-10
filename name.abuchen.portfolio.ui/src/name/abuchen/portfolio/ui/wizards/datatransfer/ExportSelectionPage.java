@@ -1,16 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -30,6 +19,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ExportSelectionPage extends AbstractWizardPage
 {
@@ -139,15 +139,15 @@ public class ExportSelectionPage extends AbstractWizardPage
             if (parentElement instanceof Class)
             {
                 if (parentElement == AccountTransaction.class)
-                    return client.getAccounts().toArray();
+                    return client.getAccounts().stream().sorted(new Account.ByName()).toArray();
                 else if (parentElement == PortfolioTransaction.class)
-                    return client.getPortfolios().toArray();
+                    return client.getPortfolios().stream().sorted(new Portfolio.ByName()).toArray();
                 else if (parentElement == Security.class)
                     return new String[] { Messages.ExportWizardSecurityMasterData,
                                     Messages.ExportWizardMergedSecurityPrices,
                                     Messages.ExportWizardAllTransactionsAktienfreundeNet };
                 else if (parentElement == SecurityPrice.class)
-                    return client.getSecurities().toArray();
+                    return client.getSecurities().stream().sorted(new Security.ByName()).toArray();
             }
 
             return null;
@@ -199,13 +199,13 @@ public class ExportSelectionPage extends AbstractWizardPage
         public Image getImage(Object element)
         {
             if (element instanceof Class)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_CATEGORY);
+                return Images.CATEGORY.image();
             else if (element instanceof Account)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return Images.ACCOUNT.image();
             else if (element instanceof Portfolio)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                return Images.PORTFOLIO.image();
             else if (element instanceof Security)
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                return Images.SECURITY.image();
             return null;
         }
     }

@@ -3,28 +3,18 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
-
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -32,6 +22,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
 
 public class AttributesPage extends AbstractPage implements IMenuListener
 {
@@ -120,7 +118,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         // add button
         final Button addButton = new Button(composite, SWT.PUSH);
-        addButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_ADD));
+        addButton.setImage(Images.ADD.image());
         addButton.addSelectionListener(new SelectionAdapter()
         {
             @Override
@@ -132,14 +130,9 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(addButton);
 
-        parent.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (menu != null && !menu.isDisposed())
-                    menu.dispose();
-            }
+        parent.addDisposeListener(e -> {
+            if (menu != null && !menu.isDisposed())
+                menu.dispose();
         });
     }
 
@@ -156,12 +149,12 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         // delete button
         final Button deleteButton = new Button(container, SWT.PUSH);
-        deleteButton.setImage(PortfolioPlugin.image(PortfolioPlugin.IMG_REMOVE));
+        deleteButton.setImage(Images.REMOVE.image());
 
         // model binding
-        final Binding binding = bindings.getBindingContext().bindValue(
-                        SWTObservables.observeText(value, SWT.Modify),
-                        BeansObservables.observeValue(attribute, "value"), //$NON-NLS-1$
+        final Binding binding = bindings.getBindingContext().bindValue( //
+                        WidgetProperties.text(SWT.Modify).observe(value), //
+                        BeanProperties.value("value").observe(model), //$NON-NLS-1$
                         new UpdateValueStrategy().setConverter(new ToAttributeObjectConverter(attribute)),
                         new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
 

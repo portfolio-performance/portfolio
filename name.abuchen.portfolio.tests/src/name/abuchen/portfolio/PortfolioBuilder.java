@@ -1,5 +1,6 @@
 package name.abuchen.portfolio;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Account;
@@ -9,9 +10,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
-
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class PortfolioBuilder
 {
@@ -32,13 +33,13 @@ public class PortfolioBuilder
 
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
     {
-        return inbound_delivery(security, new DateMidnight(date), shares, amount);
+        return inbound_delivery(security, LocalDate.parse(date), shares, amount);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, DateMidnight date, long shares, long amount)
+    public PortfolioBuilder inbound_delivery(Security security, LocalDate date, long shares, long amount)
     {
-        portfolio.addTransaction(new PortfolioTransaction(date.toDate(), security, Type.DELIVERY_INBOUND, shares,
-                        amount, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, amount, security, shares,
+                        Type.DELIVERY_INBOUND, 0, 0));
         return this;
     }
 
@@ -52,15 +53,20 @@ public class PortfolioBuilder
 
     public PortfolioBuilder buy(Security security, String date, long shares, int amount)
     {
-        return buysell(Type.BUY, security, date, shares, amount);
+        return buysell(Type.BUY, security, date, shares, amount, 0);
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, int amount)
     {
-        return buysell(Type.SELL, security, date, shares, amount);
+        return buysell(Type.SELL, security, date, shares, amount, 0);
     }
 
-    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, int amount)
+    public PortfolioBuilder sell(Security security, String date, long shares, int amount, int fees)
+    {
+        return buysell(Type.SELL, security, date, shares, amount, fees);
+    }
+
+    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, int amount, int fees)
     {
         if (portfolio.getReferenceAccount() == null)
         {
@@ -70,14 +76,15 @@ public class PortfolioBuilder
 
         BuySellEntry entry = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
         entry.setType(type);
-        entry.setDate(new DateTime(date).toDate());
+        entry.setDate(LocalDate.parse(date));
         entry.setSecurity(security);
         entry.setShares(shares);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(amount);
+        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, fees)));
 
         entry.insert();
 
         return this;
     }
-
 }

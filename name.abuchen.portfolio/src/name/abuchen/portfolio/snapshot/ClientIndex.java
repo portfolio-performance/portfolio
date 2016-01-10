@@ -1,23 +1,26 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.text.MessageFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.Dates;
-
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Interval;
+import name.abuchen.portfolio.util.Interval;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
-    /* package */ClientIndex(Client client, ReportingPeriod reportInterval)
+    /* package */ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
-        super(client, reportInterval);
+        super(client, converter, reportInterval);
     }
 
     /* package */void calculate(List<Exception> warnings)
@@ -25,20 +28,23 @@ import org.joda.time.Interval;
         Interval interval = getReportInterval().toInterval();
 
         // the actual interval should not extend into the future
-        if (interval.getEnd().isAfterNow())
+        if (interval.getEnd().isAfter(LocalDate.now()))
         {
-            long start = interval.getStartMillis();
-            long end = Dates.today().getTime();
+            LocalDate start = interval.getStart();
+            LocalDate end = LocalDate.now();
 
-            if (start > end)
+            if (start.isAfter(end))
                 start = end;
 
-            interval = new Interval(start, end);
+            interval = Interval.of(start, end);
         }
 
-        int size = Days.daysBetween(interval.getStart(), interval.getEnd()).getDays() + 1;
+        // reported via forum: if the user selects as 'since' date something in
+        // the future, then #getDays will return something negative. Ensure the
+        // 'size' is at least 1 which will create an empty ClientIndex
+        int size = Math.max(1, (int) interval.getDays() + 1);
 
-        dates = new Date[size];
+        dates = new LocalDate[size];
         totals = new long[size];
         delta = new double[size];
         accumulated = new double[size];
@@ -50,21 +56,21 @@ import org.joda.time.Interval;
         collectTransferalsAndTaxes(size, interval);
 
         // first value = reference value
-        dates[0] = interval.getStart().toDate();
+        dates[0] = interval.getStart();
         delta[0] = 0;
         accumulated[0] = 0;
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), dates[0]);
-        long valuation = totals[0] = snapshot.getAssets();
+        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
+        long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
 
         // calculate series
         int index = 1;
-        DateTime date = interval.getStart().plusDays(1);
+        LocalDate date = interval.getStart().plusDays(1);
         while (date.compareTo(interval.getEnd()) <= 0)
         {
-            dates[index] = date.toDate();
+            dates[index] = date;
 
-            snapshot = ClientSnapshot.create(getClient(), dates[index]);
-            long thisValuation = totals[index] = snapshot.getAssets();
+            snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
+            long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
             long thisDelta = thisValuation - transferals[index] - valuation;
 
             if (valuation == 0)
@@ -77,7 +83,7 @@ import org.joda.time.Interval;
                         delta[index] = (double) thisDelta / (double) transferals[index];
                     else
                         warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets,
-                                        thisDelta, date.toDate())));
+                                        thisDelta, date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))));
                 }
             }
             else
@@ -93,69 +99,83 @@ import org.joda.time.Interval;
         }
     }
 
-    private void addValue(long[] array, long value, Interval interval, DateMidnight time)
+    private void addValue(long[] array, String currencyCode, long value, Interval interval, LocalDate time)
     {
         if (value == 0)
             return;
 
-        int ii = Days.daysBetween(interval.getStart(), time).getDays();
+        int ii = Dates.daysBetween(interval.getStart(), time);
+
+        if (!currencyCode.equals(getCurrencyConverter().getTermCurrency()))
+            value = getCurrencyConverter().convert(time, Money.of(currencyCode, value)).getAmount();
+
         array[ii] += value;
     }
 
     private void collectTransferalsAndTaxes(int size, Interval interval)
     {
-        getClient().getAccounts()
-                        .stream()
-                        .flatMap(a -> a.getTransactions().stream())
-                        .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
-                                        && t.getDate().getTime() <= interval.getEndMillis()) //
-                        .forEach(t -> {
-                            switch (t.getType())
-                            {
-                                case DEPOSIT:
-                                    addValue(transferals, t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case REMOVAL:
-                                    addValue(transferals, -t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case TAXES:
-                                    addValue(taxes, t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case TAX_REFUND:
-                                    addValue(taxes, -t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case DIVIDENDS:
-                                    addValue(dividends, t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                case INTEREST:
-                                    addValue(interest, t.getAmount(), interval, t.getDateMidnight());
-                                    break;
-                                default:
-                                    // do nothing
-                                    break;
-                            }
-                        });
+        for (Account account : getClient().getAccounts())
+        {
+            account.getTransactions()
+                            .stream()
+                            .filter(t -> !t.getDate().isBefore(interval.getStart())
+                                            && !t.getDate().isAfter(interval.getEnd()))
+                            .forEach(t -> {
+                                switch (t.getType())
+                                {
+                                    case DEPOSIT:
+                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case REMOVAL:
+                                        addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
+                                                        t.getDate());
+                                        break;
+                                    case TAXES:
+                                        addValue(taxes, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case TAX_REFUND:
+                                        addValue(taxes, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case DIVIDENDS:
+                                        addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case INTEREST:
+                                        addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    default:
+                                        // do nothing
+                                        break;
+                                }
+                            });
 
-        getClient().getPortfolios()
-                        .stream()
-                        .flatMap(p -> p.getTransactions().stream())
-                        .filter(t -> t.getDate().getTime() >= interval.getStartMillis()
-                                        && t.getDate().getTime() <= interval.getEndMillis()) //
-                        .forEach(t -> {
-                            switch (t.getType())
-                            {
-                                case DELIVERY_INBOUND:
-                                    addValue(transferals, t.getAmount(), interval, t.getDateMidnight());
-                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
-                                    break;
-                                case DELIVERY_OUTBOUND:
-                                    addValue(transferals, -t.getAmount(), interval, t.getDateMidnight());
-                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
-                                    break;
-                                default:
-                                    addValue(taxes, t.getTaxes(), interval, t.getDateMidnight());
-                                    break;
-                            }
-                        });
+        }
+
+        for (Portfolio portfolio : getClient().getPortfolios())
+        {
+            portfolio.getTransactions()
+                            .stream()
+                            .filter(t -> !t.getDate().isBefore(interval.getStart())
+                                            && !t.getDate().isAfter(interval.getEnd()))
+                            .forEach(t -> {
+                                // collect taxes
+                                addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(), //
+                                                interval, t.getDate());
+
+                                // collect transferals
+                                switch (t.getType())
+                                {
+                                    case DELIVERY_INBOUND:
+                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case DELIVERY_OUTBOUND:
+                                        addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
+                                                        t.getDate());
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            });
+
+        }
     }
 }

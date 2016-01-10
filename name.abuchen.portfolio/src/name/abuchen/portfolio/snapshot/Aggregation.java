@@ -1,17 +1,13 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
-
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.Days;
-import org.joda.time.Months;
-import org.joda.time.MutableDateTime;
-import org.joda.time.ReadablePeriod;
-import org.joda.time.Years;
 
 public class Aggregation
 {
@@ -20,66 +16,65 @@ public class Aggregation
         WEEKLY
         {
             @Override
-            public ReadablePeriod getPeriod()
+            public TemporalAmount getPeriod()
             {
-                return Days.days(7);
+                return java.time.Period.ofDays(7);
             }
 
             @Override
-            public DateMidnight getStartDateFor(DateMidnight d)
+            public LocalDate getStartDateFor(LocalDate d)
             {
-                return d.dayOfWeek().withMinimumValue();
+                TemporalField fieldISO = WeekFields.of(Locale.getDefault()).dayOfWeek();
+                return d.with(fieldISO, 1);
             }
         },
         MONTHLY
         {
             @Override
-            public ReadablePeriod getPeriod()
+            public TemporalAmount getPeriod()
             {
-                return Months.months(1);
+                return java.time.Period.ofMonths(1);
             }
 
             @Override
-            public DateMidnight getStartDateFor(DateMidnight d)
+            public LocalDate getStartDateFor(LocalDate d)
             {
-                return d.dayOfMonth().withMinimumValue();
+                return d.withDayOfMonth(1);
             }
         },
         QUARTERLY
         {
             @Override
-            public ReadablePeriod getPeriod()
+            public TemporalAmount getPeriod()
             {
-                return Months.months(3);
+                return java.time.Period.ofMonths(3);
             }
 
             @Override
-            public DateMidnight getStartDateFor(DateMidnight d)
+            public LocalDate getStartDateFor(LocalDate d)
             {
-                MutableDateTime answer = new MutableDateTime(d);
-                answer.set(DateTimeFieldType.monthOfYear(), (((d.getMonthOfYear() - 1) / 3) * 3) + 1);
-                answer.set(DateTimeFieldType.dayOfMonth(), 1);
-                return new DateMidnight(answer);
+                int month = (((d.getMonthValue() - 1) / 3) * 3) + 1;
+                return LocalDate.of(d.getYear(), month, 1);
             }
         },
         YEARLY
         {
             @Override
-            public ReadablePeriod getPeriod()
+            public TemporalAmount getPeriod()
             {
-                return Years.years(1);
+                return java.time.Period.ofYears(1);
             }
 
             @Override
-            public DateMidnight getStartDateFor(DateMidnight d)
+            public LocalDate getStartDateFor(LocalDate d)
             {
-                return d.dayOfYear().withMinimumValue();
+                return d.withDayOfYear(1);
             }
         };
 
-        public abstract ReadablePeriod getPeriod();
+        public abstract TemporalAmount getPeriod();
 
-        public abstract DateMidnight getStartDateFor(DateMidnight d);
+        public abstract LocalDate getStartDateFor(LocalDate d);
 
         private static final ResourceBundle RESOURCES = ResourceBundle
                         .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
@@ -92,16 +87,16 @@ public class Aggregation
 
     public static PerformanceIndex aggregate(PerformanceIndex index, Period period)
     {
-        Date[] dates = index.getDates();
+        LocalDate[] dates = index.getDates();
         double[] accumulated = index.getAccumulatedPercentage();
         double[] delta = index.getDeltaPercentage();
         long[] transferals = index.getTransferals();
         long[] totals = index.getTotals();
 
-        DateMidnight start = period.getStartDateFor(new DateMidnight(dates[0])).plus(period.getPeriod());
-        DateMidnight kill = start.minusDays(1);
+        LocalDate start = period.getStartDateFor(dates[0]).plus(period.getPeriod());
+        LocalDate kill = start.minusDays(1);
 
-        List<Date> cDates = new ArrayList<Date>();
+        List<LocalDate> cDates = new ArrayList<LocalDate>();
         List<Double> cAccumulated = new ArrayList<Double>();
         List<Double> cDelta = new ArrayList<Double>();
         List<Long> cTransferals = new ArrayList<Long>();
@@ -112,13 +107,13 @@ public class Aggregation
 
         for (int ii = 0; ii < dates.length; ii++)
         {
-            DateMidnight current = new DateMidnight(dates[ii]);
+            LocalDate current = dates[ii];
             d = ((d + 1) * (delta[ii] + 1)) - 1;
             t += transferals[ii];
 
             if (current.equals(kill) || ii == dates.length - 1)
             {
-                cDates.add(current.toDate());
+                cDates.add(current);
                 cAccumulated.add(accumulated[ii]);
                 cDelta.add(d);
                 cTransferals.add(t);
@@ -132,8 +127,9 @@ public class Aggregation
             }
         }
 
-        PerformanceIndex answer = new PerformanceIndex(index.getClient(), index.getReportInterval());
-        answer.dates = cDates.toArray(new Date[0]);
+        PerformanceIndex answer = new PerformanceIndex(index.getClient(), index.getCurrencyConverter(),
+                        index.getReportInterval());
+        answer.dates = cDates.toArray(new LocalDate[0]);
         answer.accumulated = asArrayD(cAccumulated);
         answer.delta = asArrayD(cDelta);
         answer.transferals = asArrayL(cTransferals);

@@ -41,4 +41,25 @@ public interface UIConstants
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
     }
+
+    interface Preferences
+    {
+        String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
+        String AUTO_UPDATE = "AUTO_UPDATE"; //$NON-NLS-1$
+
+        String PROXY_HOST = "PROXY_HOST"; //$NON-NLS-1$
+        String PROXY_PORT = "PROXY_PORT"; //$NON-NLS-1$
+
+        /**
+         * Preference key to use indirect quotation ("Mengennotierung") when
+         * displaying exchange rates.
+         */
+        String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to create a backup of the original file before
+         * saving. The backup file has the postfix ".backup".
+         */
+        String CREATE_BACKUP_BEFORE_SAVING = "CREATE_BACKUP_BEFORE_SAVING"; //$NON-NLS-1$
+    }
 }

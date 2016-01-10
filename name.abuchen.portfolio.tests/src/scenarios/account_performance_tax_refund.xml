@@ -32,6 +32,7 @@
     <account>
       <uuid>7c6d057f-30d6-4830-95f1-18de9c0fe494</uuid>
       <name>Account A</name>
+      <currencyCode>EUR</currencyCode>
       <isRetired>false</isRetired>
       <transactions>
         <account-transaction>

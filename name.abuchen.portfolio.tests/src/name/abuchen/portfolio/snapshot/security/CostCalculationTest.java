@@ -4,10 +4,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
+import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 import org.junit.Test;
 
@@ -30,12 +33,13 @@ public class CostCalculationTest
                         .addTo(client);
 
         CostCalculation cost = new CostCalculation();
-        cost.visitAll(portfolio.getTransactions());
+        cost.setTermCurrency(CurrencyUnit.EUR);
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
 
         // expected:
         // 3149,20 - round(3149,20 * 15/109) + 1684,92 + 959,30 = 5360,04385
 
-        assertThat(cost.getFifoCost(), is(536005L));
+        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 536005L)));
     }
 
     @Test
@@ -54,9 +58,10 @@ public class CostCalculationTest
                         .addTo(client);
 
         CostCalculation cost = new CostCalculation();
-        cost.visitAll(portfolio.getTransactions());
+        cost.setTermCurrency(CurrencyUnit.EUR);
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
 
-        assertThat(cost.getFifoCost(), is(0L));
+        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
     @Test
@@ -75,9 +80,10 @@ public class CostCalculationTest
                         .addTo(client);
 
         CostCalculation cost = new CostCalculation();
-        cost.visitAll(portfolio.getTransactions());
+        cost.setTermCurrency(CurrencyUnit.EUR);
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
 
-        assertThat(cost.getFifoCost(), is(0L));
+        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
 }

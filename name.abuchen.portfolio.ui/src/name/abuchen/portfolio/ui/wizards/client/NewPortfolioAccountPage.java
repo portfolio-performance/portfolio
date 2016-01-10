@@ -3,13 +3,6 @@ package name.abuchen.portfolio.ui.wizards.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -27,6 +20,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class NewPortfolioAccountPage extends AbstractWizardPage
 {
@@ -95,6 +95,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
                 {
                     Account account = new Account();
                     account.setName(acnName);
+                    account.setCurrencyCode(client.getBaseCurrency());
                     Portfolio portfolio = new Portfolio();
                     portfolio.setName(portName);
                     portfolio.setReferenceAccount(account);
@@ -136,7 +137,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                return Images.PORTFOLIO.image();
             }
         });
         TableViewerColumn aCol = new TableViewerColumn(tViewer, SWT.NONE);
@@ -153,7 +154,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return Images.ACCOUNT.image();
             }
         });
         container.pack();

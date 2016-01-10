@@ -170,6 +170,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private Security security;
 
     private String name;
+    private String currencyCode;
     private String note;
     private String isin;
     private String tickerSymbol;
@@ -197,6 +198,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.security = security;
 
         this.name = security.getName();
+        this.currencyCode = security.getCurrencyCode();
         this.note = security.getNote();
         this.isin = security.getIsin();
         this.tickerSymbol = security.getTickerSymbol();
@@ -229,6 +231,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setName(String name)
     {
         firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
+    }
+
+    public String getCurrencyCode()
+    {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode)
+    {
+        firePropertyChange("currencyCode", this.currencyCode, this.currencyCode = currencyCode); //$NON-NLS-1$
     }
 
     public String getNote()
@@ -377,6 +389,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setAttributes(Security security)
     {
         security.setName(name);
+        security.setCurrencyCode(currencyCode);
         security.setNote(note);
         security.setIsin(isin);
         security.setTickerSymbol(tickerSymbol);
