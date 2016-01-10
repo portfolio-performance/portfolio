@@ -13,9 +13,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
     {
         IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
-        // FIXME beta update site
-        store.setDefault(UIConstants.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio-beta"); //$NON-NLS-1$
-
+        store.setDefault(UIConstants.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
     }
 }

@@ -23,7 +23,6 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -316,21 +315,6 @@ public class PortfolioPart implements LoadClientThread.Callback
         {
             doSaveAs(part, shell, null, null);
             return;
-        }
-
-        // FIXME - remove beta overwrite popup
-        if (client.getFileVersionAfterRead() < Client.CURRENT_VERSION)
-        {
-            boolean confirmOverwrite = MessageDialog.openQuestion(shell, "Beta Version", //$NON-NLS-1$
-                            MessageFormat.format(
-                                            "Die aktuelle Datei {0} wurde mit einer vorherigen (nicht Beta) Version " //$NON-NLS-1$
-                                                            + "von Portfolio Performance erstellt. Überschreiben?", //$NON-NLS-1$
-                                            clientFile.getAbsolutePath()));
-            if (!confirmOverwrite)
-            {
-                doSaveAs(part, shell, null, null);
-                return;
-            }
         }
 
         try
