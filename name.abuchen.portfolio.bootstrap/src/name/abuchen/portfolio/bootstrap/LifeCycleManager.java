@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.bootstrap;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -44,6 +46,7 @@ public class LifeCycleManager
     public void doPostContextCreate(IEclipseContext context)
     {
         checkForJava8();
+        removeClearPersistedStateFlag();
         checkForModelChanges();
         setupEventLoopAdvisor(context);
     }
@@ -60,6 +63,31 @@ public class LifeCycleManager
             MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.TitleJavaVersion,
                             Messages.MsgMinimumRequiredVersion);
             throw new UnsupportedOperationException("The minimum Java version required is Java 8"); //$NON-NLS-1$
+        }
+    }
+
+    private void removeClearPersistedStateFlag()
+    {
+        // the 'old' update mechanism edited the ini file *after* the upgrade
+        // and added the -clearPersistedState flag. The current mechanism does
+        // not need it, hence it must be remove if present
+
+        // not applicable on Mac OS X because only update is not supported
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            return;
+
+        try
+        {
+            IniFileManipulator iniFile = new IniFileManipulator();
+            iniFile.load();
+            iniFile.unsetClearPersistedState();
+            if (iniFile.isDirty())
+                iniFile.save();
+        }
+        catch (IOException ignore)
+        {
+            // ignore: in production, it will anyway be removed during the next
+            // update; in development, it will annoy to always report this error
         }
     }
 
