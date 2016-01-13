@@ -58,8 +58,8 @@ import name.abuchen.portfolio.ui.Messages;
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
-                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source.getOwner(source
-                                .getPortfolioTransaction());
+                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source
+                                .getOwner(source.getPortfolioTransaction());
                 owner.deleteTransaction(source.getPortfolioTransaction(), client);
                 source = null;
             }
@@ -101,10 +101,15 @@ import name.abuchen.portfolio.ui.Messages;
     {
         String oldAccountCurrency = getTransactionCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.account.name(), this.account, this.account = account);
+
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldAccountCurrency, getTransactionCurrencyCode());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
 
         if (getSecurity() != null)
         {

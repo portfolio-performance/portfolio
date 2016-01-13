@@ -110,9 +110,14 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     {
         String oldCurrencyCode = getTransactionCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+
         firePropertyChange(Properties.transactionCurrency.name(), transactionCurrency, transactionCurrency = currency);
+
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldCurrencyCode, getTransactionCurrencyCode());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
                         getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
     }
 }
