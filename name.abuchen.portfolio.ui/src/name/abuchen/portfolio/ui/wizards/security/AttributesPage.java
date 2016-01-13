@@ -154,7 +154,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         // model binding
         final Binding binding = bindings.getBindingContext().bindValue( //
                         WidgetProperties.text(SWT.Modify).observe(value), //
-                        BeanProperties.value("value").observe(model), //$NON-NLS-1$
+                        BeanProperties.value("value").observe(attribute), //$NON-NLS-1$
                         new UpdateValueStrategy().setConverter(new ToAttributeObjectConverter(attribute)),
                         new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
 
