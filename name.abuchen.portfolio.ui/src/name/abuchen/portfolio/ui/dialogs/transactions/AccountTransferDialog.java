@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -196,6 +197,10 @@ public class AccountTransferDialog extends AbstractTransactionDialog
                 amount.setVisible(visible);
             }
         });
+
+        WarningMessages warnings = new WarningMessages(this);
+        warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }

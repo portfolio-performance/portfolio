@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -155,11 +157,11 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         int widest = widest(securities.label, source.label, target.label, lblDate, amount.label, lblNote);
         startingWith(securities.label).width(widest);
 
-        StockSplitWarningListener stockSplits = new StockSplitWarningListener(this);
-        model.addPropertyChangeListener(Properties.security.name(),
-                        e -> stockSplits.check(model().getSecurity(), model().getDate()));
-        model.addPropertyChangeListener(Properties.date.name(),
-                        e -> stockSplits.check(model().getSecurity(), model().getDate()));
+        WarningMessages warnings = new WarningMessages(this);
+        warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate()));
+        model.addPropertyChangeListener(Properties.security.name(), e -> warnings.check());
+        model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
     }
 
     @Override

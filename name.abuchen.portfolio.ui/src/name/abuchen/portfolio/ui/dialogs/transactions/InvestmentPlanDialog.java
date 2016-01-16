@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +166,10 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         int widest = widest(lblName, securities.label, portfolio.label, account.label, lblDate, interval.label,
                         amount.label, fees.label);
         startingWith(lblName).width(widest);
+
+        WarningMessages warnings = new WarningMessages(this);
+        warnings.add(() -> model().getStart().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        model.addPropertyChangeListener(Properties.start.name(), e -> warnings.check());
     }
 
     public void setPlan(InvestmentPlan plan)
