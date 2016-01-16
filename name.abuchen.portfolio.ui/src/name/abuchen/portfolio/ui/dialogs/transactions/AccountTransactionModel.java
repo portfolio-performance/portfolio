@@ -198,12 +198,8 @@ public class AccountTransactionModel extends AbstractModel
     }
 
     /**
-     * Check whether calculation works out. The separate validation is needed
-     * because the model does prevent negative values in methods
-     * {@link #calcGrossValue(long, long, long)} and
-     * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
-     * quote (2 digits currently) and the exchange rate (4 digits), the gross
-     * value and converted gross value are checked against a range.
+     * Due to the limited precision of the exchange rate (4 digits), the amount
+     * is checked against a range.
      */
     private IStatus calculateStatus()
     {

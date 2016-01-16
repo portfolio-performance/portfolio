@@ -137,9 +137,9 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         fxAmount.bindCurrency(Properties.fxCurrencyCode.name());
 
         Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
-        exchangeRate.bindExchangeRate(
+        exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
-                        Messages.ColumnExchangeRate);
+                        Values.ExchangeRate.pattern(), Messages.ColumnExchangeRate);
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
 

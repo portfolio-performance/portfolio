@@ -44,7 +44,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Security security;
     protected LocalDate date = LocalDate.now();
     protected long shares;
-    protected long quote;
+    protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
     protected BigDecimal exchangeRate = BigDecimal.ONE;
     protected long convertedGrossValue;
@@ -105,7 +105,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 case GROSS_VALUE:
                     this.exchangeRate = unit.getExchangeRate();
                     this.grossValue = unit.getForex().getAmount();
-                    this.quote = Math.round(this.grossValue * Values.Share.factor() / (double) this.shares);
+                    this.quote = new BigDecimal(
+                                    this.grossValue * Values.Share.factor() / (this.shares * Values.Amount.divider()));
                     break;
                 case FEE:
                     if (unit.getForex() != null)
@@ -130,7 +131,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             // units contained no information about forex
             this.grossValue = convertedGrossValue;
-            this.quote = transaction.getGrossPricePerShareAmount();
+            this.quote = new BigDecimal(transaction.getGrossPricePerShareAmount() / Values.Amount.divider());
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -191,10 +192,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     private IStatus calculateStatus()
     {
         // check whether gross value is in range
-        long lower = Math.round(shares * (quote - 1) * Values.Amount.factor()
-                        / (Values.Share.divider() * Values.Quote.divider()));
-        long upper = Math.round(shares * (quote + 1) * Values.Amount.factor()
-                        / (Values.Share.divider() * Values.Quote.divider()));
+        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
+                        / Values.Share.divider());
+        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * Values.Amount.factor()
+                        / Values.Share.divider());
         if (grossValue < lower || grossValue > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
@@ -279,12 +280,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             if (!hasPosition)
             {
                 setShares(0);
-                setQuote(security.getSecurityPrice(date).getValue());
+                setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
             }
         }
         else
         {
-            setQuote(security.getSecurityPrice(date).getValue());
+            setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
         }
     }
 
@@ -326,31 +327,29 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         firePropertyChange(Properties.shares.name(), this.shares, this.shares = shares);
 
-        if (quote != 0)
+        if (quote.doubleValue() != 0)
         {
-            setGrossValue(Math.round(shares * quote * Values.Amount.factor()
-                            / (Values.Share.divider() * Values.Quote.divider())));
+            setGrossValue(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
         }
         else if (grossValue != 0 && shares != 0)
         {
-            setQuote(Math.round(grossValue * Values.Share.factor() / shares));
+            setQuote(new BigDecimal(grossValue * Values.Share.factor() / (shares * Values.Amount.divider())));
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
 
-    public long getQuote()
+    public BigDecimal getQuote()
     {
         return quote;
     }
 
-    public void setQuote(long quote)
+    public void setQuote(BigDecimal quote)
     {
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
 
-        triggerGrossValue(Math.round(
-                        shares * quote * Values.Amount.factor() / (Values.Share.divider() * Values.Quote.divider())));
+        triggerGrossValue(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -367,8 +366,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (shares != 0)
         {
-            long newQuote = Math.round(grossValue * Values.Share.factor() * Values.Quote.factor()
-                            / (shares * Values.Quote.divider()));
+            BigDecimal newQuote = new BigDecimal(
+                            grossValue * Values.Share.factor() / (shares * Values.Amount.divider()));
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = newQuote);
         }
 
@@ -514,8 +513,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         this.grossValue = Math.round(convertedGrossValue / exchangeRate.doubleValue()));
 
         if (shares != 0)
-            firePropertyChange(Properties.quote.name(), this.quote,
-                            this.quote = Math.round(grossValue * Values.Share.factor() / (double) shares));
+            firePropertyChange(Properties.quote.name(), this.quote, this.quote = new BigDecimal(
+                            grossValue * Values.Share.factor() / (shares * Values.Amount.divider())));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());

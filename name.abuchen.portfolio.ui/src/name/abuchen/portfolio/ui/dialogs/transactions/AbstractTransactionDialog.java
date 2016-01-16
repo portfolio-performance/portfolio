@@ -99,9 +99,9 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                             BeanProperties.value(property).observe(model));
         }
 
-        public void bindExchangeRate(String property, String description)
+        public void bindBigDecimal(String property, String pattern, String description)
         {
-            NumberFormat format = new DecimalFormat("#,##0.0000"); //$NON-NLS-1$
+            NumberFormat format = new DecimalFormat(pattern);
 
             context.bindValue(WidgetProperties.text(SWT.Modify).observe(value), //
                             BeanProperties.value(property).observe(model), //

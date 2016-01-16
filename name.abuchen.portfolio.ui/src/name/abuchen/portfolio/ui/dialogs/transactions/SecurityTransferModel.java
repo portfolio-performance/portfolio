@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -38,7 +39,7 @@ public class SecurityTransferModel extends AbstractModel
     private LocalDate date = LocalDate.now();
 
     private long shares;
-    private long quote;
+    private BigDecimal quote = BigDecimal.ONE;
     private long amount;
     private String note;
 
@@ -78,8 +79,8 @@ public class SecurityTransferModel extends AbstractModel
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
-                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source.getOwner(source
-                                .getSourceTransaction());
+                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source
+                                .getOwner(source.getSourceTransaction());
                 owner.deleteTransaction(source.getSourceTransaction(), client);
                 source = null;
             }
@@ -109,10 +110,10 @@ public class SecurityTransferModel extends AbstractModel
     private IStatus calculateStatus()
     {
         // check whether gross value is in range
-        long lower = Math.round(shares * (quote - 1) * Values.Amount.factor()
-                        / (Values.Share.divider() * Values.Quote.divider()));
-        long upper = Math.round(shares * (quote + 1) * Values.Amount.factor()
-                        / (Values.Share.divider() * Values.Quote.divider()));
+        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
+                        / Values.Share.divider());
+        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * Values.Amount.factor()
+                        / Values.Share.divider());
         if (amount < lower || amount > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
@@ -130,8 +131,9 @@ public class SecurityTransferModel extends AbstractModel
         {
             CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                             client.getBaseCurrency());
-            PortfolioSnapshot snapshot = sourcePortfolio != null ? PortfolioSnapshot.create(sourcePortfolio, converter,
-                            date) : ClientSnapshot.create(client, converter, date).getJointPortfolio();
+            PortfolioSnapshot snapshot = sourcePortfolio != null
+                            ? PortfolioSnapshot.create(sourcePortfolio, converter, date)
+                            : ClientSnapshot.create(client, converter, date).getJointPortfolio();
             position = snapshot.getPositionsBySecurity().get(security);
         }
 
@@ -144,12 +146,12 @@ public class SecurityTransferModel extends AbstractModel
         else if (security != null)
         {
             setShares(0);
-            setQuote(security.getSecurityPrice(date).getValue());
+            setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
         }
         else
         {
             setShares(0);
-            setQuote(0);
+            setQuote(BigDecimal.ZERO);
         }
     }
 
@@ -162,7 +164,8 @@ public class SecurityTransferModel extends AbstractModel
         this.security = entry.getSourceTransaction().getSecurity();
         this.date = entry.getSourceTransaction().getDate();
         this.shares = entry.getSourceTransaction().getShares();
-        this.quote = entry.getSourceTransaction().getGrossPricePerShareAmount();
+        this.quote = new BigDecimal(
+                        entry.getSourceTransaction().getGrossPricePerShareAmount() / Values.Amount.divider());
         this.amount = entry.getTargetTransaction().getAmount();
         this.note = entry.getSourceTransaction().getNote();
     }
@@ -243,31 +246,29 @@ public class SecurityTransferModel extends AbstractModel
     {
         firePropertyChange(Properties.shares.name(), this.shares, this.shares = shares);
 
-        if (quote != 0)
+        if (quote.doubleValue() != 0)
         {
-            setAmount(Math.round(shares * quote * Values.Amount.factor()
-                            / (Values.Share.divider() * Values.Quote.divider())));
+            setAmount(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
         }
         else if (amount != 0 && shares != 0)
         {
-            setQuote(Math.round(amount * Values.Share.factor() / shares));
+            setQuote(new BigDecimal(amount * Values.Share.factor() / (shares * Values.Amount.divider())));
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
 
-    public long getQuote()
+    public BigDecimal getQuote()
     {
         return quote;
     }
 
-    public void setQuote(long quote)
+    public void setQuote(BigDecimal quote)
     {
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
 
-        triggerAmount(Math.round(shares * quote * Values.Amount.factor()
-                        / (Values.Share.divider() * Values.Quote.divider())));
+        triggerAmount(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -284,7 +285,7 @@ public class SecurityTransferModel extends AbstractModel
 
         if (shares != 0)
         {
-            long newQuote = Math.round(amount * Values.Share.factor() / shares);
+            BigDecimal newQuote = new BigDecimal(amount * Values.Share.factor() / (shares * Values.Amount.divider()));
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = newQuote);
         }
 

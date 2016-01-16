@@ -124,7 +124,7 @@ public abstract class Values<E>
 
     public static final QuoteValues Quote = new QuoteValues();
 
-    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("0.0000", 1D, 1) //$NON-NLS-1$
+    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 1D, 1)//$NON-NLS-1$
     {
         @Override
         public String format(BigDecimal exchangeRate)
