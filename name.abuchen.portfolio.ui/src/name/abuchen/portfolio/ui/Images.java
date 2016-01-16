@@ -66,8 +66,8 @@ public enum Images
         // On Mac OS X it works, on Linux the wrong images got loaded, on
         // Windows I could not tell a difference. Therefore I activated it only
         // for Mac OS X.
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-            org.eclipse.jface.internal.InternalPolicy.DEBUG_LOAD_URL_IMAGE_DESCRIPTOR_2x = true;
+        /*if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            org.eclipse.jface.internal.InternalPolicy.DEBUG_LOAD_URL_IMAGE_DESCRIPTOR_2x = true;*/
     }
 
     private static ImageRegistry imageRegistry = new ImageRegistry();
