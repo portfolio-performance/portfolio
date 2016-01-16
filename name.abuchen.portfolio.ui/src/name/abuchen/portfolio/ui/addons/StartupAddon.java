@@ -20,6 +20,9 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.service.event.Event;
@@ -140,5 +143,14 @@ public class StartupAddon
 
         Window.setDefaultImages(new Image[] { Images.LOGO_512.image(), Images.LOGO_256.image(), Images.LOGO_128.image(),
                         Images.LOGO_48.image(), Images.LOGO_32.image(), Images.LOGO_16.image() });
+    }
+
+    @PostConstruct
+    public void replaceDefaultDialogImages()
+    {
+        ImageRegistry registry = JFaceResources.getImageRegistry();
+        registry.put(Dialog.DLG_IMG_MESSAGE_ERROR, Images.ERROR.descriptor());
+        registry.put(Dialog.DLG_IMG_MESSAGE_WARNING, Images.WARNING.descriptor());
+        registry.put(Dialog.DLG_IMG_MESSAGE_INFO, Images.INFO.descriptor());
     }
 }
