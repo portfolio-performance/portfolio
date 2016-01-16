@@ -24,9 +24,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return title;
     }
 
-    public void setTitle(String title)
+    public HtmlChartConfigTimeline setTitle(String title)
     {
         this.title = title;
+        return this;
     }
 
     public String getInterpolation()
@@ -34,9 +35,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return interpolation;
     }
 
-    public void setInterpolation(String interpolation)
+    public HtmlChartConfigTimeline setInterpolation(String interpolation)
     {
         this.interpolation = interpolation;
+        return this;
     }
 
     public String getNumberFormat()
@@ -44,9 +46,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return numberFormat;
     }
 
-    public void setNumberFormat(String numberFormat)
+    public HtmlChartConfigTimeline setNumberFormat(String numberFormat)
     {
         this.numberFormat = numberFormat;
+        return this;
     }
 
     public String getNumberFormatLocale()
@@ -54,9 +57,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return numberFormatLocale;
     }
 
-    public void setNumberFormatLocale(String numberFormatLocale)
+    public HtmlChartConfigTimeline setNumberFormatLocale(String numberFormatLocale)
     {
         this.numberFormatLocale = numberFormatLocale;
+        return this;
     }
 
     public boolean isShowLegend()
@@ -64,9 +68,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return showLegend;
     }
 
-    public void setShowLegend(boolean showLegend)
+    public HtmlChartConfigTimeline setShowLegend(boolean showLegend)
     {
         this.showLegend = showLegend;
+        return this;
     }
 
     public boolean isUseLogScale()
@@ -74,9 +79,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return useLogScale;
     }
 
-    public void setUseLogScale(boolean useLogScale)
+    public HtmlChartConfigTimeline setUseLogScale(boolean useLogScale)
     {
         this.useLogScale = useLogScale;
+        return this;
     }
 
     public boolean isAllowZoom()
@@ -84,9 +90,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return allowZoom;
     }
 
-    public void setAllowZoom(boolean allowZoom)
+    public HtmlChartConfigTimeline setAllowZoom(boolean allowZoom)
     {
         this.allowZoom = allowZoom;
+        return this;
     }
 
     public HtmlChartConfigTimelineVerticalMarkerList getVerticalMarker()
@@ -94,9 +101,10 @@ public class HtmlChartConfigTimeline implements HtmlChartConfig
         return verticalMarker;
     }
 
-    public void setVerticalMarker(HtmlChartConfigTimelineVerticalMarkerList verticalMarker)
+    public HtmlChartConfigTimeline setVerticalMarker(HtmlChartConfigTimelineVerticalMarkerList verticalMarker)
     {
         this.verticalMarker = verticalMarker;
+        return this;
     }
 
     public List<HtmlChartConfigTimelineSeries> series()
