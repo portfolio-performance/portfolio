@@ -1088,7 +1088,10 @@ public class StatementOfAssetsViewer
             {
                 calculatePerformance(element, option);
                 SecurityPerformanceRecord record = element.getPerformance(option);
-                return valueProvider.apply(record);
+
+                // record is null if there are no transactions for the security
+                // in the given period
+                return record != null ? valueProvider.apply(record) : null;
             }
             return null;
         }
