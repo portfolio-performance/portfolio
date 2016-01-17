@@ -33,7 +33,11 @@ public class ExchangeRatesListView extends AbstractListView
 {
     @Inject
     private ExchangeRateProviderFactory providerFactory;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> refs/remotes/origin-fuchsst/feature_rickshaw2
     private HtmlChart chart;
     private HtmlChartConfigTimeline chartConfig;
 
@@ -46,6 +50,10 @@ public class ExchangeRatesListView extends AbstractListView
     @Override
     public void setFocus()
     {
+<<<<<<< HEAD
+=======
+        //chart.getAxisSet().adjustRange();
+>>>>>>> refs/remotes/origin-fuchsst/feature_rickshaw2
         super.setFocus();
     }
 
@@ -124,7 +132,13 @@ public class ExchangeRatesListView extends AbstractListView
     protected void createBottomTable(Composite parent)
     {
         chartConfig = new HtmlChartConfigTimeline();
+<<<<<<< HEAD
         chartConfig.setShowLegend(false).setNumberFormat("0.0000").setNumberFormatLocale("de");
+=======
+        chartConfig.setShowLegend(false)
+                .setNumberFormat("0.0000")
+                .setNumberFormatLocale("de");
+>>>>>>> refs/remotes/origin-fuchsst/feature_rickshaw2
         chart = new HtmlChart(chartConfig);
         chart.createControl(parent);
         refreshChart(null);
@@ -138,9 +152,13 @@ public class ExchangeRatesListView extends AbstractListView
         {
             chartConfig.setTitle(Messages.LabelCurrencies);
             return;
+<<<<<<< HEAD
         }
         else
         {
+=======
+        } else {
+>>>>>>> refs/remotes/origin-fuchsst/feature_rickshaw2
             String title = MessageFormat.format("{0}/{1} ({2})", //$NON-NLS-1$
                             series.getTermCurrency(), series.getBaseCurrency(), series.getProvider().getName());
             chartConfig.setTitle(title);
@@ -150,7 +168,7 @@ public class ExchangeRatesListView extends AbstractListView
 
         LocalDate[] dates = new LocalDate[rates.size()];
         double[] values = new double[rates.size()];
-
+        
         int ii = 0;
         for (ExchangeRate rate : rates)
         {
@@ -159,9 +177,16 @@ public class ExchangeRatesListView extends AbstractListView
             ii++;
         }
 
+<<<<<<< HEAD
         HtmlChartConfigTimelineSeriesLine chartSeries = new HtmlChartConfigTimelineSeriesLine(chartConfig.getTitle(),
                         dates, values, new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
 
+=======
+        HtmlChartConfigTimelineSeriesLine chartSeries = new HtmlChartConfigTimelineSeriesLine(
+                        Messages.LabelConsumerPriceIndex, dates, values,
+                        new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
+        
+>>>>>>> refs/remotes/origin-fuchsst/feature_rickshaw2
         chartConfig.series().add(chartSeries);
         chart.refreshChart();
     }
