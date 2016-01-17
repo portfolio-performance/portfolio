@@ -269,7 +269,7 @@ public class ClientPerformanceSnapshot
         capitalGains.positions = valuation.entrySet().stream() //
                         .filter(entry -> !entry.getValue().isZero())
                         .map(entry -> new Position(entry.getKey(), entry.getValue().toMoney()))
-                        .sorted((p1, p2) -> p1.getLabel().compareTo(p2.getLabel())) //
+                        .sorted((p1, p2) -> p1.getLabel().compareToIgnoreCase(p2.getLabel())) //
                         .collect(Collectors.toList());
 
         // total capital gains -> sum it up
@@ -375,7 +375,7 @@ public class ClientPerformanceSnapshot
                         //
                         .filter(entry -> !entry.getValue().isZero())
                         .map(entry -> new Position(entry.getKey(), entry.getValue().toMoney()))
-                        .sorted((p1, p2) -> p1.getLabel().compareTo(p2.getLabel())) //
+                        .sorted((p1, p2) -> p1.getLabel().compareToIgnoreCase(p2.getLabel())) //
                         .collect(Collectors.toList());
 
         if (!otherEarnings.isZero())

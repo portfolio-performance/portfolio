@@ -162,7 +162,7 @@ public final class TaxonomyModel
             @Override
             public int compare(Assignment o1, Assignment o2)
             {
-                return o1.getInvestmentVehicle().toString().compareTo(o2.getInvestmentVehicle().toString());
+                return o1.getInvestmentVehicle().toString().compareToIgnoreCase(o2.getInvestmentVehicle().toString());
             }
         });
 

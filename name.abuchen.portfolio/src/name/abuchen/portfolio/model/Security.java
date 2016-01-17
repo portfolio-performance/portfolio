@@ -23,7 +23,7 @@ public final class Security implements Attributable, InvestmentVehicle
         {
             if (s1 == null)
                 return s2 == null ? 0 : -1;
-            return s1.name.compareTo(s2.name);
+            return s1.name.compareToIgnoreCase(s2.name);
         }
     }
 

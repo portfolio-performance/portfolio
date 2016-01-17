@@ -140,7 +140,7 @@ public final class ColumnViewerSorter extends ViewerComparator
                 switch (type)
                 {
                     case 1:
-                        return ((String) attribute1).compareTo((String) attribute2);
+                        return ((String) attribute1).compareToIgnoreCase((String) attribute2);
                     case 2:
                         return ((Enum<?>) attribute2).name().compareTo(((Enum<?>) attribute2).name());
                     case 3:

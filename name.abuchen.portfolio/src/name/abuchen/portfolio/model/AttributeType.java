@@ -315,7 +315,7 @@ public class AttributeType
                 else if (type == Double.class)
                     return ((Double) o1).compareTo((Double) o2);
                 else if (type == String.class)
-                    return ((String) o1).compareTo((String) o2);
+                    return ((String) o1).compareToIgnoreCase((String) o2);
                 else
                     return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
             }

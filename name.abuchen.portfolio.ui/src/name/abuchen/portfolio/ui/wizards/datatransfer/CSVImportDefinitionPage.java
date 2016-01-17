@@ -8,7 +8,6 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -767,14 +766,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             for (Enum<?> entry : mapFormat.map().keySet())
                 elements.add(new Entry(mapFormat.map(), entry));
 
-            Collections.sort(elements, new Comparator<Entry<?>>()
-            {
-                @Override
-                public int compare(Entry<?> e1, Entry<?> e2)
-                {
-                    return e1.key.name().compareTo(e2.key.name());
-                }
-            });
+            Collections.sort(elements, (e1, e2) -> e1.key.name().compareToIgnoreCase(e2.key.name()));
 
             return elements.toArray();
         }
