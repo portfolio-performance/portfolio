@@ -18,26 +18,30 @@
 // args.allowDrag          : true (default) allow dragging (only meaningful when Zoom and/or horizontal slider is is allowed), false to disable dragging
 function LineChart(args) {
 	'use strict';
-	var mouseDown = [false, false, false, false, false, false, false, false], graph, x_axis, y_axis, vline, legend, highlight, zoomBehavior, dragBehavior, hoverDetail, resize, vmarker;
+	var mouseDown = [ false, false, false, false, false, false, false, false ], graph, x_axis, y_axis, vline, legend, highlight, zoomBehavior, dragBehavior, hoverDetail, resize, vmarker;
 
 	if (args === undefined) {
 		return;
 	}
 
-	graph = new Rickshaw.Graph({
-		element : document.querySelector("#chart"),
-		min : (args !== undefined && args.minY !== undefined ? args.minY : 'auto'),
-		max : (args !== undefined && args.maxY !== undefined ? args.maxY : undefined),
-		renderer : 'multi',
-		unstack : (args !== undefined && args.unstack !== undefined ? args.unstack : true),
-		interpolation : (args.interpolation !== undefined ? args.interpolation : 'monotone'),
-		xScale : d3.time.scale(),
-		series : args.series
-	});
+	graph = new Rickshaw.Graph(
+			{
+				element : document.querySelector("#chart"),
+				min : (args !== undefined && args.minY !== undefined ? args.minY
+						: 'auto'),
+				max : (args !== undefined && args.maxY !== undefined ? args.maxY
+						: undefined),
+				renderer : 'multi',
+				unstack : (args !== undefined && args.unstack !== undefined ? args.unstack
+						: true),
+				interpolation : (args.interpolation !== undefined ? args.interpolation
+						: 'monotone'),
+				xScale : d3.time.scale(),
+				series : args.series
+			});
 
-	
 	x_axis = new Rickshaw.Graph.Axis.Time({
-		graph       : graph,
+		graph : graph,
 		timeFixture : new Rickshaw.Fixtures.PortfolioTime()
 	});
 
@@ -76,14 +80,19 @@ function LineChart(args) {
 			legend : legend,
 			disabledColor : function(seriesColor) {
 				var transparency = 0.4, grayWeigth = 0.6, rgb;
-				// handle rgba-color definition separately, since D3 only supports interpolation of RGB
+				// handle rgba-color definition separately, since D3 only
+				// supports interpolation of RGB
 				if (seriesColor.indexOf('rgba') === 0) {
-					rgb = d3.rgb('rgb' + seriesColor.substr(4, seriesColor.lastIndexOf(',') + 1) + ')');
+					rgb = d3.rgb('rgb'
+							+ seriesColor.substr(4, seriesColor
+									.lastIndexOf(',') + 1) + ')');
 				} else {
 					rgb = d3.rgb(seriesColor);
 				}
-				rgb = d3.rgb(d3.interpolateRgb(rgb, d3.rgb('#d8d8d8'))(grayWeigth));
-				return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
+				rgb = d3.rgb(d3.interpolateRgb(rgb, d3.rgb('#d8d8d8'))(
+						grayWeigth));
+				return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ','
+						+ transparency + ')';
 			}
 		});
 	}
@@ -92,76 +101,149 @@ function LineChart(args) {
 		zoomBehavior = new Rickshaw.Graph.Behavior.MouseWheelZoom({
 			graph : graph
 		});
+
+		$(document).keydown(function(event) {
+			event.preventDefault();
+			var keyCode = event.keyCode;
+			if (keyCode == 48 // "0"
+					|| keyCode == 96 // "NumPad0"
+					|| keyCode == 12 // Clear = Shift+NumPad5
+					|| keyCode == 53 // "5"
+					|| keyCode == 101 // "NumPad5"
+			) {
+				zoomBehavior.zoom.reset();
+			} else if (keyCode == 43 // "+"
+					|| keyCode == 107 // "NumPad+"
+			) {
+				if (event.shiftKey) {
+					zoomBehavior.zoom.inX();
+				} else {
+					zoomBehavior.zoom.inY();
+				}
+			} else if (keyCode == 45 // "-"
+					|| keyCode == 109 // "NumPad-"
+			) {
+				if (event.shiftKey) {
+					zoomBehavior.zoom.outX();
+				} else {
+					zoomBehavior.zoom.outY();
+				}
+			}
+		});
 	}
 
 	if (args.allowDrag === undefined || args.allowDrag) {
 		dragBehavior = new Rickshaw.Graph.Behavior.DragZoomedChart({
 			graph : graph
 		});
+
+		$(document).keydown(function(event) {
+			event.preventDefault();
+			var keyCode = event.keyCode;
+			var moveDistance = 32;
+
+			console.log(event.key + ":" + event.keyCode);
+
+			if (keyCode == 38 // ArrowUp
+					|| keyCode == 104 // NumPad8
+			) {
+				dragBehavior.MoveChartViewPort(0, moveDistance);
+			} else if (keyCode == 39 // ArrowRight
+					|| keyCode == 102 // NumPad6
+			) {
+				dragBehavior.MoveChartViewPort(moveDistance, 0);
+			} else if (keyCode == 40 // ArrowDown
+					|| keyCode == 98 // NumPad2
+			) {
+				dragBehavior.MoveChartViewPort(0, -moveDistance);
+			} else if (keyCode == 37 // ArrowLeft
+					|| keyCode == 100 // NumPad4
+			) {
+				dragBehavior.MoveChartViewPort(-moveDistance, 0);
+			}
+		});
+
 	}
 
-	hoverDetail = new Rickshaw.Graph.HoverDetail({
-		graph : graph,
+	hoverDetail = new Rickshaw.Graph.HoverDetail(
+			{
+				graph : graph,
 
-		xFormatter : function(x) {
-			var content, // result html of tooltip
-			series, // array of series of graph
-			numSeries, // number of series in graph
-			currentSeries, // current series referenced in series array
-			swatch, // swatch displaying the color next to name if series as html
-			numDataPoints, // number of data points in current series
-			minX, // x-value of first data point
-			maxX, // x-value of last data point
-			index, // index based of x value relative to minX/maxX range
-			y, // y-value of data point at index, displayed if no explicit label is present
-			label, // optional label of the data point, if not present, the y-value is shown
-			date = new Date(x * 1000);
+				xFormatter : function(x) {
+					var content, // result html of tooltip
+					series, // array of series of graph
+					numSeries, // number of series in graph
+					currentSeries, // current series referenced in series array
+					swatch, // swatch displaying the color next to name if
+					// series as html
+					numDataPoints, // number of data points in current series
+					minX, // x-value of first data point
+					maxX, // x-value of last data point
+					index, // index based of x value relative to minX/maxX
+					// range
+					y, // y-value of data point at index, displayed if no
+					// explicit label is present
+					label, // optional label of the data point, if not present,
+					// the y-value is shown
+					date = new Date(x * 1000);
 
-			content = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+					content = date.getFullYear() + "-"
+							+ ("0" + (date.getMonth() + 1)).slice(-2) + "-"
+							+ ("0" + date.getDate()).slice(-2);
 
-			if (mouseDown[2]) {	// 0= left, 1= middle, 2= right
-				series = graph.series;
-				numSeries = series.length;
-				content += '<table id="detail_table">';
-				for (var seriesIndex = 0; seriesIndex < numSeries; seriesIndex++) {
-					currentSeries = series[seriesIndex];
-					swatch = '<span class="detail_swatch" style="background-color: ' + series[seriesIndex].color + '"></span>';
-					numDataPoints = series[seriesIndex].data.length;
+					if (mouseDown[2]) { // 0= left, 1= middle, 2= right
+						series = graph.series;
+						numSeries = series.length;
+						content += '<table id="detail_table">';
+						for (var seriesIndex = 0; seriesIndex < numSeries; seriesIndex++) {
+							currentSeries = series[seriesIndex];
+							swatch = '<span class="detail_swatch" style="background-color: '
+									+ series[seriesIndex].color + '"></span>';
+							numDataPoints = series[seriesIndex].data.length;
 
-					if (!currentSeries.noLegend) {
+							if (!currentSeries.noLegend) {
 
-						content += '<tr>' + '<td>' + swatch + series[seriesIndex].name + '</td>';
-						if (numDataPoints > 0) {
-							minX = series[seriesIndex].data[0].x;
-							maxX = series[seriesIndex].data[numDataPoints - 1].x;
-							index = Math.round((x - minX) / (maxX - minX) * (numDataPoints - 1));
-							if (x < minX) {
-								index = 0;
-							} else if (x > maxX) {
-								index = numDataPoints - 1;
+								content += '<tr>' + '<td>' + swatch
+										+ series[seriesIndex].name + '</td>';
+								if (numDataPoints > 0) {
+									minX = series[seriesIndex].data[0].x;
+									maxX = series[seriesIndex].data[numDataPoints - 1].x;
+									index = Math.round((x - minX)
+											/ (maxX - minX)
+											* (numDataPoints - 1));
+									if (x < minX) {
+										index = 0;
+									} else if (x > maxX) {
+										index = numDataPoints - 1;
+									}
+									y = series[seriesIndex].data[index].y;
+									content += '<td class="detail_value">'
+											+ y_axis.tickFormat(y) + '</td>';
+								}
+								content += '</tr>';
 							}
-							y = series[seriesIndex].data[index].y;
-							content += '<td class="detail_value">' + y_axis.tickFormat(y) + '</td>';
 						}
-						content += '</tr>';
+						content += '</table>';
 					}
-				}
-				content += '</table>';
-			}
 
-			return content;
-		}
-	});
+					return content;
+				}
+			});
 
 	resize = function() {
-		graph.configure({
-			width : window.innerWidth - jQuery('#y_axis').width() - 4,
-			height : window.innerHeight - jQuery('#slider').height() - (jQuery('#title').height() + jQuery('#legend').height() + 16)
-		});
+		graph
+				.configure({
+					width : window.innerWidth - jQuery('#y_axis').width() - 4,
+					height : window.innerHeight
+							- jQuery('#slider').height()
+							- (jQuery('#title').height()
+									+ jQuery('#legend').height() + 16)
+				});
 
 		graph.render();
 		jQuery('#y_axis').height(jQuery('#chart').height());
-		// y axis does not recognise the correct height on first refresh for whatever reason -> force resize
+		// y axis does not recognise the correct height on first refresh for
+		// whatever reason -> force resize
 		y_axis.setSize(jQuery('#chart').height());
 
 	};
@@ -189,7 +271,8 @@ function LineChart(args) {
 
 	if (args !== undefined && args.title !== undefined) {
 		jQuery('#title').html(args.title);
-	};
+	}
+	;
 	window.addEventListener('resize', resize);
 	resize();
 
