@@ -105,6 +105,8 @@ function LineChart(args) {
 		$(document).keydown(function(event) {
 			event.preventDefault();
 			var keyCode = event.keyCode;
+			var ctrlKey = event.ctrlKey;
+			var shiftKey = event.shiftKey;
 			if (keyCode == 48 // "0"
 					|| keyCode == 96 // "NumPad0"
 					|| keyCode == 12 // Clear = Shift+NumPad5
@@ -112,23 +114,28 @@ function LineChart(args) {
 					|| keyCode == 101 // "NumPad5"
 			) {
 				zoomBehavior.zoom.reset();
-			} else if (keyCode == 43 // "+"
-					|| keyCode == 107 // "NumPad+"
+			} else if ((keyCode == 43 && !shiftKey) // "+"
+					|| (keyCode == 107 && !shiftKey) // "NumPad+"
+					|| (keyCode == 38 && ctrlKey) // ArrowUp
 			) {
-				if (event.shiftKey) {
-					zoomBehavior.zoom.inX();
-				} else {
-					zoomBehavior.zoom.inY();
-				}
-			} else if (keyCode == 45 // "-"
-					|| keyCode == 109 // "NumPad-"
+				zoomBehavior.zoom.inY();
+			} else if ((keyCode == 45 && !shiftKey) // "-"
+					|| (keyCode == 109 && !shiftKey) // "NumPad-"
+					|| (keyCode == 40 && ctrlKey) // ArrowDown
 			) {
-				if (event.shiftKey) {
-					zoomBehavior.zoom.outX();
-				} else {
-					zoomBehavior.zoom.outY();
-				}
+				zoomBehavior.zoom.outY();
+			} else if ((keyCode == 43 && shiftKey) // "+"
+					|| (keyCode == 107 && shiftKey) // "NumPad+"
+					|| (keyCode == 39 && ctrlKey) // ArrowRight
+			) {
+				zoomBehavior.zoom.inX();
+			} else if ((keyCode == 45 && shiftKey) // "-"
+					|| (keyCode == 109 && shiftKey) // "NumPad-"
+					|| (keyCode == 37 && ctrlKey) // ArrowLeft
+			) {
+				zoomBehavior.zoom.outX();
 			}
+console.log(event);
 		});
 	}
 
@@ -140,21 +147,22 @@ function LineChart(args) {
 		$(document).keydown(function(event) {
 			event.preventDefault();
 			var keyCode = event.keyCode;
+			var ctrlKey = event.ctrlKey;
 			var moveDistance = 32;
 
-			if (keyCode == 38 // ArrowUp
+			if ((keyCode == 38 && !ctrlKey) // ArrowUp
 					|| keyCode == 104 // NumPad8
 			) {
 				dragBehavior.MoveChartViewPort(0, moveDistance);
-			} else if (keyCode == 39 // ArrowRight
+			} else if ((keyCode == 39 && !ctrlKey) // ArrowRight
 					|| keyCode == 102 // NumPad6
 			) {
 				dragBehavior.MoveChartViewPort(moveDistance, 0);
-			} else if (keyCode == 40 // ArrowDown
+			} else if ((keyCode == 40 && !ctrlKey) // ArrowDown
 					|| keyCode == 98 // NumPad2
 			) {
 				dragBehavior.MoveChartViewPort(0, -moveDistance);
-			} else if (keyCode == 37 // ArrowLeft
+			} else if ((keyCode == 37 && !ctrlKey) // ArrowLeft
 					|| keyCode == 100 // NumPad4
 			) {
 				dragBehavior.MoveChartViewPort(-moveDistance, 0);
