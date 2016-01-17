@@ -21,7 +21,11 @@ public class ExchangeRateProviderFactory
         providers = new ArrayList<ExchangeRateProvider>();
         Iterator<ExchangeRateProvider> registeredProvider = ServiceRegistry.lookupProviders(ExchangeRateProvider.class);
         while (registeredProvider.hasNext())
-            providers.add(registeredProvider.next());
+        {
+            ExchangeRateProvider provider = registeredProvider.next();
+            provider.init(this);
+            providers.add(provider);
+        }
     }
 
     public List<ExchangeRateProvider> getProviders()
@@ -39,7 +43,6 @@ public class ExchangeRateProviderFactory
 
     public ExchangeRateTimeSeries getTimeSeries(String baseCurrency, String termCurrency)
     {
-        // TODO pick exchange rate with best quality of service
         for (ExchangeRateProvider p : providers)
         {
             ExchangeRateTimeSeries s = p.getTimeSeries(baseCurrency, termCurrency);

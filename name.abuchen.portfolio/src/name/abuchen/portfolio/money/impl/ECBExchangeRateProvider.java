@@ -20,6 +20,7 @@ import com.thoughtworks.xstream.XStream;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.util.LocalDateConverter;
 
@@ -59,6 +60,12 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     public String getName()
     {
         return Messages.LabelEuropeanCentralBank;
+    }
+
+    @Override
+    public void init(ExchangeRateProviderFactory factory)
+    {
+        // nothing to do
     }
 
     @Override
@@ -126,7 +133,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     @Override
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
-        return new ArrayList<ExchangeRateTimeSeries>(data.getSeries());
+        return new ArrayList<>(data.getSeries());
     }
 
     @Override
