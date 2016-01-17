@@ -142,8 +142,6 @@ function LineChart(args) {
 			var keyCode = event.keyCode;
 			var moveDistance = 32;
 
-			console.log(event.key + ":" + event.keyCode);
-
 			if (keyCode == 38 // ArrowUp
 					|| keyCode == 104 // NumPad8
 			) {
