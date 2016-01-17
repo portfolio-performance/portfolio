@@ -5,6 +5,7 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 	this.graph = args.graph;
 	this.xScale = args.graph.xScale || d3.scale.linear();
 	this.yScale = args.graph.yScale || d3.scale.linear();
+	this.minRangeX = args.minRangeX || 604800; // 60*60*24*7 = 1 week;
 
 	var self = this, initRange = {
 		x : {
@@ -118,14 +119,13 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 			self.graph.render();
 		},
 		inX : function(x) {
-			var minX, maxX, reduceBy, relativePos, coordinate;
+			var minX, maxX, reduceBy, relativePos, coordinate, weekSeconds;
 			minX = this.getCurrentMinX();
 			maxX = this.getCurrentMaxX();
 			coordinate = (x == null) ? (maxX - minX) / 2 + minX : x;
 			reduceBy = (maxX - minX) * this.zoom_ratio;
 			relativePos = (coordinate - minX) / (maxX - minX);
-			if ((maxX - minX) < (initRange.x.max - initRange.x.min)
-					* this.zoom_ratio) {
+			if ((maxX - minX) < self.minRangeX) {
 				return;
 			}
 			self.graph.window.xMin = minX + (reduceBy * relativePos);
@@ -175,7 +175,7 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 	$(self.graph.element)
 			.mousewheel(
 					function(event) {
-
+						event.preventDefault();
 						var parentOffset, width, height, relX, relY, translateX, translateY, x, y, swapXY;
 
 						parentOffset = $(self.graph.element).parent().offset();
