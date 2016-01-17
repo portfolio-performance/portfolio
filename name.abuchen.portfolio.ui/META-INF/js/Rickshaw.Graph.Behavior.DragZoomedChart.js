@@ -177,8 +177,8 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 		chartElement = $(self.graph.element);
 		parentOffset = chartElement.parent().offset();
 		return {
-			x : (event.pageX - parentOffset.left),
-			y : (event.pageY - parentOffset.top)
+			x : (pageX - parentOffset.left),
+			y : (pageY - parentOffset.top)
 		};
 	};
 
