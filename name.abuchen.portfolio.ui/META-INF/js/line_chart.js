@@ -135,7 +135,6 @@ function LineChart(args) {
 			) {
 				zoomBehavior.zoom.outX();
 			}
-console.log(event);
 		});
 	}
 
