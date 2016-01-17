@@ -119,7 +119,7 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 			self.graph.render();
 		},
 		inX : function(x) {
-			var minX, maxX, reduceBy, relativePos, coordinate, weekSeconds;
+			var minX, maxX, reduceBy, relativePos, coordinate;
 			minX = this.getCurrentMinX();
 			maxX = this.getCurrentMaxX();
 			coordinate = (x == null) ? (maxX - minX) / 2 + minX : x;
@@ -159,16 +159,21 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 			self.graph.render();
 		},
 		resetX : function() {
-			minX = initRange.x.min;
-			maxX = initRange.x.max;
+			self.graph.window.xMin = initRange.x.min;
+			self.graph.window.xMax = initRange.x.max;
+			self.graph.render();
 		},
 		resetY : function() {
-			minY = initRange.y.min;
-			maxY = initRange.y.max;
+			self.graph.min = initRange.y.min;
+			self.graph.max = initRange.y.max;
+			self.graph.render();
 		},
 		reset : function() {
-			resetX();
-			resetY();
+			self.graph.window.xMin = initRange.x.min;
+			self.graph.window.xMax = initRange.x.max;
+			self.graph.min = initRange.y.min;
+			self.graph.max = initRange.y.max;
+			self.graph.render();
 		}
 	};
 
