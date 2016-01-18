@@ -33,7 +33,6 @@ public class ExchangeRatesListView extends AbstractListView
 {
     @Inject
     private ExchangeRateProviderFactory providerFactory;
-
     private HtmlChart chart;
     private HtmlChartConfigTimeline chartConfig;
 
@@ -150,7 +149,7 @@ public class ExchangeRatesListView extends AbstractListView
 
         LocalDate[] dates = new LocalDate[rates.size()];
         double[] values = new double[rates.size()];
-
+        
         int ii = 0;
         for (ExchangeRate rate : rates)
         {
@@ -161,7 +160,6 @@ public class ExchangeRatesListView extends AbstractListView
 
         HtmlChartConfigTimelineSeriesLine chartSeries = new HtmlChartConfigTimelineSeriesLine(chartConfig.getTitle(),
                         dates, values, new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
-
         chartConfig.series().add(chartSeries);
         chart.refreshChart();
     }

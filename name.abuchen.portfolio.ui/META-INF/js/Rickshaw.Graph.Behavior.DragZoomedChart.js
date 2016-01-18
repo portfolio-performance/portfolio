@@ -5,6 +5,7 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 	self = this;
 
 	this.graph = args.graph;
+	this.chartElement = $(this.graph.element);
 	this.xScale = args.graph.xScale || d3.scale.linear();
 	this.yScale = args.graph.yScale || d3.scale.linear();
 
@@ -130,13 +131,11 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 
 	$(self.graph.element).mousedown(function(event) {
 		if (event.which === 1) {
-			var chartElement;
-			chartElement = $(self.graph.element);
-			parentOffset = chartElement.parent().offset();
+			parentOffset = self.chartElement.parent().offset();
 			self.mouseDownPos.x = event.pageX - parentOffset.left;
 			self.mouseDownPos.y = event.pageY - parentOffset.top;
 			self.isMouseDown = true;
-			chartElement.css('cursor', 'grabbing');
+			self.chartElement.css('cursor', 'grabbing');
 		}
 	});
 
@@ -157,15 +156,13 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 	});
 
 	$(self.graph.element).mouseup(function(event) {
-		var chartElement;
-		chartElement = $(self.graph.element);
-		chartElement.css('cursor', 'default');
+		self.chartElement.css('cursor', 'default');
 		self.isMouseDown = false;
 	});
 
 	$(self.graph.element).mouseout(function(event) {
 		var chartElementParent, chartXY;
-		chartElementParent = $(self.graph.element).parent();
+		chartElementParent = self.chartElement.parent();
 		chartXY = self.getMouseXYonChart(event.pageX, event.pageY);
 		if (chartXY.x < 0 || chartXY.x > chartElementParent.width() || chartXY.y < 0 || chartXY.y > chartElementParent.height()) {
 			$(this).mouseup();
@@ -173,12 +170,11 @@ Rickshaw.Graph.Behavior.DragZoomedChart = function(args) {
 	});
 
 	this.getMouseXYonChart = function(pageX, pageY) {
-		var chartElement, parentOffset;
-		chartElement = $(self.graph.element);
-		parentOffset = chartElement.parent().offset();
+		var parentOffset;
+		parentOffset = self.chartElement.parent().offset();
 		return {
-			x : (event.pageX - parentOffset.left),
-			y : (event.pageY - parentOffset.top)
+			x : (pageX - parentOffset.left),
+			y : (pageY - parentOffset.top)
 		};
 	};
 

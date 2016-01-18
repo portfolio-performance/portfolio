@@ -5,6 +5,7 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 	this.graph = args.graph;
 	this.xScale = args.graph.xScale || d3.scale.linear();
 	this.yScale = args.graph.yScale || d3.scale.linear();
+	this.minRangeX = args.minRangeX || 604800; // 60*60*24*7 = 1 week;
 
 	var self = this, initRange = {
 		x : {
@@ -18,25 +19,30 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 	};
 
 	this.graph.onConfigure(function() {
-		self.graph.series.forEach(function(series) {
-			if (series.disabled) {
-				return;
-			}
+		self.graph.series
+				.forEach(function(series) {
+					if (series.disabled) {
+						return;
+					}
 
-			var domain = self.graph.renderer.domain(series);
-			if (initRange.x.min === undefined || domain.x[0] < initRange.x.min) {
-				initRange.x.min = domain.x[0];
-			}
-			if (initRange.x.max === undefined || domain.x[1] > initRange.x.max) {
-				initRange.x.max = domain.x[1];
-			}
-			if (initRange.y.min === undefined || domain.y[0] < initRange.y.min) {
-				initRange.y.min = domain.y[0];
-			}
-			if (initRange.y.max === undefined || domain.y[1] > initRange.y.max) {
-				initRange.y.max = domain.y[1];
-			}
-		});
+					var domain = self.graph.renderer.domain(series);
+					if (initRange.x.min === undefined
+							|| domain.x[0] < initRange.x.min) {
+						initRange.x.min = domain.x[0];
+					}
+					if (initRange.x.max === undefined
+							|| domain.x[1] > initRange.x.max) {
+						initRange.x.max = domain.x[1];
+					}
+					if (initRange.y.min === undefined
+							|| domain.y[0] < initRange.y.min) {
+						initRange.y.min = domain.y[0];
+					}
+					if (initRange.y.max === undefined
+							|| domain.y[1] > initRange.y.max) {
+						initRange.y.max = domain.y[1];
+					}
+				});
 	});
 
 	this.zoom = {
@@ -61,7 +67,8 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 		},
 		getCurrentMinX : function() {
 			var result;
-			if (self.graph.window === undefined || self.graph.window.xMin === undefined) {
+			if (self.graph.window === undefined
+					|| self.graph.window.xMin === undefined) {
 				result = initRange.x.min;
 			} else {
 				result = self.graph.window.xMin;
@@ -69,31 +76,34 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 			return result;
 		},
 		getCurrentMaxX : function() {
-			if (self.graph.window === undefined || self.graph.window.xMax === undefined) {
+			if (self.graph.window === undefined
+					|| self.graph.window.xMax === undefined) {
 				result = initRange.x.max;
 			} else {
 				result = self.graph.window.xMax;
 			}
 			return result;
 		},
-		inY : function(coordinate) {
-			var minY, maxY, reduceBy, relativePos;
+		inY : function(y) {
+			var minY, maxY, reduceBy, relativePos, coordinate;
 			minY = this.getCurrentMinY();
 			maxY = this.getCurrentMaxY();
+			coordinate = (y == null) ? (maxY - minY) / 2 + minY : y;
 			reduceBy = (maxY - minY) * this.zoom_ratio;
 			relativePos = (coordinate - minY) / (maxY - minY);
-			if ((maxY - minY) < (initRange.y.max - initRange.y.min) * this.zoom_ratio) {
+			if ((maxY - minY) < (initRange.y.max - initRange.y.min)
+					* this.zoom_ratio) {
 				return;
 			}
 			self.graph.min = minY + (reduceBy * relativePos);
 			self.graph.max = maxY - (reduceBy * (1 - relativePos));
 			self.graph.render();
 		},
-		outY : function(coordinate) {
-			var minY, maxY, extendBy, relativePos;
-
+		outY : function(y) {
+			var minY, maxY, extendBy, relativePos, coordinate;
 			minY = this.getCurrentMinY();
 			maxY = this.getCurrentMaxY();
+			coordinate = (y == null) ? (maxY - minY) / 2 + minY : y;
 			extendBy = (maxY - minY) * this.zoom_ratio;
 			relativePos = (coordinate - minY) / (maxY - minY);
 			minY = minY - (extendBy * relativePos);
@@ -108,25 +118,26 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 			self.graph.max = (maxY < initRange.y.max) ? maxY : initRange.y.max;
 			self.graph.render();
 		},
-		inX : function(coordinate) {
-			var minX, maxX, reduceBy, relativePos;
-
+		inX : function(x) {
+			var minX, maxX, reduceBy, relativePos, coordinate;
 			minX = this.getCurrentMinX();
 			maxX = this.getCurrentMaxX();
+			coordinate = (x == null) ? (maxX - minX) / 2 + minX : x;
 			reduceBy = (maxX - minX) * this.zoom_ratio;
 			relativePos = (coordinate - minX) / (maxX - minX);
-			if ((maxX - minX) < (initRange.x.max - initRange.x.min) * this.zoom_ratio) {
+			if ((maxX - minX) < self.minRangeX) {
 				return;
 			}
 			self.graph.window.xMin = minX + (reduceBy * relativePos);
 			self.graph.window.xMax = maxX - (reduceBy * (1 - relativePos));
 			self.graph.render();
 		},
-		outX : function(coordinate) {
-			var minX, maxX, extendBy, relativePos;
+		outX : function(x) {
+			var minX, maxX, extendBy, relativePos, coordinate;
 
 			minX = this.getCurrentMinX();
 			maxX = this.getCurrentMaxX();
+			coordinate = (x == null) ? (maxX - minX) / 2 + minX : x;
 			extendBy = (maxX - minX) * this.zoom_ratio;
 			relativePos = (coordinate - minX) / (maxX - minX);
 			minX = minX - (extendBy * relativePos);
@@ -140,39 +151,66 @@ Rickshaw.Graph.Behavior.MouseWheelZoom = function(args) {
 				minX = minX - (maxX - initRange.x.max);
 			}
 
-			self.graph.window.xMin = (minX > initRange.x.min) ? minX : initRange.x.min;
-			self.graph.window.xMax = (maxX < initRange.x.max) ? maxX : initRange.x.max;
+			self.graph.window.xMin = (minX > initRange.x.min) ? minX
+					: initRange.x.min;
+			self.graph.window.xMax = (maxX < initRange.x.max) ? maxX
+					: initRange.x.max;
 
+			self.graph.render();
+		},
+		resetX : function() {
+			self.graph.window.xMin = initRange.x.min;
+			self.graph.window.xMax = initRange.x.max;
+			self.graph.render();
+		},
+		resetY : function() {
+			self.graph.min = initRange.y.min;
+			self.graph.max = initRange.y.max;
+			self.graph.render();
+		},
+		reset : function() {
+			self.graph.window.xMin = initRange.x.min;
+			self.graph.window.xMax = initRange.x.max;
+			self.graph.min = initRange.y.min;
+			self.graph.max = initRange.y.max;
 			self.graph.render();
 		}
 	};
 
-	$(self.graph.element).mousewheel(function(event) {
+	$(self.graph.element)
+			.mousewheel(
+					function(event) {
+						event.preventDefault();
+						var parentOffset, width, height, relX, relY, translateX, translateY, x, y, swapXY;
 
-		var parentOffset, width, height, relX, relY, translateX, translateY, x, y, swapXY;
+						parentOffset = $(self.graph.element).parent().offset();
+						width = self.graph.width;
+						height = self.graph.height;
+						relX = event.pageX - parentOffset.left;
+						relY = event.pageY - parentOffset.top;
+						translateX = self.xScale.domain([ 0, width ]).range(
+								[ initRange.x.min, initRange.x.max ]);
+						translateY = self.yScale.domain([ 0, height ]).range(
+								[ initRange.y.min, initRange.y.max ]);
+						x = translateX(relX);
+						y = translateY(height - relY);
+						swapXY = event.shiftKey;
 
-		parentOffset = $(self.graph.element).parent().offset();
-		width = self.graph.width;
-		height = self.graph.height;
-		relX = event.pageX - parentOffset.left;
-		relY = event.pageY - parentOffset.top;
-		translateX = self.xScale.domain([0, width]).range([initRange.x.min, initRange.x.max]);
-		translateY = self.yScale.domain([0, height]).range([initRange.y.min, initRange.y.max]);
-		x = translateX(relX);
-		y = translateY(height - relY);
-		swapXY = event.shiftKey;
+						// swap x as y and y as x if shift was pressed
+						if ((event.deltaY < 0 && !swapXY)
+								|| (event.deltaX < 0 && swapXY)) {
+							self.zoom.outY(y);
+						} else if ((event.deltaY > 0 && !swapXY)
+								|| (event.deltaX > 0 && swapXY)) {
+							self.zoom.inY(y);
+						} else if ((event.deltaX < 0 && !swapXY)
+								|| (event.deltaY < 0 && swapXY)) {
+							self.zoom.outX(x);
+						} else if ((event.deltaX > 0 && !swapXY)
+								|| (event.deltaY > 0 && swapXY)) {
+							self.zoom.inX(x);
+						}
 
-		// swap x as y and y as x if shift was pressed
-		if ((event.deltaY < 0 && !swapXY) || (event.deltaX < 0 && swapXY)) {
-			self.zoom.outY(y);
-		} else if ((event.deltaY > 0 && !swapXY) || (event.deltaX > 0 && swapXY)) {
-			self.zoom.inY(y);
-		} else if ((event.deltaX < 0 && !swapXY) || (event.deltaY < 0 && swapXY)) {
-			self.zoom.outX(x);
-		} else if ((event.deltaX > 0 && !swapXY) || (event.deltaY > 0 && swapXY)) {
-			self.zoom.inX(x);
-		}
-
-	});
+					});
 
 };
