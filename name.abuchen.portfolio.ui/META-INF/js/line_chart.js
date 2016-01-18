@@ -107,6 +107,7 @@ function LineChart(args) {
 			var keyCode = event.keyCode;
 			var ctrlKey = event.ctrlKey;
 			var shiftKey = event.shiftKey;
+			console.log(keyCode);
 			if (keyCode == 48 // "0"
 					|| keyCode == 96 // "NumPad0"
 					|| keyCode == 12 // Clear = Shift+NumPad5
@@ -114,12 +115,12 @@ function LineChart(args) {
 					|| keyCode == 101 // "NumPad5"
 			) {
 				zoomBehavior.zoom.reset();
-			} else if ((keyCode == 43 && !shiftKey) // "+"
+			} else if ((keyCode == 171 && !shiftKey) // "+"
 					|| (keyCode == 107 && !shiftKey) // "NumPad+"
 					|| (keyCode == 38 && ctrlKey) // ArrowUp
 			) {
 				zoomBehavior.zoom.inY();
-			} else if ((keyCode == 45 && !shiftKey) // "-"
+			} else if ((keyCode == 173 && !shiftKey) // "-"
 					|| (keyCode == 109 && !shiftKey) // "NumPad-"
 					|| (keyCode == 40 && ctrlKey) // ArrowDown
 			) {
