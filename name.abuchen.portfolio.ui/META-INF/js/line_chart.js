@@ -115,21 +115,25 @@ function LineChart(args) {
 			) {
 				zoomBehavior.zoom.reset();
 			} else if ((keyCode == 171 && !shiftKey) // "+"
+					|| (keyCode == 187 && !shiftKey) // "+ in IE"
 					|| (keyCode == 107 && !shiftKey) // "NumPad+"
 					|| (keyCode == 38 && ctrlKey) // ArrowUp
 			) {
 				zoomBehavior.zoom.inY();
 			} else if ((keyCode == 173 && !shiftKey) // "-"
+					|| (keyCode == 189 && !shiftKey) // "- in IE"
 					|| (keyCode == 109 && !shiftKey) // "NumPad-"
 					|| (keyCode == 40 && ctrlKey) // ArrowDown
 			) {
 				zoomBehavior.zoom.outY();
-			} else if ((keyCode == 43 && shiftKey) // "+"
+			} else if ((keyCode == 171 && shiftKey) // "+"
+					|| (keyCode == 187 && shiftKey) // "+ in IE"
 					|| (keyCode == 107 && shiftKey) // "NumPad+"
 					|| (keyCode == 39 && ctrlKey) // ArrowRight
 			) {
 				zoomBehavior.zoom.inX();
-			} else if ((keyCode == 45 && shiftKey) // "-"
+			} else if ((keyCode == 173 && shiftKey) // "-"
+					|| (keyCode == 189 && shiftKey) // "- in IE"
 					|| (keyCode == 109 && shiftKey) // "NumPad-"
 					|| (keyCode == 37 && ctrlKey) // ArrowLeft
 			) {
