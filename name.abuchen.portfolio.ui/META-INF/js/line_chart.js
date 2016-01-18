@@ -107,7 +107,6 @@ function LineChart(args) {
 			var keyCode = event.keyCode;
 			var ctrlKey = event.ctrlKey;
 			var shiftKey = event.shiftKey;
-			console.log(keyCode);
 			if (keyCode == 48 // "0"
 					|| keyCode == 96 // "NumPad0"
 					|| keyCode == 12 // Clear = Shift+NumPad5
