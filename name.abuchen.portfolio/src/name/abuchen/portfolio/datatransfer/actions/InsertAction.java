@@ -40,7 +40,8 @@ public class InsertAction implements ImportAction
     {
         // ensure consistency (in case the user deleted the creation of the
         // security via the dialog)
-        process(transaction.getSecurity());
+        if (transaction.getSecurity() != null)
+            process(transaction.getSecurity());
         account.addTransaction(transaction);
         return Status.OK_STATUS;
     }
