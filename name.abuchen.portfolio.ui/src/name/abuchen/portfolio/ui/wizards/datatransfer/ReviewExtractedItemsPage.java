@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
@@ -141,6 +142,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     public boolean doConvertToDelivery()
     {
         return cbConvertToDelivery.getSelection();
+    }
+
+    @Override
+    public IWizardPage getNextPage()
+    {
+        return null;
     }
 
     @Override

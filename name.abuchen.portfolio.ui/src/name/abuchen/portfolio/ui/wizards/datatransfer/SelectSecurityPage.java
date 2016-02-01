@@ -43,14 +43,18 @@ public class SelectSecurityPage extends AbstractWizardPage
         Label label = new Label(container, SWT.NONE);
         label.setText(Messages.ColumnSecurity);
 
+        List<Security> securities = client.getActiveSecurities();
+
         combo = new ComboViewer(container);
         combo.setContentProvider(ArrayContentProvider.getInstance());
-        combo.setInput(client.getActiveSecurities());
-        combo.setSelection(new StructuredSelection(((List<?>) combo.getInput()).get(0)));
+        combo.setInput(securities);
+        if (!securities.isEmpty())
+            combo.setSelection(new StructuredSelection(securities.get(0)));
+        combo.addSelectionChangedListener(e -> setPageComplete(!combo.getSelection().isEmpty()));
 
         FormDataFactory.startingWith(combo.getControl(), label);
 
-        setPageComplete(true);
+        setPageComplete(!combo.getSelection().isEmpty());
 
         setControl(container);
     }
