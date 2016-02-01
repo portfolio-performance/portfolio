@@ -202,7 +202,7 @@ public class InvestmentPlan implements Named, Adaptable
 
         LocalDate now = LocalDate.now();
 
-        while (transactionDate.isBefore(now))
+        while (!transactionDate.isAfter(now))
         {
             PortfolioTransaction transaction = createTransaction(converter, transactionDate);
 
