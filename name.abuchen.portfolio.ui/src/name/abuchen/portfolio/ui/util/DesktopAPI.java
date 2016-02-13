@@ -30,9 +30,22 @@ public class DesktopAPI
         {
             URI target = new URI(uri);
 
-            // try using native commands on Linux first
+            // try Java's desktop API first
+            if (Desktop.isDesktopSupported())
+            {
+                Desktop desktop = Desktop.getDesktop();
+                if (desktop.isSupported(Desktop.Action.BROWSE))
+                {
+                    desktop.browse(target);
+                    return;
+                }
+            }
+
+            // then fallback to using native commands on Linux
             if (Platform.OS_LINUX.equals(Platform.getOS()))
             {
+                if (runCommand("sensible-browser", uri)) //$NON-NLS-1$
+                    return;
                 if (runCommand("kde-open", uri)) //$NON-NLS-1$
                     return;
                 if (runCommand("gnome-open", uri)) //$NON-NLS-1$
@@ -41,15 +54,8 @@ public class DesktopAPI
                     return;
             }
 
-            // fall back to Java Desktop
-            if (!Desktop.isDesktopSupported())
-                throw new IOException(Messages.DesktopAPIPlatformNotSupported);
-
-            Desktop desktop = Desktop.getDesktop();
-            if (!desktop.isSupported(Desktop.Action.BROWSE))
-                throw new IOException(Messages.DesktopAPIBrowserActionNotSupported);
-
-            desktop.browse(target);
+            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                            MessageFormat.format(Messages.DesktopAPIErrorOpeningURL, uri));
         }
         catch (IOException e)
         {
