@@ -22,6 +22,8 @@ public abstract class ReportingPeriod
 
         if (type == LastX.CODE)
             return new LastX(code);
+        else if (type == LastXDays.CODE)
+            return new LastXDays(code);
         else if (type == FromXtoY.CODE)
             return new FromXtoY(code);
         else if (type == SinceX.CODE)
@@ -159,6 +161,37 @@ public abstract class ReportingPeriod
                 buf.append(MessageFormat.format(Messages.LabelReportingPeriodMonths, months));
 
             return buf.toString();
+        }
+    }
+
+    public static class LastXDays extends ReportingPeriod
+    {
+        private static final char CODE = 'D';
+
+        private final int days;
+
+        /* package */ LastXDays(String code)
+        {
+            this(Integer.parseInt(code.substring(1)));
+        }
+
+        public LastXDays(int days)
+        {
+            super(LocalDate.now().minusDays(days), LocalDate.now());
+
+            this.days = days;
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE).append(days);
+        }
+
+        @Override
+        public String toString()
+        {
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXDays, days);
         }
     }
 

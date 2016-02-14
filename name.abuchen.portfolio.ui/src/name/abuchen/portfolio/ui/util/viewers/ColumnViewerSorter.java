@@ -36,6 +36,16 @@ public final class ColumnViewerSorter extends ViewerComparator
         }
     }
 
+    public interface OptionAwareComparator<O> extends Comparator<Object>
+    {
+        int compare(O option, Object o1, Object o2);
+
+        default int compare(Object o1, Object o2)
+        {
+            return compare(null, o1, o2);
+        }
+    }
+
     private static class ChainedComparator implements Comparator<Object>
     {
         private final List<Comparator<Object>> comparators;
@@ -213,9 +223,23 @@ public final class ColumnViewerSorter extends ViewerComparator
             return dir * -1;
 
         if (comparator instanceof DirectionAwareComparator)
+        {
             return ((DirectionAwareComparator) comparator).compare(direction, element1, element2);
+        }
+        else if (comparator instanceof OptionAwareComparator<?>)
+        {
+            Object option = null;
+            if (viewerColumn instanceof TableViewerColumn)
+                option = ((TableViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            else if (viewerColumn instanceof TreeViewerColumn)
+                option = ((TreeViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+
+            return dir * ((OptionAwareComparator<Object>) comparator).compare(option, element1, element2);
+        }
         else
+        {
             return dir * comparator.compare(element1, element2);
+        }
     }
 
     public void attachTo(Column column)

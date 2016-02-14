@@ -155,6 +155,9 @@ public class Messages extends NLS
     public static String ColumnPurchaseValue_Description;
     public static String ColumnPurchaseValueBaseCurrency;
     public static String ColumnQuote;
+    public static String ColumnQuoteChange;
+    public static String ColumnQuoteChange_Description;
+    public static String ColumnQuoteChange_Option;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
     public static String ColumnSecurity;
@@ -353,6 +356,7 @@ public class Messages extends NLS
     public static String LabelQuoteFeedProvider;
     public static String LabelRefresh;
     public static String LabelReportingAddPeriod;
+    public static String LabelReportingDialogDays;
     public static String LabelReportingDialogFrom;
     public static String LabelReportingDialogLast;
     public static String LabelReportingDialogMonths;

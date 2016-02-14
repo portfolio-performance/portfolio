@@ -2,8 +2,10 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -41,6 +43,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -56,6 +59,9 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.OptionAwareComparator;
+import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -103,6 +109,7 @@ public final class SecuritiesTable implements ModificationListener
         addDeltaColumn();
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
+        addQuoteDeltaColumn();
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {
@@ -400,6 +407,53 @@ public final class SecuritiesTable implements ModificationListener
         support.addColumn(column);
     }
 
+    private void addQuoteDeltaColumn()
+    {
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = new ArrayList<>(view.getPart().loadReportingPeriods());
+
+        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
+            Security security = (Security) element;
+
+            SecurityPrice latest = security.getSecurityPrice(option.getEndDate());
+            SecurityPrice previous = security.getSecurityPrice(option.getStartDate());
+
+            if (latest == null || previous == null)
+                return null;
+
+            if (previous.getValue() == 0)
+                return null;
+
+            return new Double((latest.getValue() - previous.getValue()) / (double) previous.getValue());
+        };
+
+        Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
+        column.setDescription(Messages.ColumnQuoteChange_Description);
+        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(new OptionAwareComparator<ReportingPeriod>()
+        {
+            @Override
+            public int compare(ReportingPeriod option, Object o1, Object o2)
+            {
+                Double v1 = valueProvider.apply(o1, option);
+                Double v2 = valueProvider.apply(o2, option);
+
+                if (v1 == null && v2 == null)
+                    return 0;
+                else if (v1 == null)
+                    return -1;
+                else if (v2 == null)
+                    return 1;
+
+                return Double.compare(v1.doubleValue(), v2.doubleValue());
+            }
+        }));
+        support.addColumn(column);
+    }
+
     private void addAttributeColumns()
     {
         getClient().getSettings() //
@@ -685,6 +739,41 @@ public final class SecuritiesTable implements ModificationListener
         {
             super.performFinish(security);
             updateQuotes(security);
+        }
+    }
+
+    private static final class QuoteReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    {
+        private BiFunction<Object, ReportingPeriod, Double> valueProvider;
+
+        public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, Double> valueProvider)
+        {
+            this.valueProvider = valueProvider;
+        }
+
+        @Override
+        public String getText(Object e, ReportingPeriod option)
+        {
+            Double value = valueProvider.apply(e, option);
+            if (value == null)
+                return null;
+
+            return String.format("%,.2f %%", value * 100); //$NON-NLS-1$
+        }
+
+        @Override
+        public Color getForeground(Object e, ReportingPeriod option)
+        {
+            Double value = valueProvider.apply(e, option);
+            if (value == null)
+                return null;
+
+            if (value.doubleValue() < 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+            else if (value.doubleValue() > 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            else
+                return null;
         }
     }
 }

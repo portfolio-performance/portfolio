@@ -21,6 +21,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.util.Dates;
 
 public class ReportingPeriodDialog extends Dialog
 {
@@ -30,6 +31,9 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioLast;
     private Spinner years;
     private Spinner months;
+
+    private Button radioLastDays;
+    private Spinner days;
 
     private Button radioFromXtoY;
     private DateTimePicker dateFrom;
@@ -75,6 +79,15 @@ public class ReportingPeriodDialog extends Dialog
         Label lblMonths = new Label(editArea, SWT.NONE);
         lblMonths.setText(Messages.LabelReportingDialogMonths);
 
+        radioLastDays = new Button(editArea, SWT.RADIO);
+        Label lblLastDays = new Label(editArea, SWT.NONE);
+        lblLastDays.setText(Messages.LabelReportingDialogLast);
+        days = new Spinner(editArea, SWT.BORDER);
+        days.setMinimum(1);
+        days.setMaximum(10000);
+        Label lblDays = new Label(editArea, SWT.NONE);
+        lblDays.setText(Messages.LabelReportingDialogDays);
+
         radioFromXtoY = new Button(editArea, SWT.RADIO);
         Label lblFrom = new Label(editArea, SWT.NONE);
         lblFrom.setText(Messages.LabelReportingDialogFrom);
@@ -102,9 +115,13 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioLast).thenRight(lblLast).thenRight(years).thenRight(lblYears)
                         .thenRight(months).thenRight(lblMonths);
 
-        FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLast, 20)).thenRight(lblFrom)
+        FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(lblLastDays)
+                        .thenRight(days).thenRight(lblDays);
+
+        FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20)).thenRight(lblFrom)
                         .thenRight(dateFrom.getControl()).top(new FormAttachment(lblFrom, -3, SWT.TOP)).thenRight(lblTo)
-                        .thenRight(dateTo.getControl()).top(new FormAttachment(lblFrom, -3, SWT.TOP));
+                        .top(new FormAttachment(lblFrom, 0, SWT.TOP)).thenRight(dateTo.getControl())
+                        .top(new FormAttachment(lblFrom, -3, SWT.TOP));
 
         FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20)).thenRight(lblSince)
                         .thenRight(dateSince.getControl()).top(new FormAttachment(lblSince, -3, SWT.TOP));
@@ -119,6 +136,7 @@ public class ReportingPeriodDialog extends Dialog
         presetFromTemplate();
 
         listen(radioLast, years, months);
+        listen(radioLastDays, days);
         listen(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
         listen(radioSinceX, dateSince.getControl());
         listen(radioYearX, year);
@@ -149,6 +167,8 @@ public class ReportingPeriodDialog extends Dialog
     {
         if (template instanceof ReportingPeriod.LastX)
             radioLast.setSelection(true);
+        else if (template instanceof ReportingPeriod.LastXDays)
+            radioLastDays.setSelection(true);
         else if (template instanceof ReportingPeriod.FromXtoY)
             radioFromXtoY.setSelection(true);
         else if (template instanceof ReportingPeriod.SinceX)
@@ -167,6 +187,8 @@ public class ReportingPeriodDialog extends Dialog
         years.setSelection(p.getYears());
         months.setSelection(p.getMonths());
 
+        days.setSelection(Dates.daysBetween(template.getStartDate(), template.getEndDate()));
+
         year.setSelection(template.getEndDate().getYear());
     }
 
@@ -176,6 +198,10 @@ public class ReportingPeriodDialog extends Dialog
         if (radioLast.getSelection())
         {
             result = new ReportingPeriod.LastX(years.getSelection(), months.getSelection());
+        }
+        else if (radioLastDays.getSelection())
+        {
+            result = new ReportingPeriod.LastXDays(days.getSelection());
         }
         else if (radioFromXtoY.getSelection())
         {
