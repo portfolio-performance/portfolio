@@ -262,17 +262,6 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }
 
-    /**
-     * make sure drop-down boxes contain the security, portfolio and account of
-     * this transaction (they might be "retired" and do not show by default)
-     */
-    private <T> List<T> including(List<T> list, T element)
-    {
-        if (element != null && !list.contains(element))
-            list.add(0, element);
-        return list;
-    }
-
     private String sign()
     {
         switch (model().getType())

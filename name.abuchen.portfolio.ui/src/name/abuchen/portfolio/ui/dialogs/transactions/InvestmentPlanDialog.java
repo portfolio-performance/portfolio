@@ -77,20 +77,20 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         // security
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
-        securities.value.setInput(client.getActiveSecurities());
+        securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
         // portfolio
 
         ComboInput portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
-        portfolio.value.setInput(client.getActivePortfolios());
+        portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
         // account
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
-        List<Account> accounts = client.getActiveAccounts();
+        List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
         accounts.add(0, InvestmentPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);

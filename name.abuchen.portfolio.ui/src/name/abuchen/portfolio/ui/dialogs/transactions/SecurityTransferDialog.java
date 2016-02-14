@@ -82,14 +82,14 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         // security
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
-        securities.value.setInput(client.getActiveSecurities());
+        securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
         // source portfolio
 
         ComboInput source = new ComboInput(editArea, Messages.ColumnAccountFrom);
-        source.value.setInput(client.getActivePortfolios());
+        source.value.setInput(including(client.getActivePortfolios(), model().getSourcePortfolio()));
         IObservableValue sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
                         Messages.MsgPortfolioFromMissing);
         source.bindCurrency(Properties.sourcePortfolioLabel.name());
@@ -97,7 +97,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         // target portfolio
 
         ComboInput target = new ComboInput(editArea, Messages.ColumnAccountTo);
-        target.value.setInput(client.getActivePortfolios());
+        target.value.setInput(including(client.getActivePortfolios(), model().getTargetPortfolio()));
         IObservableValue targetObservable = target.bindValue(Properties.targetPortfolio.name(),
                         Messages.MsgPortfolioToMissing);
         target.bindCurrency(Properties.targetPortfolioLabel.name());

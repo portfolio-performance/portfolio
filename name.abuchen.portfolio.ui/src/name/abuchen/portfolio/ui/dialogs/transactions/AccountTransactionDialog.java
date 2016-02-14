@@ -99,7 +99,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         // account
 
         ComboInput accounts = new ComboInput(editArea, Messages.ColumnAccount);
-        accounts.value.setInput(client.getActiveAccounts());
+        accounts.value.setInput(including(client.getActiveAccounts(), model().getAccount()));
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         accounts.bindCurrency(Properties.accountCurrencyCode.name());
 
@@ -229,7 +229,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
     {
         ComboInput securities;
         List<Security> activeSecurities = new ArrayList<Security>();
-        activeSecurities.addAll(client.getActiveSecurities());
+        activeSecurities.addAll(including(client.getActiveSecurities(), model().getSecurity()));
         if (model().supportsOptionalSecurity())
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
 

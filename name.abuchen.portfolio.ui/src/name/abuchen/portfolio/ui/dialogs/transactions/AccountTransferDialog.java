@@ -98,7 +98,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         // source account
 
         ComboInput source = new ComboInput(editArea, Messages.ColumnAccountFrom);
-        source.value.setInput(client.getActiveAccounts());
+        source.value.setInput(including(client.getActiveAccounts(), model().getSourceAccount()));
         IObservableValue sourceObservable = source.bindValue(Properties.sourceAccount.name(),
                         Messages.MsgAccountFromMissing);
         source.bindCurrency(Properties.sourceAccountCurrency.name());
@@ -106,7 +106,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         // target account
 
         ComboInput target = new ComboInput(editArea, Messages.ColumnAccountTo);
-        target.value.setInput(client.getActiveAccounts());
+        target.value.setInput(including(client.getActiveAccounts(), model().getTargetAccount()));
         IObservableValue targetObservable = target.bindValue(Properties.targetAccount.name(),
                         Messages.MsgAccountToMissing);
         target.bindCurrency(Properties.targetAccountCurrency.name());

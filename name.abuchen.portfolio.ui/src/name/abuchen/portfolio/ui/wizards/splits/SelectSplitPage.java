@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -68,11 +66,9 @@ public class SelectSplitPage extends AbstractWizardPage
         Label labelSecurity = new Label(container, SWT.NONE);
         labelSecurity.setText(Messages.ColumnSecurity);
 
-        List<Security> securities = new ArrayList<Security>();
-        for (Security s : model.getClient().getSecurities())
-            if (!s.isRetired())
-                securities.add(s);
-        Collections.sort(securities, new Security.ByName());
+        List<Security> securities = model.getClient().getActiveSecurities();
+        if (model.getSecurity() != null && !securities.contains(model.getSecurity()))
+            securities.add(0, model.getSecurity());
 
         ComboViewer comboSecurity = new ComboViewer(container, SWT.READ_ONLY);
         comboSecurity.setContentProvider(ArrayContentProvider.getInstance());

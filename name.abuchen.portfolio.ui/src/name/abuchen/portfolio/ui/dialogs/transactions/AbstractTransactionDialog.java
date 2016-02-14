@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -282,4 +283,15 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
     public void setSecurity(Security security)
     {}
+
+    /**
+     * make sure drop-down boxes contain the security, portfolio and account of
+     * this transaction (they might be "retired" and do not show by default)
+     */
+    protected <T> List<T> including(List<T> list, T element)
+    {
+        if (element != null && !list.contains(element))
+            list.add(0, element);
+        return list;
+    }
 }
