@@ -100,8 +100,8 @@ public class PerformanceView extends AbstractHistoricView
         private Label volatility;
         private Label semiVolatility;
 
-        private Label[] labels;
         private Label[] signs;
+        private Label[] labels;
         private Label[] values;
 
         public void setInput(ClientPerformanceSnapshot snapshot)
@@ -124,8 +124,8 @@ public class PerformanceView extends AbstractHistoricView
             int ii = 0;
             for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
             {
-                labels[ii].setText(category.getLabel());
                 signs[ii].setText(category.getSign());
+                labels[ii].setText(category.getLabel());
                 values[ii].setText(Values.Money.format(category.getValuation(), index.getClient().getBaseCurrency()));
 
                 if (++ii >= labels.length)
@@ -322,8 +322,8 @@ public class PerformanceView extends AbstractHistoricView
 
             for (int ii = 0; ii < labels.length; ii++)
             {
-                labels[ii] = new Label(composite, SWT.NONE);
                 signs[ii] = new Label(composite, SWT.NONE);
+                labels[ii] = new Label(composite, SWT.NONE);
                 values[ii] = new Label(composite, SWT.RIGHT);
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
             }
