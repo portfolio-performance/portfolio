@@ -432,7 +432,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
                 return getColor(((SecurityPerformanceRecord) e).getDeltaPercent());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
         column.setVisible(false);
         recordColumns.addColumn(column);
     }
