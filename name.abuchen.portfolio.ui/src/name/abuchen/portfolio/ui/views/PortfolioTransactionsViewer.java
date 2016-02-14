@@ -428,7 +428,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         if (firstTransaction != null)
         {
             Action editAction = createEditAction(firstTransaction);
-            editAction.setAccelerator(SWT.MOD1 | 'e');
+            editAction.setAccelerator(SWT.MOD1 | 'E');
             manager.add(editAction);
             manager.add(new Separator());
         }

@@ -725,7 +725,7 @@ public final class SecuritiesTable implements ModificationListener
         private EditSecurityAction()
         {
             super(Messages.SecurityMenuEditSecurity);
-            setAccelerator(SWT.MOD1 | 'e');
+            setAccelerator(SWT.MOD1 | 'E');
         }
 
         @Override

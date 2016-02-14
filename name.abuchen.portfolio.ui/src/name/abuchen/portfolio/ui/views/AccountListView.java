@@ -570,7 +570,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         if (transaction != null)
         {
             Action action = createEditAction(account, transaction);
-            action.setAccelerator(SWT.MOD1 | 'e');
+            action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
             manager.add(new Separator());
         }
