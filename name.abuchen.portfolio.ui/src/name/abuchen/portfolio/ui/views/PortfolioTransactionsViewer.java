@@ -23,11 +23,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -80,6 +82,52 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         {
             warningColor.dispose();
             super.dispose();
+        }
+    }
+
+    private static class ConvertToDeliveryAction extends Action
+    {
+        private final AbstractFinanceView owner;
+        private final PortfolioTransaction transaction;
+
+        public ConvertToDeliveryAction(AbstractFinanceView owner, PortfolioTransaction transaction)
+        {
+            this.owner = owner;
+            this.transaction = transaction;
+
+            if (transaction.getType() != PortfolioTransaction.Type.BUY
+                            && transaction.getType() != PortfolioTransaction.Type.SELL)
+                throw new IllegalArgumentException();
+
+            setText(transaction.getType() == PortfolioTransaction.Type.BUY ? Messages.MenuConvertToInboundDelivery
+                            : Messages.MenuConvertToOutboundDelivery);
+        }
+
+        @Override
+        public void run()
+        {
+            // delete existing transaction
+            CrossEntry source = transaction.getCrossEntry();
+            @SuppressWarnings("unchecked")
+            TransactionOwner<Transaction> portfolio = (TransactionOwner<Transaction>) source.getOwner(transaction);
+            portfolio.deleteTransaction(transaction, owner.getClient());
+
+            // create new delivery
+            PortfolioTransaction delivery = new PortfolioTransaction();
+            delivery.setType(transaction.getType() == PortfolioTransaction.Type.BUY
+                            ? PortfolioTransaction.Type.DELIVERY_INBOUND : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+            delivery.setDate(transaction.getDate());
+            delivery.setMonetaryAmount(transaction.getMonetaryAmount());
+            delivery.setSecurity(transaction.getSecurity());
+            delivery.setNote(transaction.getNote());
+            delivery.setShares(transaction.getShares());
+
+            transaction.getUnits().forEach(unit -> delivery.addUnit(unit));
+
+            portfolio.addTransaction(delivery);
+
+            owner.markDirty();
+            owner.notifyModelUpdated();
         }
     }
 
@@ -382,6 +430,13 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             Action editAction = createEditAction(firstTransaction);
             editAction.setAccelerator(SWT.MOD1 | 'e');
             manager.add(editAction);
+            manager.add(new Separator());
+        }
+
+        if (fullContextMenu && firstTransaction != null && (firstTransaction.getType() == PortfolioTransaction.Type.BUY
+                        || firstTransaction.getType() == PortfolioTransaction.Type.SELL))
+        {
+            manager.add(new ConvertToDeliveryAction(owner, firstTransaction));
             manager.add(new Separator());
         }
 

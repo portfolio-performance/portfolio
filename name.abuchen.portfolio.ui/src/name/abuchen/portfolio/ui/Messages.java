@@ -414,6 +414,8 @@ public class Messages extends NLS
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
     public static String MenuConfigureChart;
+    public static String MenuConvertToInboundDelivery;
+    public static String MenuConvertToOutboundDelivery;
     public static String MenuCreateColumnConfig;
     public static String MenuEditInvestmentPlan;
     public static String MenuEditTransaction;
