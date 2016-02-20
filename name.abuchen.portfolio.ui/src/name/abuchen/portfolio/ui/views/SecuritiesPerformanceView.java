@@ -64,7 +64,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
-public class DividendsPerformanceView extends AbstractListView implements ReportingPeriodListener
+public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -152,7 +152,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         container.setLayout(layout);
 
         records = new TableViewer(container, SWT.FULL_SELECTION);
-        recordColumns = new ShowHideColumnHelper(DividendsPerformanceView.class.getName(), getClient(),
+        recordColumns = new ShowHideColumnHelper(SecuritiesPerformanceView.class.getName(), getClient(),
                         getPreferenceStore(), records, layout);
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
@@ -612,7 +612,7 @@ public class DividendsPerformanceView extends AbstractListView implements Report
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        DividendsPerformanceView.class.getSimpleName() + "@bottom3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        SecuritiesPerformanceView.class.getSimpleName() + "@bottom3", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
         // date

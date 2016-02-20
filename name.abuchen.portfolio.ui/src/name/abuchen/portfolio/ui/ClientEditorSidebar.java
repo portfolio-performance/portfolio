@@ -336,7 +336,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         new Entry(performance,
                         new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility, "ReturnsVolatilityChart")) //$NON-NLS-1$
                                         .setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "DividendsPerformance")) //$NON-NLS-1$
+        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecuritiesPerformance")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
     }
 
