@@ -34,7 +34,8 @@ public enum Images
     CONFIG("config.png"), //$NON-NLS-1$
     EXPORT("export.png"), //$NON-NLS-1$
     SAVE("save.png"), //$NON-NLS-1$
-    FILTER("filter.png"), //$NON-NLS-1$
+    FILTER_ON("filter_on.png"), //$NON-NLS-1$
+    FILTER_OFF("filter_off.png"), //$NON-NLS-1$
 
     VIEW_TABLE("view_table.png"), //$NON-NLS-1$
     VIEW_TREEMAP("view_treemap.png"), //$NON-NLS-1$

@@ -144,13 +144,13 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             @Override
             public void run()
             {
-                isFiltered = isChecked();
+                isFiltered = !isFiltered;
                 getPart().getPreferenceStore().setValue(FILTER_INACTIVE_PORTFOLIOS, isFiltered);
+                setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
                 setInput();
             }
         };
-        filter.setChecked(isFiltered);
-        filter.setImageDescriptor(Images.FILTER.descriptor());
+        filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.PortfolioFilterRetiredPortfolios);
         new ActionContributionItem(filter).fill(toolBar, -1);
     }
@@ -240,8 +240,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                 {
                     transactions.setInput(portfolio, portfolio.getTransactions());
                     transactions.refresh();
-                    CurrencyConverter converter = new CurrencyConverterImpl(factory, portfolio.getReferenceAccount()
-                                    .getCurrencyCode());
+                    CurrencyConverter converter = new CurrencyConverterImpl(factory,
+                                    portfolio.getReferenceAccount().getCurrencyCode());
                     statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, LocalDate.now()));
                 }
                 else
@@ -272,8 +272,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         manager.add(new Separator());
 
-        manager.add(new Action(portfolio.isRetired() ? Messages.PortfolioMenuActivate
-                        : Messages.PortfolioMenuDeactivate)
+        manager.add(new Action(
+                        portfolio.isRetired() ? Messages.PortfolioMenuActivate : Messages.PortfolioMenuDeactivate)
         {
             @Override
             public void run()

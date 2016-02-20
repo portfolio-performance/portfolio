@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -12,12 +15,15 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -48,6 +54,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -66,6 +73,63 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
 public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
+    private class FilterDropDown extends AbstractDropDown
+    {
+        private Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
+        private Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
+
+        public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
+        {
+            super(toolBar, Messages.SecurityFilter, Images.FILTER_OFF.image(), SWT.NONE);
+
+            if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero")) //$NON-NLS-1$
+                filter.add(sharesGreaterZero);
+
+            if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
+                filter.add(sharesEqualZero);
+
+            if (!filter.isEmpty())
+                getToolItem().setImage(Images.FILTER_ON.image());
+
+            toolBar.addDisposeListener(e -> {
+                preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero", //$NON-NLS-1$
+                                filter.contains(sharesGreaterZero));
+                preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
+                                filter.contains(sharesEqualZero));
+            });
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(createAction(manager, Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(manager, Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+        }
+
+        private Action createAction(IMenuManager manager, String label, Predicate<SecurityPerformanceRecord> predicate)
+        {
+            Action action = new Action(label, Action.AS_CHECK_BOX)
+            {
+                @Override
+                public void run()
+                {
+                    boolean isChecked = filter.contains(predicate);
+
+                    if (isChecked)
+                        filter.remove(predicate);
+                    else
+                        filter.add(predicate);
+
+                    setChecked(!isChecked);
+                    getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                    records.refresh();
+                }
+            };
+            action.setChecked(filter.contains(predicate));
+            return action;
+        }
+    }
+
     @Inject
     private ExchangeRateProviderFactory factory;
 
@@ -74,6 +138,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private TableViewer records;
     private TableViewer transactions;
     private ReportingPeriodDropDown dropDown;
+
+    private List<Predicate<SecurityPerformanceRecord>> filter = new ArrayList<>();
 
     @Override
     protected String getTitle()
@@ -92,6 +158,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     protected void addButtons(ToolBar toolBar)
     {
         dropDown = new ReportingPeriodDropDown(toolBar, getPart(), this);
+        new FilterDropDown(toolBar, getPreferenceStore());
         addExportButton(toolBar);
         addSaveButton(toolBar);
         addConfigButton(toolBar);
@@ -190,6 +257,24 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                                 .getSelection()).getFirstElement();
                 transactions.setInput(record != null ? record.getTransactions() : Collections.emptyList());
                 transactions.refresh();
+            }
+        });
+
+        records.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                if (filter.isEmpty())
+                    return true;
+
+                for (Predicate<SecurityPerformanceRecord> predicate : filter)
+                {
+                    if (!predicate.test((SecurityPerformanceRecord) element))
+                        return false;
+                }
+
+                return true;
             }
         });
 
@@ -612,8 +697,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecuritiesPerformanceView.class.getSimpleName() + "@bottom3", getPreferenceStore(), transactions, //$NON-NLS-1$
-                        layout);
+                        SecuritiesPerformanceView.class.getSimpleName() + "@bottom3", getPreferenceStore(), //$NON-NLS-1$
+                        transactions, layout);
 
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);

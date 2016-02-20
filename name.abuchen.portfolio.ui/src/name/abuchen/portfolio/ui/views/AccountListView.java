@@ -129,13 +129,13 @@ public class AccountListView extends AbstractListView implements ModificationLis
             @Override
             public void run()
             {
-                isFiltered = isChecked();
+                isFiltered = !isFiltered;
                 getPart().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
+                setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
                 resetInput();
             }
         };
-        filter.setChecked(isFiltered);
-        filter.setImageDescriptor(Images.FILTER.descriptor());
+        filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
         new ActionContributionItem(filter).fill(toolBar, -1);
     }
