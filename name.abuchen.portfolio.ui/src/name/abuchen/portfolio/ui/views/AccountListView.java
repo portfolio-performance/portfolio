@@ -526,7 +526,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         hookKeyListener();
 
-        if (!getClient().getAccounts().isEmpty())
+        if (accounts.getTable().getItemCount() > 0)
             accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
     }
 
