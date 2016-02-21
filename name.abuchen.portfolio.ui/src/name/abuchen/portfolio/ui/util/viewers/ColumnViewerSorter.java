@@ -166,7 +166,7 @@ public final class ColumnViewerSorter extends ViewerComparator
                     case 8:
                         return ((Money) attribute1).compareTo((Money) attribute2);
                     default:
-                        return String.valueOf(attribute1).compareTo(String.valueOf(attribute2));
+                        return String.valueOf(attribute1).compareToIgnoreCase(String.valueOf(attribute2));
                 }
             }
             catch (IllegalAccessException e)
@@ -189,6 +189,37 @@ public final class ColumnViewerSorter extends ViewerComparator
 
         return new ColumnViewerSorter(
                         comparators.size() == 1 ? comparators.get(0) : new ChainedComparator(comparators));
+    }
+
+    public static ColumnViewerSorter create(Function<Object, Comparable<?>> valueProvider)
+    {
+        return create(new Comparator<Object>()
+        {
+            @Override
+            public int compare(Object o1, Object o2)
+            {
+                if (o1 == null && o2 == null)
+                    return 0;
+                else if (o1 == null)
+                    return -1;
+                else if (o2 == null)
+                    return 1;
+
+                @SuppressWarnings("unchecked")
+                Comparable<Object> v1 = (Comparable<Object>) valueProvider.apply(o1);
+                @SuppressWarnings("unchecked")
+                Comparable<Object> v2 = (Comparable<Object>) valueProvider.apply(o2);
+
+                if (v1 == null && v2 == null)
+                    return 0;
+                else if (v1 == null)
+                    return -1;
+                else if (v2 == null)
+                    return 1;
+
+                return v1.compareTo(v2);
+            }
+        });
     }
 
     public static ColumnViewerSorter create(Comparator<Object> comparator)

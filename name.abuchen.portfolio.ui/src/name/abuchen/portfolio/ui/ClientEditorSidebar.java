@@ -179,7 +179,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
                         Images.WATCHLIST.descriptor()));
 
-        entry.setContextMenu((e,m)-> watchlistContextMenuAboutToShow(watchlist, e, m));
+        entry.setContextMenu((e, m) -> watchlistContextMenuAboutToShow(watchlist, e, m));
 
         entry.addDropSupport(DND.DROP_MOVE, new Transfer[] { SecurityTransfer.getTransfer() }, new DropTargetAdapter()
         {
@@ -337,6 +337,8 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                         new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility, "ReturnsVolatilityChart")) //$NON-NLS-1$
                                         .setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecuritiesPerformance")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
+        new Entry(performance, new ActivateViewAction(Messages.LabelDividends, "dividends.Dividends")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
     }
 

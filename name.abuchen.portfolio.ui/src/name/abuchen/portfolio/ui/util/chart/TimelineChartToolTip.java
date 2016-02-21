@@ -151,6 +151,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             if (categoryEnabled)
             {
                 int line = (Integer) getFocusedObject();
+                if (line >= series.getYSeries().length)
+                    continue;
                 value = series.getYSeries()[line];
             }
             else

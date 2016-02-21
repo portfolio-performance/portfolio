@@ -170,6 +170,7 @@ public class Messages extends NLS
     public static String ColumnStartDate;
     public static String ColumnStatus;
     public static String ColumnSubTotal;
+    public static String ColumnSum;
     public static String ColumnSymbol;
     public static String ColumnTargetValue;
     public static String ColumnTaxes;
@@ -375,6 +376,8 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelDividends;
+    public static String LabelDividendsByMonthAndVehicle;
+    public static String LabelDividendsPerMonth;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
