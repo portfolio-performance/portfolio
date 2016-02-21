@@ -22,6 +22,11 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -30,11 +35,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.Strings;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
@@ -192,6 +192,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     private final Column[] columns = new Column[] { new DateColumn(), new CloseColumn(), new HighColumn(),
                     new LowColumn() };
 
+    private final PageCache cache = new PageCache();
+
     @Override
     public String getId()
     {
@@ -261,8 +263,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             errors.add(new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
             return Collections.emptyList();
         }
+        
+        List<LatestSecurityPrice> answer = cache.lookup(feedURL);
+        if (answer != null)
+            return answer;
 
-        return parseFromURL(feedURL, errors);
+        answer = parseFromURL(feedURL, errors);
+
+        cache.put(feedURL, answer);
+
+        return answer;
     }
 
     @Override

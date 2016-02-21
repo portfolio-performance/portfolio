@@ -3,19 +3,20 @@ package name.abuchen.portfolio.ui;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.QuoteFeed;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
 
 public final class UpdateQuotesJob extends AbstractClientJob
 {
@@ -122,7 +123,12 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         boolean isDirty = false;
 
-        for (Security security : securities)
+        // randomize list in case LRU cache size of HTMLTableQuote feed is too
+        // small; otherwise entries would be evited in order
+        List<Security> list = new ArrayList<>(securities);
+        Collections.shuffle(list);
+
+        for (Security security : list)
         {
             if (monitor.isCanceled())
                 return isDirty;
