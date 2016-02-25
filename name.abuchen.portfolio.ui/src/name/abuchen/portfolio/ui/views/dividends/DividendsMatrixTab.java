@@ -91,7 +91,7 @@ public class DividendsMatrixTab implements DividendsTab
         for (TableColumn c : tableViewer.getTable().getColumns())
             c.pack();
 
-        model.addPropertyChangeListener("startYear", e -> updateColumns(tableViewer, layout)); //$NON-NLS-1$
+        model.addUpdateListener(() -> updateColumns(tableViewer, layout));
 
         return container;
     }

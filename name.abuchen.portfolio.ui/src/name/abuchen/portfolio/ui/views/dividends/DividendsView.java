@@ -51,7 +51,13 @@ public class DividendsView extends AbstractFinanceView
             year = now.getYear() - 2;
 
         model.updateWith(year);
-        model.addPropertyChangeListener("startYear", e -> preferences.setValue(KEY_YEAR, model.getStartYear())); //$NON-NLS-1$
+        model.addUpdateListener(() -> preferences.setValue(KEY_YEAR, model.getStartYear()));
+    }
+    
+    @Override
+    public void notifyModelUpdated()
+    {
+        model.recalculate();
     }
 
     @Override

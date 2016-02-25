@@ -86,7 +86,7 @@ public abstract class AbstractChartTab implements DividendsTab
         TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
         toolTip.enableCategory(true);
 
-        model.addPropertyChangeListener("startYear", e -> updateChart()); //$NON-NLS-1$
+        model.addUpdateListener(() -> updateChart());
 
         return chart;
     }

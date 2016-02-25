@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views.dividends;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -21,6 +19,12 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
 public class DividendsViewModel
 {
+    @FunctionalInterface
+    public interface UpdateListener
+    {
+        void onUpdate();
+    }
+
     public static class Line
     {
         private InvestmentVehicle vehicle;
@@ -48,14 +52,13 @@ public class DividendsViewModel
             return sum;
         }
     }
-
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    
+    private List<UpdateListener> listeners = new ArrayList<>();
 
     private final CurrencyConverter converter;
     private final Client client;
 
-    private int startYear = 2016;
-
+    private int startYear;
     private int noOfmonths;
     private List<Line> lines;
     private Line sum;
@@ -105,12 +108,15 @@ public class DividendsViewModel
 
     public void updateWith(int year)
     {
-        int oldStartYear = this.startYear;
         this.startYear = year;
-
         calculate();
-
-        firePropertyChange("startYear", oldStartYear, this.startYear); //$NON-NLS-1$
+        fireUpdateChange();
+    }
+    
+    public void recalculate()
+    {
+        calculate();
+        fireUpdateChange();
     }
 
     private void calculate()
@@ -156,13 +162,13 @@ public class DividendsViewModel
         this.lines = new ArrayList<>(vehicle2line.values());
     }
 
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    public void addUpdateListener(UpdateListener listener)
     {
-        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+        this.listeners.add(listener);
     }
 
-    protected void firePropertyChange(String attribute, Object oldValue, Object newValue)
+    protected void fireUpdateChange()
     {
-        propertyChangeSupport.firePropertyChange(attribute, oldValue, newValue);
+        this.listeners.stream().forEach(l -> l.onUpdate());
     }
 }

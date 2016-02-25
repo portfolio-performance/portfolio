@@ -80,7 +80,7 @@ public class TransactionsTab implements DividendsTab
 
         tableViewer.setInput(model.getTransactions());
 
-        model.addPropertyChangeListener("startYear", e -> tableViewer.setInput(model.getTransactions())); //$NON-NLS-1$
+        model.addUpdateListener(() -> tableViewer.setInput(model.getTransactions()));
 
         return container;
     }
