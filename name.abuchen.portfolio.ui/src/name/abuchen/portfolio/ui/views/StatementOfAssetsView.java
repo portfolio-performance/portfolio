@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -25,7 +23,6 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 
@@ -40,14 +37,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     protected String getTitle()
     {
-        return Messages.LabelStatementOfAssets;
-    }
-
-    @Inject
-    @Optional
-    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
-    {
-        updateTitle(Messages.LabelStatementOfAssets + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        return assetViewer == null ? Messages.LabelStatementOfAssets : Messages.LabelStatementOfAssets + //
+                        " (" + assetViewer.getColumnHelper().getConfigurationName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -57,6 +48,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, LocalDate.now());
 
         assetViewer.setInput(snapshot);
+        updateTitle();
     }
 
     @Override
@@ -131,6 +123,9 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         assetViewer = make(StatementOfAssetsViewer.class);
         Control control = assetViewer.createControl(parent);
+
+        updateTitle();
+        assetViewer.getColumnHelper().addListener(() -> updateTitle());
 
         hookContextMenu(assetViewer.getTableViewer().getControl(), new IMenuListener()
         {

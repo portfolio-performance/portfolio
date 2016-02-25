@@ -3,11 +3,6 @@ package name.abuchen.portfolio.ui.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -19,6 +14,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
 
 public class ConfigurationStore
 {
@@ -204,7 +202,6 @@ public class ConfigurationStore
         preferences.setValue(identifier + ACTIVE, configurations.size() - 1);
 
         listener.onConfigurationPicked(active.getData());
-        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void rename(Configuration config)
@@ -217,7 +214,6 @@ public class ConfigurationStore
 
         config.setName(dlg.getValue());
         client.setProperty(identifier + '$' + configurations.indexOf(config), config.serialize());
-        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void delete(Configuration config)
@@ -232,7 +228,6 @@ public class ConfigurationStore
         active = configurations.get(0);
         storeConfigurations();
         listener.onConfigurationPicked(active.getData());
-        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void activate(Configuration config)
@@ -241,7 +236,6 @@ public class ConfigurationStore
         active = config;
         preferences.setValue(identifier + ACTIVE, configurations.indexOf(config));
         listener.onConfigurationPicked(config.getData());
-        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     public void updateActive(String data)
@@ -253,6 +247,11 @@ public class ConfigurationStore
     public String getActive()
     {
         return active.getData();
+    }
+    
+    public String getActiveName()
+    {
+        return active.getName();
     }
 
     public void insertMigratedConfiguration(String data)
@@ -294,11 +293,9 @@ public class ConfigurationStore
             // ignore -> use first
         }
 
-        // make sure on configuration is active
+        // make sure one configuration is active
         if (active == null)
             active = configurations.get(0);
-
-        PortfolioPlugin.getDefault().postEvent(UIConstants.Event.Configuration.PICKED, active.getName());
     }
 
     private void storeConfigurations()

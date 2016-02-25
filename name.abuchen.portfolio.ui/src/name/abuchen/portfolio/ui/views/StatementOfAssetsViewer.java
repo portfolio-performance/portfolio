@@ -746,6 +746,11 @@ public class StatementOfAssetsViewer
         this.portfolioSnapshot = snapshot;
         internalSetInput(snapshot != null ? snapshot.groupByTaxonomy(taxonomy) : null);
     }
+    
+    public ShowHideColumnHelper getColumnHelper()
+    {
+        return support;
+    }
 
     private void internalSetInput(GroupByTaxonomy grouping)
     {

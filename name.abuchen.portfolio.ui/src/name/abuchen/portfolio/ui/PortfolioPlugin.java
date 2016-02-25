@@ -2,24 +2,18 @@ package name.abuchen.portfolio.ui;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 
 import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
 
@@ -31,8 +25,6 @@ public class PortfolioPlugin implements BundleActivator
 
     private Bundle bundle;
     private IPreferenceStore preferenceStore;
-
-    private EventAdmin eventAdmin;
 
     public PortfolioPlugin()
     {
@@ -46,9 +38,6 @@ public class PortfolioPlugin implements BundleActivator
         bundle = context.getBundle();
 
         setupProxyAuthenticator();
-
-        ServiceReference<EventAdmin> eventAdminServiceReference = context.getServiceReference(EventAdmin.class);
-        eventAdmin = context.getService(eventAdminServiceReference);
 
         preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, PortfolioPlugin.PLUGIN_ID);
     }
@@ -130,14 +119,5 @@ public class PortfolioPlugin implements BundleActivator
     public static boolean isDevelopmentMode()
     {
         return System.getProperty("osgi.dev") != null; //$NON-NLS-1$
-    }
-
-    public void postEvent(String topic, Object payload)
-    {
-        // http://blog.vogella.com/2013/06/24/sending-events-to-e4-applications-from-outside-of-e4/
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put(IEventBroker.DATA, payload);
-        eventAdmin.postEvent(new Event(topic, map));
     }
 }

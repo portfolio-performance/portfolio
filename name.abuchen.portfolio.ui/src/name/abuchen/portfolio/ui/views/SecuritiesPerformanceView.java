@@ -8,8 +8,6 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -51,7 +49,6 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
@@ -144,14 +141,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     @Override
     protected String getTitle()
     {
-        return Messages.LabelSecurityPerformance;
-    }
-
-    @Inject
-    @Optional
-    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
-    {
-        updateTitle(Messages.LabelSecurityPerformance + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        return recordColumns == null ? Messages.LabelSecurityPerformance
+                        : Messages.LabelSecurityPerformance + " (" + recordColumns.getConfigurationName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -221,6 +212,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         records = new TableViewer(container, SWT.FULL_SELECTION);
         recordColumns = new ShowHideColumnHelper(SecuritiesPerformanceView.class.getName(), getClient(),
                         getPreferenceStore(), records, layout);
+
+        updateTitle();
+        recordColumns.addListener(() -> updateTitle());
+
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
 
@@ -872,6 +867,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     public void notifyModelUpdated()
     {
         reportingPeriodUpdated();
+        updateTitle();
     }
 
     @Override

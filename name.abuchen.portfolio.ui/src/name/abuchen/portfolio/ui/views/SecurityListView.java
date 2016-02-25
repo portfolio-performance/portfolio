@@ -11,10 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -74,7 +70,6 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -171,15 +166,16 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected String getTitle()
     {
-        return watchlist == null ? Messages.LabelSecurities : Messages.LabelSecurities + " " + watchlist.getName(); //$NON-NLS-1$
-    }
+        StringBuilder title = new StringBuilder();
+        if (watchlist == null)
+            title.append(Messages.LabelSecurities);
+        else
+            title.append(Messages.LabelSecurities).append(' ').append(watchlist.getName());
 
-    @Inject
-    @Optional
-    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
-    {
-        updateTitle(getTitle() + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-                                                     // );
+        if (securities != null)
+            title.append(" (").append(securities.getColumnHelper().getConfigurationName()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        return title.toString();
     }
 
     @Override
@@ -193,6 +189,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     {
         if (securities != null && !securities.getTableViewer().getTable().isDisposed())
         {
+            updateTitle();
             securities.getTableViewer().refresh(true);
             securities.getTableViewer().setSelection(securities.getTableViewer().getSelection());
         }
@@ -329,7 +326,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     protected void createTopTable(Composite parent)
     {
         securities = new SecuritiesTable(parent, this);
-
+        updateTitle();
+        securities.getColumnHelper().addListener(() -> updateTitle());
+        
         securities.addSelectionChangedListener(new ISelectionChangedListener()
         {
             public void selectionChanged(SelectionChangedEvent event)

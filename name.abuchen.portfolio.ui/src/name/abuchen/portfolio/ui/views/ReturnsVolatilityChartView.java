@@ -13,10 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -49,7 +46,6 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
@@ -76,13 +72,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     protected String getTitle()
     {
         return Messages.LabelHistoricalReturnsAndVolatiltity;
-    }
-
-    @Inject
-    @Optional
-    private void onConfigurationPicked(@UIEventTopic(UIConstants.Event.Configuration.PICKED) String name)
-    {
-        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
     }
 
     @Override
@@ -159,6 +148,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.RETURN_VOLATILITY);
         picker.setListener(() -> updateChart());
+        
+        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
@@ -194,6 +185,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         try
         {
+            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+            
             chart.suspendUpdate(true);
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());

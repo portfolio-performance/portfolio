@@ -21,11 +21,6 @@ public interface UIConstants
             String CREATED = "errorlog/created"; //$NON-NLS-1$
             String CLEARED = "errorlog/cleared"; //$NON-NLS-1$
         }
-
-        interface Configuration
-        {
-            String PICKED = "configuration/picked"; //$NON-NLS-1$
-        }
     }
 
     interface File

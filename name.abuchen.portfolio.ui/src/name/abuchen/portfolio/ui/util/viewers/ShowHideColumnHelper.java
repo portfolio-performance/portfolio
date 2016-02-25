@@ -42,6 +42,12 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
 {
+    @FunctionalInterface
+    public interface Listener
+    {
+        void onConfigurationPicked();
+    }
+
     private abstract static class ViewerPolicy
     {
         abstract ColumnViewer getViewer();
@@ -271,13 +277,14 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
     private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:([^\\|]*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
-    private String identifier;
+    private final String identifier;
 
     private List<Column> columns = new ArrayList<Column>();
     private Map<String, Column> id2column = new HashMap<String, Column>();
 
     private IPreferenceStore preferences;
     private ConfigurationStore store;
+    private List<Listener> listeners = new ArrayList<>();
 
     private ViewerPolicy policy;
     private Menu contextMenu;
@@ -324,6 +331,16 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         if (store != null)
             store.dispose();
+    }
+    
+    public String getConfigurationName()
+    {
+        return store != null ? store.getActiveName() : null;
+    }
+    
+    public void addListener(Listener l)
+    {
+        this.listeners.add(l);
     }
 
     public void showSaveMenu(Shell shell)
@@ -735,6 +752,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             doResetColumns();
         else
             createFromColumnConfig(data);
+
+        listeners.stream().forEach(l -> l.onConfigurationPicked());
 
         policy.getViewer().refresh();
     }

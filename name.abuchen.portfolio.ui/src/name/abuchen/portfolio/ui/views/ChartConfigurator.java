@@ -292,6 +292,11 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
     {
         this.listener = listener;
     }
+    
+    public String getConfigurationName()
+    {
+        return store.getActiveName();
+    }
 
     public void showMenu(Shell shell)
     {
@@ -776,7 +781,7 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
     @Override
     public void beforeConfigurationPicked()
     {
-        // do nothing - all configuraiton changes are stored via #updateActive
+        // do nothing - all configuration changes are stored via #updateActive
     }
 
     @Override
