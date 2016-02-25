@@ -425,6 +425,9 @@ public final class SecuritiesTable implements ModificationListener
             if (previous.getValue() == 0)
                 return null;
 
+            if (previous.getTime().isAfter(option.getStartDate()))
+                return null;
+
             return new Double((latest.getValue() - previous.getValue()) / (double) previous.getValue());
         };
 
