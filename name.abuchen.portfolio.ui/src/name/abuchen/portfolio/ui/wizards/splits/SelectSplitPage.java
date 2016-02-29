@@ -92,7 +92,7 @@ public class SelectSplitPage extends AbstractWizardPage
 
         Spinner spinnerNewShares = new Spinner(container, SWT.BORDER);
         spinnerNewShares.setMinimum(1);
-        spinnerNewShares.setMaximum(100);
+        spinnerNewShares.setMaximum(1000000);
         spinnerNewShares.setSelection(1);
         spinnerNewShares.setIncrement(1);
         spinnerNewShares.setFocus();
@@ -102,7 +102,7 @@ public class SelectSplitPage extends AbstractWizardPage
 
         Spinner spinnerOldShares = new Spinner(container, SWT.BORDER);
         spinnerOldShares.setMinimum(1);
-        spinnerOldShares.setMaximum(100);
+        spinnerOldShares.setMaximum(1000000);
         spinnerOldShares.setSelection(1);
         spinnerOldShares.setIncrement(1);
 
