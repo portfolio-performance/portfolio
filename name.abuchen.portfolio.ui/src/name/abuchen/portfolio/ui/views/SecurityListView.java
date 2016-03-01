@@ -174,7 +174,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         if (securities != null)
             title.append(" (").append(securities.getColumnHelper().getConfigurationName()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-        
+
         return title.toString();
     }
 
@@ -328,7 +328,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         securities = new SecuritiesTable(parent, this);
         updateTitle();
         securities.getColumnHelper().addListener(() -> updateTitle());
-        
+
         securities.addSelectionChangedListener(new ISelectionChangedListener()
         {
             public void selectionChanged(SelectionChangedEvent event)
@@ -657,65 +657,82 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     private void updateChart(Security security)
     {
-        ISeries series = chart.getSeriesSet().getSeries(Messages.ColumnQuote);
-        if (series != null)
-            chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
-        chart.clearMarkerLines();
+        chart.setRedraw(false);
 
-        if (security == null || security.getPrices().isEmpty())
+        try
         {
-            chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-            chart.redraw();
-            return;
-        }
+            ISeries series = chart.getSeriesSet().getSeries(Messages.ColumnQuote);
+            if (series != null)
+                chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
+            chart.clearMarkerLines();
 
-        chart.getTitle().setText(security.getName());
-
-        List<SecurityPrice> prices = security.getPrices();
-
-        int index;
-        LocalDate[] dates;
-        double[] values;
-
-        if (chartPeriod == null)
-        {
-            index = 0;
-            dates = new LocalDate[prices.size()];
-            values = new double[prices.size()];
-        }
-        else
-        {
-            index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0),
-                            new SecurityPrice.ByDate()));
-
-            if (index >= prices.size())
+            if (security == null || security.getPrices().isEmpty())
             {
-                // no data available
+                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
                 chart.redraw();
                 return;
             }
 
-            dates = new LocalDate[prices.size() - index];
-            values = new double[prices.size() - index];
-        }
+            chart.getTitle().setText(security.getName());
 
-        for (int ii = 0; index < prices.size(); index++, ii++)
+            List<SecurityPrice> prices = security.getPrices();
+
+            int index;
+            LocalDate[] dates;
+            double[] values;
+
+            if (chartPeriod == null)
+            {
+                index = 0;
+                dates = new LocalDate[prices.size()];
+                values = new double[prices.size()];
+            }
+            else
+            {
+                index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0),
+                                new SecurityPrice.ByDate()));
+
+                if (index >= prices.size())
+                {
+                    // no data available
+                    chart.redraw();
+                    return;
+                }
+
+                dates = new LocalDate[prices.size() - index];
+                values = new double[prices.size() - index];
+            }
+
+            for (int ii = 0; index < prices.size(); index++, ii++)
+            {
+                SecurityPrice p = prices.get(index);
+                dates[ii] = p.getTime();
+                values[ii] = p.getValue() / Values.Quote.divider();
+            }
+
+            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            Messages.ColumnQuote);
+            lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+            lineSeries.setLineWidth(2);
+            lineSeries.enableArea(true);
+            lineSeries.setSymbolType(PlotSymbolType.NONE);
+            lineSeries.setYSeries(values);
+            lineSeries.setAntialias(SWT.ON);
+
+            chart.getAxisSet().adjustRange();
+
+            addChartMarker(security);
+
+        }
+        finally
         {
-            SecurityPrice p = prices.get(index);
-            dates[ii] = p.getTime();
-            values[ii] = p.getValue() / Values.Quote.divider();
+            chart.setRedraw(true);
+            chart.redraw();
         }
+    }
 
-        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.ColumnQuote);
-        lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-        lineSeries.setLineWidth(2);
-        lineSeries.enableArea(true);
-        lineSeries.setSymbolType(PlotSymbolType.NONE);
-        lineSeries.setYSeries(values);
-        lineSeries.setAntialias(SWT.ON);
-
-        chart.getAxisSet().adjustRange();
-
+    private void addChartMarker(Security security)
+    {
         for (Portfolio portfolio : getClient().getPortfolios())
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
@@ -747,8 +764,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             if (chartPeriod == null || chartPeriod.isBefore(event.getDate()))
                 chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
         }
-
-        chart.redraw();
     }
 
     // //////////////////////////////////////////////////////////////
