@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -14,10 +15,11 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -42,16 +44,18 @@ public class EmbeddedBrowser
     public Control createControl(Composite parent, Consumer<Browser> functions)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().applyTo(container);
+        container.setLayout(new FillLayout());
 
         try
         {
             browser = new Browser(container, SWT.NONE);
             browser.setJavascriptEnabled(true);
-            GridDataFactory.fillDefaults().grab(true, true).applyTo(browser);
 
             if (functions != null)
                 functions.accept(browser);
+
+            LogFunction log = new LogFunction(browser);
+            browser.addDisposeListener(e -> log.dispose());
 
             browser.setText(loadHTML(htmlpage));
 
@@ -116,4 +120,21 @@ public class EmbeddedBrowser
         }
     }
 
+    private static class LogFunction extends BrowserFunction
+    {
+        public LogFunction(Browser browser)
+        {
+            super(browser, "$log"); //$NON-NLS-1$
+        }
+
+        @Override
+        public Object function(Object[] arguments)
+        {
+            if (arguments != null && arguments.length == 1)
+                PortfolioPlugin.log(String.valueOf(arguments[0]));
+            else
+                PortfolioPlugin.log(Arrays.toString(arguments));
+            return null;
+        }
+    }
 }

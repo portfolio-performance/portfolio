@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,15 +13,17 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChart;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimeline;
+import name.abuchen.portfolio.ui.util.htmlchart.HtmlChartConfigTimelineSeriesLine;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -33,7 +34,8 @@ public class ExchangeRatesListView extends AbstractListView
     @Inject
     private ExchangeRateProviderFactory providerFactory;
 
-    private TimelineChart chart;
+    private HtmlChart chart;
+    private HtmlChartConfigTimeline chartConfig;
 
     @Override
     protected String getTitle()
@@ -44,7 +46,6 @@ public class ExchangeRatesListView extends AbstractListView
     @Override
     public void setFocus()
     {
-        chart.getAxisSet().adjustRange();
         super.setFocus();
     }
 
@@ -57,8 +58,8 @@ public class ExchangeRatesListView extends AbstractListView
 
         TableViewer indeces = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        ExchangeRatesListView.class.getSimpleName() + "@top", getPreferenceStore(), indeces, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+                        getPreferenceStore(), indeces, layout);
 
         Column column = new Column(Messages.ColumnBaseCurrency, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -122,20 +123,27 @@ public class ExchangeRatesListView extends AbstractListView
     @Override
     protected void createBottomTable(Composite parent)
     {
-        chart = new TimelineChart(parent);
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.0000")); //$NON-NLS-1$
+        chartConfig = new HtmlChartConfigTimeline();
+        chartConfig.setShowLegend(false).setNumberFormat("0.0000").setNumberFormatLocale("de");
+        chart = new HtmlChart(chartConfig);
+        chart.createControl(parent);
         refreshChart(null);
     }
 
     private void refreshChart(ExchangeRateTimeSeries series)
     {
-        for (ISeries s : chart.getSeriesSet().getSeries())
-            chart.getSeriesSet().deleteSeries(s.getId());
+        chartConfig.series().clear();
 
         if (series == null || series.getRates().isEmpty())
         {
-            chart.getTitle().setText(Messages.LabelCurrencies);
+            chartConfig.setTitle(Messages.LabelCurrencies);
             return;
+        }
+        else
+        {
+            String title = MessageFormat.format("{0}/{1} ({2})", //$NON-NLS-1$
+                            series.getTermCurrency(), series.getBaseCurrency(), series.getProvider().getName());
+            chartConfig.setTitle(title);
         }
 
         List<ExchangeRate> rates = series.getRates();
@@ -151,14 +159,10 @@ public class ExchangeRatesListView extends AbstractListView
             ii++;
         }
 
-        String title = MessageFormat.format("{0}/{1} ({2})", //$NON-NLS-1$
-                        series.getTermCurrency(), series.getBaseCurrency(), series.getProvider().getName());
+        HtmlChartConfigTimelineSeriesLine chartSeries = new HtmlChartConfigTimelineSeriesLine(chartConfig.getTitle(),
+                        dates, values, new RGB(Colors.CPI.red(), Colors.CPI.green(), Colors.CPI.blue()), 1);
 
-        chart.getTitle().setText(title);
-        chart.addDateSeries(dates, values, Colors.TOTALS, title);
-
-        chart.getAxisSet().adjustRange();
-
-        chart.redraw();
+        chartConfig.series().add(chartSeries);
+        chart.refreshChart();
     }
 }

@@ -29,7 +29,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
     @Override
     public Control createControl(Composite container)
     {
-        browser = new EmbeddedBrowser("/META-INF/html/flare.html"); //$NON-NLS-1$
+        browser = new EmbeddedBrowser("/META-INF/html/flare_chart.html"); //$NON-NLS-1$
         return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
     }
 
