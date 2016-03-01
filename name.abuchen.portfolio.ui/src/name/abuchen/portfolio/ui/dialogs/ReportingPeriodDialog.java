@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.time.Period;
 import java.time.Year;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
@@ -67,8 +68,7 @@ public class ReportingPeriodDialog extends Dialog
         editArea.setLayout(new FormLayout());
 
         radioLast = new Button(editArea, SWT.RADIO);
-        Label lblLast = new Label(editArea, SWT.NONE);
-        lblLast.setText(Messages.LabelReportingDialogLast);
+        radioLast.setText(Messages.LabelReportingDialogLast);
         years = new Spinner(editArea, SWT.BORDER);
         years.setMinimum(0);
         Label lblYears = new Label(editArea, SWT.NONE);
@@ -80,8 +80,7 @@ public class ReportingPeriodDialog extends Dialog
         lblMonths.setText(Messages.LabelReportingDialogMonths);
 
         radioLastDays = new Button(editArea, SWT.RADIO);
-        Label lblLastDays = new Label(editArea, SWT.NONE);
-        lblLastDays.setText(Messages.LabelReportingDialogLast);
+        radioLastDays.setText(Messages.LabelReportingDialogLast);
         days = new Spinner(editArea, SWT.BORDER);
         days.setMinimum(1);
         days.setMaximum(10000);
@@ -89,21 +88,18 @@ public class ReportingPeriodDialog extends Dialog
         lblDays.setText(Messages.LabelReportingDialogDays);
 
         radioFromXtoY = new Button(editArea, SWT.RADIO);
-        Label lblFrom = new Label(editArea, SWT.NONE);
-        lblFrom.setText(Messages.LabelReportingDialogFrom);
+        radioFromXtoY.setText(Messages.LabelReportingDialogFrom);
         dateFrom = new DateTimePicker(editArea);
         Label lblTo = new Label(editArea, SWT.NONE);
         lblTo.setText(Messages.LabelReportingDialogUntil);
         dateTo = new DateTimePicker(editArea);
 
         radioSinceX = new Button(editArea, SWT.RADIO);
-        Label lblSince = new Label(editArea, SWT.NONE);
-        lblSince.setText(Messages.LabelReportingDialogSince);
+        radioSinceX.setText(Messages.LabelReportingDialogSince);
         dateSince = new DateTimePicker(editArea);
 
         radioYearX = new Button(editArea, SWT.RADIO);
-        Label lblYearX = new Label(editArea, SWT.NONE);
-        lblYearX.setText(Messages.LabelReportingDialogYear);
+        radioYearX.setText(Messages.LabelReportingDialogYear);
         year = new Spinner(editArea, SWT.BORDER);
         year.setMinimum(Year.MIN_VALUE);
         year.setMaximum(Year.MAX_VALUE);
@@ -112,22 +108,32 @@ public class ReportingPeriodDialog extends Dialog
         // form layout
         //
 
-        FormDataFactory.startingWith(radioLast).thenRight(lblLast).thenRight(years).thenRight(lblYears)
+        FormDataFactory.startingWith(radioLast).top(new FormAttachment(0, 10)).thenRight(years).thenRight(lblYears)
                         .thenRight(months).thenRight(lblMonths);
 
-        FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(lblLastDays)
-                        .thenRight(days).thenRight(lblDays);
+        FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
+                        .thenRight(lblDays);
 
-        FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20)).thenRight(lblFrom)
-                        .thenRight(dateFrom.getControl()).top(new FormAttachment(lblFrom, -3, SWT.TOP)).thenRight(lblTo)
-                        .top(new FormAttachment(lblFrom, 0, SWT.TOP)).thenRight(dateTo.getControl())
-                        .top(new FormAttachment(lblFrom, -3, SWT.TOP));
+        if (!Platform.OS_MACOSX.equals(Platform.getOS()))
+        {
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20))
+                            .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
+                            .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
+                            .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
 
-        FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20)).thenRight(lblSince)
-                        .thenRight(dateSince.getControl()).top(new FormAttachment(lblSince, -3, SWT.TOP));
+            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
+                            .thenRight(dateSince.getControl()).top(new FormAttachment(radioSinceX, -1, SWT.TOP));
+        }
+        else
+        {
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20))
+                            .thenRight(dateFrom.getControl()).thenRight(lblTo).thenRight(dateTo.getControl());
 
-        FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(lblYearX)
-                        .thenRight(year);
+            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
+                            .thenRight(dateSince.getControl());
+        }
+
+        FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
         //
         // wiring
