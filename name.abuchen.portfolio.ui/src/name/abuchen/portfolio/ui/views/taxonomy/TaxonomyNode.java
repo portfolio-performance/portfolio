@@ -217,7 +217,7 @@ public abstract class TaxonomyNode implements Adaptable
     private Money actual;
     private Money target;
 
-    /* package */TaxonomyNode(TaxonomyNode parent)
+    /* package */ TaxonomyNode(TaxonomyNode parent)
     {
         this.parent = parent;
     }
@@ -345,6 +345,11 @@ public abstract class TaxonomyNode implements Adaptable
 
         TaxonomyNode newChild = new ClassificationNode(this, newClassification);
 
+        // set actuals and target; will be calculated later but must not be null
+        newChild.setActual(Money.of(actual.getCurrencyCode(), 0));
+        newChild.setTarget(Money.of(target.getCurrencyCode(), 0));
+
+        // unclassified node shall stay at the end
         int insertAt = isRoot() ? children.size() - 1 : children.size();
         children.add(insertAt, newChild);
         for (int ii = 0; ii < children.size(); ii++)
