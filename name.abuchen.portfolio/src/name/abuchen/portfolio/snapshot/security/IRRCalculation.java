@@ -68,6 +68,11 @@ import name.abuchen.portfolio.money.Values;
 
     public double getIRR()
     {
+        // see #457: if the reporting period contains only tax refunds, dates
+        // (and values) can be empty and no IRR can be calculated
+        if (dates.size() == 0)
+            return Double.NaN;
+
         return IRR.calculate(dates, values);
     }
 }
