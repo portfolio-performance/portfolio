@@ -385,7 +385,7 @@ public class ClientPerformanceSnapshot
 
         categories.get(CategoryType.TAXES).valuation = taxes.toMoney();
 
-        categories.get(CategoryType.TRANSFERS).valuation = deposits.subtract(removals).toMoney();
+        categories.get(CategoryType.TRANSFERS).valuation = deposits.toMoney().subtract(removals.toMoney());
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits.toMoney()));
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals.toMoney()));
     }
