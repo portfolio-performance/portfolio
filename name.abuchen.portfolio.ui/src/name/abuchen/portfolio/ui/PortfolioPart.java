@@ -148,7 +148,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         container.setLayout(new FillLayout());
 
         SashForm sash = new SashForm(container, SWT.HORIZONTAL | SWT.SMOOTH);
-        sash.setSashWidth(1);
+        sash.setSashWidth(3);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).margins(0, 0).applyTo(navigationBar);

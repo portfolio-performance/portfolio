@@ -64,10 +64,10 @@ public enum Images
         // But: for now it needs enabling via JFace debug option, which in turn
         // are only set when using the non-e4 org.eclipse.ui bundle. Alas, we
         // enable it directly.
-        // On Mac OS X it works, on Linux the wrong images got loaded, on
-        // Windows I could not tell a difference. Therefore I activated it only
-        // for Mac OS X.
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+
+        // On Mac OS X and Windows it works for me, on Linux the wrong images
+        // got loaded. Therefore I do not activate it for Linux
+        if (!Platform.OS_LINUX.equals(Platform.getOS()))
             org.eclipse.jface.internal.InternalPolicy.DEBUG_LOAD_URL_IMAGE_DESCRIPTOR_2x = true;
     }
 
