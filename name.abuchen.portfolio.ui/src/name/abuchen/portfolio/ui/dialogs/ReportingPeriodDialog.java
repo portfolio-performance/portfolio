@@ -114,8 +114,11 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
                         .thenRight(lblDays);
 
-        if (!Platform.OS_MACOSX.equals(Platform.getOS()))
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
         {
+            // under Mac OS X, the date input fields are not align with the text
+            // by default
+
             FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20))
                             .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
                             .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
