@@ -266,7 +266,7 @@
 						<alias>${alias}</alias>
 						<storepass>${storepass}</storepass>
 						<keypass>${keypass}</keypass>
-						<tsa>http://time.certum.pl/</tsa>
+						<tsa>http://tsa.safecreative.org/</tsa>
 					</configuration>
 				</plugin>
 				<plugin>
