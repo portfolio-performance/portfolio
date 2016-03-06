@@ -196,6 +196,19 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     }
 
     @Override
+    public void markDirty()
+    {
+        super.markDirty();
+
+        // see issue #448: if the note column is edited, the information area is
+        // not updated accordingly. #markDirty is called by the SecuritiesTable
+        // when any column is edited
+        Security security = (Security) ((IStructuredSelection) securities.getTableViewer().getSelection())
+                        .getFirstElement();
+        latest.setInput(security);
+    }
+
+    @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         // called from prices table
