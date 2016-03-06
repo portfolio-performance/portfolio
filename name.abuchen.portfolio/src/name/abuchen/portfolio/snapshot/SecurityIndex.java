@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
@@ -46,7 +47,7 @@ import name.abuchen.portfolio.util.Interval;
         if (lastPricePoint.isBefore(endDate))
             endDate = lastPricePoint;
 
-        int size = Dates.daysBetween(startDate, endDate) + 1;
+        int size = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
         if (size <= 0)
         {
             initEmpty(clientIndex);
