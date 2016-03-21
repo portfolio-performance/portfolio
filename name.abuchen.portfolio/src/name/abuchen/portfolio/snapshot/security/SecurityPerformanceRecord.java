@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -79,6 +80,11 @@ public final class SecurityPerformanceRecord implements Adaptable
      * {@link #addTransaction(Transaction)}
      */
     private Money marketValue;
+
+    /**
+     * Latest quote
+     */
+    private SecurityPrice quote;
 
     /**
      * fifo cost of shares held {@link #calculateFifoCosts()}
@@ -189,6 +195,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     public Money getMarketValue()
     {
         return marketValue;
+    }
+
+    public SecurityPrice getQuote()
+    {
+        return quote;
     }
 
     public Money getFifoCost()
@@ -304,7 +315,9 @@ public final class SecurityPerformanceRecord implements Adaptable
         for (Transaction t : transactions)
             if (t instanceof DividendFinalTransaction)
                 mv.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+
         this.marketValue = mv.toMoney();
+        this.quote = security.getSecurityPrice(LocalDate.now());
     }
 
     private void calculateIRR(CurrencyConverter converter)

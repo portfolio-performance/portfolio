@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -40,6 +42,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
@@ -326,6 +329,30 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
                                 getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // latest / current quote
+        column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
+                Money money = Money.of(record.getSecurity().getCurrencyCode(), record.getQuote().getValue());
+                return Values.Money.format(money, getClient().getBaseCurrency());
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
+
+                return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
+                                Values.Date.format(record.getQuote().getTime()));
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
