@@ -31,4 +31,9 @@ public final class TextUtil
         // remove added character needed to create a word boundary
         return wrapped.substring(0, wrapped.length() - 2);
     }
+
+    public static final String tooltip(String text)
+    {
+        return text == null ? null : text.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }

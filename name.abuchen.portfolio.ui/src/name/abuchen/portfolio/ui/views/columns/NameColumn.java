@@ -16,6 +16,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class NameColumn extends Column
 {
@@ -54,9 +55,9 @@ public class NameColumn extends Column
             if (element == null)
                 return null;
             else if (element instanceof Security)
-                return ((Security) element).toInfoString();
+                return TextUtil.tooltip(((Security) element).toInfoString());
             else
-                return element.getName();
+                return TextUtil.tooltip(element.getName());
         }
     }
 
