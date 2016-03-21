@@ -7,3 +7,4 @@ name.abuchen.portfolio.checks.impl.NullSecurityPricesCheck
 name.abuchen.portfolio.checks.impl.DanglingAccountsCheck
 name.abuchen.portfolio.checks.impl.MissingCurrencyCheck
 name.abuchen.portfolio.checks.impl.TransactionCurrencyCheck
+name.abuchen.portfolio.checks.impl.FixTaxRefundsCheck

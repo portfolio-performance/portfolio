@@ -227,13 +227,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
 
     private ComboInput setupSecurities(Composite editArea)
     {
-        ComboInput securities;
         List<Security> activeSecurities = new ArrayList<Security>();
         activeSecurities.addAll(including(client.getActiveSecurities(), model().getSecurity()));
-        if (model().supportsOptionalSecurity())
+
+        // add empty security only if it has not been added previously
+        // --> happens when editing an existing transaction
+        if (model().supportsOptionalSecurity() && !activeSecurities.contains(AccountTransactionModel.EMPTY_SECURITY))
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
 
-        securities = new ComboInput(editArea, Messages.ColumnSecurity);
+        ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(activeSecurities);
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());

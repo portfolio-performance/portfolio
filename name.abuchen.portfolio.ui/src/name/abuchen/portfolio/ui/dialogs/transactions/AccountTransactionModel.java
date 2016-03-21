@@ -117,7 +117,7 @@ public class AccountTransactionModel extends AbstractModel
         }
 
         t.setDate(date);
-        t.setSecurity(security);
+        t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(amount);
         t.setType(type);
@@ -170,6 +170,9 @@ public class AccountTransactionModel extends AbstractModel
         this.sourceTransaction = transaction;
 
         this.security = transaction.getSecurity();
+        if (this.security == null && supportsOptionalSecurity())
+            this.security = EMPTY_SECURITY;
+
         this.account = account;
         this.date = transaction.getDate();
         this.shares = transaction.getShares();
