@@ -50,12 +50,12 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository</url>
 		</repository>
 		<repository>
 			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.5/R-4.5.1-201509040015</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
@@ -65,7 +65,7 @@
 		<repository>
 			<id>eclipse-nebula</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/nebula/archives/Q12015/release</url>
+			<url>http://download.eclipse.org/technology/nebula/archives/Q42015/release</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
 			<artifactId>org.apache.servicemix.bundles.xstream</artifactId>
-			<version>1.4.7_1</version>
+			<version>1.4.8_1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
@@ -105,7 +105,7 @@
 		<dependency>
 			<groupId>org.swtchart</groupId>
 			<artifactId>org.swtchart</artifactId>
-			<version>0.9.0</version>
+			<version>0.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.engehausen</groupId>
@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.8.1</version>
+			<version>1.8.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
