@@ -9,7 +9,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.22.2</version>
+	<version>0.22.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -266,7 +266,7 @@
 						<alias>${alias}</alias>
 						<storepass>${storepass}</storepass>
 						<keypass>${keypass}</keypass>
-						<tsa>http://tsa.safecreative.org/</tsa>
+						<tsa>https://timestamp.geotrust.com/tsa</tsa>
 					</configuration>
 				</plugin>
 				<plugin>
