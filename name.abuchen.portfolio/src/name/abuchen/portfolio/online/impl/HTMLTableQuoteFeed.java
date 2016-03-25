@@ -447,7 +447,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         Elements cells = row.select("> td"); //$NON-NLS-1$
 
         // row can be empty if it contains only 'th' elements
-        if (cells.size() == 0)
+        if (cells.size() <= 1)
             return null;
 
         LatestSecurityPrice price = new LatestSecurityPrice();
