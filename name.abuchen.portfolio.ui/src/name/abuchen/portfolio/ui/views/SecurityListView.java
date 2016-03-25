@@ -732,7 +732,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
 
-            chart.getAxisSet().adjustRange();
+            chart.adjustRange();
 
             addChartMarker(security);
 

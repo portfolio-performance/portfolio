@@ -162,7 +162,7 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     public void setFocus()
     {
-        chart.getAxisSet().adjustRange();
+        chart.adjustRange();
         chart.setFocus();
     }
 
@@ -192,7 +192,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
             setChartSeries();
 
-            chart.getAxisSet().adjustRange();
+            chart.adjustRange();
         }
         finally
         {

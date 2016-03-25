@@ -11,11 +11,9 @@ import org.swtchart.IAxis.Position;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
-import org.swtchart.Range;
 
 public class ScatterChart extends Chart
 {
-    private static final double ZOOM_RATIO = 0.1;
     private ChartContextMenu contextMenu;
 
     public ScatterChart(Composite parent)
@@ -66,24 +64,12 @@ public class ScatterChart extends Chart
             setRedraw(false);
 
             getAxisSet().adjustRange();
-            for (IAxis axis : getAxisSet().getXAxes())
-                addMargin(axis);
-            for (IAxis axis : getAxisSet().getYAxes())
-                addMargin(axis);
+            ChartUtil.addMargins(this, 0.1);
         }
         finally
         {
             setRedraw(true);
         }
-    }
-
-    private void addMargin(IAxis axis)
-    {
-        Range range = axis.getRange();
-        double midPoint = ((range.upper - range.lower) / 2) + range.lower;
-        double lower = (range.lower - 2 * ZOOM_RATIO * midPoint) / (1 - 2 * ZOOM_RATIO);
-        double upper = (range.upper - 2 * ZOOM_RATIO * midPoint) / (1 - 2 * ZOOM_RATIO);
-        axis.setRange(new Range(lower, upper));
     }
 
     public void exportMenuAboutToShow(IMenuManager manager, String label)

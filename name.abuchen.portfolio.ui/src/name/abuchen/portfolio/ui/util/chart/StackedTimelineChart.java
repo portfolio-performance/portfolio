@@ -4,8 +4,6 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-import name.abuchen.portfolio.util.Dates;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -21,6 +19,8 @@ import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
+
+import name.abuchen.portfolio.util.Dates;
 
 public class StackedTimelineChart extends Chart
 {

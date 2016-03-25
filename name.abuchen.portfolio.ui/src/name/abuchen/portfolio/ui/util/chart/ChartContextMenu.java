@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import name.abuchen.portfolio.ui.Messages;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -11,6 +9,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
+
+import name.abuchen.portfolio.ui.Messages;
 
 /* package */class ChartContextMenu
 {
@@ -42,6 +42,8 @@ import org.swtchart.IAxis;
             {
                 if (chart instanceof ScatterChart)
                     ((ScatterChart) chart).adjustRange();
+                else if (chart instanceof TimelineChart)
+                    ((TimelineChart) chart).adjustRange();
                 else
                     chart.getAxisSet().adjustRange();
 

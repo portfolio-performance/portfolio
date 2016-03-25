@@ -300,6 +300,9 @@ public class StackedChartViewer extends AbstractChartPage
 
     private void rebuildChartSeries(long[] totals, List<SeriesBuilder> series)
     {
+        if (chart.isDisposed())
+            return;
+
         try
         {
             chart.suspendUpdate(true);

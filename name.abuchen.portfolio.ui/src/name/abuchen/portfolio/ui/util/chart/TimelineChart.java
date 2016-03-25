@@ -12,8 +12,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.util.Colors;
-
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -36,6 +34,8 @@ import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
+
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart
 {
@@ -276,5 +276,20 @@ public class TimelineChart extends Chart
         for (int ii = 0; ii < answer.length; ii++)
             answer[ii] = Date.from(dates[ii].atStartOfDay().atZone(zoneId).toInstant());
         return answer;
+    }
+
+    public void adjustRange()
+    {
+        try
+        {
+            setRedraw(false);
+
+            getAxisSet().adjustRange();
+            ChartUtil.addYMargins(this, 0.03);
+        }
+        finally
+        {
+            setRedraw(true);
+        }
     }
 }

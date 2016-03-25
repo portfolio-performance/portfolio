@@ -131,8 +131,9 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
 
         ColumnEditingSupport.prepare(indices);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(ConsumerPriceIndexListView.class.getSimpleName()
-                        + "@bottom", getPreferenceStore(), indices, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(
+                        ConsumerPriceIndexListView.class.getSimpleName() + "@bottom", getPreferenceStore(), indices, //$NON-NLS-1$
+                        layout);
 
         Column column = new Column(Messages.ColumnYear, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -246,31 +247,38 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
 
     private void refreshChart()
     {
-        for (ISeries s : chart.getSeriesSet().getSeries())
-            chart.getSeriesSet().deleteSeries(s.getId());
-
-        if (getClient().getConsumerPriceIndices() == null || getClient().getConsumerPriceIndices().isEmpty())
-            return;
-
-        List<ConsumerPriceIndex> indices = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndices());
-        Collections.sort(indices, new ConsumerPriceIndex.ByDate());
-
-        LocalDate[] dates = new LocalDate[indices.size()];
-        double[] cpis = new double[indices.size()];
-
-        int ii = 0;
-        for (ConsumerPriceIndex index : indices)
+        try
         {
-            dates[ii] = LocalDate.of(index.getYear(), index.getMonth(), 1);
-            cpis[ii] = (double) index.getIndex() / Values.Index.divider();
-            ii++;
+            chart.suspendUpdate(true);
+            for (ISeries s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
+
+            if (getClient().getConsumerPriceIndices() == null || getClient().getConsumerPriceIndices().isEmpty())
+                return;
+
+            List<ConsumerPriceIndex> indices = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndices());
+            Collections.sort(indices, new ConsumerPriceIndex.ByDate());
+
+            LocalDate[] dates = new LocalDate[indices.size()];
+            double[] cpis = new double[indices.size()];
+
+            int ii = 0;
+            for (ConsumerPriceIndex index : indices)
+            {
+                dates[ii] = LocalDate.of(index.getYear(), index.getMonth(), 1);
+                cpis[ii] = (double) index.getIndex() / Values.Index.divider();
+                ii++;
+            }
+
+            chart.addDateSeries(dates, cpis, Colors.CPI, Messages.LabelConsumerPriceIndex);
+
+            chart.adjustRange();
         }
-
-        chart.addDateSeries(dates, cpis, Colors.CPI, Messages.LabelConsumerPriceIndex);
-
-        chart.getAxisSet().adjustRange();
-
-        chart.redraw();
+        finally
+        {
+            chart.suspendUpdate(false);
+            chart.redraw();
+        }
     }
 
 }
