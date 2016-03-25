@@ -266,7 +266,7 @@ public class CSVExporter
 
                 if (hasValues)
                 {
-                    printer.print(Values.Date.format(pointer));
+                    printer.print(pointer.toString());
 
                     for (ii = 0; ii < indices.length; ii++)
                     {

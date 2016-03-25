@@ -1,31 +1,22 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
-import name.abuchen.portfolio.ui.Messages;
+import java.time.format.FormatStyle;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import com.ibm.icu.text.MessageFormat;
 
+import name.abuchen.portfolio.ui.Messages;
+
 public class DateEditingSupport extends PropertyEditingSupport
 {
-    public static class DateCharacterVerifyListener implements VerifyListener
-    {
-        private String allowedChars = "-0123456789"; //$NON-NLS-1$
-
-        public void verifyText(VerifyEvent e)
-        {
-            for (int ii = 0; e.doit && ii < e.text.length(); ii++)
-                e.doit = allowedChars.indexOf(e.text.charAt(0)) >= 0;
-        }
-    }
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
 
     public DateEditingSupport(Class<?> subjectType, String attributeName)
     {
@@ -39,15 +30,15 @@ public class DateEditingSupport extends PropertyEditingSupport
     public CellEditor createEditor(Composite composite)
     {
         TextCellEditor textEditor = new TextCellEditor(composite);
-        ((Text) textEditor.getControl()).setTextLimit(10);
-        ((Text) textEditor.getControl()).addVerifyListener(new DateCharacterVerifyListener());
+        ((Text) textEditor.getControl()).setTextLimit(20);
         return textEditor;
     }
 
     @Override
     public final Object getValue(Object element) throws Exception
     {
-        return ((LocalDate) descriptor().getReadMethod().invoke(adapt(element))).toString();
+        LocalDate date = (LocalDate) descriptor().getReadMethod().invoke(adapt(element));
+        return formatter.format(date);
     }
 
     @Override
@@ -58,7 +49,7 @@ public class DateEditingSupport extends PropertyEditingSupport
 
         try
         {
-            newValue = LocalDate.parse(String.valueOf(value));
+            newValue = LocalDate.parse(String.valueOf(value), formatter);
         }
         catch (DateTimeParseException e)
         {

@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Interval;
 
 public abstract class ReportingPeriod
@@ -213,8 +212,7 @@ public abstract class ReportingPeriod
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(Values.Date.format(getStartDate())).append('_')
-                            .append(Values.Date.format(getEndDate()));
+            buffer.append(CODE).append(getStartDate().toString()).append('_').append(getEndDate().toString());
         }
 
         @Override
@@ -242,7 +240,7 @@ public abstract class ReportingPeriod
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(Values.Date.format(getStartDate()));
+            buffer.append(CODE).append(getStartDate().toString());
         }
 
         @Override

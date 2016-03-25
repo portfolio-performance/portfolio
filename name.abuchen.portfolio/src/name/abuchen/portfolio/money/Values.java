@@ -3,6 +3,8 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 public abstract class Values<E>
 {
@@ -144,10 +146,12 @@ public abstract class Values<E>
 
     public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
     {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+
         @Override
         public String format(LocalDate date)
         {
-            return String.format("%tF", date); //$NON-NLS-1$
+            return formatter.format(date);
         }
     };
 

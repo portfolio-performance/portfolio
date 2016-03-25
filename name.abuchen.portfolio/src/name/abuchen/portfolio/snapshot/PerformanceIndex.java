@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVStrategy;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
@@ -24,9 +27,6 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
-
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVStrategy;
 
 public class PerformanceIndex
 {
@@ -281,7 +281,7 @@ public class PerformanceIndex
                 if (!filter.test(ii))
                     continue;
 
-                printer.print(Values.Date.format(dates[ii]));
+                printer.print(dates[ii].toString());
                 printer.print(Values.Amount.format(totals[ii]));
                 printer.print(Values.Amount.format(transferals[ii]));
                 printer.print(Values.Percent.format(delta[ii]));
