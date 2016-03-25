@@ -304,7 +304,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).get(), errors);
+            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).timeout(20000).get(), errors);
         }
         catch (URISyntaxException | IOException e)
         {
