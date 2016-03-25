@@ -64,6 +64,12 @@ public final class UpdateQuotesJob extends AbstractClientJob
             isDirty = isDirty || isHistoricalDirty;
         }
 
+        // job is cancelled either if part has been destroyed or plugin has been
+        // stopped. Either way, do not mark the client dirty as it would
+        // recreate the Display. We just stop here.
+        if (monitor.isCanceled())
+            return Status.CANCEL_STATUS;
+
         if (isDirty)
         {
             getClient().markDirty();

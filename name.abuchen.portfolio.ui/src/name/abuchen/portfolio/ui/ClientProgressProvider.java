@@ -24,6 +24,8 @@ public class ClientProgressProvider extends ProgressProvider
 {
     private class MonitorImpl implements IProgressMonitor
     {
+        private boolean isCanceled = false;
+
         @Override
         public void beginTask(final String name, int totalWork)
         {
@@ -43,12 +45,14 @@ public class ClientProgressProvider extends ProgressProvider
         @Override
         public boolean isCanceled()
         {
-            return false;
+            return isCanceled;
         }
 
         @Override
         public void setCanceled(boolean value)
-        {}
+        {
+            this.isCanceled = value;
+        }
 
         @Override
         public void setTaskName(String name)

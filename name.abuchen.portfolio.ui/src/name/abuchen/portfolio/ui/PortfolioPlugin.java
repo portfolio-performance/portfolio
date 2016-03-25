@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
@@ -47,6 +48,8 @@ public class PortfolioPlugin implements BundleActivator
     {
         if (preferenceStore != null && preferenceStore.needsSaving())
             ((ScopedPreferenceStore) preferenceStore).save();
+
+        Job.getJobManager().cancel(null);
     }
 
     private void setupProxyAuthenticator()
