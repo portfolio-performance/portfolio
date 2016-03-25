@@ -6,7 +6,6 @@ import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -215,7 +214,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         Security security = (Security) prices.getData(Security.class.toString());
 
         // if the date changed, the prices must be reordered --> binary search
-        if (newValue instanceof Date)
+        if (newValue instanceof LocalDate)
         {
             SecurityPrice price = (SecurityPrice) element;
             security.removePrice(price);
@@ -556,13 +555,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         prices.setContentProvider(new SimpleListContentProvider(true));
 
-        hookContextMenu(prices.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillPricesContextMenu(manager);
-            }
-        });
+        hookContextMenu(prices.getTable(), manager -> fillPricesContextMenu(manager));
 
         return container;
     }
