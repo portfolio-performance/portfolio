@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -495,12 +496,13 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
-            regularQuoteUpdateJob = new UpdateQuotesJob(client, false, 1000 * 60 * 10);
+            regularQuoteUpdateJob = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST))
+                            .repeatEvery(1000 * 60 * 10);
             regularQuoteUpdateJob.schedule(500);
 
-            new UpdateQuotesJob(client).schedule(1000);
+            new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).schedule(1000);
 
-            new UpdateCPIJob(client).schedule(700);
+            new UpdateCPIJob(client).schedule(1200);
         }
     }
 

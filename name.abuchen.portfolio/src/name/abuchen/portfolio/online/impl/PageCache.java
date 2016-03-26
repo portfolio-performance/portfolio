@@ -34,7 +34,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
         }
     };
 
-    public List<LatestSecurityPrice> lookup(String url)
+    public synchronized List<LatestSecurityPrice> lookup(String url)
     {
         PageEntry entry = map.get(url);
 
@@ -52,7 +52,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
         }
     }
 
-    public void put(String url, List<LatestSecurityPrice> prices)
+    public synchronized void put(String url, List<LatestSecurityPrice> prices)
     {
         map.put(url, new PageEntry(prices));
     }

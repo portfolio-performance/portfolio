@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import javax.inject.Named;
+import java.util.EnumSet;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.UpdateQuotesJob;
+import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -11,6 +10,9 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.UpdateQuotesJob;
 
 public class UpdateQuotesHandler
 {
@@ -29,8 +31,9 @@ public class UpdateQuotesHandler
         if (client == null)
             return;
 
-        boolean isHistoric = "historic".equals(target); //$NON-NLS-1$
+        UpdateQuotesJob.Target t = "historic".equals(target) ? UpdateQuotesJob.Target.HISTORIC //$NON-NLS-1$
+                        : UpdateQuotesJob.Target.LATEST;
 
-        new UpdateQuotesJob(client, isHistoric, 0).schedule();
+        new UpdateQuotesJob(client, EnumSet.of(t)).schedule();
     }
 }
