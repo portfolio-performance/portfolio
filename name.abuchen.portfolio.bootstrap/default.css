@@ -1,0 +1,7 @@
+.MPartStack {
+	swt-tab-renderer: url('bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.renderers.CTabRendering');
+}
+
+CTabFolder {
+	swt-tab-renderer: url('bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.renderers.CTabRendering');
+}
