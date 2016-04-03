@@ -163,7 +163,8 @@ public class Taxonomy
     public Taxonomy copy()
     {
         Taxonomy copy = new Taxonomy(this.name);
-        copy.setDimensions(new ArrayList<>(this.dimensions));
+        if (this.dimensions != null)
+            copy.setDimensions(new ArrayList<>(this.dimensions));
         copy.setRootNode(this.root.copy());
         return copy;
     }
