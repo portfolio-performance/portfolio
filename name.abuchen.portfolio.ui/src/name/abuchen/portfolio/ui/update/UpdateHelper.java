@@ -100,10 +100,19 @@ public class UpdateHelper
 
             if (returnCode == 0)
             {
-                boolean successful = partService.saveAll(true);
+                try
+                {
+                    boolean successful = partService.saveAll(true);
 
-                if (successful)
-                    workbench.restart();
+                    if (successful)
+                        workbench.restart();
+                }
+                catch (IllegalStateException e)
+                {
+                    PortfolioPlugin.log(e);
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                    Messages.MsgCannotRestartBecauseOfOpenDialog);
+                }
             }
         });
     }
