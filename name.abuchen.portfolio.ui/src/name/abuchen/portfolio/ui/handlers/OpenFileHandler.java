@@ -4,9 +4,6 @@ import java.io.File;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
-
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -19,6 +16,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+
 public class OpenFileHandler
 {
     @Execute
@@ -26,8 +26,8 @@ public class OpenFileHandler
                     EModelService modelService)
     {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setFilterExtensions(new String[] { "*.xml;*.portfolio" }); //$NON-NLS-1$
-        dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
+        dialog.setFilterExtensions(new String[] { "*.xml;*.portfolio", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+        dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile, Messages.LabelAllFiles });
         String fileSelected = dialog.open();
 
         if (fileSelected != null)

@@ -311,6 +311,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedTaxes;
     public static String LabelAggregationDaily;
+    public static String LabelAllFiles;
     public static String LabelAllSecurities;
     public static String LabelAvailableAttributes;
     public static String LabelColumns;
