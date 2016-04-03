@@ -189,6 +189,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         private final int index;
     }
 
+    public static final String ID = "GENERIC_HTML_TABLE"; //$NON-NLS-1$
+
     private final Column[] columns = new Column[] { new DateColumn(), new CloseColumn(), new HighColumn(),
                     new LowColumn() };
 
@@ -197,7 +199,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     @Override
     public String getId()
     {
-        return "GENERIC_HTML_TABLE"; //$NON-NLS-1$
+        return ID;
     }
 
     @Override
@@ -263,14 +265,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             errors.add(new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
             return Collections.emptyList();
         }
-        
+
         List<LatestSecurityPrice> answer = cache.lookup(feedURL);
         if (answer != null)
             return answer;
 
         answer = parseFromURL(feedURL, errors);
 
-        cache.put(feedURL, answer);
+        if (!answer.isEmpty())
+            cache.put(feedURL, answer);
 
         return answer;
     }
@@ -304,7 +307,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).timeout(20000).get(), errors);
+            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).timeout(30000).get(), errors);
         }
         catch (URISyntaxException | IOException e)
         {
@@ -358,7 +361,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(document.html()));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, document.html())));
 
         return prices;
     }

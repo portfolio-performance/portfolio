@@ -145,6 +145,7 @@ public class Messages extends NLS
     public static String MsgMoreResultsAvailable;
     public static String MsgNoExchangeRateAvailableForConversion;
     public static String MsgNoExchangeRateTimeSeriesFound;
+    public static String MsgNoQuotesFoundInHTML;
     public static String MsgNoResults;
     public static String MsgNotANumber;
     public static String MsgNotAPortflioFile;

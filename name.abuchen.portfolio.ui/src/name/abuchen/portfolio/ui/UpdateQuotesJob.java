@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobGroup;
 
@@ -21,6 +24,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 
 public final class UpdateQuotesJob extends AbstractClientJob
 {
@@ -33,6 +37,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         private final String feedId;
         private final List<Security> securities;
+        private ISchedulingRule rule;
 
         public JobSpec(String feedId, List<Security> securities)
         {
@@ -44,6 +49,47 @@ public final class UpdateQuotesJob extends AbstractClientJob
         {
             this(feedId, new ArrayList<>());
         }
+    }
+
+    /**
+     * Ensure that the HTMLTableQuoteFeed retrieves quotes from one host
+     * sequentially. #478
+     */
+    private static class HostSchedulingRule implements ISchedulingRule
+    {
+        private final String host;
+
+        private HostSchedulingRule(String host)
+        {
+            this.host = host;
+        }
+
+        @Override
+        public boolean contains(ISchedulingRule rule)
+        {
+            return isConflicting(rule);
+        }
+
+        @Override
+        public boolean isConflicting(ISchedulingRule rule)
+        {
+            return rule instanceof HostSchedulingRule && ((HostSchedulingRule) rule).host.equals(this.host);
+        }
+
+        public static ISchedulingRule createFor(String url)
+        {
+            try
+            {
+                return new HostSchedulingRule(new URI(url).getHost());
+            }
+            catch (URISyntaxException e)
+            {
+                // ignore syntax exception -> quote feed provide will also
+                // complain but with a better error message
+                return null;
+            }
+        }
+
     }
 
     private final Set<Target> target;
@@ -129,6 +175,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     return Status.OK_STATUS;
                 }
             };
+
+            job.setRule(spec.rule);
             job.setJobGroup(jobGroup);
             job.schedule();
         }
@@ -162,11 +210,19 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 feedId = s.getFeed();
 
             // the HTML download makes request per URL (per security) -> execute
-            // as parallel jobs
-            if ("GENERIC_HTML_TABLE".equals(feedId)) //$NON-NLS-1$
-                specs.add(new JobSpec(feedId, Arrays.asList(s)));
+            // as parallel jobs (although the scheduling rule ensures that only
+            // one request is made per host at a given time)
+            if (HTMLTableQuoteFeed.ID.equals(feedId))
+            {
+                JobSpec spec = new JobSpec(feedId, Arrays.asList(s));
+                spec.rule = HostSchedulingRule
+                                .createFor(s.getLatestFeedURL() == null ? s.getFeedURL() : s.getLatestFeedURL());
+                specs.add(spec);
+            }
             else
+            {
                 feed2securities.computeIfAbsent(feedId, key -> new JobSpec(key)).securities.add(s);
+            }
         }
 
         specs.addAll(feed2securities.values());
@@ -211,13 +267,17 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     return Status.OK_STATUS;
                 }
             };
+
+            if (HTMLTableQuoteFeed.ID.equals(security.getFeed()))
+                job.setRule(HostSchedulingRule.createFor(security.getFeedURL()));
+
             job.setJobGroup(jobGroup);
             job.schedule();
         }
 
         try
         {
-            jobGroup.join(10000, monitor);
+            jobGroup.join(240000, monitor);
         }
         catch (InterruptedException ignore)
         {
