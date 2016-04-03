@@ -99,8 +99,10 @@ public class StartupAddon
                     {
                         provider.load(monitor);
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
+                        // also catch runtime exceptions to make sure the update
+                        // method runs in any case
                         PortfolioPlugin.log(e);
                     }
 
