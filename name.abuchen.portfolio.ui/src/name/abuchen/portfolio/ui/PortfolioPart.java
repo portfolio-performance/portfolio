@@ -55,6 +55,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.views.ExceptionView;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class PortfolioPart implements LoadClientThread.Callback
@@ -449,6 +450,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         });
     }
 
+    @SuppressWarnings("unchecked")
     public void activateView(String target, Object parameter)
     {
         disposeView();
@@ -460,24 +462,31 @@ public class PortfolioPart implements LoadClientThread.Callback
             if (clazz == null)
                 return;
 
-            IEclipseContext viewContext = this.context.createChild();
-            viewContext.set(Client.class, this.client);
-            viewContext.set(IPreferenceStore.class, this.preferenceStore);
-            viewContext.set(PortfolioPart.class, this);
-
-            view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
-            viewContext.set(AbstractFinanceView.class, view);
-            view.setContext(viewContext);
-            view.init(this, parameter);
-            view.createViewControl(book);
-
-            book.showPage(view.getControl());
-            view.setFocus();
+            createView((Class<AbstractFinanceView>) clazz, parameter);
         }
-        catch (ClassNotFoundException e)
+        catch (Exception e)
         {
-            throw new RuntimeException(e);
+            PortfolioPlugin.log(e);
+            
+            createView(ExceptionView.class, e);
         }
+    }
+
+    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
+    {
+        IEclipseContext viewContext = this.context.createChild();
+        viewContext.set(Client.class, this.client);
+        viewContext.set(IPreferenceStore.class, this.preferenceStore);
+        viewContext.set(PortfolioPart.class, this);
+
+        view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
+        viewContext.set(AbstractFinanceView.class, view);
+        view.setContext(viewContext);
+        view.init(this, parameter);
+        view.createViewControl(book);
+
+        book.showPage(view.getControl());
+        view.setFocus();
     }
 
     private void disposeView()
