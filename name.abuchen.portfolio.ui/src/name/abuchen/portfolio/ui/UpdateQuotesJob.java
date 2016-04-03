@@ -80,7 +80,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
         {
             try
             {
-                return new HostSchedulingRule(new URI(url).getHost());
+                final String hostname = new URI(url).getHost();
+                return hostname != null ? new HostSchedulingRule(hostname) : null;
             }
             catch (URISyntaxException e)
             {
