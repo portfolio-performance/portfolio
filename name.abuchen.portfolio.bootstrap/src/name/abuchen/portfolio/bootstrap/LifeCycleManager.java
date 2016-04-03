@@ -16,9 +16,11 @@ import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.MApplicationElement;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
+import org.eclipse.e4.ui.workbench.Selector;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
@@ -202,28 +204,26 @@ public class LifeCycleManager
     private void removePortfolioPartsWithoutPersistedFile(MApplication app, EPartService partService,
                     EModelService modelService)
     {
-        MPartStack stack = (MPartStack) modelService.find("name.abuchen.portfolio.ui.partstack.main", app); //$NON-NLS-1$
+        List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.IN_ACTIVE_PERSPECTIVE,
+                        new Selector()
+                        {
+                            @Override
+                            public boolean select(MApplicationElement element)
+                            {
+                                if (!"name.abuchen.portfolio.ui.part.portfolio".equals(element.getElementId())) //$NON-NLS-1$
+                                    return false;
+                                return element.getPersistedState().get("file") == null; //$NON-NLS-1$
+                            }
+                        });
 
-        List<MStackElement> toBeRemoved = new ArrayList<MStackElement>();
-
-        for (MStackElement child : stack.getChildren())
+        for (MPart part : parts)
         {
-            if (!(child instanceof MPart))
-                continue;
+            MElementContainer<MUIElement> parent = part.getParent();
 
-            if (!"name.abuchen.portfolio.ui.part.portfolio".equals(child.getElementId())) //$NON-NLS-1$
-                continue;
+            if (parent.getSelectedElement().equals(part))
+                parent.setSelectedElement(null);
 
-            String filename = child.getPersistedState().get("file"); //$NON-NLS-1$
-            if (filename == null)
-                toBeRemoved.add(child);
-        }
-
-        if (!toBeRemoved.isEmpty())
-        {
-            if (toBeRemoved.contains(stack.getSelectedElement()))
-                stack.setSelectedElement(null);
-            stack.getChildren().removeAll(toBeRemoved);
+            parent.getChildren().remove(part);
         }
     }
 }
