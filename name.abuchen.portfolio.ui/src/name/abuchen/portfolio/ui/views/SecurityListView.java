@@ -1,13 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.action.Action;
@@ -16,9 +13,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -37,21 +32,11 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
@@ -72,7 +57,6 @@ import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -148,19 +132,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TableViewer prices;
     private TableViewer transactions;
     private TableViewer events;
-    private TimelineChart chart;
+    private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
-
-    private LocalDate chartPeriod;
 
     private Watchlist watchlist;
 
     private Pattern filterPattern;
 
     public SecurityListView()
-    {
-        chartPeriod = LocalDate.now().minusYears(2);
-    }
+    {}
 
     @Override
     protected String getTitle()
@@ -226,7 +206,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         latest.setInput(security);
         transactions.setInput(security.getTransactions(getClient()));
         events.setInput(security.getEvents());
-        updateChart(security);
+        chart.updateChart(security);
 
         markDirty();
     }
@@ -399,7 +379,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         events.setInput(security != null ? security.getEvents() : Collections.emptyList());
 
-        updateChart(security);
+        chart.updateChart(security);
     }
 
     // //////////////////////////////////////////////////////////////
@@ -425,37 +405,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
         item.setControl(chartComposite);
 
-        chart = new TimelineChart(chartComposite);
-        chart.getTitle().setText("..."); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-
-        Composite buttons = new Composite(chartComposite, SWT.NONE);
-        buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
-
-        addButton(buttons, Messages.SecurityTabChart1M, Period.ofMonths(1));
-        addButton(buttons, Messages.SecurityTabChart2M, Period.ofMonths(2));
-        addButton(buttons, Messages.SecurityTabChart6M, Period.ofMonths(6));
-        addButton(buttons, Messages.SecurityTabChart1Y, Period.ofYears(1));
-        addButton(buttons, Messages.SecurityTabChart2Y, Period.ofYears(3));
-        addButton(buttons, Messages.SecurityTabChart3Y, Period.ofYears(4));
-        addButton(buttons, Messages.SecurityTabChart5Y, Period.ofYears(5));
-        addButton(buttons, Messages.SecurityTabChart10Y, Period.ofYears(10));
-
-        Button button = new Button(buttons, SWT.FLAT);
-        button.setText(Messages.SecurityTabChartAll);
-        button.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                chartPeriod = null;
-
-                Security security = (Security) prices.getData(Security.class.toString());
-                updateChart(security);
-            }
-        });
+        chart = new SecuritiesChart(chartComposite, getClient());
 
         // tab 2: historical quotes
         item = new CTabItem(folder, SWT.NONE);
@@ -473,38 +423,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setControl(createEventsTable(folder));
 
         folder.setSelection(0);
-    }
-
-    private void addButton(Composite buttons, String label, TemporalAmount amountToAdd)
-    {
-        Button b = new Button(buttons, SWT.FLAT);
-        b.setText(label);
-        b.addSelectionListener(new ChartPeriodSelectionListener()
-        {
-            @Override
-            protected LocalDate startAt()
-            {
-                return LocalDate.now().minus(amountToAdd);
-            }
-        });
-    }
-
-    private abstract class ChartPeriodSelectionListener implements SelectionListener
-    {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-            chartPeriod = startAt();
-
-            Security security = (Security) prices.getData(Security.class.toString());
-            updateChart(security);
-        }
-
-        protected abstract LocalDate startAt();
-
-        @Override
-        public void widgetDefaultSelected(SelectionEvent e)
-        {}
     }
 
     // //////////////////////////////////////////////////////////////
@@ -585,7 +503,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
-                    updateChart(security);
+                    chart.updateChart(security);
 
                     prices.setSelection(new StructuredSelection(price), true);
                     prices.editElement(price, 0);
@@ -621,7 +539,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
-                    updateChart(security);
+                    chart.updateChart(security);
                 }
             });
         }
@@ -645,7 +563,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     latest.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
-                    updateChart(security);
+                    chart.updateChart(security);
                 }
             });
         }
@@ -654,121 +572,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         {
             manager.add(new Separator());
             new QuotesContextMenu(this).menuAboutToShow(manager, security);
-        }
-    }
-
-    // //////////////////////////////////////////////////////////////
-    // tab item: chart
-    // //////////////////////////////////////////////////////////////
-
-    private void updateChart(Security security)
-    {
-        chart.setRedraw(false);
-
-        try
-        {
-            ISeries series = chart.getSeriesSet().getSeries(Messages.ColumnQuote);
-            if (series != null)
-                chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
-            chart.clearMarkerLines();
-
-            if (security == null || security.getPrices().isEmpty())
-            {
-                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-                chart.redraw();
-                return;
-            }
-
-            chart.getTitle().setText(security.getName());
-
-            List<SecurityPrice> prices = security.getPrices();
-
-            int index;
-            LocalDate[] dates;
-            double[] values;
-
-            if (chartPeriod == null)
-            {
-                index = 0;
-                dates = new LocalDate[prices.size()];
-                values = new double[prices.size()];
-            }
-            else
-            {
-                index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0),
-                                new SecurityPrice.ByDate()));
-
-                if (index >= prices.size())
-                {
-                    // no data available
-                    chart.redraw();
-                    return;
-                }
-
-                dates = new LocalDate[prices.size() - index];
-                values = new double[prices.size() - index];
-            }
-
-            for (int ii = 0; index < prices.size(); index++, ii++)
-            {
-                SecurityPrice p = prices.get(index);
-                dates[ii] = p.getTime();
-                values[ii] = p.getValue() / Values.Quote.divider();
-            }
-
-            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.ColumnQuote);
-            lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-            lineSeries.setLineWidth(2);
-            lineSeries.enableArea(true);
-            lineSeries.setSymbolType(PlotSymbolType.NONE);
-            lineSeries.setYSeries(values);
-            lineSeries.setAntialias(SWT.ON);
-
-            chart.adjustRange();
-
-            addChartMarker(security);
-
-        }
-        finally
-        {
-            chart.setRedraw(true);
-            chart.redraw();
-        }
-    }
-
-    private void addChartMarker(Security security)
-    {
-        for (Portfolio portfolio : getClient().getPortfolios())
-        {
-            for (PortfolioTransaction t : portfolio.getTransactions())
-            {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
-                {
-                    String label = Values.Share.format(t.getShares());
-                    switch (t.getType())
-                    {
-                        case BUY:
-                        case TRANSFER_IN:
-                        case DELIVERY_INBOUND:
-                            chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), label);
-                            break;
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DELIVERY_OUTBOUND:
-                            chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + label); //$NON-NLS-1$
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
-            }
-        }
-
-        for (SecurityEvent event : security.getEvents())
-        {
-            if (chartPeriod == null || chartPeriod.isBefore(event.getDate()))
-                chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
         }
     }
 

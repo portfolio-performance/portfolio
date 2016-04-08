@@ -12,6 +12,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -24,6 +25,9 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
@@ -57,6 +61,7 @@ import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -255,7 +260,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                                 .getSelection()).getFirstElement();
                 transactions.setInput(record != null ? record.getTransactions() : Collections.emptyList());
                 transactions.refresh();
+                chart.updateChart(record.getSecurity());
+                latest.setInput(record.getSecurity());
             }
+
         });
 
         records.addFilter(new ViewerFilter()
@@ -709,12 +717,37 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                         });
     }
 
+    private SecuritiesChart chart;
+    private SecurityDetailsViewer latest;
+
     @Override
     protected void createBottomTable(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
+        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
+
+        // folder
+        CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabChart);
+
+        Composite chartComposite = new Composite(folder, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
+        item.setControl(chartComposite);
+
+        chart = new SecuritiesChart(chartComposite, getClient());
+
+        latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
+        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
+
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabTransactions);
+        Composite container = new Composite(folder, SWT.NONE);
+        item.setControl(container);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
+
+        folder.setSelection(0);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
@@ -895,6 +928,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     {
         reportingPeriodUpdated();
         updateTitle();
+
     }
 
     @Override
@@ -920,5 +954,4 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     {
         return Display.getCurrent().getSystemColor(value >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
     }
-
 }
