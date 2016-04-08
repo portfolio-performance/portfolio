@@ -1,3 +1,5 @@
 target
 .metadata/*
 .recommenders/*
+.DS_Store
+
