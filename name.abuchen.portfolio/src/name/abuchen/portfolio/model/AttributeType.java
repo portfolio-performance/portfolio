@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.regex.Matcher;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.LocalDateConverter;
 
 public class AttributeType
 {
@@ -174,31 +176,25 @@ public class AttributeType
         }
     }
 
-    public static class DateConverter implements Converter
-    {
+    /**
+     * DateConverter uses LocalDateConverter
+     */
+    public static class DateConverter implements Converter {
         @Override
-        public String toString(Object object)
-        {
-            if (object != null)
-                return ((LocalDate) object).toString();
-            else
+        public String toString(Object object) {
+            if (object != null) {
+                return new LocalDateConverter().toString(object);
+            } else {
                 return ""; //$NON-NLS-1$
+            }
         }
 
         @Override
-        public Object fromString(String value)
-        {
-            try
-            {
-                if (value.trim().length() == 0)
-                    return null;
-
-                return LocalDate.parse(value);
+        public Object fromString(String value) {
+            if (value.trim().length() == 0) {
+                return null;
             }
-            catch (DateTimeParseException e)
-            {
-                throw new IllegalArgumentException(e);
-            }
+            return new LocalDateConverter().fromString(value);
         }
     }
 
