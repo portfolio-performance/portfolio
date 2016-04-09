@@ -20,11 +20,11 @@ public class CopyMenuToNewWindowAddon
     {
         if (UIEvents.isADD(event))
         {
-            System.err.println("copying menu ddd");
             MTrimmedWindow origin = (MTrimmedWindow) event.getProperty(EventTags.ELEMENT);
             MTrimmedWindow window = (MTrimmedWindow) event.getProperty(EventTags.NEW_VALUE);
 
             MMenu mainMenu = (MMenu) EcoreUtil.copy((EObject) origin.getMainMenu());
+            mainMenu.setVisible(true);
 
             window.setMainMenu(mainMenu);
         }
