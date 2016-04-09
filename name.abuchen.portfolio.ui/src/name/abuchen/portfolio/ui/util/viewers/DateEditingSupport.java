@@ -12,11 +12,18 @@ import org.eclipse.swt.widgets.Text;
 
 import com.ibm.icu.text.MessageFormat;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
 public class DateEditingSupport extends PropertyEditingSupport
 {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+    private static final DateTimeFormatter[] formatters = new DateTimeFormatter[] {
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM),
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT), //
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG), //
+                    DateTimeFormatter.ofPattern("d.M.yyyy"), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
+                    DateTimeFormatter.ISO_DATE };
 
     public DateEditingSupport(Class<?> subjectType, String attributeName)
     {
@@ -38,7 +45,7 @@ public class DateEditingSupport extends PropertyEditingSupport
     public final Object getValue(Object element) throws Exception
     {
         LocalDate date = (LocalDate) descriptor().getReadMethod().invoke(adapt(element));
-        return formatter.format(date);
+        return Values.Date.format(date);
     }
 
     @Override
@@ -47,14 +54,21 @@ public class DateEditingSupport extends PropertyEditingSupport
         Object subject = adapt(element);
         LocalDate newValue = null;
 
-        try
+        for (DateTimeFormatter formatter : formatters)
         {
-            newValue = LocalDate.parse(String.valueOf(value), formatter);
+            try
+            {
+                newValue = LocalDate.parse(String.valueOf(value), formatter);
+                break;
+            }
+            catch (DateTimeParseException ignore)
+            {
+                // continue with next formatter
+            }
         }
-        catch (DateTimeParseException e)
-        {
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), e);
-        }
+
+        if (newValue == null)
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value));
 
         LocalDate oldValue = (LocalDate) descriptor().getReadMethod().invoke(subject);
 

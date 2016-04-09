@@ -5,7 +5,9 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -176,11 +178,19 @@ public class AttributeType
 
     public static class DateConverter implements Converter
     {
+        private static final DateTimeFormatter[] formatters = new DateTimeFormatter[] {
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM),
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT), //
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG), //
+                        DateTimeFormatter.ofPattern("d.M.yyyy"), //$NON-NLS-1$
+                        DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
+                        DateTimeFormatter.ISO_DATE };
+
         @Override
         public String toString(Object object)
         {
             if (object != null)
-                return ((LocalDate) object).toString();
+                return Values.Date.format((LocalDate) object);
             else
                 return ""; //$NON-NLS-1$
         }
@@ -188,17 +198,21 @@ public class AttributeType
         @Override
         public Object fromString(String value)
         {
-            try
-            {
-                if (value.trim().length() == 0)
-                    return null;
+            if (value.trim().length() == 0)
+                return null;
 
-                return LocalDate.parse(value);
-            }
-            catch (DateTimeParseException e)
+            for (DateTimeFormatter formatter : formatters)
             {
-                throw new IllegalArgumentException(e);
+                try
+                {
+                    return LocalDate.parse(value, formatter);
+                }
+                catch (DateTimeParseException ignore)
+                {
+                    // continue with next formatter
+                }
             }
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value));
         }
     }
 
