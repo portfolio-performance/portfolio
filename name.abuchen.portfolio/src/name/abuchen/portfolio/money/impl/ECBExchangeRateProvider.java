@@ -22,7 +22,7 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
-import name.abuchen.portfolio.util.LocalDateConverter;
+import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 
 /**
  * Load and manage exchanges rates provided by the European Central Bank (ECB).
@@ -369,7 +369,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 
                     xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
 
-                    xstream.registerConverter(new LocalDateConverter());
+                    xstream.registerConverter(new XStreamLocalDateConverter());
 
                     xstream.alias("data", ECBData.class);
                     xstream.alias("series", ExchangeRateTimeSeriesImpl.class);

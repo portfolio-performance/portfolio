@@ -47,7 +47,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
-import name.abuchen.portfolio.util.LocalDateConverter;
+import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -897,7 +897,7 @@ public class ClientFactory
 
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
-                    xstream.registerConverter(new LocalDateConverter());
+                    xstream.registerConverter(new XStreamLocalDateConverter());
                     xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(), xstream
                                     .getReflectionProvider()));
 

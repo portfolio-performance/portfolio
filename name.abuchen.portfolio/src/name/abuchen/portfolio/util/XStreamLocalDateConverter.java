@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
-public class LocalDateConverter extends AbstractSingleValueConverter
+public class XStreamLocalDateConverter extends AbstractSingleValueConverter
 {
     public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
     {
