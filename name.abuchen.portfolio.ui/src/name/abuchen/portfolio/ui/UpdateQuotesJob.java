@@ -184,7 +184,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         try
         {
-            jobGroup.join(10000, monitor);
+            jobGroup.join(0, monitor);
         }
         catch (InterruptedException ignore)
         {
@@ -278,7 +278,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         try
         {
-            jobGroup.join(240000, monitor);
+            jobGroup.join(0, monitor);
         }
         catch (InterruptedException ignore)
         {
