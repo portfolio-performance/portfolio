@@ -260,19 +260,18 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                                 .getSelection()).getFirstElement();
 
                 Security security = null;
+                List<Transaction> transactionList = null;
+
                 if (record != null)
                 {
-                    transactions.setInput(record.getTransactions());
+                    transactionList = record.getTransactions();
                     security = record.getSecurity();
-                    latest.setInput(record.getSecurity());
                 }
-                else
-                {
-                    transactions.setInput(Collections.emptyList());
-                    latest.setInput(null);
-                }
+                
+                transactions.setInput(transactionList);
                 transactions.refresh();
                 chart.updateChart(security);
+                latest.setInput(security);
             }
 
         });
