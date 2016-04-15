@@ -44,12 +44,11 @@ import name.abuchen.portfolio.money.CurrencyConverter;
         {
             securities.add(t.getSecurity());
 
+            PortfolioTransaction clone = new PortfolioTransaction();
             switch (t.getType())
             {
                 case BUY:
                 case TRANSFER_IN:
-                {
-                    PortfolioTransaction clone = new PortfolioTransaction();
                     clone.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                     clone.setDate(t.getDate());
                     clone.setCurrencyCode(t.getCurrencyCode());
@@ -59,11 +58,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     clone.addUnits(t.getUnits());
                     pseudoPortfolio.addTransaction(clone);
                     break;
-                }
                 case SELL:
                 case TRANSFER_OUT:
-                {
-                    PortfolioTransaction clone = new PortfolioTransaction();
                     clone.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                     clone.setDate(t.getDate());
                     clone.setCurrencyCode(t.getCurrencyCode());
@@ -73,7 +69,6 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     clone.addUnits(t.getUnits());
                     pseudoPortfolio.addTransaction(clone);
                     break;
-                }
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
                     pseudoPortfolio.addTransaction(t);

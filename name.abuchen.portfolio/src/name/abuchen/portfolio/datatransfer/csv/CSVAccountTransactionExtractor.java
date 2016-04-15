@@ -66,7 +66,6 @@ import name.abuchen.portfolio.money.Money;
         {
             case TRANSFER_IN:
             case TRANSFER_OUT:
-            {
                 AccountTransferEntry entry = new AccountTransferEntry();
                 entry.setAmount(Math.abs(amount.getAmount()));
                 entry.setCurrencyCode(amount.getCurrencyCode());
@@ -74,10 +73,8 @@ import name.abuchen.portfolio.money.Money;
                 entry.setNote(note);
                 items.add(new AccountTransferItem(entry));
                 break;
-            }
             case BUY:
             case SELL:
-            {
                 if (security == null)
                     throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,
                                     new StringJoiner(", ").add(Messages.CSVColumn_ISIN) //$NON-NLS-1$
@@ -88,17 +85,16 @@ import name.abuchen.portfolio.money.Money;
                     throw new ParseException(
                                     MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Shares), 0);
 
-                BuySellEntry entry = new BuySellEntry();
-                entry.setType(PortfolioTransaction.Type.valueOf(type.name()));
-                entry.setAmount(Math.abs(amount.getAmount()));
-                entry.setShares(Math.abs(shares));
-                entry.setCurrencyCode(amount.getCurrencyCode());
-                entry.setSecurity(security);
-                entry.setDate(date);
-                entry.setNote(note);
-                items.add(new BuySellEntryItem(entry));
+                BuySellEntry buySellEntry = new BuySellEntry();
+                buySellEntry.setType(PortfolioTransaction.Type.valueOf(type.name()));
+                buySellEntry.setAmount(Math.abs(amount.getAmount()));
+                buySellEntry.setShares(Math.abs(shares));
+                buySellEntry.setCurrencyCode(amount.getCurrencyCode());
+                buySellEntry.setSecurity(security);
+                buySellEntry.setDate(date);
+                buySellEntry.setNote(note);
+                items.add(new BuySellEntryItem(buySellEntry));
                 break;
-            }
             case DIVIDENDS:
                 if (security == null)
                     throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,

@@ -5,10 +5,9 @@ import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.math.PseudoDerivativeFunction;
-import name.abuchen.portfolio.math.NewtonGoalSeek.Function;
-
 import org.junit.Test;
+
+import name.abuchen.portfolio.math.NewtonGoalSeek.Function;
 
 public class PseudoDerivateFunctionTest
 {
