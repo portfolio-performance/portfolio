@@ -4,14 +4,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
-import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
-import name.abuchen.portfolio.money.impl.ECBData;
-import name.abuchen.portfolio.money.impl.ECBExchangeRateProvider;
-import name.abuchen.portfolio.money.impl.ExchangeRateTimeSeriesImpl;
-import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 
 import org.junit.Test;
+
+import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 @SuppressWarnings("nls")
 public class ECBExchangeRateProviderTest
