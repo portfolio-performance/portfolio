@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: Buchen
+    Checkstyle-Configuration: Portfolio Checkstyle
     Description: none
 -->
 <module name="Checker">
@@ -112,18 +112,13 @@
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="LeftCurly">
-      <property name="severity" value="ignore"/>
       <property name="option" value="nl"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="NeedBraces">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
-    <module name="RightCurly">
-      <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-    </module>
+    <module name="RightCurly"/>
     <module name="AvoidInlineConditionals"/>
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
