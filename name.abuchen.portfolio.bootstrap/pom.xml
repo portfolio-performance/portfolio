@@ -20,6 +20,10 @@
 				<artifactId>maven-jarsigner-plugin</artifactId>
 				<version>${jarsigner.plugin.version}</version>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 </project>
