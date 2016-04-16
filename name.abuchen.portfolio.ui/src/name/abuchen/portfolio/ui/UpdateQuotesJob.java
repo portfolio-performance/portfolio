@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,7 +9,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -33,21 +34,34 @@ public final class UpdateQuotesJob extends AbstractClientJob
         LATEST, HISTORIC
     }
 
-    private static class JobSpec
+    /**
+     * Keeps dirty state of parallel jobs and marks the client file dirty after
+     * 5th dirty result. Background: marking the client dirty after every job
+     * sends too many update events to the GUI.
+     */
+    private static class Dirtyable
     {
-        private final String feedId;
-        private final List<Security> securities;
-        private ISchedulingRule rule;
+        private static final int THRESHOLD = 5;
 
-        public JobSpec(String feedId, List<Security> securities)
+        private final Client client;
+        private AtomicInteger counter;
+
+        public Dirtyable(Client client)
         {
-            this.feedId = feedId;
-            this.securities = securities;
+            this.client = client;
+            this.counter = new AtomicInteger();
         }
 
-        public JobSpec(String feedId)
+        public void markDirty()
         {
-            this(feedId, new ArrayList<>());
+            int count = counter.incrementAndGet();
+            if (count % THRESHOLD == 0)
+                client.markDirty();
+        }
+
+        public boolean isDirty()
+        {
+            return counter.get() % THRESHOLD != 0;
         }
     }
 
@@ -126,16 +140,24 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
 
-        // update latest quotes
-        if (target.contains(Target.LATEST))
-            doUpdateLatestQuotes(monitor);
+        Dirtyable dirtyable = new Dirtyable(getClient());
+        List<Job> jobs = new ArrayList<>();
 
-        // update historical quotes
+        // include latest quotes
+        if (target.contains(Target.LATEST))
+            addLatestQuotesJobs(dirtyable, jobs);
+
+        // include historical quotes
         if (target.contains(Target.HISTORIC))
-            doUpdateHistoricalQuotes(monitor);
+            addHistoricalQuotesJobs(dirtyable, jobs);
 
         if (monitor.isCanceled())
             return Status.CANCEL_STATUS;
+
+        runJobs(monitor, jobs);
+
+        if (!monitor.isCanceled() && dirtyable.isDirty())
+            getClient().markDirty();
 
         if (repeatPeriod > 0)
             schedule(repeatPeriod);
@@ -143,65 +165,29 @@ public final class UpdateQuotesJob extends AbstractClientJob
         return Status.OK_STATUS;
     }
 
-    private void doUpdateLatestQuotes(IProgressMonitor monitor)
+    private void runJobs(IProgressMonitor monitor, List<Job> jobs)
     {
-        List<JobSpec> specs = collectJobSpecs();
-
-        JobGroup jobGroup = new JobGroup(Messages.JobLabelUpdating, 10, specs.size());
-
-        boolean[] isDirty = new boolean[1];
-
-        for (JobSpec spec : specs)
+        JobGroup group = new JobGroup(Messages.JobLabelUpdating, 10, jobs.size());
+        for (Job job : jobs)
         {
-            QuoteFeed feed = Factory.getQuoteFeedProvider(spec.feedId);
-            if (feed == null)
-                continue;
-
-            if (monitor.isCanceled())
-                return;
-
-            Job job = new Job(feed.getName())
-            {
-                @Override
-                protected IStatus run(IProgressMonitor monitor)
-                {
-                    ArrayList<Exception> exceptions = new ArrayList<>();
-
-                    if (feed.updateLatestQuotes(spec.securities, exceptions))
-                        isDirty[0] = true;
-
-                    if (!exceptions.isEmpty())
-                        PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
-
-                    return Status.OK_STATUS;
-                }
-            };
-
-            job.setRule(spec.rule);
-            job.setJobGroup(jobGroup);
+            job.setJobGroup(group);
             job.schedule();
         }
 
         try
         {
-            jobGroup.join(10000, monitor);
+            group.join(0, monitor);
         }
         catch (InterruptedException ignore)
         {
             // ignore
         }
-
-        // if the job is cancelled, do not mark the client dirty as it would
-        // trigger the creation of a new Display
-        if (isDirty[0] && !monitor.isCanceled())
-            getClient().markDirty();
     }
 
-    private List<JobSpec> collectJobSpecs()
+    private void addLatestQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
     {
-        List<JobSpec> specs = new ArrayList<>();
+        Map<QuoteFeed, List<Security>> feed2securities = new HashMap<>();
 
-        Map<String, JobSpec> feed2securities = new HashMap<>();
         for (Security s : securities)
         {
             // if configured, use feed for latest quotes
@@ -210,49 +196,63 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (feedId == null)
                 feedId = s.getFeed();
 
+            QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
+            if (feed == null)
+                continue;
+
             // the HTML download makes request per URL (per security) -> execute
             // as parallel jobs (although the scheduling rule ensures that only
             // one request is made per host at a given time)
             if (HTMLTableQuoteFeed.ID.equals(feedId))
             {
-                JobSpec spec = new JobSpec(feedId, Arrays.asList(s));
-                spec.rule = HostSchedulingRule
-                                .createFor(s.getLatestFeedURL() == null ? s.getFeedURL() : s.getLatestFeedURL());
-                specs.add(spec);
+                Job job = createLatestQuoteJob(dirtyable, feed, Arrays.asList(s));
+                job.setRule(HostSchedulingRule
+                                .createFor(s.getLatestFeedURL() == null ? s.getFeedURL() : s.getLatestFeedURL()));
+                jobs.add(job);
             }
             else
             {
-                feed2securities.computeIfAbsent(feedId, key -> new JobSpec(key)).securities.add(s);
+                feed2securities.computeIfAbsent(feed, key -> new ArrayList<>()).add(s);
             }
         }
 
-        specs.addAll(feed2securities.values());
-
-        return specs;
+        for (Entry<QuoteFeed, List<Security>> entry : feed2securities.entrySet())
+            jobs.add(createLatestQuoteJob(dirtyable, entry.getKey(), entry.getValue()));
     }
 
-    private void doUpdateHistoricalQuotes(IProgressMonitor monitor)
+    private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, List<Security> securities)
     {
-        boolean[] isDirty = new boolean[1];
+        return new Job(feed.getName())
+        {
+            @Override
+            protected IStatus run(IProgressMonitor monitor)
+            {
+                ArrayList<Exception> exceptions = new ArrayList<>();
 
+                if (feed.updateLatestQuotes(securities, exceptions))
+                    dirtyable.markDirty();
+
+                if (!exceptions.isEmpty())
+                    PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
+
+                return Status.OK_STATUS;
+            }
+        };
+    }
+
+    private void addHistoricalQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
+    {
         // randomize list in case LRU cache size of HTMLTableQuote feed is too
         // small; otherwise entries would be evicted in order
         Collections.shuffle(securities);
 
-        JobGroup jobGroup = new JobGroup(Messages.JobLabelUpdating, 10, securities.size());
-
         for (Security security : securities)
         {
-            if (monitor.isCanceled())
-                return;
-
             Job job = new Job(security.getName())
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
-                    monitor.subTask(MessageFormat.format(Messages.JobMsgUpdatingQuotesFor, security.getName()));
-
                     QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
                     if (feed == null)
                         return Status.OK_STATUS;
@@ -260,7 +260,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     ArrayList<Exception> exceptions = new ArrayList<>();
 
                     if (feed.updateHistoricalQuotes(security, exceptions))
-                        isDirty[0] = true;
+                        dirtyable.markDirty();
 
                     if (!exceptions.isEmpty())
                         PortfolioPlugin.log(createErrorStatus(security.getName(), exceptions));
@@ -272,23 +272,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (HTMLTableQuoteFeed.ID.equals(security.getFeed()))
                 job.setRule(HostSchedulingRule.createFor(security.getFeedURL()));
 
-            job.setJobGroup(jobGroup);
-            job.schedule();
+            jobs.add(job);
         }
-
-        try
-        {
-            jobGroup.join(240000, monitor);
-        }
-        catch (InterruptedException ignore)
-        {
-            // ignore
-        }
-
-        // if the job is cancelled, do not mark the client dirty as it would
-        // trigger the creation of a new Display
-        if (isDirty[0] && !monitor.isCanceled())
-            getClient().markDirty();
     }
 
     private IStatus createErrorStatus(String label, List<Exception> exceptions)

@@ -435,7 +435,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         return preferenceStore;
     }
 
-    /* package */void markDirty()
+                    /* package */void markDirty()
     {
         dirty.setDirty(true);
     }
@@ -467,7 +467,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-            
+
             createView(ExceptionView.class, e);
         }
     }
@@ -505,13 +505,15 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
         {
+            new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC))
+                            .schedule(1000);
+
+            int tenMinutes = 1000 * 60 * 10;
             regularQuoteUpdateJob = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST))
-                            .repeatEvery(1000 * 60 * 10);
-            regularQuoteUpdateJob.schedule(500);
+                            .repeatEvery(tenMinutes);
+            regularQuoteUpdateJob.schedule(tenMinutes);
 
-            new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).schedule(1000);
-
-            new UpdateCPIJob(client).schedule(1200);
+            new UpdateCPIJob(client).schedule(1000);
         }
     }
 
