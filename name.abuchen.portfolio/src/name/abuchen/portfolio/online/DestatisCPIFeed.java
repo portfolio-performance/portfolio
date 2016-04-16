@@ -170,6 +170,8 @@ public class DestatisCPIFeed implements CPIFeed
                 case 2:
                     price.setIndex(parseIndex(text.getText()));
                     break;
+                default:
+                    assert false : col;
             }
 
             return true;

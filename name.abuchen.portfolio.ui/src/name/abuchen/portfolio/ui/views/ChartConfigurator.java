@@ -356,6 +356,9 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
                 break;
             case RETURN_VOLATILITY:
                 buildReturnVolatilitySeries(wheel);
+                break;
+            default:
+                assert false : mode;
         }
 
         buildCommonDataSeries(wheel);

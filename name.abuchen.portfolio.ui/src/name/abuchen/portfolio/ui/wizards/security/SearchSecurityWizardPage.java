@@ -200,6 +200,8 @@ public class SearchSecurityWizardPage extends WizardPage
                     return item.getType();
                 case 5:
                     return item.getExchange();
+                default:
+                    assert false : columnIndex;
             }
             return null;
         }

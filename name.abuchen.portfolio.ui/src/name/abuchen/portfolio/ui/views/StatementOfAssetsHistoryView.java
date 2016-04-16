@@ -304,7 +304,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
                                 item.getLabel());
                 item.configure(iaSeries);
                 break;
-
+            default:
+                assert false : item.getInstance();
         }
     }
 
