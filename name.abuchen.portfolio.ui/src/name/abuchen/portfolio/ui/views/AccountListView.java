@@ -1,8 +1,13 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -17,13 +22,17 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
+import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -32,8 +41,12 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -42,6 +55,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -64,6 +79,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private TableViewer accounts;
     private TableViewer transactions;
+    private TimelineChart accountBalanceChart;
 
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
@@ -71,6 +87,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private ShowHideColumnHelper transactionsColumns;
 
     private boolean isFiltered = false;
+
+    @Inject
+    private ExchangeRateProviderFactory factory;
 
     @Override
     protected String getTitle()
@@ -265,6 +284,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 transactions.setInput(
                                 account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
                 transactions.refresh();
+
+                updateChart(account);
             }
         });
 
@@ -309,6 +330,25 @@ public class AccountListView extends AbstractListView implements ModificationLis
     // //////////////////////////////////////////////////////////////
 
     protected void createBottomTable(Composite parent)
+    {
+        // folder
+        CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.TabTransactions);
+        item.setControl(createTransactionTable(folder));
+
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.TabAccountBalanceChart);
+        item.setControl(createAccountBalanceChart(folder));
+
+        folder.setSelection(0);
+
+        if (accounts.getTable().getItemCount() > 0)
+            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+    }
+
+    protected Control createTransactionTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -526,8 +566,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         hookKeyListener();
 
-        if (accounts.getTable().getItemCount() > 0)
-            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+        return container;
     }
 
     private Color colorFor(AccountTransaction t)
@@ -625,4 +664,61 @@ public class AccountListView extends AbstractListView implements ModificationLis
                             .parameters(transaction.getType());
         }
     }
+
+    private Control createAccountBalanceChart(Composite parent)
+    {
+        accountBalanceChart = new TimelineChart(parent);
+
+        return accountBalanceChart;
+    }
+
+    private void updateChart(Account account)
+    {
+        try
+        {
+            accountBalanceChart.suspendUpdate(true);
+
+            for (ISeries s : accountBalanceChart.getSeriesSet().getSeries())
+                accountBalanceChart.getSeriesSet().deleteSeries(s.getId());
+
+            List<AccountTransaction> tx = account.getTransactions();
+            if (tx.isEmpty())
+                return;
+
+            CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
+            Collections.sort(tx, new Transaction.ByDate());
+
+            LocalDate now = LocalDate.now();
+            LocalDate start = tx.get(0).getDate();
+            LocalDate end = tx.get(tx.size() - 1).getDate();
+            if (now.isAfter(end))
+                end = now;
+            if (now.isBefore(start))
+                start = now;
+
+            int days = (int) ChronoUnit.DAYS.between(start, end) + 2;
+
+            LocalDate[] dates = new LocalDate[days];
+            double[] values = new double[days];
+
+            dates[0] = start.minusDays(1);
+            values[0] = 0d;
+
+            for (int ii = 1; ii < dates.length; ii++)
+            {
+                values[ii] = AccountSnapshot.create(account, converter, start) //
+                                .getFunds().getAmount() / Values.Amount.divider();
+                dates[ii] = start;
+                start = start.plusDays(1);
+            }
+
+            accountBalanceChart.addDateSeries(dates, values, Colors.CASH, account.getName());
+            accountBalanceChart.adjustRange();
+        }
+        finally
+        {
+            accountBalanceChart.suspendUpdate(false);
+        }
+    }
+
 }

@@ -599,6 +599,7 @@ public class Messages extends NLS
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
     public static String SystemMenuCheckForUpdates;
+    public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
     public static String TooltipMaxDrawdown;
