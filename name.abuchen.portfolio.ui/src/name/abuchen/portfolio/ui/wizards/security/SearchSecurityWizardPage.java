@@ -200,8 +200,9 @@ public class SearchSecurityWizardPage extends WizardPage
                     return item.getType();
                 case 5:
                     return item.getExchange();
+                default:
+                    throw new IllegalArgumentException(String.valueOf(columnIndex));
             }
-            return null;
         }
 
         @Override

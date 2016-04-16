@@ -17,14 +17,14 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
-
 import org.htmlparser.Node;
 import org.htmlparser.Tag;
 import org.htmlparser.Text;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.util.ParserException;
+
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.ConsumerPriceIndex;
 
 public class DestatisCPIFeed implements CPIFeed
 {
@@ -169,6 +169,9 @@ public class DestatisCPIFeed implements CPIFeed
                     break;
                 case 2:
                     price.setIndex(parseIndex(text.getText()));
+                    break;
+                default:
+                    // ignore other columns (containing sub-indices);
                     break;
             }
 

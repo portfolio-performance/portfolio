@@ -120,9 +120,10 @@ public class QuotesTableViewer
                         return Values.Quote.format(p.getValue());
                     case 4:
                         return String.format("%,d", p.getVolume()); //$NON-NLS-1$
+                    default:
+                        throw new IllegalArgumentException(String.valueOf(columnIndex));
                 }
             }
-            return null;
         }
 
     }
