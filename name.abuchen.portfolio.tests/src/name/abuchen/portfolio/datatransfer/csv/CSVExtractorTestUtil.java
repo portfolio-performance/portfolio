@@ -16,6 +16,7 @@ final class CSVExtractorTestUtil
     /**
      * Build column config for unit testing, e.g. expect all values exactly in
      * the order they have been configured and with the first format option
+     * @return Map &lt;String, Column&gt;
      */
     /* package */ static Map<String, Column> buildField2Column(CSVExtractor extractor)
     {

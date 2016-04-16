@@ -63,6 +63,7 @@ public class PortfolioTransaction extends Transaction
     /**
      * Returns the gross value, i.e. the value including taxes and fees. See
      * {@link #getGrossValue()}.
+     * @return long
      */
     public long getGrossValueAmount()
     {
@@ -90,6 +91,7 @@ public class PortfolioTransaction extends Transaction
      * before adding additional taxes and fees. In the case of sell
      * transactions, that are the gross proceeds before the deduction of taxes
      * and fees.
+     * @return Money
      */
     public Money getGrossValue()
     {
@@ -98,6 +100,7 @@ public class PortfolioTransaction extends Transaction
 
     /**
      * Returns the gross price per share. See {@link #getGrossPricePerShare()}.
+     * @return long
      */
     public long getGrossPricePerShareAmount()
     {
@@ -110,6 +113,7 @@ public class PortfolioTransaction extends Transaction
     /**
      * Returns the gross price per share, i.e. the gross value divided by the
      * number of shares bought or sold.
+     * @return Money
      */
     public Money getGrossPricePerShare()
     {

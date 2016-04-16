@@ -13,11 +13,13 @@ public interface QuoteFeed
 
     /**
      * Returns the technical identifier of the quote feed.
+     * @return String
      */
     String getId();
 
     /**
      * Returns the display name of the quote feed.
+     * @return String
      */
     String getName();
 
@@ -36,7 +38,7 @@ public interface QuoteFeed
     /**
      * Update the historical quotes of the given security.
      * 
-     * @param securities
+     * @param security
      *            the security for which the historical quotes are to be
      *            updated.
      * @param errors

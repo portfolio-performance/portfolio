@@ -17,6 +17,7 @@ public interface CurrencyConverter
 
     /**
      * Returns a CurrencyConverter with the provided term currency
+     * @return CurrencyConverter
      */
     CurrencyConverter with(String currencyCode);
 }

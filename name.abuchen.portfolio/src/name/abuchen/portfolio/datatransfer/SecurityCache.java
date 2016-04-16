@@ -84,6 +84,7 @@ public class SecurityCache
      * Returns a list of {@link SecurityItem} that are implicitly created when
      * extracting transactions. Do not add all newly created securities as they
      * might be created out of erroneous transactions.
+     * @return Collection &lt;Item&gt;
      */
     public Collection<Item> createMissingSecurityItems(List<Item> items)
     {

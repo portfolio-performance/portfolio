@@ -140,6 +140,7 @@ public final class Sidebar extends Composite
         /**
          * Finds either the neighbor above (SWT.ARROW_DOWN) or below
          * (SWT.ARROW_UP) the current entry.
+         * @return Entry
          */
         public Entry findNeighbor(int direction)
         {

@@ -203,6 +203,7 @@ public class AccountTransactionModel extends AbstractModel
     /**
      * Due to the limited precision of the exchange rate (4 digits), the amount
      * is checked against a range.
+     * @return IStatus
      */
     private IStatus calculateStatus()
     {

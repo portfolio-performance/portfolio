@@ -12,6 +12,7 @@ public interface ExchangeRateProvider
 {
     /**
      * Returns a descriptive name for the source of exchange rates.
+     * @return String
      */
     String getName();
 
@@ -37,12 +38,14 @@ public interface ExchangeRateProvider
 
     /**
      * Returns the available exchange rates provided by this provider.
+     * @return List &ltExchangeRateTimeSeries;&gt;
      */
     List<ExchangeRateTimeSeries> getAvailableTimeSeries();
 
     /**
      * Returns a exchange rate series for the given base and term currency if
      * available.
+     * @return List &ltExchangeRateTimeSeries;&gt;
      */
     ExchangeRateTimeSeries getTimeSeries(String baseCurrency, String termCurrency);
 }

@@ -46,6 +46,7 @@ public class SecurityPosition
 
         /**
          * Remove matching transfer_in / transfer_out transactions
+         * @return List&lt;PortfolioTransaction&gt;
          */
         private List<PortfolioTransaction> filter(List<PortfolioTransaction> input)
         {

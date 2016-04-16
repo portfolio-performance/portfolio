@@ -92,6 +92,7 @@ public class DividendsViewModel
 
     /**
      * Returns all lines including the sum line
+     * @return List &lt;Line&gt;
      */
     public List<Line> getAllLines()
     {

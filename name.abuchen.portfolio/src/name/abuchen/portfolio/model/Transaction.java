@@ -225,6 +225,7 @@ public abstract class Transaction implements Annotated
 
     /**
      * Returns any unit of the given type
+     * @return Optional &lt;Unit&gt;
      */
     public Optional<Unit> getUnit(Unit.Type type)
     {
@@ -268,6 +269,7 @@ public abstract class Transaction implements Annotated
 
     /**
      * Returns the sum of units in transaction currency
+     * @return Money
      */
     public Money getUnitSum(Unit.Type type)
     {
@@ -277,6 +279,7 @@ public abstract class Transaction implements Annotated
 
     /**
      * Returns the sum of units in the term currency of the currency converter
+     * @return Money
      */
     public Money getUnitSum(Unit.Type type, CurrencyConverter converter)
     {

@@ -20,6 +20,7 @@ public final class SWTHelper
 
     /**
      * Returns the widest control. Used when layouting dialogs.
+     * @return Control
      */
     public static Control widestWidget(Control... widgets)
     {
@@ -44,6 +45,7 @@ public final class SWTHelper
 
     /**
      * Returns the widest control. Used when layouting dialogs.
+     * @return integer
      */
     public static int widest(Control... widgets)
     {
@@ -64,6 +66,7 @@ public final class SWTHelper
 
     /**
      * Returns the width needed to display a date. Used when layouting dialogs.
+     * @return integer
      */
     public static int dateWidth(Drawable drawable)
     {
@@ -76,6 +79,7 @@ public final class SWTHelper
     /**
      * Returns the width needed to display the sample string. Used when
      * layouting dialogs.
+     * @return integer
      */
     public static int stringWidth(Drawable drawable, String sample)
     {
@@ -87,6 +91,7 @@ public final class SWTHelper
 
     /**
      * Returns the width needed to display a currency.
+     * @return integer
      */
     public static int amountWidth(Drawable drawable)
     {
@@ -95,6 +100,7 @@ public final class SWTHelper
 
     /**
      * Returns the width needed to display a currency.
+     * @return integer
      */
     public static int currencyWidth(Drawable drawable)
     {

@@ -10,6 +10,7 @@ public final class Strings
      * Since {@see String#trim} does not trim all whitespace and space
      * characters, this is an alternative implementation. Inspired by the blog
      * post at http://closingbraces.net/2008/11/11/javastringtrim/
+     * @return String
      */
     public static String strip(String value)
     {

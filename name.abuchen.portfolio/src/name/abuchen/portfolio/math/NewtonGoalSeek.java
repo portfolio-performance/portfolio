@@ -19,6 +19,7 @@ package name.abuchen.portfolio.math;
      *            derivative function
      * @param x0
      *            start value
+     * @return double
      */
     public static double seek(Function f, Function fd, double x0)
     {

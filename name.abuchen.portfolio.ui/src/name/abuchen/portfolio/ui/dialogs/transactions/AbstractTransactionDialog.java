@@ -287,6 +287,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     /**
      * make sure drop-down boxes contain the security, portfolio and account of
      * this transaction (they might be "retired" and do not show by default)
+     * @return <T>
      */
     protected <T> List<T> including(List<T> list, T element)
     {

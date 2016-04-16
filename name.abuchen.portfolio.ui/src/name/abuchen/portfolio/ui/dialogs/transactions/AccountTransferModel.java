@@ -165,6 +165,7 @@ public class AccountTransferModel extends AbstractModel
 
     /**
      * Check whether calculation works out.
+     * @return IStatus
      */
     private IStatus calculateStatus()
     {

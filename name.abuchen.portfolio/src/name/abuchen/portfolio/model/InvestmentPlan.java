@@ -159,6 +159,7 @@ public class InvestmentPlan implements Named, Adaptable
 
     /**
      * Returns the date of the last transaction generated
+     * @return LocalDate
      */
     private LocalDate getLastDate()
     {
@@ -176,6 +177,7 @@ public class InvestmentPlan implements Named, Adaptable
     /**
      * Returns the date for the next transaction to be generated based on the
      * interval
+     * @return LocalDate
      */
     private LocalDate next(LocalDate date)
     {
@@ -189,6 +191,11 @@ public class InvestmentPlan implements Named, Adaptable
         return next;
     }
 
+    /**
+     * 
+     * @param converter CurrencyConverter
+     * @return List &lt;PortfolioTransaction&gt;
+     */
     public List<PortfolioTransaction> generateTransactions(CurrencyConverter converter)
     {
         LocalDate transactionDate = null;
@@ -215,6 +222,12 @@ public class InvestmentPlan implements Named, Adaptable
         return newlyCreated;
     }
 
+    /**
+     * 
+     * @param converter CurrencyConverter
+     * @param tDate LocalDate
+     * @return PortfolioTransaction
+     */
     private PortfolioTransaction createTransaction(CurrencyConverter converter, LocalDate tDate)
     {
         String targetCurrencyCode = getCurrencyCode();
