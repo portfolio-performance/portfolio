@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -28,8 +30,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class DkbPDFExtractorTest
@@ -66,7 +66,7 @@ public class DkbPDFExtractorTest
 
         return security;
     }
-    
+
     private Security assertSecurityBuyAktien(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -78,7 +78,7 @@ public class DkbPDFExtractorTest
 
         return security;
     }
-    
+
     private Security assertSecuritySell(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -90,7 +90,7 @@ public class DkbPDFExtractorTest
 
         return security;
     }
-    
+
     private Security assertSecuritySellAktien(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -102,7 +102,7 @@ public class DkbPDFExtractorTest
 
         return security;
     }
-    
+
     private Security assertSecurityErtragsgutschriftZinsgutschrift(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -114,7 +114,7 @@ public class DkbPDFExtractorTest
 
         return security;
     }
-    
+
     private Security assertSecurityErtragsgutschriftDividende(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -160,7 +160,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(14452L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }
-    
+
     @Test
     public void testErtragsgutschriftDividende() throws IOException
     {
@@ -195,34 +195,6 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
     }
 
-//    @Test
-//    public void testErtragsgutschriftWhenSecurityExists() throws IOException
-//    {
-//        Client client = new Client();
-//        Security security = new Security("BASF", "DE000BASF111", null, null);
-//        client.addSecurity(security);
-//
-//        DkbPDFExtractor extractor = new DkbPDFExtractor(client)
-//        {
-//            @Override
-//            String strip(File file) throws IOException
-//            {
-//                return from("DeutscheBankErtragsgutschrift.txt");
-//            }
-//        };
-//        List<Exception> errors = new ArrayList<Exception>();
-//
-//        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
-//
-//        assertThat(errors, empty());
-//        assertThat(results.size(), is(1));
-//
-//        // check transaction
-//        AccountTransaction transaction = (AccountTransaction) results.get(0).getSubject();
-//        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-//        assertThat(transaction.getSecurity(), is(security));
-//    }
-
     @Test
     public void testWertpapierKauf() throws IOException
     {
@@ -256,16 +228,14 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2030.66))));
-//        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2030.66)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-11-27")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(/*80.66*/0.00))));
-//        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(80.66)));    
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
+                        Values.Amount.factorize(/* 80.66 */0.00))));
     }
 
     @Test
-    public void testWertpapierKauf2() throws IOException //Aktien
+    public void testWertpapierKauf2() throws IOException // Aktien
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
@@ -336,18 +306,14 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4937.19))));
-        //assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(4937.19)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2015-10-29"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.13))));
-//        assertThat(entry.getPortfolioTransaction().getTaxes(),
-//                        is(Values.Amount.factorize(49.42) + Values.Amount.factorize(2.71)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
-//        assertThat(entry.getPortfolioTransaction().getFees(), is(Values.Amount.factorize(110.68)));
     }
-    
+
     @Test
     public void testWertpapierVerkaufAktien() throws IOException
     {
