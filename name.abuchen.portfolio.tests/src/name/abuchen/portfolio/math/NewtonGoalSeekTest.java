@@ -1,10 +1,9 @@
 package name.abuchen.portfolio.math;
 
-import name.abuchen.portfolio.math.NewtonGoalSeek;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.core.Is.*;
 
 public class NewtonGoalSeekTest
 {
