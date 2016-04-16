@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
-
 /**
- * Holds the {@link ExchangeRateTimeSeries} time series that are managed by
+ * Holds theExchangeRateTimeSeries time series that are managed by
  * {@link ECBExchangeRateProvider}.
  */
 /* package */class ECBData

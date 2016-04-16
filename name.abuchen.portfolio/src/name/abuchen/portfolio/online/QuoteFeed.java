@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.online;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -31,7 +30,6 @@ public interface QuoteFeed
      *            any errors that occur during the update of the quotes are
      *            added to this list.
      * @return true if at least one quote was updated.
-     * @throws IOException
      */
     boolean updateLatestQuotes(List<Security> securities, List<Exception> errors);
 
@@ -45,7 +43,6 @@ public interface QuoteFeed
      *            any errors that occur during the update of the quotes are
      *            added to this list.
      * @return true if at least one quote was updated.
-     * @throws IOException
      */
     boolean updateHistoricalQuotes(Security security, List<Exception> errors);
 

@@ -5,10 +5,10 @@ import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
-import name.abuchen.portfolio.math.RiskTest;
-import name.abuchen.portfolio.model.Client;
 import org.junit.Test;
+
+import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class PerformanceIndexTest
@@ -27,7 +27,7 @@ public class PerformanceIndexTest
     }
 
     /**
-     * Companion test for basic volatility {@link RiskTest#testVolatility()}
+     * Companion test for basic volatility RiskTest#testVolatility
      */
     @Test
     public void testVolatilityFromPerformanceIndex()
