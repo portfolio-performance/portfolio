@@ -85,10 +85,7 @@
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
-    <module name="GenericWhitespace">
-      <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-    </module>
+    <module name="GenericWhitespace"/>
     <module name="MethodParamPad">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
@@ -154,13 +151,11 @@
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="EmptyStatement"/>
-    <module name="EqualsHashCode">
-      <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-    </module>
+    <module name="EqualsHashCode"/>
     <module name="HiddenField">
       <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+      <property name="ignoreConstructorParameter" value="true"/>
+      <property name="ignoreSetter" value="true"/>
     </module>
     <module name="IllegalInstantiation">
       <property name="severity" value="ignore"/>
@@ -230,10 +225,7 @@
     <property name="severity" value="ignore"/>
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
   </module>
-  <module name="FileTabCharacter">
-    <property name="severity" value="ignore"/>
-    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-  </module>
+  <module name="FileTabCharacter"/>
   <module name="RegexpSingleline">
     <property name="severity" value="ignore"/>
     <property name="format" value="\s+$"/>

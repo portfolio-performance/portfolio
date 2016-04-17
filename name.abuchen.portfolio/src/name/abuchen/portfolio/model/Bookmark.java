@@ -15,19 +15,21 @@ public class Bookmark
         this.pattern = pattern;
     }
 
-    public void setLabel(String label){
+    public void setLabel(String label)
+    {
         this.label = label;
     }
-    
+
     public String getLabel()
     {
         return label;
     }
 
-    public void setPattern(String pattern){
+    public void setPattern(String pattern)
+    {
         this.pattern = pattern;
     }
-    
+
     public String getPattern()
     {
         return pattern;
@@ -42,9 +44,9 @@ public class Bookmark
     {
         String url = pattern.replace("{tickerSymbol}", encode(security.getTickerSymbol())); //$NON-NLS-1$
         url = url.replace("{isin}", encode(security.getIsin())); //$NON-NLS-1$
-        url = url.replace("{wkn}", encode(security.getWkn()));   //$NON-NLS-1$
+        url = url.replace("{wkn}", encode(security.getWkn())); //$NON-NLS-1$
         url = url.replace("{name}", encode(security.getName())); //$NON-NLS-1$
-        
+
         return url;
     }
 

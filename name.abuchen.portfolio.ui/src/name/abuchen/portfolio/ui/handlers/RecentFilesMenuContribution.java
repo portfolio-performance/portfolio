@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
@@ -34,9 +33,6 @@ public class RecentFilesMenuContribution
 
     @Inject
     private EModelService modelService;
-
-    @Inject
-    private EHandlerService handlerService;
 
     MCommand mCommand = null;
     MCommandParameter mParameter = null;
