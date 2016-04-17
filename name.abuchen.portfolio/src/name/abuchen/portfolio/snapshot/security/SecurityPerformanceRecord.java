@@ -131,6 +131,16 @@ public final class SecurityPerformanceRecord implements Adaptable
      * periodicity of dividend payments {@link #calculateDividends()}
      */
     private Periodicity periodicity = Periodicity.UNKNOWN;
+    
+    /**
+     * market value - fifo cost of shares held {@link #calculateFifoCosts()}
+     */
+    private Money capitalGainsOnHoldings;
+
+    /**
+     * {@link capitalGainsOnHoldings} in percent
+     */
+    private double capitalGainsOnHoldingsPercent;
 
     /* package */SecurityPerformanceRecord(Security security)
     {
@@ -209,12 +219,14 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     public Money getCapitalGainsOnHoldings()
     {
-        return marketValue.subtract(fifoCost);
+        capitalGainsOnHoldings = marketValue.subtract(fifoCost);
+        return capitalGainsOnHoldings;
     }
 
     public double getCapitalGainsOnHoldingsPercent()
     {
-        return ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
+        capitalGainsOnHoldingsPercent = ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
+        return capitalGainsOnHoldingsPercent;
     }
 
     public Money getFees()
