@@ -21,17 +21,36 @@ public interface UIConstants
             String CREATED = "errorlog/created"; //$NON-NLS-1$
             String CLEARED = "errorlog/cleared"; //$NON-NLS-1$
         }
+
+        interface File
+        {
+            String ALL_SUB_TOPICS = "file/*"; //$NON-NLS-1$
+            String OPENED = "file/opened"; //$NON-NLS-1$
+            String SAVED = "file/saved"; //$NON-NLS-1$
+        }
     }
 
     interface File
     {
         String ENCRYPTED_EXTENSION = "portfolio"; //$NON-NLS-1$
+        String PERSISTED_STATE_KEY = "file"; //$NON-NLS-1$
     }
 
+    /**
+     * Command names defined in application.e4xmi
+     */
+    interface Command
+    {
+        String OPEN_RECENT_FILE = "name.abuchen.portfolio.ui.command.openRecentFile"; //$NON-NLS-1$
+    }
+
+    /**
+     * Parameter keys used in application.e4xmi
+     */
     interface Parameter
     {
         String PART = "name.abuchen.portfolio.ui.param.part"; //$NON-NLS-1$
-        String FILE = "file"; //$NON-NLS-1$
+        String FILE = "name.abuchen.portfolio.ui.param.file"; //$NON-NLS-1$
         String EXTENSION = "name.abuchen.portfolio.ui.param.extension"; //$NON-NLS-1$
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
@@ -56,5 +75,10 @@ public interface UIConstants
          * saving. The backup file has the postfix ".backup".
          */
         String CREATE_BACKUP_BEFORE_SAVING = "CREATE_BACKUP_BEFORE_SAVING"; //$NON-NLS-1$
+
+        /**
+         * Preference key to store a comma-separated list of recent files
+         */
+        String RECENT_FILES = "RECENT_FILES"; //$NON-NLS-1$
     }
 }

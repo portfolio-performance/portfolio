@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
+import name.abuchen.portfolio.ui.util.RecentFilesCache;
 
 public class StartupAddon
 {
@@ -50,6 +51,12 @@ public class StartupAddon
     public void setupLogEntryCache(LogEntryCache cache)
     {
         // force creation of log entry cache
+    }
+
+    @PostConstruct
+    public void setupRecentFilesCache(RecentFilesCache cache)
+    {
+        // force creation of recent files cache
     }
 
     @Inject

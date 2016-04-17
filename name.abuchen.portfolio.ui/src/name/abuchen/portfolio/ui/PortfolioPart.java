@@ -23,6 +23,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -104,6 +105,9 @@ public class PortfolioPart implements LoadClientThread.Callback
     IEclipseContext context;
 
     @Inject
+    IEventBroker broker;
+
+    @Inject
     @Preference
     IEclipsePreferences preferences;
 
@@ -119,10 +123,11 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
 
         // is file name available? (e.g. load file, open on startup)
-        String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
+        String filename = part.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY);
         if (filename != null)
         {
             clientFile = new File(filename);
+            broker.post(UIConstants.Event.File.OPENED, clientFile.getAbsolutePath());
             loadPreferences();
         }
 
@@ -331,12 +336,13 @@ public class PortfolioPart implements LoadClientThread.Callback
 
         try
         {
-            part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
+            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientFile.getAbsolutePath());
 
             if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                 createBackup(shell, clientFile);
 
             ClientFactory.save(client, clientFile, null, null);
+            broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
             dirty.setDirty(false);
 
             storePreferences();
@@ -409,8 +415,9 @@ public class PortfolioPart implements LoadClientThread.Callback
         {
             clientFile = localFile;
 
-            part.getPersistedState().put(UIConstants.Parameter.FILE, clientFile.getAbsolutePath());
+            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientFile.getAbsolutePath());
             ClientFactory.save(client, clientFile, encryptionMethod, password);
+            broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
 
             dirty.setDirty(false);
             part.setLabel(clientFile.getName());
