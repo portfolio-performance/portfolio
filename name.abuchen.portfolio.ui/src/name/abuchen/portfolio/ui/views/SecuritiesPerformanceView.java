@@ -493,6 +493,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldings")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -513,6 +514,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsPercent")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // delta

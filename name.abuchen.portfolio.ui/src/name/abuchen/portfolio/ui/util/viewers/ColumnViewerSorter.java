@@ -233,7 +233,7 @@ public final class ColumnViewerSorter extends ViewerComparator
     private ViewerColumn viewerColumn;
     private int direction = SWT.DOWN;
 
-    private ColumnViewerSorter(Comparator<Object> comparator)
+    public ColumnViewerSorter(Comparator<Object> comparator)
     {
         this.comparator = comparator;
     }
