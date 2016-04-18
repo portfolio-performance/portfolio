@@ -159,6 +159,7 @@ public class Taxonomy
     /**
      * Returns a full copy of the taxonomy including all assignments but with
      * newly generated UUIDs.
+     * @return Taxonomy
      */
     public Taxonomy copy()
     {

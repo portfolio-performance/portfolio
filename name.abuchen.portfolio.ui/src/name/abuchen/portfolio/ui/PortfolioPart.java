@@ -182,6 +182,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     /**
      * Creates window with logo and message. Optional a progress bar (while
      * loading) or a password input field (if encrypted).
+     * @return ProgressBar
      */
     private ProgressBar createContainerWithMessage(Composite parent, String message, boolean showProgressBar,
                     boolean showPasswordField)

@@ -102,6 +102,7 @@ import name.abuchen.portfolio.money.Money;
 
     /**
      * gross investment
+     * @return Money
      */
     public Money getFifoCost()
     {
@@ -113,6 +114,7 @@ import name.abuchen.portfolio.money.Money;
 
     /**
      * net investment, i.e. without fees and taxes
+     * @return Money
      */
     public Money getNetFifoCost()
     {

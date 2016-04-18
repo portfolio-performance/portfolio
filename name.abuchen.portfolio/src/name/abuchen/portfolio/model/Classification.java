@@ -430,6 +430,7 @@ public class Classification implements Named
     /**
      * Recursively creates a copy of the classification including all
      * assignments with newly generated UUIDs.
+     * @return Classification
      */
     public Classification copy()
     {

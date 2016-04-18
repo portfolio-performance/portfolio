@@ -70,6 +70,7 @@ public abstract class AbstractModel
     /**
      * Creates a tool tip text that includes exchange rate plus inverse exchange
      * rate for informational purposes.
+     * @return String
      */
     /* package */ static String createCurrencyToolTip(BigDecimal exchangeRate, String term, String base)
     {

@@ -464,6 +464,7 @@ public class ClientPerformanceSnapshot
      * get rounding differences if we do not take the original amount. If the
      * transferal does not involve the term currency at all, we calculate the
      * average value out of both converted amounts.
+     * @return Money
      */
     private Money determineTransferAmount(AccountTransaction t)
     {

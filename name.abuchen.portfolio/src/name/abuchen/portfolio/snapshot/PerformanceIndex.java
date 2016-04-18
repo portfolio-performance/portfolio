@@ -129,6 +129,7 @@ public class PerformanceIndex
      * Returns the interval for which data exists. Might be different from
      * {@link #getReportInterval()} if the reporting interval extends into the
      * future.
+     * @return Interval
      */
     public Interval getActualInterval()
     {
@@ -149,6 +150,7 @@ public class PerformanceIndex
      * Returns the final accumulated performance value for this performance
      * reporting period. It is the last element of the array returned by
      * {@link #getAccumulatedPercentage}.
+     * @return double
      */
     public double getFinalAccumulatedPercentage()
     {
@@ -196,6 +198,7 @@ public class PerformanceIndex
      * the reporting period)</li>
      * <li>on weekends or public holidays</li>
      * </ul>
+     * @return Predicate&lt;Integer&gt
      */
     private Predicate<Integer> filterReturnsForVolatilityCalculation()
     {

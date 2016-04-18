@@ -188,6 +188,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
      * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
      * quote (2 digits currently) and the exchange rate (4 digits), the gross
      * value and converted gross value are checked against a range.
+     * @return IStatus
      */
     private IStatus calculateStatus()
     {

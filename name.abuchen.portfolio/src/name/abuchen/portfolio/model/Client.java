@@ -149,6 +149,7 @@ public class Client
     /**
      * Returns a sorted list of active securities, i.e. securities that are not
      * marked as retired.
+     * @return List<Security> 
      */
     public List<Security> getActiveSecurities()
     {
@@ -245,6 +246,7 @@ public class Client
     /**
      * Returns a sorted list of active accounts, i.e. accounts that are not
      * marked as retired.
+     * @return List &lt;Account&gt;
      */
     public List<Account> getActiveAccounts()
     {
@@ -274,6 +276,7 @@ public class Client
     /**
      * Returns a sorted list of active portfolios, i.e. portfolios that are not
      * marked as retired.
+     * @return List &lt;Portfolio&gt;
      */
     public List<Portfolio> getActivePortfolios()
     {

@@ -314,16 +314,19 @@ public interface Extractor
 
     /**
      * Returns a readable label for the type of documents
+     * @return a String
      */
     String getLabel();
 
     /**
      * Returns the filter extension for the file dialog, e.g. "*.pdf"
+     * @return file extension as String
      */
     String getFilterExtension();
 
     /**
      * Returns a list of extracted items.
+     * @return a list of extracted items (List<Item>)
      */
     List<Item> extract(List<File> files, List<Exception> errors);
 

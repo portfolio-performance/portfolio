@@ -162,6 +162,7 @@ public final class Security implements Attributable, InvestmentVehicle
 
     /**
      * Returns ISIN, Ticker or WKN - whatever is available.
+     * @return String
      */
     public String getExternalIdentifier()
     {

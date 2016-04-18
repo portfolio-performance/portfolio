@@ -81,6 +81,7 @@ public class IBFlexStatementExtractor implements Extractor
      * Lookup a Security in the Model or create a new one if it does not yet
      * exist It uses IB ContractID (conID) for the WKN, tries to degrade if
      * conID or ISIN are not available
+     * @return Security
      */
     private Security getOrCreateSecurity(Client client, Element eElement, boolean doCreate)
     {
@@ -422,6 +423,7 @@ public class IBFlexStatementExtractor implements Extractor
     /**
      * Return currency as valid currency code (in the sense that PP is
      * supporting this currency code)
+     * @return a String
      */
     private String asCurrencyUnit(String currency)
     {
@@ -432,6 +434,9 @@ public class IBFlexStatementExtractor implements Extractor
         return unit == null ? CurrencyUnit.EUR : unit.getCurrencyCode();
     }
 
+        /**
+         * @return List<item>
+         */
     /* package */List<Item> getResults()
     {
         return results;

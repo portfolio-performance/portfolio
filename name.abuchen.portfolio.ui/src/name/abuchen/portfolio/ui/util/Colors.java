@@ -76,6 +76,7 @@ public enum Colors
     /**
      * Returns an appropriate text color (black or white) for the given
      * background color.
+     * @return Color
      */
     public static Color getTextColor(Color color)
     {

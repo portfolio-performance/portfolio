@@ -175,6 +175,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
     /**
      * Calculate the first date to request historical quotes for.
+     * @return LocalDate
      */
     /* package */final LocalDate caculateStart(Security security)
     {
