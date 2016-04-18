@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -144,6 +145,25 @@ public class TaxonomyColumn extends Column
         setGroupLabel(Messages.ColumnTaxonomy);
         setOptions(new TaxonomyOptions(taxonomy));
         setLabelProvider(new TaxonomyLabelProvider(taxonomy));
+        setComparator(new TaxonomyComparator(taxonomy));
     }
 
+    private class TaxonomyComparator implements Comparator<Object> {
+        
+        private final Taxonomy taxonomy;
+
+        public TaxonomyComparator(Taxonomy taxonomy)
+        {
+            this.taxonomy = taxonomy;
+        }
+        
+        @Override
+        public int compare(Object o1, Object o2)        
+        {
+            InvestmentVehicle vehicle1 = Adaptor.adapt(InvestmentVehicle.class, o1);
+            InvestmentVehicle vehicle2 = Adaptor.adapt(InvestmentVehicle.class, o2);
+            
+            return taxonomy.getClassifications(vehicle1).toString().compareTo(taxonomy.getClassifications(vehicle2).toString());
+        }
+    }
 }
