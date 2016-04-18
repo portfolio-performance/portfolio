@@ -33,8 +33,9 @@ public class TokenReplacingReader extends Reader
     {
         if (this.tokenValue != null)
         {
-            if (this.tokenValueIndex < this.tokenValue.length()) { return this.tokenValue
-                            .charAt(this.tokenValueIndex++); }
+            if (this.tokenValueIndex < this.tokenValue.length())
+                return this.tokenValue.charAt(this.tokenValueIndex++);
+
             if (this.tokenValueIndex == this.tokenValue.length())
             {
                 this.tokenValue = null;

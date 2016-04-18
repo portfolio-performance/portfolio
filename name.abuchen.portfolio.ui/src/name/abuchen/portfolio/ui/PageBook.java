@@ -18,7 +18,8 @@ public class PageBook extends Composite
 
     public void showPage(Control page)
     {
-        if (page.isDisposed() || page.getParent() != this) { return; }
+        if (page.isDisposed() || page.getParent() != this)
+            return;
 
         layout.topControl = page;
         layout(true);

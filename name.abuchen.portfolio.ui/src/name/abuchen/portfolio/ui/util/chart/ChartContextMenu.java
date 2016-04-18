@@ -186,7 +186,8 @@ import name.abuchen.portfolio.ui.Messages;
                 dialog.setFilterExtensions(EXTENSIONS);
 
                 String filename = dialog.open();
-                if (filename == null) { return; }
+                if (filename == null)
+                    return;
 
                 int format;
                 if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) //$NON-NLS-1$ //$NON-NLS-2$
