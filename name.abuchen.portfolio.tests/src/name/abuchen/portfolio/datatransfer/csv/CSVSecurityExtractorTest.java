@@ -31,7 +31,7 @@ public class CSVSecurityExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]> asList(
+                        Arrays.<String[]>asList(
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -60,7 +60,7 @@ public class CSVSecurityExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]> asList(
+                        Arrays.<String[]>asList(
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -77,8 +77,7 @@ public class CSVSecurityExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]> asList(
-                                        new String[] { "DE0007164600", "716460", "", "SAP SE", "EUR", "Notiz" },
+                        Arrays.<String[]>asList(new String[] { "DE0007164600", "716460", "", "SAP SE", "EUR", "Notiz" },
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -95,7 +94,7 @@ public class CSVSecurityExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]> asList(new String[] { "", "", "", "SAP SE", "EUR", "Notiz" }),
+                        Arrays.<String[]>asList(new String[] { "", "", "", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));

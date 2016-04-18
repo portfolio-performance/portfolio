@@ -156,6 +156,7 @@
       <property name="severity" value="ignore"/>
       <property name="ignoreConstructorParameter" value="true"/>
       <property name="ignoreSetter" value="true"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="IllegalInstantiation">
       <property name="severity" value="ignore"/>
@@ -225,7 +226,9 @@
     <property name="severity" value="ignore"/>
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
   </module>
-  <module name="FileTabCharacter"/>
+  <module name="FileTabCharacter">
+    <property name="fileExtensions" value="java,xml"/>
+  </module>
   <module name="RegexpSingleline">
     <property name="severity" value="ignore"/>
     <property name="format" value="\s+$"/>

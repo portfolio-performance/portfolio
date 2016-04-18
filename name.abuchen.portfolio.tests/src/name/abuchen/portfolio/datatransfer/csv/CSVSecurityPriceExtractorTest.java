@@ -31,7 +31,7 @@ public class CSVSecurityPriceExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]> asList( //
+                        Arrays.<String[]>asList( //
                                         new String[] { "2015-01-01", "14,20" }, new String[] { "2015-01-02", "15,20" }),
                         buildField2Column(extractor), errors);
 
@@ -54,7 +54,7 @@ public class CSVSecurityPriceExtractorTest
         CSVExtractor extractor = new CSVSecurityPriceExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0, Arrays.<String[]> asList( //
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
                         new String[] { "", "14,20" }), buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));
@@ -69,7 +69,7 @@ public class CSVSecurityPriceExtractorTest
         CSVExtractor extractor = new CSVSecurityPriceExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0, Arrays.<String[]> asList( //
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
                         new String[] { "2015-01-01", "" }), buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));
