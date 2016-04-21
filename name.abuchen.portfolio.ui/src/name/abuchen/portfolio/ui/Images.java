@@ -55,7 +55,10 @@ public enum Images
 
     ERROR("error.png"), //$NON-NLS-1$
     WARNING("warning.png"), //$NON-NLS-1$
-    INFO("info.png"); //$NON-NLS-1$
+    INFO("info.png"), //$NON-NLS-1$
+
+    RED_ARROW("red_arrow.png"), //$NON-NLS-1$
+    GREEN_ARROW("green_arrow.png"); //$NON-NLS-1$
 
     static
     {
