@@ -280,6 +280,21 @@ public final class SecuritiesTable implements ModificationListener
                                 ? Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN)
                                 : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
             }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                SecurityPrice price = ((Security) element).getSecurityPrice(LocalDate.now());
+                if (!(price instanceof LatestSecurityPrice))
+                    return null;
+
+                LatestSecurityPrice latest = (LatestSecurityPrice) price;
+                if (latest.getValue() > latest.getPreviousClose())
+                    return Images.GREEN_ARROW.image();
+                if (latest.getValue() < latest.getPreviousClose())
+                    return Images.RED_ARROW.image();
+                return null;
+            }
         });
         column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
         {
