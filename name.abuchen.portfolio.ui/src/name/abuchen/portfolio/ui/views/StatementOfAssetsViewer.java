@@ -48,9 +48,11 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.ExchangeRate;
@@ -66,6 +68,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
@@ -1135,6 +1138,26 @@ public class StatementOfAssetsViewer
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
             else
                 return null;
+        }
+
+        @Override
+        public Image getImage(Object element, ReportingPeriod option)
+        {
+            Object value = getValue(element, option);
+            if (value == null)
+                return null;
+
+            double doubleValue = 0;
+            if (value instanceof Money)
+                doubleValue = ((Money) value).getAmount();
+            else if (value instanceof Double)
+                doubleValue = (Double) value;
+
+            if (doubleValue > 0)
+                return Images.GREEN_ARROW.image();
+            if (doubleValue < 0)
+                return Images.RED_ARROW.image();
+            return null;
         }
     }
 }
