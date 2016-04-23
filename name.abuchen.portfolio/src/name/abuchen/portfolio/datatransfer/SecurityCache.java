@@ -91,7 +91,7 @@ public class SecurityCache
 
         Set<Security> available = new HashSet<>();
         available.addAll(client.getSecurities());
-        items.stream().filter(i -> i instanceof SecurityItem).map(Item::getSecurity).forEach(s -> available.add(s));
+        items.stream().filter(i -> i instanceof SecurityItem).map(Item::getSecurity).forEach(available::add);
 
         for (Item item : items)
         {
