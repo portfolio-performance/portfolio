@@ -18,6 +18,8 @@ import name.abuchen.portfolio.model.Security;
 
 public class SecurityCache
 {
+    private static final Security DUPLICATE_SECURITY_MARKER = new Security();
+
     private final Client client;
 
     private final Map<String, Security> isin2security;
@@ -29,22 +31,14 @@ public class SecurityCache
         this.client = client;
 
         this.isin2security = client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
-                        .collect(Collectors.toMap(Security::getIsin, s -> s,
-                                        (l, r) -> failWith(Messages.MsgErrorDuplicateISIN, l.getIsin())));
+                        .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER));
 
         this.wkn2security = client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
-                        .collect(Collectors.toMap(Security::getWkn, s -> s,
-                                        (l, r) -> failWith(Messages.MsgErrorDuplicateWKN, l.getWkn())));
+                        .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER));
 
         this.ticker2security = client.getSecurities().stream()
-                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
-                        .collect(Collectors.toMap(Security::getTickerSymbol, s -> s,
-                                        (l, r) -> failWith(Messages.MsgErrorDuplicateTicker, l.getTickerSymbol())));
-    }
-
-    private Security failWith(String message, String parameter)
-    {
-        throw new IllegalArgumentException(MessageFormat.format(message, parameter));
+                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty()).collect(Collectors
+                                        .toMap(Security::getTickerSymbol, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER));
     }
 
     public Security lookup(String isin, String tickerSymbol, String wkn, Supplier<Security> creationFunction)
@@ -52,16 +46,22 @@ public class SecurityCache
         Security security = null;
         if (isin != null)
             security = isin2security.get(isin);
+        if (security == DUPLICATE_SECURITY_MARKER)
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorDuplicateISIN, isin));
         if (security != null)
             return security;
 
         if (wkn != null)
             security = wkn2security.get(wkn);
+        if (security == DUPLICATE_SECURITY_MARKER)
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorDuplicateWKN, isin));
         if (security != null)
             return security;
 
         if (tickerSymbol != null)
             security = ticker2security.get(tickerSymbol);
+        if (security == DUPLICATE_SECURITY_MARKER)
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorDuplicateTicker, isin));
         if (security != null)
             return security;
 

@@ -23,11 +23,13 @@ public abstract class CSVExtractor implements Extractor
     public abstract List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors);
 
+    @Override
     public String getFilterExtension()
     {
         return "*.csv"; //$NON-NLS-1$
     }
 
+    @Override
     public List<Item> extract(List<File> files, List<Exception> errors)
     {
         throw new UnsupportedOperationException();
@@ -86,7 +88,7 @@ public abstract class CSVExtractor implements Extractor
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return (long) Math.round(num.doubleValue() * Values.Share.factor());
+        return Math.round(num.doubleValue() * Values.Share.factor());
     }
 
     @SuppressWarnings("unchecked")

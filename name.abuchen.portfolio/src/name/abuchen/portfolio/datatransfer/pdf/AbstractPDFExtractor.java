@@ -65,16 +65,8 @@ import name.abuchen.portfolio.money.Values;
     @Override
     public List<Item> extract(List<File> files, List<Exception> errors)
     {
-        try
-        {
-            // careful: security cache makes extractor stateful
-            securityCache = new SecurityCache(client);
-        }
-        catch (IllegalArgumentException e)
-        {
-            errors.add(e);
-            return Collections.emptyList();
-        }
+        // careful: security cache makes extractor stateful
+        securityCache = new SecurityCache(client);
 
         List<Item> results = new ArrayList<>();
         for (File f : files)
