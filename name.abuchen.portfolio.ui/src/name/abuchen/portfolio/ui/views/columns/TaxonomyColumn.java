@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,6 +14,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.OptionAwareComparator;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 
 public class TaxonomyColumn extends Column
@@ -142,28 +142,37 @@ public class TaxonomyColumn extends Column
     {
         super(taxonomy.getId(), taxonomy.getName(), SWT.LEFT, 120);
 
+        TaxonomyLabelProvider labelProvider = new TaxonomyLabelProvider(taxonomy);
+
         setGroupLabel(Messages.ColumnTaxonomy);
         setOptions(new TaxonomyOptions(taxonomy));
-        setLabelProvider(new TaxonomyLabelProvider(taxonomy));
-        setComparator(new TaxonomyComparator(taxonomy));
+        setLabelProvider(labelProvider);
+        setComparator(new TaxonomyComparator(labelProvider));
     }
 
-    private class TaxonomyComparator implements Comparator<Object> {
-        
-        private final Taxonomy taxonomy;
+    private class TaxonomyComparator implements OptionAwareComparator<Integer>
+    {
+        private final TaxonomyLabelProvider labelProvider;
 
-        public TaxonomyComparator(Taxonomy taxonomy)
+        public TaxonomyComparator(TaxonomyLabelProvider labelProvider)
         {
-            this.taxonomy = taxonomy;
+            this.labelProvider = labelProvider;
         }
-        
+
         @Override
-        public int compare(Object o1, Object o2)        
+        public int compare(Integer option, Object o1, Object o2)
         {
-            InvestmentVehicle vehicle1 = Adaptor.adapt(InvestmentVehicle.class, o1);
-            InvestmentVehicle vehicle2 = Adaptor.adapt(InvestmentVehicle.class, o2);
-            
-            return taxonomy.getClassifications(vehicle1).toString().compareTo(taxonomy.getClassifications(vehicle2).toString());
+            String s1 = labelProvider.getText(o1, option);
+            String s2 = labelProvider.getText(o2, option);
+
+            if (s1 == null && s2 == null)
+                return 0;
+            else if (s1 == null)
+                return -1;
+            else if (s2 == null)
+                return 1;
+
+            return s1.compareToIgnoreCase(s2);
         }
     }
 }
