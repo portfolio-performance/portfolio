@@ -226,8 +226,6 @@ public class ConsorsbankPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankErtragsgutschrift5.txt")), errors);
 
         assertThat(errors, empty());
-
-        // since taxes are zero, no tax transaction must be created
         assertThat(results.size(), is(3));
 
         // check security
