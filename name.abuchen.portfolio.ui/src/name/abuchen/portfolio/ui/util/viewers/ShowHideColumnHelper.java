@@ -74,9 +74,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             if (column.getSorter() != null)
             {
-                column.getSorter().attachTo(getViewer(), viewerColumn);
                 if (direction != null)
-                    column.getSorter().setSorter(direction);
+                    column.getSorter().attachTo(getViewer(), viewerColumn, direction);
+                else
+                    column.getSorter().attachTo(getViewer(), viewerColumn);
             }
 
             if (column.getEditingSupport() != null)

@@ -668,6 +668,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private Control createAccountBalanceChart(Composite parent)
     {
         accountBalanceChart = new TimelineChart(parent);
+        accountBalanceChart.getTitle().setVisible(false);
 
         return accountBalanceChart;
     }

@@ -119,8 +119,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *([\\d.]+,\\d+) *")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
 
@@ -134,15 +133,18 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("kapst", "currency")
-                        .match("KAPST.*(?<currency>\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *")
-                        .assign((t, v) -> {
+                        .section("currency").optional()
+                        .match("VERRECHNUNGSTOPF ALLGEMEIN NACH ERTRAG.*(?<currency>\\w{3}+).*")
+                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
+
+                        .section("kapst", "currency").optional()
+                        .match("KAPST .*(?<currency>\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *").assign((t, v) -> {
                             t.setAmount(asAmount(v.get("kapst")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .section("solz", "currency").optional()
-                        .match("SOLZ.*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
+                        .match("SOLZ .*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
                             if (currency.equals(t.getCurrencyCode()))
@@ -160,8 +162,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+) *(\\w{3}+) *([\\d.]+,\\d+) *")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
 

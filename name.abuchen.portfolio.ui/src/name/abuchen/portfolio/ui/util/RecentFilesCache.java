@@ -3,11 +3,11 @@ package name.abuchen.portfolio.ui.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,16 +29,17 @@ import name.abuchen.portfolio.ui.UIConstants;
 public class RecentFilesCache
 {
     @Inject
-    @Preference(nodePath = "name.abuchen.portfolio.bootstrap")
+    @Preference
     IEclipsePreferences preferences;
 
     private static final int MAXIMUM = 10;
 
-    private final Collection<String> files = Collections
+    private final Set<String> files = Collections
                     .newSetFromMap(new LinkedHashMap<String, Boolean>(32, 0.7f, true)
                     {
                         private static final long serialVersionUID = 1L;
 
+                        @Override
                         protected boolean removeEldestEntry(Map.Entry<String, Boolean> eldest)
                         {
                             return size() > MAXIMUM;

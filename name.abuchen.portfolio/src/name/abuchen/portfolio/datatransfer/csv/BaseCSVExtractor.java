@@ -70,7 +70,7 @@ import name.abuchen.portfolio.money.Money;
             {
                 extract(results, strings, field2column);
             }
-            catch (ParseException | UnsupportedOperationException e)
+            catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
             {
                 errors.add(new IOException(MessageFormat.format(Messages.CSVLineXwithMsgY, lineNo, e.getMessage()), e));
             }

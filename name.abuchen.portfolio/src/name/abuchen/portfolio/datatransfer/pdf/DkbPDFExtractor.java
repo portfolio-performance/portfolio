@@ -100,7 +100,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
+                                t.setShares(asShares(v.get("shares")) / 100);
                             }
                             else
                             {
