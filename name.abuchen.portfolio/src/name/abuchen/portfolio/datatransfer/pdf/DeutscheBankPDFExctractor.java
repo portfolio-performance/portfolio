@@ -63,16 +63,19 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("provision", "currency")
+                        .optional()
                         .match("Provision( \\([0-9,]* %\\))? (?<currency>\\w{3}+) (?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
 
                         .section("additional", "currency")
+                        .optional()
                         .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) (?<additional>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 
                         .section("xetra", "currency").match("XETRA-Kosten (?<currency>\\w{3}+) (?<xetra>[\\d.]+,\\d+)")
+                        .optional()
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
 
