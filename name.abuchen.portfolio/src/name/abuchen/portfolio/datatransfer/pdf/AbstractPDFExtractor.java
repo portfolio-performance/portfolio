@@ -28,11 +28,15 @@ import name.abuchen.portfolio.money.Values;
 
 /* package */abstract class AbstractPDFExtractor implements Extractor
 {
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY); //$NON-NLS-1$
+
+    private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
+
     private final Client client;
     private SecurityCache securityCache;
     private final PDFTextStripper textStripper;
-    private final List<String> bankIdentifier = new ArrayList<String>();
-    private final List<DocumentType> documentTypes = new ArrayList<DocumentType>();
+    private final List<String> bankIdentifier = new ArrayList<>();
+    private final List<DocumentType> documentTypes = new ArrayList<>();
 
     public AbstractPDFExtractor(Client client) throws IOException
     {
@@ -64,7 +68,7 @@ import name.abuchen.portfolio.money.Values;
         // careful: security cache makes extractor stateful
         securityCache = new SecurityCache(client);
 
-        List<Item> results = new ArrayList<Item>();
+        List<Item> results = new ArrayList<>();
         for (File f : files)
         {
             try
@@ -85,7 +89,7 @@ import name.abuchen.portfolio.money.Values;
         return results;
     }
 
-    /* testing */String strip(File file) throws IOException
+                    /* testing */String strip(File file) throws IOException
     {
         try (PDDocument doc = PDDocument.load(file))
         {
@@ -99,7 +103,7 @@ import name.abuchen.portfolio.money.Values;
         {
             checkBankIdentifier(filename, text);
 
-            List<Item> items = new ArrayList<Item>();
+            List<Item> items = new ArrayList<>();
 
             for (DocumentType type : documentTypes)
             {
@@ -120,7 +124,7 @@ import name.abuchen.portfolio.money.Values;
         }
         catch (IllegalArgumentException e)
         {
-            errors.add(new IllegalArgumentException(e.getMessage() + " @ " + filename)); //$NON-NLS-1$
+            errors.add(new IllegalArgumentException(e.getMessage() + " @ " + filename, e)); //$NON-NLS-1$
             return Collections.emptyList();
         }
         catch (UnsupportedOperationException e)
@@ -155,15 +159,12 @@ import name.abuchen.portfolio.money.Values;
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
             return s;
         });
-        
+
         if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
-        
+
         return security;
     }
-
-    final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY); //$NON-NLS-1$
 
     protected long asShares(String value)
     {
@@ -187,7 +188,7 @@ import name.abuchen.portfolio.money.Values;
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
-    /* protected */long asAmount(String value)
+                    /* protected */long asAmount(String value)
     {
         try
         {
@@ -199,7 +200,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-    /* protected */BigDecimal asExchangeRate(String value)
+                    /* protected */BigDecimal asExchangeRate(String value)
     {
         try
         {
@@ -211,7 +212,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-    /* protected */LocalDate asDate(String value)
+                    /* protected */LocalDate asDate(String value)
     {
         return LocalDate.parse(value, DATE_FORMAT);
     }
