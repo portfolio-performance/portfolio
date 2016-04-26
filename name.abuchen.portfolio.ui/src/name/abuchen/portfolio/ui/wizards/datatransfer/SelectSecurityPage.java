@@ -35,6 +35,18 @@ public class SelectSecurityPage extends AbstractWizardPage
     }
 
     @Override
+    public void beforePage()
+    {
+        setPageComplete(!combo.getSelection().isEmpty());
+    }
+
+    @Override
+    public void afterPage()
+    {
+        setPageComplete(true);
+    }
+
+    @Override
     public void createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -54,7 +66,12 @@ public class SelectSecurityPage extends AbstractWizardPage
 
         FormDataFactory.startingWith(combo.getControl(), label);
 
-        setPageComplete(!combo.getSelection().isEmpty());
+        // initially the page is set to completed (when importing anything other
+        // than quotes, this page is never called). Before actually opening the
+        // page, the completion status is checked against the selection of a
+        // security (see #beforePage). After leaving the page, the status is set
+        // back to true in case the user decides to import something different.
+        setPageComplete(true);
 
         setControl(container);
     }
