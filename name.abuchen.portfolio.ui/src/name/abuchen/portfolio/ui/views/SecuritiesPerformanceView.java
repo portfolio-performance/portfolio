@@ -449,6 +449,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
             }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                return getIconImage(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
+            }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
         recordColumns.addColumn(column);
@@ -469,6 +475,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             public Color getForeground(Object e)
             {
                 return getColor(((SecurityPerformanceRecord) e).getIrr());
+            }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                return getIconImage(((SecurityPerformanceRecord) e).getIrr());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
@@ -491,6 +503,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings().getAmount());
             }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                return getIconImage(((SecurityPerformanceRecord) e).getCapitalGainsOnHoldings().getAmount());
+            }
+            
         });
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldings")); //$NON-NLS-1$
@@ -511,6 +530,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             public Color getForeground(Object element)
             {
                 return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
+            }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                return getIconImage(((SecurityPerformanceRecord) e).getCapitalGainsOnHoldingsPercent());
             }
         });
         column.setVisible(false);
@@ -535,6 +560,11 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return getColor(((SecurityPerformanceRecord) e).getDelta().getAmount());
             }
+            @Override
+            public Image getImage(Object e)
+            {
+                return getIconImage(((SecurityPerformanceRecord) e).getDelta().getAmount());
+            }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
@@ -556,6 +586,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             public Color getForeground(Object e)
             {
                 return getColor(((SecurityPerformanceRecord) e).getDeltaPercent());
+            }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                return getIconImage(((SecurityPerformanceRecord) e).getDeltaPercent());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
@@ -964,5 +1000,14 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private static Color getColor(double value)
     {
         return Display.getCurrent().getSystemColor(value >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+    }
+    
+    private static Image getIconImage(double value)
+    {
+        if (value > 0)
+            return Images.GREEN_ARROW.image();
+        if (value < 0)
+            return Images.RED_ARROW.image();
+        return null;
     }
 }
