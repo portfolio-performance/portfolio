@@ -22,8 +22,8 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
-        addDividendTransaction("Ertragsgutschrift");
-        addDividendTransaction("Dividendengutschrift");
+        addDividendTransaction("Ertragsgutschrift"); //$NON-NLS-1$
+        addDividendTransaction("Dividendengutschrift"); //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
