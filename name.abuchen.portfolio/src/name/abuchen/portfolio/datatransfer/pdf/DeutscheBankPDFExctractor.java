@@ -22,7 +22,8 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
-        addDividendTransaction();
+        addDividendTransaction("Ertragsgutschrift");
+        addDividendTransaction("Dividendengutschrift");
     }
 
     @SuppressWarnings("nls")
@@ -151,12 +152,12 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addDividendTransaction()
+    private void addDividendTransaction(String nameOfTransaction)
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift");
+        DocumentType type = new DocumentType(nameOfTransaction);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Ertragsgutschrift");
+        Block block = new Block(nameOfTransaction);
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
