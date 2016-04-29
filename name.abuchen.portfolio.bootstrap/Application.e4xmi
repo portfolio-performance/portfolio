@@ -66,6 +66,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.ingdiba" label="%command.import.pdf.ingdiba" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="ingdiba"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.onvista" label="%command.import.pdf.onvista" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="onvista"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_ylDyMKWZEeWIXKZIF66Dag" elementId="name.abuchen.portfolio.ui.menu.file.import.sbroker" label="%command.import.pdf.sbroker" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_FeCqYKWaEeWIXKZIF66Dag" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="sbroker"/>
           </children>
