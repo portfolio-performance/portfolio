@@ -218,14 +218,14 @@ public final class ColumnViewerSorter
         }
     }
 
-    private static final class X extends ViewerComparator
+    private static final class ViewerSorter extends ViewerComparator
     {
         private ColumnViewer columnViewer;
         private ViewerColumn viewerColumn;
         private Comparator<Object> comparator;
         private int direction = SWT.DOWN;
 
-        public X(ColumnViewer columnViewer, ViewerColumn viewerColumn, Comparator<Object> comparator)
+        public ViewerSorter(ColumnViewer columnViewer, ViewerColumn viewerColumn, Comparator<Object> comparator)
         {
             this.columnViewer = columnViewer;
             this.viewerColumn = viewerColumn;
@@ -381,7 +381,7 @@ public final class ColumnViewerSorter
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, int direction)
     {
-        X x = new X(viewer, column, comparator);
+        ViewerSorter x = new ViewerSorter(viewer, column, comparator);
 
         if (direction != SWT.NONE)
             x.setSorter(direction);
