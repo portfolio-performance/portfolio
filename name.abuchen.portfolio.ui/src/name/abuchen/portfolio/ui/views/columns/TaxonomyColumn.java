@@ -34,7 +34,7 @@ public class TaxonomyColumn extends Column
             // 1 --> skip taxonomy root node
             List<Integer> elements = IntStream.range(1, taxonomy.getHeigth()) //
                             .boxed().collect(Collectors.toList());
-            elements.add(100); // full classification
+            elements.add(SHOW_FULL_CLASSIFICATION);
             return elements;
         }
 
@@ -55,7 +55,7 @@ public class TaxonomyColumn extends Column
         {
             int index = element;
 
-            if (index == 100)
+            if (index == SHOW_FULL_CLASSIFICATION)
                 return taxonomy.getName();
 
             List<String> labels = taxonomy.getDimensions();
@@ -68,7 +68,7 @@ public class TaxonomyColumn extends Column
         {
             int index = element;
 
-            if (index == 100)
+            if (index == SHOW_FULL_CLASSIFICATION)
                 return Messages.LabelFullClassification;
 
             List<String> labels = taxonomy.getDimensions();
@@ -122,7 +122,7 @@ public class TaxonomyColumn extends Column
                 if (answer.length() > 0)
                     answer.append(", "); //$NON-NLS-1$
 
-                if (option == 100)
+                if (option == SHOW_FULL_CLASSIFICATION)
                 {
                     answer.append(c.getPathName(false));
                 }
@@ -137,6 +137,8 @@ public class TaxonomyColumn extends Column
             return answer.toString();
         }
     }
+
+    private static final int SHOW_FULL_CLASSIFICATION = 100;
 
     public TaxonomyColumn(final Taxonomy taxonomy)
     {
