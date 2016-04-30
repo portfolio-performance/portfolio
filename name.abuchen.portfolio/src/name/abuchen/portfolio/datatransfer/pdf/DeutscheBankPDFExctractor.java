@@ -22,7 +22,8 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
-        addDividendTransaction();
+        addDividendTransaction("Ertragsgutschrift"); //$NON-NLS-1$
+        addDividendTransaction("Dividendengutschrift"); //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -63,16 +64,19 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("provision", "currency")
+                        .optional()
                         .match("Provision( \\([0-9,]* %\\))? (?<currency>\\w{3}+) (?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
 
                         .section("additional", "currency")
+                        .optional()
                         .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) (?<additional>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 
                         .section("xetra", "currency").match("XETRA-Kosten (?<currency>\\w{3}+) (?<xetra>[\\d.]+,\\d+)")
+                        .optional()
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
 
@@ -127,16 +131,19 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli"))))))
 
                         .section("provision", "currency")
+                        .optional()
                         .match("Provision (?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
 
                         .section("additional", "currency")
+                        .optional()
                         .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) -(?<additional>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 
                         .section("xetra", "currency") //
+                        .optional()
                         .match("XETRA-Kosten (?<currency>\\w{3}+) -(?<xetra>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
@@ -145,12 +152,12 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addDividendTransaction()
+    private void addDividendTransaction(String nameOfTransaction)
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift");
+        DocumentType type = new DocumentType(nameOfTransaction);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Ertragsgutschrift");
+        Block block = new Block(nameOfTransaction);
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
