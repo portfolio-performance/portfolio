@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.DirectionAwareComparator;
 import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class DividendsMatrixTab implements DividendsTab
 {
@@ -98,7 +99,7 @@ public class DividendsMatrixTab implements DividendsTab
 
     private void createColumns(TableViewer records, TableColumnLayout layout)
     {
-        createSecurityColumn(records, layout);
+        createSecurityColumn(records, layout, true);
 
         // create monthly columns
         LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
@@ -109,9 +110,13 @@ public class DividendsMatrixTab implements DividendsTab
         }
 
         createSumColumn(records, layout);
+
+        // add security name at the end of the matrix table again because the
+        // first column is most likely not visible anymore
+        createSecurityColumn(records, layout, false);
     }
 
-    private void createSecurityColumn(TableViewer records, TableColumnLayout layout)
+    private void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
@@ -158,7 +163,7 @@ public class DividendsMatrixTab implements DividendsTab
                 int dir = direction == SWT.DOWN ? 1 : -1;
                 return dir * n1.compareToIgnoreCase(n2);
             }
-        }).attachTo(records, column, true);
+        }).attachTo(records, column, isSorted);
 
         layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
@@ -175,6 +180,13 @@ public class DividendsMatrixTab implements DividendsTab
                 Line line = (DividendsViewModel.Line) element;
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(line.getValue(index))
                                 : Values.Amount.format(line.getValue(index));
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
+                return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override
