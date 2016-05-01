@@ -88,6 +88,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvide
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 
+@SuppressWarnings("restriction")
 public class StatementOfAssetsViewer
 {
     @Inject

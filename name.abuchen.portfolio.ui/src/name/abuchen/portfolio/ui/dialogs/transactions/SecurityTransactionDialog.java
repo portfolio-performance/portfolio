@@ -37,7 +37,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactio
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
-public class SecurityTransactionDialog extends AbstractTransactionDialog
+@SuppressWarnings("restriction")
+public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
     @Inject
     private Client client;
@@ -53,7 +54,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog
     }
 
     @PostConstruct
-    private void createModel(ExchangeRateProviderFactory factory, PortfolioTransaction.Type type)
+    private void createModel(ExchangeRateProviderFactory factory, PortfolioTransaction.Type type) // NOSONAR
     {
         boolean isBuySell = type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
         AbstractSecurityTransactionModel model = isBuySell ? new BuySellModel(client, type)

@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -59,6 +60,7 @@ import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.views.ExceptionView;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
+@SuppressWarnings("restriction")
 public class PortfolioPart implements LoadClientThread.Callback
 {
     private abstract class BuildContainerRunnable implements Runnable
@@ -85,6 +87,9 @@ public class PortfolioPart implements LoadClientThread.Callback
 
         public abstract void createContainer(Composite parent);
     }
+
+    // compatibility: the value used to be stored in the AbstractHistoricView
+    private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
     private File clientFile;
     private Client client;
@@ -316,7 +321,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     }
 
     @PreDestroy
-    public void destroy(MPart part)
+    public void destroy()
     {
         if (clientFile != null)
             storePreferences();
@@ -371,11 +376,12 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
         catch (IOException e)
         {
+            PortfolioPlugin.log(e);
             MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
         }
     }
 
-    public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod)
+    public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod) // NOSONAR
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 
@@ -486,7 +492,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         viewContext.set(IPreferenceStore.class, this.preferenceStore);
         viewContext.set(PortfolioPart.class, this);
 
-        view = (AbstractFinanceView) ContextInjectionFactory.make(clazz, viewContext);
+        view = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, view);
         view.setContext(viewContext);
         view.init(this, parameter);
@@ -528,14 +534,11 @@ public class PortfolioPart implements LoadClientThread.Callback
     // preference store functions
     // //////////////////////////////////////////////////////////////
 
-    // compatibility: the value used to be stored in the AbstractHistoricView
-    private static final String IDENTIFIER = "AbstractHistoricView"; //$NON-NLS-1$
-
-    public LinkedList<ReportingPeriod> loadReportingPeriods()
+    public LinkedList<ReportingPeriod> loadReportingPeriods() // NOSONAR
     {
-        LinkedList<ReportingPeriod> answer = new LinkedList<ReportingPeriod>();
+        LinkedList<ReportingPeriod> answer = new LinkedList<>();
 
-        String config = getPreferenceStore().getString(IDENTIFIER);
+        String config = getPreferenceStore().getString(REPORTING_PERIODS_KEY);
         if (config != null && config.trim().length() > 0)
         {
             String[] codes = config.split(";"); //$NON-NLS-1$
@@ -561,7 +564,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         return answer;
     }
 
-    public void storeReportingPeriods(LinkedList<ReportingPeriod> periods)
+    public void storeReportingPeriods(List<ReportingPeriod> periods)
     {
         StringBuilder buf = new StringBuilder();
         for (ReportingPeriod p : periods)
@@ -570,7 +573,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             buf.append(';');
         }
 
-        getPreferenceStore().setValue(IDENTIFIER, buf.toString());
+        getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
 
     private void storePreferences()

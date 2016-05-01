@@ -13,6 +13,7 @@ import org.osgi.framework.ServiceReference;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
+@SuppressWarnings("restriction")
 public class ProxyAddon
 {
 

@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+@SuppressWarnings("restriction")
 public enum Images
 {
     LOGO_16("pp_16.png"), //$NON-NLS-1$

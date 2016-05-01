@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.ui.UIConstants;
 
+@SuppressWarnings("restriction")
 public class TextViewerPart
 {
     @Inject

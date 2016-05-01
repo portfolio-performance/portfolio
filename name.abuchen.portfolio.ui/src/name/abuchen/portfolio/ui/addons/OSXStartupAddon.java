@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import name.abuchen.portfolio.ui.Messages;
 
+@SuppressWarnings("restriction")
 public class OSXStartupAddon
 {
     @Inject

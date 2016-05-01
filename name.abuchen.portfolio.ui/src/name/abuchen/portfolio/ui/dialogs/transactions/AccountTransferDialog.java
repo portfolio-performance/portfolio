@@ -5,8 +5,6 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +36,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Prope
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
-public class AccountTransferDialog extends AbstractTransactionDialog
+@SuppressWarnings("restriction")
+public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 {
     private final class AccountsMustBeDifferentValidator extends MultiValidator
     {
@@ -76,7 +75,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog
     }
 
     @PostConstruct
-    private void createModel(ExchangeRateProviderFactory factory)
+    private void createModel(ExchangeRateProviderFactory factory) // NOSONAR
     {
         AccountTransferModel m = new AccountTransferModel(client);
         m.setExchangeRateProviderFactory(factory);
@@ -180,22 +179,17 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         // hide / show exchange rate if necessary
         //
 
-        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange(PropertyChangeEvent event)
-            {
-                String sourceCurrency = model().getSourceAccountCurrency();
-                String targetCurrency = model().getTargetAccountCurrency();
+        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> {
+            String sourceCurrency = model().getSourceAccountCurrency();
+            String targetCurrency = model().getTargetAccountCurrency();
 
-                // make exchange rate visible if both are set but different
+            // make exchange rate visible if both are set but different
 
-                boolean visible = sourceCurrency.length() > 0 && targetCurrency.length() > 0
-                                && !sourceCurrency.equals(targetCurrency);
+            boolean visible = sourceCurrency.length() > 0 && targetCurrency.length() > 0
+                            && !sourceCurrency.equals(targetCurrency);
 
-                exchangeRate.setVisible(visible);
-                amount.setVisible(visible);
-            }
+            exchangeRate.setVisible(visible);
+            amount.setVisible(visible);
         });
 
         WarningMessages warnings = new WarningMessages(this);
@@ -205,6 +199,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }
 
+    @Override
     public void setAccount(Account account)
     {
         model().setSourceAccount(account);
