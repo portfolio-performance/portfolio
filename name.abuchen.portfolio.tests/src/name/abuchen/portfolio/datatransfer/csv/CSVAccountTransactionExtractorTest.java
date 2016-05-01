@@ -110,6 +110,29 @@ public class CSVAccountTransactionExtractorTest
     }
 
     @Test
+    public void testIfMultipleSecuritiesWithSameISINExist()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setIsin("DE0007164600");
+        client.addSecurity(security);
+        Security security2 = new Security();
+        security2.setIsin("DE0007164600");
+        client.addSecurity(security2);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(
+                        0, Arrays.<String[]>asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "100",
+                                        "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors.size(), is(1));
+        assertThat(results, empty());
+    }
+
+    @Test
     public void testTypeIsDeterminedByPositiveAmount()
     {
         Client client = new Client();

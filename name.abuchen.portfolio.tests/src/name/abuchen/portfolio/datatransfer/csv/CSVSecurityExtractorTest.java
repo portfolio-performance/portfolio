@@ -94,7 +94,7 @@ public class CSVSecurityExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "", "", "", "SAP SE", "EUR", "Notiz" }),
+                        Arrays.<String[]>asList(new String[] { "", "", "", "", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));
