@@ -29,10 +29,10 @@ public class TaxonomyColumn extends Column
         }
 
         @Override
-        public List<Integer> getElements()
+        public List<Integer> getOptions()
         {
             // 1 --> skip taxonomy root node
-            List<Integer> elements = IntStream.range(1, taxonomy.getHeigth()) //
+            List<Integer> elements = IntStream.range(1, taxonomy.getHeigth()) // NOSONAR
                             .boxed().collect(Collectors.toList());
             elements.add(SHOW_FULL_CLASSIFICATION);
             return elements;
@@ -45,51 +45,51 @@ public class TaxonomyColumn extends Column
         }
 
         @Override
-        public String toString(Integer element)
+        public String toString(Integer option)
         {
-            return element.toString();
+            return option.toString();
         }
 
         @Override
-        public String getColumnLabel(Integer element)
+        public String getColumnLabel(Integer option)
         {
-            int index = element;
+            int index = option;
 
             if (index == SHOW_FULL_CLASSIFICATION)
                 return taxonomy.getName();
 
             List<String> labels = taxonomy.getDimensions();
             return labels != null && index < labels.size() ? labels.get(index - 1)
-                            : MessageFormat.format(Messages.LabelLevelNameNumber, taxonomy.getName(), element);
+                            : MessageFormat.format(Messages.LabelLevelNameNumber, taxonomy.getName(), option);
         }
 
         @Override
-        public String getMenuLabel(Integer element)
+        public String getMenuLabel(Integer option)
         {
-            int index = element;
+            int index = option;
 
             if (index == SHOW_FULL_CLASSIFICATION)
                 return Messages.LabelFullClassification;
 
             List<String> labels = taxonomy.getDimensions();
             return labels != null && index <= labels.size() ? labels.get(index - 1)
-                            : MessageFormat.format(Messages.LabelLevelNumber, element);
+                            : MessageFormat.format(Messages.LabelLevelNumber, option);
         }
 
         @Override
-        public String getDescription(Integer element)
+        public String getDescription(Integer option)
         {
             return null;
         }
 
         @Override
-        public boolean canCreateNewElements()
+        public boolean canCreateNewOptions()
         {
             return false;
         }
 
         @Override
-        public Integer createNewElement(Shell shell)
+        public Integer createNewOption(Shell shell)
         {
             throw new UnsupportedOperationException();
         }

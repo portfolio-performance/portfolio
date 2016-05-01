@@ -280,8 +280,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private final String identifier;
 
-    private List<Column> columns = new ArrayList<Column>();
-    private Map<String, Column> id2column = new HashMap<String, Column>();
+    private List<Column> columns = new ArrayList<>();
+    private Map<String, Column> id2column = new HashMap<>();
 
     private IPreferenceStore preferences;
     private ConfigurationStore store;
@@ -369,14 +369,14 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     @Override
     public void menuAboutToShow(final IMenuManager manager)
     {
-        final Map<Column, List<Object>> visible = new HashMap<Column, List<Object>>();
+        final Map<Column, List<Object>> visible = new HashMap<>();
         for (Widget col : policy.getColumns())
         {
             Column column = (Column) col.getData(Column.class.getName());
             visible.computeIfAbsent(column, k -> new ArrayList<Object>()).add(col.getData(OPTIONS_KEY));
         }
 
-        Map<String, IMenuManager> groups = new HashMap<String, IMenuManager>();
+        Map<String, IMenuManager> groups = new HashMap<>();
 
         for (final Column column : columns)
         {
@@ -398,7 +398,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 MenuManager subMenu = new MenuManager(column.getMenuLabel());
 
-                for (Object option : column.getOptions().getElements())
+                for (Object option : column.getOptions().getOptions())
                 {
                     boolean isVisible = options.contains(option);
                     String label = column.getOptions().getMenuLabel(option);
@@ -414,7 +414,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                     addShowHideAction(subMenu, column, label, true, option);
                 }
 
-                if (column.getOptions().canCreateNewElements())
+                if (column.getOptions().canCreateNewOptions())
                     addCreateOptionAction(subMenu, column);
 
                 managerToAdd.add(subMenu);
@@ -447,7 +447,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             @Override
             public void run()
             {
-                Object option = column.getOptions().createNewElement(Display.getCurrent().getActiveShell());
+                Object option = column.getOptions().createNewOption(Display.getCurrent().getActiveShell());
                 if (option != null)
                 {
                     policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
@@ -548,7 +548,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 if (column.hasOptions())
                 {
-                    for (Object element : column.getOptions().getElements())
+                    for (Object element : column.getOptions().getOptions())
                         policy.create(column, element, column.getDefaultSortDirection(), column.getDefaultWidth());
                 }
                 else
