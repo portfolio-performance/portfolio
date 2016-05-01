@@ -333,12 +333,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (store != null)
             store.dispose();
     }
-    
+
     public String getConfigurationName()
     {
         return store != null ? store.getActiveName() : null;
     }
-    
+
     public void addListener(Listener l)
     {
         this.listeners.add(l);
@@ -496,6 +496,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 try
                 {
                     policy.setRedraw(false);
+
+                    Widget sortColumn = policy.getSortColumn();
+                    if (widget.equals(sortColumn))
+                        policy.getViewer().setComparator(null);
+
                     widget.dispose();
                 }
                 finally
@@ -637,6 +642,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         try
         {
             policy.setRedraw(false);
+
+            // turn of sorting in case new columns define no viewer comparator
+            policy.getViewer().setComparator(null);
+
             int count = policy.getColumnCount();
 
             StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
@@ -695,6 +704,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             // first add, then remove columns
             // (otherwise rendering of first column is broken)
             policy.setRedraw(false);
+
+            // turn of sorting in case new columns define no viewer comparator
+            policy.getViewer().setComparator(null);
 
             int count = policy.getColumnCount();
 
