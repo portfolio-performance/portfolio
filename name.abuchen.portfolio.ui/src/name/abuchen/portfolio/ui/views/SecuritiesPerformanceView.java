@@ -28,10 +28,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
 import com.ibm.icu.text.MessageFormat;
@@ -65,6 +63,8 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
@@ -427,31 +427,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
     }
 
-    private void addPerformanceColumns() // NOSONAR
+    private void addPerformanceColumns()
     {
         Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return getIconImage(((SecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn());
-            }
-        });
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
@@ -459,54 +441,17 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getIrr());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getIrr());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return getIconImage(((SecurityPerformanceRecord) e).getIrr());
-            }
-        });
+        column.setLabelProvider(
+                        new NumberColorLabelProvider<>(Values.Percent2, r -> ((SecurityPerformanceRecord) r).getIrr()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
-        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(),
-                                getClient().getBaseCurrency());
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings().getAmount());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return getIconImage(((SecurityPerformanceRecord) e).getCapitalGainsOnHoldings().getAmount());
-            }
-
-        });
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(),
+                        getClient().getBaseCurrency()));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldings")); //$NON-NLS-1$
         recordColumns.addColumn(column);
@@ -514,26 +459,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return getColor(((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsPercent());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return getIconImage(((SecurityPerformanceRecord) e).getCapitalGainsOnHoldingsPercent());
-            }
-        });
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsPercent()));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsPercent")); //$NON-NLS-1$
         recordColumns.addColumn(column);
@@ -543,26 +470,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
         column.setMenuLabel(Messages.ColumnAbsolutePerformance_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getDelta(), getClient().getBaseCurrency());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getDelta().getAmount());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return getIconImage(((SecurityPerformanceRecord) e).getDelta().getAmount());
-            }
-        });
+        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((SecurityPerformanceRecord) element).getDelta(),
+                        getClient().getBaseCurrency()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
@@ -571,26 +480,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
         column.setMenuLabel(Messages.ColumnAbsolutePerformancePercent_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getDeltaPercent());
-            }
-
-            @Override
-            public Color getForeground(Object e)
-            {
-                return getColor(((SecurityPerformanceRecord) e).getDeltaPercent());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                return getIconImage(((SecurityPerformanceRecord) e).getDeltaPercent());
-            }
-        });
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getDeltaPercent()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
         column.setVisible(false);
         recordColumns.addColumn(column);
@@ -1007,19 +898,5 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         Security security = ((SecurityPerformanceRecord) selection).getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
-    }
-
-    private static Color getColor(double value)
-    {
-        return Display.getCurrent().getSystemColor(value >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
-    }
-
-    private static Image getIconImage(double value)
-    {
-        if (value > 0)
-            return Images.GREEN_ARROW.image();
-        if (value < 0)
-            return Images.RED_ARROW.image();
-        return null;
     }
 }
