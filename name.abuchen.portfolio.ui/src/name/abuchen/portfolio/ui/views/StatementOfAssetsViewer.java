@@ -13,7 +13,6 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -77,7 +76,6 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.DirectionAwareComparator;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -137,7 +135,7 @@ public class StatementOfAssetsViewer
     }
 
     @PostConstruct
-    private void loadTaxonomy()
+    private void loadTaxonomy() // NOSONAR
     {
         String taxonomyId = preference.getString(this.getClass().getSimpleName());
 
@@ -686,14 +684,7 @@ public class StatementOfAssetsViewer
         {
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    StatementOfAssetsViewer.this.menuAboutToShow(manager);
-                }
-            });
+            menuMgr.addMenuListener(manager -> StatementOfAssetsViewer.this.menuAboutToShow(manager));
 
             contextMenu = menuMgr.createContextMenu(shell);
         }
@@ -796,7 +787,7 @@ public class StatementOfAssetsViewer
         if (clientSnapshot == null && portfolioSnapshot == null)
             return;
 
-        SecurityPerformanceSnapshot sps = null;
+        SecurityPerformanceSnapshot sps;
 
         if (clientSnapshot != null)
         {
@@ -850,7 +841,7 @@ public class StatementOfAssetsViewer
         private AssetCategory category;
         private AssetPosition position;
 
-        private transient Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
+        private Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
 
         private Element(AssetCategory category, int sortOrder)
         {
@@ -1003,7 +994,7 @@ public class StatementOfAssetsViewer
         }
     }
 
-    public static class ElementComparator implements DirectionAwareComparator
+    public static class ElementComparator implements Comparator<Object>
     {
         private Comparator<Object> comparator;
 
@@ -1013,16 +1004,18 @@ public class StatementOfAssetsViewer
         }
 
         @Override
-        public int compare(int direction, Object o1, Object o2)
+        public int compare(Object o1, Object o2)
         {
             int a = ((Element) o1).getSortOrder();
             int b = ((Element) o2).getSortOrder();
 
             if (a != b)
-                return a - b;
+            {
+                int direction = ColumnViewerSorter.SortingContext.getSortDirection();
+                return direction == SWT.DOWN ? a - b : b - a;
+            }
 
-            int dir = direction == SWT.DOWN ? 1 : -1;
-            return dir * comparator.compare(o1, o2);
+            return comparator.compare(o1, o2);
         }
     }
 
@@ -1053,7 +1046,7 @@ public class StatementOfAssetsViewer
             // sorting (only positions within a category are sorted)
             int sortOrder = 0;
 
-            List<Element> answer = new ArrayList<Element>();
+            List<Element> answer = new ArrayList<>();
             for (AssetCategory cat : categories.asList())
             {
                 answer.add(new Element(cat, sortOrder));

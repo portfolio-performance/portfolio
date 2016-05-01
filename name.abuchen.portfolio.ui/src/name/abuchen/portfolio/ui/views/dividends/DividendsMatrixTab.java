@@ -33,7 +33,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.DirectionAwareComparator;
 import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -144,25 +143,20 @@ public class DividendsMatrixTab implements DividendsTab
             }
         });
 
-        ColumnViewerSorter.create(new DirectionAwareComparator()
-        {
-            @Override
-            public int compare(int direction, Object o1, Object o2)
-            {
-                DividendsViewModel.Line line1 = (DividendsViewModel.Line) o1;
-                DividendsViewModel.Line line2 = (DividendsViewModel.Line) o2;
+        ColumnViewerSorter.create((o1, o2) -> {
+            int direction = ColumnViewerSorter.SortingContext.getSortDirection();
 
-                if (line1.getVehicle() == null)
-                    return 1;
-                if (line2.getVehicle() == null)
-                    return -1;
+            DividendsViewModel.Line line1 = (DividendsViewModel.Line) o1;
+            DividendsViewModel.Line line2 = (DividendsViewModel.Line) o2;
 
-                String n1 = line1.getVehicle().getName();
-                String n2 = line2.getVehicle().getName();
+            if (line1.getVehicle() == null)
+                return direction == SWT.DOWN ? 1 : -1;
+            if (line2.getVehicle() == null)
+                return direction == SWT.DOWN ? -1 : 1;
 
-                int dir = direction == SWT.DOWN ? 1 : -1;
-                return dir * n1.compareToIgnoreCase(n2);
-            }
+            String n1 = line1.getVehicle().getName();
+            String n2 = line2.getVehicle().getName();
+            return n1.compareToIgnoreCase(n2);
         }).attachTo(records, column, isSorted);
 
         layout.setColumnData(column.getColumn(), new ColumnPixelData(200));

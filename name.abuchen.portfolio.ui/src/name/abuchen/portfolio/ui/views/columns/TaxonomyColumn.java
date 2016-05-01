@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,7 +15,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.OptionAwareComparator;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 
 public class TaxonomyColumn extends Column
@@ -152,7 +153,7 @@ public class TaxonomyColumn extends Column
         setComparator(new TaxonomyComparator(labelProvider));
     }
 
-    private class TaxonomyComparator implements OptionAwareComparator<Integer>
+    private class TaxonomyComparator implements Comparator<Object>
     {
         private final TaxonomyLabelProvider labelProvider;
 
@@ -162,8 +163,10 @@ public class TaxonomyColumn extends Column
         }
 
         @Override
-        public int compare(Integer option, Object o1, Object o2)
+        public int compare(Object o1, Object o2)
         {
+            Integer option = (Integer) ColumnViewerSorter.SortingContext.getColumnOption();
+
             String s1 = labelProvider.getText(o1, option);
             String s2 = labelProvider.getText(o2, option);
 

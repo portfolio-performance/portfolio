@@ -15,7 +15,7 @@ public class AssetPosition
         @Override
         public int compare(AssetPosition p1, AssetPosition p2)
         {
-            return p1.getDescription().compareTo(p2.getDescription());
+            return p1.getDescription().compareToIgnoreCase(p2.getDescription());
         }
     }
 

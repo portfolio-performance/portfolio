@@ -59,7 +59,6 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.OptionAwareComparator;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -227,23 +226,18 @@ public final class SecuritiesTable implements ModificationListener
                 return latest != null ? Values.Quote.format(latest.getValue()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                long v1 = p1.getValue();
-                long v2 = p2.getValue();
-                return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
-            }
+            long v1 = p1.getValue();
+            long v2 = p2.getValue();
+            return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
         }));
         support.addColumn(column);
     }
@@ -317,8 +311,8 @@ public final class SecuritiesTable implements ModificationListener
                 LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
                 LatestSecurityPrice l2 = (LatestSecurityPrice) p2;
 
-                double v1 = (((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100);
-                double v2 = (((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100);
+                double v1 = ((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100;
+                double v2 = ((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100;
                 return Double.compare(v1, v2);
             }
         }));
@@ -351,21 +345,16 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                return p1.getTime().compareTo(p2.getTime());
-            }
+            return p1.getTime().compareTo(p2.getTime());
         }));
         support.addColumn(column);
     }
@@ -401,23 +390,18 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                List<SecurityPrice> prices1 = ((Security) o1).getPrices();
-                SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
-                List<SecurityPrice> prices2 = ((Security) o2).getPrices();
-                SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            List<SecurityPrice> prices1 = ((Security) o1).getPrices();
+            SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
+            List<SecurityPrice> prices2 = ((Security) o2).getPrices();
+            SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                return p1.getTime().compareTo(p2.getTime());
-            }
+            return p1.getTime().compareTo(p2.getTime());
         }));
         support.addColumn(column);
     }
@@ -451,23 +435,20 @@ public final class SecuritiesTable implements ModificationListener
         column.setDescription(Messages.ColumnQuoteChange_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(new OptionAwareComparator<ReportingPeriod>()
-        {
-            @Override
-            public int compare(ReportingPeriod option, Object o1, Object o2)
-            {
-                Double v1 = valueProvider.apply(o1, option);
-                Double v2 = valueProvider.apply(o2, option);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
 
-                if (v1 == null && v2 == null)
-                    return 0;
-                else if (v1 == null)
-                    return -1;
-                else if (v2 == null)
-                    return 1;
+            Double v1 = valueProvider.apply(o1, option);
+            Double v2 = valueProvider.apply(o2, option);
 
-                return Double.compare(v1.doubleValue(), v2.doubleValue());
-            }
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return Double.compare(v1.doubleValue(), v2.doubleValue());
         }));
         support.addColumn(column);
     }
