@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+@SuppressWarnings("restriction")
 public class CustomSaveHandler extends PartServiceSaveHandler
 {
     private static final class PromptForSaveDialog extends MessageDialog

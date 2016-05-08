@@ -152,10 +152,10 @@ import name.abuchen.portfolio.money.Values;
         String isin = values.get("isin"); //$NON-NLS-1$
         String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
         String wkn = values.get("wkn"); //$NON-NLS-1$
+        String name = values.get("name").trim(); //$NON-NLS-1$
 
-        Security security = securityCache.lookup(isin, tickerSymbol, wkn, () -> {
+        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
-            s.setName(values.get("name").trim()); //$NON-NLS-1$
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
             return s;
         });

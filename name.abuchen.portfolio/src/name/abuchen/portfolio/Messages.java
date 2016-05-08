@@ -128,6 +128,7 @@ public class Messages extends NLS
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDuplicateISIN;
+    public static String MsgErrorDuplicateName;
     public static String MsgErrorDuplicateTicker;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;

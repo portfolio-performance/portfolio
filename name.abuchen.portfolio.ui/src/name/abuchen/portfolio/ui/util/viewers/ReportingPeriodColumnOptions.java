@@ -22,7 +22,7 @@ public class ReportingPeriodColumnOptions implements Column.Options<ReportingPer
     }
 
     @Override
-    public List<ReportingPeriod> getElements()
+    public List<ReportingPeriod> getOptions()
     {
         return defaultOptions;
     }
@@ -41,37 +41,37 @@ public class ReportingPeriodColumnOptions implements Column.Options<ReportingPer
     }
 
     @Override
-    public String toString(ReportingPeriod element)
+    public String toString(ReportingPeriod option)
     {
-        return element.getCode();
+        return option.getCode();
     }
 
     @Override
-    public String getColumnLabel(ReportingPeriod element)
+    public String getColumnLabel(ReportingPeriod option)
     {
-        return MessageFormat.format(columnLabel, element.toString());
+        return MessageFormat.format(columnLabel, option.toString());
     }
 
     @Override
-    public String getMenuLabel(ReportingPeriod element)
+    public String getMenuLabel(ReportingPeriod option)
     {
-        return element.toString();
+        return option.toString();
     }
 
     @Override
-    public String getDescription(ReportingPeriod element)
+    public String getDescription(ReportingPeriod option)
     {
         return null;
     }
 
     @Override
-    public boolean canCreateNewElements()
+    public boolean canCreateNewOptions()
     {
         return true;
     }
 
     @Override
-    public ReportingPeriod createNewElement(Shell shell)
+    public ReportingPeriod createNewOption(Shell shell)
     {
         ReportingPeriodDialog dialog = new ReportingPeriodDialog(shell, null);
         if (dialog.open() == ReportingPeriodDialog.OK)

@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
+@SuppressWarnings("restriction")
 public class WelcomePart
 {
 
@@ -162,13 +163,13 @@ public class WelcomePart
         {
             Command cmd = commandService.getCommand(command);
 
-            List<Parameterization> parameterizations = new ArrayList<Parameterization>();
+            List<Parameterization> parameterizations = new ArrayList<>();
             if (parameters != null)
             {
-                for (int ii = 0; ii < parameters.length; ii++)
+                for (int ii = 0; ii < parameters.length; ii = ii + 2)
                 {
                     IParameter p = cmd.getParameter(parameters[ii]);
-                    parameterizations.add(new Parameterization(p, parameters[++ii]));
+                    parameterizations.add(new Parameterization(p, parameters[ii + 1]));
                 }
             }
 

@@ -212,7 +212,7 @@ public class CSVPortfolioTransactionExtractorTest
     }
 
     @Test
-    public void testErrorIfNoSecurityIsFound() throws ParseException
+    public void testThatSecurityIsCreatedByName() throws ParseException
     {
         Client client = new Client();
 
@@ -224,8 +224,10 @@ public class CSVPortfolioTransactionExtractorTest
                                         "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
-        assertThat(errors.size(), is(1));
-        assertThat(results, empty());
+        assertThat(errors, empty());
+
+        SecurityItem item = (SecurityItem) results.stream().filter(i -> i instanceof SecurityItem).findAny().get();
+        assertThat(item.getSecurity().getName(), is("SAP SE"));
     }
 
     @Test
@@ -236,8 +238,8 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "", "DE0007164600", "", "", "SAP SE", "100", "EUR",
+        List<Item> results = extractor.extract(
+                        0, Arrays.<String[]>asList(new String[] { "", "DE0007164600", "", "", "SAP SE", "100", "EUR",
                                         "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 

@@ -5,8 +5,6 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -53,7 +50,8 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
-public class AccountTransactionDialog extends AbstractTransactionDialog
+@SuppressWarnings("restriction")
+public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
     @Inject
     private Client client;
@@ -71,7 +69,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
     }
 
     @PostConstruct
-    private void createModel(ExchangeRateProviderFactory factory, AccountTransaction.Type type)
+    private void createModel(ExchangeRateProviderFactory factory, AccountTransaction.Type type) // NOSONAR
     {
         AccountTransactionModel m = new AccountTransactionModel(client, type);
         m.setExchangeRateProviderFactory(factory);
@@ -84,7 +82,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
     }
 
     @Override
-    protected void createFormElements(Composite editArea)
+    protected void createFormElements(Composite editArea) // NOSONAR
     {
         //
         // input elements
@@ -166,7 +164,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
                         fxAmount.label, lblNote);
 
-        FormDataFactory forms = null;
+        FormDataFactory forms;
         if (securities != null)
         {
             forms = startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
@@ -200,22 +198,17 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         // hide / show exchange rate if necessary
         //
 
-        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange(PropertyChangeEvent event)
-            {
-                String securityCurrency = model().getSecurityCurrencyCode();
-                String accountCurrency = model().getAccountCurrencyCode();
+        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> {
+            String securityCurrency = model().getSecurityCurrencyCode();
+            String accountCurrency = model().getAccountCurrencyCode();
 
-                // make exchange rate visible if both are set but different
+            // make exchange rate visible if both are set but different
 
-                boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
-                                && !securityCurrency.equals(accountCurrency);
+            boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
+                            && !securityCurrency.equals(accountCurrency);
 
-                exchangeRate.setVisible(visible);
-                amount.setVisible(visible);
-            }
+            exchangeRate.setVisible(visible);
+            amount.setVisible(visible);
         });
 
         WarningMessages warnings = new WarningMessages(this);
@@ -227,7 +220,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
 
     private ComboInput setupSecurities(Composite editArea)
     {
-        List<Security> activeSecurities = new ArrayList<Security>();
+        List<Security> activeSecurities = new ArrayList<>();
         activeSecurities.addAll(including(client.getActiveSecurities(), model().getSecurity()));
 
         // add empty security only if it has not been added previously
@@ -248,21 +241,14 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         {
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    sharesMenuAboutToShow(manager);
-                }
-            });
+            menuMgr.addMenuListener(this::sharesMenuAboutToShow);
             contextMenu = menuMgr.createContextMenu(getShell());
         }
 
         contextMenu.setVisible(true);
     }
 
-    private void sharesMenuAboutToShow(IMenuManager manager)
+    private void sharesMenuAboutToShow(IMenuManager manager) // NOSONAR
     {
         manager.add(new LabelOnly(Messages.DividendsDialogTitleShares));
 
@@ -317,7 +303,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
             contextMenu.dispose();
     }
 
-    private String getTotalLabel()
+    private String getTotalLabel() // NOSONAR
     {
         switch (model().getType())
         {
@@ -339,11 +325,13 @@ public class AccountTransactionDialog extends AbstractTransactionDialog
         }
     }
 
+    @Override
     public void setAccount(Account account)
     {
         model().setAccount(account);
     }
 
+    @Override
     public void setSecurity(Security security)
     {
         model().setSecurity(security);

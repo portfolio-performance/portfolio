@@ -33,8 +33,8 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.DirectionAwareComparator;
 import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class DividendsMatrixTab implements DividendsTab
 {
@@ -98,7 +98,7 @@ public class DividendsMatrixTab implements DividendsTab
 
     private void createColumns(TableViewer records, TableColumnLayout layout)
     {
-        createSecurityColumn(records, layout);
+        createSecurityColumn(records, layout, true);
 
         // create monthly columns
         LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
@@ -109,9 +109,13 @@ public class DividendsMatrixTab implements DividendsTab
         }
 
         createSumColumn(records, layout);
+
+        // add security name at the end of the matrix table again because the
+        // first column is most likely not visible anymore
+        createSecurityColumn(records, layout, false);
     }
 
-    private void createSecurityColumn(TableViewer records, TableColumnLayout layout)
+    private void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
@@ -139,26 +143,21 @@ public class DividendsMatrixTab implements DividendsTab
             }
         });
 
-        ColumnViewerSorter.create(new DirectionAwareComparator()
-        {
-            @Override
-            public int compare(int direction, Object o1, Object o2)
-            {
-                DividendsViewModel.Line line1 = (DividendsViewModel.Line) o1;
-                DividendsViewModel.Line line2 = (DividendsViewModel.Line) o2;
+        ColumnViewerSorter.create((o1, o2) -> {
+            int direction = ColumnViewerSorter.SortingContext.getSortDirection();
 
-                if (line1.getVehicle() == null)
-                    return 1;
-                if (line2.getVehicle() == null)
-                    return -1;
+            DividendsViewModel.Line line1 = (DividendsViewModel.Line) o1;
+            DividendsViewModel.Line line2 = (DividendsViewModel.Line) o2;
 
-                String n1 = line1.getVehicle().getName();
-                String n2 = line2.getVehicle().getName();
+            if (line1.getVehicle() == null)
+                return direction == SWT.DOWN ? 1 : -1;
+            if (line2.getVehicle() == null)
+                return direction == SWT.DOWN ? -1 : 1;
 
-                int dir = direction == SWT.DOWN ? 1 : -1;
-                return dir * n1.compareToIgnoreCase(n2);
-            }
-        }).attachTo(records, column, true);
+            String n1 = line1.getVehicle().getName();
+            String n2 = line2.getVehicle().getName();
+            return n1.compareToIgnoreCase(n2);
+        }).attachTo(records, column, isSorted);
 
         layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
@@ -175,6 +174,13 @@ public class DividendsMatrixTab implements DividendsTab
                 Line line = (DividendsViewModel.Line) element;
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(line.getValue(index))
                                 : Values.Amount.format(line.getValue(index));
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
+                return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override

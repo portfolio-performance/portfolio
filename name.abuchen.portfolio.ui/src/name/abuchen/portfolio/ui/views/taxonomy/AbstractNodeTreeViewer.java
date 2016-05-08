@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,6 +69,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
+@SuppressWarnings("restriction")
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
     private static class ItemContentProvider implements ITreeContentProvider
@@ -108,7 +108,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         @Override
         public void dispose()
-        {}
+        {
+            // no resources allocated
+        }
     }
 
     private static class NodeDragListener extends DragSourceAdapter
@@ -153,7 +155,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         }
 
         @Override
-        public boolean performDrop(Object data)
+        public boolean performDrop(Object data) // NOSONAR
         {
             TaxonomyNode droppedNode = TaxonomyNodeTransfer.getTransfer().getTaxonomyNode();
             if (droppedNode == getCurrentTarget())
@@ -178,7 +180,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     droppedNode.insertBefore(target);
                     viewer.onTaxnomyNodeEdited(droppedParent);
                     break;
-                case ViewerDropAdapter.LOCATION_ON:
+                case ViewerDropAdapter.LOCATION_ON: // NOSONAR
                     // parent must not be dropped into child
                     if (target.getPath().contains(droppedNode))
                         break;
@@ -292,6 +294,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         support.showHideShowColumnsMenu(shell);
     }
 
+    @Override
     public final Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -325,7 +328,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         nodeViewer.setInput(getModel());
 
-        new ContextMenu(nodeViewer.getControl(), manager -> fillContextMenu(manager)).hook();
+        new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();
 
         return container;
     }
@@ -335,7 +338,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     protected void addDimensionColumn(ShowHideColumnHelper support)
     {
         Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider()
+        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
         {
             @Override
             public Image getImage(Object e)
@@ -376,12 +379,12 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         addWeightColumn(support);
     }
 
-    private void addWeightColumn(ShowHideColumnHelper support)
+    private void addWeightColumn(ShowHideColumnHelper support) // NOSONAR
     {
         Column column;
         column = new Column("weight", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
         column.setDescription(Messages.ColumnWeight_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
             public String getText(Object element)
@@ -424,14 +427,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return false;
                 return super.canEdit(element);
             }
-        }.addListener(new ModificationListener()
-        {
-            @Override
-            public void onModified(Object element, Object newValue, Object oldValue)
-            {
-                onWeightModified(element, newValue, oldValue);
-            }
-        }).attachTo(column);
+        } //
+                        .addListener((element, newValue, oldValue) -> onWeightModified(element, newValue, oldValue)) //
+                        .attachTo(column);
         support.addColumn(column);
     }
 
@@ -450,10 +448,10 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 long base = node.getParent() == null ? node.getActual().getAmount()
                                 : node.getParent().getActual().getAmount();
 
-                if (base == 0d)
+                if (base == 0)
                     return Values.Percent.format(0d);
                 else
-                    return Values.Percent.format(((double) actual / (double) base));
+                    return Values.Percent.format((double) actual / (double) base);
             }
         });
         support.addColumn(column);
@@ -471,11 +469,11 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         support.addColumn(column);
     }
 
-    protected void addAdditionalColumns(ShowHideColumnHelper support)
+    protected void addAdditionalColumns(ShowHideColumnHelper support) // NOSONAR
     {
         Column column = new Column("exchangeRate", Messages.ColumnExchangeRate, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
             public String getText(Object element)
@@ -516,7 +514,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         column = new Column("actBaseCurrency", Messages.ColumnActualValue + Messages.BaseCurrencyCue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setDescription(Messages.ColumnActualValueBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
             public String getText(Object element)
@@ -649,7 +647,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         super.dispose();
     }
 
-    protected void fillContextMenu(IMenuManager manager)
+    protected void fillContextMenu(IMenuManager manager) // NOSONAR
     {
         final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) nodeViewer.getSelection()).getFirstElement();
         if (node == null)
@@ -678,24 +676,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             if (!unassigned.getChildren().isEmpty())
             {
                 MenuManager subMenu = new MenuManager(Messages.MenuTaxonomyMakeAssignment);
-                for (final TaxonomyNode assignment : unassigned.getChildren())
-                {
-                    String label = assignment.getName();
-
-                    if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
-                        label += " (" + Values.Weight.format(assignment.getWeight()) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
-
-                    subMenu.add(new Action(label)
-                    {
-                        @Override
-                        public void run()
-                        {
-                            assignment.moveTo(node);
-                            nodeViewer.setExpandedState(node, true);
-                            onTaxnomyNodeEdited(node);
-                        }
-                    });
-                }
+                addAvailableAssignments(subMenu, node);
                 manager.add(subMenu);
             }
 
@@ -761,6 +742,28 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         }
     }
 
+    private void addAvailableAssignments(MenuManager manager, TaxonomyNode targetNode)
+    {
+        for (final TaxonomyNode assignment : getModel().getUnassignedNode().getChildren())
+        {
+            String label = assignment.getName();
+
+            if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
+                label += " (" + Values.Weight.format(assignment.getWeight()) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
+
+            manager.add(new Action(label)
+            {
+                @Override
+                public void run()
+                {
+                    assignment.moveTo(targetNode);
+                    nodeViewer.setExpandedState(targetNode, true);
+                    onTaxnomyNodeEdited(targetNode);
+                }
+            });
+        }
+    }
+
     private void doAddClassification(TaxonomyNode parent)
     {
         Classification newClassification = new Classification(null, UUID.randomUUID().toString(),
@@ -780,14 +783,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         node.getParent().removeChild(node);
 
-        node.accept(new TaxonomyModel.NodeVisitor()
-        {
-            @Override
-            public void visit(TaxonomyNode node)
-            {
-                if (node.isAssignment())
-                    node.moveTo(getModel().getUnassignedNode());
-            }
+        node.accept(node1 -> {
+            if (node1.isAssignment())
+                node1.moveTo(getModel().getUnassignedNode());
         });
 
         onTaxnomyNodeEdited(getModel().getRootNode());
@@ -850,26 +848,21 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         // do not fire model change -> called within modification listener
     }
 
-    private void doSort(TaxonomyNode node, final boolean byType)
+    private void doSort(TaxonomyNode node, final boolean byType) // NOSONAR
     {
-        Collections.sort(node.getChildren(), new Comparator<TaxonomyNode>()
-        {
-            @Override
-            public int compare(TaxonomyNode node1, TaxonomyNode node2)
-            {
-                // unassigned category always stays at the end of the list
-                if (node1.isUnassignedCategory())
-                    return 1;
-                if (node2.isUnassignedCategory())
-                    return -1;
+        Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
+            // unassigned category always stays at the end of the list
+            if (node1.isUnassignedCategory())
+                return 1;
+            if (node2.isUnassignedCategory())
+                return -1;
 
-                if (byType && node1.isClassification() && !node2.isClassification())
-                    return -1;
-                if (byType && !node1.isClassification() && node2.isClassification())
-                    return 1;
+            if (byType && node1.isClassification() && !node2.isClassification())
+                return -1;
+            if (byType && !node1.isClassification() && node2.isClassification())
+                return 1;
 
-                return node1.getName().compareToIgnoreCase(node2.getName());
-            }
+            return node1.getName().compareToIgnoreCase(node2.getName());
         });
 
         int rank = 0;

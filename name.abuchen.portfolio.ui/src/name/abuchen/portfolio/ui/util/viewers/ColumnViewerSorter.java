@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -28,25 +30,59 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public final class ColumnViewerSorter
 {
-    public interface DirectionAwareComparator extends Comparator<Object>
+    /**
+     * The SortingContext provides comparators access to the original sort
+     * direction and the currently selected column option. The sort direction is
+     * typically used to keep an element at a stable position regardless of the
+     * sort direction (for example a summary line shows up always at the end).
+     */
+    public static final class SortingContext
     {
-        int compare(int order, Object o1, Object o2);
+        private static final String OPTION = "option"; //$NON-NLS-1$
+        private static final String DIRECTION = "direction"; //$NON-NLS-1$
 
-        @Override
-        default int compare(Object o1, Object o2)
+        private static final ThreadLocal<Map<String, Object>> MAP = new ThreadLocal<Map<String, Object>>()
         {
-            return compare(SWT.DOWN, o1, o2);
+            @Override
+            protected Map<String, Object> initialValue()
+            {
+                return new HashMap<>();
+            }
+        };
+
+        private SortingContext()
+        {}
+
+        /* protected */ static void setSortDirection(int direction)
+        {
+            MAP.get().put(DIRECTION, direction);
         }
-    }
 
-    public interface OptionAwareComparator<O> extends Comparator<Object>
-    {
-        int compare(O option, Object o1, Object o2);
-
-        @Override
-        default int compare(Object o1, Object o2)
+        /**
+         * Returns the original sort direction.
+         */
+        public static int getSortDirection()
         {
-            return compare(null, o1, o2);
+            Object direction = MAP.get().get(DIRECTION);
+            return direction == null ? SWT.DOWN : (int) direction;
+        }
+
+        /* protected */ static void setOption(Object option)
+        {
+            MAP.get().put(OPTION, option);
+        }
+
+        /**
+         * Returns the currently selected column option.
+         */
+        public static Object getColumnOption()
+        {
+            return MAP.get().get(OPTION);
+        }
+
+        /* protected */ static void clear()
+        {
+            MAP.get().clear();
         }
     }
 
@@ -218,14 +254,14 @@ public final class ColumnViewerSorter
         }
     }
 
-    private static final class X extends ViewerComparator
+    private static final class ViewerSorter extends ViewerComparator
     {
         private ColumnViewer columnViewer;
         private ViewerColumn viewerColumn;
         private Comparator<Object> comparator;
         private int direction = SWT.DOWN;
 
-        public X(ColumnViewer columnViewer, ViewerColumn viewerColumn, Comparator<Object> comparator)
+        public ViewerSorter(ColumnViewer columnViewer, ViewerColumn viewerColumn, Comparator<Object> comparator)
         {
             this.columnViewer = columnViewer;
             this.viewerColumn = viewerColumn;
@@ -296,33 +332,38 @@ public final class ColumnViewerSorter
         @Override
         public int compare(Viewer viewer, Object element1, Object element2)
         {
-            int dir = direction == SWT.DOWN ? 1 : -1;
-
-            if (element1 == null)
-                return element2 == null ? 0 : dir;
-            if (element2 == null)
-                return dir * -1;
-
-            if (comparator instanceof DirectionAwareComparator)
+            try
             {
-                return ((DirectionAwareComparator) comparator).compare(direction, element1, element2);
-            }
-            else if (comparator instanceof OptionAwareComparator<?>)
-            {
-                Object option = null;
-                if (viewerColumn instanceof TableViewerColumn)
-                    option = ((TableViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
-                else if (viewerColumn instanceof TreeViewerColumn)
-                    option = ((TreeViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+                setupSortingContext();
 
-                return dir * ((OptionAwareComparator<Object>) comparator).compare(option, element1, element2);
-            }
-            else
-            {
+                int dir = direction == SWT.DOWN ? 1 : -1;
+
+                if (element1 == null && element2 == null)
+                    return 0;
+                else if (element1 == null)
+                    return dir;
+                else if (element2 == null)
+                    return -dir;
+
                 return dir * comparator.compare(element1, element2);
+            }
+            finally
+            {
+                SortingContext.clear();
             }
         }
 
+        private void setupSortingContext()
+        {
+            SortingContext.setSortDirection(direction);
+
+            Object option = null;
+            if (viewerColumn instanceof TableViewerColumn)
+                option = ((TableViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            else if (viewerColumn instanceof TreeViewerColumn)
+                option = ((TreeViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            SortingContext.setOption(option);
+        }
     }
 
     private Comparator<Object> comparator;
@@ -381,7 +422,7 @@ public final class ColumnViewerSorter
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, int direction)
     {
-        X x = new X(viewer, column, comparator);
+        ViewerSorter x = new ViewerSorter(viewer, column, comparator);
 
         if (direction != SWT.NONE)
             x.setSorter(direction);

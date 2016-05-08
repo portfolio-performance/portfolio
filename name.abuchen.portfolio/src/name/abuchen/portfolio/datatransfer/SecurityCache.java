@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -20,62 +21,61 @@ public class SecurityCache
 {
     private static final Security DUPLICATE_SECURITY_MARKER = new Security();
 
+    private static final List<String> MESSAGES = Arrays.asList(Messages.MsgErrorDuplicateISIN,
+                    Messages.MsgErrorDuplicateTicker, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateName);
+
     private final Client client;
 
-    private final Map<String, Security> isin2security;
-    private final Map<String, Security> wkn2security;
-    private final Map<String, Security> ticker2security;
+    private final List<Map<String, Security>> localMaps = new ArrayList<>();
 
     public SecurityCache(Client client)
     {
         this.client = client;
 
-        this.isin2security = client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
-                        .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER));
+        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
+                        .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
-        this.wkn2security = client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
-                        .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER));
+        this.localMaps.add(client.getSecurities().stream()
+                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty()) //
+                        .collect(Collectors.toMap(Security::getTickerSymbol, s -> s,
+                                        (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
-        this.ticker2security = client.getSecurities().stream()
-                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty()).collect(Collectors
-                                        .toMap(Security::getTickerSymbol, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER));
+        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
+                        .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+
+        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getName() != null && !s.getName().isEmpty())
+                        .collect(Collectors.toMap(Security::getName, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+
     }
 
-    public Security lookup(String isin, String tickerSymbol, String wkn, Supplier<Security> creationFunction)
+    public Security lookup(String isin, String tickerSymbol, String wkn, String name,
+                    Supplier<Security> creationFunction)
     {
-        Security security = null;
-        if (isin != null)
-            security = isin2security.get(isin);
-        if (security == DUPLICATE_SECURITY_MARKER)
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorDuplicateISIN, isin));
-        if (security != null)
-            return security;
+        List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
 
-        if (wkn != null)
-            security = wkn2security.get(wkn);
-        if (security == DUPLICATE_SECURITY_MARKER)
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorDuplicateWKN, isin));
-        if (security != null)
-            return security;
+        for (int ii = 0; ii < localMaps.size(); ii++)
+        {
+            String attribute = attributes.get(ii);
 
-        if (tickerSymbol != null)
-            security = ticker2security.get(tickerSymbol);
-        if (security == DUPLICATE_SECURITY_MARKER)
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorDuplicateTicker, isin));
-        if (security != null)
-            return security;
+            Security security = localMaps.get(ii).get(attribute);
+            if (security == DUPLICATE_SECURITY_MARKER)
+                throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(ii), attribute));
+            if (security != null)
+                return security;
+        }
 
-        security = creationFunction.get();
+        Security security = creationFunction.get();
         security.setIsin(isin);
         security.setWkn(wkn);
         security.setTickerSymbol(tickerSymbol);
+        security.setName(name);
 
-        if (security.getIsin() != null)
-            isin2security.put(security.getIsin(), security);
-        if (security.getWkn() != null)
-            wkn2security.put(security.getWkn(), security);
-        if (security.getTickerSymbol() != null)
-            wkn2security.put(security.getTickerSymbol(), security);
+        for (int ii = 0; ii < localMaps.size(); ii++)
+        {
+            String attribute = attributes.get(ii);
+            if (attribute != null)
+                localMaps.get(ii).put(attribute, security);
+        }
 
         return security;
     }

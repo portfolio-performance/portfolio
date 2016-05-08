@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 
+@SuppressWarnings("restriction")
 public class OpenErrorLogFileHandler
 {
 

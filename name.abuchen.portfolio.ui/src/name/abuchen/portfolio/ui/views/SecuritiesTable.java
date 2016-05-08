@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -59,7 +58,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.OptionAwareComparator;
+import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -213,10 +212,9 @@ public final class SecuritiesTable implements ModificationListener
         support.addColumn(column);
     }
 
-    private void addColumnLatestPrice()
+    private void addColumnLatestPrice() // NOSONAR
     {
-        Column column;
-        column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
+        Column column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatest_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -227,90 +225,60 @@ public final class SecuritiesTable implements ModificationListener
                 return latest != null ? Values.Quote.format(latest.getValue()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                long v1 = p1.getValue();
-                long v2 = p2.getValue();
-                return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
-            }
+            long v1 = p1.getValue();
+            long v2 = p2.getValue();
+            return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
         }));
         support.addColumn(column);
     }
 
-    private void addDeltaColumn()
+    private void addDeltaColumn() // NOSONAR
     {
         Column column;
         column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                SecurityPrice price = ((Security) e).getSecurityPrice(LocalDate.now());
-                if (!(price instanceof LatestSecurityPrice))
-                    return null;
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+            SecurityPrice price = ((Security) element).getSecurityPrice(LocalDate.now());
+            if (!(price instanceof LatestSecurityPrice))
+                return null;
 
-                LatestSecurityPrice latest = (LatestSecurityPrice) price;
-                return String.format("%,.2f %%", //$NON-NLS-1$
-                                ((double) (latest.getValue() - latest.getPreviousClose())
-                                                / (double) latest.getPreviousClose()) * 100);
-            }
+            LatestSecurityPrice latest = (LatestSecurityPrice) price;
+            return (latest.getValue() - latest.getPreviousClose()) / (double) latest.getPreviousClose();
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-            @Override
-            public Color getForeground(Object element)
-            {
-                SecurityPrice price = ((Security) element).getSecurityPrice(LocalDate.now());
-                if (!(price instanceof LatestSecurityPrice))
-                    return null;
+            if (!(p1 instanceof LatestSecurityPrice))
+                p1 = null;
+            if (!(p2 instanceof LatestSecurityPrice))
+                p2 = null;
 
-                LatestSecurityPrice latest = (LatestSecurityPrice) price;
-                return latest.getValue() >= latest.getPreviousClose()
-                                ? Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN)
-                                : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                if (!(p1 instanceof LatestSecurityPrice))
-                    p1 = null;
-                if (!(p2 instanceof LatestSecurityPrice))
-                    p2 = null;
+            LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
+            LatestSecurityPrice l2 = (LatestSecurityPrice) p2;
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
-
-                LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
-                LatestSecurityPrice l2 = (LatestSecurityPrice) p2;
-
-                double v1 = (((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100);
-                double v2 = (((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100);
-                return Double.compare(v1, v2);
-            }
+            double v1 = ((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100;
+            double v2 = ((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100;
+            return Double.compare(v1, v2);
         }));
         support.addColumn(column);
     }
 
-    private void addColumnDateOfLatestPrice()
+    private void addColumnDateOfLatestPrice() // NOSONAR
     {
         Column column;
         column = new Column("9", Messages.ColumnLatestDate, SWT.LEFT, 80); //$NON-NLS-1$
@@ -336,30 +304,25 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                return p1.getTime().compareTo(p2.getTime());
-            }
+            return p1.getTime().compareTo(p2.getTime());
         }));
         support.addColumn(column);
     }
 
-    private void addColumnDateOfLatestHistoricalPrice()
+    private void addColumnDateOfLatestHistoricalPrice() // NOSONAR
     {
         Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatestHistoricalDate_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
             public String getText(Object element)
@@ -386,28 +349,23 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                List<SecurityPrice> prices1 = ((Security) o1).getPrices();
-                SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
-                List<SecurityPrice> prices2 = ((Security) o2).getPrices();
-                SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            List<SecurityPrice> prices1 = ((Security) o1).getPrices();
+            SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
+            List<SecurityPrice> prices2 = ((Security) o2).getPrices();
+            SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                return p1.getTime().compareTo(p2.getTime());
-            }
+            return p1.getTime().compareTo(p2.getTime());
         }));
         support.addColumn(column);
     }
 
-    private void addQuoteDeltaColumn()
+    private void addQuoteDeltaColumn() // NOSONAR
     {
         // create a modifiable copy as all menus share the same list of
         // reporting periods
@@ -436,23 +394,20 @@ public final class SecuritiesTable implements ModificationListener
         column.setDescription(Messages.ColumnQuoteChange_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(new OptionAwareComparator<ReportingPeriod>()
-        {
-            @Override
-            public int compare(ReportingPeriod option, Object o1, Object o2)
-            {
-                Double v1 = valueProvider.apply(o1, option);
-                Double v2 = valueProvider.apply(o2, option);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
 
-                if (v1 == null && v2 == null)
-                    return 0;
-                else if (v1 == null)
-                    return -1;
-                else if (v2 == null)
-                    return 1;
+            Double v1 = valueProvider.apply(o1, option);
+            Double v2 = valueProvider.apply(o2, option);
 
-                return Double.compare(v1.doubleValue(), v2.doubleValue());
-            }
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return Double.compare(v1.doubleValue(), v2.doubleValue());
         }));
         support.addColumn(column);
     }
@@ -567,7 +522,7 @@ public final class SecuritiesTable implements ModificationListener
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(manager -> fillContextMenu(manager));
+        menuMgr.addMenuListener(this::fillContextMenu);
 
         contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
@@ -578,7 +533,7 @@ public final class SecuritiesTable implements ModificationListener
         });
     }
 
-    private void fillContextMenu(IMenuManager manager)
+    private void fillContextMenu(IMenuManager manager) // NOSONAR
     {
         final Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
         if (security == null)
@@ -777,6 +732,20 @@ public final class SecuritiesTable implements ModificationListener
                 return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
             else
                 return null;
+        }
+
+        @Override
+        public Image getImage(Object element, ReportingPeriod option)
+        {
+            Double value = valueProvider.apply(element, option);
+            if (value == null)
+                return null;
+
+            if (value.doubleValue() > 0)
+                return Images.GREEN_ARROW.image();
+            if (value.doubleValue() < 0)
+                return Images.RED_ARROW.image();
+            return null;
         }
     }
 }

@@ -10,21 +10,28 @@ public class Column
 {
     public interface Options<E>
     {
-        List<E> getElements();
+        List<E> getOptions();
 
+        /**
+         * Converts serialized option back into option instance.
+         */
         E valueOf(String s);
 
-        String toString(E element);
+        /**
+         * Converts an option instance into a string (to store column
+         * configuration).
+         */
+        String toString(E option);
 
-        String getColumnLabel(E element);
+        String getColumnLabel(E option);
 
-        String getMenuLabel(E element);
+        String getMenuLabel(E option);
 
-        String getDescription(E element);
+        String getDescription(E option);
 
-        boolean canCreateNewElements();
+        boolean canCreateNewOptions();
 
-        E createNewElement(Shell shell);
+        E createNewOption(Shell shell);
     }
 
     /**
@@ -62,12 +69,12 @@ public class Column
         this.defaultWidth = defaultWidth;
     }
 
-    /* package */String getId()
+                    /* package */String getId()
     {
         return id;
     }
 
-    /* package */void setId(String id)
+                    /* package */void setId(String id)
     {
         this.id = id;
     }
@@ -129,37 +136,37 @@ public class Column
         this.editingSupport = editingSupport;
     }
 
-    /* package */String getLabel()
+                    /* package */String getLabel()
     {
         return label;
     }
 
-    /* package */String getMenuLabel()
+                    /* package */String getMenuLabel()
     {
         return menuLabel != null ? menuLabel : label;
     }
 
-    /* package */String getDescription()
+                    /* package */String getDescription()
     {
         return description;
     }
 
-    /* package */int getStyle()
+                    /* package */int getStyle()
     {
         return style;
     }
 
-    /* package */int getDefaultWidth()
+                    /* package */int getDefaultWidth()
     {
         return defaultWidth;
     }
 
-    /* package */boolean isVisible()
+                    /* package */boolean isVisible()
     {
         return isVisible;
     }
 
-    /* package */boolean isRemovable()
+                    /* package */boolean isRemovable()
     {
         return isRemovable;
     }
@@ -169,27 +176,27 @@ public class Column
         return sorter;
     }
 
-    /* package */Integer getDefaultSortDirection()
+                    /* package */Integer getDefaultSortDirection()
     {
         return defaultSortDirection;
     }
 
-    /* package */CellLabelProvider getLabelProvider()
+                    /* package */CellLabelProvider getLabelProvider()
     {
         return labelProvider;
     }
 
-    /* package */boolean hasOptions()
+                    /* package */boolean hasOptions()
     {
         return options != null;
     }
 
-    /* package */Options<Object> getOptions()
+                    /* package */Options<Object> getOptions()
     {
         return options;
     }
 
-    /* package */String getGroupLabel()
+                    /* package */String getGroupLabel()
     {
         return groupLabel;
     }
@@ -199,7 +206,7 @@ public class Column
         return editingSupport;
     }
 
-    /* package */String getToolTipText()
+                    /* package */String getToolTipText()
     {
         if (description != null)
             return description;

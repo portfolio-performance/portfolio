@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,7 +15,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter.OptionAwareComparator;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 
 public class TaxonomyColumn extends Column
@@ -29,12 +30,12 @@ public class TaxonomyColumn extends Column
         }
 
         @Override
-        public List<Integer> getElements()
+        public List<Integer> getOptions()
         {
             // 1 --> skip taxonomy root node
-            List<Integer> elements = IntStream.range(1, taxonomy.getHeigth()) //
+            List<Integer> elements = IntStream.range(1, taxonomy.getHeigth()) // NOSONAR
                             .boxed().collect(Collectors.toList());
-            elements.add(100); // full classification
+            elements.add(SHOW_FULL_CLASSIFICATION);
             return elements;
         }
 
@@ -45,51 +46,51 @@ public class TaxonomyColumn extends Column
         }
 
         @Override
-        public String toString(Integer element)
+        public String toString(Integer option)
         {
-            return element.toString();
+            return option.toString();
         }
 
         @Override
-        public String getColumnLabel(Integer element)
+        public String getColumnLabel(Integer option)
         {
-            int index = element;
+            int index = option;
 
-            if (index == 100)
+            if (index == SHOW_FULL_CLASSIFICATION)
                 return taxonomy.getName();
 
             List<String> labels = taxonomy.getDimensions();
             return labels != null && index < labels.size() ? labels.get(index - 1)
-                            : MessageFormat.format(Messages.LabelLevelNameNumber, taxonomy.getName(), element);
+                            : MessageFormat.format(Messages.LabelLevelNameNumber, taxonomy.getName(), option);
         }
 
         @Override
-        public String getMenuLabel(Integer element)
+        public String getMenuLabel(Integer option)
         {
-            int index = element;
+            int index = option;
 
-            if (index == 100)
+            if (index == SHOW_FULL_CLASSIFICATION)
                 return Messages.LabelFullClassification;
 
             List<String> labels = taxonomy.getDimensions();
             return labels != null && index <= labels.size() ? labels.get(index - 1)
-                            : MessageFormat.format(Messages.LabelLevelNumber, element);
+                            : MessageFormat.format(Messages.LabelLevelNumber, option);
         }
 
         @Override
-        public String getDescription(Integer element)
+        public String getDescription(Integer option)
         {
             return null;
         }
 
         @Override
-        public boolean canCreateNewElements()
+        public boolean canCreateNewOptions()
         {
             return false;
         }
 
         @Override
-        public Integer createNewElement(Shell shell)
+        public Integer createNewOption(Shell shell)
         {
             throw new UnsupportedOperationException();
         }
@@ -122,7 +123,7 @@ public class TaxonomyColumn extends Column
                 if (answer.length() > 0)
                     answer.append(", "); //$NON-NLS-1$
 
-                if (option == 100)
+                if (option == SHOW_FULL_CLASSIFICATION)
                 {
                     answer.append(c.getPathName(false));
                 }
@@ -138,6 +139,8 @@ public class TaxonomyColumn extends Column
         }
     }
 
+    private static final int SHOW_FULL_CLASSIFICATION = 100;
+
     public TaxonomyColumn(final Taxonomy taxonomy)
     {
         super(taxonomy.getId(), taxonomy.getName(), SWT.LEFT, 120);
@@ -150,7 +153,7 @@ public class TaxonomyColumn extends Column
         setComparator(new TaxonomyComparator(labelProvider));
     }
 
-    private class TaxonomyComparator implements OptionAwareComparator<Integer>
+    private class TaxonomyComparator implements Comparator<Object>
     {
         private final TaxonomyLabelProvider labelProvider;
 
@@ -160,8 +163,10 @@ public class TaxonomyColumn extends Column
         }
 
         @Override
-        public int compare(Integer option, Object o1, Object o2)
+        public int compare(Object o1, Object o2)
         {
+            Integer option = (Integer) ColumnViewerSorter.SortingContext.getColumnOption();
+
             String s1 = labelProvider.getText(o1, option);
             String s2 = labelProvider.getText(o2, option);
 
