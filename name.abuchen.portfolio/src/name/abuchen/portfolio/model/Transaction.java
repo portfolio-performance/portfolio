@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -104,6 +105,13 @@ public abstract class Transaction implements Annotated
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
+            if (t1.getDate().equals(t2.getDate()))
+                if (t1.getAmount() < t2.getAmount())
+                    return -1;
+                else if (t1.getAmount() == t2.getAmount())
+                    return 0;
+                else
+                    return 1;
             return t1.getDate().compareTo(t2.getDate());
         }
     }
@@ -294,6 +302,22 @@ public abstract class Transaction implements Annotated
     public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
     {
         Collections.sort(transactions, new ByDate());
+        if (transactions.size() > 0 && transactions.get(0) instanceof AccountTransaction)
+        {
+            AccountTransaction at = (AccountTransaction) transactions.get(0);
+            long saldo = 0;
+            for (int ii = 0; ii < transactions.size(); ii++)
+            {
+                at = (AccountTransaction) transactions.get(ii);
+                if (EnumSet.of(AccountTransaction.Type.REMOVAL, AccountTransaction.Type.FEES,
+                                AccountTransaction.Type.TAXES, AccountTransaction.Type.BUY,
+                                AccountTransaction.Type.TRANSFER_OUT).contains(at.getType()))
+                    saldo = saldo - at.getAmount();
+                else
+                    saldo = saldo + at.getAmount();
+                at.setBalance(saldo);
+            }
+        }
         return transactions;
     }
 }
