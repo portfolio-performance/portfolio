@@ -377,7 +377,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.create(AccountTransaction.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        ColumnViewerSorter.create(AccountTransaction.class, "date", "amount", "type").attachTo(column, SWT.DOWN); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         new DateEditingSupport(AccountTransaction.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
@@ -420,6 +420,29 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "amount")); //$NON-NLS-1$
+        transactionsColumns.addColumn(column);
+
+        column = new Column(Messages.Balance, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getBalance()),
+                                getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                AccountTransaction t = (AccountTransaction) element;
+                if (t.getBalance() < 0)
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                return null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "balance")); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
