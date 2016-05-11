@@ -88,7 +88,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     @Override
     public List<AccountTransaction> getTransactions()
     {
-        return transactions;
+        return Transaction.sortByDate(transactions);
     }
 
     @Override
