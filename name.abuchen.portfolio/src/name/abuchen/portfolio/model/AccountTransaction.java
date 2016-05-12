@@ -19,6 +19,8 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
+    private long balance;
+
     public AccountTransaction()
     {}
 
@@ -36,5 +38,15 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+    }
+
+    public long getBalance()
+    {
+        return balance;
+    }
+
+    public void setBalance(long balance)
+    {
+        this.balance = balance;
     }
 }
