@@ -119,7 +119,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, true);
 
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
-        quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern(), Messages.ColumnQuote);
+        quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
         quote.bindCurrency(Properties.securityCurrencyCode.name());
 
         Input amount = new Input(editArea, "="); //$NON-NLS-1$

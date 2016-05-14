@@ -459,7 +459,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Quote.format(((SecurityPrice) element).getValue());
+                Security security = (Security) prices.getData(Security.class.toString());
+                SecurityPrice price = (SecurityPrice) element;
+                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getClient().getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$

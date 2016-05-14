@@ -6,6 +6,10 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import org.hamcrest.number.IsCloseTo;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -25,10 +29,6 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-
-import org.hamcrest.number.IsCloseTo;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class CurrencyTestCase
@@ -94,9 +94,10 @@ public class CurrencyTestCase
         AssetPosition positionUSD = getAssetPositionByName(grouping, accountUSD.getName());
         assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, Math.round(1000_00 * (1 / 1.1588)))));
 
-        Money equityEURvaluation = Money.of(CurrencyUnit.EUR, 20 * securityEUR.getSecurityPrice(grouping.getDate())
-                        .getValue());
-        Money equityUSDvaluation = Money.of("USD", 10 * securityUSD.getSecurityPrice(grouping.getDate()).getValue())
+        Money equityEURvaluation = Money.of(CurrencyUnit.EUR, Math.round(20
+                        * securityEUR.getSecurityPrice(grouping.getDate()).getValue() / Values.Quote.dividerToMoney()));
+        Money equityUSDvaluation = Money.of("USD", Math.round(10
+                        * securityUSD.getSecurityPrice(grouping.getDate()).getValue() / Values.Quote.dividerToMoney()))
                         .with(converter.at(grouping.getDate()));
         Money equityValuation = Money.of(CurrencyUnit.EUR,
                         equityEURvaluation.getAmount() + equityUSDvaluation.getAmount());
@@ -131,9 +132,8 @@ public class CurrencyTestCase
 
         // profit loss w/o rounding differences
         assertThat(equityUSD.getProfitLoss(), is(equityUSD.getValuation().subtract(equityUSD.getFIFOPurchaseValue())));
-        assertThat(equityUSD.getPosition().getProfitLoss(),
-                        is(equityUSD.getPosition().calculateValue()
-                                        .subtract(equityUSD.getPosition().getFIFOPurchaseValue())));
+        assertThat(equityUSD.getPosition().getProfitLoss(), is(equityUSD.getPosition().calculateValue()
+                        .subtract(equityUSD.getPosition().getFIFOPurchaseValue())));
 
     }
 
@@ -153,10 +153,10 @@ public class CurrencyTestCase
                                         .subtract(performance.getValue(CategoryType.TRANSFERS))
                                         .subtract(performance.getValue(CategoryType.INITIAL_VALUE))));
 
-        assertThat(performance.getValue(CategoryType.CAPITAL_GAINS).add(
-                        performance.getValue(CategoryType.CURRENCY_GAINS)),
-                        is(performance.getValue(CategoryType.FINAL_VALUE).subtract(
-                                        performance.getValue(CategoryType.INITIAL_VALUE))));
+        assertThat(performance.getValue(CategoryType.CAPITAL_GAINS)
+                        .add(performance.getValue(CategoryType.CURRENCY_GAINS)),
+                        is(performance.getValue(CategoryType.FINAL_VALUE)
+                                        .subtract(performance.getValue(CategoryType.INITIAL_VALUE))));
 
         // compare with result calculated by Excel's XIRR function
         assertThat(performance.getPerformanceIRR(), IsCloseTo.closeTo(0.505460984, 0.00000001));
@@ -178,8 +178,8 @@ public class CurrencyTestCase
         ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-12-31"),
                         LocalDate.parse("2015-08-10"));
         SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
-        SecurityPerformanceRecord record = performance.getRecords().stream()
-                        .filter(r -> r.getSecurity() == securityUSD).findAny().get();
+        SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
+                        .findAny().get();
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
         assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60 + 471_05 + 498_45)));
     }

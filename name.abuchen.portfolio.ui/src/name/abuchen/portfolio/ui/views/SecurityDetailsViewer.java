@@ -9,18 +9,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Taxonomy.Visitor;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Colors;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -36,6 +24,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class SecurityDetailsViewer
 {
@@ -281,17 +281,17 @@ public class SecurityDetailsViewer
             {
                 LatestSecurityPrice p = security.getLatest();
 
-                valueLatestPrices.setText(Values.Amount.format(p.getValue()));
+                valueLatestPrices.setText(Values.Quote.format(p.getValue()));
                 valueLatestTrade.setText(Values.Date.format(p.getTime()));
                 long daysHigh = p.getHigh();
-                valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysHigh));
+                valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));
                 long daysLow = p.getLow();
-                valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysLow));
+                valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysLow));
                 long volume = p.getVolume();
                 valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
                 long prevClose = p.getPreviousClose();
-                valuePreviousClose.setText(prevClose == -1 ? Messages.LabelNotAvailable : Values.Amount
-                                .format(prevClose));
+                valuePreviousClose
+                                .setText(prevClose == -1 ? Messages.LabelNotAvailable : Values.Quote.format(prevClose));
             }
         }
 

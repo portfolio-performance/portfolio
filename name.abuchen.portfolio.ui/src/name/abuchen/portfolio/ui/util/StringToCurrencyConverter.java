@@ -86,8 +86,7 @@ public class StringToCurrencyConverter implements IConverter
                 after *= 10;
         }
 
-        long resultValue = before.longValue() * factor + after;
-        return resultValue;
+        return before.longValue() * factor + after;
     }
 
 }

@@ -226,12 +226,13 @@ public class BindingHelper
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
-        Spinner spinner = new Spinner(editArea, SWT.NONE);
+        Spinner spinner = new Spinner(editArea, SWT.BORDER);
         spinner.setMinimum(min);
         spinner.setMaximum(max);
         spinner.setSelection(selection);
         spinner.setIncrement(increment);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(spinner);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
+                        .hint(5 * getAverageCharWidth(spinner), SWT.DEFAULT).applyTo(spinner);
         context.bindValue(WidgetProperties.selection().observe(spinner), BeanProperties.value(property).observe(model));
     }
 

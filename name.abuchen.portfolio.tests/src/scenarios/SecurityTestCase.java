@@ -8,6 +8,8 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
@@ -17,8 +19,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class SecurityTestCase
@@ -56,7 +56,7 @@ public class SecurityTestCase
         // ttwror is easy to calculate:
 
         double endvalue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-04")).getValue()
-                        / Values.Share.divider();
+                        / Values.Share.divider() / Values.Quote.dividerToMoney();
 
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo((endvalue / delivery.getAmount()) - 1, 0.0001));
     }

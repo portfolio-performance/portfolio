@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.hamcrest.number.IsCloseTo;
+import org.junit.Test;
+
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioBuilder;
@@ -25,9 +28,6 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
-
-import org.hamcrest.number.IsCloseTo;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class ClientIndexTest
@@ -219,7 +219,7 @@ public class ClientIndexTest
     {
         LocalDate startDate = LocalDate.of(2012, 1, 1);
         LocalDate endDate = LocalDate.of(2012, 4, 29); // a weekend
-        long startPrice = 100 * Values.Amount.factor();
+        long startPrice = Values.Quote.factorize(100);
 
         Client client = new Client();
 
@@ -234,7 +234,7 @@ public class ClientIndexTest
         while (date.isBefore(endDate))
         {
             long p = security.getSecurityPrice(date).getValue();
-            portfolio.inbound_delivery(security, date, 1 * Values.Share.factor(), p);
+            portfolio.inbound_delivery(security, date, Values.Share.factorize(100), p);
             date = date.plusDays(20);
         }
 
@@ -263,7 +263,7 @@ public class ClientIndexTest
     {
         LocalDate startDate = LocalDate.of(2015, 1, 1);
         LocalDate endDate = LocalDate.of(2015, 8, 1);
-        long startPrice = 100 * Values.Amount.factor();
+        long startPrice = Values.Quote.factorize(100);
 
         Client client = new Client();
 
@@ -272,7 +272,7 @@ public class ClientIndexTest
                         .addTo(client);
 
         new PortfolioBuilder() //
-                        .inbound_delivery(security, "2014-01-01", Values.Share.factorize(1), 100) //
+                        .inbound_delivery(security, "2014-01-01", Values.Share.factorize(100), 100) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);

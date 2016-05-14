@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.Messages;
         return type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
     }
 
+    @Override
     public void setSource(Object entry)
     {
         this.source = (BuySellEntry) entry;
@@ -39,6 +40,7 @@ import name.abuchen.portfolio.ui.Messages;
         fillFromTransaction(source.getPortfolioTransaction());
     }
 
+    @Override
     public void applyChanges()
     {
         if (security == null)
@@ -86,6 +88,7 @@ import name.abuchen.portfolio.ui.Messages;
         super.resetToNewTransaction();
     }
 
+    @Override
     public void setPortfolio(Portfolio portfolio)
     {
         setAccount(portfolio.getReferenceAccount());
@@ -103,7 +106,7 @@ import name.abuchen.portfolio.ui.Messages;
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
 
-        firePropertyChange(Properties.account.name(), this.account, this.account = account);
+        firePropertyChange(Properties.account.name(), this.account, this.account = account); // NOSONAR
 
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldAccountCurrency, getTransactionCurrencyCode());
         firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,

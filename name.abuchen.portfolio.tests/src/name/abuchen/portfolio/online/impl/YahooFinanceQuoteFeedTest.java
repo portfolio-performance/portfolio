@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class YahooFinanceQuoteFeedTest
@@ -68,12 +69,12 @@ public class YahooFinanceQuoteFeedTest
         assertThat(errors.size(), is(0));
 
         LatestSecurityPrice latest = securities.get(0).getLatest();
-        assertThat(latest.getValue(), is(1371L));
+        assertThat(latest.getValue(), is(Values.Quote.factorize(13.71)));
         assertThat(latest.getTime(), equalTo(LocalDate.of(2011, Month.SEPTEMBER, 29)));
-        assertThat(latest.getHigh(), is(1375L));
-        assertThat(latest.getLow(), is(1370L));
+        assertThat(latest.getHigh(), is(Values.Quote.factorize(13.75)));
+        assertThat(latest.getLow(), is(Values.Quote.factorize(13.70)));
         assertThat(latest.getVolume(), is(10037));
-        assertThat(latest.getPreviousClose(), is(1271L));
+        assertThat(latest.getPreviousClose(), is(Values.Quote.factorize(12.71)));
 
         latest = securities.get(1).getLatest();
         assertThat(latest.getHigh(), is(-1L));
@@ -109,7 +110,7 @@ public class YahooFinanceQuoteFeedTest
 
         // not first, but second security must have value
         LatestSecurityPrice latest = adidas.getLatest();
-        assertThat(latest.getValue(), is(4920L));
+        assertThat(latest.getValue(), is(Values.Quote.factorize(49.20)));
 
         assertThat(errors.size(), is(1));
 
@@ -136,10 +137,12 @@ public class YahooFinanceQuoteFeedTest
         assertThat(security.getPrices().size(), is(2257));
 
         assertThat(security.getPrices().get(0), //
-                        equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1), 2935)));
+                        equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1),
+                                        Values.Quote.factorize(29.35))));
 
         assertThat(security.getPrices().get(security.getPrices().size() - 1),
-                        equalTo(new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), 3274)));
+                        equalTo(new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22),
+                                        Values.Quote.factorize(32.74))));
     }
 
     @Test

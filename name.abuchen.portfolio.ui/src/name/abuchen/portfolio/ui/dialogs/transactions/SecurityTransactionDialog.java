@@ -127,7 +127,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, true);
 
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
-        quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern(), Messages.ColumnQuote);
+        quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
         quote.bindCurrency(Properties.securityCurrencyCode.name());
 
         Input grossValue = new Input(editArea, "="); //$NON-NLS-1$
@@ -137,7 +137,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
-                        Values.ExchangeRate.pattern(), Messages.ColumnExchangeRate);
+                        Values.ExchangeRate.pattern());
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
 

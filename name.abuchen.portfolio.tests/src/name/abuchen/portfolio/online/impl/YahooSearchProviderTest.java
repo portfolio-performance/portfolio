@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 
 @SuppressWarnings("nls")
 public class YahooSearchProviderTest
@@ -35,7 +36,7 @@ public class YahooSearchProviderTest
             assertThat(p.getSymbol(), equalTo("D979C.LS"));
             assertThat(p.getName(), equalTo("BASF AG/CITI WT 14"));
             assertThat(p.getIsin(), equalTo("DE000CF79JW9"));
-            assertThat(p.getLastTrade(), equalTo(11L));
+            assertThat(p.getLastTrade(), equalTo(Values.Quote.factorize(0.11)));
             assertThat(p.getType(), equalTo("Zertifikate & OS"));
             assertThat(p.getExchange(), equalTo("LIS"));
         }

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -17,7 +19,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class SecurityPositionTest
@@ -87,7 +88,7 @@ public class SecurityPositionTest
     @Test
     public void testThatTransferInCountsIfTransferOutIsMissing()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), 2000);
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_IN, 0, 0));
@@ -103,7 +104,7 @@ public class SecurityPositionTest
     @Test
     public void testThatTransferInCountsIfTransferOutIsMissingPlusBuyTransaction()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), 2000);
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
@@ -121,7 +122,7 @@ public class SecurityPositionTest
     @Test
     public void testThatTransferInDoesNotCountIfMatchingTransferOutIsIncluded()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), 2000);
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
@@ -141,7 +142,7 @@ public class SecurityPositionTest
     @Test
     public void testThatOnlyMatchingTransfersAreRemoved_InRemains()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), 2000);
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
@@ -163,7 +164,7 @@ public class SecurityPositionTest
     @Test
     public void testThatOnlyMatchingTransfersAreRemoved_OutRemains()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), 2000);
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
@@ -185,7 +186,7 @@ public class SecurityPositionTest
     @Test
     public void testPurchasePriceIfSharesArePartiallyTransferredOut()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), 2000);
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));

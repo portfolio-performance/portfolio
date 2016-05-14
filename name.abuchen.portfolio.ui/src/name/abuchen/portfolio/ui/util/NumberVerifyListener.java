@@ -7,6 +7,7 @@ public final class NumberVerifyListener implements VerifyListener
 {
     private String allowedChars = ",.0123456789"; //$NON-NLS-1$
 
+    @Override
     public void verifyText(VerifyEvent e)
     {
         for (int ii = 0; e.doit && ii < e.text.length(); ii++)

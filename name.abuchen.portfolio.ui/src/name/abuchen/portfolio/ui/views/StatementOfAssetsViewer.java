@@ -277,9 +277,9 @@ public class StatementOfAssetsViewer
                 if (!element.isSecurity())
                     return null;
 
-                Money money = Money.of(element.getSecurity().getCurrencyCode(),
-                                element.getSecurityPosition().getPrice().getValue());
-                return Values.Money.format(money, client.getBaseCurrency());
+                Security security = element.getSecurity();
+                return Values.Quote.format(security.getCurrencyCode(),
+                                element.getSecurityPosition().getPrice().getValue(), client.getBaseCurrency());
             }
         });
         column.setComparator(new ElementComparator(new AttributeComparator(e -> {

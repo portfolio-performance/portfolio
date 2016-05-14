@@ -329,7 +329,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (quote.doubleValue() != 0)
         {
-            setGrossValue(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+            triggerGrossValue(
+                            Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
         }
         else if (grossValue != 0 && shares != 0)
         {

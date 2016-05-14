@@ -23,10 +23,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -40,16 +40,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Classification.Assignment;
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
-import name.abuchen.portfolio.util.XStreamLocalDateConverter;
-import name.abuchen.portfolio.util.ProgressMonitorInputStream;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
@@ -57,6 +47,16 @@ import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.mapper.Mapper;
+
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
@@ -482,6 +482,9 @@ public class ClientFactory
                 setAllCurrencies(client, CurrencyUnit.EUR);
                 bumpUpCPIMonthValue(client);
                 convertFeesAndTaxesToTransactionUnits(client);
+            case 29:
+                // added decimal places to stock quotes
+                addDecimalPlacesToQuotes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -513,7 +516,7 @@ public class ClientFactory
     {
         for (Portfolio p : client.getPortfolios())
             for (PortfolioTransaction t : p.getTransactions())
-                t.setShares(t.getShares() * Values.Share.factor());
+                t.setShares(t.getShares() * 100000);
     }
 
     private static void changePortfolioTransactionTypeToDelivery(Client client)
@@ -654,8 +657,8 @@ public class ClientFactory
 
         for (Object element : category.getElements())
         {
-            Assignment assignment = element instanceof Account ? new Assignment((Account) element) : new Assignment(
-                            (Security) element);
+            Assignment assignment = element instanceof Account ? new Assignment((Account) element)
+                            : new Assignment((Security) element);
             assignment.setRank(rank++);
 
             node.addAssignment(assignment);
@@ -725,17 +728,11 @@ public class ClientFactory
             List<TransactionPair<?>> transactions = security.getTransactions(client);
 
             // sort by date of transaction
-            Collections.sort(transactions, new Comparator<TransactionPair<?>>()
-            {
-                @Override
-                public int compare(TransactionPair<?> one, TransactionPair<?> two)
-                {
-                    return one.getTransaction().getDate().compareTo(two.getTransaction().getDate());
-                }
-            });
+            Collections.sort(transactions,
+                            (one, two) -> one.getTransaction().getDate().compareTo(two.getTransaction().getDate()));
 
             // count and assign number of shares by account
-            Map<Account, Long> account2shares = new HashMap<Account, Long>();
+            Map<Account, Long> account2shares = new HashMap<>();
             for (TransactionPair<? extends Transaction> t : transactions)
             {
                 if (t.getTransaction() instanceof AccountTransaction)
@@ -756,7 +753,7 @@ public class ClientFactory
                 {
                     PortfolioTransaction portfolioTransaction = (PortfolioTransaction) t.getTransaction();
 
-                    // determine account: if it exists, take the cross entry;
+                    // determine account: if it exists, take the cross entry.
                     // otherwise the reference account
                     Account account = null;
                     switch (portfolioTransaction.getType())
@@ -764,8 +761,8 @@ public class ClientFactory
                         case BUY:
                         case SELL:
                             if (portfolioTransaction.getCrossEntry() != null)
-                                account = (Account) portfolioTransaction.getCrossEntry().getCrossOwner(
-                                                portfolioTransaction);
+                                account = (Account) portfolioTransaction.getCrossEntry()
+                                                .getCrossOwner(portfolioTransaction);
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
                         default:
@@ -884,6 +881,43 @@ public class ClientFactory
         }
     }
 
+    private static void addDecimalPlacesToQuotes(Client client)
+    {
+        // previously quotes worked in cents (2 decimal places). This change
+        // adds 2 decimal places to support up to 4.
+        int decimalPlacesAdded = 100;
+
+        for (Security security : client.getSecurities())
+        {
+            security.getPrices().stream().forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
+            if (security.getLatest() != null)
+            {
+                LatestSecurityPrice l = security.getLatest();
+                l.setValue(l.getValue() * decimalPlacesAdded);
+
+                if (l.getHigh() != -1)
+                    l.setHigh(l.getHigh() * decimalPlacesAdded);
+                if (l.getLow() != -1)
+                    l.setLow(l.getLow() * decimalPlacesAdded);
+                if (l.getPreviousClose() != -1)
+                    l.setPreviousClose(l.getPreviousClose() * decimalPlacesAdded);
+            }
+        }
+
+        List<AttributeType> typesWithQuotes = client.getSettings().getAttributeTypes()
+                        .filter(t -> t.getConverter() instanceof AttributeType.QuoteConverter)
+                        .collect(Collectors.toList());
+
+        client.getSecurities().stream().map(s -> s.getAttributes()).forEach(attributes -> {
+            for (AttributeType t : typesWithQuotes)
+            {
+                Object value = attributes.get(t);
+                if (value != null && value instanceof Long)
+                    attributes.put(t, ((Long) value).longValue() * decimalPlacesAdded);
+            }
+        });
+    }
+
     @SuppressWarnings("nls")
     private static XStream xstream()
     {
@@ -898,8 +932,8 @@ public class ClientFactory
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
                     xstream.registerConverter(new XStreamLocalDateConverter());
-                    xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(), xstream
-                                    .getReflectionProvider()));
+                    xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(),
+                                    xstream.getReflectionProvider()));
 
                     xstream.useAttributeFor(Money.class, "amount");
                     xstream.useAttributeFor(Money.class, "currencyCode");

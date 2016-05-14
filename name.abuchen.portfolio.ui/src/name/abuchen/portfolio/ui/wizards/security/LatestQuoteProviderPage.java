@@ -109,7 +109,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 
-                List<Security> list = new ArrayList<Security>();
+                List<Security> list = new ArrayList<>();
                 list.add(s);
 
                 feed.updateLatestQuotes(list, new ArrayList<Exception>());
@@ -122,19 +122,18 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                     {
                         LatestSecurityPrice p = s.getLatest();
 
-                        valueLatestPrices.setText(Values.Amount.format(p.getValue()));
+                        valueLatestPrices.setText(Values.Quote.format(p.getValue()));
                         valueLatestTrade.setText(Values.Date.format(p.getTime()));
                         long daysHigh = p.getHigh();
                         valueDaysHigh.setText(
-                                        daysHigh == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysHigh));
+                                        daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));
                         long daysLow = p.getLow();
-                        valueDaysLow.setText(
-                                        daysLow == -1 ? Messages.LabelNotAvailable : Values.Amount.format(daysLow));
+                        valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysLow));
                         long volume = p.getVolume();
                         valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
                         long prevClose = p.getPreviousClose();
                         valuePreviousClose.setText(
-                                        prevClose == -1 ? Messages.LabelNotAvailable : Values.Amount.format(prevClose));
+                                        prevClose == -1 ? Messages.LabelNotAvailable : Values.Quote.format(prevClose));
 
                     }
                     else
@@ -217,7 +216,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     @Override
     protected List<QuoteFeed> getAvailableFeeds()
     {
-        List<QuoteFeed> feeds = new ArrayList<QuoteFeed>();
+        List<QuoteFeed> feeds = new ArrayList<>();
         feeds.add(EMTPY_QUOTE_FEED);
 
         for (QuoteFeed feed : Factory.getQuoteFeedProvider())
