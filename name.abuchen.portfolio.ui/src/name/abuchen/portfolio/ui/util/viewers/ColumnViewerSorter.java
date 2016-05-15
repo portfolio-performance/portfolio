@@ -389,9 +389,10 @@ public final class ColumnViewerSorter
         return create(new ValueProviderComparator(valueProvider));
     }
 
-    public static ColumnViewerSorter create(Comparator<Object> comparator)
+    @SuppressWarnings("unchecked")
+    public static ColumnViewerSorter create(Comparator<? extends Object> comparator)
     {
-        return new ColumnViewerSorter(comparator);
+        return new ColumnViewerSorter((Comparator<Object>) comparator);
     }
 
     public ColumnViewerSorter wrap(Function<Comparator<Object>, Comparator<Object>> provider)

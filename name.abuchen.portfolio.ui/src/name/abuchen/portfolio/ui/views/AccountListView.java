@@ -5,7 +5,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -16,9 +18,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -45,6 +45,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.ui.Images;
@@ -80,6 +81,13 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private TableViewer accounts;
     private TableViewer transactions;
     private TimelineChart accountBalanceChart;
+
+    /**
+     * Store current balance of account after given transaction has been
+     * applied. See {@link #updateBalance(Account)}. Do not store transient
+     * balance in persistent AccountTransaction object.
+     */
+    private Map<AccountTransaction, Money> transaction2balance = new HashMap<>();
 
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
@@ -161,7 +169,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private void addConfigButton(final ToolBar toolBar)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE)
+        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE) // NOSONAR
         {
             @Override
             public void menuAboutToShow(IMenuManager manager)
@@ -198,6 +206,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().updateFrom(t);
             accounts.refresh(true);
+
+            updateOnAccountSelected((Account) transactions.getData(Account.class.toString()));
         }
 
         markDirty();
@@ -222,7 +232,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                         getPreferenceStore(), accounts, layout);
 
         Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider()
+        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
         {
             @Override
             public Color getForeground(Object e)
@@ -266,33 +276,24 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);
 
-        for (Account account : getClient().getAccounts())
-        {
-            Collections.sort(account.getTransactions(), new Transaction.ByDate());
-        }
-
         accounts.setContentProvider(new SimpleListContentProvider());
         resetInput();
         accounts.refresh();
 
-        accounts.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                transactions.setData(Account.class.toString(), account);
-                transactions.setInput(
-                                account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
-                transactions.refresh();
+        accounts.addSelectionChangedListener(event -> {
+            Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
-                updateChart(account);
-            }
+            updateOnAccountSelected(account);
+
+            transactions.setData(Account.class.toString(), account);
+            transactions.setInput(account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
+            transactions.refresh();
         });
 
-        hookContextMenu(accounts.getTable(), manager -> fillAccountsContextMenu(manager));
+        hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
     }
 
-    private void fillAccountsContextMenu(IMenuManager manager)
+    private void fillAccountsContextMenu(IMenuManager manager) // NOSONAR
     {
         final Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (account == null)
@@ -329,6 +330,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
     // bottom table: transactions
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createBottomTable(Composite parent)
     {
         // folder
@@ -428,21 +430,11 @@ public class AccountListView extends AbstractListView implements ModificationLis
             @Override
             public String getText(Object e)
             {
-                AccountTransaction t = (AccountTransaction) e;
-                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getBalance()),
-                                getClient().getBaseCurrency());
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                AccountTransaction t = (AccountTransaction) element;
-                if (t.getBalance() < 0)
-                    return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-                return null;
+                Money balance = transaction2balance.get(e);
+                return balance != null ? Values.Money.format(balance, getClient().getBaseCurrency()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "balance")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(new AccountTransaction.ByDateAmountAndType()));
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
@@ -585,7 +577,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         transactions.setContentProvider(new SimpleListContentProvider());
 
-        hookContextMenu(transactions.getTable(), manager -> fillTransactionsContextMenu(manager));
+        hookContextMenu(transactions.getTable(), this::fillTransactionsContextMenu);
 
         hookKeyListener();
 
@@ -620,7 +612,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         });
     }
 
-    private void fillTransactionsContextMenu(IMenuManager manager)
+    private void fillTransactionsContextMenu(IMenuManager manager) // NOSONAR
     {
         Account account = (Account) transactions.getData(Account.class.toString());
         if (account == null)
@@ -696,6 +688,49 @@ public class AccountListView extends AbstractListView implements ModificationLis
         return accountBalanceChart;
     }
 
+    private void updateOnAccountSelected(Account account)
+    {
+        updateBalance(account);
+        updateChart(account);
+    }
+
+    private void updateBalance(Account account)
+    {
+        transaction2balance.clear();
+        if (account == null)
+            return;
+
+        List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
+        Collections.sort(tx, new AccountTransaction.ByDateAmountAndType());
+
+        MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
+        for (AccountTransaction t : tx)
+        {
+            switch (t.getType())
+            {
+                case DEPOSIT:
+                case INTEREST:
+                case DIVIDENDS:
+                case TAX_REFUND:
+                case SELL:
+                case TRANSFER_IN:
+                    balance.add(t.getMonetaryAmount());
+                    break;
+                case REMOVAL:
+                case FEES:
+                case TAXES:
+                case BUY:
+                case TRANSFER_OUT:
+                    balance.subtract(t.getMonetaryAmount());
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+
+            transaction2balance.put(t, balance.toMoney());
+        }
+    }
+
     private void updateChart(Account account)
     {
         try
@@ -704,6 +739,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
             for (ISeries s : accountBalanceChart.getSeriesSet().getSeries())
                 accountBalanceChart.getSeriesSet().deleteSeries(s.getId());
+
+            if (account == null)
+                return;
 
             List<AccountTransaction> tx = account.getTransactions();
             if (tx.isEmpty())
