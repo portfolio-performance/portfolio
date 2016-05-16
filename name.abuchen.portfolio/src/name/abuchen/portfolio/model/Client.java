@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.crypto.SecretKey;
 
@@ -40,16 +41,17 @@ public class Client
 
     private String baseCurrency = CurrencyUnit.EUR;
 
-    private List<Security> securities = new ArrayList<Security>();
+    private List<Security> securities = new ArrayList<>();
     private List<Watchlist> watchlists;
 
     // keep typo -> xstream deserialization
     private List<ConsumerPriceIndex> consumerPriceIndeces;
 
-    private List<Account> accounts = new ArrayList<Account>();
-    private List<Portfolio> portfolios = new ArrayList<Portfolio>();
+    private List<Account> accounts = new ArrayList<>();
+    private List<Portfolio> portfolios = new ArrayList<>();
     private List<InvestmentPlan> plans;
     private List<Taxonomy> taxonomies;
+    private List<Dashboard> dashboards;
 
     private Map<String, String> properties;
     private ClientSettings settings;
@@ -73,22 +75,25 @@ public class Client
         // persisted in that version are not initialized
 
         if (watchlists == null)
-            watchlists = new ArrayList<Watchlist>();
+            watchlists = new ArrayList<>();
 
         if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
+            consumerPriceIndeces = new ArrayList<>();
 
         if (properties == null)
-            properties = new HashMap<String, String>();
+            properties = new HashMap<>();
 
         if (propertyChangeSupport == null)
             propertyChangeSupport = new PropertyChangeSupport(this);
 
         if (plans == null)
-            plans = new ArrayList<InvestmentPlan>();
+            plans = new ArrayList<>();
 
         if (taxonomies == null)
-            taxonomies = new ArrayList<Taxonomy>();
+            taxonomies = new ArrayList<>();
+
+        if (dashboards == null)
+            dashboards = new ArrayList<>();
 
         if (settings == null)
             settings = new ClientSettings();
@@ -96,12 +101,12 @@ public class Client
             settings.doPostLoadInitialization();
     }
 
-    /* package */int getVersion()
+                    /* package */int getVersion()
     {
         return version;
     }
 
-    /* package */void setVersion(int version)
+                    /* package */void setVersion(int version)
     {
         this.version = version;
     }
@@ -111,7 +116,8 @@ public class Client
         return fileVersionAfterRead;
     }
 
-    /* package */void setFileVersionAfterRead(int fileVersionAfterRead)
+    /* package */
+    void setFileVersionAfterRead(int fileVersionAfterRead)
     {
         this.fileVersionAfterRead = fileVersionAfterRead;
     }
@@ -196,7 +202,7 @@ public class Client
         if (indices == null)
             throw new IllegalArgumentException();
 
-        List<ConsumerPriceIndex> newValues = new ArrayList<ConsumerPriceIndex>(indices);
+        List<ConsumerPriceIndex> newValues = new ArrayList<>(indices);
         Collections.sort(newValues, new ConsumerPriceIndex.ByDate());
 
         if (consumerPriceIndeces == null || !consumerPriceIndeces.equals(newValues))
@@ -284,25 +290,29 @@ public class Client
     }
 
     @Deprecated
-    /* package */Category getRootCategory()
+    /* package */
+    Category getRootCategory()
     {
         return this.rootCategory;
     }
 
     @Deprecated
-    /* package */void setRootCategory(Category rootCategory)
+    /* package */
+    void setRootCategory(Category rootCategory)
     {
         this.rootCategory = rootCategory;
     }
 
     @Deprecated
-    /* package */String getIndustryTaxonomy()
+    /* package */
+    String getIndustryTaxonomy()
     {
         return industryTaxonomyId;
     }
 
     @Deprecated
-    /* package */void setIndustryTaxonomy(String industryTaxonomyId)
+    /* package */
+    void setIndustryTaxonomy(String industryTaxonomyId)
     {
         this.industryTaxonomyId = industryTaxonomyId;
     }
@@ -334,6 +344,21 @@ public class Client
                         .findAny().orElse(null);
     }
 
+    public Stream<Dashboard> getDashboards()
+    {
+        return dashboards.stream();
+    }
+
+    public void addDashboard(Dashboard dashboard)
+    {
+        this.dashboards.add(dashboard);
+    }
+
+    public void removeDashboard(Dashboard dashboard)
+    {
+        this.dashboards.remove(dashboard);
+    }
+
     public ClientSettings getSettings()
     {
         return settings;
@@ -357,12 +382,14 @@ public class Client
         return properties.get(key);
     }
 
-    /* package */SecretKey getSecret()
+    /* package */
+    SecretKey getSecret()
     {
         return secret;
     }
 
-    /* package */void setSecret(SecretKey secret)
+    /* package */
+    void setSecret(SecretKey secret)
     {
         this.secret = secret;
     }
@@ -381,8 +408,7 @@ public class Client
             {
                 portfolio.setReferenceAccount(null);
 
-                accounts.stream().filter(a -> !account.equals(a)).findAny()
-                                .ifPresent(a -> portfolio.setReferenceAccount(a));
+                accounts.stream().filter(a -> !account.equals(a)).findAny().ifPresent(portfolio::setReferenceAccount);
 
                 if (portfolio.getReferenceAccount() == null)
                 {

@@ -486,6 +486,8 @@ public class ClientFactory
                 // added decimal places to stock quotes
                 addDecimalPlacesToQuotes(client);
 
+                // added dashboards to model
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -976,6 +978,10 @@ public class ClientFactory
                     xstream.alias("taxonomy", Taxonomy.class);
                     xstream.alias("classification", Classification.class);
                     xstream.alias("assignment", Assignment.class);
+
+                    xstream.alias("dashboard", Dashboard.class);
+                    xstream.alias("column", Dashboard.Column.class);
+                    xstream.alias("widget", Dashboard.Widget.class);
 
                     xstream.alias("event", SecurityEvent.class);
                 }
