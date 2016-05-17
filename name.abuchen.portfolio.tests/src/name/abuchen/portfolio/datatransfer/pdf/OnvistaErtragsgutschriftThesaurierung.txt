@@ -1,0 +1,47 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=172305000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Ausschüttung für
+Herr ADRESSZEILE5=01.01.2014 - 31.12.2014
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=43
+54321 Musterhausen 172305000 99904078 / 27.02.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Ertragsthesaurierung Frankfurt am Main, 03.03.2015
+Gattungsbezeichnung ISIN
+Allianz Euro Bond Fund Inhaber-Anteile A (EUR) o.N. LU0140355917
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 28,000 02.03.2015 04.03.2015 EUR 0,088340
+Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 2,47
+Bei Teilthesaurierungen kann die Steuerpflicht durch die Barausschüttungskomponente abgegolten sein. In diesen Fällen
+wurde auch die ggf. ausgewiesene anrechenbare Quellensteuer bereits im Rahmen der Ausschüttung berücksichtigt.
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Thesaurierung brutto EUR 2.47
+fiktiv anrechenbare Quellensteuer Fondseingangsseite EUR 0,27
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 2,02
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,11
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,18
+Zahlungstag 04.03.2015
+Jahressteuerbescheinigung folgt
+Der von der Kapitalverwaltungsgesellschaft (KVG) zum Geschäftsjahresende des Fonds gemeldete und in jenem
+Kalenderjahr als zugeflossen geltende ausschüttungsgleiche (thesaurierte) Ertrag ist gem. §2 Abs. 1 InvStG steuerpflichtig
+und in der Steuererklärung für 2015 (Anlage KAP) zu deklarieren.
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/DUANDEREEREIERTR/GDBERTRG/000043/040315/001216
