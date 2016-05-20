@@ -1,5 +1,10 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -16,68 +21,154 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 
 public class DashboardView extends AbstractFinanceView
 {
+    @Inject
+    private ExchangeRateProviderFactory exchangeRateFactory;
+
+    private List<WidgetDelegate> delegates = new ArrayList<>();
+
     @Override
     protected String getTitle()
     {
-        return "Berechnung";
+        return "Dashboard";
+    }
+
+    @Override
+    public void notifyModelUpdated()
+    {
+        updateWidgets();
     }
 
     @Override
     protected Control createBody(Composite parent)
     {
-        Composite composite = new Composite(parent, SWT.NONE);
-        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(true).applyTo(composite);
+        Dashboard dashboard = getClient().getDashboards().findAny().orElseGet(() -> createDefaultDashboard());
 
-        Composite column1 = createColumn(composite);
-        createKPI(column1, "True-Time Weighted Rate of Return", "10,88%");
-        createKPI(column1, "Interner Zinsfuß (IZF)", "9,88%");
+        DashboardResources resources = new DashboardResources(parent);
 
-        Composite column2 = createColumn(composite);
-        createKPI(column2, "Maximum Drawdown", "20,16%");
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
+                        .applyTo(container);
 
-        Composite column3 = createColumn(composite);
-        createKPI(column3, "Volatilität", "0,39%");
+        for (Dashboard.Column column : dashboard.getColumns())
+        {
+            Composite composite = createColumn(container);
+            composite.setData(column);
 
-        return composite;
+            for (Dashboard.Widget widget : column.getWidgets())
+            {
+                WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
+                if (factory == null)
+                    continue;
+
+                WidgetDelegate delegate = factory.create(widget);
+
+                this.delegates.add(delegate);
+
+                Composite element = delegate.createControl(composite, resources);
+                element.setData(widget);
+                addDragListener(element);
+                addDropListener(element);
+
+                for (Control child : element.getChildren())
+                    addDragListener(child);
+
+                GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
+            }
+        }
+
+        updateWidgets();
+
+        return container;
+    }
+
+    private Dashboard createDefaultDashboard()
+    {
+        Dashboard dashboard = new Dashboard();
+        dashboard.setName("Letztes Jahr");
+
+        Dashboard.Column column = new Dashboard.Column();
+        dashboard.getColumns().add(column);
+
+        Dashboard.Widget widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEADING.name());
+        widget.setLabel("Kennzahlen");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.TTWROR.name());
+        widget.setLabel("True-Time Weighted Rate of Return");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.IRR.name());
+        widget.setLabel("Interner Zinsfuß");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
+        widget.setLabel("Absolute Change");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.DELTA.name());
+        widget.setLabel("Delta");
+        column.getWidgets().add(widget);
+
+        column = new Dashboard.Column();
+        dashboard.getColumns().add(column);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEADING.name());
+        widget.setLabel("Risikokennzahlen");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.MAXDRAWDOWN.name());
+        widget.setLabel("Maximaler Drawdown");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.MAXDRAWDOWNDURATION.name());
+        widget.setLabel("Maximaler Drawdown Duration");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.VOLATILITY.name());
+        widget.setLabel("Volatilität");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.SEMIVOLATILITY.name());
+        widget.setLabel("Semivolatilität");
+        column.getWidgets().add(widget);
+
+        dashboard.getColumns().add(new Dashboard.Column());
+
+        return dashboard;
     }
 
     private Composite createColumn(Composite composite)
     {
         Composite column = new Composite(composite, SWT.NONE);
-        column.setData(new Dashboard.Column());
+        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(column);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(column);
+
         addDropListener(column);
 
-        column.setLayout(new RowLayout(SWT.VERTICAL));
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(column);
         return column;
-    }
-
-    private Composite createKPI(Composite parent, String label, String value)
-    {
-        Composite kpi = new Composite(parent, SWT.NONE);
-        kpi.setData(new Dashboard.Widget());
-        addDragListener(kpi);
-        addDropListener(kpi);
-
-        kpi.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        kpi.setLayout(new RowLayout(SWT.VERTICAL));
-        Label lbl = new Label(kpi, SWT.NONE);
-        lbl.setText(label);
-        Label vl = new Label(kpi, SWT.NONE);
-        vl.setText(value);
-        return kpi;
     }
 
     private void addDragListener(final Control control)
@@ -89,15 +180,23 @@ public class DashboardView extends AbstractFinanceView
             @Override
             public void dragSetData(final DragSourceEvent event)
             {
-                transfer.setSelection(new StructuredSelection(control));
+                Control c = control;
+                while (!(c.getData() instanceof Dashboard.Widget))
+                    c = c.getParent();
+
+                transfer.setSelection(new StructuredSelection(c));
             }
 
             @Override
             public void dragStart(DragSourceEvent dragSourceEvent)
             {
-                Composite composite = (Composite) ((DragSource) dragSourceEvent.getSource()).getControl();
-                Point compositeSize = composite.getSize();
-                GC gc = new GC(composite);
+                Control control = ((DragSource) dragSourceEvent.getSource()).getControl();
+
+                while (!(control.getData() instanceof Dashboard.Widget))
+                    control = control.getParent();
+
+                Point compositeSize = control.getSize();
+                GC gc = new GC(control);
                 Image image = new Image(Display.getCurrent(), compositeSize.x, compositeSize.y);
                 gc.copyArea(image, 0, 0);
                 dragSourceEvent.image = image;
@@ -159,6 +258,13 @@ public class DashboardView extends AbstractFinanceView
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
         dropTarget.setTransfer(new Transfer[] { transfer });
         dropTarget.addDropListener(dragAdapter);
+    }
+
+    private void updateWidgets()
+    {
+        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateFactory, getClient().getBaseCurrency());
+        DashboardData data = new DashboardData(getClient(), converter);
+        delegates.forEach(d -> d.update(data));
     }
 
 }

@@ -17,18 +17,18 @@ public final class InfoToolTip extends ToolTip
     private Control control;
     private String message;
 
-    public static void attach(Control control, String message)
-    {
-        InfoToolTip tooltip = new InfoToolTip(control, message);
-        tooltip.setPopupDelay(0);
-        tooltip.activate();
-    }
-
     private InfoToolTip(Control control, String message)
     {
         super(control, ToolTip.NO_RECREATE, false);
         this.control = control;
         this.message = message;
+    }
+
+    public static void attach(Control control, String message)
+    {
+        InfoToolTip tooltip = new InfoToolTip(control, message);
+        tooltip.setPopupDelay(0);
+        tooltip.activate();
     }
 
     @Override

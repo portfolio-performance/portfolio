@@ -14,7 +14,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;
 
-    private final Map<String, ExchangeRateTimeSeries> cache = new HashMap<String, ExchangeRateTimeSeries>();
+    private final Map<String, ExchangeRateTimeSeries> cache = new HashMap<>();
 
     public CurrencyConverterImpl(ExchangeRateProviderFactory factory, String termCurrency)
     {
@@ -48,7 +48,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
         if (termCurrency.equals(currencyCode))
             return new ExchangeRate(date, BigDecimal.ONE);
 
-        ExchangeRateTimeSeries series = cache.computeIfAbsent(currencyCode, code -> lookupSeries(code));
+        ExchangeRateTimeSeries series = cache.computeIfAbsent(currencyCode, this::lookupSeries);
 
         Optional<ExchangeRate> rate = series.lookupRate(date);
         if (!rate.isPresent())
@@ -58,7 +58,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
         return rate.get();
     }
 
-    private ExchangeRateTimeSeries lookupSeries(String currencyCode)
+    private ExchangeRateTimeSeries lookupSeries(String currencyCode) // NOSONAR
     {
         ExchangeRateTimeSeries series = factory.getTimeSeries(currencyCode, termCurrency);
         if (series == null)
