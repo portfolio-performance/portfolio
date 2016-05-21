@@ -23,6 +23,7 @@ public class HeadingWidget implements WidgetDelegate
         heading.setBackground(parent.getBackground());
         FillLayout layout = new FillLayout();
         layout.marginWidth = 5;
+        layout.marginHeight = 10;
         heading.setLayout(layout);
 
         Label lbl = new Label(heading, SWT.NONE);

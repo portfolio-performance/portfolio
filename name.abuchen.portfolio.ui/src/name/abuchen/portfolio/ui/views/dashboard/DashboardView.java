@@ -54,6 +54,7 @@ public class DashboardView extends AbstractFinanceView
     protected Control createBody(Composite parent)
     {
         Dashboard dashboard = getClient().getDashboards().findAny().orElseGet(() -> createDefaultDashboard());
+        updateTitle("Dashboard: " + dashboard.getName());
 
         DashboardResources resources = new DashboardResources(parent);
 
@@ -88,6 +89,8 @@ public class DashboardView extends AbstractFinanceView
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
             }
         }
+
+        container.layout();
 
         updateWidgets();
 
@@ -166,6 +169,22 @@ public class DashboardView extends AbstractFinanceView
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CALCULATION.name());
         widget.setLabel("Berechnung");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEADING.name());
+        widget.setLabel("Charts");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.CHART.name());
+        widget.setLabel("Performance Gesamtportfolio 1 Jahr");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.CHART.name());
+        widget.setLabel("Performance Gesamtportfolio 5 Jahre");
+        widget.getConfiguration().put("period", "L5Y0");
         column.getWidgets().add(widget);
 
         return dashboard;

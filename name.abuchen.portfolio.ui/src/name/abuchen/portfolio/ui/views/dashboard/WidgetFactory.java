@@ -50,7 +50,9 @@ public enum WidgetFactory
         return index.getVolatility().getSemiDeviation();
     })),
 
-    CALCULATION(widget -> new PerformanceCalculationWidget(widget));
+    CALCULATION(widget -> new PerformanceCalculationWidget(widget)),
+
+    CHART(widget -> new PerformanceChartWidget(widget));
 
     private Function<Dashboard.Widget, WidgetDelegate> createFunction;
 

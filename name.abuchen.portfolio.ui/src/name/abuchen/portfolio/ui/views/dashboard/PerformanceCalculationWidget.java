@@ -21,6 +21,7 @@ public class PerformanceCalculationWidget implements WidgetDelegate
     private final Widget widget;
     private ReportingPeriod reportingPeriod;
 
+    private Composite container;
     private Label[] signs;
     private Label[] labels;
     private Label[] values;
@@ -47,7 +48,7 @@ public class PerformanceCalculationWidget implements WidgetDelegate
     @Override
     public Composite createControl(Composite parent, DashboardResources resources)
     {
-        Composite container = new Composite(parent, SWT.NONE);
+        container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(container);
         container.setBackground(parent.getBackground());
 
@@ -81,6 +82,8 @@ public class PerformanceCalculationWidget implements WidgetDelegate
             if (++ii >= labels.length)
                 break;
         }
+
+        container.layout();
     }
 
 }
