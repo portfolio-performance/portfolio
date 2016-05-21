@@ -48,7 +48,9 @@ public enum WidgetFactory
     SEMIVOLATILITY(widget -> new IndicatorWidget<Double>(widget, Values.Percent2, (data, period) -> {
         PerformanceIndex index = data.calculate(PerformanceIndex.class, period);
         return index.getVolatility().getSemiDeviation();
-    }));
+    })),
+
+    CALCULATION(widget -> new PerformanceCalculationWidget(widget));
 
     private Function<Dashboard.Widget, WidgetDelegate> createFunction;
 

@@ -155,7 +155,18 @@ public class DashboardView extends AbstractFinanceView
         widget.setLabel("Semivolatilität");
         column.getWidgets().add(widget);
 
-        dashboard.getColumns().add(new Dashboard.Column());
+        column = new Dashboard.Column();
+        dashboard.getColumns().add(column);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEADING.name());
+        widget.setLabel("Berechnung");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.CALCULATION.name());
+        widget.setLabel("Berechnung");
+        column.getWidgets().add(widget);
 
         return dashboard;
     }
