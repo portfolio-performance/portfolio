@@ -164,8 +164,7 @@ public class SecurityTransferModel extends AbstractModel
         this.security = entry.getSourceTransaction().getSecurity();
         this.date = entry.getSourceTransaction().getDate();
         this.shares = entry.getSourceTransaction().getShares();
-        this.quote = new BigDecimal(
-                        entry.getSourceTransaction().getGrossPricePerShareAmount() / Values.Amount.divider());
+        this.quote = entry.getSourceTransaction().getGrossPricePerShare().toBigDecimal();
         this.amount = entry.getTargetTransaction().getAmount();
         this.note = entry.getSourceTransaction().getNote();
     }

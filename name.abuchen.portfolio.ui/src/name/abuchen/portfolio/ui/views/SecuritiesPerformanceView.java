@@ -42,7 +42,6 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
@@ -340,7 +339,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public String getText(Object r)
             {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
+                return Values.Quote.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
                                 getClient().getBaseCurrency());
             }
         });
@@ -355,8 +354,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             public String getText(Object element)
             {
                 SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
-                Money money = Money.of(record.getSecurity().getCurrencyCode(), record.getQuote().getValue());
-                return Values.Money.format(money, getClient().getBaseCurrency());
+                return Values.Quote.format(record.getQuote(), getClient().getBaseCurrency());
             }
 
             @Override
@@ -365,7 +363,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
 
                 return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
-                                Values.Date.format(record.getQuote().getTime()));
+                                Values.Date.format(record.getLatestSecurityPrice().getTime()));
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
@@ -813,7 +811,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 if (t instanceof PortfolioTransaction)
                 {
                     PortfolioTransaction p = (PortfolioTransaction) t;
-                    return Values.Money.format(p.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    return Values.Quote.format(p.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else
                     return null;

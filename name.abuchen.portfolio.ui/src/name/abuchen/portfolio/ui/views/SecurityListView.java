@@ -48,7 +48,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Images;
@@ -690,15 +690,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Money.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                    return Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
                                     getClient().getBaseCurrency());
                 }
                 else if (t instanceof AccountTransaction)
                 {
                     long shares = ((AccountTransaction) t).getShares();
                     if (shares != 0)
-                        return Values.Money.format(Money.of(t.getCurrencyCode(),
-                                        Math.round(t.getAmount() * Values.Share.divider() / shares)));
+                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), Math.round(t.getAmount()
+                                        * Values.Share.divider() * Values.Quote.factorToMoney() / shares)));
                 }
                 return null;
             }

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.TemporalAmount;
@@ -47,6 +48,7 @@ public class SecuritiesChart
         this.client = client;
         chart = new TimelineChart(parent);
         chart.getTitle().setText("..."); //$NON-NLS-1$
+        chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
 
         Composite buttons = new Composite(parent, SWT.NONE);

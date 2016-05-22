@@ -85,6 +85,16 @@ public abstract class Values<E>
             return currencyCode + " " + format(quote); //$NON-NLS-1$
         }
 
+        public String format(Quote quote)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount());
+        }
+
+        public String format(Quote quote, String skipCurrency)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+        }
+
         /**
          * Factor by which to multiply a monetary amount to convert it into a
          * quote amount. Monetary amounts have 2 decimal digits while quotes

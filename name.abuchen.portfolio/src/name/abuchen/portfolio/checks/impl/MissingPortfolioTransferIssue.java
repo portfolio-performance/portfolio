@@ -32,7 +32,7 @@ import name.abuchen.portfolio.money.Values;
         @Override
         public String getDoneLabel()
         {
-            PortfolioTransaction.Type target = null;
+            PortfolioTransaction.Type target;
             if (transaction.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                 target = PortfolioTransaction.Type.TRANSFER_OUT;
             else
@@ -44,8 +44,8 @@ import name.abuchen.portfolio.money.Values;
         @Override
         public void execute()
         {
-            Portfolio from = null;
-            Portfolio to = null;
+            Portfolio from;
+            Portfolio to;
 
             if (transaction.getType() == PortfolioTransaction.Type.TRANSFER_IN)
             {
@@ -81,7 +81,7 @@ import name.abuchen.portfolio.money.Values;
         return MessageFormat.format(Messages.IssueMissingPortfolioTransfer, //
                         transaction.getType().toString(), //
                         Values.Share.format(transaction.getShares()), //
-                        Values.Amount.format(transaction.getGrossPricePerShareAmount()), //
+                        Values.Quote.format(transaction.getGrossPricePerShare()), //
                         transaction.getSecurity().getName());
     }
 
