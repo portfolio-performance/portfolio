@@ -556,40 +556,6 @@ public class OnvistaPDFExtractorTest
     }
     
     
-//    @Test
-//    public void testErtragsgutschriftDividendeReinvestition() throws IOException
-//    {
-//        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
-//        {
-//            @Override
-//            String strip(File file) throws IOException
-//            {
-//                return from("OnvistaErtragsgutschriftDividendeReinvestition.txt");
-//            }
-//        };
-//        List<Exception> errors = new ArrayList<Exception>();
-//
-//        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
-//
-//        assertThat(errors, empty());
-//        assertThat(results.size(), is(2));
-//
-//        // check security
-//        Security security = assertSecurityErtragsgutschriftDividendeReinvestitionTarget(results);
-//
-//        // check transaction
-//        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-//        assertThat(item.isPresent(), is(true));
-//        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-//        BuySellEntry transaction = (BuySellEntry) item.get().getSubject();
-//        assertThat(transaction.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-//        assertThat(transaction.getPortfolioTransaction().getSecurity(), is(security));
-//        assertThat(transaction.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
-//        assertThat(transaction.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-05-17")));
-//        assertThat(transaction.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
-//
-//    }
-    
 
     private String from(String resource)
     {

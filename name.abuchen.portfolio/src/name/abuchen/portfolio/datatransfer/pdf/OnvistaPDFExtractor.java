@@ -33,7 +33,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addBackOfProfitsTransaction();
         addTransferInTransaction();
-        addDividendReinvestTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -354,10 +353,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
                         
-                        .section("notation", "shares")
-                        .find("Nominal (Ex-Tag )?Zahltag (.*etrag pro .*)?(Zinssatz.*)?")
-                        //STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (.*)")
+                        .section("notation", "shares", "date", "amount", "currency")
+                        //.find("Nominal (Ex-Tag )?Zahltag (.*etrag pro .*)?(Zinssatz.*)?")
+                        //STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
+                        //Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
+                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)?(.*)")
+                        .match("(?<date>\\d+.\\d+.\\d{4}+)?(\\d{6,12})?(.{7,58} )?(?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -369,18 +370,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setShares(asShares(v.get("shares")));
                             }
-                        })
-
-                        .section("date", "amount", "currency")
-                        .find("Wert(\\s+)Konto-Nr. (Devisenkurs )?Betrag zu Ihren Gunsten(\\s*)$")
-                        //21.04.2016 172305047 EUR 10,00
-                        //18.12.2012 172305047 EUR/SGD 1,61567 EUR 1,56
-                        .match("(?<date>\\d+.\\d+.\\d{4}+) (\\d{6,12}) (.{7,20} )?(?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
+                            transferValueMap.put("date", t.getDate());
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+                        
                         .section("tax").optional()
                         .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
@@ -398,6 +393,46 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         .wrap(t -> new TransactionItem(t)));
+        
+        //Reinvestierung in:
+        block = new Block("Die Dividende wurde wie folgt in neue Aktien reinvestiert(.*)");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+    
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+    
+                        .section("name", "isin")
+                        .find("Gattungsbezeichnung ISIN")
+                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+                        
+                        .section("notation", "shares", "amount", "currency")
+                        .find("Nominal Reinvestierungspreis")
+                        //STK 25,000 EUR 0,700000
+                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
+                        .assign((t, v) -> {
+                            String notation = v.get("notation");
+                            if (notation != null && !notation.equalsIgnoreCase("STK"))
+                            {
+                                // Prozent-Notierung, Workaround..
+                                t.setShares((asShares(v.get("shares")) / 100));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                            
+                            t.setDate((LocalDate) transferValueMap.get("date"));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                                        
+                        .wrap(t -> new BuySellEntryItem(t)));
     }
 
     @SuppressWarnings("nls")
@@ -529,116 +564,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new BuySellEntryItem(t)));
     }
     
-    @SuppressWarnings("nls")
-    private void addDividendReinvestTransaction()
-    {
-        DocumentType type = new DocumentType("Reinvestierung");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Reinvestierung(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
-                        })
-
-                        .section("name", "isin")
-                        .find("Gattungsbezeichnung(.*) ISIN")
-                        .match("(?<name>.*?) (\\d+.\\d+.\\d{4} ){0,2}(?<isin>[^ ]\\S*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-                        
-                        .section("notation", "shares", "date")
-                        .find("Nominal (Ex-Tag )?Zahltag (.*etrag pro .*)?(Zinssatz.*)?")
-                        //STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("STK"))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                            t.setDate(asDate(v.get("date")));
-                            transferValueMap.put("date", t.getDate());
-                        })
-
-                        .section("amount", "currency")
-                        //Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
-                        .match("Leistungen aus dem steuerlichen Einlagenkonto (.*) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        .section("tax").optional()
-                        .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
-                        })
-                        .section("soli").optional()
-                        .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli")))));
-                        })
-                        .section("kirchenst").optional()
-                        .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
-                        })
-                        
-                        .wrap((t) -> {
-                            //addReinvest(type, t);
-                            return new TransactionItem(t);
-                        }));
-        
-        //Reinvestierung in:
-        block = new Block("Die Dividende wurde wie folgt in neue Aktien reinvestiert(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-    
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-    
-                        .section("name", "isin")
-                        .find("Gattungsbezeichnung ISIN")
-                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-                        
-                        .section("notation", "shares", "amount", "currency")
-                        .find("Nominal Reinvestierungspreis")
-                        //STK 25,000 EUR 0,700000
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("STK"))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                            
-                            t.setDate((LocalDate) transferValueMap.get("date"));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                                        
-                        .wrap(t -> new BuySellEntryItem(t)));        
-    }
         
     @Override
     public String getLabel()
