@@ -7,10 +7,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import name.abuchen.portfolio.money.Values;
+
 /* package */class YahooHelper
 {
     static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
     {
+        @Override
         protected DecimalFormat initialValue()
         {
             return new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
@@ -21,7 +24,7 @@ import java.util.Locale;
     {
         if ("N/A".equals(s)) //$NON-NLS-1$
             return -1;
-        return (long) (FMT_PRICE.get().parse(s).doubleValue() * 100);
+        return (long) (FMT_PRICE.get().parse(s).doubleValue() * Values.Quote.factor());
     }
 
     static int asNumber(String s) throws ParseException

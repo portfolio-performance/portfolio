@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -94,7 +95,8 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(150_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Money.of(CurrencyUnit.EUR, 39_24L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(39.248))));
     }
 
     private Security assertSecondSecurity(Item item)
@@ -120,7 +122,8 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Money.of(CurrencyUnit.EUR, 59_48L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(59.489))));
     }
 
     private void assertThirdTransaction(Item item)
@@ -136,7 +139,8 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 100_00L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShareAmount(), is(59_48L));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(59.489))));
     }
 
     @Test

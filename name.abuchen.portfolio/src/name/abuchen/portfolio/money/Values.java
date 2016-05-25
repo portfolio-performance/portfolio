@@ -50,30 +50,70 @@ public abstract class Values<E>
 
     public static final class QuoteValues extends Values<Long>
     {
+        private static final String QUOTE_PATTERN = "#,##0.00##"; //$NON-NLS-1$
+
+        private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = new ThreadLocal<DecimalFormat>()
+        {
+            @Override
+            protected DecimalFormat initialValue()
+            {
+                return new DecimalFormat(QUOTE_PATTERN);
+            }
+        };
+
         private QuoteValues()
         {
-            super("#,##0.00", 100D, 100); //$NON-NLS-1$
+            super(QUOTE_PATTERN, 10000D, 10000);
         }
 
         @Override
         public String format(Long quote)
         {
-            return String.format("%,.2f", quote / divider()); //$NON-NLS-1$
+            return QUOTE_FORMAT.get().format(quote / divider());
         }
 
-        public String format(String currencyCode, long quote)
+        public String format(String currencyCode, long quote, String skipCurrency)
         {
-            return String.format("%s %,.2f", currencyCode, quote / divider()); //$NON-NLS-1$
-        }
-
-        public String format(String currencyCode, long quote, String skipCurrencyCode)
-        {
-            if (skipCurrencyCode.equals(currencyCode))
+            if (skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
         }
 
+        public String format(String currencyCode, long quote)
+        {
+            return currencyCode + " " + format(quote); //$NON-NLS-1$
+        }
+
+        public String format(Quote quote)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount());
+        }
+
+        public String format(Quote quote, String skipCurrency)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+        }
+
+        /**
+         * Factor by which to multiply a monetary amount to convert it into a
+         * quote amount. Monetary amounts have 2 decimal digits while quotes
+         * have 4 digits.
+         */
+        public int factorToMoney()
+        {
+            return factor() / Values.Money.factor();
+        }
+
+        /**
+         * Divider by which to divide a quote amount to convert it into a
+         * monetary amount. Monetary amounts have 2 decimal digits while quotes
+         * have 4 digits.
+         */
+        public double dividerToMoney()
+        {
+            return divider() / Values.Money.divider();
+        }
     }
 
     public static final Values<Long> Amount = new Values<Long>("#,##0.00", 100D, 100) //$NON-NLS-1$
@@ -187,7 +227,7 @@ public abstract class Values<E>
         @Override
         public String format(Double percent)
         {
-            return String.format("%,.2f%%", percent * 100); //$NON-NLS-1$ 
+            return String.format("%,.2f%%", percent * 100); //$NON-NLS-1$
         }
     };
 
@@ -196,7 +236,7 @@ public abstract class Values<E>
         @Override
         public String format(Double percent)
         {
-            return String.format("%,.5f%%", percent * 100); //$NON-NLS-1$ 
+            return String.format("%,.5f%%", percent * 100); //$NON-NLS-1$
         }
     };
 

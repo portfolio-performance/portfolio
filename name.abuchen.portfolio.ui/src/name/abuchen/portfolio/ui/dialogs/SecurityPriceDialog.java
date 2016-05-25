@@ -2,27 +2,33 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import java.time.LocalDate;
 
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 
 public class SecurityPriceDialog extends AbstractDialog
 {
-    static class Model extends BindingHelper.Model
+    static class SecurityPriceModel extends BindingHelper.Model
     {
-        private Security security;
+        private final Security security;
         private LocalDate date = LocalDate.now();
         private long price;
 
-        public Model(Client client, Security security)
+        public SecurityPriceModel(Client client, Security security)
         {
             super(client);
 
             this.security = security;
+        }
+
+        public Security getSecurity()
+        {
+            return security;
         }
 
         public long getPrice()
@@ -32,7 +38,7 @@ public class SecurityPriceDialog extends AbstractDialog
 
         public void setPrice(long price)
         {
-            firePropertyChange("price", this.price, this.price = price); //$NON-NLS-1$
+            firePropertyChange("price", this.price, this.price = price); // NOSONAR //$NON-NLS-1$
         }
 
         public LocalDate getDate()
@@ -42,9 +48,10 @@ public class SecurityPriceDialog extends AbstractDialog
 
         public void setDate(LocalDate date)
         {
-            firePropertyChange("date", this.date, this.date = date); //$NON-NLS-1$
+            firePropertyChange("date", this.date, this.date = date); // NOSONAR //$NON-NLS-1$
         }
 
+        @Override
         public void applyChanges()
         {
             SecurityPrice p = new SecurityPrice(date, price);
@@ -54,7 +61,7 @@ public class SecurityPriceDialog extends AbstractDialog
 
     public SecurityPriceDialog(Shell parentShell, Client client, Security security)
     {
-        super(parentShell, Messages.LabelQuote, new Model(client, security));
+        super(parentShell, Messages.LabelQuote, new SecurityPriceModel(client, security));
     }
 
     @Override

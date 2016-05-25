@@ -15,7 +15,7 @@ public class AssetCategory
     private final Classification classification;
     private final CurrencyConverter converter;
     private final LocalDate date;
-    private final List<AssetPosition> positions = new ArrayList<AssetPosition>();
+    private final List<AssetPosition> positions = new ArrayList<>();
     private final Money totalAssets;
     private final MutableMoney valuation;
 

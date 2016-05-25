@@ -11,6 +11,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -38,6 +39,8 @@ public class SecurityTest
                 p.getWriteMethod().invoke(source, UUID.randomUUID().toString());
             else if (p.getPropertyType() == boolean.class)
                 p.getWriteMethod().invoke(source, true);
+            else if (p.getPropertyType() == int.class)
+                p.getWriteMethod().invoke(source, new Random().nextInt());
             else
                 skipped++;
         }
@@ -54,7 +57,8 @@ public class SecurityTest
             if ("UUID".equals(p.getName())) //$NON-NLS-1$
                 continue;
 
-            if (p.getPropertyType() != String.class && p.getPropertyType() != boolean.class)
+            if (p.getPropertyType() != String.class && p.getPropertyType() != boolean.class
+                            && p.getPropertyType() != int.class)
                 continue;
 
             Object sourceValue = p.getReadMethod().invoke(source);

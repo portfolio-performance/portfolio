@@ -9,6 +9,8 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
@@ -21,7 +23,6 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class GroupByTaxonomyTest
@@ -38,17 +39,17 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Security a = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1000) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
                         .assign(taxonomy, "debt") //
                         .addTo(client);
 
         Security c = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1200) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(12)) //
                         .assign(taxonomy, "equity") //
                         .addTo(client);
 
         Security d = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1200) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(12)) //
                         .assign(taxonomy, "equity") //
                         .addTo(client);
 
@@ -87,7 +88,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Security a = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1000) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
                         .assign(taxonomy, "debt", Classification.ONE_HUNDRED_PERCENT / 2) //
                         .assign(taxonomy, "equity", Classification.ONE_HUNDRED_PERCENT / 2) //
                         .addTo(client);
@@ -123,7 +124,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Security a = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1000) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
                         .assign(taxonomy, "cat1", Classification.ONE_HUNDRED_PERCENT / 2) //
                         .assign(taxonomy, "cat2", Classification.ONE_HUNDRED_PERCENT / 2) //
                         .addTo(client);
@@ -157,7 +158,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Security a = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1000) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
@@ -191,7 +192,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Security a = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 1000) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
                         .assign(taxonomy, "debt", Classification.ONE_HUNDRED_PERCENT / 2) //
                         .addTo(client);
 

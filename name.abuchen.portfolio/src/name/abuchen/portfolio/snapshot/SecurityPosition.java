@@ -142,10 +142,8 @@ public class SecurityPosition
                 }
             }
 
-            this.purchasePrice = Money.of(
-                            converter.getTermCurrency(),
-                            sharesBought > 0 ? Math.round((netInvestment * Values.Share.factor())
-                                            / (double) sharesBought) : 0);
+            this.purchasePrice = Money.of(converter.getTermCurrency(), sharesBought > 0
+                            ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesBought) : 0);
             this.purchaseValue = Money.of(converter.getTermCurrency(), grossInvestment);
         }
 
@@ -186,9 +184,10 @@ public class SecurityPosition
 
         this.investment = snapshot.getAccount();
         this.converter = snapshot.getCurrencyConverter().with(investment.getCurrencyCode());
-        this.price = new SecurityPrice(snapshot.getTime(), snapshot.getUnconvertedFunds().getAmount());
+        this.price = new SecurityPrice(snapshot.getTime(),
+                        snapshot.getUnconvertedFunds().getAmount() * Values.Quote.factorToMoney());
         this.shares = Values.Share.factor();
-        this.transactions = new ArrayList<PortfolioTransaction>();
+        this.transactions = new ArrayList<>();
     }
 
     public SecurityPosition(Security security, CurrencyConverter converter, SecurityPrice price,
@@ -216,7 +215,7 @@ public class SecurityPosition
                     throw new UnsupportedOperationException();
             }
         }).sum();
-        this.transactions = new ArrayList<PortfolioTransaction>(transactions);
+        this.transactions = new ArrayList<>(transactions);
     }
 
     public Security getSecurity()
@@ -241,9 +240,11 @@ public class SecurityPosition
 
     public Money calculateValue()
     {
-        long p = price != null ? price.getValue() : 0;
-        long marketValue = Math.round(shares * p / Values.Share.divider());
-        return Money.of(investment.getCurrencyCode(), marketValue);
+        if (price == null)
+            return Money.of(investment.getCurrencyCode(), 0);
+
+        double marketValue = shares * price.getValue() / Values.Share.divider() / Values.Quote.dividerToMoney();
+        return Money.of(investment.getCurrencyCode(), Math.round(marketValue));
     }
 
     public Money getFIFOPurchasePrice()
@@ -272,7 +273,7 @@ public class SecurityPosition
 
     public static SecurityPosition split(SecurityPosition position, int weight)
     {
-        List<PortfolioTransaction> splitTransactions = new ArrayList<PortfolioTransaction>(position.transactions.size());
+        List<PortfolioTransaction> splitTransactions = new ArrayList<>(position.transactions.size());
 
         for (PortfolioTransaction t : position.transactions)
         {
@@ -284,18 +285,18 @@ public class SecurityPosition
             t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
 
-            t.getUnits().forEach(
-                            u -> {
-                                long splitAmount = Math.round(u.getAmount().getAmount() * weight
-                                                / (double) Classification.ONE_HUNDRED_PERCENT);
-                                t2.addUnit(new Unit(u.getType(), //
-                                                Money.of(u.getAmount().getCurrencyCode(), splitAmount)));
-                            });
+            t.getUnits().forEach(u -> {
+                long splitAmount = Math.round(
+                                u.getAmount().getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT);
+                t2.addUnit(new Unit(u.getType(), //
+                                Money.of(u.getAmount().getCurrencyCode(), splitAmount)));
+            });
 
             splitTransactions.add(t2);
         }
 
-        return new SecurityPosition(position.investment, position.converter, position.price, Math.round(position.shares
-                        * weight / (double) Classification.ONE_HUNDRED_PERCENT), splitTransactions);
+        return new SecurityPosition(position.investment, position.converter, position.price,
+                        Math.round(position.shares * weight / (double) Classification.ONE_HUNDRED_PERCENT),
+                        splitTransactions);
     }
 }

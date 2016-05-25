@@ -131,7 +131,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             // units contained no information about forex
             this.grossValue = convertedGrossValue;
-            this.quote = new BigDecimal(transaction.getGrossPricePerShareAmount() / Values.Amount.divider());
+            this.quote = transaction.getGrossPricePerShare().toBigDecimal();
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -329,7 +329,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (quote.doubleValue() != 0)
         {
-            setGrossValue(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+            triggerGrossValue(
+                            Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
         }
         else if (grossValue != 0 && shares != 0)
         {

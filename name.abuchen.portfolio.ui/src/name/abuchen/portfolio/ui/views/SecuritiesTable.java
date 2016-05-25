@@ -221,8 +221,16 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                SecurityPrice latest = ((Security) e).getSecurityPrice(LocalDate.now());
-                return latest != null ? Values.Quote.format(latest.getValue()) : null;
+                Security security = (Security) e;
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                if (latest == null)
+                    return null;
+
+                if (security.getCurrencyCode() == null)
+                    return Values.Quote.format(latest.getValue());
+                else
+                    return Values.Quote.format(security.getCurrencyCode(), latest.getValue(),
+                                    getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -610,6 +618,20 @@ public final class SecuritiesTable implements ModificationListener
         new OpenDialogAction(view, Messages.SecurityMenuDividends) //
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);

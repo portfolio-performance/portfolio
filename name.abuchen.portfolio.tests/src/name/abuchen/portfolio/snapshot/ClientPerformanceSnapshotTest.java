@@ -168,8 +168,8 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Security security = new Security();
-        security.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 10000));
-        security.addPrice(new SecurityPrice(LocalDate.of(2011, Month.JUNE, 1), 11000));
+        security.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(100)));
+        security.addPrice(new SecurityPrice(LocalDate.of(2011, Month.JUNE, 1), Values.Quote.factorize(110)));
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
@@ -199,8 +199,8 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Security security = new Security();
-        security.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 10000));
-        security.addPrice(new SecurityPrice(LocalDate.of(2011, Month.JUNE, 1), 11000));
+        security.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(100)));
+        security.addPrice(new SecurityPrice(LocalDate.of(2011, Month.JUNE, 1), Values.Quote.factorize(110)));
         client.addSecurity(security);
 
         Portfolio portfolio = new Portfolio();
@@ -233,8 +233,8 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Security security = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 100_00) //
-                        .addPrice("2011-06-01", 110_00) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2011-06-01", Values.Quote.factorize(110)) //
                         .addTo(client);
 
         Account account = new AccountBuilder() //
@@ -268,8 +268,8 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Security security = new SecurityBuilder() //
-                        .addPrice("2010-01-01", 100_00) //
-                        .addPrice("2011-06-01", 110_00) //
+                        .addPrice("2010-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2011-06-01", Values.Quote.factorize(110)) //
                         .addTo(client);
 
         Account account = new AccountBuilder() //

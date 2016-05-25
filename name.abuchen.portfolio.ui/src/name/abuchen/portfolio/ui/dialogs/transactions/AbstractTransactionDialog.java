@@ -13,7 +13,6 @@ import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -49,9 +48,9 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
     public class Input
     {
-        public Label label;
-        public Text value;
-        public Label currency;
+        public final Label label;
+        public final Text value;
+        public final Label currency;
 
         public Input(Composite editArea, String text)
         {
@@ -76,16 +75,11 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             strategy.setConverter(new StringToCurrencyConverter(values));
             if (isMandatory)
             {
-                strategy.setAfterConvertValidator(new IValidator()
-                {
-                    @Override
-                    public IStatus validate(Object value)
-                    {
-                        Long v = (Long) value;
-                        return v != null && v.longValue() > 0 ? ValidationStatus.ok()
-                                        : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
-                                                        description));
-                    }
+                strategy.setAfterConvertValidator(convertedValue -> {
+                    Long v = (Long) convertedValue;
+                    return v != null && v.longValue() > 0 ? ValidationStatus.ok()
+                                    : ValidationStatus.error(
+                                                    MessageFormat.format(Messages.MsgDialogInputRequired, description));
                 });
             }
 
@@ -100,7 +94,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                             BeanProperties.value(property).observe(model));
         }
 
-        public void bindBigDecimal(String property, String pattern, String description)
+        public void bindBigDecimal(String property, String pattern)
         {
             NumberFormat format = new DecimalFormat(pattern);
 
@@ -120,9 +114,9 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
     public class ComboInput
     {
-        public Label label;
-        public ComboViewer value;
-        public Label currency;
+        public final Label label;
+        public final ComboViewer value;
+        public final Label currency;
 
         public ComboInput(Composite editArea, String text)
         {
@@ -130,6 +124,10 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             {
                 label = new Label(editArea, SWT.RIGHT);
                 label.setText(text);
+            }
+            else
+            {
+                label = null;
             }
             value = new ComboViewer(editArea);
             value.setContentProvider(new ArrayContentProvider());

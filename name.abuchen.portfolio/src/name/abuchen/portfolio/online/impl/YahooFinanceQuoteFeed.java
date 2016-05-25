@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
@@ -222,7 +223,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                         stopDate.getDayOfMonth(), //
                         Integer.toString(stopDate.getYear()));
 
-        List<T> answer = new ArrayList<T>();
+        List<T> answer = new ArrayList<>();
 
         String line = null;
         try (BufferedReader reader = openReader(wknUrl, errors))
@@ -270,7 +271,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         LocalDate date = LocalDate.parse(values[0], dateFormat);
 
         Number q = priceFormat.parse(values[4]);
-        long v = (long) (q.doubleValue() * 100);
+        long v = (long) (q.doubleValue() * Values.Quote.factor());
 
         price.setTime(date);
         price.setValue(v);
@@ -283,10 +284,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             latest.setVolume(q.intValue());
 
             q = priceFormat.parse(values[2]);
-            latest.setHigh((long) (q.doubleValue() * 100));
+            latest.setHigh((long) (q.doubleValue() * Values.Quote.factor()));
 
             q = priceFormat.parse(values[3]);
-            latest.setLow((long) (q.doubleValue() * 100));
+            latest.setLow((long) (q.doubleValue() * Values.Quote.factor()));
         }
     }
 

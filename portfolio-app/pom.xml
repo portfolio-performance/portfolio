@@ -65,7 +65,7 @@
 		<repository>
 			<id>eclipse-nebula</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/nebula/archives/Q42015/release</url>
+			<url>http://archive.eclipse.org/technology/nebula/Q42015/release</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
@@ -193,7 +193,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.4.201502262128</version>
+				<version>0.7.6.201602180812</version>
 				<executions>
 					<execution>
 						<goals>
@@ -208,7 +208,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>2.3</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -225,10 +224,15 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.4.1</version>
+					<version>2.7</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.10</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -280,7 +284,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>2.3.2</version>
+					<version>2.5.5</version>
 					<configuration>
 						<findbugsXmlOutput>true</findbugsXmlOutput>
 						<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
@@ -311,17 +315,17 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>2.1</version>
+					<version>3.0.2</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.0</version>
+					<version>1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.4.0</version>
+					<version>1.5.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -342,7 +346,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
-						<version>2.6</version>
 						<executions>
 							<execution>
 								<id>copy-dependencies</id>
@@ -362,7 +365,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
-						<version>2.4.3</version>
 						<executions>
 							<execution>
 								<id>copy-resources</id>

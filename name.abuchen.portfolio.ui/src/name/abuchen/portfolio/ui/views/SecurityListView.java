@@ -3,13 +3,11 @@ package name.abuchen.portfolio.ui.views;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
@@ -17,9 +15,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -30,17 +26,20 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -48,12 +47,16 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -138,9 +141,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private Watchlist watchlist;
 
     private Pattern filterPattern;
-
-    public SecurityListView()
-    {}
 
     @Override
     protected String getTitle()
@@ -243,22 +243,17 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         toolItem.setWidth(search.getSize().x);
         toolItem.setControl(search);
 
-        search.addModifyListener(new ModifyListener()
-        {
-            @Override
-            public void modifyText(ModifyEvent e)
+        search.addModifyListener(e -> {
+            String filter = search.getText().trim();
+            if (filter.length() == 0)
             {
-                String filter = search.getText().trim();
-                if (filter.length() == 0)
-                {
-                    filterPattern = null;
-                    securities.refresh();
-                }
-                else
-                {
-                    filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
-                    securities.refresh();
-                }
+                filterPattern = null;
+                securities.refresh();
+            }
+            else
+            {
+                filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                securities.refresh();
             }
         });
     }
@@ -315,19 +310,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     // top table: securities
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createTopTable(Composite parent)
     {
         securities = new SecuritiesTable(parent, this);
         updateTitle();
         securities.getColumnHelper().addListener(() -> updateTitle());
 
-        securities.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                onSecurityChanged((Security) ((IStructuredSelection) event.getSelection()).getFirstElement());
-            }
-        });
+        securities.addSelectionChangedListener(event -> onSecurityChanged(
+                        (Security) ((IStructuredSelection) event.getSelection()).getFirstElement()));
 
         securities.addFilter(new ViewerFilter()
         {
@@ -386,6 +377,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     // bottom table: folder
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createBottomTable(Composite parent)
     {
         SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
@@ -459,7 +451,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Quote.format(((SecurityPrice) element).getValue());
+                Security security = (Security) prices.getData(Security.class.toString());
+                SecurityPrice price = (SecurityPrice) element;
+                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getClient().getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
@@ -601,15 +595,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                return ((TransactionPair<?>) o1).getTransaction().getDate()
-                                .compareTo((((TransactionPair<?>) o2).getTransaction().getDate()));
-            }
-        }), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> ((TransactionPair<?>) o1).getTransaction().getDate()
+                        .compareTo(((TransactionPair<?>) o2).getTransaction().getDate())), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -667,15 +654,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                long a1 = ((TransactionPair<?>) o1).getTransaction().getAmount();
-                long a2 = ((TransactionPair<?>) o2).getTransaction().getAmount();
-                return a1 > a2 ? 1 : a1 < a2 ? -1 : 0;
-            }
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            long a1 = ((TransactionPair<?>) o1).getTransaction().getAmount();
+            long a2 = ((TransactionPair<?>) o2).getTransaction().getAmount();
+            return a1 > a2 ? 1 : a1 < a2 ? -1 : 0;
         }));
         support.addColumn(column);
 
@@ -688,15 +670,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Money.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                    return Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
                                     getClient().getBaseCurrency());
                 }
                 else if (t instanceof AccountTransaction)
                 {
                     long shares = ((AccountTransaction) t).getShares();
                     if (shares != 0)
-                        return Values.Money.format(Money.of(t.getCurrencyCode(),
-                                        Math.round(t.getAmount() * Values.Share.divider() / shares)));
+                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), Math.round(t.getAmount()
+                                        * Values.Share.divider() * Values.Quote.factorToMoney() / shares)));
                 }
                 return null;
             }
@@ -744,35 +726,102 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         transactions.setContentProvider(new SimpleListContentProvider(true));
 
-        hookContextMenu(transactions.getControl(), new IMenuListener()
+        hookContextMenu(transactions.getControl(), this::transactionMenuAboutToShow);
+
+        hookKeyListener();
+        return container;
+    }
+
+    private void hookKeyListener()
+    {
+        transactions.getControl().addKeyListener(new KeyAdapter()
         {
             @Override
-            public void menuAboutToShow(IMenuManager manager)
+            public void keyPressed(KeyEvent e)
             {
-                Security security = (Security) prices.getData(Security.class.toString());
-                if (security != null)
-                    new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
-
-                manager.add(new Separator());
-
-                manager.add(new Action(Messages.MenuTransactionDelete)
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
                 {
-                    @Override
-                    public void run()
-                    {
-                        TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions
-                                        .getSelection()).getFirstElement();
-                        if (pair == null)
-                            return;
-
-                        pair.deleteTransaction(getClient());
-                        getClient().markDirty();
-                    }
-                });
+                    TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions.getSelection())
+                                    .getFirstElement();
+                    if (pair != null)
+                        createEditAction(pair).run();
+                }
             }
         });
+    }
 
-        return container;
+    private void transactionMenuAboutToShow(IMenuManager manager) // NOSONAR
+    {
+        Security security = (Security) prices.getData(Security.class.toString());
+        if (security == null)
+            return;
+
+        TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions.getSelection())
+                        .getFirstElement();
+        if (pair != null)
+        {
+            Action action = createEditAction(pair);
+            action.setAccelerator(SWT.MOD1 | 'E');
+            manager.add(action);
+            manager.add(new Separator());
+        }
+
+        new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.MenuTransactionDelete)
+        {
+            @Override
+            public void run()
+            {
+                TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions.getSelection())
+                                .getFirstElement();
+                if (pair == null)
+                    return;
+
+                pair.deleteTransaction(getClient());
+                getClient().markDirty();
+            }
+        });
+    }
+
+    private Action createEditAction(TransactionPair<?> transactoinPair)
+    {
+        if (transactoinPair.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        {
+            BuySellEntry entry = (BuySellEntry) transactoinPair.getTransaction().getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (transactoinPair.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
+        {
+            PortfolioTransferEntry entry = (PortfolioTransferEntry) transactoinPair.getTransaction().getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
+        }
+        else if (transactoinPair.getTransaction() instanceof PortfolioTransaction)
+        {
+            @SuppressWarnings("unchecked")
+            TransactionPair<PortfolioTransaction> pair = (TransactionPair<PortfolioTransaction>) transactoinPair;
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
+                            .parameters(pair.getTransaction().getType());
+        }
+        else if (transactoinPair.getTransaction() instanceof AccountTransaction)
+        {
+            @SuppressWarnings("unchecked")
+            TransactionPair<AccountTransaction> pair = (TransactionPair<AccountTransaction>) transactoinPair;
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(AccountTransactionDialog.class,
+                                            d -> d.setTransaction((Account) pair.getOwner(), pair.getTransaction())) //
+                            .parameters(pair.getTransaction().getType());
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
     }
 
     // //////////////////////////////////////////////////////////////

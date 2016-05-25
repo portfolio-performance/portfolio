@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 
 public class PortfolioTransaction extends Transaction
@@ -97,22 +98,16 @@ public class PortfolioTransaction extends Transaction
     }
 
     /**
-     * Returns the gross price per share. See {@link #getGrossPricePerShare()}.
-     */
-    public long getGrossPricePerShareAmount()
-    {
-        if (getShares() == 0)
-            return 0;
-
-        return getGrossValueAmount() * Values.Share.factor() / getShares();
-    }
-
-    /**
      * Returns the gross price per share, i.e. the gross value divided by the
      * number of shares bought or sold.
      */
-    public Money getGrossPricePerShare()
+    public Quote getGrossPricePerShare()
     {
-        return Money.of(getCurrencyCode(), getGrossPricePerShareAmount());
+        if (getShares() == 0)
+            return Quote.of(getCurrencyCode(), 0);
+
+        double grossPrice = getGrossValueAmount() * Values.Share.factor() * Values.Quote.factorToMoney()
+                        / (double) getShares();
+        return Quote.of(getCurrencyCode(), Math.round(grossPrice));
     }
 }

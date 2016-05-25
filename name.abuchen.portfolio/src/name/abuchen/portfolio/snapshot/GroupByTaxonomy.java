@@ -36,7 +36,7 @@ public final class GroupByTaxonomy
     private final CurrencyConverter converter;
     private final LocalDate date;
     private final Money valuation;
-    private final List<AssetCategory> categories = new ArrayList<AssetCategory>();
+    private final List<AssetCategory> categories = new ArrayList<>();
 
     private GroupByTaxonomy(Taxonomy taxonomy, CurrencyConverter converter, LocalDate date, Money valuation)
     {
@@ -50,7 +50,7 @@ public final class GroupByTaxonomy
     {
         this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getMonetaryAssets());
 
-        Map<InvestmentVehicle, Item> vehicle2position = new HashMap<InvestmentVehicle, Item>();
+        Map<InvestmentVehicle, Item> vehicle2position = new HashMap<>();
 
         // cash
         for (AccountSnapshot account : snapshot.getAccounts())
@@ -75,7 +75,7 @@ public final class GroupByTaxonomy
     {
         this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getValue());
 
-        Map<InvestmentVehicle, Item> vehicle2position = new HashMap<InvestmentVehicle, Item>();
+        Map<InvestmentVehicle, Item> vehicle2position = new HashMap<>();
 
         for (SecurityPosition pos : snapshot.getPositions())
             vehicle2position.put(pos.getSecurity(), new Item(pos));
@@ -98,7 +98,7 @@ public final class GroupByTaxonomy
     {
         for (Classification classification : taxonomy.getRoot().getChildren())
         {
-            final Map<InvestmentVehicle, Item> vehicle2item = new HashMap<InvestmentVehicle, Item>();
+            final Map<InvestmentVehicle, Item> vehicle2item = new HashMap<>();
 
             // first: assign items to categories
 

@@ -188,8 +188,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String statusHistoricalQuotesProvider;
     private String statusLatestQuotesProvider;
 
-    private List<TaxonomyDesignation> taxonomies = new ArrayList<TaxonomyDesignation>();
-    private List<AttributeDesignation> attributes = new ArrayList<AttributeDesignation>();
+    private List<TaxonomyDesignation> taxonomies = new ArrayList<>();
+    private List<AttributeDesignation> attributes = new ArrayList<>();
 
     public EditSecurityModel(Client client, Security security)
     {

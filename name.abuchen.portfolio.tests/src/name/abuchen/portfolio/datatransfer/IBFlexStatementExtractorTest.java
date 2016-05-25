@@ -23,6 +23,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
@@ -100,7 +102,8 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-04-01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 6_75L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Money.of("CAD", 27L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+                        is(Quote.of("CAD", Values.Quote.factorize(0.27))));
 
     }
 

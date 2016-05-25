@@ -7,6 +7,9 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.time.Month;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -16,9 +19,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class PortfolioMergeTest
 {
@@ -39,15 +39,15 @@ public class PortfolioMergeTest
         client = new Client();
 
         securityA = new Security();
-        securityA.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1000));
+        securityA.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(10)));
         client.addSecurity(securityA);
 
         securityB = new Security();
-        securityB.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1100));
+        securityB.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(11)));
         client.addSecurity(securityB);
 
         securityX = new Security();
-        securityX.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), 1200));
+        securityX.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(12)));
         client.addSecurity(securityX);
 
         Portfolio portfolioA = new Portfolio();

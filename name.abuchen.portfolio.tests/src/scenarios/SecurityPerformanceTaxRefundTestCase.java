@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
@@ -31,8 +33,6 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class SecurityPerformanceTaxRefundTestCase
@@ -61,7 +61,7 @@ public class SecurityPerformanceTaxRefundTestCase
         // no changes in holdings, ttwror must (without taxes and tax refunds):
         double startValue = delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
         double endValue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()
-                        / Values.Share.divider();
+                        / Values.Share.divider() / Values.Quote.dividerToMoney();
         double ttwror = (endValue / startValue) - 1;
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 

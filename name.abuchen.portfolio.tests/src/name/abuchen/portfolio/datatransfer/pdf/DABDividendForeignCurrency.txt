@@ -1,0 +1,43 @@
+3.17/ABREEREIERTR/GDBERTRG/004879/140515/015942
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+Erträgnisgutschrift aus Wertpapieren DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Hans Mustermann
+Dividende für ADRESSZEILE3=Musterstr. 1
+Herr 01.07.2014 - 30.06.2015 ADRESSZEILE4=12345 Musterstadt
+Hans Mustermann Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+Musterstr. 1 123456789 989898989 / 14.05.2015 ADRESSZEILE6=12345 Musterstadt BELEGNUMMER=4879
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Hans Mustermann
+Dividendengutschrift München, 14.05.2015
+Gattungsbezeichnung ISIN
+Procter & Gamble Co., The Registered Shares o.N. US7427181091
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 100,000 14.04.2015 16.05.2015 USD 0,669500
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+16.05.2015 111111111 USD 56,91
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 58,68
+US-Quellensteuer 15% USD 10,04
+davon anrechenbare US-Quellensteuer 15% EUR 0,00
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,0 0,0
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag 16.05.2015
+Devisenkurs: EUR/USD 1,1409
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB Bank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Tel. 0 89/ 88 95 - 6000 >
+Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich,
+Registergericht: R.C.S. Paris 662 042 449 > Président du Conseil d'Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
