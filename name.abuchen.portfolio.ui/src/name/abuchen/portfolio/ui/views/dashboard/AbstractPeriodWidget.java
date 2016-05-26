@@ -54,4 +54,10 @@ public abstract class AbstractPeriodWidget extends WidgetDelegate
     {
         new ContextMenu(title, listener).hook();
     }
+
+    @Override
+    void update()
+    {
+        this.title.setText(getWidget().getLabel());
+    }
 }

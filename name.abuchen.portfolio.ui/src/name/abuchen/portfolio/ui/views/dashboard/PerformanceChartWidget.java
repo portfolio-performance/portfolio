@@ -87,6 +87,8 @@ public class PerformanceChartWidget extends WidgetDelegate
     @Override
     public void update()
     {
+        title.setText(getWidget().getLabel());
+
         PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, reportingPeriod);
 
         try

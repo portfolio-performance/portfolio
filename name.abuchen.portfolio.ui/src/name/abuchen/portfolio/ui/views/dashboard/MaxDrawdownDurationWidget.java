@@ -25,6 +25,8 @@ public class MaxDrawdownDurationWidget extends AbstractPeriodWidget
     @Override
     public void update()
     {
+        super.update();
+
         PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, getReportingPeriod());
 
         Drawdown drawdown = index.getDrawdown();

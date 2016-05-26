@@ -26,6 +26,8 @@ public class IndicatorWidget<N extends Number> extends AbstractPeriodWidget
     @Override
     public void update()
     {
+        super.update();
+
         N value = provider.apply(getDashboardData(), getReportingPeriod());
         indicator.setText(formatter.format(value));
         indicator.setForeground(Display.getDefault()

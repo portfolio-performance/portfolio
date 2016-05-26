@@ -280,26 +280,33 @@ public class DashboardView extends AbstractFinanceView
 
     private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
     {
-        manager.add(new Action(MessageFormat.format("Delete ''{0}''", delegate.getWidget().getLabel()))
-        {
-            @Override
-            public void run()
-            {
-                Composite composite = findCompositeFor(delegate);
-                if (composite == null)
-                    throw new IllegalArgumentException();
+        manager.add(new SimpleAction("Edit label...", a -> {
+            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Label umbenennen", "Label",
+                            delegate.getWidget().getLabel(), null);
 
-                Composite parent = composite.getParent();
-                Dashboard.Column column = (Dashboard.Column) parent.getData();
+            if (dialog.open() != InputDialog.OK)
+                return;
 
-                if (!column.getWidgets().remove(delegate.getWidget()))
-                    throw new IllegalArgumentException();
+            delegate.getWidget().setLabel(dialog.getValue());
+            delegate.update();
+        }));
 
-                composite.dispose();
-                parent.layout();
-                markDirty();
-            }
-        });
+        manager.add(new Separator());
+        manager.add(new SimpleAction(MessageFormat.format("Delete ''{0}''", delegate.getWidget().getLabel()), a -> {
+            Composite composite = findCompositeFor(delegate);
+            if (composite == null)
+                throw new IllegalArgumentException();
+
+            Composite parent = composite.getParent();
+            Dashboard.Column column = (Dashboard.Column) parent.getData();
+
+            if (!column.getWidgets().remove(delegate.getWidget()))
+                throw new IllegalArgumentException();
+
+            composite.dispose();
+            parent.layout();
+            markDirty();
+        }));
     }
 
     private Composite findCompositeFor(WidgetDelegate delegate)

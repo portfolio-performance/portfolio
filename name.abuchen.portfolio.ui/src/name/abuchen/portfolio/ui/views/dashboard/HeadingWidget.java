@@ -45,6 +45,6 @@ public class HeadingWidget extends WidgetDelegate
     @Override
     public void update()
     {
-        // nothing to do for static heading
+        title.setText(getWidget().getLabel());
     }
 }

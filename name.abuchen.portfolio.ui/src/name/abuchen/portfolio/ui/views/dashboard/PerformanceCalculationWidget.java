@@ -23,6 +23,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     private ReportingPeriod reportingPeriod;
 
     private Composite container;
+    private Label title;
     private Label[] signs;
     private Label[] labels;
     private Label[] values;
@@ -53,6 +54,10 @@ public class PerformanceCalculationWidget extends WidgetDelegate
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(container);
         container.setBackground(parent.getBackground());
 
+        title = new Label(container, SWT.NONE);
+        title.setText(getWidget().getLabel());
+        GridDataFactory.fillDefaults().span(3, 1).grab(true, false).applyTo(title);
+
         labels = new Label[ClientPerformanceSnapshot.CategoryType.values().length];
         signs = new Label[labels.length];
         values = new Label[labels.length];
@@ -71,12 +76,14 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     @Override
     public void attachContextMenu(IMenuListener listener)
     {
-        new ContextMenu(container, listener).hook();
+        new ContextMenu(title, listener).hook();
     }
 
     @Override
     public void update()
     {
+        title.setText(getWidget().getLabel());
+
         ClientPerformanceSnapshot snapshot = getDashboardData().calculate(ClientPerformanceSnapshot.class,
                         reportingPeriod);
 
