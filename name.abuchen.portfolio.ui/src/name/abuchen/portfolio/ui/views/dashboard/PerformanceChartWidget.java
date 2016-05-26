@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -20,20 +21,21 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
-public class PerformanceChartWidget implements WidgetDelegate
+public class PerformanceChartWidget extends WidgetDelegate
 {
     private static final String CONFIG_PERIOD = "period"; //$NON-NLS-1$
 
-    private final Widget widget;
     private ReportingPeriod reportingPeriod;
 
+    private Label title;
     private TimelineChart chart;
 
-    public PerformanceChartWidget(Widget widget)
+    public PerformanceChartWidget(Widget widget, DashboardData dashboardData)
     {
-        this.widget = widget;
+        super(widget, dashboardData);
 
         String config = widget.getConfiguration().get(CONFIG_PERIOD);
         if (config == null || config.isEmpty())
@@ -57,9 +59,9 @@ public class PerformanceChartWidget implements WidgetDelegate
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
         container.setBackground(parent.getBackground());
 
-        Label lbl = new Label(container, SWT.NONE);
-        lbl.setText(widget.getLabel());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(lbl);
+        title = new Label(container, SWT.NONE);
+        title.setText(getWidget().getLabel());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
@@ -77,9 +79,15 @@ public class PerformanceChartWidget implements WidgetDelegate
     }
 
     @Override
-    public void update(DashboardData data)
+    public void attachContextMenu(IMenuListener listener)
     {
-        PerformanceIndex index = data.calculate(PerformanceIndex.class, reportingPeriod);
+        new ContextMenu(title, listener).hook();
+    }
+
+    @Override
+    public void update()
+    {
+        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, reportingPeriod);
 
         try
         {

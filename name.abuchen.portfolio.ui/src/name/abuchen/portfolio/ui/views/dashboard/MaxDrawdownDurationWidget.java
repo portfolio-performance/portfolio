@@ -12,20 +12,20 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.util.Interval;
 
-public class MaxDrawdownDurationWidget extends AbstractPeriodWidget implements WidgetDelegate
+public class MaxDrawdownDurationWidget extends AbstractPeriodWidget
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                     .withZone(ZoneId.systemDefault());
 
-    public MaxDrawdownDurationWidget(Widget widget)
+    public MaxDrawdownDurationWidget(Widget widget, DashboardData dashboardData)
     {
-        super(widget);
+        super(widget, dashboardData);
     }
 
     @Override
-    public void update(DashboardData data)
+    public void update()
     {
-        PerformanceIndex index = data.calculate(PerformanceIndex.class, getReportingPeriod());
+        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, getReportingPeriod());
 
         Drawdown drawdown = index.getDrawdown();
         Interval maxDDDuration = drawdown.getMaxDrawdownDuration();

@@ -1,19 +1,21 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 
-public class HeadingWidget implements WidgetDelegate
+public class HeadingWidget extends WidgetDelegate
 {
-    private final Widget widget;
+    private Label title;
 
-    public HeadingWidget(Widget widget)
+    public HeadingWidget(Widget widget, DashboardData data)
     {
-        this.widget = widget;
+        super(widget, data);
     }
 
     @Override
@@ -26,16 +28,22 @@ public class HeadingWidget implements WidgetDelegate
         layout.marginHeight = 10;
         heading.setLayout(layout);
 
-        Label lbl = new Label(heading, SWT.NONE);
-        lbl.setFont(resources.getBoldFont());
-        lbl.setForeground(resources.getHeadingColor());
-        lbl.setText(widget.getLabel());
+        title = new Label(heading, SWT.NONE);
+        title.setFont(resources.getBoldFont());
+        title.setForeground(resources.getHeadingColor());
+        title.setText(getWidget().getLabel());
 
         return heading;
     }
 
     @Override
-    public void update(DashboardData data)
+    public void attachContextMenu(IMenuListener listener)
+    {
+        new ContextMenu(title, listener).hook();
+    }
+
+    @Override
+    public void update()
     {
         // nothing to do for static heading
     }

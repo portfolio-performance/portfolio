@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -25,6 +28,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -35,6 +40,11 @@ public class DashboardView extends AbstractFinanceView
 {
     @Inject
     private ExchangeRateProviderFactory exchangeRateFactory;
+
+    private Composite container;
+
+    private Dashboard dashboard;
+    private DashboardData dashboardData;
 
     private List<WidgetDelegate> delegates = new ArrayList<>();
 
@@ -53,12 +63,15 @@ public class DashboardView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        Dashboard dashboard = getClient().getDashboards().findAny().orElseGet(() -> createDefaultDashboard());
+        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateFactory, getClient().getBaseCurrency());
+        dashboardData = new DashboardData(getClient(), converter);
+
+        dashboard = getClient().getDashboards().findAny().orElseGet(() -> createDefaultDashboard());
         updateTitle("Dashboard: " + dashboard.getName());
 
         DashboardResources resources = new DashboardResources(parent);
 
-        Composite container = new Composite(parent, SWT.NONE);
+        container = new Composite(parent, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
@@ -74,12 +87,15 @@ public class DashboardView extends AbstractFinanceView
                 if (factory == null)
                     continue;
 
-                WidgetDelegate delegate = factory.create(widget);
+                WidgetDelegate delegate = factory.create(widget, dashboardData);
 
                 this.delegates.add(delegate);
 
                 Composite element = delegate.createControl(composite, resources);
-                element.setData(widget);
+                element.setData(delegate);
+
+                delegate.attachContextMenu(manager -> widgetMenuAboutToShow(manager, delegate));
+
                 addDragListener(element);
                 addDropListener(element);
 
@@ -201,6 +217,50 @@ public class DashboardView extends AbstractFinanceView
         return column;
     }
 
+    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
+    {
+        manager.add(new Action(MessageFormat.format("Delete ''{0}''", delegate.getWidget().getLabel()))
+        {
+            @Override
+            public void run()
+            {
+                Composite composite = findComposite(delegate);
+                if (composite == null)
+                    throw new IllegalArgumentException();
+
+                Composite parent = composite.getParent();
+                Dashboard.Column column = (Dashboard.Column) parent.getData();
+
+                if (!column.getWidgets().remove(delegate.getWidget()))
+                    throw new IllegalArgumentException();
+
+                composite.dispose();
+
+                parent.layout();
+            }
+        });
+    }
+
+    private Composite findComposite(WidgetDelegate delegate)
+    {
+        for (Control column : container.getChildren())
+        {
+            if (!(column instanceof Composite))
+                continue;
+
+            for (Control child : ((Composite) column).getChildren())
+            {
+                if (!(child instanceof Composite))
+                    continue;
+
+                if (delegate.equals(child.getData()))
+                    return (Composite) child;
+            }
+        }
+
+        return null;
+    }
+
     private void addDragListener(final Control control)
     {
         final LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
@@ -211,7 +271,7 @@ public class DashboardView extends AbstractFinanceView
             public void dragSetData(final DragSourceEvent event)
             {
                 Control c = control;
-                while (!(c.getData() instanceof Dashboard.Widget))
+                while (!(c.getData() instanceof WidgetDelegate))
                     c = c.getParent();
 
                 transfer.setSelection(new StructuredSelection(c));
@@ -222,7 +282,7 @@ public class DashboardView extends AbstractFinanceView
             {
                 Control control = ((DragSource) dragSourceEvent.getSource()).getControl();
 
-                while (!(control.getData() instanceof Dashboard.Widget))
+                while (!(control.getData() instanceof WidgetDelegate))
                     control = control.getParent();
 
                 Point compositeSize = control.getSize();
@@ -262,7 +322,7 @@ public class DashboardView extends AbstractFinanceView
 
                 droppedComposite.setParent(p);
 
-                if (parent.getData() instanceof Dashboard.Widget)
+                if (parent.getData() instanceof WidgetDelegate)
                     droppedComposite.moveAbove(parent);
 
                 if (parent.getData() instanceof Dashboard.Column)
@@ -292,9 +352,7 @@ public class DashboardView extends AbstractFinanceView
 
     private void updateWidgets()
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateFactory, getClient().getBaseCurrency());
-        DashboardData data = new DashboardData(getClient(), converter);
-        delegates.forEach(d -> d.update(data));
+        delegates.forEach(d -> d.update());
     }
 
 }

@@ -14,18 +14,19 @@ public class IndicatorWidget<N extends Number> extends AbstractPeriodWidget
     private final Values<N> formatter;
     private final BiFunction<DashboardData, ReportingPeriod, N> provider;
 
-    public IndicatorWidget(Widget widget, Values<N> formatter, BiFunction<DashboardData, ReportingPeriod, N> provider)
+    public IndicatorWidget(Widget widget, DashboardData dashboardData, Values<N> formatter,
+                    BiFunction<DashboardData, ReportingPeriod, N> provider)
     {
-        super(widget);
+        super(widget, dashboardData);
 
         this.formatter = formatter;
         this.provider = provider;
     }
 
     @Override
-    public void update(DashboardData data)
+    public void update()
     {
-        N value = provider.apply(data, getReportingPeriod());
+        N value = provider.apply(getDashboardData(), getReportingPeriod());
         indicator.setText(formatter.format(value));
         indicator.setForeground(Display.getDefault()
                         .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));

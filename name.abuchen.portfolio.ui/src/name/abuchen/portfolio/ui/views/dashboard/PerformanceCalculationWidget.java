@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.io.IOException;
 
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -13,12 +14,12 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 
-public class PerformanceCalculationWidget implements WidgetDelegate
+public class PerformanceCalculationWidget extends WidgetDelegate
 {
     private static final String CONFIG_PERIOD = "period"; //$NON-NLS-1$
 
-    private final Widget widget;
     private ReportingPeriod reportingPeriod;
 
     private Composite container;
@@ -26,9 +27,9 @@ public class PerformanceCalculationWidget implements WidgetDelegate
     private Label[] labels;
     private Label[] values;
 
-    public PerformanceCalculationWidget(Widget widget)
+    public PerformanceCalculationWidget(Widget widget, DashboardData dashboardData)
     {
-        this.widget = widget;
+        super(widget, dashboardData);
 
         String config = widget.getConfiguration().get(CONFIG_PERIOD);
         if (config == null || config.isEmpty())
@@ -68,16 +69,23 @@ public class PerformanceCalculationWidget implements WidgetDelegate
     }
 
     @Override
-    public void update(DashboardData data)
+    public void attachContextMenu(IMenuListener listener)
     {
-        ClientPerformanceSnapshot snapshot = data.calculate(ClientPerformanceSnapshot.class, reportingPeriod);
+        new ContextMenu(container, listener).hook();
+    }
+
+    @Override
+    public void update()
+    {
+        ClientPerformanceSnapshot snapshot = getDashboardData().calculate(ClientPerformanceSnapshot.class,
+                        reportingPeriod);
 
         int ii = 0;
         for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
         {
             signs[ii].setText(category.getSign());
             labels[ii].setText(category.getLabel());
-            values[ii].setText(Values.Money.format(category.getValuation(), data.getClient().getBaseCurrency()));
+            values[ii].setText(Values.Money.format(category.getValuation(), getClient().getBaseCurrency()));
 
             if (++ii >= labels.length)
                 break;
@@ -85,5 +93,4 @@ public class PerformanceCalculationWidget implements WidgetDelegate
 
         container.layout();
     }
-
 }

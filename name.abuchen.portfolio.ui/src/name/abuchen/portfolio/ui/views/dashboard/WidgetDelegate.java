@@ -1,12 +1,41 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.swt.widgets.Composite;
 
-public interface WidgetDelegate
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Dashboard;
+
+public abstract class WidgetDelegate
 {
+    private final Dashboard.Widget widget;
+    private final DashboardData data;
 
-    Composite createControl(Composite parent, DashboardResources resources);
+    public WidgetDelegate(Dashboard.Widget widget, DashboardData data)
+    {
+        this.widget = widget;
+        this.data = data;
+    }
 
-    void update(DashboardData data);
+    protected Client getClient()
+    {
+        return data.getClient();
+    }
+
+    protected Dashboard.Widget getWidget()
+    {
+        return widget;
+    }
+
+    protected DashboardData getDashboardData()
+    {
+        return data;
+    }
+
+    abstract Composite createControl(Composite parent, DashboardResources resources);
+
+    abstract void update();
+
+    abstract void attachContextMenu(IMenuListener listener);
 
 }

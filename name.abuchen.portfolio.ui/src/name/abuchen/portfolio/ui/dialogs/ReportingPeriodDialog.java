@@ -52,6 +52,7 @@ public class ReportingPeriodDialog extends Dialog
         this.template = template != null ? template : new ReportingPeriod.LastX(1, 0);
     }
 
+    @Override
     protected void configureShell(Shell shell)
     {
         super.configureShell(shell);

@@ -66,6 +66,11 @@ public class DashboardData
         return client;
     }
 
+    public void clear()
+    {
+        cache.clear();
+    }
+
     public <T> T calculate(Class<T> type, ReportingPeriod period)
     {
         CacheKey key = new CacheKey(type, period);

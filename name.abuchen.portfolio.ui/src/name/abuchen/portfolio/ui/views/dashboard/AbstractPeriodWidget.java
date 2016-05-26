@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.io.IOException;
-
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -10,39 +9,25 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 
-public abstract class AbstractPeriodWidget implements WidgetDelegate
+public abstract class AbstractPeriodWidget extends WidgetDelegate
 {
-    private static final String CONFIG_PERIOD = "period"; //$NON-NLS-1$
+    private ReportingPeriodConfig reportingPeriod;
 
-    private final Widget widget;
-    private ReportingPeriod reportingPeriod;
-
+    protected Label title;
     protected Label indicator;
 
-    public AbstractPeriodWidget(Widget widget)
+    public AbstractPeriodWidget(Widget widget, DashboardData dashboardData)
     {
-        this.widget = widget;
+        super(widget, dashboardData);
 
-        String config = widget.getConfiguration().get(CONFIG_PERIOD);
-        if (config == null || config.isEmpty())
-            config = "L1Y0"; //$NON-NLS-1$
-
-        try
-        {
-            this.reportingPeriod = ReportingPeriod.from(config);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            this.reportingPeriod = new ReportingPeriod.LastX(1, 0);
-        }
+        reportingPeriod = new ReportingPeriodConfig(widget);
     }
 
-    public ReportingPeriod getReportingPeriod()
+    protected ReportingPeriod getReportingPeriod()
     {
-        return reportingPeriod;
+        return reportingPeriod.getReportingPeriod();
     }
 
     @Override
@@ -52,9 +37,9 @@ public abstract class AbstractPeriodWidget implements WidgetDelegate
         container.setBackground(parent.getBackground());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
     
-        Label lbl = new Label(container, SWT.NONE);
-        lbl.setText(widget.getLabel());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(lbl);
+        title = new Label(container, SWT.NONE);
+        title.setText(getWidget().getLabel());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
     
         indicator = new Label(container, SWT.NONE);
         indicator.setFont(resources.getKpiFont());
@@ -62,5 +47,11 @@ public abstract class AbstractPeriodWidget implements WidgetDelegate
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
     
         return container;
+    }
+
+    @Override
+    public void attachContextMenu(IMenuListener listener)
+    {
+        new ContextMenu(title, listener).hook();
     }
 }
