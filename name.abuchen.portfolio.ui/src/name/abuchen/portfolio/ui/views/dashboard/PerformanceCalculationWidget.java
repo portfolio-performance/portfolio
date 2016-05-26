@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.io.IOException;
-
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -12,16 +10,10 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 
-public class PerformanceCalculationWidget extends WidgetDelegate
+public class PerformanceCalculationWidget extends ReportingPeriodWidget
 {
-    private static final String CONFIG_PERIOD = "period"; //$NON-NLS-1$
-
-    private ReportingPeriod reportingPeriod;
-
     private Composite container;
     private Label title;
     private Label[] signs;
@@ -31,20 +23,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     public PerformanceCalculationWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
-
-        String config = widget.getConfiguration().get(CONFIG_PERIOD);
-        if (config == null || config.isEmpty())
-            config = "L1Y0"; //$NON-NLS-1$
-
-        try
-        {
-            this.reportingPeriod = ReportingPeriod.from(config);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            this.reportingPeriod = new ReportingPeriod.LastX(1, 0);
-        }
     }
 
     @Override
@@ -85,7 +63,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate
         title.setText(getWidget().getLabel());
 
         ClientPerformanceSnapshot snapshot = getDashboardData().calculate(ClientPerformanceSnapshot.class,
-                        reportingPeriod);
+                        getReportingPeriod());
 
         int ii = 0;
         for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())

@@ -8,26 +8,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 
-public abstract class AbstractPeriodWidget extends WidgetDelegate
+public abstract class AbstractIndicatorWidget extends ReportingPeriodWidget
 {
-    private ReportingPeriodConfig reportingPeriod;
-
     protected Label title;
     protected Label indicator;
 
-    public AbstractPeriodWidget(Widget widget, DashboardData dashboardData)
+    public AbstractIndicatorWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
-
-        reportingPeriod = new ReportingPeriodConfig(widget);
-    }
-
-    protected ReportingPeriod getReportingPeriod()
-    {
-        return reportingPeriod.getReportingPeriod();
     }
 
     @Override

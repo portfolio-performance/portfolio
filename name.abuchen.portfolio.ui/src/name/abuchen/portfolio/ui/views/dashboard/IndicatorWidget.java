@@ -9,7 +9,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
-public class IndicatorWidget<N extends Number> extends AbstractPeriodWidget
+public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
 {
     private final Values<N> formatter;
     private final BiFunction<DashboardData, ReportingPeriod, N> provider;

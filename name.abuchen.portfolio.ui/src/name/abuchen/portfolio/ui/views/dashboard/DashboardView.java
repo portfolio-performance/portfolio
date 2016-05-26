@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.text.MessageFormat;
 import java.util.function.Consumer;
-
-import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -31,13 +29,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Dashboard;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DashboardView extends AbstractFinanceView
@@ -166,9 +163,6 @@ public class DashboardView extends AbstractFinanceView
 
     private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
 
-    @Inject
-    private ExchangeRateProviderFactory exchangeRateFactory;
-
     private DashboardResources resources;
     private Composite container;
 
@@ -184,6 +178,7 @@ public class DashboardView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
+        this.dashboardData.clearCache();
         updateWidgets();
     }
 
@@ -203,13 +198,40 @@ public class DashboardView extends AbstractFinanceView
             manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(dashboard)));
             manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(dashboard)));
         });
+
+        AbstractDropDown.create(toolBar, "Configure", Images.CONFIG.image(), SWT.NONE,
+                        manager -> configMenuReportingPeriod(manager));
+    }
+
+    private void configMenuReportingPeriod(IMenuManager manager)
+    {
+        MenuManager subMenu = new MenuManager("Berichtszeitraum");
+        dashboardData.getDefaultReportingPeriods().stream()
+                        .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
+                            dashboardData.setDefaultReportingPeriod(p);
+                            markDirty();
+                            updateWidgets();
+                        })));
+
+        subMenu.add(new Separator());
+        subMenu.add(new SimpleAction("Neu...", a -> {
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
+                            dashboardData.getDefaultReportingPeriod());
+            if (dialog.open() == ReportingPeriodDialog.OK)
+            {
+                dashboardData.setDefaultReportingPeriod(dialog.getReportingPeriod());
+                markDirty();
+                updateWidgets();
+            }
+        }));
+
+        manager.add(subMenu);
     }
 
     @Override
     protected Control createBody(Composite parent)
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateFactory, getClient().getBaseCurrency());
-        dashboardData = new DashboardData(getClient(), converter);
+        dashboardData = make(DashboardData.class);
 
         dashboard = getClient().getDashboards().findAny().orElseGet(() -> {
             Dashboard newDashboard = createDefaultDashboard();
@@ -217,7 +239,7 @@ public class DashboardView extends AbstractFinanceView
             markDirty();
             return newDashboard;
         });
-        updateTitle(MessageFormat.format("Dashboard: {0}", dashboard.getName()));
+        updateTitle(dashboard.getName());
 
         resources = new DashboardResources(parent);
 
@@ -226,11 +248,7 @@ public class DashboardView extends AbstractFinanceView
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
 
-        buildColumns();
-
-        container.layout();
-
-        updateWidgets();
+        selectDashboard(dashboard);
 
         return container;
     }
@@ -280,6 +298,9 @@ public class DashboardView extends AbstractFinanceView
 
     private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
     {
+        manager.add(new LabelOnly(delegate.getWidget().getLabel()));
+        manager.add(new Separator());
+
         manager.add(new SimpleAction("Edit label...", a -> {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Label umbenennen", "Label",
                             delegate.getWidget().getLabel(), null);
@@ -291,8 +312,10 @@ public class DashboardView extends AbstractFinanceView
             delegate.update();
         }));
 
+        delegate.configMenuAboutToShow(manager);
+
         manager.add(new Separator());
-        manager.add(new SimpleAction(MessageFormat.format("Delete ''{0}''", delegate.getWidget().getLabel()), a -> {
+        manager.add(new SimpleAction("Löschen", a -> {
             Composite composite = findCompositeFor(delegate);
             if (composite == null)
                 throw new IllegalArgumentException();
@@ -365,9 +388,9 @@ public class DashboardView extends AbstractFinanceView
 
     private void selectDashboard(Dashboard board)
     {
-        this.dashboardData.clear();
+        this.dashboardData.setDashboard(board);
         this.dashboard = board;
-        updateTitle(MessageFormat.format("Dashboard: {0}", board.getName()));
+        updateTitle(board.getName());
 
         for (Control column : container.getChildren())
             column.dispose();
@@ -406,7 +429,7 @@ public class DashboardView extends AbstractFinanceView
 
         board.setName(dialog.getValue());
         markDirty();
-        updateTitle(MessageFormat.format("Dashboard: {0}", board.getName()));
+        updateTitle(board.getName());
     }
 
     private void deleteDashboard(Dashboard board)
@@ -509,7 +532,7 @@ public class DashboardView extends AbstractFinanceView
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CHART.name());
         widget.setLabel("Performance Gesamtportfolio 5 Jahre");
-        widget.getConfiguration().put("period", "L5Y0");
+        widget.getConfiguration().put("REPORTING_PERIOD", "L5Y0");
         column.getWidgets().add(widget);
 
         return newDashboard;

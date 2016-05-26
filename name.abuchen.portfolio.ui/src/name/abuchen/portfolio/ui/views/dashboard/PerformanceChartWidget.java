@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 import org.eclipse.jface.action.IMenuListener;
@@ -18,38 +17,18 @@ import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
-public class PerformanceChartWidget extends WidgetDelegate
+public class PerformanceChartWidget extends ReportingPeriodWidget
 {
-    private static final String CONFIG_PERIOD = "period"; //$NON-NLS-1$
-
-    private ReportingPeriod reportingPeriod;
-
     private Label title;
     private TimelineChart chart;
 
     public PerformanceChartWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
-
-        String config = widget.getConfiguration().get(CONFIG_PERIOD);
-        if (config == null || config.isEmpty())
-            config = "L1Y0"; //$NON-NLS-1$
-
-        try
-        {
-            this.reportingPeriod = ReportingPeriod.from(config);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            this.reportingPeriod = new ReportingPeriod.LastX(1, 0);
-        }
     }
 
     @Override
@@ -89,7 +68,7 @@ public class PerformanceChartWidget extends WidgetDelegate
     {
         title.setText(getWidget().getLabel());
 
-        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, reportingPeriod);
+        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, getReportingPeriod());
 
         try
         {

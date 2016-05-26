@@ -12,7 +12,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.util.Interval;
 
-public class MaxDrawdownDurationWidget extends AbstractPeriodWidget
+public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                     .withZone(ZoneId.systemDefault());

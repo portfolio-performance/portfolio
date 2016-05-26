@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Client;
@@ -37,5 +38,8 @@ public abstract class WidgetDelegate
     abstract void update();
 
     abstract void attachContextMenu(IMenuListener listener);
+
+    public void configMenuAboutToShow(IMenuManager manager)
+    {}
 
 }

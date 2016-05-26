@@ -1,15 +1,24 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class DashboardData
 {
@@ -55,10 +64,17 @@ public class DashboardData
 
     private final Map<CacheKey, Object> cache = new HashMap<>();
 
-    public DashboardData(Client client, CurrencyConverter converter)
+    private final List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
+    private ReportingPeriod defaultReportingPeriod;
+
+    private Dashboard dashboard;
+
+    @Inject
+    public DashboardData(Client client, ExchangeRateProviderFactory factory, PortfolioPart part)
     {
         this.client = client;
-        this.converter = converter;
+        this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        this.defaultReportingPeriods.addAll(part.loadReportingPeriods());
     }
 
     public Client getClient()
@@ -66,7 +82,51 @@ public class DashboardData
         return client;
     }
 
-    public void clear()
+    public Dashboard getDashboard()
+    {
+        return dashboard;
+    }
+
+    public void setDashboard(Dashboard dashboard)
+    {
+        this.dashboard = dashboard;
+        this.defaultReportingPeriod = null;
+    }
+
+    public List<ReportingPeriod> getDefaultReportingPeriods()
+    {
+        return defaultReportingPeriods;
+    }
+
+    public void setDefaultReportingPeriod(ReportingPeriod reportingPeriod)
+    {
+        this.defaultReportingPeriod = reportingPeriod;
+    }
+
+    public ReportingPeriod getDefaultReportingPeriod()
+    {
+        if (defaultReportingPeriod != null)
+            return defaultReportingPeriod;
+
+        String code = dashboard.getConfiguration().get(Dashboard.Config.REPORTING_PERIOD.name());
+
+        try
+        {
+            if (code != null && !code.isEmpty())
+                defaultReportingPeriod = ReportingPeriod.from(code);
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+        }
+
+        if (defaultReportingPeriod == null)
+            defaultReportingPeriod = new ReportingPeriod.LastX(1, 0);
+
+        return defaultReportingPeriod;
+    }
+
+    public void clearCache()
     {
         cache.clear();
     }
@@ -92,5 +152,4 @@ public class DashboardData
             return null;
         }
     }
-
 }

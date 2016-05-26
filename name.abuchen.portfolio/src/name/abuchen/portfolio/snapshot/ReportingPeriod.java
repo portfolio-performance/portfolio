@@ -15,6 +15,15 @@ public abstract class ReportingPeriod
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
 
+    protected final LocalDate startDate;
+    protected final LocalDate endDate;
+
+    public ReportingPeriod(LocalDate startDate, LocalDate endDate)
+    {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     public static final ReportingPeriod from(String code) throws IOException
     {
         char type = code.charAt(0);
@@ -37,14 +46,6 @@ public abstract class ReportingPeriod
         throw new IOException(code);
     }
 
-    protected final LocalDate startDate;
-    protected final LocalDate endDate;
-
-    public ReportingPeriod(LocalDate startDate, LocalDate endDate)
-    {
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
 
     public final LocalDate getStartDate()
     {

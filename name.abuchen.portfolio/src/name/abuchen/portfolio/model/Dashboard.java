@@ -7,6 +7,11 @@ import java.util.Map;
 
 public class Dashboard
 {
+    public enum Config
+    {
+        REPORTING_PERIOD;
+    }
+    
     public static class Column
     {
         private List<Widget> widgets = new ArrayList<>();
@@ -26,7 +31,7 @@ public class Dashboard
     {
         private String type;
         private String label;
-        private Map<String, String> configuration = new HashMap<>();
+        private Map<String, String> configuration;
 
         public String getType()
         {
@@ -50,17 +55,16 @@ public class Dashboard
 
         public Map<String, String> getConfiguration()
         {
-            return configuration;
-        }
+            if (configuration == null)
+                configuration = new HashMap<>();
 
-        public void setConfiguration(Map<String, String> configuration)
-        {
-            this.configuration = configuration;
+            return configuration;
         }
     }
 
     private String name;
-    private List<Column> columns = new ArrayList<>();
+    private Map<String, String> configuration;
+    private List<Column> columns;
 
     public String getName()
     {
@@ -72,8 +76,19 @@ public class Dashboard
         this.name = name;
     }
 
+    public Map<String, String> getConfiguration()
+    {
+        if (configuration == null)
+            configuration = new HashMap<>();
+
+        return configuration;
+    }
+
     public List<Column> getColumns()
     {
+        if (columns == null)
+            columns = new ArrayList<>();
+
         return columns;
     }
 
@@ -85,16 +100,17 @@ public class Dashboard
     public Dashboard copy()
     {
         Dashboard copy = new Dashboard();
-        copy.name = this.name;
+        copy.setName(this.name);
+        copy.getConfiguration().putAll(this.getConfiguration());
 
         for (Column column : columns)
         {
             Column copyColumn = new Column();
             column.getWidgets().stream().map(w -> {
                 Widget c = new Widget();
-                c.label = w.label;
-                c.type = w.type;
-                c.configuration.putAll(w.configuration);
+                c.setLabel(w.getLabel());
+                c.setType(w.getType());
+                c.getConfiguration().putAll(w.getConfiguration());
                 return c;
             }).forEach(copyColumn.getWidgets()::add);
             copy.getColumns().add(copyColumn);
