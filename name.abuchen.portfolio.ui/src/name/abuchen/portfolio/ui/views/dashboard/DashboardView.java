@@ -2,12 +2,12 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -38,6 +38,129 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 
 public class DashboardView extends AbstractFinanceView
 {
+    private static final class WidgetDragSourceAdapter extends DragSourceAdapter
+    {
+        private final LocalSelectionTransfer transfer;
+        private final Control dragSource;
+
+        private WidgetDragSourceAdapter(LocalSelectionTransfer transfer, Control control)
+        {
+            this.transfer = transfer;
+            this.dragSource = control;
+        }
+
+        @Override
+        public void dragSetData(DragSourceEvent event)
+        {
+            Control widgetComposite = dragSource;
+            while (!(widgetComposite.getData() instanceof Dashboard.Widget))
+                widgetComposite = widgetComposite.getParent();
+
+            transfer.setSelection(new StructuredSelection(widgetComposite));
+        }
+
+        @Override
+        public void dragStart(DragSourceEvent event)
+        {
+            Control control = ((DragSource) event.getSource()).getControl();
+
+            while (!(control.getData() instanceof Dashboard.Widget))
+                control = control.getParent();
+
+            Point size = control.getSize();
+            GC gc = new GC(control);
+            Image image = new Image(control.getDisplay(), size.x, size.y);
+            gc.copyArea(image, 0, 0);
+            gc.dispose();
+            event.image = image;
+        }
+    }
+
+    private static final class WidgetDropTargetAdapter extends DropTargetAdapter
+    {
+        private final LocalSelectionTransfer transfer;
+        private final Composite dropTarget;
+        private final Consumer<Dashboard.Widget> listener;
+
+        private WidgetDropTargetAdapter(LocalSelectionTransfer transfer, Composite dropTarget,
+                        Consumer<Dashboard.Widget> listener)
+        {
+            this.transfer = transfer;
+            this.dropTarget = dropTarget;
+            this.listener = listener;
+        }
+
+        @Override
+        public void drop(final DropTargetEvent event)
+        {
+            Object droppedElement = ((StructuredSelection) transfer.getSelection()).getFirstElement();
+
+            if (!(droppedElement instanceof Composite))
+                return;
+
+            Composite droppedComposite = (Composite) droppedElement;
+            if (droppedComposite.equals(dropTarget))
+                return;
+
+            Dashboard.Widget droppedWidget = (Dashboard.Widget) droppedComposite.getData();
+            if (droppedWidget == null)
+                throw new IllegalArgumentException();
+
+            Composite oldParent = droppedComposite.getParent();
+            Dashboard.Column oldColumn = (Dashboard.Column) oldParent.getData();
+            if (oldColumn == null)
+                throw new IllegalArgumentException();
+
+            Composite newParent = dropTarget;
+            while (!(newParent.getData() instanceof Dashboard.Column))
+                newParent = newParent.getParent();
+            Dashboard.Column newColumn = (Dashboard.Column) newParent.getData();
+
+            droppedComposite.setParent(newParent);
+
+            if (dropTarget.getData() instanceof Dashboard.Widget)
+            {
+                // dropped on another widget
+                droppedComposite.moveAbove(dropTarget);
+
+                Dashboard.Widget dropTargetWidget = (Dashboard.Widget) dropTarget.getData();
+                oldColumn.getWidgets().remove(droppedWidget);
+                newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), droppedWidget);
+            }
+            else if (dropTarget.getData() instanceof Dashboard.Column)
+            {
+                // dropped on another column
+                droppedComposite.moveBelow(null);
+
+                oldColumn.getWidgets().remove(droppedWidget);
+                newColumn.getWidgets().add(droppedWidget);
+            }
+            else
+            {
+                throw new IllegalArgumentException();
+            }
+
+            listener.accept(droppedWidget);
+
+            oldParent.layout();
+            newParent.layout();
+        }
+
+        @Override
+        public void dragEnter(DropTargetEvent event)
+        {
+            dropTarget.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+        }
+
+        @Override
+        public void dragLeave(DropTargetEvent event)
+        {
+            dropTarget.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        }
+    }
+
+    private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
+
     @Inject
     private ExchangeRateProviderFactory exchangeRateFactory;
 
@@ -92,7 +215,8 @@ public class DashboardView extends AbstractFinanceView
                 this.delegates.add(delegate);
 
                 Composite element = delegate.createControl(composite, resources);
-                element.setData(delegate);
+                element.setData(widget);
+                element.setData(DELEGATE_KEY, delegate);
 
                 delegate.attachContextMenu(manager -> widgetMenuAboutToShow(manager, delegate));
 
@@ -115,11 +239,11 @@ public class DashboardView extends AbstractFinanceView
 
     private Dashboard createDefaultDashboard()
     {
-        Dashboard dashboard = new Dashboard();
-        dashboard.setName("Letztes Jahr");
+        Dashboard newDashboard = new Dashboard();
+        newDashboard.setName("Letztes Jahr");
 
         Dashboard.Column column = new Dashboard.Column();
-        dashboard.getColumns().add(column);
+        newDashboard.getColumns().add(column);
 
         Dashboard.Widget widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
@@ -147,7 +271,7 @@ public class DashboardView extends AbstractFinanceView
         column.getWidgets().add(widget);
 
         column = new Dashboard.Column();
-        dashboard.getColumns().add(column);
+        newDashboard.getColumns().add(column);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
@@ -175,7 +299,7 @@ public class DashboardView extends AbstractFinanceView
         column.getWidgets().add(widget);
 
         column = new Dashboard.Column();
-        dashboard.getColumns().add(column);
+        newDashboard.getColumns().add(column);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
@@ -203,7 +327,7 @@ public class DashboardView extends AbstractFinanceView
         widget.getConfiguration().put("period", "L5Y0");
         column.getWidgets().add(widget);
 
-        return dashboard;
+        return newDashboard;
     }
 
     private Composite createColumn(Composite composite)
@@ -224,7 +348,7 @@ public class DashboardView extends AbstractFinanceView
             @Override
             public void run()
             {
-                Composite composite = findComposite(delegate);
+                Composite composite = findCompositeFor(delegate);
                 if (composite == null)
                     throw new IllegalArgumentException();
 
@@ -235,13 +359,13 @@ public class DashboardView extends AbstractFinanceView
                     throw new IllegalArgumentException();
 
                 composite.dispose();
-
                 parent.layout();
+                markDirty();
             }
         });
     }
 
-    private Composite findComposite(WidgetDelegate delegate)
+    private Composite findCompositeFor(WidgetDelegate delegate)
     {
         for (Control column : container.getChildren())
         {
@@ -253,7 +377,7 @@ public class DashboardView extends AbstractFinanceView
                 if (!(child instanceof Composite))
                     continue;
 
-                if (delegate.equals(child.getData()))
+                if (delegate.equals(child.getData(DELEGATE_KEY)))
                     return (Composite) child;
             }
         }
@@ -261,89 +385,22 @@ public class DashboardView extends AbstractFinanceView
         return null;
     }
 
-    private void addDragListener(final Control control)
+    private void addDragListener(Control control)
     {
-        final LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
+        LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
 
-        final DragSourceAdapter dragAdapter = new DragSourceAdapter()
-        {
-            @Override
-            public void dragSetData(final DragSourceEvent event)
-            {
-                Control c = control;
-                while (!(c.getData() instanceof WidgetDelegate))
-                    c = c.getParent();
+        DragSourceAdapter dragAdapter = new WidgetDragSourceAdapter(transfer, control);
 
-                transfer.setSelection(new StructuredSelection(c));
-            }
-
-            @Override
-            public void dragStart(DragSourceEvent dragSourceEvent)
-            {
-                Control control = ((DragSource) dragSourceEvent.getSource()).getControl();
-
-                while (!(control.getData() instanceof WidgetDelegate))
-                    control = control.getParent();
-
-                Point compositeSize = control.getSize();
-                GC gc = new GC(control);
-                Image image = new Image(Display.getCurrent(), compositeSize.x, compositeSize.y);
-                gc.copyArea(image, 0, 0);
-                dragSourceEvent.image = image;
-            }
-        };
-
-        final DragSource dragSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_COPY);
+        DragSource dragSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_COPY);
         dragSource.setTransfer(new Transfer[] { transfer });
         dragSource.addDragListener(dragAdapter);
     }
 
-    private void addDropListener(final Composite parent)
+    private void addDropListener(Composite parent)
     {
         LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
 
-        DropTargetAdapter dragAdapter = new DropTargetAdapter()
-        {
-            @Override
-            public void drop(final DropTargetEvent event)
-            {
-                Control droppedObj = (Control) ((StructuredSelection) transfer.getSelection()).getFirstElement();
-
-                if (droppedObj.equals(parent))
-                    return;
-
-                Composite oldParent = droppedObj.getParent();
-
-                Composite droppedComposite = (Composite) droppedObj;
-
-                Composite p = parent;
-                while (!(p.getData() instanceof Dashboard.Column))
-                    p = p.getParent();
-
-                droppedComposite.setParent(p);
-
-                if (parent.getData() instanceof WidgetDelegate)
-                    droppedComposite.moveAbove(parent);
-
-                if (parent.getData() instanceof Dashboard.Column)
-                    droppedComposite.moveBelow(null);
-
-                oldParent.layout();
-                p.layout();
-            }
-
-            @Override
-            public void dragEnter(DropTargetEvent event)
-            {
-                parent.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
-            }
-
-            @Override
-            public void dragLeave(DropTargetEvent event)
-            {
-                parent.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            }
-        };
+        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(transfer, parent, w -> markDirty());
 
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
         dropTarget.setTransfer(new Transfer[] { transfer });
