@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -51,6 +52,19 @@ public abstract class AbstractDropDown implements IMenuListener
         menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(this);
+    }
+
+    public static final AbstractDropDown create(ToolBar toolBar, String label, Image image, int style,
+                    IMenuListener listener)
+    {
+        return new AbstractDropDown(toolBar, label, image, style)
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                listener.menuAboutToShow(manager);
+            }
+        };
     }
 
     private void widgetSelected(SelectionEvent event)

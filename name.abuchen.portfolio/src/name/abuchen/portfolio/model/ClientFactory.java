@@ -980,8 +980,10 @@ public class ClientFactory
                     xstream.alias("assignment", Assignment.class);
 
                     xstream.alias("dashboard", Dashboard.class);
+                    xstream.useAttributeFor(Dashboard.class, "name");
                     xstream.alias("column", Dashboard.Column.class);
                     xstream.alias("widget", Dashboard.Widget.class);
+                    xstream.useAttributeFor(Dashboard.Widget.class, "type");
 
                     xstream.alias("event", SecurityEvent.class);
                 }

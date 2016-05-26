@@ -1,13 +1,14 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.MessageFormat;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -27,14 +28,17 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
+import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DashboardView extends AbstractFinanceView
 {
@@ -98,6 +102,7 @@ public class DashboardView extends AbstractFinanceView
             if (!(droppedElement instanceof Composite))
                 return;
 
+            // check if dropped upon itself
             Composite droppedComposite = (Composite) droppedElement;
             if (droppedComposite.equals(dropTarget))
                 return;
@@ -164,12 +169,11 @@ public class DashboardView extends AbstractFinanceView
     @Inject
     private ExchangeRateProviderFactory exchangeRateFactory;
 
+    private DashboardResources resources;
     private Composite container;
 
     private Dashboard dashboard;
     private DashboardData dashboardData;
-
-    private List<WidgetDelegate> delegates = new ArrayList<>();
 
     @Override
     protected String getTitle()
@@ -184,21 +188,55 @@ public class DashboardView extends AbstractFinanceView
     }
 
     @Override
+    protected void addButtons(ToolBar toolBar)
+    {
+        AbstractDropDown.create(toolBar, "Configure Dashboards", Images.SAVE.image(), SWT.NONE, manager -> {
+            getClient().getDashboards().forEach(d -> {
+                Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
+                action.setChecked(d.equals(dashboard));
+                manager.add(action);
+            });
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.ConfigurationNew, a -> createNewDashboard(null)));
+            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(dashboard)));
+            manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(dashboard)));
+            manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(dashboard)));
+        });
+    }
+
+    @Override
     protected Control createBody(Composite parent)
     {
         CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateFactory, getClient().getBaseCurrency());
         dashboardData = new DashboardData(getClient(), converter);
 
-        dashboard = getClient().getDashboards().findAny().orElseGet(() -> createDefaultDashboard());
-        updateTitle("Dashboard: " + dashboard.getName());
+        dashboard = getClient().getDashboards().findAny().orElseGet(() -> {
+            Dashboard newDashboard = createDefaultDashboard();
+            getClient().addDashboard(newDashboard);
+            markDirty();
+            return newDashboard;
+        });
+        updateTitle(MessageFormat.format("Dashboard: {0}", dashboard.getName()));
 
-        DashboardResources resources = new DashboardResources(parent);
+        resources = new DashboardResources(parent);
 
         container = new Composite(parent, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
 
+        buildColumns();
+
+        container.layout();
+
+        updateWidgets();
+
+        return container;
+    }
+
+    private void buildColumns()
+    {
         for (Dashboard.Column column : dashboard.getColumns())
         {
             Composite composite = createColumn(container);
@@ -211,8 +249,6 @@ public class DashboardView extends AbstractFinanceView
                     continue;
 
                 WidgetDelegate delegate = factory.create(widget, dashboardData);
-
-                this.delegates.add(delegate);
 
                 Composite element = delegate.createControl(composite, resources);
                 element.setData(widget);
@@ -229,12 +265,154 @@ public class DashboardView extends AbstractFinanceView
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
             }
         }
+    }
+
+    private Composite createColumn(Composite composite)
+    {
+        Composite column = new Composite(composite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(column);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(column);
+
+        addDropListener(column);
+
+        return column;
+    }
+
+    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
+    {
+        manager.add(new Action(MessageFormat.format("Delete ''{0}''", delegate.getWidget().getLabel()))
+        {
+            @Override
+            public void run()
+            {
+                Composite composite = findCompositeFor(delegate);
+                if (composite == null)
+                    throw new IllegalArgumentException();
+
+                Composite parent = composite.getParent();
+                Dashboard.Column column = (Dashboard.Column) parent.getData();
+
+                if (!column.getWidgets().remove(delegate.getWidget()))
+                    throw new IllegalArgumentException();
+
+                composite.dispose();
+                parent.layout();
+                markDirty();
+            }
+        });
+    }
+
+    private Composite findCompositeFor(WidgetDelegate delegate)
+    {
+        for (Control column : container.getChildren())
+        {
+            if (!(column instanceof Composite))
+                continue;
+
+            for (Control child : ((Composite) column).getChildren())
+            {
+                if (!(child instanceof Composite))
+                    continue;
+
+                if (delegate.equals(child.getData(DELEGATE_KEY)))
+                    return (Composite) child;
+            }
+        }
+
+        return null;
+    }
+
+    private void addDragListener(Control control)
+    {
+        LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
+
+        DragSourceAdapter dragAdapter = new WidgetDragSourceAdapter(transfer, control);
+
+        DragSource dragSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_COPY);
+        dragSource.setTransfer(new Transfer[] { transfer });
+        dragSource.addDragListener(dragAdapter);
+    }
+
+    private void addDropListener(Composite parent)
+    {
+        LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
+
+        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(transfer, parent, w -> markDirty());
+
+        DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
+        dropTarget.setTransfer(new Transfer[] { transfer });
+        dropTarget.addDropListener(dragAdapter);
+    }
+
+    private void updateWidgets()
+    {
+        for (Control column : container.getChildren())
+        {
+            for (Control child : ((Composite) column).getChildren())
+            {
+                WidgetDelegate delegate = (WidgetDelegate) child.getData(DELEGATE_KEY);
+                delegate.update();
+            }
+        }
+    }
+
+    private void selectDashboard(Dashboard board)
+    {
+        this.dashboardData.clear();
+        this.dashboard = board;
+        updateTitle(MessageFormat.format("Dashboard: {0}", board.getName()));
+
+        for (Control column : container.getChildren())
+            column.dispose();
+
+        buildColumns();
 
         container.layout();
 
         updateWidgets();
+    }
 
-        return container;
+    private void createNewDashboard(Dashboard template)
+    {
+        Dashboard newDashboard = template != null ? template.copy() : createDefaultDashboard();
+
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Dashboard umbenennen", "Name",
+                        newDashboard.getName(), null);
+
+        if (dialog.open() != InputDialog.OK)
+            return;
+
+        newDashboard.setName(dialog.getValue());
+
+        getClient().addDashboard(newDashboard);
+        markDirty();
+        selectDashboard(newDashboard);
+    }
+
+    private void renameDashboard(Dashboard board)
+    {
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Dashboard umbenennen", "Name",
+                        board.getName(), null);
+
+        if (dialog.open() != InputDialog.OK)
+            return;
+
+        board.setName(dialog.getValue());
+        markDirty();
+        updateTitle(MessageFormat.format("Dashboard: {0}", board.getName()));
+    }
+
+    private void deleteDashboard(Dashboard board)
+    {
+        getClient().removeDashboard(board);
+        markDirty();
+
+        selectDashboard(getClient().getDashboards().findFirst().orElseGet(() -> {
+            Dashboard newDashboard = createDefaultDashboard();
+            getClient().addDashboard(newDashboard);
+            markDirty();
+            return newDashboard;
+        }));
     }
 
     private Dashboard createDefaultDashboard()
@@ -329,87 +507,4 @@ public class DashboardView extends AbstractFinanceView
 
         return newDashboard;
     }
-
-    private Composite createColumn(Composite composite)
-    {
-        Composite column = new Composite(composite, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(column);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(column);
-
-        addDropListener(column);
-
-        return column;
-    }
-
-    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
-    {
-        manager.add(new Action(MessageFormat.format("Delete ''{0}''", delegate.getWidget().getLabel()))
-        {
-            @Override
-            public void run()
-            {
-                Composite composite = findCompositeFor(delegate);
-                if (composite == null)
-                    throw new IllegalArgumentException();
-
-                Composite parent = composite.getParent();
-                Dashboard.Column column = (Dashboard.Column) parent.getData();
-
-                if (!column.getWidgets().remove(delegate.getWidget()))
-                    throw new IllegalArgumentException();
-
-                composite.dispose();
-                parent.layout();
-                markDirty();
-            }
-        });
-    }
-
-    private Composite findCompositeFor(WidgetDelegate delegate)
-    {
-        for (Control column : container.getChildren())
-        {
-            if (!(column instanceof Composite))
-                continue;
-
-            for (Control child : ((Composite) column).getChildren())
-            {
-                if (!(child instanceof Composite))
-                    continue;
-
-                if (delegate.equals(child.getData(DELEGATE_KEY)))
-                    return (Composite) child;
-            }
-        }
-
-        return null;
-    }
-
-    private void addDragListener(Control control)
-    {
-        LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
-
-        DragSourceAdapter dragAdapter = new WidgetDragSourceAdapter(transfer, control);
-
-        DragSource dragSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_COPY);
-        dragSource.setTransfer(new Transfer[] { transfer });
-        dragSource.addDragListener(dragAdapter);
-    }
-
-    private void addDropListener(Composite parent)
-    {
-        LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
-
-        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(transfer, parent, w -> markDirty());
-
-        DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
-        dropTarget.setTransfer(new Transfer[] { transfer });
-        dropTarget.addDropListener(dragAdapter);
-    }
-
-    private void updateWidgets()
-    {
-        delegates.forEach(d -> d.update());
-    }
-
 }

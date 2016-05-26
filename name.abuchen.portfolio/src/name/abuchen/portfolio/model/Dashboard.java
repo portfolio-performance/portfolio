@@ -81,4 +81,24 @@ public class Dashboard
     {
         this.columns = columns;
     }
+
+    public Dashboard copy()
+    {
+        Dashboard copy = new Dashboard();
+        copy.name = this.name;
+
+        for (Column column : columns)
+        {
+            Column copyColumn = new Column();
+            column.getWidgets().stream().map(w -> {
+                Widget c = new Widget();
+                c.label = w.label;
+                c.type = w.type;
+                c.configuration.putAll(w.configuration);
+                return c;
+            }).forEach(copyColumn.getWidgets()::add);
+            copy.getColumns().add(copyColumn);
+        }
+        return copy;
+    }
 }
