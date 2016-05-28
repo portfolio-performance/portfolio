@@ -11,15 +11,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class VolatilityTestCase
@@ -86,7 +86,7 @@ public class VolatilityTestCase
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, report, warnings);
 
         Security sap = client.getSecurities().stream().filter(s -> "Sap AG".equals(s.getName())).findAny().get();
-        PerformanceIndex sapIndex = PerformanceIndex.forSecurity(index, sap, warnings);
+        PerformanceIndex sapIndex = PerformanceIndex.forSecurity(index, sap);
 
         assertThat(warnings, empty());
         // quotes only until December 31st

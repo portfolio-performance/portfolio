@@ -269,7 +269,7 @@ public class PerformanceChartView extends AbstractHistoricView
         if (cpiIndex == null)
         {
             PerformanceIndex clientIndex = getClientIndex(warnings);
-            cpiIndex = PerformanceIndex.forConsumerPriceIndex(clientIndex, warnings);
+            cpiIndex = PerformanceIndex.forConsumerPriceIndex(clientIndex);
             dataCache.put(ConsumerPriceIndex.class, cpiIndex);
         }
 
@@ -298,7 +298,7 @@ public class PerformanceChartView extends AbstractHistoricView
         if (securityIndex == null)
         {
             PerformanceIndex clientIndex = getClientIndex(warnings);
-            securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
+            securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
             dataCache.put(security, securityIndex);
         }
 

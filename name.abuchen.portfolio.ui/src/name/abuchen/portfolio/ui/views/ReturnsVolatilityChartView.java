@@ -266,7 +266,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         if (securityIndex == null)
         {
             PerformanceIndex clientIndex = getClientIndex(warnings);
-            securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
+            securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
             dataCache.put(security, securityIndex);
         }
 
