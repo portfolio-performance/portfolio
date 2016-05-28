@@ -42,7 +42,7 @@ public abstract class AbstractIndicatorWidget extends ReportingPeriodWidget
     @Override
     public void attachContextMenu(IMenuListener listener)
     {
-        new ContextMenu(title, listener).hook();
+        new ContextMenu(title.getParent(), listener).hook();
     }
 
     @Override

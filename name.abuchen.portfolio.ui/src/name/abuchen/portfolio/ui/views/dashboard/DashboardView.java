@@ -34,6 +34,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -132,7 +133,8 @@ public class DashboardView extends AbstractFinanceView
             else if (dropTarget.getData() instanceof Dashboard.Column)
             {
                 // dropped on another column
-                droppedComposite.moveBelow(null);
+                Composite filler = (Composite) newParent.getData(FILLER_KEY);
+                droppedComposite.moveAbove(filler);
 
                 oldColumn.getWidgets().remove(droppedWidget);
                 newColumn.getWidgets().add(droppedWidget);
@@ -151,17 +153,21 @@ public class DashboardView extends AbstractFinanceView
         @Override
         public void dragEnter(DropTargetEvent event)
         {
-            dropTarget.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            Composite filler = (Composite) dropTarget.getData(FILLER_KEY);
+            (filler != null ? filler : dropTarget)
+                            .setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
         }
 
         @Override
         public void dragLeave(DropTargetEvent event)
         {
-            dropTarget.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            Composite filler = (Composite) dropTarget.getData(FILLER_KEY);
+            (filler != null ? filler : dropTarget).setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         }
     }
 
     private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
+    private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
 
     private DashboardResources resources;
     private Composite container;
@@ -199,8 +205,10 @@ public class DashboardView extends AbstractFinanceView
             manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(dashboard)));
         });
 
-        AbstractDropDown.create(toolBar, "Configure", Images.CONFIG.image(), SWT.NONE,
-                        manager -> configMenuReportingPeriod(manager));
+        AbstractDropDown.create(toolBar, "Configure", Images.CONFIG.image(), SWT.NONE, manager -> {
+            configMenuReportingPeriod(manager);
+            manager.add(new SimpleAction("Neue Spalte", a -> createNewColumn()));
+        });
     }
 
     private void configMenuReportingPeriod(IMenuManager manager)
@@ -231,6 +239,8 @@ public class DashboardView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
+        resources = new DashboardResources(parent);
+
         dashboardData = make(DashboardData.class);
 
         dashboard = getClient().getDashboards().findAny().orElseGet(() -> {
@@ -239,14 +249,9 @@ public class DashboardView extends AbstractFinanceView
             markDirty();
             return newDashboard;
         });
-        updateTitle(dashboard.getName());
-
-        resources = new DashboardResources(parent);
 
         container = new Composite(parent, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
-                        .applyTo(container);
 
         selectDashboard(dashboard);
 
@@ -257,8 +262,7 @@ public class DashboardView extends AbstractFinanceView
     {
         for (Dashboard.Column column : dashboard.getColumns())
         {
-            Composite composite = createColumn(container);
-            composite.setData(column);
+            Composite composite = buildColumn(container, column);
 
             for (Dashboard.Widget widget : column.getWidgets())
             {
@@ -266,34 +270,63 @@ public class DashboardView extends AbstractFinanceView
                 if (factory == null)
                     continue;
 
-                WidgetDelegate delegate = factory.create(widget, dashboardData);
-
-                Composite element = delegate.createControl(composite, resources);
-                element.setData(widget);
-                element.setData(DELEGATE_KEY, delegate);
-
-                delegate.attachContextMenu(manager -> widgetMenuAboutToShow(manager, delegate));
-
-                addDragListener(element);
-                addDropListener(element);
-
-                for (Control child : element.getChildren())
-                    addDragListener(child);
-
-                GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
+                buildDelegate(composite, factory, widget);
             }
         }
     }
 
-    private Composite createColumn(Composite composite)
+    private Composite buildColumn(Composite composite, Dashboard.Column column)
     {
-        Composite column = new Composite(composite, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(column);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(column);
+        Composite columnControl = new Composite(composite, SWT.NONE);
+        columnControl.setBackground(composite.getBackground());
+        columnControl.setData(column);
 
-        addDropListener(column);
+        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(columnControl);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(columnControl);
 
-        return column;
+        addDropListener(columnControl);
+
+        // Each column has an empty composite at the bottom to serve as target
+        // for the column context menu. A separate composite is needed because
+        // *all* context menus attached to nested composites are always shown.
+        Composite filler = new Composite(columnControl, SWT.NONE);
+        filler.setBackground(columnControl.getBackground());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(filler);
+        columnControl.setData(FILLER_KEY, filler);
+
+        new ContextMenu(filler, manager -> {
+            MenuManager subMenu = new MenuManager("Neues Widget");
+            for (WidgetFactory type : WidgetFactory.values())
+                subMenu.add(new SimpleAction(type.toString(), a -> addNewWidget(columnControl, type)));
+            manager.add(subMenu);
+            manager.add(new Separator());
+            manager.add(new SimpleAction("Spalte löschen", a -> deleteColumn(columnControl)));
+        }).hook();
+
+        return columnControl;
+    }
+
+    private WidgetDelegate buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
+    {
+        WidgetDelegate delegate = widgetType.create(widget, dashboardData);
+
+        Composite element = delegate.createControl(columnControl, resources);
+        element.setData(widget);
+        element.setData(DELEGATE_KEY, delegate);
+
+        Composite filler = (Composite) columnControl.getData(FILLER_KEY);
+        element.moveAbove(filler);
+
+        delegate.attachContextMenu(manager -> widgetMenuAboutToShow(manager, delegate));
+
+        addDragListener(element);
+        addDropListener(element);
+
+        for (Control child : element.getChildren())
+            addDragListener(child);
+
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
+        return delegate;
     }
 
     private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
@@ -381,7 +414,8 @@ public class DashboardView extends AbstractFinanceView
             for (Control child : ((Composite) column).getChildren())
             {
                 WidgetDelegate delegate = (WidgetDelegate) child.getData(DELEGATE_KEY);
-                delegate.update();
+                if (delegate != null)
+                    delegate.update();
             }
         }
     }
@@ -397,7 +431,10 @@ public class DashboardView extends AbstractFinanceView
 
         buildColumns();
 
-        container.layout();
+        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()) //
+                        .equalWidth(true).spacing(10, 10).applyTo(container);
+
+        container.layout(true);
 
         updateWidgets();
     }
@@ -443,6 +480,48 @@ public class DashboardView extends AbstractFinanceView
             markDirty();
             return newDashboard;
         }));
+    }
+
+    private void addNewWidget(Composite columnControl, WidgetFactory widgetType)
+    {
+        Dashboard.Column column = (Dashboard.Column) columnControl.getData();
+
+        Dashboard.Widget widget = new Dashboard.Widget();
+        widget.setLabel(widgetType.toString());
+        widget.setType(widgetType.name());
+        column.getWidgets().add(widget);
+
+        WidgetDelegate delegate = buildDelegate(columnControl, widgetType, widget);
+
+        markDirty();
+        delegate.update();
+        columnControl.layout(true);
+    }
+
+    private void createNewColumn()
+    {
+        Dashboard.Column column = new Dashboard.Column();
+        dashboard.getColumns().add(column);
+
+        buildColumn(container, column);
+
+        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
+                        .applyTo(container);
+        container.layout(true);
+    }
+
+    private void deleteColumn(Composite columnControl)
+    {
+        Dashboard.Column column = (Dashboard.Column) columnControl.getData();
+
+        dashboard.getColumns().remove(column);
+        markDirty();
+
+        columnControl.dispose();
+
+        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
+                        .applyTo(container);
+        container.layout(true);
     }
 
     private Dashboard createDefaultDashboard()

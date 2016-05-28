@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Menu;
 public class ContextMenu
 {
     private final Control owner;
-    private final Menu contextMenu;
+    private final Menu menu;
 
     public ContextMenu(Control owner, IMenuListener listener)
     {
@@ -18,25 +18,25 @@ public class ContextMenu
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(listener);
 
-        contextMenu = menuMgr.createContextMenu(owner);
+        menu = menuMgr.createContextMenu(owner);
 
         owner.addDisposeListener(e -> dispose());
     }
 
     public ContextMenu hook()
     {
-        owner.setMenu(contextMenu);
+        owner.setMenu(menu);
         return this;
     }
 
     public Menu getMenu()
     {
-        return contextMenu;
+        return menu;
     }
 
     private void dispose()
     {
-        if (!contextMenu.isDisposed())
-            contextMenu.dispose();
+        if (!menu.isDisposed())
+            menu.dispose();
     }
 }
