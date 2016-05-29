@@ -741,13 +741,14 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // dividend amount
         column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
+        column.setDescription("Bruttodividende");
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object t)
             {
                 if (t instanceof DividendTransaction)
-                    return Values.Money.format(((DividendTransaction) t).getMonetaryAmount(),
+                    return Values.Money.format(((DividendTransaction) t).getGrossValue(),
                                     getClient().getBaseCurrency());
                 else
                     return null;

@@ -102,6 +102,7 @@ public class SecurityPerformanceSnapshot
                 dt.setAmount(t.getAmount());
                 dt.setShares(t.getShares());
                 dt.setNote(t.getNote());
+                dt.addUnits(t.getUnits());
                 records.get(t.getSecurity()).addTransaction(dt);
             }
             else if (t.getType() == AccountTransaction.Type.TAX_REFUND)

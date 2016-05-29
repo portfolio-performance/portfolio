@@ -96,6 +96,8 @@ import name.abuchen.portfolio.money.Money;
     @Override
     public void visit(CurrencyConverter converter, DividendTransaction t)
     {
+        taxes += t.getUnitSum(Unit.Type.TAX, converter).getAmount();
+
         t.setFifoCost(getFifoCost());
         t.setTotalShares(getSharesHeld());
     }
