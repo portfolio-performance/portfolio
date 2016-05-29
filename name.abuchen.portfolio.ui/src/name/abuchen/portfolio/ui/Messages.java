@@ -116,6 +116,7 @@ public class Messages extends NLS
     public static String ColumnFieldType;
     public static String ColumnFix;
     public static String ColumnForeignCurrencies;
+    public static String ColumnGrossValue;
     public static String ColumnIndex;
     public static String ColumnInterval;
     public static String ColumnIRR;

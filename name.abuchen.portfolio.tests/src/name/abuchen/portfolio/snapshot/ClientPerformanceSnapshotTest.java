@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -335,7 +336,7 @@ public class ClientPerformanceSnapshotTest
         Account cad = new AccountBuilder("CAD") //
                         .deposit_("2015-01-01", 1000_00) //
                         .addTo(client);
-        
+
         // insert account transfer
 
         AccountTransferEntry entry = new AccountTransferEntry(usd, cad);
@@ -369,4 +370,49 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getCategoryByType(CategoryType.CURRENCY_GAINS).getValuation(), is(currencyGains.toMoney()));
     }
+
+    @Test
+    public void testDividendTransactionWithTaxes()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder().addTo(client);
+        Account account = new AccountBuilder().addTo(client);
+
+        AccountTransaction dividend = new AccountTransaction();
+        dividend.setDate(LocalDate.parse("2011-03-01"));
+        dividend.setType(AccountTransaction.Type.DIVIDENDS);
+        dividend.setSecurity(security);
+        dividend.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
+        dividend.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 10_00)));
+
+        assertThat(dividend.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 110_00)));
+
+        account.addTransaction(dividend);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 110_00)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 10_00)));
+
+        assertThat(snapshot.getEarnings().size(), is(1));
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, 110_00)));
+
+        GroupEarningsByAccount.Item item = new GroupEarningsByAccount(snapshot).getItems().get(0);
+        assertThat(item.getSum(), is(Money.of(CurrencyUnit.EUR, 110_00)));
+
+        MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.INITIAL_VALUE));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.CAPITAL_GAINS));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.EARNINGS));
+        valueAtEndOfPeriod.subtract(snapshot.getValue(CategoryType.FEES));
+        valueAtEndOfPeriod.subtract(snapshot.getValue(CategoryType.TAXES));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.CURRENCY_GAINS));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.TRANSFERS));
+
+        assertThat(valueAtEndOfPeriod.toMoney(), is(snapshot.getValue(CategoryType.FINAL_VALUE)));
+    }
+
 }

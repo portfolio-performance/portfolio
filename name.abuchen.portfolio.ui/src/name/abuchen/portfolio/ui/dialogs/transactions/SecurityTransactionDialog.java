@@ -234,7 +234,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         // hide / show exchange rate if necessary
         //
 
-        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> {
+        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> { // NOSONAR
             String securityCurrency = model().getSecurityCurrencyCode();
             String accountCurrency = model().getTransactionCurrencyCode();
 
@@ -252,6 +252,13 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             forexTaxes.setVisible(visible);
             plusForexTaxes.setVisible(visible);
             taxes.label.setVisible(!visible);
+
+            // set fx taxes and tx fees to 0 if not visible
+            if (!visible)
+            {
+                model().setForexFees(0);
+                model().setForexTaxes(0);
+            }
         });
 
         WarningMessages warnings = new WarningMessages(this);

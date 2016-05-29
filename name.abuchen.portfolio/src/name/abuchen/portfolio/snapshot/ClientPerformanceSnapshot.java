@@ -62,7 +62,7 @@ public class ClientPerformanceSnapshot
 
     public static class Category
     {
-        private List<Position> positions = new ArrayList<Position>();
+        private List<Position> positions = new ArrayList<>();
 
         private String label;
         private String sign;
@@ -123,8 +123,8 @@ public class ClientPerformanceSnapshot
         this.period = period;
         this.snapshotStart = ClientSnapshot.create(client, converter, period.getStartDate());
         this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEndDate());
-        this.categories = new EnumMap<CategoryType, Category>(CategoryType.class);
-        this.earnings = new ArrayList<Transaction>();
+        this.categories = new EnumMap<>(CategoryType.class);
+        this.earnings = new ArrayList<>();
 
         calculate();
     }
@@ -141,7 +141,7 @@ public class ClientPerformanceSnapshot
 
     public List<Category> getCategories()
     {
-        return new ArrayList<Category>(categories.values());
+        return new ArrayList<>(categories.values());
     }
 
     public Category getCategoryByType(CategoryType type)
@@ -231,7 +231,7 @@ public class ClientPerformanceSnapshot
 
     private void addCapitalGains()
     {
-        Map<Security, MutableMoney> valuation = new HashMap<Security, MutableMoney>();
+        Map<Security, MutableMoney> valuation = new HashMap<>();
         for (Security s : client.getSecurities())
             valuation.put(s, MutableMoney.of(converter.getTermCurrency()));
 
@@ -287,7 +287,7 @@ public class ClientPerformanceSnapshot
         MutableMoney deposits = MutableMoney.of(converter.getTermCurrency());
         MutableMoney removals = MutableMoney.of(converter.getTermCurrency());
 
-        Map<Security, MutableMoney> earningsBySecurity = new HashMap<Security, MutableMoney>();
+        Map<Security, MutableMoney> earningsBySecurity = new HashMap<>();
 
         for (Account account : client.getAccounts())
         {
@@ -300,19 +300,7 @@ public class ClientPerformanceSnapshot
                 {
                     case DIVIDENDS:
                     case INTEREST:
-                        this.earnings.add(t);
-                        earnings.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
-                        if (t.getSecurity() != null)
-                        {
-                            earningsBySecurity
-                                            .computeIfAbsent(t.getSecurity(),
-                                                            k -> MutableMoney.of(converter.getTermCurrency())) //
-                                            .add(t.getMonetaryAmount().with(converter.at(t.getDate())));
-                        }
-                        else
-                        {
-                            otherEarnings.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
-                        }
+                        addEarningTransaction(t, earnings, otherEarnings, taxes, earningsBySecurity);
                         break;
                     case DEPOSIT:
                         deposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
@@ -390,9 +378,27 @@ public class ClientPerformanceSnapshot
         categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals.toMoney()));
     }
 
+    private void addEarningTransaction(AccountTransaction transaction, MutableMoney earnings,
+                    MutableMoney otherEarnings, MutableMoney taxes, Map<Security, MutableMoney> earningsBySecurity)
+    {
+        this.earnings.add(transaction);
+
+        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDate()));
+        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDate()));
+
+        earnings.add(earned);
+        taxes.add(tax);
+
+        if (transaction.getSecurity() != null)
+            earningsBySecurity.computeIfAbsent(transaction.getSecurity(),
+                            k -> MutableMoney.of(converter.getTermCurrency())).add(earned);
+        else
+            otherEarnings.add(earned);
+    }
+
     private void addCurrencyGains()
     {
-        Map<String, MutableMoney> currency2money = new HashMap<String, MutableMoney>();
+        Map<String, MutableMoney> currency2money = new HashMap<>();
 
         for (AccountSnapshot snapshot : snapshotStart.getAccounts())
         {

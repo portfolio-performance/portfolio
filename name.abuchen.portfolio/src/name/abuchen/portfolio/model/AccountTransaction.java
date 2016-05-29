@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
+
 public class AccountTransaction extends Transaction
 {
     public enum Type
@@ -64,5 +67,30 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+    }
+
+    /**
+     * Returns the gross value, i.e. the value including taxes. See
+     * {@link #getGrossValue()}.
+     */
+    public long getGrossValueAmount()
+    {
+        // at the moment, only dividend transaction support taxes
+        if (!(this.type == Type.DIVIDENDS || this.type == Type.INTEREST))
+            throw new UnsupportedOperationException();
+
+        long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
+
+        return getAmount() + taxes;
+    }
+
+    /**
+     * Returns the gross value, i.e. the value before taxes are applied. At the
+     * moment, only dividend transactions are supported.
+     */
+    public Money getGrossValue()
+    {
+        return Money.of(getCurrencyCode(), getGrossValueAmount());
     }
 }
