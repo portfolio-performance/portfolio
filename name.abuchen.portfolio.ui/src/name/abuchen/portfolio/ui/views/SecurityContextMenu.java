@@ -42,7 +42,7 @@ public class SecurityContextMenu
         // menus to create transactions
         if (security != null && security.getCurrencyCode() == null)
         {
-            new BookmarkMenu(owner.getPart(), security);
+            manager.add(new BookmarkMenu(owner.getPart(), security));
             return;
         }
 
