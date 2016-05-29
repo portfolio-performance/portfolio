@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
 public class DividendsViewModel
@@ -64,6 +65,8 @@ public class DividendsViewModel
     private Line sum;
     private List<TransactionPair<AccountTransaction>> transactions;
 
+    private boolean useGrossValue = true;
+
     public DividendsViewModel(CurrencyConverter converter, Client client)
     {
         this.converter = converter;
@@ -88,6 +91,16 @@ public class DividendsViewModel
     public Line getSum()
     {
         return sum;
+    }
+
+    public boolean usesGrossValue()
+    {
+        return useGrossValue;
+    }
+
+    public void setUseGrossValue(boolean useGrossValue)
+    {
+        this.useGrossValue = useGrossValue;
     }
 
     /**
@@ -145,9 +158,10 @@ public class DividendsViewModel
                 if (!predicate.test(t))
                     continue;
 
-                transactions.add(new TransactionPair<AccountTransaction>(account, t));
+                transactions.add(new TransactionPair<>(account, t));
 
-                long value = converter.at(t.getDate()).apply(t.getMonetaryAmount()).getAmount();
+                Money dividendValue = useGrossValue ? t.getGrossValue() : t.getMonetaryAmount();
+                long value = dividendValue.with(converter.at(t.getDate())).getAmount();
                 int index = (t.getDate().getYear() - startYear) * 12 + t.getDate().getMonthValue() - 1;
 
                 Line line = vehicle2line.computeIfAbsent(t.getSecurity(), s -> new Line(s, noOfmonths));

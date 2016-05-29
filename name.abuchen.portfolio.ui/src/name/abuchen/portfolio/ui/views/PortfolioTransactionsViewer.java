@@ -133,7 +133,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
     private AbstractFinanceView owner;
     private Portfolio portfolio;
-    private Set<PortfolioTransaction> marked = new HashSet<PortfolioTransaction>();
+    private Set<PortfolioTransaction> marked = new HashSet<>();
 
     private TableViewer tableViewer;
     private ShowHideColumnHelper support;
@@ -283,11 +283,11 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
                 return t.getShares() != 0
-                                ? Values.Money.format(t.getGrossPricePerShare(), owner.getClient().getBaseCurrency())
+                                ? Values.Quote.format(t.getGrossPricePerShare(), owner.getClient().getBaseCurrency())
                                 : null;
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "grossPricePerShareAmount").attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(PortfolioTransaction.class, "grossPricePerShare").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);

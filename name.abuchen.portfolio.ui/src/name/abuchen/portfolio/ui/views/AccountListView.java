@@ -46,6 +46,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.ui.Images;
@@ -504,12 +505,13 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 if (t.getCrossEntry() instanceof BuySellEntry)
                 {
                     PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
-                    return Values.Money.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    return Values.Quote.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
-                    long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider() / t.getShares());
-                    return Values.Money.format(Money.of(t.getCurrencyCode(), dividendPerShare),
+                    long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider()
+                                    * Values.Quote.factorToMoney() / t.getShares());
+                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), dividendPerShare),
                                     getClient().getBaseCurrency());
                 }
                 else

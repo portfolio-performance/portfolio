@@ -28,7 +28,7 @@ import name.abuchen.portfolio.util.Dates;
     @Override
     public void visit(CurrencyConverter converter, DividendTransaction t)
     {
-        sum.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        sum.add(t.getGrossValue().with(converter.at(t.getDate())));
         numOfEvents++;
 
         if (t.getShares() > 0 && (lastPayment == null || Dates.daysBetween(lastPayment, t.getDate()) > 30))

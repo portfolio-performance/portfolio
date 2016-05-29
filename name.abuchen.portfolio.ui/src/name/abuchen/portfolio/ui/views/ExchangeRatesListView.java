@@ -9,9 +9,7 @@ import javax.inject.Inject;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -108,14 +106,10 @@ public class ExchangeRatesListView extends AbstractListView
         indeces.setInput(providerFactory.getAvailableTimeSeries());
         indeces.refresh();
 
-        indeces.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) ((IStructuredSelection) event.getSelection())
-                                .getFirstElement();
-                refreshChart(series);
-            }
+        indeces.addSelectionChangedListener(event -> {
+            ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement();
+            refreshChart(series);
         });
     }
 

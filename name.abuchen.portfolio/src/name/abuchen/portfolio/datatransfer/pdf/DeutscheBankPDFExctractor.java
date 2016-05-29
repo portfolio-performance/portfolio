@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 
 public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
 {
@@ -186,6 +187,20 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("grossValue", "currency") //
+                        .optional() //
+                        .match("Bruttoertrag (?<grossValue>[\\d.]+,\\d+) (?<currency>\\w{3}+)").assign((t, v) -> {
+                            Money grossValue = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("grossValue")));
+
+                            // calculating taxes as the difference between gross
+                            // value and transaction amount
+                            Money taxes = MutableMoney.of(t.getCurrencyCode()).add(grossValue)
+                                            .subtract(t.getMonetaryAmount()).toMoney();
+                            if (!taxes.isZero())
+                                t.addUnit(new Unit(Unit.Type.TAX, taxes));
+                        })
+
                         // will match gross value only if forex data exists
                         .section("forexSum", "forexCurrency", "grossValue", "currency", "exchangeRate") //
                         .optional() //
@@ -203,6 +218,13 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                             // security actually matches
                             if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                                 t.addUnit(unit);
+
+                            // calculating taxes as the difference between gross
+                            // value and transaction amount
+                            Money taxes = MutableMoney.of(t.getCurrencyCode()).add(grossValue)
+                                            .subtract(t.getMonetaryAmount()).toMoney();
+                            if (!taxes.isZero())
+                                t.addUnit(new Unit(Unit.Type.TAX, taxes));
                         })
 
                         .wrap(t -> new TransactionItem(t)));

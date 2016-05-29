@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -166,6 +167,26 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        
+                        // this section is needed, if the dividend is payed in
+                        // the forex currency to a account in forex curreny
+                        .section("forex", "localCurrency", "forexCurrency", "exchangeRate")
+                        .optional()
+                        .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
+                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<forex>[\\d.]+,\\d+)$")
+                        .match("Devisenkurs: (?<localCurrency>\\w{3}+)/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
+                                            BigDecimal.ROUND_HALF_DOWN);
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                            Money localAmount = Money.of(v.get("localCurrency"), Math.round(forex.getAmount()
+                                            / Double.parseDouble(v.get("exchangeRate").replace(',', '.'))));
+                            t.setAmount(forex.getAmount());
+                            t.setCurrencyCode(forex.getCurrencyCode());
+                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, forex, localAmount, exchangeRate);
+                            if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                t.addUnit(unit);
                         })
 
                         .wrap(t -> new TransactionItem(t)));

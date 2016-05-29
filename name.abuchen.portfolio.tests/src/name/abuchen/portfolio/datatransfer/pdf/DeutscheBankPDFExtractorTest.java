@@ -100,7 +100,9 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-15")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1495L)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 14_95L)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 4_52)));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 19_47)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
 
@@ -163,7 +165,9 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-15")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 6488L)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 64_88L)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 8_71 + 47 + 13_07)));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 87_13)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(380)));
     }
 

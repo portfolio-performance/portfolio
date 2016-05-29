@@ -16,7 +16,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -68,8 +70,8 @@ public class TransactionsTab implements DividendsTab
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(TransactionsTab.class.getSimpleName(), preferences,
-                        tableViewer, layout);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(TransactionsTab.class.getSimpleName() + "@v2", //$NON-NLS-1$
+                        preferences, tableViewer, layout);
 
         addColumns(support);
         support.createColumns();
@@ -122,6 +124,34 @@ public class TransactionsTab implements DividendsTab
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getShares()).attachTo(column);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnGrossValue, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Money.format(
+                                ((AccountTransaction) ((TransactionPair<?>) element).getTransaction()).getGrossValue(),
+                                client.getBaseCurrency());
+            }
+        });
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getMonetaryAmount()).attachTo(column);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return Values.Money.format(((TransactionPair<?>) element).getTransaction().getUnitSum(Unit.Type.TAX),
+                                client.getBaseCurrency());
+            }
+        });
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.TAX))
+                        .attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);

@@ -116,6 +116,7 @@ public class Messages extends NLS
     public static String ColumnFieldType;
     public static String ColumnFix;
     public static String ColumnForeignCurrencies;
+    public static String ColumnGrossValue;
     public static String ColumnIndex;
     public static String ColumnInterval;
     public static String ColumnIRR;
@@ -400,6 +401,7 @@ public class Messages extends NLS
     public static String LabelUnknownVersion;
     public static String LabelUnnamedXml;
     public static String LabelUpdatesAvailable;
+    public static String LabelUseGrossDividends;
     public static String LabelValueInboundDelivery;
     public static String LabelValueOutboundDelivery;
     public static String LabelViewPieChart;

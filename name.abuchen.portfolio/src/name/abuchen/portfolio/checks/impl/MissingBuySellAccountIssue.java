@@ -109,14 +109,14 @@ import name.abuchen.portfolio.money.Values;
         return MessageFormat.format(Messages.IssueMissingBuySellInAccount, //
                         transaction.getType().toString(), //
                         Values.Share.format(transaction.getShares()), //
-                        Values.Amount.format(transaction.getGrossPricePerShareAmount()), //
+                        Values.Quote.format(transaction.getGrossPricePerShare()), //
                         transaction.getSecurity().getName());
     }
 
     @Override
     public List<QuickFix> getAvailableFixes()
     {
-        List<QuickFix> answer = new ArrayList<QuickFix>();
+        List<QuickFix> answer = new ArrayList<>();
 
         answer.add(new ConvertToDeliveryFix());
 

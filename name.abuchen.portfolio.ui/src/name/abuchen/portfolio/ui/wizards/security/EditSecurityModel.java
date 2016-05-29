@@ -175,7 +175,6 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String isin;
     private String tickerSymbol;
     private String wkn;
-    private int decimalPlaces;
     private String feed;
     private String feedURL;
     private String latestFeed;

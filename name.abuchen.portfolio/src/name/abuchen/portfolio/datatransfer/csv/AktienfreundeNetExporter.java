@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVPrinter;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -19,8 +21,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
-
-import org.apache.commons.csv.CSVPrinter;
 
 public class AktienfreundeNetExporter
 {
@@ -108,7 +108,7 @@ public class AktienfreundeNetExporter
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
         printer.print(type);
-        printer.print(Values.Amount.format(transaction.getGrossPricePerShareAmount()));
+        printer.print(Values.Quote.format(transaction.getGrossPricePerShare().getAmount()));
         printer.print(Values.Share.format(transaction.getShares()));
         printer.print(Values.Amount.format(transaction.getUnitSum(Unit.Type.FEE).getAmount()));
         printer.print(Values.Amount.format(transaction.getUnitSum(Unit.Type.TAX).getAmount()));
