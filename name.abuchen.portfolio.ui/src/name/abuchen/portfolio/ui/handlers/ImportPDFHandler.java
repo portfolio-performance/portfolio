@@ -8,6 +8,24 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
+
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -19,23 +37,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
-
-import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
 public class ImportPDFHandler
 {
@@ -110,6 +111,8 @@ public class ImportPDFHandler
                 return new FlatexPDFExctractor(client);
             case "ingdiba": //$NON-NLS-1$
                 return new INGDiBaExtractor(client);
+            case "onvista": //$NON-NLS-1$
+                return new OnvistaPDFExtractor(client);
             case "sbroker": //$NON-NLS-1$
                 return new SBrokerPDFExtractor(client);
             case "ib": //$NON-NLS-1$
