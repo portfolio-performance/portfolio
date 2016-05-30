@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -53,7 +54,7 @@ public class DividendsView extends AbstractFinanceView
         model.updateWith(year);
         model.addUpdateListener(() -> preferences.setValue(KEY_YEAR, model.getStartYear()));
     }
-    
+
     @Override
     public void notifyModelUpdated()
     {
@@ -83,6 +84,25 @@ public class DividendsView extends AbstractFinanceView
                     if (tab != null)
                         tab.addExportActions(manager);
                 }
+            }
+        };
+
+        new AbstractDropDown(toolBar, Messages.MenuConfigureChart, Images.CONFIG.image(), SWT.NONE)
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                Action action = new Action(Messages.LabelUseGrossDividends)
+                {
+                    @Override
+                    public void run()
+                    {
+                        model.setUseGrossValue(!model.usesGrossValue());
+                        model.recalculate();
+                    }
+                };
+                action.setChecked(model.usesGrossValue());
+                manager.add(action);
             }
         };
     }

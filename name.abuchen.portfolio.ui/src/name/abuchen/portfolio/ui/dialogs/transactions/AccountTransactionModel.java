@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -28,9 +27,9 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, shares, fxAmount, exchangeRate, inverseExchangeRate, amount, //
-        note, exchangeRateCurrencies, inverseExchangeRateCurrencies, accountCurrencyCode, //
-        securityCurrencyCode, fxCurrencyCode, calculationStatus;
+        security, account, date, shares, fxGrossAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        fxTaxes, taxes, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
+        accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
 
     public static final Security EMPTY_SECURITY = new Security("", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -46,9 +45,14 @@ public class AccountTransactionModel extends AbstractModel
     private LocalDate date = LocalDate.now();
     private long shares;
 
-    private long fxAmount;
+    private long fxGrossAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
-    private long amount;
+    private long grossAmount;
+
+    private long fxTaxes;
+    private long taxes;
+    private long total;
+
     private String note;
 
     private IStatus calculationStatus = ValidationStatus.ok();
@@ -119,21 +123,30 @@ public class AccountTransactionModel extends AbstractModel
         t.setDate(date);
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
-        t.setAmount(amount);
+        t.setAmount(total);
         t.setType(type);
         t.setNote(note);
         t.setCurrencyCode(getAccountCurrencyCode());
 
         t.clearUnits();
 
+        if (taxes != 0)
+            t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(getAccountCurrencyCode(), taxes)));
+
         String fxCurrencyCode = getFxCurrencyCode();
         if (!fxCurrencyCode.equals(account.getCurrencyCode()))
         {
             Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
-                            Money.of(getAccountCurrencyCode(), amount), //
-                            Money.of(getSecurityCurrencyCode(), fxAmount), //
+                            Money.of(getAccountCurrencyCode(), grossAmount), //
+                            Money.of(getSecurityCurrencyCode(), fxGrossAmount), //
                             getExchangeRate());
             t.addUnit(forex);
+
+            if (fxTaxes != 0)
+                t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+                                Money.of(getAccountCurrencyCode(), Math.round(fxTaxes * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), fxTaxes), //
+                                exchangeRate));
         }
     }
 
@@ -144,8 +157,10 @@ public class AccountTransactionModel extends AbstractModel
         this.sourceTransaction = null;
 
         setShares(0);
-        setFxAmount(0);
-        setAmount(0);
+        setFxGrossAmount(0);
+        setGrossAmount(0);
+        setTaxes(0);
+        setFxTaxes(0);
         setNote(null);
     }
 
@@ -164,6 +179,11 @@ public class AccountTransactionModel extends AbstractModel
         return type == AccountTransaction.Type.TAX_REFUND;
     }
 
+    public boolean supportsTaxUnits()
+    {
+        return type == AccountTransaction.Type.DIVIDENDS;
+    }
+
     public void setSource(Account account, AccountTransaction transaction)
     {
         this.sourceAccount = account;
@@ -176,20 +196,37 @@ public class AccountTransactionModel extends AbstractModel
         this.account = account;
         this.date = transaction.getDate();
         this.shares = transaction.getShares();
-        this.amount = transaction.getAmount();
+        this.total = transaction.getAmount();
 
-        Optional<Transaction.Unit> forex = transaction.getUnit(Transaction.Unit.Type.GROSS_VALUE);
-        if (forex.isPresent() && forex.get().getAmount().getCurrencyCode().equals(getAccountCurrencyCode())
-                        && forex.get().getForex().getCurrencyCode().equals(getFxCurrencyCode()))
-        {
-            this.exchangeRate = forex.get().getExchangeRate();
-            this.fxAmount = forex.get().getForex().getAmount();
-        }
-        else
-        {
-            this.exchangeRate = BigDecimal.ONE;
-            this.fxAmount = this.amount;
-        }
+        // both will be overwritten if forex data exists
+        this.exchangeRate = BigDecimal.ONE;
+        this.taxes = 0;
+        this.fxTaxes = 0;
+
+        transaction.getUnits().forEach(unit -> {
+            switch (unit.getType())
+            {
+                case GROSS_VALUE:
+                    this.exchangeRate = unit.getExchangeRate();
+                    this.grossAmount = unit.getAmount().getAmount();
+                    this.fxGrossAmount = unit.getForex().getAmount();
+                    break;
+                case TAX:
+                    if (unit.getForex() != null)
+                        this.fxTaxes += unit.getForex().getAmount();
+                    else
+                        this.taxes += unit.getAmount().getAmount();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        });
+
+        this.grossAmount = calculateGrossAmount();
+
+        // in case units have to forex gross value
+        if (exchangeRate.equals(BigDecimal.ONE))
+            this.fxGrossAmount = grossAmount;
 
         this.note = transaction.getNote();
     }
@@ -207,13 +244,13 @@ public class AccountTransactionModel extends AbstractModel
     private IStatus calculateStatus()
     {
         // check whether converted amount is in range
-        long upper = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
-        long lower = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
+        long upper = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
+        long lower = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
-        if (amount < lower || amount > upper)
+        if (grossAmount < lower || grossAmount > upper)
             return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
 
-        if (amount == 0L)
+        if (grossAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
 
         return ValidationStatus.ok();
@@ -323,16 +360,17 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.shares.name(), this.shares, this.shares = shares);
     }
 
-    public long getFxAmount()
+    public long getFxGrossAmount()
     {
-        return fxAmount;
+        return fxGrossAmount;
     }
 
-    public void setFxAmount(long foreignCurrencyAmount)
+    public void setFxGrossAmount(long foreignCurrencyAmount)
     {
-        firePropertyChange(Properties.fxAmount.name(), this.fxAmount, this.fxAmount = foreignCurrencyAmount);
+        firePropertyChange(Properties.fxGrossAmount.name(), this.fxGrossAmount,
+                        this.fxGrossAmount = foreignCurrencyAmount);
 
-        triggerAmount(Math.round(exchangeRate.doubleValue() * foreignCurrencyAmount));
+        triggerGrossAmount(Math.round(exchangeRate.doubleValue() * foreignCurrencyAmount));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -351,7 +389,7 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
         firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
-        triggerAmount(Math.round(newRate.doubleValue() * fxAmount));
+        triggerGrossAmount(Math.round(newRate.doubleValue() * fxGrossAmount));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -367,18 +405,18 @@ public class AccountTransactionModel extends AbstractModel
         setExchangeRate(BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN));
     }
 
-    public long getAmount()
+    public long getGrossAmount()
     {
-        return amount;
+        return grossAmount;
     }
 
-    public void setAmount(long amount)
+    public void setGrossAmount(long amount)
     {
-        triggerAmount(amount);
+        triggerGrossAmount(amount);
 
-        if (fxAmount != 0)
+        if (fxGrossAmount != 0)
         {
-            BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxAmount), 10,
+            BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxGrossAmount), 10,
                             RoundingMode.HALF_UP);
             BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
@@ -389,9 +427,73 @@ public class AccountTransactionModel extends AbstractModel
                         this.calculationStatus = calculateStatus());
     }
 
-    public void triggerAmount(long amount)
+    public void triggerGrossAmount(long amount)
     {
-        firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount);
+        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = amount);
+        triggerTotal(calculateTotal());
+    }
+
+    public long getFxTaxes()
+    {
+        return fxTaxes;
+    }
+
+    public void setFxTaxes(long fxTaxes)
+    {
+        firePropertyChange(Properties.fxTaxes.name(), this.fxTaxes, this.fxTaxes = fxTaxes);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
+    public void setTaxes(long taxes)
+    {
+        firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getTotal()
+    {
+        return total;
+    }
+
+    public void setTotal(long total)
+    {
+        triggerTotal(total);
+
+        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = calculateGrossAmount());
+
+        firePropertyChange(Properties.fxGrossAmount.name(), this.fxGrossAmount,
+                        this.fxGrossAmount = Math.round(grossAmount / exchangeRate.doubleValue()));
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public void triggerTotal(long total)
+    {
+        firePropertyChange(Properties.total.name(), this.total, this.total = total);
+    }
+
+    protected long calculateGrossAmount()
+    {
+        long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
+        return total + totalTaxes;
+    }
+
+    private long calculateTotal()
+    {
+        long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
+        return Math.max(0, grossAmount - totalTaxes);
     }
 
     public String getNote()

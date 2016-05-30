@@ -16,6 +16,7 @@ public class PortfolioTransaction extends Transaction
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
+        @Override
         public String toString()
         {
             return RESOURCES.getString("portfolio." + name()); //$NON-NLS-1$
@@ -31,7 +32,9 @@ public class PortfolioTransaction extends Transaction
     /* package */transient long taxes;
 
     public PortfolioTransaction()
-    {}
+    {
+        // needed for xstream de-serialization
+    }
 
     public PortfolioTransaction(LocalDate date, String currencyCode, long amount, Security security, long shares,
                     Type type, long fees, long taxes)

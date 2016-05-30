@@ -17,9 +17,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
-    
-    private Map<String, Object> transferValueMap = new HashMap<>();
-    
+   
     public OnvistaPDFExtractor(Client client) throws IOException
     {
         super(client);
@@ -43,14 +41,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Wir haben für Sie gekauft(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
+        
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
                         .section("name", "isin")
                         .find("Gattungsbezeichnung ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
@@ -60,7 +60,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         
                         .section("notation", "shares")
                         .find("Nominal Kurs")
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -84,22 +84,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        
-                        .section("brokerage").optional()
-                        .match("(^.*)(Orderprovision) (\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage")) ))))
-                        .section("stockfees").optional()
-                        .match("(^.*) (B\\Drsengeb\\Dhr) (\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees")) ))))
-                        .section("agent").optional()                
-                        .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("agent")) ))))                
+                        })               
                                         
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(t -> new BuySellEntryItem(t));
+        addFeesSections(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -110,14 +98,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Wir haben für Sie verkauft(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
+        
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
                         .section("name", "isin")
                         .find("Gattungsbezeichnung ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
@@ -127,7 +117,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         
                         .section("notation", "shares")
                         .find("Nominal Kurs")
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -151,41 +141,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
                         
-                        //Handelszeit 12:30 Maklercourtage              EUR 0,75-
-                        .section("brokerage").optional()
-                        .match("(^.*)(Orderprovision) (\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage")) ))))
-                        .section("stockfees").optional()
-                        .match("(^.*) (B\\Drsengeb\\Dhr) (\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees")) ))))
-                        .section("agent").optional()                
-                        .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("agent")) ))))
-                                        
-                        .section("tax").optional()
-                        //Kapitalertragsteuer EUR 4,22-
-                        .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
-                        }) 
-                        .section("soli").optional()
-                        .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli")))));
-                        })
-                        .section("kirchenst").optional()
-                        .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
-                        })
-
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(t -> new BuySellEntryItem(t));
+        addTaxesSectionsBuySell(pdfTransaction);
+        addFeesSections(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -196,14 +154,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Bestätigung(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
+        
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
                         .section("name", "isin")
                         .find("Gattungsbezeichnung ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
@@ -213,7 +173,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         
                         .section("notation", "shares")
                         .find("Nominal Kurs")
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -237,22 +197,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        
-                        .section("brokerage").optional()
-                        .match("(^.*)(Orderprovision) (\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage")) ))))
-                        .section("stockfees").optional()
-                        .match("(^.*) (B\\Drsengeb\\Dhr) (\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees")) ))))
-                        .section("agent").optional()                
-                        .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("agent")) ))))                
-                                        
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        })                             
+                        .wrap(t -> new BuySellEntryItem(t));
+        addFeesSections(pdfTransaction);
     }
     
     @SuppressWarnings("nls")
@@ -263,14 +210,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Gutschriftsanzeige(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
+        
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
                         .section("name", "isin")
                         .find("Gattungsbezeichnung (.*) ISIN")
                         .match("(?<name>.*) (.*) (?<isin>[^ ]\\S*)$")
@@ -280,7 +229,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         
                         .section("notation", "shares")
                         .find("Nominal Einlösung(.*)$")
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)$")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)$")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -303,28 +252,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-                        
-                        .section("tax").optional()
-                        //Kapitalertragsteuer EUR 4,22-
-                        .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
-                        })
-                        .section("soli").optional()
-                        .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli")))));
-                        })
-                        .section("kirchenst").optional()
-                        .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
-                        })
-
-                        .wrap(t -> new BuySellEntryItem(t)));
+                       
+                        .wrap(t -> new BuySellEntryItem(t));
+        addTaxesSectionsBuySell(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -336,13 +266,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         //Erträgnisgutschrift allein ist nicht gut hier, da es schon in der Kopfzeile steht..
         Block block = new Block("Dividendengutschrift.*|Kupongutschrift.*|Erträgnisgutschrift.*(\\d+.\\d+.\\d{4})");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
-                        })
+        
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
 
                         .section("name", "isin")
                         .find("Gattungsbezeichnung(.*) ISIN")
@@ -357,7 +290,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         //.find("Nominal (Ex-Tag )?Zahltag (.*etrag pro .*)?(Zinssatz.*)?")
                         //STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
                         //Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)?(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)?(.*)")
                         .match("(?<date>\\d+.\\d+.\\d{4}+)?(\\d{6,12})?(.{7,58} )?(?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -371,51 +304,40 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 t.setShares(asShares(v.get("shares")));
                             }
                             t.setDate(asDate(v.get("date")));
-                            transferValueMap.put("date", t.getDate());
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
                         
-                        .section("tax").optional()
-                        .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
-                        })
-                        .section("soli").optional()
-                        .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli")))));
-                        })
-                        .section("kirchenst").optional()
-                        .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> {
-                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
-                        })
-                        
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(t -> new TransactionItem(t));
         
-        //Reinvestierung in:
-        block = new Block("Die Dividende wurde wie folgt in neue Aktien reinvestiert(.*)");
+        addTaxesSectionsAccount(pdfTransaction);
+        
+        //optional: Reinvestierung in:
+        block = new Block("Reinvestierung.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
-    
+
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
-    
-                        .section("name", "isin")
+
+                        .section("date")
+                        .match("(^\\w{3}+) (\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)?(.*)")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("name", "isin") //
+                        .find("Die Dividende wurde wie folgt in neue Aktien reinvestiert:")
                         .find("Gattungsbezeichnung ISIN")
-                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
-                        .assign((t, v) -> {
+                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
                         
                         .section("notation", "shares", "amount", "currency")
                         .find("Nominal Reinvestierungspreis")
                         //STK 25,000 EUR 0,700000
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -427,13 +349,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setShares(asShares(v.get("shares")));
                             }
-                            
-                            t.setDate((LocalDate) transferValueMap.get("date"));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
                                         
                         .wrap(t -> new BuySellEntryItem(t)));
     }
+   
 
     @SuppressWarnings("nls")
     private void addBackOfProfitsTransaction()
@@ -441,18 +362,18 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Ertragsthesaurierung");
         this.addDocumentTyp(type);
 
-        //Dividendengutschrift|Kupongutschrift|Erträgnisgutschrift
         Block block = new Block("Ertragsthesaurierung(.*)");
-        //Block block = new Block("(!=Dividendengutschrift.*|Kupongutschrift.*|Erträgnisgutschrift.*)(?=Ertragsthesaurierung.*)");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
-                        })
-
+        
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
                         .section("name", "isin")
                         .find("Gattungsbezeichnung(.*) ISIN")
                         //Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
@@ -465,7 +386,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .section("notation", "shares", "date")
                         .find("Nominal (Ex-Tag )?Zahltag (.*etrag pro .*)?(Zinssatz.*)?")
                         //STK 28,000 02.03.2015 04.03.2015 EUR 0,088340
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -486,6 +407,62 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+                        .wrap(t -> new TransactionItem(t));
+        addTaxesSectionsAccount(pdfTransaction);
+    }
+    
+    @SuppressWarnings("nls")
+    private void addTransferInTransaction()
+    {
+        DocumentType type = new DocumentType("Wir erhielten zu Gunsten Ihres Depots");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Wir erhielten zu Gunsten Ihres Depots(.*)");
+        type.addBlock(block);
+        
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.TRANSFER_IN);
+            return entry;
+        });
+        
+        block.set(pdfTransaction);
+        pdfTransaction
+                        .section("name", "isin")
+                        .find("Gattungsbezeichnung ISIN")
+                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+                        
+                        .section("notation", "shares", "date")
+                        .find("Nominal Schlusstag Wert")
+                        //STK 28,000 02.12.2011 02.12.2011
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
+                        .assign((t, v) -> {
+                            String notation = v.get("notation");
+                            if (notation != null && !notation.equalsIgnoreCase("STK"))
+                            {
+                                // Prozent-Notierung, Workaround..
+                                t.setShares((asShares(v.get("shares")) / 100));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                            t.setDate(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
+                        })
+                        
+                        .wrap(t -> new BuySellEntryItem(t));
+        addFeesSections(pdfTransaction);
+    }
+    
+    
+    private void addTaxesSectionsAccount(Transaction<AccountTransaction> pdfTransaction)
+    {
+        pdfTransaction
                         .section("tax").optional()
                         .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
@@ -500,70 +477,51 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
                             t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
-                        })
-                        
-                        .wrap(t -> new TransactionItem(t)));
+                        });
     }
     
-    @SuppressWarnings("nls")
-    private void addTransferInTransaction()
+    private void addTaxesSectionsBuySell(Transaction<BuySellEntry> pdfTransaction)
     {
-        DocumentType type = new DocumentType("Wir erhielten zu Gunsten Ihres Depots");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Wir erhielten zu Gunsten Ihres Depots(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.TRANSFER_IN);
-                            return entry;
-                        })
-
-                        .section("name", "isin")
-                        .find("Gattungsbezeichnung ISIN")
-                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$")
+        pdfTransaction
+                        .section("tax").optional()
+                        //Kapitalertragsteuer EUR 4,22-
+                        .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
                         })
-                        
-                        .section("notation", "shares", "date")
-                        .find("Nominal Schlusstag Wert")
-                        //STK 28,000 02.12.2011 02.12.2011
-                        .match("(?<notation>^EUR|^STK) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
+                        .section("soli").optional()
+                        .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("STK"))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                            t.setDate(asDate(v.get("date")));
-                            //TODO: Währung fehlt hier, aber ohne knallts beim Import..
-                            t.setCurrencyCode(asCurrencyCode("EUR"));
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli")))));
                         })
+                        .section("kirchenst").optional()
+                        .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
+                        });
                         
-                        .section("brokerage").optional()
-                        .match("(^.*)(Orderprovision) (\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage")) ))))
-                        .section("stockfees").optional()
-                        .match("(^.*) (B\\Drsengeb\\Dhr) (\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees")) ))))
-                        .section("agent").optional()                
-                        .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("agent")) ))))                
-                                        
-                        .wrap(t -> new BuySellEntryItem(t)));
     }
     
+    private void addFeesSections(Transaction<BuySellEntry> pdfTransaction)
+    {
+        pdfTransaction
+        .section("brokerage").optional()
+        .match("(^.*)(Orderprovision) (\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage")) ))))
+        .section("stockfees").optional()
+        .match("(^.*) (B\\Drsengeb\\Dhr) (\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees")) ))))
+        .section("agent").optional()                
+        .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("agent")) ))));              
+                        
+    }
         
     @Override
     public String getLabel()

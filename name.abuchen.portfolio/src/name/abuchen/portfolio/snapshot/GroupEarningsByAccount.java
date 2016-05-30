@@ -34,7 +34,7 @@ public class GroupEarningsByAccount
         }
     }
 
-    private List<Item> items = new ArrayList<Item>();
+    private List<Item> items = new ArrayList<>();
 
     public GroupEarningsByAccount(ClientPerformanceSnapshot snapshot)
     {
@@ -54,7 +54,7 @@ public class GroupEarningsByAccount
                     {
                         case DIVIDENDS:
                         case INTEREST:
-                            sum.add(t.getMonetaryAmount());
+                            sum.add(t.getGrossValue());
                             break;
                         case DEPOSIT:
                         case REMOVAL:

@@ -129,10 +129,10 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // other input fields
 
-        String totalLabel = getTotalLabel();
-        Input fxAmount = new Input(editArea, totalLabel);
-        fxAmount.bindValue(Properties.fxAmount.name(), totalLabel, Values.Amount, true);
-        fxAmount.bindCurrency(Properties.fxCurrencyCode.name());
+        String totalLabel = model().supportsTaxUnits() ? Messages.ColumnGrossValue : getTotalLabel();
+        Input fxGrossAmount = new Input(editArea, totalLabel);
+        fxGrossAmount.bindValue(Properties.fxGrossAmount.name(), totalLabel, Values.Amount, true);
+        fxGrossAmount.bindCurrency(Properties.fxCurrencyCode.name());
 
         Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
@@ -146,11 +146,36 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                                         model().getExchangeRate(), model().getAccountCurrencyCode(),
                                         model().getSecurityCurrencyCode())));
 
-        Input amount = new Input(editArea, "="); //$NON-NLS-1$
-        amount.bindValue(Properties.amount.name(), totalLabel, Values.Amount, true);
-        amount.bindCurrency(Properties.accountCurrencyCode.name());
+        Input grossAmount = new Input(editArea, "="); //$NON-NLS-1$
+        grossAmount.bindValue(Properties.grossAmount.name(), totalLabel, Values.Amount, true);
+        grossAmount.bindCurrency(Properties.accountCurrencyCode.name());
+
+        // taxes
+
+        Label plusForexTaxes = new Label(editArea, SWT.NONE);
+        plusForexTaxes.setText("+"); //$NON-NLS-1$
+        plusForexTaxes.setVisible(model().supportsTaxUnits());
+
+        Input forexTaxes = new Input(editArea, Messages.ColumnTaxes);
+        forexTaxes.bindValue(Properties.fxTaxes.name(), Messages.ColumnTaxes, Values.Amount, false);
+        forexTaxes.bindCurrency(Properties.fxCurrencyCode.name());
+        forexTaxes.setVisible(model().supportsTaxUnits());
+
+        Input taxes = new Input(editArea, Messages.ColumnTaxes);
+        taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
+        taxes.bindCurrency(Properties.accountCurrencyCode.name());
+        taxes.setVisible(model().supportsTaxUnits());
+        taxes.label.setVisible(false); // will only show if no fx available
+
+        // total
+
+        Input total = new Input(editArea, getTotalLabel());
+        total.bindValue(Properties.total.name(), Messages.ColumnTotal, Values.Amount, false);
+        total.bindCurrency(Properties.accountCurrencyCode.name());
+        total.setVisible(model().supportsTaxUnits());
 
         // note
+
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
@@ -162,7 +187,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         //
 
         int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
-                        fxAmount.label, lblNote);
+                        fxGrossAmount.label, lblNote);
 
         FormDataFactory forms;
         if (securities != null)
@@ -177,38 +202,68 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             startingWith(accounts.label).width(widest);
         }
 
-        int amountWidth = amountWidth(amount.value);
-        int currencyWidth = currencyWidth(fxAmount.currency);
+        int amountWidth = amountWidth(grossAmount.value);
+        int currencyWidth = currencyWidth(fxGrossAmount.currency);
 
-        forms.thenBelow(valueDate.getControl()).label(lblDate) //
+        // date
+        // shares
+        forms = forms.thenBelow(valueDate.getControl()).label(lblDate) //
                         .thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
-                        .thenBelow(fxAmount.value).width(amountWidth).label(fxAmount.label) //
-                        .thenRight(fxAmount.currency).width(currencyWidth) //
+                        .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
+                        .thenRight(fxGrossAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //
                         .thenRight(exchangeRate.currency).width(amountWidth) //
-                        .thenRight(amount.label) //
-                        .thenRight(amount.value).width(amountWidth) //
-                        // note
-                        .suffix(amount.currency) //
-                        .thenBelow(valueNote).left(accounts.value.getControl()).right(amount.value).label(lblNote);
+                        .thenRight(grossAmount.label) //
+                        .thenRight(grossAmount.value).width(amountWidth) //
+                        .thenRight(grossAmount.currency).width(currencyWidth);
+
+        // forexTaxes - taxes
+        if (model().supportsTaxUnits())
+        {
+            startingWith(grossAmount.value) //
+                            .thenBelow(taxes.value).width(amountWidth).label(taxes.label).suffix(taxes.currency) //
+                            .thenBelow(total.value).width(amountWidth).label(total.label).thenRight(total.currency)
+                            .width(currencyWidth);
+
+            startingWith(taxes.value).thenLeft(plusForexTaxes).thenLeft(forexTaxes.currency).width(currencyWidth)
+                            .thenLeft(forexTaxes.value).width(amountWidth).thenLeft(forexTaxes.label);
+
+            forms = startingWith(total.value);
+        }
+
+        // note
+        forms.thenBelow(valueNote).left(accounts.value.getControl()).right(grossAmount.value).label(lblNote);
 
         //
         // hide / show exchange rate if necessary
         //
 
-        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> {
+        model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> { // NOSONAR
             String securityCurrency = model().getSecurityCurrencyCode();
             String accountCurrency = model().getAccountCurrencyCode();
 
             // make exchange rate visible if both are set but different
-
-            boolean visible = securityCurrency.length() > 0 && accountCurrency.length() > 0
+            boolean isFxVisible = securityCurrency.length() > 0 && accountCurrency.length() > 0
                             && !securityCurrency.equals(accountCurrency);
 
-            exchangeRate.setVisible(visible);
-            amount.setVisible(visible);
+            exchangeRate.setVisible(isFxVisible);
+            grossAmount.setVisible(isFxVisible);
+            forexTaxes.setVisible(isFxVisible && model().supportsShares());
+            plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+
+            // in case fx taxes have been entered
+            if (!isFxVisible)
+                model().setFxTaxes(0);
+
+            // move input fields to have a nicer layout
+            if (isFxVisible)
+                startingWith(grossAmount.value).thenBelow(taxes.value);
+            else
+                startingWith(fxGrossAmount.value).thenBelow(taxes.value);
+            editArea.layout();
         });
 
         WarningMessages warnings = new WarningMessages(this);
