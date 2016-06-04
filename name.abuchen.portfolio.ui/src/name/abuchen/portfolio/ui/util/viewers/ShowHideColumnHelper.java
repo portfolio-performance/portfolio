@@ -349,7 +349,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (store == null)
             throw new UnsupportedOperationException();
 
-        store.showSaveMenu(shell);
+        store.showMenu(shell);
     }
 
     public void showHideShowColumnsMenu(Shell shell)

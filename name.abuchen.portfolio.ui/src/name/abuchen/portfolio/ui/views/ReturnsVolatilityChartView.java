@@ -50,15 +50,17 @@ import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
     private CurrencyConverter converter;
 
     private ScatterChart chart;
-    private ChartConfigurator picker;
+    private DataSeriesConfigurator picker;
 
     private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
 
@@ -146,14 +148,16 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             }
         });
 
-        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.RETURN_VOLATILITY);
-        picker.setListener(() -> updateChart());
+        picker = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.RETURN_VOLATILITY);
+        picker.addListener(() -> updateChart());
         
-        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
+
+        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(legend);
 
         setChartSeries();
 

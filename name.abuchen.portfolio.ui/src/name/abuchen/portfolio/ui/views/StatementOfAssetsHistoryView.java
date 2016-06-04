@@ -38,15 +38,17 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
     private CurrencyConverter converter;
 
     private TimelineChart chart;
-    private ChartConfigurator picker;
+    private DataSeriesConfigurator picker;
 
     private Map<Object, Object> dataCache = new HashMap<Object, Object>();
 
@@ -151,14 +153,16 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
 
-        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.STATEMENT_OF_ASSETS);
-        picker.setListener(() -> updateChart());
+        picker = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.STATEMENT_OF_ASSETS);
+        picker.addListener(() -> updateChart());
+
+        DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
 
         updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(legend);
 
         setChartSeries();
 

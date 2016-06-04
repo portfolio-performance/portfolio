@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -18,6 +17,10 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 
+/**
+ * Stores a set of named configurations whereby one is the active configuration
+ * at any given time. Each configuration has a name given by the user.
+ */
 public class ConfigurationStore
 {
     public interface ConfigurationStoreOwner
@@ -79,7 +82,7 @@ public class ConfigurationStore
         }
     }
 
-    private static final String ACTIVE = "$active"; //$NON-NLS-1$
+    private static final String KEY_ACTIVE = "$active"; //$NON-NLS-1$
 
     private final String identifier;
     private final Client client;
@@ -87,7 +90,7 @@ public class ConfigurationStore
     private final ConfigurationStoreOwner listener;
 
     private Configuration active;
-    private List<Configuration> configurations = new ArrayList<Configuration>();
+    private List<Configuration> configurations = new ArrayList<>();
 
     private Menu contextMenu;
 
@@ -102,85 +105,47 @@ public class ConfigurationStore
         loadConfigurations();
     }
 
-    public void showSaveMenu(Shell shell)
+    /**
+     * Shows menu to manage views, e.g. create, copy, rename, and delete a view.
+     * 
+     * @param shell
+     */
+    public void showMenu(Shell shell)
     {
         if (contextMenu == null)
         {
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(new IMenuListener()
-            {
-                @Override
-                public void menuAboutToShow(IMenuManager manager)
-                {
-                    saveMenuAboutToShow(manager);
-                }
-            });
+            menuMgr.addMenuListener(this::saveMenuAboutToShow);
             contextMenu = menuMgr.createContextMenu(shell);
         }
         contextMenu.setVisible(true);
     }
 
+    /**
+     * Disposes the configuration store.
+     */
     public void dispose()
     {
         if (contextMenu != null && !contextMenu.isDisposed())
             contextMenu.dispose();
     }
 
-    private void saveMenuAboutToShow(IMenuManager manager)
+    private void saveMenuAboutToShow(IMenuManager manager) // NOSONAR
     {
         for (final Configuration config : configurations)
         {
-            Action action = new Action(config.getName())
-            {
-                @Override
-                public void run()
-                {
-                    activate(config);
-                }
-            };
+            Action action = new SimpleAction(config.getName(), a -> activate(config));
             action.setChecked(active == config);
             manager.add(action);
         }
 
         manager.add(new Separator());
 
-        manager.add(new Action(Messages.ConfigurationNew)
-        {
-            @Override
-            public void run()
-            {
-                createNew(null);
-            }
-        });
-
-        manager.add(new Action(Messages.ConfigurationDuplicate)
-        {
-            @Override
-            public void run()
-            {
-                createNew(active);
-            }
-        });
-
-        manager.add(new Action(Messages.ConfigurationRename)
-        {
-            @Override
-            public void run()
-            {
-                rename(active);
-            }
-        });
-
-        manager.add(new Action(Messages.ConfigurationDelete)
-        {
-            @Override
-            public void run()
-            {
-                delete(active);
-            }
-        });
-
+        manager.add(new SimpleAction(Messages.ConfigurationNew, a -> createNew(null)));
+        manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNew(active)));
+        manager.add(new SimpleAction(Messages.ConfigurationRename, a -> rename(active)));
+        manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> delete(active)));
     }
 
     private void createNew(Configuration template)
@@ -199,7 +164,7 @@ public class ConfigurationStore
         configurations.add(active);
 
         client.setProperty(identifier + '$' + (configurations.size() - 1), active.serialize());
-        preferences.setValue(identifier + ACTIVE, configurations.size() - 1);
+        preferences.setValue(identifier + KEY_ACTIVE, configurations.size() - 1);
 
         listener.onConfigurationPicked(active.getData());
     }
@@ -234,7 +199,7 @@ public class ConfigurationStore
     {
         listener.beforeConfigurationPicked();
         active = config;
-        preferences.setValue(identifier + ACTIVE, configurations.indexOf(config));
+        preferences.setValue(identifier + KEY_ACTIVE, configurations.indexOf(config));
         listener.onConfigurationPicked(config.getData());
     }
 
@@ -248,7 +213,7 @@ public class ConfigurationStore
     {
         return active.getData();
     }
-    
+
     public String getActiveName()
     {
         return active.getName();
@@ -284,7 +249,7 @@ public class ConfigurationStore
         // read active configuration
         try
         {
-            int activeIndex = preferences.getInt(identifier + ACTIVE);
+            int activeIndex = preferences.getInt(identifier + KEY_ACTIVE);
             if (activeIndex >= 0 && activeIndex < configurations.size())
                 active = configurations.get(activeIndex);
         }
@@ -300,7 +265,7 @@ public class ConfigurationStore
 
     private void storeConfigurations()
     {
-        preferences.setValue(identifier + ACTIVE, configurations.indexOf(active));
+        preferences.setValue(identifier + KEY_ACTIVE, configurations.indexOf(active));
         for (int index = 0; index < configurations.size(); index++)
         {
             Configuration config = configurations.get(index);

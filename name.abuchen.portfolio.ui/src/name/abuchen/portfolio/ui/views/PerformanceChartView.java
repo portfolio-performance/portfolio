@@ -50,8 +50,10 @@ import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
@@ -60,7 +62,7 @@ public class PerformanceChartView extends AbstractHistoricView
     private CurrencyConverter converter;
 
     private TimelineChart chart;
-    private ChartConfigurator picker;
+    private DataSeriesConfigurator picker;
 
     private Aggregation.Period aggregationPeriod;
 
@@ -145,14 +147,16 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
-        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.PERFORMANCE);
-        picker.setListener(() -> updateChart());
+        picker = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.PERFORMANCE);
+        picker.addListener(() -> updateChart());
         
-        updateTitle(Messages.LabelPerformanceChart + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
+
+        updateTitle(Messages.LabelPerformanceChart + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(legend);
 
         setChartSeries();
 
