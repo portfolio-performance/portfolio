@@ -45,7 +45,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("shares", "date")
-                        .match("^davon ausgef.: (?<shares>\\d+,\\d*) St. *Schlusstag *:  (?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+\\.\\d+\\.\\d{4}+), \\d+:\\d+ Uhr")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
                             t.setDate(asDate(v.get("date")));
@@ -91,7 +91,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("shares", "date")
-                        .match("^davon ausgef.: (?<shares>\\d+,\\d*) St. *Schlusstag *:  (?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
                             t.setDate(asDate(v.get("date")));
