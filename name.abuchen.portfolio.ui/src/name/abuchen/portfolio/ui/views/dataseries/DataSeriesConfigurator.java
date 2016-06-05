@@ -2,10 +2,10 @@ package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -13,20 +13,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.LineStyle;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
@@ -34,6 +27,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 
 /**
  * The DataSeriesConfigurator manages the currently available set of data
@@ -41,13 +35,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
  */
 public class DataSeriesConfigurator implements ConfigurationStoreOwner
 {
-    /**
-     * Data series available for the Client type.
-     */
-    public enum ClientDataSeries
-    {
-        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, ACCUMULATED, DELTA_PERCENTAGE;
-    }
 
     /**
      * Listener for updates on data series.
@@ -61,36 +48,24 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         void onUpdate();
     }
 
-    /**
-     * Determines the selection of data series available.
-     */
-    public enum Mode
-    {
-        STATEMENT_OF_ASSETS, PERFORMANCE, RETURN_VOLATILITY
-    }
-
     private final String identifier;
     private final Client client;
-    private final Mode mode;
+    private final ConfigurationStore store;
 
     private final List<DataSeriesConfigurator.Listener> listeners = new ArrayList<>();
 
-    private final List<DataSeries> availableSeries = new ArrayList<>();
+    private DataSeriesSet dataSeriesSet;
     private final List<DataSeries> selectedSeries = new ArrayList<>();
-
-    private ConfigurationStore store;
 
     private Menu configContextMenu;
 
-    public DataSeriesConfigurator(AbstractFinanceView view, Mode mode)
+    public DataSeriesConfigurator(AbstractFinanceView view, DataSeries.UseCase useCase)
     {
         this.identifier = view.getClass().getSimpleName() + "-PICKER"; //$NON-NLS-1$
         this.client = view.getClient();
-        this.mode = mode;
-
         this.store = new ConfigurationStore(identifier, client, view.getPreferenceStore(), this);
 
-        buildAvailableDataSeries();
+        this.dataSeriesSet = new DataSeriesSet(client, useCase);
         load();
 
         view.getControl().addDisposeListener(e -> DataSeriesConfigurator.this.widgetDisposed());
@@ -149,175 +124,11 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         return selectedSeries;
     }
 
-    private void buildAvailableDataSeries()
-    {
-        ColorWheel wheel = new ColorWheel(30);
-
-        switch (mode)
-        {
-            case STATEMENT_OF_ASSETS:
-                buildStatementOfAssetsDataSeries();
-                break;
-            case PERFORMANCE:
-                buildPerformanceDataSeries(wheel);
-                break;
-            case RETURN_VOLATILITY:
-                buildReturnVolatilitySeries(wheel);
-                break;
-            default:
-                throw new IllegalArgumentException(mode.name());
-        }
-
-        buildCommonDataSeries(wheel);
-    }
-
-    private void buildStatementOfAssetsDataSeries()
-    {
-        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
-                        Colors.TOTALS.swt()));
-
-        DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
-                        Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
-        series.setLineChart(false);
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INVESTED_CAPITAL,
-                        Messages.LabelInvestedCapital, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
-        series.setShowArea(true);
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
-                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes,
-                        Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
-        series.setLineChart(false);
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS_ACCUMULATED,
-                        Messages.LabelAccumulatedDividends,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
-        series.setLineChart(false);
-        availableSeries.add(series);
-
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_ACCUMULATED,
-                        Messages.LabelAccumulatedInterest,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
-        availableSeries.add(series);
-
-    }
-
-    private void buildPerformanceDataSeries(ColorWheel wheel)
-    {
-        // accumulated performance
-        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ACCUMULATED,
-                        Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
-
-        DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
-                        Messages.LabelAggregationDaily,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
-        series.setLineChart(false);
-        availableSeries.add(series);
-
-        // consumer price index
-        series = new DataSeries(DataSeries.Type.CONSUMER_PRICE_INDEX, ConsumerPriceIndex.class,
-                        Messages.LabelConsumerPriceIndex, Colors.CPI.swt());
-        series.setBenchmark(true);
-        series.setLineStyle(LineStyle.DASHDOTDOT);
-        availableSeries.add(series);
-
-        // securities as benchmark
-        int index = 0;
-        for (Security security : client.getSecurities())
-        {
-            series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
-                            wheel.getRGB(index++));
-            series.setBenchmark(true);
-            availableSeries.add(series);
-        }
-    }
-
-    private void buildReturnVolatilitySeries(ColorWheel wheel)
-    {
-        // accumulated performance
-        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
-
-        // securities as benchmark
-        int index = 0;
-        for (Security security : client.getSecurities())
-        {
-            DataSeries series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
-                            wheel.getRGB(index++));
-
-            series.setBenchmark(true);
-            availableSeries.add(series);
-        }
-    }
-
-    private void buildCommonDataSeries(ColorWheel wheel)
-    {
-        int index = client.getSecurities().size();
-
-        for (Security security : client.getSecurities())
-        {
-            // securites w/o currency code (e.g. a stock index) cannot be added
-            // as equity data series (only as benchmark)
-            if (security.getCurrencyCode() == null)
-                continue;
-
-            availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
-                            wheel.getRGB(index++)));
-        }
-
-        for (Portfolio portfolio : client.getPortfolios())
-            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
-                            wheel.getRGB(index++)));
-
-        // portfolio + reference account
-        for (Portfolio portfolio : client.getPortfolios())
-        {
-            DataSeries series = new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT, portfolio,
-                            portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
-                            wheel.getRGB(index++));
-            availableSeries.add(series);
-        }
-
-        for (Account account : client.getAccounts())
-            availableSeries.add(
-                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.getRGB(index++)));
-
-        for (Taxonomy taxonomy : client.getTaxonomies())
-        {
-            taxonomy.foreach(new Taxonomy.Visitor()
-            {
-                @Override
-                public void visit(Classification classification)
-                {
-                    if (classification.getParent() == null)
-                        return;
-
-                    availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, classification,
-                                    classification.getName(), Colors.toRGB(classification.getColor())));
-                }
-            });
-        }
-    }
-
     private void addDefaultDataSeries()
     {
         EnumSet<ClientDataSeries> set = EnumSet.of(ClientDataSeries.TOTALS, ClientDataSeries.TRANSFERALS);
 
-        for (DataSeries series : availableSeries)
+        for (DataSeries series : dataSeriesSet.getAvailableSeries())
         {
             if ((series.getType() == DataSeries.Type.CLIENT && set.contains(series.getInstance()))
                             || series.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
@@ -343,9 +154,8 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     private void load(String config)
     {
-        Map<String, DataSeries> uuid2series = new HashMap<>();
-        for (DataSeries series : availableSeries)
-            uuid2series.put(series.getUUID(), series);
+        Map<String, DataSeries> uuid2series = dataSeriesSet.getAvailableSeries().stream()
+                        .collect(Collectors.toMap(s -> s.getUUID(), s -> s));
 
         String[] items = config.split(","); //$NON-NLS-1$
         for (String item : items)
@@ -404,7 +214,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
         manager.add(new SimpleAction(Messages.ChartSeriesPickerAddItem, a -> doAddSeries(false)));
 
-        if (mode != Mode.STATEMENT_OF_ASSETS)
+        if (dataSeriesSet.getUseCase() != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             manager.add(new SimpleAction(Messages.ChartSeriesPickerAddBenchmark, a -> doAddSeries(true)));
 
         manager.add(new SimpleAction(Messages.MenuResetChartSeries, a -> doResetSeries(null)));
@@ -412,7 +222,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     private void doAddSeries(boolean showOnlyBenchmark)
     {
-        List<DataSeries> list = new ArrayList<>(availableSeries);
+        List<DataSeries> list = new ArrayList<>(dataSeriesSet.getAvailableSeries());
 
         // remove items if that do not match the benchmark flag
         Iterator<DataSeries> iter = list.iterator();
@@ -445,8 +255,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     private void doResetSeries(String config)
     {
-        availableSeries.clear();
-        buildAvailableDataSeries();
+        dataSeriesSet = new DataSeriesSet(client, dataSeriesSet.getUseCase());
 
         selectedSeries.clear();
 

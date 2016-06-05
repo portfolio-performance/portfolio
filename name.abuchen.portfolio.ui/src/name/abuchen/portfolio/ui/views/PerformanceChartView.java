@@ -131,7 +131,7 @@ public class PerformanceChartView extends AbstractHistoricView
         DataSeriesCache cache = make(DataSeriesCache.class);
         seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
 
-        picker = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.PERFORMANCE);
+        picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
         picker.addListener(() -> updateChart());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);

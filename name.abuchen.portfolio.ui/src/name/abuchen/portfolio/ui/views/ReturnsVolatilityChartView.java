@@ -44,7 +44,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
     private ScatterChart chart;
     private LocalResourceManager resources;
-    private DataSeriesConfigurator picker;
+    private DataSeriesConfigurator configurator;
 
     private DataSeriesCache cache;
 
@@ -64,12 +64,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void addConfigButton(ToolBar toolBar)
     {
-        Action save = new SimpleAction(Messages.MenuSaveChart, a -> picker.showSaveMenu(getActiveShell()));
+        Action save = new SimpleAction(Messages.MenuSaveChart, a -> configurator.showSaveMenu(getActiveShell()));
         save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
-        Action config = new SimpleAction(Messages.MenuConfigureChart, a -> picker.showMenu(getActiveShell()));
+        Action config = new SimpleAction(Messages.MenuConfigureChart, a -> configurator.showMenu(getActiveShell()));
         config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(config).fill(toolBar, -1);
@@ -116,12 +116,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             }
         });
 
-        picker = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.RETURN_VOLATILITY);
-        picker.addListener(() -> updateChart());
+        configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
+        configurator.addListener(() -> updateChart());
 
-        DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
+        DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
 
-        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
@@ -157,7 +157,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         try
         {
-            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + configurator.getConfigurationName() //$NON-NLS-1$
+                            + ")"); //$NON-NLS-1$
 
             chart.suspendUpdate(true);
             for (ISeries s : chart.getSeriesSet().getSeries())
@@ -176,7 +177,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        picker.getSelectedDataSeries().forEach(series -> {
+        configurator.getSelectedDataSeries().forEach(series -> {
             PerformanceIndex index = cache.lookup(series, getReportingPeriod());
             Volatility volatility = index.getVolatility();
 
@@ -207,7 +208,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
             }));
 
-            for (DataSeries series : picker.getSelectedDataSeries())
+            for (DataSeries series : configurator.getSelectedDataSeries())
                 manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, series.getLabel()),
                                 a -> exportDataSeries(series)));
 

@@ -17,6 +17,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
@@ -120,7 +121,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         DataSeriesCache cache = make(DataSeriesCache.class);
         seriesBuilder = new StatementOfAssetsSeriesBuilder(chart, cache);
 
-        configurator = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.STATEMENT_OF_ASSETS);
+        configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
         configurator.addListener(() -> updateChart());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);

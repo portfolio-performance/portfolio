@@ -7,7 +7,7 @@ import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 
 public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 {

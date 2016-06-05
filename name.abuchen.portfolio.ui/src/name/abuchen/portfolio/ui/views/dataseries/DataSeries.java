@@ -13,10 +13,31 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
 
+/**
+ * A data series available to add to charts.
+ */
 public final class DataSeries
 {
+    /**
+     * The use case determines the selection of data series available.
+     */
+    public enum UseCase
+    {
+        STATEMENT_OF_ASSETS, PERFORMANCE, RETURN_VOLATILITY
+    }
+
+    /**
+     * Data series available for the Client type.
+     */
+    public enum ClientDataSeries
+    {
+        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, ACCUMULATED, DELTA_PERCENTAGE;
+    }
+
+    /**
+     * Type of objects for which the PerformanceIndex is calculated.
+     */
     public enum Type
     {
         CLIENT("Client-", i -> ((ClientDataSeries) i).name().toLowerCase(Locale.US)), //$NON-NLS-1$
@@ -37,7 +58,7 @@ public final class DataSeries
             this.uuidProvider = uuidProvider;
         }
 
-        public String buildUUID(Object instance)
+        String buildUUID(Object instance)
         {
             return label + uuidProvider.apply(instance);
         }
