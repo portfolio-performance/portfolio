@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -28,21 +27,19 @@ public class DataSeriesCache
 {
     private static class CacheKey
     {
-        private final Class<?> type;
-        private final Object instance;
+        private final String uuid;
         private final ReportingPeriod reportingPeriod;
 
-        public CacheKey(Class<?> type, Object instance, ReportingPeriod reportingPeriod)
+        CacheKey(String uuid, ReportingPeriod reportingPeriod)
         {
-            this.type = Objects.requireNonNull(type);
-            this.instance = Objects.requireNonNull(instance);
+            this.uuid = Objects.requireNonNull(uuid);
             this.reportingPeriod = Objects.requireNonNull(reportingPeriod);
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(type, instance, reportingPeriod);
+            return Objects.hash(uuid, reportingPeriod);
         }
 
         @Override
@@ -56,9 +53,7 @@ public class DataSeriesCache
                 return false;
 
             CacheKey other = (CacheKey) obj;
-            if (!type.equals(other.type))
-                return false;
-            if (!instance.equals(other.instance))
+            if (!uuid.equals(other.uuid))
                 return false;
             if (!reportingPeriod.equals(other.reportingPeriod))
                 return false;
@@ -85,16 +80,12 @@ public class DataSeriesCache
 
     public PerformanceIndex lookup(DataSeries series, ReportingPeriod reportingPeriod)
     {
-        Object instance = series.getInstance();
-        if (series.getType() == Client.class)
-            instance = Client.class;
-        else if (series.isPortfolioPlus())
-            instance = ((Portfolio) series.getInstance()).getUUID();
-        else if (series.isBenchmark() && series.getInstance() instanceof Security)
-            instance = ((Security) series.getInstance()).getUUID();
+        // Every data series is cached separately except the for the client. The
+        // client data series are created out of the same PerformanceIndex
+        // instance, e.g. accumulated and delta performance.
+        String uuid = series.getType() == DataSeries.Type.CLIENT ? "$client$" : series.getUUID(); //$NON-NLS-1$
 
-        CacheKey key = new CacheKey(series.getType(), instance, reportingPeriod);
-
+        CacheKey key = new CacheKey(uuid, reportingPeriod);
         return cache.computeIfAbsent(key, k -> calculate(series, reportingPeriod));
     }
 
@@ -104,46 +95,43 @@ public class DataSeriesCache
 
         try
         {
-            if (series.getType() == Client.class)
+            switch (series.getType())
             {
-                return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings);
-            }
-            else if (series.getType() == Security.class)
-            {
-                Security security = (Security) series.getInstance();
+                case CLIENT:
+                    return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings);
 
-                return series.isBenchmark() ? PerformanceIndex.forSecurity(
-                                lookup(new DataSeries(Client.class, null, null, null), reportingPeriod), security)
-                                : PerformanceIndex.forInvestment(client, converter, security, reportingPeriod,
-                                                warnings);
-            }
-            else if (series.getType() == Portfolio.class)
-            {
-                Portfolio portfolio = (Portfolio) series.getInstance();
-                return series.isPortfolioPlus()
-                                ? PerformanceIndex.forPortfolioPlusAccount(client, converter, portfolio,
-                                                reportingPeriod, warnings)
-                                : PerformanceIndex.forPortfolio(client, converter, portfolio, reportingPeriod,
-                                                warnings);
-            }
-            else if (series.getType() == Account.class)
-            {
-                Account account = (Account) series.getInstance();
-                return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
-            }
-            else if (series.getType() == Classification.class)
-            {
-                Classification classification = (Classification) series.getInstance();
-                return PerformanceIndex.forClassification(client, converter, classification, reportingPeriod, warnings);
-            }
-            else if (series.getType() == ConsumerPriceIndex.class)
-            {
-                return PerformanceIndex.forConsumerPriceIndex(
-                                lookup(new DataSeries(Client.class, null, null, null), reportingPeriod));
-            }
-            else
-            {
-                return null;
+                case SECURITY:
+                    return PerformanceIndex.forInvestment(client, converter, (Security) series.getInstance(),
+                                    reportingPeriod, warnings);
+
+                case SECURITY_BENCHMARK:
+                    return PerformanceIndex.forSecurity(
+                                    lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod),
+                                    (Security) series.getInstance());
+
+                case PORTFOLIO:
+                    return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
+                                    reportingPeriod, warnings);
+
+                case PORTFOLIO_PLUS_ACCOUNT:
+                    return PerformanceIndex.forPortfolioPlusAccount(client, converter, (Portfolio) series.getInstance(),
+                                    reportingPeriod, warnings);
+
+                case ACCOUNT:
+                    Account account = (Account) series.getInstance();
+                    return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
+
+                case CLASSIFICATION:
+                    Classification classification = (Classification) series.getInstance();
+                    return PerformanceIndex.forClassification(client, converter, classification, reportingPeriod,
+                                    warnings);
+
+                case CONSUMER_PRICE_INDEX:
+                    return PerformanceIndex.forConsumerPriceIndex(
+                                    lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod));
+
+                default:
+                    throw new IllegalArgumentException(series.getType().name());
             }
         }
         finally

@@ -173,43 +173,44 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     private void buildStatementOfAssetsDataSeries()
     {
-        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
                         Colors.TOTALS.swt()));
 
-        DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS, Messages.LabelTransferals,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
+        DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
+                        Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.INVESTED_CAPITAL, Messages.LabelInvestedCapital,
-                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INVESTED_CAPITAL,
+                        Messages.LabelInvestedCapital, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
         series.setShowArea(true);
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
                         Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes,
                         Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.DIVIDENDS_ACCUMULATED,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS_ACCUMULATED,
                         Messages.LabelAccumulatedDividends,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.INTEREST, Messages.LabelInterest,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
-        series = new DataSeries(Client.class, ClientDataSeries.INTEREST_ACCUMULATED, Messages.LabelAccumulatedInterest,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_ACCUMULATED,
+                        Messages.LabelAccumulatedInterest,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
         availableSeries.add(series);
 
@@ -218,18 +219,18 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     private void buildPerformanceDataSeries(ColorWheel wheel)
     {
         // accumulated performance
-        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.ACCUMULATED,
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ACCUMULATED,
                         Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
 
-        DataSeries series = new DataSeries(Client.class, ClientDataSeries.DELTA_PERCENTAGE,
+        DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
                         Messages.LabelAggregationDaily,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         // consumer price index
-        series = new DataSeries(ConsumerPriceIndex.class, ConsumerPriceIndex.class, Messages.LabelConsumerPriceIndex,
-                        Colors.CPI.swt());
+        series = new DataSeries(DataSeries.Type.CONSUMER_PRICE_INDEX, ConsumerPriceIndex.class,
+                        Messages.LabelConsumerPriceIndex, Colors.CPI.swt());
         series.setBenchmark(true);
         series.setLineStyle(LineStyle.DASHDOTDOT);
         availableSeries.add(series);
@@ -238,7 +239,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         int index = 0;
         for (Security security : client.getSecurities())
         {
-            series = new DataSeries(Security.class, security, security.getName(), //
+            series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
                             wheel.getRGB(index++));
             series.setBenchmark(true);
             availableSeries.add(series);
@@ -248,14 +249,14 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     private void buildReturnVolatilitySeries(ColorWheel wheel)
     {
         // accumulated performance
-        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS,
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
                         Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
 
         // securities as benchmark
         int index = 0;
         for (Security security : client.getSecurities())
         {
-            DataSeries series = new DataSeries(Security.class, security, security.getName(), //
+            DataSeries series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
                             wheel.getRGB(index++));
 
             series.setBenchmark(true);
@@ -274,26 +275,26 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
             if (security.getCurrencyCode() == null)
                 continue;
 
-            availableSeries.add(new DataSeries(Security.class, security, security.getName(), //
+            availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
                             wheel.getRGB(index++)));
         }
 
         for (Portfolio portfolio : client.getPortfolios())
-            availableSeries.add(new DataSeries(Portfolio.class, portfolio, portfolio.getName(), //
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
                             wheel.getRGB(index++)));
 
         // portfolio + reference account
         for (Portfolio portfolio : client.getPortfolios())
         {
-            DataSeries series = new DataSeries(Portfolio.class, portfolio,
+            DataSeries series = new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT, portfolio,
                             portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
                             wheel.getRGB(index++));
-            series.setPortfolioPlus(true);
             availableSeries.add(series);
         }
 
         for (Account account : client.getAccounts())
-            availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getRGB(index++)));
+            availableSeries.add(
+                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.getRGB(index++)));
 
         for (Taxonomy taxonomy : client.getTaxonomies())
         {
@@ -305,8 +306,8 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
                     if (classification.getParent() == null)
                         return;
 
-                    availableSeries.add(new DataSeries(Classification.class, classification, classification.getName(),
-                                    Colors.toRGB(classification.getColor())));
+                    availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, classification,
+                                    classification.getName(), Colors.toRGB(classification.getColor())));
                 }
             });
         }
@@ -318,8 +319,8 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
         for (DataSeries series : availableSeries)
         {
-            if ((series.getType() == Client.class && set.contains(series.getInstance()))
-                            || series.getType() == ConsumerPriceIndex.class)
+            if ((series.getType() == DataSeries.Type.CLIENT && set.contains(series.getInstance()))
+                            || series.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
             {
                 selectedSeries.add(series);
             }

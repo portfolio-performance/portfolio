@@ -8,7 +8,7 @@ import org.swtchart.ILineSeries;
 
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
-public class AbstractChartSeriesBuilder
+public abstract class AbstractChartSeriesBuilder
 {
     private final TimelineChart chart;
     private final DataSeriesCache cache;

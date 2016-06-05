@@ -3,8 +3,6 @@ package name.abuchen.portfolio.ui.views.dataseries;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -22,11 +20,11 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
     {
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
-        if (series.getType() == Client.class)
+        if (series.getType() == DataSeries.Type.CLIENT)
         {
             addClient(series, index, aggregationPeriod);
         }
-        else if (series.getType() == ConsumerPriceIndex.class)
+        else if (series.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
         {
             if (index.getDates().length > 0
                             && (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY))

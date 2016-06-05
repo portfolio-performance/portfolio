@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -8,8 +9,6 @@ import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
@@ -18,19 +17,44 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientD
 
 public final class DataSeries
 {
-    private Class<?> type;
+    public enum Type
+    {
+        CLIENT("Client-", i -> ((ClientDataSeries) i).name().toLowerCase(Locale.US)), //$NON-NLS-1$
+        SECURITY("Security", i -> ((Security) i).getUUID()), //$NON-NLS-1$
+        SECURITY_BENCHMARK("[b]Security", i -> ((Security) i).getUUID()), //$NON-NLS-1$
+        ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
+        PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        CONSUMER_PRICE_INDEX("[b]ConsumerPriceIndex", i -> ""), //$NON-NLS-1$ //$NON-NLS-2$
+        CLASSIFICATION("Classification", i -> ((Classification) i).getId()); //$NON-NLS-1$
+
+        private final String label;
+        private final Function<Object, String> uuidProvider;
+
+        Type(String label, Function<Object, String> uuidProvider)
+        {
+            this.label = label;
+            this.uuidProvider = uuidProvider;
+        }
+
+        public String buildUUID(Object instance)
+        {
+            return label + uuidProvider.apply(instance);
+        }
+    }
+
+    private Type type;
     private Object instance;
     private String label;
     private boolean isLineChart = true;
     private boolean isBenchmark = false;
-    private boolean isPortfolioPlus = false;
 
     private RGB color;
 
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
 
-    /* package */ DataSeries(Class<?> type, Object instance, String label, RGB color)
+    /* package */ DataSeries(Type type, Object instance, String label, RGB color)
     {
         this.type = type;
         this.instance = instance;
@@ -38,7 +62,7 @@ public final class DataSeries
         this.color = color;
     }
 
-    public Class<?> getType()
+    public Type getType()
     {
         return type;
     }
@@ -101,16 +125,6 @@ public final class DataSeries
         this.isBenchmark = isBenchmark;
     }
 
-    public boolean isPortfolioPlus()
-    {
-        return isPortfolioPlus;
-    }
-
-    public void setPortfolioPlus(boolean isPortfolioPlus)
-    {
-        this.isPortfolioPlus = isPortfolioPlus;
-    }
-
     public boolean isShowArea()
     {
         return showArea;
@@ -133,38 +147,25 @@ public final class DataSeries
 
     public Image getImage()
     {
-        if (type == Security.class)
-            return Images.SECURITY.image();
-        else if (type == Account.class)
-            return Images.ACCOUNT.image();
-        else if (type == Portfolio.class)
-            return Images.PORTFOLIO.image();
-        else if (type == Classification.class)
-            return Images.CATEGORY.image();
-        else
-            return null;
+        switch (type)
+        {
+            case SECURITY:
+            case SECURITY_BENCHMARK:
+                return Images.SECURITY.image();
+            case ACCOUNT:
+                return Images.ACCOUNT.image();
+            case PORTFOLIO:
+            case PORTFOLIO_PLUS_ACCOUNT:
+                return Images.PORTFOLIO.image();
+            case CLASSIFICATION:
+                return Images.CATEGORY.image();
+            default:
+                return null;
+        }
     }
 
     public String getUUID()
     {
-        String prefix = isBenchmark() ? "[b]" : ""; //$NON-NLS-1$ //$NON-NLS-2$
-        if (isPortfolioPlus())
-            prefix += "[+]"; //$NON-NLS-1$
-
-        if (type == Security.class)
-            return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
-        else if (type == Client.class)
-            return prefix + Client.class.getSimpleName() + "-" //$NON-NLS-1$
-                            + ((ClientDataSeries) instance).name().toLowerCase(Locale.US);
-        else if (type == Account.class)
-            return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
-        else if (type == Portfolio.class)
-            return prefix + Portfolio.class.getSimpleName() + ((Portfolio) instance).getUUID();
-        else if (type == ConsumerPriceIndex.class)
-            return prefix + ConsumerPriceIndex.class.getSimpleName();
-        else if (type == Classification.class)
-            return prefix + Classification.class.getSimpleName() + ((Classification) instance).getId();
-
-        throw new UnsupportedOperationException(type.getName());
+        return this.type.buildUUID(instance);
     }
 }

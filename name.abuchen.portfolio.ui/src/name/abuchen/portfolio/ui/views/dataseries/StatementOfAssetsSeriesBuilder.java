@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views.dataseries;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -21,7 +20,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
     {
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
-        if (series.getType() == Client.class)
+        if (series.getType() == DataSeries.Type.CLIENT)
         {
             addClient(series, index);
         }

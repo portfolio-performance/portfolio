@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -51,9 +49,11 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
@@ -156,7 +156,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         picker = new DataSeriesConfigurator(this, DataSeriesConfigurator.Mode.RETURN_VOLATILITY);
         picker.addListener(() -> updateChart());
-        
+
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
 
         updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -196,7 +196,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         try
         {
             updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-            
+
             chart.suspendUpdate(true);
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
@@ -218,16 +218,32 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         for (DataSeries item : picker.getSelectedDataSeries())
         {
-            if (item.getType() == Client.class)
-                addClient(item, (ClientDataSeries) item.getInstance(), warnings);
-            else if (item.getType() == Security.class)
-                addSecurity(item, (Security) item.getInstance(), warnings);
-            else if (item.getType() == Portfolio.class)
-                addPortfolio(item, (Portfolio) item.getInstance(), warnings);
-            else if (item.getType() == Account.class)
-                addAccount(item, (Account) item.getInstance(), warnings);
-            else if (item.getType() == Classification.class)
-                addClassification(item, (Classification) item.getInstance(), warnings);
+            switch (item.getType())
+            {
+                case CLIENT:
+                    addClient(item, (ClientDataSeries) item.getInstance(), warnings);
+                    break;
+                case SECURITY:
+                    addSecurityPerformance(item, (Security) item.getInstance(), warnings);
+                    break;
+                case SECURITY_BENCHMARK:
+                    addSecurityBenchmark(item, (Security) item.getInstance(), warnings);
+                    break;
+                case PORTFOLIO:
+                    addPortfolio(item, (Portfolio) item.getInstance(), warnings);
+                    break;
+                case PORTFOLIO_PLUS_ACCOUNT:
+                    addPortfolioAndAccount(item, (Portfolio) item.getInstance(), warnings);
+                    break;
+                case ACCOUNT:
+                    addAccount(item, (Account) item.getInstance(), warnings);
+                    break;
+                case CLASSIFICATION:
+                    addClassification(item, (Classification) item.getInstance(), warnings);
+                    break;
+                default:
+                    throw new IllegalArgumentException(item.getType().name());
+            }
         }
 
         PortfolioPlugin.log(warnings);
@@ -266,14 +282,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             addScatterSeries(item, clientIndex);
     }
 
-    private void addSecurity(DataSeries item, Security security, List<Exception> warnings)
-    {
-        if (item.isBenchmark())
-            addSecurityBenchmark(item, security, warnings);
-        else
-            addSecurityPerformance(item, security, warnings);
-    }
-
     private void addSecurityBenchmark(DataSeries item, Security security, List<Exception> warnings)
     {
         PerformanceIndex securityIndex = dataCache.get(security);
@@ -304,15 +312,28 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
     {
-        Object cacheKey = item.isPortfolioPlus() ? portfolio.getUUID() : portfolio;
+        Object cacheKey = portfolio;
         PerformanceIndex portfolioIndex = dataCache.get(cacheKey);
 
         if (portfolioIndex == null)
         {
-            portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
-                            .forPortfolioPlusAccount(getClient(), converter, portfolio, getReportingPeriod(), warnings)
-                            : PerformanceIndex.forPortfolio(getClient(), converter, portfolio, getReportingPeriod(),
-                                            warnings);
+            portfolioIndex = PerformanceIndex.forPortfolio(getClient(), converter, portfolio, getReportingPeriod(),
+                            warnings);
+            dataCache.put(cacheKey, portfolioIndex);
+        }
+
+        addScatterSeries(item, portfolioIndex);
+    }
+
+    private void addPortfolioAndAccount(DataSeries item, Portfolio portfolio, List<Exception> warnings)
+    {
+        Object cacheKey = portfolio.getUUID();
+        PerformanceIndex portfolioIndex = dataCache.get(cacheKey);
+
+        if (portfolioIndex == null)
+        {
+            portfolioIndex = PerformanceIndex.forPortfolioPlusAccount(getClient(), converter, portfolio,
+                            getReportingPeriod(), warnings);
             dataCache.put(cacheKey, portfolioIndex);
         }
 
@@ -367,8 +388,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 }
             });
 
-            Set<Class<?>> exportTypes = new HashSet<>(Arrays.asList(new Class<?>[] { //
-                            Client.class, Security.class, Portfolio.class, Account.class, Classification.class }));
+            EnumSet<DataSeries.Type> exportTypes = EnumSet.of(Type.CLIENT, Type.SECURITY, Type.SECURITY_BENCHMARK,
+                            Type.ACCOUNT, Type.PORTFOLIO, Type.PORTFOLIO_PLUS_ACCOUNT, Type.CLASSIFICATION);
 
             for (DataSeries series : picker.getSelectedDataSeries())
             {
@@ -382,14 +403,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         private void addMenu(IMenuManager manager, final DataSeries series)
         {
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, series.getLabel()))
-            {
-                @Override
-                public void run()
-                {
-                    exportDataSeries(series);
-                }
-            });
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, series.getLabel()),
+                            a -> exportDataSeries(series)));
         }
 
         private void exportDataSeries(DataSeries series)
@@ -401,11 +416,11 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 {
                     PerformanceIndex index;
 
-                    if (series.getType() == Client.class)
+                    if (series.getType() == Type.CLIENT)
                         index = dataCache.get(Client.class);
-                    else if (series.isPortfolioPlus())
+                    else if (series.getType() == Type.PORTFOLIO_PLUS_ACCOUNT)
                         index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
-                    else if (series.getType() == Security.class && !series.isBenchmark())
+                    else if (series.getType() == Type.SECURITY)
                         index = dataCache.get(((Security) series.getInstance()).getUUID());
                     else
                         index = dataCache.get(series.getInstance());
