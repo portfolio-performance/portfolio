@@ -487,6 +487,7 @@ public class ClientFactory
                 addDecimalPlacesToQuotes(client);
 
                 // added dashboards to model
+                fixStoredChartConfigurationWithNewPerformanceSeriesKeys(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -918,6 +919,14 @@ public class ClientFactory
                     attributes.put(t, ((Long) value).longValue() * decimalPlacesAdded);
             }
         });
+    }
+
+    @SuppressWarnings("nls")
+    private static void fixStoredChartConfigurationWithNewPerformanceSeriesKeys(Client client)
+    {
+        replace(client, "PerformanceChartView-PICKER", //
+                        "Client-totals;", "Client-accumulated;", //
+                        "Client-transferals;", "Client-delta_percentage;");
     }
 
     @SuppressWarnings("nls")

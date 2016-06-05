@@ -8,7 +8,6 @@ import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
 
@@ -49,23 +48,22 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 
     }
 
-    private void addClient(DataSeries item, PerformanceIndex clientIndex, Aggregation.Period aggregationPeriod)
+    private void addClient(DataSeries series, PerformanceIndex clientIndex, Aggregation.Period aggregationPeriod)
     {
         PerformanceIndex index = aggregationPeriod != null ? Aggregation.aggregate(clientIndex, aggregationPeriod)
                         : clientIndex;
 
-        switch ((ClientDataSeries) item.getInstance())
+        switch ((ClientDataSeries) series.getInstance())
         {
-            case TOTALS:
-                ILineSeries series = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
-                                Messages.PerformanceChartLabelAccumulatedIRR);
-                configure(item, series);
+            case ACCUMULATED:
+                ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
+                                series.getLabel());
+                configure(series, lineSeries);
                 break;
-            case TRANSFERALS:
+            case DELTA_PERCENTAGE:
                 IBarSeries barSeries = getChart().addDateBarSeries(index.getDates(), index.getDeltaPercentage(),
-                                aggregationPeriod != null ? aggregationPeriod.toString()
-                                                : Messages.LabelAggregationDaily);
-                configure(item, barSeries);
+                                aggregationPeriod != null ? aggregationPeriod.toString() : series.getLabel());
+                configure(series, barSeries);
                 break;
             default:
                 break;

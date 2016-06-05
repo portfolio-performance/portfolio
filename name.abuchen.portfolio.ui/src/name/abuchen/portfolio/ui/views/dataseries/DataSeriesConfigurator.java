@@ -46,7 +46,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
      */
     public enum ClientDataSeries
     {
-        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED;
+        TOTALS, INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, ACCUMULATED, DELTA_PERCENTAGE;
     }
 
     /**
@@ -218,12 +218,11 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     private void buildPerformanceDataSeries(ColorWheel wheel)
     {
         // accumulated performance
-        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.TOTALS,
+        availableSeries.add(new DataSeries(Client.class, ClientDataSeries.ACCUMULATED,
                         Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
 
-        // daily change - must be TRANSFERALS for historical reasons as
-        // it was stored this way in the XML file
-        DataSeries series = new DataSeries(Client.class, ClientDataSeries.TRANSFERALS, Messages.LabelAggregationDaily,
+        DataSeries series = new DataSeries(Client.class, ClientDataSeries.DELTA_PERCENTAGE,
+                        Messages.LabelAggregationDaily,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
@@ -294,8 +293,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         }
 
         for (Account account : client.getAccounts())
-            availableSeries.add(
-                            new DataSeries(Account.class, account, account.getName(), wheel.getRGB(index++)));
+            availableSeries.add(new DataSeries(Account.class, account, account.getName(), wheel.getRGB(index++)));
 
         for (Taxonomy taxonomy : client.getTaxonomies())
         {

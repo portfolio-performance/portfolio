@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.util.Locale;
+
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.swtchart.LineStyle;
@@ -152,7 +154,8 @@ public final class DataSeries
         if (type == Security.class)
             return prefix + Security.class.getSimpleName() + ((Security) instance).getUUID();
         else if (type == Client.class)
-            return prefix + Client.class.getSimpleName() + "-" + ((ClientDataSeries) instance).name().toLowerCase(); //$NON-NLS-1$
+            return prefix + Client.class.getSimpleName() + "-" //$NON-NLS-1$
+                            + ((ClientDataSeries) instance).name().toLowerCase(Locale.US);
         else if (type == Account.class)
             return prefix + Account.class.getSimpleName() + ((Account) instance).getUUID();
         else if (type == Portfolio.class)
