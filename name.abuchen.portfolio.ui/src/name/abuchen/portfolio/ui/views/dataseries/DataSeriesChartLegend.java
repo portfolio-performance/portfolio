@@ -6,6 +6,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -32,6 +34,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 public class DataSeriesChartLegend extends Composite
 {
     private final DataSeriesConfigurator configurator;
+    private final LocalResourceManager resources;
 
     /**
      * Constructor.
@@ -46,6 +49,7 @@ public class DataSeriesChartLegend extends Composite
         super(parent, SWT.NONE);
 
         this.configurator = configurator;
+        this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
         setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
@@ -112,6 +116,12 @@ public class DataSeriesChartLegend extends Composite
             }
         }
 
+        private Color colorFor(RGB color)
+        {
+            DataSeriesChartLegend legend = (DataSeriesChartLegend) getParent();
+            return legend.resources.createColor(color);
+        }
+
         private void paintControl(Event e)
         {
             Color oldForeground = e.gc.getForeground();
@@ -121,7 +131,7 @@ public class DataSeriesChartLegend extends Composite
             Rectangle r = new Rectangle(0, 0, size.y, size.y);
             GC gc = e.gc;
 
-            gc.setBackground(series.getColor());
+            gc.setBackground(colorFor(series.getColor()));
             gc.fillRectangle(r.x, r.y, r.width, r.height);
 
             gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
@@ -156,13 +166,12 @@ public class DataSeriesChartLegend extends Composite
                 public void run()
                 {
                     ColorDialog colorDialog = new ColorDialog(Display.getDefault().getActiveShell());
-                    colorDialog.setRGB(series.getColor().getRGB());
+                    colorDialog.setRGB(series.getColor());
                     RGB newColor = colorDialog.open();
                     if (newColor != null)
                     {
-                        DataSeriesChartLegend legend = (DataSeriesChartLegend) getParent();
-                        series.setColor(legend.configurator.colorFor(newColor));
-                        legend.configurator.fireUpdate();
+                        series.setColor(newColor);
+                        ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
                     }
                 }
             });

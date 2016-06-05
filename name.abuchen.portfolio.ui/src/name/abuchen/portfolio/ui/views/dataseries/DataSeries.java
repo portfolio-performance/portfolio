@@ -1,10 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
@@ -26,19 +23,17 @@ public final class DataSeries
     private boolean isBenchmark = false;
     private boolean isPortfolioPlus = false;
 
-    private Color color;
-    private RGB rgb;
+    private RGB color;
 
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
 
-    /* package */ DataSeries(Class<?> type, Object instance, String label, Color color)
+    /* package */ DataSeries(Class<?> type, Object instance, String label, RGB color)
     {
         this.type = type;
         this.instance = instance;
         this.label = label;
         this.color = color;
-        this.rgb = color.getRGB();
     }
 
     public Class<?> getType()
@@ -74,20 +69,14 @@ public final class DataSeries
         return buf.toString();
     }
 
-    public void setColor(Color color)
+    public void setColor(RGB color)
     {
         this.color = color;
-        this.rgb = color.getRGB();
     }
 
-    public Color getColor()
+    public RGB getColor()
     {
         return color;
-    }
-
-    public RGB getRGB()
-    {
-        return rgb;
     }
 
     public boolean isLineChart()
@@ -174,19 +163,5 @@ public final class DataSeries
             return prefix + Classification.class.getSimpleName() + ((Classification) instance).getId();
 
         throw new UnsupportedOperationException(type.getName());
-    }
-
-    public void configure(ILineSeries series)
-    {
-        series.setLineColor(getColor());
-        series.setSymbolColor(getColor());
-        series.enableArea(showArea);
-        series.setLineStyle(lineStyle);
-    }
-
-    public void configure(IBarSeries series)
-    {
-        series.setBarPadding(50);
-        series.setBarColor(getColor());
     }
 }

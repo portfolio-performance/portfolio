@@ -20,8 +20,11 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -50,22 +53,23 @@ import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator.ClientDataSeries;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
     private CurrencyConverter converter;
 
     private ScatterChart chart;
+    private LocalResourceManager resources;
     private DataSeriesConfigurator picker;
 
-    private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
+    private Map<Object, PerformanceIndex> dataCache = new HashMap<>();
 
     @PostConstruct
-    private void setupCurrencyConverter(ExchangeRateProviderFactory factory, Client client)
+    private void setupCurrencyConverter(ExchangeRateProviderFactory factory, Client client) // NOSONAR
     {
         converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
@@ -116,6 +120,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+        resources = new LocalResourceManager(JFaceResources.getResources(), composite);
 
         chart = new ScatterChart(composite);
         chart.getTitle().setText(getTitle());
@@ -189,7 +195,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         try
         {
-            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
             
             chart.suspendUpdate(true);
             for (ISeries s : chart.getSeriesSet().getSeries())
@@ -208,7 +214,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         for (DataSeries item : picker.getSelectedDataSeries())
         {
@@ -232,7 +238,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         Volatility volatility = index.getVolatility();
         ILineSeries series = chart.addScatterSeries(new double[] { volatility.getStandardDeviation() },
                         new double[] { index.getFinalAccumulatedPercentage() }, item.getLabel());
-        item.configure(series);
+
+        Color color = resources.createColor(item.getColor());
+        series.setLineColor(color);
+        series.setSymbolColor(color);
+        series.enableArea(item.isShowArea());
+        series.setLineStyle(item.getLineStyle());
     }
 
     private PerformanceIndex getClientIndex(List<Exception> warnings)
@@ -356,7 +367,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 }
             });
 
-            Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
+            Set<Class<?>> exportTypes = new HashSet<>(Arrays.asList(new Class<?>[] { //
                             Client.class, Security.class, Portfolio.class, Account.class, Classification.class }));
 
             for (DataSeries series : picker.getSelectedDataSeries())
@@ -388,7 +399,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 @Override
                 protected void writeToFile(File file) throws IOException
                 {
-                    PerformanceIndex index = null;
+                    PerformanceIndex index;
 
                     if (series.getType() == Client.class)
                         index = dataCache.get(Client.class);
