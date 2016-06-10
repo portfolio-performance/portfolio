@@ -2,9 +2,11 @@ package name.abuchen.portfolio.util;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
 
 public final class Interval
 {
+
     private LocalDate start;
     private LocalDate end;
 
@@ -42,6 +44,36 @@ public final class Interval
     public long getDays()
     {
         return ChronoUnit.DAYS.between(start, end);
+    }
+
+    public Iterable<LocalDate> iterYears()
+    {
+        return new Iterable<LocalDate>()
+        {
+            @Override
+            public Iterator<LocalDate> iterator()
+            {
+                return new Iterator<LocalDate>()
+                {
+                    LocalDate index = LocalDate.of(start.getYear(), 1, 1);
+                    LocalDate temp;
+
+                    @Override
+                    public boolean hasNext()
+                    {
+                        return !index.isAfter(end);
+                    }
+
+                    @Override
+                    public LocalDate next()
+                    {
+                        temp = index;
+                        index = index.plusYears(1);
+                        return temp;
+                    }
+                };
+            }
+        };
     }
 
     @Override

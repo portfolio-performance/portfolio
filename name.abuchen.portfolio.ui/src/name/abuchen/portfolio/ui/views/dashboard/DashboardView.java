@@ -2,6 +2,16 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.function.Consumer;
 
+import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -27,16 +37,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
-
-import name.abuchen.portfolio.model.Dashboard;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DashboardView extends AbstractFinanceView
 {
@@ -154,8 +154,8 @@ public class DashboardView extends AbstractFinanceView
         public void dragEnter(DropTargetEvent event)
         {
             Composite filler = (Composite) dropTarget.getData(FILLER_KEY);
-            (filler != null ? filler : dropTarget)
-                            .setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            (filler != null ? filler : dropTarget).setBackground(Display.getDefault().getSystemColor(
+                            SWT.COLOR_WIDGET_BACKGROUND));
         }
 
         @Override
@@ -585,6 +585,15 @@ public class DashboardView extends AbstractFinanceView
         widget.setLabel("Semivolatilität");
         column.getWidgets().add(widget);
 
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEADING.name());
+        widget.setLabel("Performance Heatmap");
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEATMAP.name());
+        column.getWidgets().add(widget);
+
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
@@ -606,6 +615,7 @@ public class DashboardView extends AbstractFinanceView
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CHART.name());
         widget.setLabel("Performance Gesamtportfolio 1 Jahr");
+        widget.getConfiguration().put("REPORTING_PERIOD", "L1Y0");
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();

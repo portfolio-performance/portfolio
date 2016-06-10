@@ -51,7 +51,9 @@ public enum WidgetFactory
 
     CALCULATION((widget, data) -> new PerformanceCalculationWidget(widget, data)),
 
-    CHART((widget, data) -> new PerformanceChartWidget(widget, data));
+    CHART((widget, data) -> new PerformanceChartWidget(widget, data)),
+
+    HEATMAP((widget, data) -> new PerformanceHeatmapWidget(widget, data));
 
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;
 
