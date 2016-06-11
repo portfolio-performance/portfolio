@@ -12,8 +12,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -283,20 +281,5 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     public void onConfigurationPicked(String data)
     {
         this.doResetSeries(data);
-    }
-
-    private static final class DataSeriesLabelProvider extends LabelProvider
-    {
-        @Override
-        public Image getImage(Object element)
-        {
-            return ((DataSeries) element).getImage();
-        }
-
-        @Override
-        public String getText(Object element)
-        {
-            return ((DataSeries) element).getSearchLabel();
-        }
     }
 }

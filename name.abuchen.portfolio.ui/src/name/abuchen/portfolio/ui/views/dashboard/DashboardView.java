@@ -166,6 +166,8 @@ public class DashboardView extends AbstractFinanceView
         }
     }
 
+    public static final String INFO_MENU_GROUP_NAME = "info"; //$NON-NLS-1$
+
     private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
     private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
 
@@ -331,9 +333,10 @@ public class DashboardView extends AbstractFinanceView
 
     private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
     {
+        manager.add(new Separator(INFO_MENU_GROUP_NAME));
         manager.add(new LabelOnly(delegate.getWidget().getLabel()));
-        manager.add(new Separator());
 
+        manager.add(new Separator("edit")); //$NON-NLS-1$
         manager.add(new SimpleAction("Edit label...", a -> {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Label umbenennen", "Label",
                             delegate.getWidget().getLabel(), null);

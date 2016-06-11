@@ -8,16 +8,17 @@ import org.eclipse.swt.widgets.Display;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
 {
     private final Values<N> formatter;
-    private final BiFunction<DashboardData, ReportingPeriod, N> provider;
+    private final BiFunction<DataSeries, ReportingPeriod, N> provider;
 
-    public IndicatorWidget(Widget widget, DashboardData dashboardData, Values<N> formatter,
-                    BiFunction<DashboardData, ReportingPeriod, N> provider)
+    public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks, Values<N> formatter,
+                    BiFunction<DataSeries, ReportingPeriod, N> provider)
     {
-        super(widget, dashboardData);
+        super(widget, dashboardData, supportsBenchmarks);
 
         this.formatter = formatter;
         this.provider = provider;
@@ -28,7 +29,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
     {
         super.update();
 
-        N value = provider.apply(getDashboardData(), getReportingPeriod());
+        N value = provider.apply(getDataSeries(), getReportingPeriod());
         indicator.setText(formatter.format(value));
         indicator.setForeground(Display.getDefault()
                         .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));

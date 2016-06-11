@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -10,10 +11,13 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 
 public class PerformanceCalculationWidget extends ReportingPeriodWidget
 {
+    protected DataSeriesConfig config;
+
     private Composite container;
     private Label title;
     private Label[] signs;
@@ -23,6 +27,8 @@ public class PerformanceCalculationWidget extends ReportingPeriodWidget
     public PerformanceCalculationWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
+
+        config = new DataSeriesConfig(this, false);
     }
 
     @Override
@@ -58,12 +64,20 @@ public class PerformanceCalculationWidget extends ReportingPeriodWidget
     }
 
     @Override
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+        super.configMenuAboutToShow(manager);
+
+        config.menuAboutToShow(manager);
+    }
+
+    @Override
     public void update()
     {
         title.setText(getWidget().getLabel());
 
-        ClientPerformanceSnapshot snapshot = getDashboardData().calculate(ClientPerformanceSnapshot.class,
-                        getReportingPeriod());
+        PerformanceIndex index = getDashboardData().calculate(config.getDataSeries(), getReportingPeriod());
+        ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot();
 
         int ii = 0;
         for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())

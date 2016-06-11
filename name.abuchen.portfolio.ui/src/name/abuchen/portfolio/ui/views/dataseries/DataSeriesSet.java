@@ -59,6 +59,14 @@ public class DataSeriesSet
         return availableSeries;
     }
 
+    /**
+     * Returns DataSeries matching the given UUID.
+     */
+    public DataSeries lookup(String uuid)
+    {
+        return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
+    }
+
     private void buildStatementOfAssetsDataSeries()
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
@@ -200,5 +208,4 @@ public class DataSeriesSet
             });
         }
     }
-
 }

@@ -19,6 +19,9 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 
 public class DashboardData
 {
@@ -67,6 +70,9 @@ public class DashboardData
     private final List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
     private ReportingPeriod defaultReportingPeriod;
 
+    private DataSeriesSet dataSeriesSet;
+    private DataSeriesCache dataSeriesCache;
+
     private Dashboard dashboard;
 
     @Inject
@@ -75,6 +81,9 @@ public class DashboardData
         this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         this.defaultReportingPeriods.addAll(part.loadReportingPeriods());
+
+        this.dataSeriesSet = new DataSeriesSet(client, DataSeries.UseCase.RETURN_VOLATILITY);
+        this.dataSeriesCache = new DataSeriesCache(client, factory);
     }
 
     public Client getClient()
@@ -126,9 +135,15 @@ public class DashboardData
         return defaultReportingPeriod;
     }
 
+    public DataSeriesSet getDataSeriesSet()
+    {
+        return dataSeriesSet;
+    }
+
     public void clearCache()
     {
         cache.clear();
+        dataSeriesCache.clear();
     }
 
     public <T> T calculate(Class<T> type, ReportingPeriod period)
@@ -151,5 +166,15 @@ public class DashboardData
         {
             return null;
         }
+    }
+
+    public DataSeriesCache getDataSeriesCache()
+    {
+        return dataSeriesCache;
+    }
+
+    public PerformanceIndex calculate(DataSeries dataSeries, ReportingPeriod reportingPeriod)
+    {
+        return dataSeriesCache.lookup(dataSeries, reportingPeriod);
     }
 }

@@ -44,6 +44,8 @@ public abstract class ReportingPeriodWidget extends WidgetDelegate
     @Override
     public void configMenuAboutToShow(IMenuManager manager)
     {
+        manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(getReportingPeriod().toString()));
+
         MenuManager subMenu = new MenuManager("Berichtszeitraum");
 
         subMenu.add(new LabelOnly(reportingPeriod != null ? getReportingPeriod().toString() : "<dashboard default>"));

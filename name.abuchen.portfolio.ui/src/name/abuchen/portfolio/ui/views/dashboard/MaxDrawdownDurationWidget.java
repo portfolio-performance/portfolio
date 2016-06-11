@@ -19,7 +19,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget
 
     public MaxDrawdownDurationWidget(Widget widget, DashboardData dashboardData)
     {
-        super(widget, dashboardData);
+        super(widget, dashboardData, true);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget
     {
         super.update();
 
-        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, getReportingPeriod());
+        PerformanceIndex index = getDashboardData().getDataSeriesCache().lookup(getDataSeries(), getReportingPeriod());
 
         Drawdown drawdown = index.getDrawdown();
         Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
