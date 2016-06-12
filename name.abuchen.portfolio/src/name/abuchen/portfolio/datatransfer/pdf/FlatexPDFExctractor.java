@@ -187,12 +187,15 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
     {
         DocumentType type1 = new DocumentType("Dividendengutschrift");
         DocumentType type2 = new DocumentType("Ertragsmitteilung");
+        DocumentType type3 = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type1);
         this.addDocumentTyp(type2);
+        this.addDocumentTyp(type3);
 
         Block block = new Block("Ihre Depotnummer.*");
         type1.addBlock(block);
         type2.addBlock(block);
+        type3.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
                         //
                         .subject(() -> {
@@ -202,12 +205,12 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*) * (?<name>[^(]*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)").assign((t, v) -> {
+                        .match("Nr\\.(\\d*) * (?<name>[^(]*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
                         .section("shares") //
-                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?).*")
+                        .match("^St\\.[^:]+: *(?<shares>[\\.\\d]+(,\\d*)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
