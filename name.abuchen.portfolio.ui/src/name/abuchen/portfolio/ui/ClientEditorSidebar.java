@@ -325,7 +325,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         Entry performance = new Entry(section,
                         new ActivateViewAction(Messages.ClientEditorLabelPerformance, "dashboard.Dashboard")); //$NON-NLS-1$
         performance.setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction("Berechnung", "Performance")) //$NON-NLS-2$
+        new Entry(performance, new ActivateViewAction("Rechnung", "Performance")) //$NON-NLS-2$
                         .setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);

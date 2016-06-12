@@ -78,6 +78,12 @@ public class DataSeriesConfig implements WidgetConfig
 
         dataSeries = (DataSeries) result[0];
         delegate.getWidget().getConfiguration().put(Dashboard.Config.DATA_SERIES.name(), dataSeries.getUUID());
+
+        // construct label to indicate the data series (user can manually change
+        // the label later)
+        String label = WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " + dataSeries.getLabel(); //$NON-NLS-1$
+        delegate.getWidget().setLabel(label);
+
         delegate.getClient().markDirty();
     }
 

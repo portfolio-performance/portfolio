@@ -298,7 +298,7 @@ public class DashboardView extends AbstractFinanceView
         new ContextMenu(filler, manager -> {
             MenuManager subMenu = new MenuManager("Neues Widget");
             for (WidgetFactory type : WidgetFactory.values())
-                subMenu.add(new SimpleAction(type.toString(), a -> addNewWidget(columnControl, type)));
+                subMenu.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
             manager.add(subMenu);
             manager.add(new Separator());
             manager.add(new SimpleAction("Spalte löschen", a -> deleteColumn(columnControl)));
@@ -476,7 +476,7 @@ public class DashboardView extends AbstractFinanceView
         Dashboard.Column column = (Dashboard.Column) columnControl.getData();
 
         Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setLabel(widgetType.toString());
+        widget.setLabel(widgetType.getLabel());
         widget.setType(widgetType.name());
         column.getWidgets().add(widget);
 

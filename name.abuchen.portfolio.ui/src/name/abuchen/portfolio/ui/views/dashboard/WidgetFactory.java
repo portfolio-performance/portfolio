@@ -1,63 +1,134 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.function.BiFunction;
 
+import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.Messages;
 
 public enum WidgetFactory
 {
-    HEADING((widget, data) -> new HeadingWidget(widget, data)),
+    HEADING("Überschrift", (widget, data) -> new HeadingWidget(widget, data)),
 
-    TTWROR((widget, data) -> new IndicatorWidget<Double>(widget, data, true, Values.Percent2, (ds, period) -> {
-        PerformanceIndex index = data.calculate(ds, period);
-        return index.getFinalAccumulatedPercentage();
-    })),
+    TTWROR(Messages.LabelTTWROR,
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getFinalAccumulatedPercentage();
+                                    }).build()),
 
-    IRR((widget, data) -> new IndicatorWidget<Double>(widget, data, false, Values.Percent2, (ds, period) -> {
-        ClientPerformanceSnapshot snapshot = data.calculate(ds, period).getClientPerformanceSnapshot();
-        return snapshot.getPerformanceIRR();
-    })),
+    IRR(Messages.LabelIRR,
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        ClientPerformanceSnapshot snapshot = data.calculate(ds, period)
+                                                        .getClientPerformanceSnapshot();
+                                        return snapshot.getPerformanceIRR();
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
 
-    ABSOLUTE_CHANGE((widget, data) -> new IndicatorWidget<Long>(widget, data, false, Values.Amount, (ds, period) -> {
-        PerformanceIndex index = data.calculate(ds, period);
-        int length = index.getTotals().length;
-        return index.getTotals()[length - 1] - index.getTotals()[0];
-    })),
+    ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange,
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        int length = index.getTotals().length;
+                                        return index.getTotals()[length - 1] - index.getTotals()[0];
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
 
-    DELTA((widget, data) -> new IndicatorWidget<Long>(widget, data, false, Values.Amount, (ds, period) -> {
-        ClientPerformanceSnapshot snapshot = data.calculate(ds, period).getClientPerformanceSnapshot();
-        return snapshot.getAbsoluteDelta().getAmount();
-    })),
+    DELTA(Messages.LabelAbsoluteDelta, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        ClientPerformanceSnapshot snapshot = data.calculate(ds, period)
+                                                        .getClientPerformanceSnapshot();
+                                        return snapshot.getAbsoluteDelta().getAmount();
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
 
-    MAXDRAWDOWN((widget, data) -> new IndicatorWidget<Double>(widget, data, true, Values.Percent2, (ds, period) -> {
-        PerformanceIndex index = data.calculate(ds, period);
-        return index.getDrawdown().getMaxDrawdown();
-    })),
+    MAXDRAWDOWN(Messages.LabelMaxDrawdown, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getDrawdown().getMaxDrawdown();
+                                    }) //
+                                    .withTooltip((ds, period) -> {
+                                        DateTimeFormatter formatter = DateTimeFormatter
+                                                        .ofLocalizedDate(FormatStyle.LONG)
+                                                        .withZone(ZoneId.systemDefault());
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        Drawdown drawdown = index.getDrawdown();
+                                        return MessageFormat.format(Messages.TooltipMaxDrawdown,
+                                                        formatter.format(
+                                                                        drawdown.getIntervalOfMaxDrawdown().getStart()),
+                                                        formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd()));
+                                    }) //
+                                    .withColoredValues(false) //
+                                    .build()),
 
-    MAXDRAWDOWNDURATION((widget, data) -> new MaxDrawdownDurationWidget(widget, data)),
+    MAXDRAWDOWNDURATION(Messages.LabelMaxDrawdownDuration,
+                    (widget, data) -> new MaxDrawdownDurationWidget(widget, data)),
 
-    VOLATILITY((widget, data) -> new IndicatorWidget<Double>(widget, data, true, Values.Percent2, (ds, period) -> {
-        PerformanceIndex index = data.calculate(ds, period);
-        return index.getVolatility().getStandardDeviation();
-    })),
+    VOLATILITY(Messages.LabelVolatility,
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getVolatility().getStandardDeviation();
+                                    }) //
+                                    .withTooltip((ds, period) -> Messages.TooltipVolatility) //
+                                    .withColoredValues(false) //
+                                    .build()),
 
-    SEMIVOLATILITY((widget, data) -> new IndicatorWidget<Double>(widget, data, true, Values.Percent2, (ds, period) -> {
-        PerformanceIndex index = data.calculate(ds, period);
-        return index.getVolatility().getSemiDeviation();
-    })),
+    SEMIVOLATILITY(Messages.LabelSemiVolatility,
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getVolatility().getSemiDeviation();
+                                    }) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        Volatility vola = index.getVolatility();
+                                        return MessageFormat.format(Messages.TooltipSemiVolatility,
+                                                        Values.Percent5.format(vola.getExpectedSemiDeviation()),
+                                                        vola.getNormalizedSemiDeviationComparison(),
+                                                        Values.Percent5.format(vola.getStandardDeviation()),
+                                                        Values.Percent5.format(vola.getSemiDeviation()));
+                                    }) //
+                                    .withColoredValues(false) //
+                                    .build()),
 
-    CALCULATION((widget, data) -> new PerformanceCalculationWidget(widget, data)),
+    CALCULATION("Performance Berechnung", (widget, data) -> new PerformanceCalculationWidget(widget, data)),
 
-    CHART((widget, data) -> new PerformanceChartWidget(widget, data));
+    CHART("Performance Chart", (widget, data) -> new PerformanceChartWidget(widget, data));
 
+    private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;
 
-    private WidgetFactory(BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction)
+    private WidgetFactory(String label, BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction)
     {
+        this.label = label;
         this.createFunction = createFunction;
+    }
+
+    public String getLabel()
+    {
+        return label;
     }
 
     public WidgetDelegate create(Dashboard.Widget widget, DashboardData data)
