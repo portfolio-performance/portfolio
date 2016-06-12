@@ -21,10 +21,18 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     {
         private String marker;
         private List<Block> blocks = new ArrayList<Block>();
+        private Map<String, String> context = new HashMap<String, String>();
+        private BiConsumer<Map<String, String>, String[]> contextProvider;
 
         public DocumentType(String marker)
         {
+            this(marker, null);
+        }
+
+        public DocumentType(String marker, BiConsumer<Map<String, String>, String[]> contextProvider)
+        {
             this.marker = marker;
+            this.contextProvider = contextProvider;
         }
 
         public boolean matches(String text)
@@ -42,12 +50,47 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return blocks;
         }
 
+        /**
+         * Gets the current context for this parse run.
+         * 
+         * @return current context map
+         */
+        public Map<String, String> getCurrentContext()
+        {
+            return context;
+        }
+
         public void parse(String filename, List<Item> items, String text)
         {
             String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
 
+            // reset context and parse it from this file
+            context.clear();
+            parseContext(context, filename, lines);
+
             for (Block block : blocks)
                 block.parse(filename, items, lines);
+        }
+
+        /**
+         * Parses the current context and could be overridden in a subclass to
+         * fill the context.
+         * 
+         * @param context
+         *            context map
+         * @param filename
+         *            current filename
+         * @param lines
+         *            content lines of the file
+         */
+        protected void parseContext(Map<String, String> context, String filename, String[] lines)
+        {
+            // if a context provider is given call it, else parse the current
+            // context in a subclass
+            if(contextProvider!=null)
+            {
+              contextProvider.accept(context, lines);  
+            }
         }
     }
 

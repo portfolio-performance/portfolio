@@ -187,6 +187,35 @@ public class FlatexPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexKontoauszug.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-01-29")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1100_00L)));
+    }
+
+    @Test
     public void testErtragsgutschrift() throws IOException
     {
         FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
@@ -264,7 +293,7 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getShares(), is(Values.Share.factorize(99)));
     }
 
-     @Test
+    @Test
     public void testZinsgutschriftInland() throws IOException
     {
         FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
