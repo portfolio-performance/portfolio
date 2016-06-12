@@ -486,6 +486,7 @@ public class ClientFactory
                 // added decimal places to stock quotes
                 addDecimalPlacesToQuotes(client);
 
+            case 30:
                 // added dashboards to model
                 fixStoredChartConfigurationWithNewPerformanceSeriesKeys(client);
 
@@ -925,7 +926,6 @@ public class ClientFactory
     private static void fixStoredChartConfigurationWithNewPerformanceSeriesKeys(Client client)
     {
         replace(client, "PerformanceChartView-PICKER", //
-                        "Client-totals;", "Client-accumulated;", //
                         "Client-transferals;", "Client-delta_percentage;");
     }
 

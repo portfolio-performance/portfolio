@@ -82,7 +82,7 @@ public class PerformanceChartWidget extends WidgetDelegate
 
             ILineSeries series = chart.addDateSeries(index.getDates(), //
                             index.getAccumulatedPercentage(), //
-                            Messages.PerformanceChartLabelAccumulatedIRR);
+                            Messages.PerformanceChartLabelEntirePortfolio);
 
             series.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
             series.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));

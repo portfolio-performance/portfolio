@@ -53,7 +53,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 
         switch ((ClientDataSeries) series.getInstance())
         {
-            case ACCUMULATED:
+            case TOTALS:
                 ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
                                 series.getLabel());
                 configure(series, lineSeries);

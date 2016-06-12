@@ -115,8 +115,8 @@ public class DataSeriesSet
     private void buildPerformanceDataSeries(Client client, ColorWheel wheel)
     {
         // accumulated performance
-        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ACCUMULATED,
-                        Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
+                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.swt()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
                         Messages.LabelAggregationDaily,
@@ -146,7 +146,7 @@ public class DataSeriesSet
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelAccumulatedIRR, Colors.TOTALS.swt()));
+                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.swt()));
 
         // securities as benchmark
         int index = 0;
