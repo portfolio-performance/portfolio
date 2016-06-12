@@ -29,7 +29,8 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
     {
         super.update();
 
-        N value = provider.apply(getDataSeries(), getReportingPeriod());
+        N value = provider.apply(get(DataSeriesConfig.class).getDataSeries(),
+                        get(ReportingPeriodConfig.class).getReportingPeriod());
         indicator.setText(formatter.format(value));
         indicator.setForeground(Display.getDefault()
                         .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));

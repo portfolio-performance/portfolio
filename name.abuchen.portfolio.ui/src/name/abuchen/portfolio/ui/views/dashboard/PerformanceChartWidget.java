@@ -21,7 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
-public class PerformanceChartWidget extends ReportingPeriodWidget
+public class PerformanceChartWidget extends WidgetDelegate
 {
     private Label title;
     private TimelineChart chart;
@@ -29,6 +29,8 @@ public class PerformanceChartWidget extends ReportingPeriodWidget
     public PerformanceChartWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
+
+        addConfig(new ReportingPeriodConfig(this));
     }
 
     @Override
@@ -68,7 +70,8 @@ public class PerformanceChartWidget extends ReportingPeriodWidget
     {
         title.setText(getWidget().getLabel());
 
-        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class, getReportingPeriod());
+        PerformanceIndex index = getDashboardData().calculate(PerformanceIndex.class,
+                        get(ReportingPeriodConfig.class).getReportingPeriod());
 
         try
         {

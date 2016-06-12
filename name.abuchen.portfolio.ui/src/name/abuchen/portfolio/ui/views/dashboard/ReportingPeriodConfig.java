@@ -8,22 +8,23 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard;
-import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
-public abstract class ReportingPeriodWidget extends WidgetDelegate
+public class ReportingPeriodConfig implements WidgetConfig
 {
+    private final WidgetDelegate delegate;
+
     private ReportingPeriod reportingPeriod;
 
-    public ReportingPeriodWidget(Widget widget, DashboardData data)
+    public ReportingPeriodConfig(WidgetDelegate delegate)
     {
-        super(widget, data);
+        this.delegate = delegate;
 
-        String code = widget.getConfiguration().get(Dashboard.Config.REPORTING_PERIOD.name());
+        String code = delegate.getWidget().getConfiguration().get(Dashboard.Config.REPORTING_PERIOD.name());
 
         try
         {
@@ -36,13 +37,13 @@ public abstract class ReportingPeriodWidget extends WidgetDelegate
         }
     }
 
-    protected ReportingPeriod getReportingPeriod()
+    public ReportingPeriod getReportingPeriod()
     {
-        return reportingPeriod != null ? reportingPeriod : getDashboardData().getDefaultReportingPeriod();
+        return reportingPeriod != null ? reportingPeriod : delegate.getDashboardData().getDefaultReportingPeriod();
     }
 
     @Override
-    public void configMenuAboutToShow(IMenuManager manager)
+    public void menuAboutToShow(IMenuManager manager)
     {
         manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(getReportingPeriod().toString()));
 
@@ -53,15 +54,16 @@ public abstract class ReportingPeriodWidget extends WidgetDelegate
 
         subMenu.add(new SimpleAction("Use Dashboard default", a -> {
             reportingPeriod = null;
-            getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
-            getClient().markDirty();
+            delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
+            delegate.getClient().markDirty();
         }));
 
-        getDashboardData().getDefaultReportingPeriods().stream()
+        delegate.getDashboardData().getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
                             reportingPeriod = p;
-                            getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), p.getCode());
-                            getClient().markDirty();
+                            delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
+                                            p.getCode());
+                            delegate.getClient().markDirty();
                         })));
         subMenu.add(new Separator());
 
@@ -71,11 +73,13 @@ public abstract class ReportingPeriodWidget extends WidgetDelegate
             if (dialog.open() == ReportingPeriodDialog.OK)
             {
                 reportingPeriod = dialog.getReportingPeriod();
-                getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), reportingPeriod.getCode());
-                getClient().markDirty();
+                delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
+                                reportingPeriod.getCode());
+                delegate.getClient().markDirty();
             }
         }));
 
         manager.add(subMenu);
     }
+
 }

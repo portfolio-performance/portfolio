@@ -27,7 +27,9 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget
     {
         super.update();
 
-        PerformanceIndex index = getDashboardData().getDataSeriesCache().lookup(getDataSeries(), getReportingPeriod());
+        PerformanceIndex index = getDashboardData().getDataSeriesCache().lookup(
+                        get(DataSeriesConfig.class).getDataSeries(),
+                        get(ReportingPeriodConfig.class).getReportingPeriod());
 
         Drawdown drawdown = index.getDrawdown();
         Interval maxDDDuration = drawdown.getMaxDrawdownDuration();

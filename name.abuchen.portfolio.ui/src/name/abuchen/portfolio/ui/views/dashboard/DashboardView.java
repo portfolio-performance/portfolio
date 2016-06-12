@@ -35,7 +35,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DashboardView extends AbstractFinanceView
@@ -334,20 +333,7 @@ public class DashboardView extends AbstractFinanceView
     private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
     {
         manager.add(new Separator(INFO_MENU_GROUP_NAME));
-        manager.add(new LabelOnly(delegate.getWidget().getLabel()));
-
         manager.add(new Separator("edit")); //$NON-NLS-1$
-        manager.add(new SimpleAction("Edit label...", a -> {
-            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Label umbenennen", "Label",
-                            delegate.getWidget().getLabel(), null);
-
-            if (dialog.open() != InputDialog.OK)
-                return;
-
-            delegate.getWidget().setLabel(dialog.getValue());
-            delegate.update();
-        }));
-
         delegate.configMenuAboutToShow(manager);
 
         manager.add(new Separator());

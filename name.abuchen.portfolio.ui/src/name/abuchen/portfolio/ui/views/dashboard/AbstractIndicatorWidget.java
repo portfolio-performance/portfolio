@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -10,12 +9,9 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
-public abstract class AbstractIndicatorWidget extends ReportingPeriodWidget
+public abstract class AbstractIndicatorWidget extends WidgetDelegate
 {
-    protected DataSeriesConfig config;
-
     protected Label title;
     protected Label indicator;
 
@@ -23,7 +19,8 @@ public abstract class AbstractIndicatorWidget extends ReportingPeriodWidget
     {
         super(widget, dashboardData);
 
-        this.config = new DataSeriesConfig(this, supportsBenchmarks);
+        addConfig(new DataSeriesConfig(this, supportsBenchmarks));
+        addConfig(new ReportingPeriodConfig(this));
     }
 
     @Override
@@ -52,21 +49,8 @@ public abstract class AbstractIndicatorWidget extends ReportingPeriodWidget
     }
 
     @Override
-    public void configMenuAboutToShow(IMenuManager manager)
-    {
-        super.configMenuAboutToShow(manager);
-
-        config.menuAboutToShow(manager);
-    }
-
-    @Override
     void update()
     {
         this.title.setText(getWidget().getLabel());
-    }
-
-    protected DataSeries getDataSeries()
-    {
-        return config.getDataSeries();
     }
 }

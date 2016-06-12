@@ -16,7 +16,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesLabelProvider;
 
-public class DataSeriesConfig
+public class DataSeriesConfig implements WidgetConfig
 {
     private final WidgetDelegate delegate;
     private final boolean supportsBenchmarks;
@@ -41,11 +41,12 @@ public class DataSeriesConfig
         return dataSeries;
     }
 
+    @Override
     public void menuAboutToShow(IMenuManager manager)
     {
         manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(dataSeries.getLabel()));
 
-        MenuManager subMenu = new MenuManager("Datenpunkt");
+        MenuManager subMenu = new MenuManager("Datenreihe");
         subMenu.add(new LabelOnly(dataSeries.getLabel()));
         subMenu.add(new Separator());
         subMenu.add(new SimpleAction("Datenreihe auswählen", a -> doAddSeries(false)));
