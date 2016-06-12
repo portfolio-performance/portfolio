@@ -458,9 +458,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         LatestSecurityPrice price = new LatestSecurityPrice();
 
-        for (Spec spec : specs)
-            spec.column.setValue(cells.get(spec.index), price);
-
+        for (Spec spec : specs){
+            if(!"-".equalsIgnoreCase(cells.get(spec.index).text().trim())){
+                spec.column.setValue(cells.get(spec.index), price);
+            }
+        }
+        
         return price;
     }
 
