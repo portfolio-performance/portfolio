@@ -179,7 +179,7 @@ public class DashboardView extends AbstractFinanceView
     @Override
     protected String getTitle()
     {
-        return "Dashboard";
+        return Messages.LabelDashboard;
     }
 
     @Override
@@ -192,7 +192,7 @@ public class DashboardView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        AbstractDropDown.create(toolBar, "Configure Dashboards", Images.SAVE.image(), SWT.NONE, manager -> {
+        AbstractDropDown.create(toolBar, Messages.MenuConfigureDashboards, Images.SAVE.image(), SWT.NONE, manager -> {
             getClient().getDashboards().forEach(d -> {
                 Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
                 action.setChecked(d.equals(dashboard));
@@ -206,15 +206,16 @@ public class DashboardView extends AbstractFinanceView
             manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(dashboard)));
         });
 
-        AbstractDropDown.create(toolBar, "Configure", Images.CONFIG.image(), SWT.NONE, manager -> {
-            configMenuReportingPeriod(manager);
-            manager.add(new SimpleAction("Neue Spalte", a -> createNewColumn()));
-        });
+        AbstractDropDown.create(toolBar, Messages.MenuConfigureCurrentDashboard, Images.CONFIG.image(), SWT.NONE,
+                        manager -> {
+                            configMenuReportingPeriod(manager);
+                            manager.add(new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn()));
+                        });
     }
 
     private void configMenuReportingPeriod(IMenuManager manager)
     {
-        MenuManager subMenu = new MenuManager("Berichtszeitraum");
+        MenuManager subMenu = new MenuManager(Messages.LabelReportingPeriod);
         dashboardData.getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
                             dashboardData.setDefaultReportingPeriod(p);
@@ -223,7 +224,7 @@ public class DashboardView extends AbstractFinanceView
                         })));
 
         subMenu.add(new Separator());
-        subMenu.add(new SimpleAction("Neu...", a -> {
+        subMenu.add(new SimpleAction(Messages.MenuNewReportingPeriod, a -> {
             ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
                             dashboardData.getDefaultReportingPeriod());
             if (dialog.open() == ReportingPeriodDialog.OK)
@@ -296,12 +297,12 @@ public class DashboardView extends AbstractFinanceView
         columnControl.setData(FILLER_KEY, filler);
 
         new ContextMenu(filler, manager -> {
-            MenuManager subMenu = new MenuManager("Neues Widget");
+            MenuManager subMenu = new MenuManager(Messages.MenuNewWidget);
             for (WidgetFactory type : WidgetFactory.values())
                 subMenu.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
             manager.add(subMenu);
             manager.add(new Separator());
-            manager.add(new SimpleAction("Spalte löschen", a -> deleteColumn(columnControl)));
+            manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
         }).hook();
 
         return columnControl;
@@ -337,7 +338,7 @@ public class DashboardView extends AbstractFinanceView
         delegate.configMenuAboutToShow(manager);
 
         manager.add(new Separator());
-        manager.add(new SimpleAction("Löschen", a -> {
+        manager.add(new SimpleAction(Messages.MenuDeleteWidget, a -> {
             Composite composite = findCompositeFor(delegate);
             if (composite == null)
                 throw new IllegalArgumentException();
@@ -432,8 +433,8 @@ public class DashboardView extends AbstractFinanceView
     {
         Dashboard newDashboard = template != null ? template.copy() : createDefaultDashboard();
 
-        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Dashboard umbenennen", "Name",
-                        newDashboard.getName(), null);
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameDashboard,
+                        Messages.ColumnName, newDashboard.getName(), null);
 
         if (dialog.open() != InputDialog.OK)
             return;
@@ -447,8 +448,8 @@ public class DashboardView extends AbstractFinanceView
 
     private void renameDashboard(Dashboard board)
     {
-        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Dashboard umbenennen", "Name",
-                        board.getName(), null);
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameDashboard,
+                        Messages.ColumnName, board.getName(), null);
 
         if (dialog.open() != InputDialog.OK)
             return;
@@ -516,34 +517,36 @@ public class DashboardView extends AbstractFinanceView
     private Dashboard createDefaultDashboard()
     {
         Dashboard newDashboard = new Dashboard();
-        newDashboard.setName("Letztes Jahr");
+        newDashboard.setName(Messages.LabelDashboard);
+
+        newDashboard.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "L1Y0"); //$NON-NLS-1$
 
         Dashboard.Column column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
         Dashboard.Widget widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel("Kennzahlen");
+        widget.setLabel(Messages.LabelKeyIndicators);
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel("True-Time Weighted Rate of Return");
+        widget.setLabel(WidgetFactory.TTWROR.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.IRR.name());
-        widget.setLabel("Interner Zinsfuß");
+        widget.setLabel(WidgetFactory.IRR.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel("Absolute Change");
+        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.DELTA.name());
-        widget.setLabel("Delta");
+        widget.setLabel(WidgetFactory.DELTA.getLabel());
         column.getWidgets().add(widget);
 
         column = new Dashboard.Column();
@@ -551,27 +554,27 @@ public class DashboardView extends AbstractFinanceView
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel("Risikokennzahlen");
+        widget.setLabel(Messages.LabelRiskIndicators);
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.MAXDRAWDOWN.name());
-        widget.setLabel("Maximaler Drawdown");
+        widget.setLabel(WidgetFactory.MAXDRAWDOWN.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.MAXDRAWDOWNDURATION.name());
-        widget.setLabel("Maximaler Drawdown Duration");
+        widget.setLabel(WidgetFactory.MAXDRAWDOWNDURATION.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.VOLATILITY.name());
-        widget.setLabel("Volatilität");
+        widget.setLabel(WidgetFactory.VOLATILITY.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.SEMIVOLATILITY.name());
-        widget.setLabel("Semivolatilität");
+        widget.setLabel(WidgetFactory.SEMIVOLATILITY.getLabel());
         column.getWidgets().add(widget);
 
         column = new Dashboard.Column();
@@ -579,28 +582,22 @@ public class DashboardView extends AbstractFinanceView
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel("Berechnung");
+        widget.setLabel(Messages.PerformanceTabCalculation);
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CALCULATION.name());
-        widget.setLabel("Berechnung");
+        widget.setLabel(WidgetFactory.CALCULATION.getLabel());
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel("Charts");
+        widget.setLabel(Messages.ClientEditorLabelChart);
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CHART.name());
-        widget.setLabel("Performance Gesamtportfolio 1 Jahr");
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.CHART.name());
-        widget.setLabel("Performance Gesamtportfolio 5 Jahre");
-        widget.getConfiguration().put("REPORTING_PERIOD", "L5Y0");
+        widget.setLabel(WidgetFactory.CHART.getLabel());
         column.getWidgets().add(widget);
 
         return newDashboard;

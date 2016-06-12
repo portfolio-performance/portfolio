@@ -46,13 +46,13 @@ public class DataSeriesConfig implements WidgetConfig
     {
         manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(dataSeries.getLabel()));
 
-        MenuManager subMenu = new MenuManager("Datenreihe");
+        MenuManager subMenu = new MenuManager(Messages.LabelDataSeries);
         subMenu.add(new LabelOnly(dataSeries.getLabel()));
         subMenu.add(new Separator());
-        subMenu.add(new SimpleAction("Datenreihe auswählen", a -> doAddSeries(false)));
+        subMenu.add(new SimpleAction(Messages.MenuSelectDataSeries, a -> doAddSeries(false)));
 
         if (supportsBenchmarks)
-            subMenu.add(new SimpleAction("Benchmark auswählen", a -> doAddSeries(true)));
+            subMenu.add(new SimpleAction(Messages.MenuSelectBenchmarkDataSeries, a -> doAddSeries(true)));
 
         manager.add(subMenu);
     }

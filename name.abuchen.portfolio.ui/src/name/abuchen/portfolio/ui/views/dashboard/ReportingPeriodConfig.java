@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -47,12 +48,13 @@ public class ReportingPeriodConfig implements WidgetConfig
     {
         manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(getReportingPeriod().toString()));
 
-        MenuManager subMenu = new MenuManager("Berichtszeitraum");
+        MenuManager subMenu = new MenuManager(Messages.LabelReportingPeriod);
 
-        subMenu.add(new LabelOnly(reportingPeriod != null ? getReportingPeriod().toString() : "<dashboard default>"));
+        subMenu.add(new LabelOnly(reportingPeriod != null ? getReportingPeriod().toString()
+                        : Messages.LabelUsingDashboardDefaultReportingPeriod));
         subMenu.add(new Separator());
 
-        subMenu.add(new SimpleAction("Use Dashboard default", a -> {
+        subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> {
             reportingPeriod = null;
             delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
             delegate.getClient().markDirty();
@@ -67,7 +69,7 @@ public class ReportingPeriodConfig implements WidgetConfig
                         })));
         subMenu.add(new Separator());
 
-        subMenu.add(new SimpleAction("Neu...", a -> {
+        subMenu.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
             ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
                             getReportingPeriod());
             if (dialog.open() == ReportingPeriodDialog.OK)

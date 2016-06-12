@@ -16,7 +16,7 @@ import name.abuchen.portfolio.ui.Messages;
 
 public enum WidgetFactory
 {
-    HEADING("Überschrift", (widget, data) -> new HeadingWidget(widget, data)),
+    HEADING(Messages.LabelHeading, (widget, data) -> new HeadingWidget(widget, data)),
 
     TTWROR(Messages.LabelTTWROR,
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
@@ -113,9 +113,9 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
-    CALCULATION("Performance Berechnung", (widget, data) -> new PerformanceCalculationWidget(widget, data)),
+    CALCULATION(Messages.LabelPerformanceCalculation, (widget, data) -> new PerformanceCalculationWidget(widget, data)),
 
-    CHART("Performance Chart", (widget, data) -> new PerformanceChartWidget(widget, data));
+    CHART(Messages.LabelPerformanceChart, (widget, data) -> new PerformanceChartWidget(widget, data));
 
     private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;

@@ -4,6 +4,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -21,9 +22,9 @@ public class LabelConfig implements WidgetConfig
     {
         manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(delegate.getWidget().getLabel()));
 
-        manager.add(new SimpleAction("Edit label...", a -> {
-            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Label umbenennen", "Label",
-                            delegate.getWidget().getLabel(), null);
+        manager.add(new SimpleAction(Messages.MenuRenameLabel, a -> {
+            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameLabel,
+                            Messages.ColumnLable, delegate.getWidget().getLabel(), null);
 
             if (dialog.open() != InputDialog.OK)
                 return;
