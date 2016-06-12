@@ -75,6 +75,10 @@ public class ReportingPeriodConfig implements WidgetConfig
             if (dialog.open() == ReportingPeriodDialog.OK)
             {
                 reportingPeriod = dialog.getReportingPeriod();
+
+                if (!delegate.getDashboardData().getDefaultReportingPeriods().contains(reportingPeriod))
+                    delegate.getDashboardData().getDefaultReportingPeriods().add(reportingPeriod);
+
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
                                 reportingPeriod.getCode());
                 delegate.getClient().markDirty();

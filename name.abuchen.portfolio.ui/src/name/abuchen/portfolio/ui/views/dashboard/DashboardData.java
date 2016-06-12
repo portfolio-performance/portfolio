@@ -110,6 +110,9 @@ public class DashboardData
     public void setDefaultReportingPeriod(ReportingPeriod reportingPeriod)
     {
         this.defaultReportingPeriod = reportingPeriod;
+
+        defaultReportingPeriods.remove(reportingPeriod);
+        defaultReportingPeriods.add(0, reportingPeriod);
     }
 
     public ReportingPeriod getDefaultReportingPeriod()

@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DashboardView extends AbstractFinanceView
@@ -216,6 +217,10 @@ public class DashboardView extends AbstractFinanceView
     private void configMenuReportingPeriod(IMenuManager manager)
     {
         MenuManager subMenu = new MenuManager(Messages.LabelReportingPeriod);
+
+        subMenu.add(new LabelOnly(dashboardData.getDefaultReportingPeriod().toString()));
+        subMenu.add(new Separator());
+
         dashboardData.getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
                             dashboardData.setDefaultReportingPeriod(p);
