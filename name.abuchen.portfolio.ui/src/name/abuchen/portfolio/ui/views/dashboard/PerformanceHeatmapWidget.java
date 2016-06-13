@@ -8,26 +8,27 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.util.Interval;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 public class PerformanceHeatmapWidget extends ReportingPeriodWidget
 {
 
-    Composite table;
-    Label currLabel;
-    PerformanceIndex performance;
+    private Composite table;
+    private Label title;
+    private Label currLabel;
+    private PerformanceIndex performance;
+    private DashboardResources resources;
 
     public PerformanceHeatmapWidget(Widget widget, DashboardData data)
     {
@@ -37,10 +38,10 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
     @Override
     Composite createControl(Composite parent, DashboardResources resources)
     {
+        this.resources = resources;
         table = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(13).spacing(1, 1).applyTo(table);
         table.setBackground(parent.getBackground());
-
         fillTable();
         return table;
     }
@@ -53,13 +54,15 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
         performance = Math.max(min, performance);
         if (performance > 0d)
         {
-            return new Color(Display.getCurrent(), new Double(255 * (1 - performance / max)).intValue(), 255,
-                            new Double(255 * (1 - performance / max)).intValue());
+            return resources.getResourceManager().createColor(
+                            new RGB(new Double(255 * (1 - performance / max)).intValue(), 255, new Double(
+                                            255 * (1 - performance / max)).intValue()));
         }
         else
         {
-            return new Color(Display.getCurrent(), 255, new Double(255 * (1 - performance / min)).intValue(),
-                            new Double(255 * (1 - performance / min)).intValue());
+            return resources.getResourceManager().createColor(
+                            new RGB(255, new Double(255 * (1 - performance / min)).intValue(), new Double(
+                                            255 * (1 - performance / min)).intValue()));
         }
     }
 
@@ -68,9 +71,9 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
         Interval interval = getReportingPeriod().toInterval();
         ReportingPeriod currPeriod;
         // Top Left is empty
-        Label spacer = new Label(table, SWT.NONE);
-        spacer.setText("%");
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(spacer);
+        title = new Label(table, SWT.NONE);
+        title.setText("Heatmap");
+        GridDataFactory.fillDefaults().grab(false, true).applyTo(title);
         // then the legend of the months
         // no harm in hardcoding the year as each year has the same months
         for (LocalDate legendMonth = LocalDate.of(2016, 1, 1); legendMonth.getYear() == 2016; legendMonth = legendMonth
@@ -81,8 +84,6 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
             currLabel.setAlignment(SWT.CENTER);
             GridDataFactory.fillDefaults().grab(false, true).applyTo(currLabel);
         }
-        FontDescriptor desc = FontDescriptor.createFrom(currLabel.getFont()).increaseHeight(-2);
-        Font smallFont = desc.createFont(currLabel.getDisplay());
         // now loop the years
         for (LocalDate yearDate : interval.iterYears())
         {
@@ -95,7 +96,7 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
                 currLabel = new Label(table, SWT.NONE);
                 if (interval.contains(currMonth))
                 {
-                    currLabel.setFont(smallFont);
+                    currLabel.setFont(resources.getSmallFont());
                     currPeriod = new ReportingPeriod.FromXtoY(currMonth, currMonth.plusMonths(1));
                     performance = getDashboardData().calculate(PerformanceIndex.class, currPeriod);
                     currLabel.setText(Values.PercentShort.format(performance.getFinalAccumulatedPercentage()));
@@ -122,7 +123,7 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
     @Override
     void attachContextMenu(IMenuListener listener)
     {
-
+        new ContextMenu(title, listener).hook();
     }
 
 }
