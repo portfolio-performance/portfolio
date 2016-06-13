@@ -21,26 +21,8 @@ public class AccountSnapshot
         {
             if (!t.getDate().isAfter(date))
             {
-                switch (t.getType())
-                {
-                    case DEPOSIT:
-                    case DIVIDENDS:
-                    case INTEREST:
-                    case SELL:
-                    case TRANSFER_IN:
-                    case TAX_REFUND:
-                        funds += t.getAmount();
-                        break;
-                    case FEES:
-                    case TAXES:
-                    case REMOVAL:
-                    case BUY:
-                    case TRANSFER_OUT:
-                        funds -= t.getAmount();
-                        break;
-                    default:
-                        throw new RuntimeException("Unknown Account Transaction type: " + t.getType()); //$NON-NLS-1$
-                }
+                if(t.getType().isNegative()) funds -= t.getAmount();
+                else funds += t.getAmount();
             }
         }
 

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -411,7 +410,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             {
                 AccountTransaction t = (AccountTransaction) e;
                 long v = t.getAmount();
-                if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+                if (t.getType().isNegative())
                     v = -v;
                 return Values.Money.format(Money.of(t.getCurrencyCode(), v), getClient().getBaseCurrency());
             }
@@ -588,7 +587,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private Color colorFor(AccountTransaction t)
     {
-        if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+        if (t.getType().isNegative())
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
         else
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);

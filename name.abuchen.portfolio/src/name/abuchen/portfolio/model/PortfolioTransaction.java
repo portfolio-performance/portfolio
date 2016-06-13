@@ -12,10 +12,14 @@ public class PortfolioTransaction extends Transaction
 {
     public enum Type
     {
-        BUY, SELL, TRANSFER_IN, TRANSFER_OUT, DELIVERY_INBOUND, DELIVERY_OUTBOUND;
+        BUY(false), SELL(true), TRANSFER_IN(false), TRANSFER_OUT(true), DELIVERY_INBOUND(false), DELIVERY_OUTBOUND(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
+        private final boolean negativeValue;
+        private Type (final boolean negativeValue) { this.negativeValue = negativeValue; }
+        public boolean isNegative() { return this.negativeValue; }
+        
         @Override
         public String toString()
         {
