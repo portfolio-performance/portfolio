@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -21,6 +24,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addBuyTransaction();
+        addDepositAndWithdrawalTransaction();
         addDividendTransaction();
     }
 
@@ -183,16 +187,76 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
+    private void addDepositAndWithdrawalTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
+            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
+            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("year", m.group(1));
+                }
+                m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        // deposit, add value to account
+        // 01.01. 01.01. xyz 123,45+
+        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+.berweisung[ ]+[\\d.-]+,\\d+[+-]");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.DEPOSIT);
+            return t;
+        })
+
+        .section("valuta", "amount")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+.berweisung[ ]+(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
+                        .assign((t, v) -> {
+                                Map<String, String> context = type.getCurrentContext();
+                                String date = v.get("valuta");
+                                if (date != null)
+                                {
+                                    // create a long date from the year in the
+                                    // context
+                                    t.setDate(asDate(date + context.get("year")));
+                                }
+                                t.setNote(v.get("text"));
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                //check for withdrawals
+                                String sign=v.get("sign");
+                                if("-".equals(sign))
+                                {
+                                    //change type for withdrawals
+                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                }
+                        }).wrap(t -> new TransactionItem(t)));
+    }
+
+    @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
         DocumentType type1 = new DocumentType("Dividendengutschrift");
         DocumentType type2 = new DocumentType("Ertragsmitteilung");
+        DocumentType type3 = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type1);
         this.addDocumentTyp(type2);
+        this.addDocumentTyp(type3);
 
         Block block = new Block("Ihre Depotnummer.*");
         type1.addBlock(block);
         type2.addBlock(block);
+        type3.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
                         //
                         .subject(() -> {
@@ -202,12 +266,12 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*) * (?<name>[^(]*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)").assign((t, v) -> {
+                        .match("Nr\\.(\\d*) * (?<name>[^(]*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
                         .section("shares") //
-                        .match("^St. *: *(?<shares>[\\.\\d]+(,\\d*)?).*")
+                        .match("^St\\.[^:]+: *(?<shares>[\\.\\d]+(,\\d*)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
