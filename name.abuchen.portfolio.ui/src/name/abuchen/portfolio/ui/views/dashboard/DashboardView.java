@@ -586,12 +586,8 @@ public class DashboardView extends AbstractFinanceView
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel("Performance Heatmap");
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.HEATMAP.name());
+        widget.setLabel("Heatmap");
         column.getWidgets().add(widget);
 
         column = new Dashboard.Column();
