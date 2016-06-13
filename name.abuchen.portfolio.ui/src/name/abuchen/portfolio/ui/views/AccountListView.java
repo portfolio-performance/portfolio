@@ -588,7 +588,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private Color colorFor(AccountTransaction t)
     {
-        if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+        //if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+        if (t.isNegative(t.getType()))
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
         else
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
@@ -67,6 +68,12 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+    }
+    
+    public boolean isNegative(Type type)
+    {
+        if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(type)) return true;
+        else return false;
     }
 
     /**

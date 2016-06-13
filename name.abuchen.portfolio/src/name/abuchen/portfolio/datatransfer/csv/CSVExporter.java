@@ -55,7 +55,9 @@ public class CSVExporter
             {
                 printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
-                printer.print(Values.Amount.format(t.getAmount()));
+                //printer.print(Values.Amount.format(t.getAmount())); // old Version without +/-
+                if(t.isNegative(t.getType())) printer.print(Values.Amount.format((-1)*t.getAmount()));
+                else printer.print(Values.Amount.format(t.getAmount()));
                 printer.print(t.getCurrencyCode());
                 printer.print(t.getShares() != 0 ? Values.Share.format(t.getShares()) : ""); //$NON-NLS-1$
 
