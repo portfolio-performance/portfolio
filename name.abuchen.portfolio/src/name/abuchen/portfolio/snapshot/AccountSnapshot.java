@@ -21,7 +21,7 @@ public class AccountSnapshot
         {
             if (!t.getDate().isAfter(date))
             {
-                switch (t.getType())
+                /*switch (t.getType())
                 {
                     case DEPOSIT:
                     case DIVIDENDS:
@@ -40,7 +40,9 @@ public class AccountSnapshot
                         break;
                     default:
                         throw new RuntimeException("Unknown Account Transaction type: " + t.getType()); //$NON-NLS-1$
-                }
+                }*/
+                if(t.isNegative(t.getType())) funds -= t.getAmount();
+                else funds += t.getAmount();
             }
         }
 
