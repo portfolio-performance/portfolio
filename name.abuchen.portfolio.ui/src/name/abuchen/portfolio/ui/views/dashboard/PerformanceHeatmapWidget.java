@@ -40,6 +40,7 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
     {
         this.resources = resources;
         table = new Composite(parent, SWT.NONE);
+        // 13 columns, one for the legend and 12 for the months
         GridLayoutFactory.fillDefaults().numColumns(13).spacing(1, 1).applyTo(table);
         table.setBackground(parent.getBackground());
         fillTable();
@@ -68,10 +69,15 @@ public class PerformanceHeatmapWidget extends ReportingPeriodWidget
 
     private void fillTable()
     {
+        // fill the table lines according to the supplied period
+        // calculate the performance with a temorary reporting period
+        // calculate the color interpolated between red and green with white as
+        // the median
         Interval interval = getReportingPeriod().toInterval();
         ReportingPeriod currPeriod;
         // Top Left is empty
         title = new Label(table, SWT.NONE);
+        // Causes illegal Argument null: title.setText(getWidget().getLabel());
         title.setText("Heatmap");
         GridDataFactory.fillDefaults().grab(false, true).applyTo(title);
         // then the legend of the months
