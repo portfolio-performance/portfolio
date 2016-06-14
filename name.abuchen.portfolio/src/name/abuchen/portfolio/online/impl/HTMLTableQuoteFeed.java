@@ -40,6 +40,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 {
     private abstract static class Column
     {
+        static final long INVALID_PRICE = -1L;
+        
         static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
         {
             @Override
@@ -161,7 +163,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
-            price.setHigh(asQuote(value));
+            if ("-".equals(value.text().trim()))
+                price.setHigh(INVALID_PRICE);
+            else
+               price.setHigh(asQuote(value));
         }
     }
 
@@ -176,7 +181,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
-            price.setLow(asQuote(value));
+            if ("-".equals(value.text().trim()))
+                price.setLow(INVALID_PRICE);
+            else
+                price.setLow(asQuote(value));
         }
     }
 
@@ -459,9 +467,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         LatestSecurityPrice price = new LatestSecurityPrice();
 
         for (Spec spec : specs){
-            if(!"-".equalsIgnoreCase(cells.get(spec.index).text().trim())){
-                spec.column.setValue(cells.get(spec.index), price);
-            }
+            spec.column.setValue(cells.get(spec.index), price);
         }
         
         return price;
