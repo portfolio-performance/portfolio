@@ -115,7 +115,9 @@ public enum WidgetFactory
 
     CALCULATION(Messages.LabelPerformanceCalculation, (widget, data) -> new PerformanceCalculationWidget(widget, data)),
 
-    CHART(Messages.LabelPerformanceChart, (widget, data) -> new PerformanceChartWidget(widget, data));
+    CHART(Messages.LabelPerformanceChart, (widget, data) -> new PerformanceChartWidget(widget, data)),
+
+    HEATMAP("Heatmap", (widget, data) -> new PerformanceHeatmapWidget(widget, data));
 
     private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;

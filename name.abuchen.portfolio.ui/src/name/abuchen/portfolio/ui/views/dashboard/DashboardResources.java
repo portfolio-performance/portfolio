@@ -17,6 +17,7 @@ final class DashboardResources
     private Color headingColor;
     private Font kpiFont;
     private Font boldFont;
+    private Font smallFont;
 
     public DashboardResources(Composite container)
     {
@@ -26,9 +27,21 @@ final class DashboardResources
         boldFont = resourceManager.createFont(FontDescriptor
                         .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
+        smallFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).increaseHeight(-2));
+
         headingColor = resourceManager.createColor(Colors.HEADINGS.swt());
 
         container.addDisposeListener(e -> resourceManager.dispose());
+    }
+
+    public LocalResourceManager getResourceManager()
+    {
+        return resourceManager;
+    }
+
+    public Font getSmallFont()
+    {
+        return smallFont;
     }
 
     public Color getHeadingColor()
