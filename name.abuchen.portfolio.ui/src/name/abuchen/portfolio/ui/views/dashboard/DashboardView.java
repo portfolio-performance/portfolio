@@ -585,6 +585,11 @@ public class DashboardView extends AbstractFinanceView
         widget.setLabel("Semivolatilität");
         column.getWidgets().add(widget);
 
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEATMAP.name());
+        widget.setLabel("Heatmap");
+        column.getWidgets().add(widget);
+
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
@@ -606,6 +611,7 @@ public class DashboardView extends AbstractFinanceView
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CHART.name());
         widget.setLabel("Performance Gesamtportfolio 1 Jahr");
+        widget.getConfiguration().put("REPORTING_PERIOD", "L1Y0");
         column.getWidgets().add(widget);
 
         widget = new Dashboard.Widget();

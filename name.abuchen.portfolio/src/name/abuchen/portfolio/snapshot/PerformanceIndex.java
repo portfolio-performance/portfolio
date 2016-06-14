@@ -190,7 +190,7 @@ public class PerformanceIndex
     }
 
     /**
-     * The volatility calculation must excludes returns
+     * The volatility calculation must exclude returns
      * <ul>
      * <li>on first day (because on the first day the return is always zero as
      * there is no previous day to compare to)</li>
