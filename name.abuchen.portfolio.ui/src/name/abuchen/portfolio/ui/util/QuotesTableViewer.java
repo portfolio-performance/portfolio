@@ -113,9 +113,9 @@ public class QuotesTableViewer
                     case 0:
                         return Values.Date.format(p.getTime());
                     case 1:
-                        return Values.Quote.format(p.getHigh());
+                        return p.getHigh() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getHigh());
                     case 2:
-                        return Values.Quote.format(p.getLow());
+                        return p.getLow() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getLow());
                     case 3:
                         return Values.Quote.format(p.getValue());
                     case 4:
