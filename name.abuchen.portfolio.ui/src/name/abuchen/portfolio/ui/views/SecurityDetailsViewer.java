@@ -284,14 +284,17 @@ public class SecurityDetailsViewer
                 valueLatestPrices.setText(Values.Quote.format(p.getValue()));
                 valueLatestTrade.setText(Values.Date.format(p.getTime()));
                 long daysHigh = p.getHigh();
-                valueDaysHigh.setText(daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));
+                valueDaysHigh.setText(daysHigh == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
+                                : Values.Quote.format(daysHigh));
                 long daysLow = p.getLow();
-                valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysLow));
+                valueDaysLow.setText(daysLow == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
+                                : Values.Quote.format(daysLow));
                 long volume = p.getVolume();
-                valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
+                valueVolume.setText(volume == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
+                                : String.format("%,d", volume)); //$NON-NLS-1$
                 long prevClose = p.getPreviousClose();
-                valuePreviousClose
-                                .setText(prevClose == -1 ? Messages.LabelNotAvailable : Values.Quote.format(prevClose));
+                valuePreviousClose.setText(prevClose == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
+                                : Values.Quote.format(prevClose));
             }
         }
 
