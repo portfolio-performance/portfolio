@@ -39,7 +39,7 @@ import name.abuchen.portfolio.util.Strings;
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
     private abstract static class Column
-    {
+    {   
         static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
         {
             @Override
@@ -161,7 +161,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
-            price.setHigh(asQuote(value));
+            if ("-".equals(value.text().trim()))
+                price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+            else
+               price.setHigh(asQuote(value));
         }
     }
 
@@ -176,7 +179,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, LatestSecurityPrice price) throws ParseException
         {
-            price.setLow(asQuote(value));
+            if ("-".equals(value.text().trim()))
+                price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+            else
+                price.setLow(asQuote(value));
         }
     }
 
@@ -458,9 +464,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         LatestSecurityPrice price = new LatestSecurityPrice();
 
-        for (Spec spec : specs)
+        for (Spec spec : specs){
             spec.column.setValue(cells.get(spec.index), price);
-
+        }
+        
         return price;
     }
 
