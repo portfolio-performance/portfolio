@@ -12,9 +12,45 @@ public class PortfolioTransaction extends Transaction
 {
     public enum Type
     {
-        BUY, SELL, TRANSFER_IN, TRANSFER_OUT, DELIVERY_INBOUND, DELIVERY_OUTBOUND;
+        /** Records the purchase of a security. */
+        BUY(true),
+        /** Records the sale of a security. */
+        SELL(false),
+        /** Records the transfer of assets from another portfolio. */
+        TRANSFER_IN(true),
+        /** Records the transfer of assets to another portfolio. */
+        TRANSFER_OUT(false),
+        /** Records the transfer of assets into the portfolio. */
+        DELIVERY_INBOUND(true),
+        /** Records the transfer of assets out of a portfolio. */
+        DELIVERY_OUTBOUND(false);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+
+        private final boolean isPurchase;
+
+        private Type(boolean isPurchase)
+        {
+            this.isPurchase = isPurchase;
+        }
+
+        /**
+         * True if the transaction is one of the purchase types such as buy,
+         * transfer in, or an inbound delivery.
+         */
+        public boolean isPurchase()
+        {
+            return isPurchase;
+        }
+
+        /**
+         * True if the transaction is one of the liquidation types such as sell,
+         * transfer out, or an outbound delivery.
+         */
+        public boolean isLiquidation()
+        {
+            return !isPurchase;
+        }
 
         @Override
         public String toString()

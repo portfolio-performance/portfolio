@@ -12,9 +12,27 @@ public class AccountTransaction extends Transaction
 {
     public enum Type
     {
-        DEPOSIT, REMOVAL, INTEREST, DIVIDENDS, FEES, TAXES, TAX_REFUND, BUY, SELL, TRANSFER_IN, TRANSFER_OUT;
+        DEPOSIT(false), REMOVAL(true), INTEREST(false), DIVIDENDS(false), FEES(true), TAXES(true), TAX_REFUND(
+                        false), BUY(true), SELL(false), TRANSFER_IN(false), TRANSFER_OUT(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+
+        private final boolean isDebit;
+
+        private Type(boolean isDebit)
+        {
+            this.isDebit = isDebit;
+        }
+
+        public boolean isDebit()
+        {
+            return isDebit;
+        }
+
+        public boolean isCredit()
+        {
+            return !isDebit;
+        }
 
         @Override
         public String toString()
