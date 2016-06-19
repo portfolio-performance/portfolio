@@ -26,7 +26,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -64,11 +63,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
             PortfolioTransaction t = (PortfolioTransaction) element;
-
-            if (t.getType() == Type.SELL || t.getType() == Type.TRANSFER_OUT || t.getType() == Type.DELIVERY_OUTBOUND)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-            else
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            return Display.getCurrent()
+                            .getSystemColor(t.getType().isLiquidation() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
         }
 
         @Override

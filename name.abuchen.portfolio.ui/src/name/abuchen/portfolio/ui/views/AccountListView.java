@@ -410,7 +410,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             {
                 AccountTransaction t = (AccountTransaction) e;
                 long v = t.getAmount();
-                if (t.getType().isNegative())
+                if (t.getType().isDebit())
                     v = -v;
                 return Values.Money.format(Money.of(t.getCurrencyCode(), v), getClient().getBaseCurrency());
             }
@@ -587,7 +587,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private Color colorFor(AccountTransaction t)
     {
-        if (t.getType().isNegative())
+        if (t.getType().isDebit())
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
         else
             return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);

@@ -55,8 +55,7 @@ public class CSVExporter
             {
                 printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
-                if(t.getType().isNegative()) printer.print(Values.Amount.format((-1)*t.getAmount()));
-                else printer.print(Values.Amount.format(t.getAmount()));
+                printer.print(Values.Amount.format(t.getType().isDebit() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
                 printer.print(t.getShares() != 0 ? Values.Share.format(t.getShares()) : ""); //$NON-NLS-1$
 
@@ -101,8 +100,7 @@ public class CSVExporter
             {
                 printer.print(t.getDate().toString());
                 printer.print(t.getType().toString());
-                if(t.getType().isNegative()) printer.print(Values.Amount.format((-1)*t.getAmount()));
-                else printer.print(Values.Amount.format(t.getAmount()));
+                printer.print(Values.Amount.format(t.getType().isLiquidation() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
 
                 // gross amount

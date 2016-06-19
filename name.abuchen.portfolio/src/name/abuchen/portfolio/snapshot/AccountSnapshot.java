@@ -21,8 +21,10 @@ public class AccountSnapshot
         {
             if (!t.getDate().isAfter(date))
             {
-                if(t.getType().isNegative()) funds -= t.getAmount();
-                else funds += t.getAmount();
+                if (t.getType().isDebit())
+                    funds -= t.getAmount();
+                else
+                    funds += t.getAmount();
             }
         }
 
