@@ -665,7 +665,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
         item.setControl(chartComposite);
 
-        chart = new SecuritiesChart(chartComposite, getClient());
+        chart = new SecuritiesChart(chartComposite, getClient(),
+                        new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
 
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
         SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());

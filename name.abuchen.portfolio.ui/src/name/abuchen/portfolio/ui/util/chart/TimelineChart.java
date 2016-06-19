@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -17,10 +16,8 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
@@ -42,14 +39,16 @@ public class TimelineChart extends Chart
     private static class MarkerLine
     {
         private LocalDate date;
-        private RGB color;
+        private Color color;
         private String label;
+        private Double value;
 
-        private MarkerLine(LocalDate date, RGB color, String label)
+        private MarkerLine(LocalDate date, Color color, String label, Double value)
         {
             this.date = date;
             this.color = color;
             this.label = label;
+            this.value = value;
         }
 
         public long getTimeMillis()
@@ -58,7 +57,7 @@ public class TimelineChart extends Chart
         }
     }
 
-    private List<MarkerLine> markerLines = new ArrayList<MarkerLine>();
+    private List<MarkerLine> markerLines = new ArrayList<>();
 
     private TimelineChartToolTip toolTip;
     private final LocalResourceManager resources;
@@ -101,14 +100,7 @@ public class TimelineChart extends Chart
             }
         });
 
-        getPlotArea().addPaintListener(new PaintListener()
-        {
-            @Override
-            public void paintControl(PaintEvent e)
-            {
-                paintMarkerLines(e);
-            }
-        });
+        getPlotArea().addPaintListener(this::paintMarkerLines);
 
         toolTip = new TimelineChartToolTip(this);
 
@@ -119,17 +111,15 @@ public class TimelineChart extends Chart
         this.contextMenu = new ChartContextMenu(this);
     }
 
-    public void addMarkerLine(LocalDate date, RGB color, String label)
+    public void addMarkerLine(LocalDate date, Color color, String label)
     {
-        this.markerLines.add(new MarkerLine(date, color, label));
-        Collections.sort(this.markerLines, new Comparator<MarkerLine>()
-        {
-            @Override
-            public int compare(MarkerLine ml1, MarkerLine ml2)
-            {
-                return ml1.date.compareTo(ml2.date);
-            }
-        });
+        addMarkerLine(date, color, label, null);
+    }
+
+    public void addMarkerLine(LocalDate date, Color color, String label, Double value)
+    {
+        this.markerLines.add(new MarkerLine(date, color, label, value));
+        Collections.sort(this.markerLines, (ml1, ml2) -> ml1.date.compareTo(ml2.date));
     }
 
     public void clearMarkerLines()
@@ -196,8 +186,8 @@ public class TimelineChart extends Chart
         LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
 
         LocalDate cursor = start.getDayOfMonth() == 1 ? start : start.plusMonths(1).withDayOfMonth(1);
-        Period period = null;
-        DateTimeFormatter format = null;
+        Period period;
+        DateTimeFormatter format;
 
         long days = ChronoUnit.DAYS.between(start, end);
         if (days < 250)
@@ -236,12 +226,13 @@ public class TimelineChart extends Chart
         }
     }
 
-    private void paintMarkerLines(PaintEvent e)
+    private void paintMarkerLines(PaintEvent e) // NOSONAR
     {
         if (markerLines.isEmpty())
             return;
 
         IAxis xAxis = getAxisSet().getXAxis(0);
+        IAxis yAxis = getAxisSet().getYAxis(0);
 
         int labelExtentX = 0;
         int labelStackY = 0;
@@ -257,10 +248,16 @@ public class TimelineChart extends Chart
             labelExtentX = x + 5 + textExtent.x;
 
             e.gc.setLineStyle(SWT.LINE_SOLID);
-            e.gc.setForeground(resources.createColor(marker.color));
+            e.gc.setForeground(marker.color);
             e.gc.setLineWidth(2);
             e.gc.drawLine(x, 0, x, e.height);
             e.gc.drawText(marker.label, textX, e.height - 20 - labelStackY, true);
+
+            if (marker.value != null)
+            {
+                int y = yAxis.getPixelCoordinate(marker.value);
+                e.gc.drawLine(x - 5, y, x + 5, y);
+            }
         }
     }
 

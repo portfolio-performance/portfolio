@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Quote;
@@ -109,19 +110,10 @@ public class PortfolioTransaction extends Transaction
         long taxAndFees = getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
                         .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
 
-        switch (this.type)
-        {
-            case BUY:
-            case TRANSFER_IN:
-            case DELIVERY_INBOUND:
-                return getAmount() - taxAndFees;
-            case SELL:
-            case TRANSFER_OUT:
-            case DELIVERY_OUTBOUND:
-                return getAmount() + taxAndFees;
-            default:
-                throw new UnsupportedOperationException("Unsupport transaction type: "); //$NON-NLS-1$
-        }
+        if (this.type.isPurchase())
+            return getAmount() - taxAndFees;
+        else
+            return getAmount() + taxAndFees;
     }
 
     /**
@@ -138,7 +130,8 @@ public class PortfolioTransaction extends Transaction
 
     /**
      * Returns the gross price per share, i.e. the gross value divided by the
-     * number of shares bought or sold.
+     * number of shares bought or sold. The quote uses the currency of the
+     * transaction.
      */
     public Quote getGrossPricePerShare()
     {
@@ -148,5 +141,27 @@ public class PortfolioTransaction extends Transaction
         double grossPrice = getGrossValueAmount() * Values.Share.factor() * Values.Quote.factorToMoney()
                         / (double) getShares();
         return Quote.of(getCurrencyCode(), Math.round(grossPrice));
+    }
+
+    /**
+     * Returns the gross price per share in the given currency. Converted is not
+     * the price per share but the gross value before dividing by the number of
+     * shares in order minimize rounding errors.
+     */
+    public Quote getGrossPricePerShare(CurrencyConverter converter)
+    {
+        if (getShares() == 0)
+            return Quote.of(converter.getTermCurrency(), 0);
+
+        if (converter.getTermCurrency().equals(getCurrencyCode()))
+            return getGrossPricePerShare();
+
+        // Because the gross value is calculated with taxes (which might be in
+        // transaction currency and not in security currency) we must convert
+        // the gross value (instead of checking the unit type GROSS_VALUE)
+
+        long grossValue = getGrossValue().with(converter.at(getDate())).getAmount();
+        double grossPrice = grossValue * Values.Share.factor() * Values.Quote.factorToMoney() / (double) getShares();
+        return Quote.of(converter.getTermCurrency(), Math.round(grossPrice));
     }
 }

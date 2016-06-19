@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -47,6 +49,8 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -130,6 +134,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         }
     }
+
+    @Inject
+    private ExchangeRateProviderFactory factory;
 
     private SecuritiesTable securities;
     private TableViewer prices;
@@ -397,7 +404,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
         item.setControl(chartComposite);
 
-        chart = new SecuritiesChart(chartComposite, getClient());
+        chart = new SecuritiesChart(chartComposite, getClient(),
+                        new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
 
         // tab 2: historical quotes
         item = new CTabItem(folder, SWT.NONE);

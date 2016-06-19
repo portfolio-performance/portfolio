@@ -13,7 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -26,8 +26,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -37,15 +37,18 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
  */
 public class SecuritiesChart
 {
+    private Client client;
+    private CurrencyConverter converter;
 
     private TimelineChart chart;
     private LocalDate chartPeriod = LocalDate.now().minusYears(2);
     private Security security;
-    private Client client;
 
-    public SecuritiesChart(Composite parent, Client client)
+    public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
         this.client = client;
+        this.converter = converter;
+
         chart = new TimelineChart(parent);
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
@@ -206,32 +209,20 @@ public class SecuritiesChart
             {
                 if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
                 {
-                    String label = Values.Share.format(t.getShares());
-                    switch (t.getType())
-                    {
-                        case BUY:
-                        case TRANSFER_IN:
-                        case DELIVERY_INBOUND:
-                            chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), label);
-                            break;
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DELIVERY_OUTBOUND:
-                            chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + label); //$NON-NLS-1$
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
+                    String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
+                    Color color = Display.getDefault().getSystemColor(
+                                    t.getType().isPurchase() ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                    double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                                    .getAmount() / Values.Quote.divider();
+                    chart.addMarkerLine(t.getDate(), color, label, value);
                 }
             }
         }
 
-        for (SecurityEvent event : security.getEvents())
-        {
-            if (chartPeriod == null || chartPeriod.isBefore(event.getDate()))
-            {
-                chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
-            }
-        }
+        security.getEvents().stream() //
+                        .filter(e -> chartPeriod == null || chartPeriod.isBefore(e.getDate())) //
+                        .forEach(e -> chart.addMarkerLine(e.getDate(),
+                                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
+
     }
 }
