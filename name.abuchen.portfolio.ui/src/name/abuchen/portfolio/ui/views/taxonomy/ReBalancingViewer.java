@@ -168,7 +168,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                     .convert(LocalDate.now(), Money.of(deltaCurrency, delta)).getAmount();
                 }
 
-                long shares = Math.round(delta * Values.Share.factor() / weightedPrice);
+                long shares = Math.round(delta * Values.Share.factor() * Values.Quote.factorToMoney() / weightedPrice);
                 return Values.Share.format(shares);
             }
         });
