@@ -63,8 +63,8 @@ public class SecuritiesChart
         addButton(buttons, Messages.SecurityTabChart2M, Period.ofMonths(2));
         addButton(buttons, Messages.SecurityTabChart6M, Period.ofMonths(6));
         addButton(buttons, Messages.SecurityTabChart1Y, Period.ofYears(1));
-        addButton(buttons, Messages.SecurityTabChart2Y, Period.ofYears(3));
-        addButton(buttons, Messages.SecurityTabChart3Y, Period.ofYears(4));
+        addButton(buttons, Messages.SecurityTabChart2Y, Period.ofYears(2));
+        addButton(buttons, Messages.SecurityTabChart3Y, Period.ofYears(3));
         addButton(buttons, Messages.SecurityTabChart5Y, Period.ofYears(5));
         addButton(buttons, Messages.SecurityTabChart10Y, Period.ofYears(10));
 
