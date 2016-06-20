@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -9,6 +12,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -168,8 +172,12 @@ public class DashboardView extends AbstractFinanceView
 
     public static final String INFO_MENU_GROUP_NAME = "info"; //$NON-NLS-1$
 
+    private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
     private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
     private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
+
+    @Inject
+    private IPreferenceStore preferences;
 
     private DashboardResources resources;
     private Composite container;
@@ -250,17 +258,24 @@ public class DashboardView extends AbstractFinanceView
 
         dashboardData = make(DashboardData.class);
 
-        dashboard = getClient().getDashboards().findAny().orElseGet(() -> {
-            Dashboard newDashboard = createDefaultDashboard();
-            getClient().addDashboard(newDashboard);
-            markDirty();
-            return newDashboard;
-        });
+        int indexOfSelectedDashboard = Math.max(0, preferences.getInt(SELECTED_DASHBOARD_KEY));
+
+        dashboard = getClient().getDashboards() //
+                        .skip(indexOfSelectedDashboard) //
+                        .findFirst().orElseGet(() -> {
+                            Dashboard newDashboard = createDefaultDashboard();
+                            getClient().addDashboard(newDashboard);
+                            markDirty();
+                            return newDashboard;
+                        });
 
         container = new Composite(parent, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
         selectDashboard(dashboard);
+
+        container.addDisposeListener(e -> preferences.setValue(SELECTED_DASHBOARD_KEY,
+                        getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
 
         return container;
     }
