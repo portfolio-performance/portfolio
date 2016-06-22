@@ -20,7 +20,7 @@ public class Messages extends NLS
     public static String BaseCurrencySelectionPage_Description;
     public static String BaseCurrencySelectionPage_ExplanationIndividualCurrency;
     public static String BaseCurrencySelectionPage_Title;
-    public static String AttributeTypeTitle;   
+    public static String AttributeTypeTitle;
     public static String BookmarksListView_addSeparator;
     public static String BookmarksListView_insertAfter;
     public static String BookmarksListView_bookmark;
@@ -541,6 +541,7 @@ public class Messages extends NLS
     public static String PDFImportWizardTitle;
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
+    public static String PerformanceHeatmapToolTip;
     public static String PerformanceTabAssetsAtEnd;
     public static String PerformanceTabAssetsAtStart;
     public static String PerformanceTabCalculation;
