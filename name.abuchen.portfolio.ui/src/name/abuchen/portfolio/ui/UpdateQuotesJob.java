@@ -154,7 +154,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
         if (monitor.isCanceled())
             return Status.CANCEL_STATUS;
 
-        runJobs(monitor, jobs);
+        if (!jobs.isEmpty())
+            runJobs(monitor, jobs);
 
         if (!monitor.isCanceled() && dirtyable.isDirty())
             getClient().markDirty();
