@@ -119,5 +119,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
                         getExchangeRateCurrencies());
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
+
+        updateExchangeRate();
     }
 }
