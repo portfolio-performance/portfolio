@@ -101,12 +101,12 @@ public class Client
             settings.doPostLoadInitialization();
     }
 
-                    /* package */int getVersion()
+    /* package */int getVersion()
     {
         return version;
     }
 
-                    /* package */void setVersion(int version)
+    /* package */void setVersion(int version)
     {
         this.version = version;
     }
@@ -380,6 +380,11 @@ public class Client
     public String getProperty(String key)
     {
         return properties.get(key);
+    }
+
+    /* package */void clearProperties()
+    {
+        properties.clear();
     }
 
     /* package */

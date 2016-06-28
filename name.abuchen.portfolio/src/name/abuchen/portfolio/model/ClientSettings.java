@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
@@ -13,6 +15,7 @@ public class ClientSettings
 {
     private List<Bookmark> bookmarks;
     private List<AttributeType> attributeTypes;
+    private Map<String, ConfigurationSet> configurationSets;
 
     public ClientSettings()
     {
@@ -23,15 +26,18 @@ public class ClientSettings
     {
         if (bookmarks == null)
         {
-            this.bookmarks = new ArrayList<Bookmark>();
+            this.bookmarks = new ArrayList<>();
             addDefaultBookmarks();
         }
 
         if (attributeTypes == null)
         {
-            this.attributeTypes = new ArrayList<AttributeType>();
+            this.attributeTypes = new ArrayList<>();
             addDefaultAttributeTypes();
         }
+
+        if (configurationSets == null)
+            configurationSets = new HashMap<>();
     }
 
     private void addDefaultBookmarks()
@@ -142,5 +148,10 @@ public class ClientSettings
     public void addAttributeType(int index, AttributeType type)
     {
         attributeTypes.add(index, type);
+    }
+
+    public ConfigurationSet getConfigurationSet(String key)
+    {
+        return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
     }
 }

@@ -489,6 +489,7 @@ public class ClientFactory
             case 30:
                 // added dashboards to model
                 fixStoredChartConfigurationWithNewPerformanceSeriesKeys(client);
+                migrateToConfigurationSets(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -930,6 +931,48 @@ public class ClientFactory
     }
 
     @SuppressWarnings("nls")
+    private static void migrateToConfigurationSets(Client client)
+    {
+        // charts
+        migrateToConfigurationSet(client, "PerformanceChartView-PICKER");
+        migrateToConfigurationSet(client, "StatementOfAssetsHistoryView-PICKER");
+        migrateToConfigurationSet(client, "ReturnsVolatilityChartView-PICKER");
+
+        // columns config
+        migrateToConfigurationSet(client, "name.abuchen.portfolio.ui.views.SecuritiesPerformanceView");
+        migrateToConfigurationSet(client, "name.abuchen.portfolio.ui.views.SecuritiesTable");
+        migrateToConfigurationSet(client, "name.abuchen.portfolio.ui.views.StatementOfAssetsViewer");
+
+        // up until version 30, the properties were only used for view
+        // configurations (which are migrated now into configuration sets).
+        // Clear all remaining properties.
+        client.clearProperties();
+    }
+
+    private static void migrateToConfigurationSet(Client client, String key)
+    {
+        ConfigurationSet configSet = null;
+
+        int index = 0;
+
+        while (true)
+        {
+            String config = client.removeProperty(key + '$' + index);
+            if (config == null)
+                break;
+
+            if (configSet == null)
+                configSet = client.getSettings().getConfigurationSet(key);
+
+            String[] split = config.split(":="); //$NON-NLS-1$
+            if (split.length == 2)
+                configSet.add(new ConfigurationSet.Configuration(split[0], split[1]));
+
+            index++;
+        }
+    }
+
+    @SuppressWarnings("nls")
     private static XStream xstream()
     {
         if (xstream == null)
@@ -995,6 +1038,8 @@ public class ClientFactory
                     xstream.useAttributeFor(Dashboard.Widget.class, "type");
 
                     xstream.alias("event", SecurityEvent.class);
+                    xstream.alias("config-set", ConfigurationSet.class);
+                    xstream.alias("config", ConfigurationSet.Configuration.class);
                 }
             }
         }

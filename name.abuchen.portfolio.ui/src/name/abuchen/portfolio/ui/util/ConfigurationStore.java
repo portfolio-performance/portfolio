@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -15,6 +14,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConfigurationSet;
+import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.ui.Messages;
 
 /**
@@ -30,67 +31,25 @@ public class ConfigurationStore
         void onConfigurationPicked(String data);
     }
 
-    private static final class Configuration
-    {
-        private String name;
-        private String data;
-
-        public Configuration(String name, String data)
-        {
-            this.name = name;
-            this.data = data;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
-        public String getData()
-        {
-            return data;
-        }
-
-        public void setData(String data)
-        {
-            this.data = data;
-        }
-
-        String serialize()
-        {
-            return name + ":=" + data; //$NON-NLS-1$
-        }
-    }
-
     private static final class InputValidator implements IInputValidator
     {
         @Override
         public String isValid(String newText)
         {
-            if (newText == null || newText.trim().isEmpty())
-                return Messages.ConfigurationErrorMissingValue;
-
-            if (newText.indexOf(":=") >= 0) //$NON-NLS-1$
-                return Messages.ConfigurationErrorIllegalCharacters;
-
-            return null;
+            return newText == null || newText.trim().isEmpty() ? Messages.ConfigurationErrorMissingValue : null;
         }
     }
 
-    private static final String KEY_ACTIVE = "$active"; //$NON-NLS-1$
+    private static final String KEY_ACTIVE = "$picked"; //$NON-NLS-1$
 
     private final String identifier;
     private final Client client;
     private final IPreferenceStore preferences;
     private final ConfigurationStoreOwner listener;
 
+    private final ConfigurationSet configSet;
+
     private Configuration active;
-    private List<Configuration> configurations = new ArrayList<>();
 
     private Menu contextMenu;
 
@@ -102,7 +61,17 @@ public class ConfigurationStore
         this.preferences = preferences;
         this.listener = listener;
 
-        loadConfigurations();
+        this.configSet = client.getSettings().getConfigurationSet(identifier);
+
+        // make one active (and there always must be one active)
+        this.active = configSet.lookup(preferences.getString(identifier + KEY_ACTIVE))
+                        .orElseGet(() -> configSet.getConfigurations().findFirst().orElseGet(() -> {
+                            Configuration defaultConfig = new Configuration(Messages.ConfigurationStandard, null);
+                            configSet.add(defaultConfig);
+                            return defaultConfig;
+                        }));
+
+        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
     }
 
     /**
@@ -133,12 +102,11 @@ public class ConfigurationStore
 
     private void saveMenuAboutToShow(IMenuManager manager) // NOSONAR
     {
-        for (final Configuration config : configurations)
-        {
+        configSet.getConfigurations().forEach(config -> {
             Action action = new SimpleAction(config.getName(), a -> activate(config));
             action.setChecked(active == config);
             manager.add(action);
-        }
+        });
 
         manager.add(new Separator());
 
@@ -161,10 +129,11 @@ public class ConfigurationStore
         listener.beforeConfigurationPicked();
 
         active = new Configuration(name, template != null ? template.getData() : null);
-        configurations.add(active);
 
-        client.setProperty(identifier + '$' + (configurations.size() - 1), active.serialize());
-        preferences.setValue(identifier + KEY_ACTIVE, configurations.size() - 1);
+        configSet.add(active);
+        client.markDirty();
+
+        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
 
         listener.onConfigurationPicked(active.getData());
     }
@@ -178,20 +147,22 @@ public class ConfigurationStore
             return;
 
         config.setName(dlg.getValue());
-        client.setProperty(identifier + '$' + configurations.indexOf(config), config.serialize());
+        client.markDirty();
     }
 
     private void delete(Configuration config)
     {
-        configurations.remove(config);
-
-        // make sure at least one configuration exists
-        if (configurations.isEmpty())
-            configurations.add(new Configuration(Messages.ConfigurationStandard, null));
+        configSet.remove(config);
 
         listener.beforeConfigurationPicked();
-        active = configurations.get(0);
-        storeConfigurations();
+        active = configSet.getConfigurations().findAny().orElseGet(() -> {
+            Configuration defaultConfig = new Configuration(Messages.ConfigurationStandard, null);
+            configSet.add(defaultConfig);
+            return defaultConfig;
+        });
+
+        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
+
         listener.onConfigurationPicked(active.getData());
     }
 
@@ -199,14 +170,17 @@ public class ConfigurationStore
     {
         listener.beforeConfigurationPicked();
         active = config;
-        preferences.setValue(identifier + KEY_ACTIVE, configurations.indexOf(config));
+        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
         listener.onConfigurationPicked(config.getData());
     }
 
     public void updateActive(String data)
     {
-        active.setData(data);
-        client.setProperty(identifier + '$' + configurations.indexOf(active), active.serialize());
+        if (!Objects.equals(data, active.getData()))
+        {
+            active.setData(data);
+            client.markDirty();
+        }
     }
 
     public String getActive()
@@ -222,56 +196,8 @@ public class ConfigurationStore
     public void insertMigratedConfiguration(String data)
     {
         active = new Configuration(Messages.ConfigurationStandard, data);
-        configurations.add(0, active);
-
-        storeConfigurations();
+        configSet.add(active);
+        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
+        client.markDirty();
     }
-
-    private void loadConfigurations()
-    {
-        int index = 0;
-
-        String config = client.getProperty(identifier + '$' + index);
-        while (config != null)
-        {
-            String[] split = config.split(":="); //$NON-NLS-1$
-            if (split.length == 2)
-                configurations.add(new Configuration(split[0], split[1]));
-
-            index++;
-            config = client.getProperty(identifier + '$' + index);
-        }
-
-        // make sure at least on configuration exists at all times
-        if (configurations.isEmpty())
-            configurations.add(new Configuration(Messages.ConfigurationStandard, null));
-
-        // read active configuration
-        try
-        {
-            int activeIndex = preferences.getInt(identifier + KEY_ACTIVE);
-            if (activeIndex >= 0 && activeIndex < configurations.size())
-                active = configurations.get(activeIndex);
-        }
-        catch (NumberFormatException e)
-        {
-            // ignore -> use first
-        }
-
-        // make sure one configuration is active
-        if (active == null)
-            active = configurations.get(0);
-    }
-
-    private void storeConfigurations()
-    {
-        preferences.setValue(identifier + KEY_ACTIVE, configurations.indexOf(active));
-        for (int index = 0; index < configurations.size(); index++)
-        {
-            Configuration config = configurations.get(index);
-            client.setProperty(identifier + '$' + index, config.serialize());
-        }
-        client.removeProperty(identifier + '$' + configurations.size());
-    }
-
 }
