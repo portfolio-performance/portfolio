@@ -60,7 +60,7 @@ public class SecurityCache
             Security security = localMaps.get(ii).get(attribute);
             if (security == DUPLICATE_SECURITY_MARKER)
                 throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(ii), attribute));
-            if (security != null)
+            if (security != null && (isin != null && isin.equalsIgnoreCase(security.getIsin()) || isin == null))
                 return security;
         }
 
