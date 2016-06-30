@@ -214,6 +214,35 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2016-01-29")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1100_00L)));
     }
+    
+    @Test
+    public void testKontoauszug2() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexKontoauszug2.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-01-26")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 15000_00L)));
+    }
 
     @Test
     public void testErtragsgutschrift() throws IOException
@@ -329,6 +358,315 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2016-04-28")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(73.75)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1000)));
+    }
+    
+    @Test
+    public void testWertpapierVerkauf() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexVerkauf.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000US9RGR9"));
+        assertThat(security.getWkn(), is("US9RGR"));
+        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(16508.16)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-01-26")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
+    }
+    
+    @Test
+    public void testWertpapierÜbertrag() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexDepoteingang.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000US9RGR9"));
+        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_IN));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(7517.50)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-11-24")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
+    }
+    
+    @Test
+    public void testWertpapierAusgang() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexDepotausgang.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000CM31SV9"));
+        assertThat(security.getName(), is("COMMERZBANK INLINE09EO/SF"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2867.88)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2009-12-02")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 382_12L)));
+    }
+    
+    @Test
+    public void testWertpapierAusgang2() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexDepotausgang2.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000CK1Q3N7"));
+        assertThat(security.getName(), is("COMMERZBANK INLINE11EO/SF"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(0.20)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2011-07-18")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
+    }
+    
+    @Test
+    public void testWertpapierBestandsausbuchung() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexBestandsausbuchung.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertFirstSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
+        assertFirstTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
+
+        assertSecondSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem) //
+                        .collect(Collectors.toList()).get(1));
+        assertSecondTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(1));
+        assertThirdSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem) //
+                        .collect(Collectors.toList()).get(2));
+        assertThirdTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(2));
+                        
+    }
+    
+    private Security assertFirstSecurityBestandsausbuchung(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000CB81KN1"));
+        assertThat(security.getName(), is("COMMERZBANK PUT10 EOLS"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        return security;
+    }
+
+    private void assertFirstTransactionBestandsausbuchung(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-03-16")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(2000_000000L));
+    }
+
+    private Security assertSecondSecurityBestandsausbuchung(Item item)
+    {
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("DE000CM3C8A3"));
+        assertThat(security.getName(), is("COMMERZBANK CALL10 EO/DL"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        return security;
+    }
+
+    private void assertSecondTransactionBestandsausbuchung(Item item)
+    {
+        assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-03-16")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(1250_000000L));
+    }
+    
+    private Security assertThirdSecurityBestandsausbuchung(Item item)
+    {
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("DE000CM3C896"));
+        assertThat(security.getName(), is("COMMERZBANK CALL10 EO/DL"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        return security;
+    }
+
+    private void assertThirdTransactionBestandsausbuchung(Item item)
+    {
+        assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-03-16")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(750_000000L));
+    }
+    
+    @Test
+    public void testWertpapierBestandsausbuchungNeuesFormat() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexBestandsausbuchung2.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000SG0WRD3"));
+        assertThat(security.getWkn(), is("SG0WRD"));
+        assertThat(security.getName(), is("SG EFF. TURBOL ZS"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(111.22)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-28")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(83)));
     }
 
    private String from(String resource)
