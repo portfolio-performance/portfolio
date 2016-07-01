@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,7 @@ import org.json.simple.JSONValue;
 
         List<Result> answer = new ArrayList<>();
 
-        try (Scanner scanner = new Scanner(new URL(searchUrl).openStream()))
+        try (Scanner scanner = new Scanner(new URL(searchUrl).openStream(), StandardCharsets.UTF_8.name()))
         {
             String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 
