@@ -85,6 +85,9 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             String name = StringEscapeUtils.escapeJson(node.getName());
             long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
             long base = node.isRoot() ? total.getAmount() : node.getParent().getActual().getAmount();
+            // if 'unassigned category' is excluded adjust the base for the children of the root node 
+            if(getModel().isUnassignedCategoryInChartsExcluded() && node.getParent() != null && node.getParent().isRoot())
+                base = total.getAmount();
 
             String totalPercentage = "";
             if (node.getParent() != null && !node.getParent().isRoot())
