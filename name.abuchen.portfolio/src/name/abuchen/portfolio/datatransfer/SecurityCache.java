@@ -53,7 +53,8 @@ public class SecurityCache
     {
         List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
 
-        for (int ii = 0; ii < localMaps.size(); ii++)
+        // first: check the identifying attributes (ISIN, Ticker, WKN)
+        for (int ii = 0; ii < 3; ii++)
         {
             String attribute = attributes.get(ii);
 
@@ -64,7 +65,16 @@ public class SecurityCache
                 return security;
         }
 
-        Security security = creationFunction.get();
+        // second: check the name. But: even if the name matches, we also must
+        // check that the identifying attributes do not differ. Why? Investment
+        // instruments could have the same name but different ISINs.
+
+        Security security = lookupSecurityByName(isin, tickerSymbol, wkn, name);
+        if (security != null)
+            return security;
+
+
+        security = creationFunction.get();
         security.setIsin(isin);
         security.setWkn(wkn);
         security.setTickerSymbol(tickerSymbol);
@@ -78,6 +88,28 @@ public class SecurityCache
         }
 
         return security;
+    }
+
+    private Security lookupSecurityByName(String isin, String tickerSymbol, String wkn, String name)
+    {
+        Security security = localMaps.get(3).get(name);
+
+        // allow imports by duplicate name
+        if (security == null || security == DUPLICATE_SECURITY_MARKER)
+            return null;
+
+        if (doNotMatchIfGiven(isin, security.getIsin()))
+            return null;
+        if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol()))
+            return null;
+        if (doNotMatchIfGiven(wkn, security.getWkn()))
+            return null;
+        return security;
+    }
+
+    private boolean doNotMatchIfGiven(String attribute1, String attribute2)
+    {
+        return attribute1 != null && attribute2 != null && !attribute1.equalsIgnoreCase(attribute2);
     }
 
     /**
