@@ -70,6 +70,8 @@ public class ConfigurationSet
      */
     public Optional<Configuration> lookup(String uuid)
     {
+        if (uuid == null)
+            return Optional.empty();
         return configurations.stream().filter(c -> uuid.equals(c.getUUID())).findAny();
     }
 

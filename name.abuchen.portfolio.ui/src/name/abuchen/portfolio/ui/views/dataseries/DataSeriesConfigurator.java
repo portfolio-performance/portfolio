@@ -1,11 +1,8 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -15,17 +12,14 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 
 /**
  * The DataSeriesConfigurator manages the currently available set of data
@@ -53,7 +47,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     private final List<DataSeriesConfigurator.Listener> listeners = new ArrayList<>();
 
     private DataSeriesSet dataSeriesSet;
-    private final List<DataSeries> selectedSeries = new ArrayList<>();
+    private List<DataSeries> selectedSeries = new ArrayList<>();
 
     private Menu configContextMenu;
 
@@ -64,7 +58,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         this.store = new ConfigurationStore(identifier, client, view.getPreferenceStore(), this);
 
         this.dataSeriesSet = new DataSeriesSet(client, useCase);
-        load();
+        this.selectedSeries = new DataSeriesSerializer().fromString(dataSeriesSet, store.getActive());
 
         view.getControl().addDisposeListener(e -> DataSeriesConfigurator.this.widgetDisposed());
     }
@@ -77,7 +71,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     /* protected */ void fireUpdate()
     {
         listeners.forEach(l -> l.onUpdate());
-        store.updateActive(serialize());
+        store.updateActive(new DataSeriesSerializer().toString(selectedSeries));
     }
 
     public String getConfigurationName()
@@ -120,75 +114,6 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     public List<DataSeries> getSelectedDataSeries()
     {
         return selectedSeries;
-    }
-
-    private void addDefaultDataSeries()
-    {
-        EnumSet<ClientDataSeries> set = EnumSet.of(ClientDataSeries.TOTALS, ClientDataSeries.TRANSFERALS);
-
-        for (DataSeries series : dataSeriesSet.getAvailableSeries())
-        {
-            if ((series.getType() == DataSeries.Type.CLIENT && set.contains(series.getInstance()))
-                            || series.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
-            {
-                selectedSeries.add(series);
-            }
-        }
-    }
-
-    private void load()
-    {
-        String config = store.getActive();
-
-        if (config != null && config.trim().length() > 0)
-            load(config);
-
-        if (selectedSeries.isEmpty())
-        {
-            addDefaultDataSeries();
-            store.updateActive(serialize());
-        }
-    }
-
-    private void load(String config)
-    {
-        Map<String, DataSeries> uuid2series = dataSeriesSet.getAvailableSeries().stream()
-                        .collect(Collectors.toMap(s -> s.getUUID(), s -> s));
-
-        String[] items = config.split(","); //$NON-NLS-1$
-        for (String item : items)
-        {
-            String[] data = item.split(";"); //$NON-NLS-1$
-
-            String uuid = data[0];
-            DataSeries s = uuid2series.get(uuid);
-            if (s != null)
-            {
-                selectedSeries.add(s);
-
-                if (data.length == 4)
-                {
-                    s.setColor(Colors.toRGB(data[1]));
-                    s.setLineStyle(LineStyle.valueOf(data[2]));
-                    s.setShowArea(Boolean.parseBoolean(data[3]));
-                }
-            }
-        }
-    }
-
-    private String serialize()
-    {
-        StringBuilder buf = new StringBuilder();
-        for (DataSeries s : selectedSeries)
-        {
-            if (buf.length() > 0)
-                buf.append(',');
-            buf.append(s.getUUID()).append(';');
-            buf.append(Colors.toHex(s.getColor())).append(';');
-            buf.append(s.getLineStyle().name()).append(';');
-            buf.append(s.isShowArea());
-        }
-        return buf.toString();
     }
 
     private void widgetDisposed()
@@ -255,12 +180,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     {
         dataSeriesSet = new DataSeriesSet(client, dataSeriesSet.getUseCase());
 
-        selectedSeries.clear();
-
-        if (config == null)
-            addDefaultDataSeries();
-        else
-            load(config);
+        selectedSeries = new DataSeriesSerializer().fromString(dataSeriesSet, config);
 
         fireUpdate();
     }
