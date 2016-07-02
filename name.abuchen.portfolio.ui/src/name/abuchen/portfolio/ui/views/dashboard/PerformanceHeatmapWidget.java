@@ -4,15 +4,6 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
-import name.abuchen.portfolio.model.Dashboard.Widget;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
-import name.abuchen.portfolio.util.Interval;
-
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -22,6 +13,16 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+
+import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceHeatmapWidget extends WidgetDelegate
 {
@@ -47,7 +48,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
-        // title.setText(getWidget().getLabel());
+        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         table = new Composite(container, SWT.NONE);
@@ -61,22 +62,11 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
 
     private Color getScaledColorForPerformance(double performance)
     {
-        double max = 0.05;
-        double min = max * (-1d);
-        performance = Math.min(max, performance);
-        performance = Math.max(min, performance);
-        if (performance > 0d)
-        {
-            return resources.getResourceManager().createColor(
-                            new RGB(new Double(255 * (1 - performance / max)).intValue(), 255, new Double(
-                                            255 * (1 - performance / max)).intValue()));
-        }
-        else
-        {
-            return resources.getResourceManager().createColor(
-                            new RGB(255, new Double(255 * (1 - performance / min)).intValue(), new Double(
-                                            255 * (1 - performance / min)).intValue()));
-        }
+        double max = 0.07;
+        double p = Math.min(max, Math.abs(performance));
+        int colorValue = (int) (255 * (1 - p / max));
+        RGB color = performance > 0d ? new RGB(colorValue, 255, colorValue) : new RGB(255, colorValue, colorValue);
+        return resources.getResourceManager().createColor(color);
     }
 
     private void fillTable()
@@ -119,14 +109,12 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
                 {
                     currPeriod = new ReportingPeriod.FromXtoY(currMonth.minusDays(1),
                                     currMonth.withDayOfMonth(currMonth.lengthOfMonth()));
-                    if (currPeriod.getEndDate().isAfter(interval.getEnd()) || currMonth.isBefore(interval.getStart()))
-                    {
-                        currLabel.setToolTipText(Messages.PerformanceHeatmapToolTip);
-                    }
-                    currLabel.setFont(resources.getSmallFont());
                     PerformanceIndex performance = getDashboardData().calculate(dataSeries, currPeriod);
+
+                    currLabel.setFont(resources.getSmallFont());
                     currLabel.setText(Values.PercentShort.format(performance.getFinalAccumulatedPercentage()));
                     currLabel.setBackground(getScaledColorForPerformance(performance.getFinalAccumulatedPercentage()));
+                    InfoToolTip.attach(currLabel, Messages.PerformanceHeatmapToolTip);
                 }
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currLabel);
             }
@@ -137,7 +125,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
     @Override
     void update()
     {
-        // title.setText(getWidget().getLabel());
+        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
         for (Control child : table.getChildren())
             child.dispose();
         fillTable();
