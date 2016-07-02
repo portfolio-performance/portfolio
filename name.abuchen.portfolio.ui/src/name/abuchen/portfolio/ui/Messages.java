@@ -312,9 +312,11 @@ public class Messages extends NLS
     public static String LabelAccumulatedDividends;
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedTaxes;
+    public static String LabelAggregation;
     public static String LabelAggregationDaily;
     public static String LabelAllFiles;
     public static String LabelAllSecurities;
+    public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
@@ -385,6 +387,7 @@ public class Messages extends NLS
     public static String LabelDividendsByMonthAndVehicle;
     public static String LabelDividendsPerMonth;
     public static String LabelHeading;
+    public static String LabelHeatmap;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;

@@ -13,6 +13,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public enum WidgetFactory
 {
@@ -115,9 +116,13 @@ public enum WidgetFactory
 
     CALCULATION(Messages.LabelPerformanceCalculation, (widget, data) -> new PerformanceCalculationWidget(widget, data)),
 
-    CHART(Messages.LabelPerformanceChart, (widget, data) -> new PerformanceChartWidget(widget, data)),
+    CHART(Messages.LabelPerformanceChart,
+                    (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),
 
-    HEATMAP("Heatmap", (widget, data) -> new PerformanceHeatmapWidget(widget, data));
+    ASSET_CHART(Messages.LabelAssetChart,
+                    (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
+
+    HEATMAP(Messages.LabelHeatmap, (widget, data) -> new PerformanceHeatmapWidget(widget, data));
 
     private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;

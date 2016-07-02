@@ -597,11 +597,6 @@ public class DashboardView extends AbstractFinanceView
         widget.setLabel(WidgetFactory.SEMIVOLATILITY.getLabel());
         column.getWidgets().add(widget);
 
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEATMAP.name());
-        widget.setLabel("Heatmap");
-        column.getWidgets().add(widget);
-
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
@@ -613,16 +608,6 @@ public class DashboardView extends AbstractFinanceView
         widget = new Dashboard.Widget();
         widget.setType(WidgetFactory.CALCULATION.name());
         widget.setLabel(WidgetFactory.CALCULATION.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.ClientEditorLabelChart);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.CHART.name());
-        widget.setLabel(WidgetFactory.CHART.getLabel());
         column.getWidgets().add(widget);
 
         return newDashboard;
