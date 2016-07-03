@@ -16,14 +16,14 @@ import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 
 public final class ReportingPeriodDropDown extends AbstractDropDown
 {
+    @FunctionalInterface
     public interface ReportingPeriodListener
     {
         void reportingPeriodUpdated();
     }
 
     private ReportingPeriodListener listener;
-    // TODO: move reporting periods to kepler e4 application model?
-    private LinkedList<ReportingPeriod> periods = new LinkedList<ReportingPeriod>();
+    private LinkedList<ReportingPeriod> periods = new LinkedList<>();
 
     public ReportingPeriodDropDown(ToolBar toolBar, final PortfolioPart part, ReportingPeriodListener listener)
     {

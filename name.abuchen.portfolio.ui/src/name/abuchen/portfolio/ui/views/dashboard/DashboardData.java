@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +16,6 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
@@ -67,7 +64,7 @@ public class DashboardData
 
     private final Map<CacheKey, Object> cache = new HashMap<>();
 
-    private final List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
+    private List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
     private ReportingPeriod defaultReportingPeriod;
 
     private DataSeriesSet dataSeriesSet;
@@ -76,11 +73,10 @@ public class DashboardData
     private Dashboard dashboard;
 
     @Inject
-    public DashboardData(Client client, ExchangeRateProviderFactory factory, PortfolioPart part)
+    public DashboardData(Client client, ExchangeRateProviderFactory factory)
     {
         this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        this.defaultReportingPeriods.addAll(part.loadReportingPeriods());
 
         this.dataSeriesSet = new DataSeriesSet(client, DataSeries.UseCase.RETURN_VOLATILITY);
         this.dataSeriesCache = new DataSeriesCache(client, factory);
@@ -99,7 +95,11 @@ public class DashboardData
     public void setDashboard(Dashboard dashboard)
     {
         this.dashboard = dashboard;
-        this.defaultReportingPeriod = null;
+    }
+
+    public void setDefaultReportingPeriods(List<ReportingPeriod> defaultReportingPeriods)
+    {
+        this.defaultReportingPeriods = defaultReportingPeriods;
     }
 
     public List<ReportingPeriod> getDefaultReportingPeriods()
@@ -110,31 +110,10 @@ public class DashboardData
     public void setDefaultReportingPeriod(ReportingPeriod reportingPeriod)
     {
         this.defaultReportingPeriod = reportingPeriod;
-
-        defaultReportingPeriods.remove(reportingPeriod);
-        defaultReportingPeriods.add(0, reportingPeriod);
     }
 
     public ReportingPeriod getDefaultReportingPeriod()
     {
-        if (defaultReportingPeriod != null)
-            return defaultReportingPeriod;
-
-        String code = dashboard.getConfiguration().get(Dashboard.Config.REPORTING_PERIOD.name());
-
-        try
-        {
-            if (code != null && !code.isEmpty())
-                defaultReportingPeriod = ReportingPeriod.from(code);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-        }
-
-        if (defaultReportingPeriod == null)
-            defaultReportingPeriod = new ReportingPeriod.LastX(1, 0);
-
         return defaultReportingPeriod;
     }
 

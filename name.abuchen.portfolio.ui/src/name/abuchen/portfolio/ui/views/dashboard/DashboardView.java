@@ -33,16 +33,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Dashboard;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.AbstractHistoricView;
 
-public class DashboardView extends AbstractFinanceView
+public class DashboardView extends AbstractHistoricView
 {
     private static final class WidgetDragSourceAdapter extends DragSourceAdapter
     {
@@ -199,8 +197,17 @@ public class DashboardView extends AbstractFinanceView
     }
 
     @Override
+    public void reportingPeriodUpdated()
+    {
+        dashboardData.setDefaultReportingPeriod(getReportingPeriod());
+        updateWidgets();
+    }
+
+    @Override
     protected void addButtons(ToolBar toolBar)
     {
+        super.addButtons(toolBar);
+
         AbstractDropDown.create(toolBar, Messages.MenuConfigureDashboards, Images.SAVE.image(), SWT.NONE, manager -> {
             getClient().getDashboards().forEach(d -> {
                 Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
@@ -216,39 +223,8 @@ public class DashboardView extends AbstractFinanceView
         });
 
         AbstractDropDown.create(toolBar, Messages.MenuConfigureCurrentDashboard, Images.CONFIG.image(), SWT.NONE,
-                        manager -> {
-                            configMenuReportingPeriod(manager);
-                            manager.add(new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn()));
-                        });
-    }
-
-    private void configMenuReportingPeriod(IMenuManager manager)
-    {
-        MenuManager subMenu = new MenuManager(Messages.LabelReportingPeriod);
-
-        subMenu.add(new LabelOnly(dashboardData.getDefaultReportingPeriod().toString()));
-        subMenu.add(new Separator());
-
-        dashboardData.getDefaultReportingPeriods().stream()
-                        .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
-                            dashboardData.setDefaultReportingPeriod(p);
-                            markDirty();
-                            updateWidgets();
-                        })));
-
-        subMenu.add(new Separator());
-        subMenu.add(new SimpleAction(Messages.MenuNewReportingPeriod, a -> {
-            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
-                            dashboardData.getDefaultReportingPeriod());
-            if (dialog.open() == ReportingPeriodDialog.OK)
-            {
-                dashboardData.setDefaultReportingPeriod(dialog.getReportingPeriod());
-                markDirty();
-                updateWidgets();
-            }
-        }));
-
-        manager.add(subMenu);
+                        manager -> manager.add(
+                                        new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn())));
     }
 
     @Override
@@ -257,6 +233,8 @@ public class DashboardView extends AbstractFinanceView
         resources = new DashboardResources(parent);
 
         dashboardData = make(DashboardData.class);
+        dashboardData.setDefaultReportingPeriods(getReportingPeriods());
+        dashboardData.setDefaultReportingPeriod(getReportingPeriod());
 
         int indexOfSelectedDashboard = Math.max(0, preferences.getInt(SELECTED_DASHBOARD_KEY));
 
