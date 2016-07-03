@@ -199,6 +199,10 @@ public class PerformanceChartView extends AbstractHistoricView
             chart.suspendUpdate(false);
         }
         chart.redraw();
+        
+        // react on label change of transferals, e.g. 'daily' to 'weekly' 
+        picker.pack();
+        picker.layout(true, true);
     }
 
     private void setChartSeries()
@@ -251,10 +255,13 @@ public class PerformanceChartView extends AbstractHistoricView
                 item.configure(series);
                 break;
             case TRANSFERALS:
+                String aggreagtionPeriodLabel = aggregationPeriod != null ? aggregationPeriod.toString()
+                                : Messages.LabelAggregationDaily;
                 IBarSeries barSeries = chart.addDateBarSeries(aggregatedIndex.getDates(), //
                                 aggregatedIndex.getDeltaPercentage(), //
-                                aggregationPeriod != null ? aggregationPeriod.toString()
-                                                : Messages.LabelAggregationDaily);
+                                aggreagtionPeriodLabel);
+                // update label, e.g. 'daily' to 'weekly'
+                item.setLabel(aggreagtionPeriodLabel);
                 item.configure(barSeries);
                 break;
             default:
