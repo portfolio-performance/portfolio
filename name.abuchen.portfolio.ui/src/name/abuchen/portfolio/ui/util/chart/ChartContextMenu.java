@@ -18,6 +18,8 @@ import name.abuchen.portfolio.ui.Messages;
 
     private Chart chart;
     private Menu contextMenu;
+    
+    private int rememberFileExtension = 0;
 
     public ChartContextMenu(Chart chart)
     {
@@ -184,6 +186,7 @@ import name.abuchen.portfolio.ui.Messages;
                 FileDialog dialog = new FileDialog(chart.getShell(), SWT.SAVE);
                 dialog.setFileName(label);
                 dialog.setFilterExtensions(EXTENSIONS);
+                dialog.setFilterIndex(rememberFileExtension);
 
                 String filename = dialog.open();
                 if (filename == null)
@@ -196,6 +199,10 @@ import name.abuchen.portfolio.ui.Messages;
                     format = SWT.IMAGE_PNG;
                 else
                     format = SWT.IMAGE_UNDEFINED;
+                
+                rememberFileExtension = dialog.getFilterIndex();
+                if(rememberFileExtension == -1)
+                    rememberFileExtension = 0;
 
                 if (format != SWT.IMAGE_UNDEFINED)
                     try
