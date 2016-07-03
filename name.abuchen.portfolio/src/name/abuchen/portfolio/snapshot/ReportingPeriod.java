@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TradeCalendar;
 
 public abstract class ReportingPeriod
 {
@@ -32,6 +33,8 @@ public abstract class ReportingPeriod
             return new LastX(code);
         else if (type == LastXDays.CODE)
             return new LastXDays(code);
+        else if (type == LastXTradingDays.CODE)
+            return new LastXTradingDays(code);
         else if (type == FromXtoY.CODE)
             return new FromXtoY(code);
         else if (type == SinceX.CODE)
@@ -192,6 +195,56 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return MessageFormat.format(Messages.LabelReportingPeriodLastXDays, days);
+        }
+    }
+
+    public static class LastXTradingDays extends ReportingPeriod
+    {
+        private static final char CODE = 'T';
+
+        private final int tradingDays;
+
+        /* package */ LastXTradingDays(String code)
+        {
+            this(Integer.parseInt(code.substring(1)));
+        }
+
+        public LastXTradingDays(int tradingDays)
+        {
+            super(tradingDaysSinceNow(tradingDays), LocalDate.now());
+
+            this.tradingDays = tradingDays;
+        }
+
+        private static final LocalDate tradingDaysSinceNow(int tradingDays)
+        {
+            TradeCalendar calendar = new TradeCalendar();
+
+            LocalDate date = LocalDate.now();
+            int daysToGo = tradingDays;
+
+            while (daysToGo > 0)
+            {
+                date = date.minusDays(1);
+
+                if (!calendar.isHoliday(date))
+                    daysToGo--;
+            }
+
+            return date.minusDays(1);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE).append(tradingDays);
+        }
+
+        @Override
+        public String toString()
+        {
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays,
+                            tradingDays);
         }
     }
 

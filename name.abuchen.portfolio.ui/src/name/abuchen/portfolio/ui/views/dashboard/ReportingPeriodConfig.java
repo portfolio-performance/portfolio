@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 public class ReportingPeriodConfig implements WidgetConfig
 {
     private final WidgetDelegate delegate;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
 
     private ReportingPeriod reportingPeriod;
 
@@ -94,8 +97,11 @@ public class ReportingPeriodConfig implements WidgetConfig
         StringBuilder label = new StringBuilder();
         label.append(Messages.LabelReportingPeriod).append(": "); //$NON-NLS-1$
         label.append(getReportingPeriod().toString());
+        label.append(" (").append(formatter.format(getReportingPeriod().getStartDate())) //$NON-NLS-1$
+                        .append(" - ") //$NON-NLS-1$
+                        .append(formatter.format(getReportingPeriod().getEndDate())).append(")"); //$NON-NLS-1$
         if (reportingPeriod == null)
-            label.append(" (").append(Messages.LabelUsingDashboardDefaultReportingPeriod).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            label.append(" | ").append(Messages.LabelUsingDashboardDefaultReportingPeriod); //$NON-NLS-1$
         return label.toString();
     }
 }

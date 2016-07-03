@@ -558,6 +558,23 @@ public class DashboardView extends AbstractHistoricView
         widget.setLabel(WidgetFactory.DELTA.getLabel());
         column.getWidgets().add(widget);
 
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.HEADING.name());
+        widget.setLabel(Messages.LabelTTWROROneDay);
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.TTWROR.name());
+        widget.setLabel(WidgetFactory.TTWROR.getLabel());
+        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
+        column.getWidgets().add(widget);
+
+        widget = new Dashboard.Widget();
+        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
+        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
+        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
+        column.getWidgets().add(widget);
+
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 

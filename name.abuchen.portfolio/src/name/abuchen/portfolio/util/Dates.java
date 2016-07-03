@@ -16,4 +16,28 @@ public class Dates
 
         return (int) ChronoUnit.DAYS.between(start, end);
     }
+
+    public static int tradingDaysBetween(LocalDate start, LocalDate end)
+    {
+        if (start.isAfter(end))
+        {
+            LocalDate temp = start;
+            start = end;
+            end = temp;
+        }
+
+        TradeCalendar calender = new TradeCalendar();
+
+        int days = 0;
+
+        while (start.isBefore(end))
+        {
+            if (!calender.isHoliday(end))
+                days++;
+
+            end = end.minusDays(1);
+        }
+
+        return days;
+    }
 }
