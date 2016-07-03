@@ -198,7 +198,20 @@ import name.abuchen.portfolio.ui.Messages;
                     format = SWT.IMAGE_UNDEFINED;
 
                 if (format != SWT.IMAGE_UNDEFINED)
-                    chart.save(filename, format);
+                    try
+                    {
+                        chart.suspendUpdate(true);
+                        chart.getTitle().setVisible(true);
+                        chart.getLegend().setVisible(true);
+                        chart.getLegend().setPosition(SWT.BOTTOM);
+                        chart.suspendUpdate(false);
+                        chart.save(filename, format);
+                    }finally {
+                        chart.suspendUpdate(true);
+                        chart.getTitle().setVisible(false);
+                        chart.getLegend().setVisible(false);
+                        chart.suspendUpdate(false);
+                    }
             }
         });
     }
