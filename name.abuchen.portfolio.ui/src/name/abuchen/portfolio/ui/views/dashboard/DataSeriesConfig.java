@@ -87,4 +87,10 @@ public class DataSeriesConfig implements WidgetConfig
         delegate.getClient().markDirty();
     }
 
+
+    @Override
+    public String getLabel()
+    {
+        return Messages.LabelDataSeries + ": " + dataSeries.getLabel(); //$NON-NLS-1$
+    }
 }

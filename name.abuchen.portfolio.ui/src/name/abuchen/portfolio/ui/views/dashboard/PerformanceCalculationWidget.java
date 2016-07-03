@@ -1,17 +1,16 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.ui.util.ContextMenu;
 
 public class PerformanceCalculationWidget extends WidgetDelegate
 {
@@ -56,9 +55,9 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     }
 
     @Override
-    public void attachContextMenu(IMenuListener listener)
+    Control getTitleControl()
     {
-        new ContextMenu(title, listener).hook();
+        return title;
     }
 
     @Override

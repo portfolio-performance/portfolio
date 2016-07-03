@@ -34,4 +34,9 @@ public class LabelConfig implements WidgetConfig
         }));
     }
 
+    @Override
+    public String getLabel()
+    {
+        return Messages.ColumnLable + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
+    }
 }

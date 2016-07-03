@@ -5,4 +5,6 @@ import org.eclipse.jface.action.IMenuManager;
 public interface WidgetConfig
 {
     void menuAboutToShow(IMenuManager manager);
+
+    String getLabel();
 }

@@ -1,14 +1,13 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
-import name.abuchen.portfolio.ui.util.ContextMenu;
 
 public abstract class AbstractIndicatorWidget extends WidgetDelegate
 {
@@ -43,9 +42,9 @@ public abstract class AbstractIndicatorWidget extends WidgetDelegate
     }
 
     @Override
-    public void attachContextMenu(IMenuListener listener)
+    Control getTitleControl()
     {
-        new ContextMenu(title.getParent(), listener).hook();
+        return title;
     }
 
     @Override

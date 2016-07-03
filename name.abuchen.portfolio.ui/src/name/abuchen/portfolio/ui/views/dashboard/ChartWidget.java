@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -14,6 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.ISeries;
 
@@ -24,7 +24,6 @@ import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -77,6 +76,13 @@ public class ChartWidget extends WidgetDelegate
         public String getData()
         {
             return config != null ? config.getData() : null;
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return Messages.ClientEditorLabelChart + ": " //$NON-NLS-1$
+                            + (config != null ? config.getName() : Messages.LabelNoName);
         }
     }
 
@@ -134,6 +140,13 @@ public class ChartWidget extends WidgetDelegate
         {
             return aggregation;
         }
+
+        @Override
+        public String getLabel()
+        {
+            return Messages.LabelAggregation + ": " + //$NON-NLS-1$
+                            (aggregation != null ? aggregation.toString() : Messages.LabelAggregationDaily);
+        }
     }
 
     private DataSeries.UseCase useCase;
@@ -149,11 +162,10 @@ public class ChartWidget extends WidgetDelegate
         this.useCase = useCase;
         this.dataSeriesSet = new DataSeriesSet(dashboardData.getClient(), useCase);
 
-        addConfig(new ReportingPeriodConfig(this));
         addConfig(new ChartConfig(this, useCase));
-
         if (useCase == DataSeries.UseCase.PERFORMANCE)
             addConfig(new AggregationConfig(this));
+        addConfig(new ReportingPeriodConfig(this));
     }
 
     @Override
@@ -186,9 +198,9 @@ public class ChartWidget extends WidgetDelegate
     }
 
     @Override
-    public void attachContextMenu(IMenuListener listener)
+    Control getTitleControl()
     {
-        new ContextMenu(title, listener).hook();
+        return title;
     }
 
     @Override

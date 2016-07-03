@@ -2,10 +2,10 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
@@ -49,14 +49,18 @@ public abstract class WidgetDelegate
         return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny().get());
     }
 
-    public void configMenuAboutToShow(IMenuManager manager)
+    public Stream<WidgetConfig> getWidgetConfigs()
     {
-        config.stream().forEach(c -> c.menuAboutToShow(manager));
+        return config.stream();
     }
 
     abstract Composite createControl(Composite parent, DashboardResources resources);
 
     abstract void update();
 
-    abstract void attachContextMenu(IMenuListener listener);
+    /**
+     * Returns the title control to which context menu and default tooltip are
+     * attached.
+     */
+    abstract Control getTitleControl();
 }

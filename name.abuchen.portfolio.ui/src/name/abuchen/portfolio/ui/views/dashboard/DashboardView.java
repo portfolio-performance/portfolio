@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AbstractHistoricView;
 
@@ -317,7 +319,8 @@ public class DashboardView extends AbstractHistoricView
         Composite filler = (Composite) columnControl.getData(FILLER_KEY);
         element.moveAbove(filler);
 
-        delegate.attachContextMenu(manager -> widgetMenuAboutToShow(manager, delegate));
+        new ContextMenu(delegate.getTitleControl(), manager -> widgetMenuAboutToShow(manager, delegate)).hook();
+        InfoToolTip.attach(delegate.getTitleControl(), () -> buildToolTip(delegate));
 
         addDragListener(element);
         addDropListener(element);
@@ -329,11 +332,19 @@ public class DashboardView extends AbstractHistoricView
         return delegate;
     }
 
+    private String buildToolTip(WidgetDelegate delegate)
+    {
+        StringJoiner text = new StringJoiner("\n"); //$NON-NLS-1$
+        delegate.getWidgetConfigs().forEach(c -> text.add(c.getLabel()));
+        return text.toString();
+    }
+
     private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
     {
         manager.add(new Separator(INFO_MENU_GROUP_NAME));
         manager.add(new Separator("edit")); //$NON-NLS-1$
-        delegate.configMenuAboutToShow(manager);
+
+        delegate.getWidgetConfigs().forEach(c -> c.menuAboutToShow(manager));
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.MenuDeleteWidget, a -> {

@@ -88,4 +88,14 @@ public class ReportingPeriodConfig implements WidgetConfig
         manager.add(subMenu);
     }
 
+    @Override
+    public String getLabel()
+    {
+        StringBuilder label = new StringBuilder();
+        label.append(Messages.LabelReportingPeriod).append(": "); //$NON-NLS-1$
+        label.append(getReportingPeriod().toString());
+        if (reportingPeriod == null)
+            label.append(" (").append(Messages.LabelUsingDashboardDefaultReportingPeriod).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+        return label.toString();
+    }
 }
