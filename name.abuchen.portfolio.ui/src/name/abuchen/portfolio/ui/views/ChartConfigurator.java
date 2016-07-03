@@ -92,6 +92,11 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
         {
             return instance;
         }
+        
+        public void setLabel(String label)
+        {
+            this.label = label;
+        }
 
         public String getLabel()
         {
