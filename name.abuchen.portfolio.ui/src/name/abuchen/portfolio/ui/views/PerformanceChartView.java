@@ -187,6 +187,9 @@ public class PerformanceChartView extends AbstractHistoricView
             chart.suspendUpdate(false);
         }
         chart.redraw();
+
+        // re-layout in case chart legend changed
+        chart.getParent().layout(true);
     }
 
     private void setChartSeries()

@@ -6,6 +6,7 @@ import org.swtchart.ILineSeries;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 
@@ -59,8 +60,12 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
                 configure(series, lineSeries);
                 break;
             case DELTA_PERCENTAGE:
+                String aggreagtionPeriodLabel = aggregationPeriod != null ? aggregationPeriod.toString()
+                                : Messages.LabelAggregationDaily;
                 IBarSeries barSeries = getChart().addDateBarSeries(index.getDates(), index.getDeltaPercentage(),
-                                aggregationPeriod != null ? aggregationPeriod.toString() : series.getLabel());
+                                aggreagtionPeriodLabel);
+                // update label, e.g. 'daily' to 'weekly'
+                series.setLabel(aggreagtionPeriodLabel);
                 configure(series, barSeries);
                 break;
             default:

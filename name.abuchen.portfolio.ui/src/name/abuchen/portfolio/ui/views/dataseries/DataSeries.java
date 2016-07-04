@@ -98,6 +98,11 @@ public final class DataSeries
         return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
     }
 
+    public void setLabel(String label)
+    {
+        this.label = label;
+    }
+
     public String getSearchLabel()
     {
         StringBuilder buf = new StringBuilder();
