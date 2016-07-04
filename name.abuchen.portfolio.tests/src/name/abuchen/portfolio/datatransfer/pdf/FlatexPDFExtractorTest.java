@@ -430,17 +430,16 @@ public class FlatexPDFExtractorTest
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(7517.50)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-11-24")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
+        assertThat(entry.getAmount(), is(Values.Amount.factorize(7517.50)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2015-11-24")));
+        assertThat(entry.getShares(), is(Values.Share.factorize(250)));
     }
     
     @Test
@@ -668,6 +667,46 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(83)));
     }
+    
+    
+    @Test
+    public void testZinsBelastung() throws IOException
+    {
+        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexZinsBelastung.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2010-09-30")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.00)));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
+        
+        Item item2 = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(1);
+        assertThat(item2.getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item2.getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2010-12-31")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(-0.20)));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
+    }
+    
 
    private String from(String resource)
     {

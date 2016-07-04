@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
-import java.lang.annotation.Documented;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +12,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
@@ -32,6 +32,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
         addTransferOutTransaction();
         addRemoveTransaction();
         addRemoveNewFormatTransaction();
+        addOverdraftinterestTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -368,9 +369,9 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
 
         Block block = new Block(" *biw AG *");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.TRANSFER_IN);
+        block.set(new Transaction<PortfolioTransaction>().subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             return entry;
         })
                         .section("date").match("Datum(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})") //
@@ -401,28 +402,28 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                         .match("^Kurs(\\s*):(\\s+)(?<rate>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(.*)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount((asAmount(v.get("rate")) * t.getPortfolioTransaction().getShares())/100/100/100); //TODO/Workaround: Die Abrechnung ist hier komisch, der Kurs wird in der Beispiel Datei in EUR angegeben, müsste aber eigentlich in Prozent sein...
+                            t.setAmount((asAmount(v.get("rate")) * t.getShares())/100/100/100); //TODO/Workaround: Die Abrechnung ist hier komisch, der Kurs wird in der Beispiel Datei in EUR angegeben, müsste aber eigentlich in Prozent sein...
                         })
 
                         .section("fee", "currency").optional()
                         //
                         .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         //
                         .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         //
                         .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(t -> new TransactionItem(t)));
     }
 
     @SuppressWarnings("nls")
@@ -643,6 +644,61 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addOverdraftinterestTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
+            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
+            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("year", m.group(1));
+                }
+                m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Zinsabschluss[ ]+(.*)");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.INTEREST);
+            return t;
+        })
+
+        .section("valuta", "amount", "sign")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
+                        .assign((t, v) -> {
+                                Map<String, String> context = type.getCurrentContext();
+                                String date = v.get("valuta");
+                                if (date != null)
+                                {
+                                    // create a long date from the year in the
+                                    // context
+                                    t.setDate(asDate(date + context.get("year")));
+                                }
+                                t.setNote(v.get("text"));
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                //check for withdrawals
+                                String sign=v.get("sign");
+                                if("-".equals(sign))
+                                {
+                                    //negative amount for overdraft interest:
+                                    t.setAmount(asAmount(v.get("amount")) * -1);
+                                }
+                        }).wrap(t -> new TransactionItem(t)));
     }
     
     @Override
