@@ -202,7 +202,7 @@ public class FlatexPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -213,6 +213,15 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDate(), is(LocalDate.parse("2016-01-29")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1100_00L)));
+        
+        Item item2 = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(1);
+        assertThat(item2.getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item2.getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-03-31")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.00)));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
     }
     
     @Test
@@ -231,7 +240,7 @@ public class FlatexPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -242,6 +251,15 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDate(), is(LocalDate.parse("2016-01-26")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 15000_00L)));
+        
+        Item item2 = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(1);
+        assertThat(item2.getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item2.getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-03-31")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.00)));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
     }
 
     @Test
