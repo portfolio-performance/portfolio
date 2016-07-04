@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
@@ -698,7 +697,12 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
                                     //negative amount for overdraft interest:
                                     t.setAmount(asAmount(v.get("amount")) * -1);
                                 }
-                        }).wrap(t -> new TransactionItem(t)));
+                        }).wrap(t -> {
+                            if (t.getAmount() != 0) {
+                                return new TransactionItem(t);
+                            }
+                            return null;
+                        }));
     }
     
     @Override
