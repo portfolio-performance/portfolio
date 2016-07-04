@@ -40,6 +40,8 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         void onUpdate();
     }
 
+    public static final String IDENTIFIER_POSTFIX = "-PICKER"; //$NON-NLS-1$
+
     private final String identifier;
     private final Client client;
     private final ConfigurationStore store;
@@ -53,7 +55,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     public DataSeriesConfigurator(AbstractFinanceView view, DataSeries.UseCase useCase)
     {
-        this.identifier = view.getClass().getSimpleName() + "-PICKER"; //$NON-NLS-1$
+        this.identifier = view.getClass().getSimpleName() + IDENTIFIER_POSTFIX;
         this.client = view.getClient();
         this.store = new ConfigurationStore(identifier, client, view.getPreferenceStore(), this);
 

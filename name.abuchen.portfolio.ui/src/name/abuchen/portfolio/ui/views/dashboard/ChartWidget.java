@@ -27,7 +27,10 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.views.PerformanceChartView;
+import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSerializer;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
@@ -45,8 +48,8 @@ public class ChartWidget extends WidgetDelegate
         {
             this.delegate = delegate;
 
-            String configName = useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS
-                            ? "StatementOfAssetsHistoryView-PICKER" : "PerformanceChartView-PICKER"; //$NON-NLS-1$ //$NON-NLS-2$
+            String configName = (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS ? StatementOfAssetsHistoryView.class
+                            : PerformanceChartView.class).getSimpleName() + DataSeriesConfigurator.IDENTIFIER_POSTFIX;
             configSet = delegate.getClient().getSettings().getConfigurationSet(configName);
             String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.CONFIG_UUID.name());
             config = configSet.lookup(uuid).orElseGet(() -> configSet.getConfigurations().findFirst().get());
