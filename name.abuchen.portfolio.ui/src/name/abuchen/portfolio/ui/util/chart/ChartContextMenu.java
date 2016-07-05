@@ -216,6 +216,9 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                             lastUsedFileExtension = 0;
 
                         if (format != SWT.IMAGE_UNDEFINED)
+                        {
+                            boolean isChartTitleVisible = chart.getTitle().isVisible(); 
+                            boolean isChartLegendVisible = chart.getLegend().isVisible();
                             try
                             {
                                 chart.suspendUpdate(true);
@@ -226,10 +229,11 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                                 chart.save(filename, format);
                             }finally {
                                 chart.suspendUpdate(true);
-                                chart.getTitle().setVisible(false);
-                                chart.getLegend().setVisible(false);
+                                chart.getTitle().setVisible(isChartTitleVisible);
+                                chart.getLegend().setVisible(isChartLegendVisible);
                                 chart.suspendUpdate(false);
                             }
+                        }
                     }
 
                 };
