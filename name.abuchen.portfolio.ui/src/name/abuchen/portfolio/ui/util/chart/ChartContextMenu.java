@@ -25,7 +25,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     private Chart chart;
     private Menu contextMenu;
     
-    private int rememberFileExtension = 0;
+    private static int lastUsedFileExtension = 0;
 
     public ChartContextMenu(Chart chart)
     {
@@ -197,7 +197,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                         FileDialog dialog = new FileDialog(chart.getShell(), SWT.SAVE);
                         dialog.setFileName(label);
                         dialog.setFilterExtensions(EXTENSIONS);
-                        dialog.setFilterIndex(rememberFileExtension);
+                        dialog.setFilterIndex(lastUsedFileExtension);
 
                         String filename = dialog.open();
                         if (filename == null)
@@ -211,9 +211,9 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                         else
                             format = SWT.IMAGE_UNDEFINED;
                         
-                        rememberFileExtension = dialog.getFilterIndex();
-                        if(rememberFileExtension == -1)
-                            rememberFileExtension = 0;
+                        lastUsedFileExtension = dialog.getFilterIndex();
+                        if(lastUsedFileExtension == -1)
+                            lastUsedFileExtension = 0;
 
                         if (format != SWT.IMAGE_UNDEFINED)
                             try
