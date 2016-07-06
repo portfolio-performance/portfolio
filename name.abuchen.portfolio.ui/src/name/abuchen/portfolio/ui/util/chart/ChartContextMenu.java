@@ -1,9 +1,14 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
@@ -11,6 +16,7 @@ import org.swtchart.Chart;
 import org.swtchart.IAxis;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 /* package */class ChartContextMenu
 {
@@ -18,6 +24,8 @@ import name.abuchen.portfolio.ui.Messages;
 
     private Chart chart;
     private Menu contextMenu;
+    
+    private static int lastUsedFileExtension = 0;
 
     public ChartContextMenu(Chart chart)
     {
@@ -181,24 +189,64 @@ import name.abuchen.portfolio.ui.Messages;
             @Override
             public void run()
             {
-                FileDialog dialog = new FileDialog(chart.getShell(), SWT.SAVE);
-                dialog.setFileName(label);
-                dialog.setFilterExtensions(EXTENSIONS);
+                IRunnableWithProgress saveOperation = new IRunnableWithProgress()
+                {
+                    @Override
+                    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+                    {
+                        FileDialog dialog = new FileDialog(chart.getShell(), SWT.SAVE);
+                        dialog.setFileName(label);
+                        dialog.setFilterExtensions(EXTENSIONS);
+                        dialog.setFilterIndex(lastUsedFileExtension);
 
-                String filename = dialog.open();
-                if (filename == null)
-                    return;
+                        String filename = dialog.open();
+                        if (filename == null)
+                            return;
 
-                int format;
-                if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) //$NON-NLS-1$ //$NON-NLS-2$
-                    format = SWT.IMAGE_JPEG;
-                else if (filename.endsWith(".png")) //$NON-NLS-1$
-                    format = SWT.IMAGE_PNG;
-                else
-                    format = SWT.IMAGE_UNDEFINED;
+                        int format;
+                        if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) //$NON-NLS-1$ //$NON-NLS-2$
+                            format = SWT.IMAGE_JPEG;
+                        else if (filename.endsWith(".png")) //$NON-NLS-1$
+                            format = SWT.IMAGE_PNG;
+                        else
+                            format = SWT.IMAGE_UNDEFINED;
+                        
+                        lastUsedFileExtension = dialog.getFilterIndex();
+                        if(lastUsedFileExtension == -1)
+                            lastUsedFileExtension = 0;
 
-                if (format != SWT.IMAGE_UNDEFINED)
-                    chart.save(filename, format);
+                        if (format != SWT.IMAGE_UNDEFINED)
+                        {
+                            boolean isChartTitleVisible = chart.getTitle().isVisible(); 
+                            boolean isChartLegendVisible = chart.getLegend().isVisible();
+                            try
+                            {
+                                chart.suspendUpdate(true);
+                                chart.getTitle().setVisible(true);
+                                chart.getLegend().setVisible(true);
+                                chart.getLegend().setPosition(SWT.BOTTOM);
+                                chart.suspendUpdate(false);
+                                chart.save(filename, format);
+                            }finally {
+                                chart.suspendUpdate(true);
+                                chart.getTitle().setVisible(isChartTitleVisible);
+                                chart.getLegend().setVisible(isChartLegendVisible);
+                                chart.suspendUpdate(false);
+                            }
+                        }
+                    }
+
+                };
+                try
+                {
+                    new ProgressMonitorDialog(chart.getShell()).run(false, false, saveOperation);
+                }
+                catch (InvocationTargetException | InterruptedException e)
+                {
+                    PortfolioPlugin.log(e);
+                }
+                
+                
             }
         });
     }
