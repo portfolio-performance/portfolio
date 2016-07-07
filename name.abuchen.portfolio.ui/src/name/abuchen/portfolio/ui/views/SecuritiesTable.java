@@ -306,7 +306,7 @@ public final class SecuritiesTable implements ModificationListener
                 SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
 
                 LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
-                if (latest != null && latest.getTime().isBefore(sevenDaysAgo))
+                if (!((Security) element).isRetired() && latest != null && latest.getTime().isBefore(sevenDaysAgo))
                     return warningColor;
                 else
                     return null;
@@ -351,7 +351,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                if (latest.getTime().isBefore(LocalDate.now().minusDays(7)))
+                if (!((Security) element).isRetired() && latest.getTime().isBefore(LocalDate.now().minusDays(7)))
                     return warningColor;
                 else
                     return null;
