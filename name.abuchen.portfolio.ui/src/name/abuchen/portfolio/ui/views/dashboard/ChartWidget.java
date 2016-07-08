@@ -52,7 +52,8 @@ public class ChartWidget extends WidgetDelegate
                             : PerformanceChartView.class).getSimpleName() + DataSeriesConfigurator.IDENTIFIER_POSTFIX;
             configSet = delegate.getClient().getSettings().getConfigurationSet(configName);
             String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.CONFIG_UUID.name());
-            config = configSet.lookup(uuid).orElseGet(() -> configSet.getConfigurations().findFirst().get());
+            config = configSet.lookup(uuid).orElseGet(() -> configSet.getConfigurations().findFirst()
+                            .orElseGet(() -> new ConfigurationSet.Configuration(Messages.LabelNoName, null)));
         }
 
         @Override
