@@ -151,6 +151,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:
+                case INTEREST_CHARGE:
                 case TAXES:
                 case FEES:
                     pseudoAccount.addTransaction(t);

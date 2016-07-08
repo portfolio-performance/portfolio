@@ -121,6 +121,7 @@ import name.abuchen.portfolio.money.Money;
                         case DEPOSIT:
                         case REMOVAL:
                         case INTEREST:
+                        case INTEREST_CHARGE:
                         case TAXES:
                         case FEES:
                             // do nothing
@@ -185,6 +186,7 @@ import name.abuchen.portfolio.money.Money;
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:
+                case INTEREST_CHARGE:
                 case TAXES:
                 case FEES:
                     if (weight != Classification.ONE_HUNDRED_PERCENT)

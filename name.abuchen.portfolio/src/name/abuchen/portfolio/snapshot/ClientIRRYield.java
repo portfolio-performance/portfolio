@@ -95,6 +95,7 @@ public class ClientIRRYield
                                     case TAXES:
                                     case DIVIDENDS:
                                     case INTEREST:
+                                    case INTEREST_CHARGE:
                                     case TAX_REFUND:
                                         break;
                                     default:

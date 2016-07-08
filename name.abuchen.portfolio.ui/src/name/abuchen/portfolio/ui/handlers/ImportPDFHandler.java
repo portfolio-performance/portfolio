@@ -29,7 +29,7 @@ import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
@@ -111,7 +111,7 @@ public class ImportPDFHandler
             case "dkb": //$NON-NLS-1$
                 return new DkbPDFExtractor(client);
             case "flatex": //$NON-NLS-1$
-                return new FlatexPDFExctractor(client);
+                return new FlatexPDFExtractor(client);
             case "ingdiba": //$NON-NLS-1$
                 return new INGDiBaExtractor(client);
             case "onvista": //$NON-NLS-1$

@@ -37,6 +37,7 @@ public class CheckValidTypesAction implements ImportAction
             case DEPOSIT:
             case DIVIDENDS:
             case INTEREST:
+            case INTEREST_CHARGE:
             case TAX_REFUND:
             case TAXES:
             case REMOVAL:

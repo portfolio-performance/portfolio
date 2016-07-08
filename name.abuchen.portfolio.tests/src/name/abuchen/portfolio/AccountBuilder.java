@@ -54,6 +54,16 @@ public class AccountBuilder
     {
         return transaction(Type.INTEREST, date, amount);
     }
+    
+    public AccountBuilder interest_charge(String date, long amount)
+    {
+        return transaction(Type.INTEREST_CHARGE, date, amount);
+    }
+
+    public AccountBuilder interest_charge(LocalDate date, long amount)
+    {
+        return transaction(Type.INTEREST_CHARGE, date, amount);
+    }
 
     public AccountBuilder fees____(String date, long amount)
     {

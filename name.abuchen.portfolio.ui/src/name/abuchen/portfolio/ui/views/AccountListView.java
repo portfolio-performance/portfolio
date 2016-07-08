@@ -722,6 +722,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                     break;
                 case REMOVAL:
                 case FEES:
+                case INTEREST_CHARGE:
                 case TAXES:
                 case BUY:
                 case TRANSFER_OUT:

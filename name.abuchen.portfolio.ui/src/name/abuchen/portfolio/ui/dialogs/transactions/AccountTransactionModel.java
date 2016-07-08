@@ -81,6 +81,7 @@ public class AccountTransactionModel extends AbstractModel
             case TAXES:
             case TAX_REFUND:
             case INTEREST:
+            case INTEREST_CHARGE:
             case DIVIDENDS:
                 return;
             case BUY:

@@ -59,6 +59,7 @@ public class GroupEarningsByAccount
                         case DEPOSIT:
                         case REMOVAL:
                         case FEES:
+                        case INTEREST_CHARGE:
                         case TAXES:
                         case TAX_REFUND:
                         case BUY:

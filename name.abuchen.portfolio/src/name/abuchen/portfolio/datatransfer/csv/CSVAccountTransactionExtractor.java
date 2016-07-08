@@ -107,6 +107,7 @@ import name.abuchen.portfolio.money.Money;
             case TAX_REFUND:
             case FEES:
             case INTEREST:
+            case INTEREST_CHARGE:
             case REMOVAL:
                 AccountTransaction t = new AccountTransaction();
                 t.setType(type);
