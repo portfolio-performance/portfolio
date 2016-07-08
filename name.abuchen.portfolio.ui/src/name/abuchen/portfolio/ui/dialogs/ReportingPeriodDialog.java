@@ -12,9 +12,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
@@ -36,6 +34,9 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioLastDays;
     private Spinner days;
 
+    private Button radioLastTradingDays;
+    private Spinner tradingDays;
+
     private Button radioFromXtoY;
     private DateTimePicker dateFrom;
     private DateTimePicker dateTo;
@@ -52,6 +53,7 @@ public class ReportingPeriodDialog extends Dialog
         this.template = template != null ? template : new ReportingPeriod.LastX(1, 0);
     }
 
+    @Override
     protected void configureShell(Shell shell)
     {
         super.configureShell(shell);
@@ -87,6 +89,14 @@ public class ReportingPeriodDialog extends Dialog
         Label lblDays = new Label(editArea, SWT.NONE);
         lblDays.setText(Messages.LabelReportingDialogDays);
 
+        radioLastTradingDays = new Button(editArea, SWT.RADIO);
+        radioLastTradingDays.setText(Messages.LabelReportingDialogLast);
+        tradingDays = new Spinner(editArea, SWT.BORDER);
+        tradingDays.setMinimum(1);
+        tradingDays.setMaximum(10000);
+        Label lblTradingDays = new Label(editArea, SWT.NONE);
+        lblTradingDays.setText(Messages.LabelReportingDialogTradingDays);
+
         radioFromXtoY = new Button(editArea, SWT.RADIO);
         radioFromXtoY.setText(Messages.LabelReportingDialogFrom);
         dateFrom = new DateTimePicker(editArea);
@@ -114,12 +124,15 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
                         .thenRight(lblDays);
 
+        FormDataFactory.startingWith(radioLastTradingDays).top(new FormAttachment(radioLastDays, 20))
+                        .thenRight(tradingDays).thenRight(lblTradingDays);
+
         if (Platform.OS_MACOSX.equals(Platform.getOS()))
         {
             // under Mac OS X, the date input fields are not align with the text
             // by default
 
-            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20))
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
                             .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
                             .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
                             .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
@@ -129,7 +142,7 @@ public class ReportingPeriodDialog extends Dialog
         }
         else
         {
-            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastDays, 20))
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
                             .thenRight(dateFrom.getControl()).thenRight(lblTo).thenRight(dateTo.getControl());
 
             FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
@@ -146,6 +159,7 @@ public class ReportingPeriodDialog extends Dialog
 
         listen(radioLast, years, months);
         listen(radioLastDays, days);
+        listen(radioLastTradingDays, tradingDays);
         listen(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
         listen(radioSinceX, dateSince.getControl());
         listen(radioYearX, year);
@@ -157,17 +171,12 @@ public class ReportingPeriodDialog extends Dialog
     {
         for (Control c : controls)
         {
-            c.addListener(SWT.Selection, new Listener()
-            {
-                @Override
-                public void handleEvent(Event event)
-                {
-                    radioLast.setSelection(false);
-                    radioFromXtoY.setSelection(false);
-                    radioSinceX.setSelection(false);
+            c.addListener(SWT.Selection, event -> {
+                radioLast.setSelection(false);
+                radioFromXtoY.setSelection(false);
+                radioSinceX.setSelection(false);
 
-                    radio.setSelection(true);
-                }
+                radio.setSelection(true);
             });
         }
     }
@@ -178,6 +187,8 @@ public class ReportingPeriodDialog extends Dialog
             radioLast.setSelection(true);
         else if (template instanceof ReportingPeriod.LastXDays)
             radioLastDays.setSelection(true);
+        else if (template instanceof ReportingPeriod.LastXTradingDays)
+            radioLastTradingDays.setSelection(true);
         else if (template instanceof ReportingPeriod.FromXtoY)
             radioFromXtoY.setSelection(true);
         else if (template instanceof ReportingPeriod.SinceX)
@@ -185,7 +196,7 @@ public class ReportingPeriodDialog extends Dialog
         else if (template instanceof ReportingPeriod.YearX)
             radioYearX.setSelection(true);
         else
-            throw new RuntimeException();
+            throw new IllegalArgumentException();
 
         dateFrom.setSelection(template.getStartDate());
         dateSince.setSelection(template.getStartDate());
@@ -197,6 +208,8 @@ public class ReportingPeriodDialog extends Dialog
         months.setSelection(p.getMonths());
 
         days.setSelection(Dates.daysBetween(template.getStartDate(), template.getEndDate()));
+
+        tradingDays.setSelection(Dates.tradingDaysBetween(template.getStartDate(), template.getEndDate()));
 
         year.setSelection(template.getEndDate().getYear());
     }
@@ -211,6 +224,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioLastDays.getSelection())
         {
             result = new ReportingPeriod.LastXDays(days.getSelection());
+        }
+        else if (radioLastTradingDays.getSelection())
+        {
+            result = new ReportingPeriod.LastXTradingDays(tradingDays.getSelection());
         }
         else if (radioFromXtoY.getSelection())
         {
@@ -234,7 +251,7 @@ public class ReportingPeriodDialog extends Dialog
         }
         else
         {
-            throw new RuntimeException();
+            throw new IllegalArgumentException();
         }
 
         super.okPressed();

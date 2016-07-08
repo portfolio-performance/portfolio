@@ -486,6 +486,11 @@ public class ClientFactory
                 // added decimal places to stock quotes
                 addDecimalPlacesToQuotes(client);
 
+            case 30:
+                // added dashboards to model
+                fixStoredChartConfigurationWithNewPerformanceSeriesKeys(client);
+                migrateToConfigurationSets(client);
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -919,6 +924,55 @@ public class ClientFactory
     }
 
     @SuppressWarnings("nls")
+    private static void fixStoredChartConfigurationWithNewPerformanceSeriesKeys(Client client)
+    {
+        replace(client, "PerformanceChartView-PICKER", //
+                        "Client-transferals;", "Client-delta_percentage;");
+    }
+
+    @SuppressWarnings("nls")
+    private static void migrateToConfigurationSets(Client client)
+    {
+        // charts
+        migrateToConfigurationSet(client, "PerformanceChartView-PICKER");
+        migrateToConfigurationSet(client, "StatementOfAssetsHistoryView-PICKER");
+        migrateToConfigurationSet(client, "ReturnsVolatilityChartView-PICKER");
+
+        // columns config
+        migrateToConfigurationSet(client, "name.abuchen.portfolio.ui.views.SecuritiesPerformanceView");
+        migrateToConfigurationSet(client, "name.abuchen.portfolio.ui.views.SecuritiesTable");
+        migrateToConfigurationSet(client, "name.abuchen.portfolio.ui.views.StatementOfAssetsViewer");
+
+        // up until version 30, the properties were only used for view
+        // configurations (which are migrated now into configuration sets).
+        // Clear all remaining properties.
+        client.clearProperties();
+    }
+
+    private static void migrateToConfigurationSet(Client client, String key)
+    {
+        ConfigurationSet configSet = null;
+
+        int index = 0;
+
+        while (true)
+        {
+            String config = client.removeProperty(key + '$' + index);
+            if (config == null)
+                break;
+
+            if (configSet == null)
+                configSet = client.getSettings().getConfigurationSet(key);
+
+            String[] split = config.split(":="); //$NON-NLS-1$
+            if (split.length == 2)
+                configSet.add(new ConfigurationSet.Configuration(split[0], split[1]));
+
+            index++;
+        }
+    }
+
+    @SuppressWarnings("nls")
     private static XStream xstream()
     {
         if (xstream == null)
@@ -977,7 +1031,15 @@ public class ClientFactory
                     xstream.alias("classification", Classification.class);
                     xstream.alias("assignment", Assignment.class);
 
+                    xstream.alias("dashboard", Dashboard.class);
+                    xstream.useAttributeFor(Dashboard.class, "name");
+                    xstream.alias("column", Dashboard.Column.class);
+                    xstream.alias("widget", Dashboard.Widget.class);
+                    xstream.useAttributeFor(Dashboard.Widget.class, "type");
+
                     xstream.alias("event", SecurityEvent.class);
+                    xstream.alias("config-set", ConfigurationSet.class);
+                    xstream.alias("config", ConfigurationSet.Configuration.class);
                 }
             }
         }

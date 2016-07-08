@@ -109,7 +109,6 @@ public class ClientPerformanceSnapshot
     private EnumMap<CategoryType, Category> categories;
     private List<Transaction> earnings;
     private double irr;
-    private PerformanceIndex performanceIndex;
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
     {
@@ -157,11 +156,6 @@ public class ClientPerformanceSnapshot
     public List<Transaction> getEarnings()
     {
         return earnings;
-    }
-
-    public PerformanceIndex getPerformanceIndex()
-    {
-        return performanceIndex;
     }
 
     public double getPerformanceIRR()
@@ -219,10 +213,6 @@ public class ClientPerformanceSnapshot
                                         snapshotEnd.getMonetaryAssets()));
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
-
-        performanceIndex = PerformanceIndex.forClient(client, converter,
-                        new ReportingPeriod.FromXtoY(snapshotStart.getTime(), snapshotEnd.getTime()),
-                        new ArrayList<Exception>());
 
         addCapitalGains();
         addEarnings();

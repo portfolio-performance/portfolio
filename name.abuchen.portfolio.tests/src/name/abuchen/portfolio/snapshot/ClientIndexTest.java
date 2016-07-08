@@ -253,8 +253,7 @@ public class ClientIndexTest
         assertThat((double) (lastPrice - startPrice) / (double) startPrice,
                         IsCloseTo.closeTo(accumulated[accumulated.length - 1], PRECISION));
 
-        PerformanceIndex benchmark = PerformanceIndex.forSecurity(index, security, warnings);
-        assertTrue(warnings.isEmpty());
+        PerformanceIndex benchmark = PerformanceIndex.forSecurity(index, security);
         assertThat(benchmark.getFinalAccumulatedPercentage(), is(index.getFinalAccumulatedPercentage()));
     }
 
@@ -283,7 +282,7 @@ public class ClientIndexTest
         ClientIndex index = PerformanceIndex.forClient(client, converter, period, warnings);
         assertTrue(warnings.isEmpty());
 
-        PerformanceIndex benchmark = PerformanceIndex.forSecurity(index, security, warnings);
+        PerformanceIndex benchmark = PerformanceIndex.forSecurity(index, security);
         assertTrue(warnings.isEmpty());
         assertThat(benchmark.getFinalAccumulatedPercentage(), is(index.getFinalAccumulatedPercentage()));
 

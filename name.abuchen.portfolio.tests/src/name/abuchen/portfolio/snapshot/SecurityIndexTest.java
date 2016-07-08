@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.number.IsCloseTo;
+import org.junit.Test;
+
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
@@ -16,9 +19,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
-
-import org.hamcrest.number.IsCloseTo;
-import org.junit.Test;
 
 public class SecurityIndexTest
 {
@@ -49,7 +49,7 @@ public class SecurityIndexTest
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
-        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
 
@@ -94,7 +94,7 @@ public class SecurityIndexTest
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
-        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
 
@@ -151,7 +151,7 @@ public class SecurityIndexTest
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
-        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
 
@@ -199,7 +199,7 @@ public class SecurityIndexTest
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
-        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
+        PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
 

@@ -42,10 +42,12 @@ public class PerformanceIndex
     protected long[] interest;
     protected double[] accumulated;
     protected double[] delta;
-    protected Drawdown drawdown;
-    protected Volatility volatility;
 
-    /* package */PerformanceIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
+    private Drawdown drawdown;
+    private Volatility volatility;
+    private ClientPerformanceSnapshot performanceSnapshot;
+
+    /* package */ PerformanceIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
         this.client = client;
         this.converter = converter;
@@ -94,7 +96,7 @@ public class PerformanceIndex
         return forClassification(client, converter, classification, reportInterval, warnings);
     }
 
-    public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security, List<Exception> warnings)
+    public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security)
     {
         SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
                         clientIndex.getReportInterval());
@@ -102,7 +104,7 @@ public class PerformanceIndex
         return index;
     }
 
-    public static PerformanceIndex forConsumerPriceIndex(PerformanceIndex clientIndex, List<Exception> warnings)
+    public static PerformanceIndex forConsumerPriceIndex(PerformanceIndex clientIndex)
     {
         CPIIndex index = new CPIIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
                         clientIndex.getReportInterval());
@@ -110,7 +112,8 @@ public class PerformanceIndex
         return index;
     }
 
-    public Client getClient()
+    /* package */
+    Client getClient()
     {
         return client;
     }
@@ -187,7 +190,7 @@ public class PerformanceIndex
     }
 
     /**
-     * The volatility calculation must excludes returns
+     * The volatility calculation must exclude returns
      * <ul>
      * <li>on first day (because on the first day the return is always zero as
      * there is no previous day to compare to)</li>
@@ -201,6 +204,14 @@ public class PerformanceIndex
     {
         TradeCalendar calendar = new TradeCalendar();
         return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);
+    }
+
+    public ClientPerformanceSnapshot getClientPerformanceSnapshot()
+    {
+        if (performanceSnapshot == null)
+            performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval);
+
+        return performanceSnapshot;
     }
 
     public long[] getTaxes()
@@ -222,7 +233,8 @@ public class PerformanceIndex
     {
         long[] investedCapital = new long[transferals.length];
 
-        long current = investedCapital[0] = totals[0];
+        investedCapital[0] = totals[0];
+        long current = totals[0];
         for (int ii = 1; ii < investedCapital.length; ii++)
             current = investedCapital[ii] = current + transferals[ii];
 

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.util.function.Supplier;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -15,20 +17,25 @@ import org.eclipse.swt.widgets.Text;
 public final class InfoToolTip extends ToolTip
 {
     private Control control;
-    private String message;
+    private Supplier<String> message;
 
-    public static void attach(Control control, String message)
-    {
-        InfoToolTip tooltip = new InfoToolTip(control, message);
-        tooltip.setPopupDelay(0);
-        tooltip.activate();
-    }
-
-    private InfoToolTip(Control control, String message)
+    private InfoToolTip(Control control, Supplier<String> message)
     {
         super(control, ToolTip.NO_RECREATE, false);
         this.control = control;
         this.message = message;
+    }
+
+    public static void attach(Control control, String message)
+    {
+        attach(control, () -> message);
+    }
+
+    public static void attach(Control control, Supplier<String> message)
+    {
+        InfoToolTip tooltip = new InfoToolTip(control, message);
+        tooltip.setPopupDelay(0);
+        tooltip.activate();
     }
 
     @Override
@@ -41,12 +48,15 @@ public final class InfoToolTip extends ToolTip
         result.setBackground(background);
         result.setLayout(new GridLayout());
 
+        // create tool tip with a reasonable width
+        int width = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+
         Text text = new Text(result, SWT.WRAP);
         text.setBackground(background);
         text.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-        text.setText(message);
+        text.setText(message.get());
         GridData gridData = new GridData();
-        gridData.widthHint = control.getSize().x * 2;
+        gridData.widthHint = width;
         text.setLayoutData(gridData);
         Dialog.applyDialogFont(result);
         return result;

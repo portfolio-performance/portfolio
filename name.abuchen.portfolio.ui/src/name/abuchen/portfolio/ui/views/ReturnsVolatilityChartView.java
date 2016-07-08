@@ -4,15 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -20,8 +11,11 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -33,40 +27,26 @@ import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.math.Risk.Volatility;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.ClientDataSeries;
-import name.abuchen.portfolio.ui.views.ChartConfigurator.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
-    private CurrencyConverter converter;
-
     private ScatterChart chart;
-    private ChartConfigurator picker;
+    private LocalResourceManager resources;
+    private DataSeriesConfigurator configurator;
 
-    private Map<Object, PerformanceIndex> dataCache = new HashMap<Object, PerformanceIndex>();
-
-    @PostConstruct
-    private void setupCurrencyConverter(ExchangeRateProviderFactory factory, Client client)
-    {
-        converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-    }
+    private DataSeriesCache cache;
 
     @Override
     protected String getTitle()
@@ -84,26 +64,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void addConfigButton(ToolBar toolBar)
     {
-        Action save = new Action()
-        {
-            @Override
-            public void run()
-            {
-                picker.showSaveMenu(getActiveShell());
-            }
-        };
+        Action save = new SimpleAction(Messages.MenuSaveChart, a -> configurator.showSaveMenu(getActiveShell()));
         save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveChart);
         new ActionContributionItem(save).fill(toolBar, -1);
 
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                picker.showMenu(getActiveShell());
-            }
-        };
+        Action config = new SimpleAction(Messages.MenuConfigureChart, a -> configurator.showMenu(getActiveShell()));
         config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuConfigureChart);
         new ActionContributionItem(config).fill(toolBar, -1);
@@ -112,8 +78,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     @Override
     protected Composite createBody(Composite parent)
     {
+        cache = make(DataSeriesCache.class);
+
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+        resources = new LocalResourceManager(JFaceResources.getResources(), composite);
 
         chart = new ScatterChart(composite);
         chart.getTitle().setText(getTitle());
@@ -146,14 +116,16 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             }
         });
 
-        picker = new ChartConfigurator(composite, this, ChartConfigurator.Mode.RETURN_VOLATILITY);
-        picker.setListener(() -> updateChart());
-        
-        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
+        configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
+        configurator.addListener(() -> updateChart());
+
+        DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
+
+        updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(picker);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(legend);
 
         setChartSeries();
 
@@ -170,14 +142,14 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        dataCache.clear();
+        cache.clear();
         updateChart();
     }
 
     @Override
     public void notifyModelUpdated()
     {
-        dataCache.clear();
+        cache.clear();
         updateChart();
     }
 
@@ -185,8 +157,9 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         try
         {
-            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$);
-            
+            updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + configurator.getConfigurationName() //$NON-NLS-1$
+                            + ")"); //$NON-NLS-1$
+
             chart.suspendUpdate(true);
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
@@ -204,131 +177,19 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        List<Exception> warnings = new ArrayList<Exception>();
+        configurator.getSelectedDataSeries().forEach(series -> {
+            PerformanceIndex index = cache.lookup(series, getReportingPeriod());
+            Volatility volatility = index.getVolatility();
 
-        for (DataSeries item : picker.getSelectedDataSeries())
-        {
-            if (item.getType() == Client.class)
-                addClient(item, (ClientDataSeries) item.getInstance(), warnings);
-            else if (item.getType() == Security.class)
-                addSecurity(item, (Security) item.getInstance(), warnings);
-            else if (item.getType() == Portfolio.class)
-                addPortfolio(item, (Portfolio) item.getInstance(), warnings);
-            else if (item.getType() == Account.class)
-                addAccount(item, (Account) item.getInstance(), warnings);
-            else if (item.getType() == Classification.class)
-                addClassification(item, (Classification) item.getInstance(), warnings);
-        }
+            ILineSeries lineSeries = chart.addScatterSeries(new double[] { volatility.getStandardDeviation() },
+                            new double[] { index.getFinalAccumulatedPercentage() }, series.getLabel());
 
-        PortfolioPlugin.log(warnings);
-    }
-
-    private void addScatterSeries(DataSeries item, PerformanceIndex index)
-    {
-        Volatility volatility = index.getVolatility();
-        ILineSeries series = chart.addScatterSeries(new double[] { volatility.getStandardDeviation() },
-                        new double[] { index.getFinalAccumulatedPercentage() }, item.getLabel());
-        item.configure(series);
-    }
-
-    private PerformanceIndex getClientIndex(List<Exception> warnings)
-    {
-        PerformanceIndex index = dataCache.get(Client.class);
-        if (index == null)
-        {
-            ReportingPeriod interval = getReportingPeriod();
-            index = PerformanceIndex.forClient(getClient(), converter, interval, warnings);
-            dataCache.put(Client.class, index);
-        }
-        return index;
-    }
-
-    private void addClient(DataSeries item, ClientDataSeries type, List<Exception> warnings)
-    {
-        PerformanceIndex clientIndex = getClientIndex(warnings);
-
-        if (type == ClientDataSeries.TOTALS)
-            addScatterSeries(item, clientIndex);
-    }
-
-    private void addSecurity(DataSeries item, Security security, List<Exception> warnings)
-    {
-        if (item.isBenchmark())
-            addSecurityBenchmark(item, security, warnings);
-        else
-            addSecurityPerformance(item, security, warnings);
-    }
-
-    private void addSecurityBenchmark(DataSeries item, Security security, List<Exception> warnings)
-    {
-        PerformanceIndex securityIndex = dataCache.get(security);
-
-        if (securityIndex == null)
-        {
-            PerformanceIndex clientIndex = getClientIndex(warnings);
-            securityIndex = PerformanceIndex.forSecurity(clientIndex, security, warnings);
-            dataCache.put(security, securityIndex);
-        }
-
-        addScatterSeries(item, securityIndex);
-    }
-
-    private void addSecurityPerformance(DataSeries item, Security security, List<Exception> warnings)
-    {
-        PerformanceIndex securityIndex = dataCache.get(security.getUUID());
-
-        if (securityIndex == null)
-        {
-            securityIndex = PerformanceIndex.forInvestment(getClient(), converter, security, getReportingPeriod(),
-                            warnings);
-            dataCache.put(security.getUUID(), securityIndex);
-        }
-
-        addScatterSeries(item, securityIndex);
-    }
-
-    private void addPortfolio(DataSeries item, Portfolio portfolio, List<Exception> warnings)
-    {
-        Object cacheKey = item.isPortfolioPlus() ? portfolio.getUUID() : portfolio;
-        PerformanceIndex portfolioIndex = dataCache.get(cacheKey);
-
-        if (portfolioIndex == null)
-        {
-            portfolioIndex = item.isPortfolioPlus() ? PerformanceIndex //
-                            .forPortfolioPlusAccount(getClient(), converter, portfolio, getReportingPeriod(), warnings)
-                            : PerformanceIndex.forPortfolio(getClient(), converter, portfolio, getReportingPeriod(),
-                                            warnings);
-            dataCache.put(cacheKey, portfolioIndex);
-        }
-
-        addScatterSeries(item, portfolioIndex);
-    }
-
-    private void addAccount(DataSeries item, Account account, List<Exception> warnings)
-    {
-        PerformanceIndex accountIndex = dataCache.get(account);
-
-        if (accountIndex == null)
-        {
-            accountIndex = PerformanceIndex.forAccount(getClient(), converter, account, getReportingPeriod(), warnings);
-            dataCache.put(account, accountIndex);
-        }
-
-        addScatterSeries(item, accountIndex);
-    }
-
-    private void addClassification(DataSeries item, Classification classification, List<Exception> warnings)
-    {
-        PerformanceIndex index = dataCache.get(classification);
-
-        if (index == null)
-        {
-            index = PerformanceIndex.forClassification(getClient(), converter, classification, getReportingPeriod(),
-                            warnings);
-            dataCache.put(classification, index);
-        }
-
-        addScatterSeries(item, index);
+            Color color = resources.createColor(series.getColor());
+            lineSeries.setLineColor(color);
+            lineSeries.setSymbolColor(color);
+            lineSeries.enableArea(series.isShowArea());
+            lineSeries.setLineStyle(series.getLineStyle());
+        });
     }
 
     private final class ExportDropDown extends AbstractDropDown
@@ -341,40 +202,18 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(new Action(Messages.MenuExportChartData)
-            {
-                @Override
-                public void run()
-                {
-                    ScatterChartCSVExporter exporter = new ScatterChartCSVExporter(chart);
-                    exporter.setValueFormat(new DecimalFormat("0.##########%")); //$NON-NLS-1$
-                    exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
-                }
-            });
+            manager.add(new SimpleAction(Messages.MenuExportChartData, a -> {
+                ScatterChartCSVExporter exporter = new ScatterChartCSVExporter(chart);
+                exporter.setValueFormat(new DecimalFormat("0.##########%")); //$NON-NLS-1$
+                exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
+            }));
 
-            Set<Class<?>> exportTypes = new HashSet<Class<?>>(Arrays.asList(new Class<?>[] { //
-                            Client.class, Security.class, Portfolio.class, Account.class, Classification.class }));
-
-            for (DataSeries series : picker.getSelectedDataSeries())
-            {
-                if (exportTypes.contains(series.getType()))
-                    addMenu(manager, series);
-            }
+            for (DataSeries series : configurator.getSelectedDataSeries())
+                manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, series.getLabel()),
+                                a -> exportDataSeries(series)));
 
             manager.add(new Separator());
             chart.exportMenuAboutToShow(manager, getTitle());
-        }
-
-        private void addMenu(IMenuManager manager, final DataSeries series)
-        {
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, series.getLabel()))
-            {
-                @Override
-                public void run()
-                {
-                    exportDataSeries(series);
-                }
-            });
         }
 
         private void exportDataSeries(DataSeries series)
@@ -384,17 +223,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 @Override
                 protected void writeToFile(File file) throws IOException
                 {
-                    PerformanceIndex index = null;
-
-                    if (series.getType() == Client.class)
-                        index = dataCache.get(Client.class);
-                    else if (series.isPortfolioPlus())
-                        index = dataCache.get(((Portfolio) series.getInstance()).getUUID());
-                    else if (series.getType() == Security.class && !series.isBenchmark())
-                        index = dataCache.get(((Security) series.getInstance()).getUUID());
-                    else
-                        index = dataCache.get(series.getInstance());
-
+                    PerformanceIndex index = cache.lookup(series, getReportingPeriod());
                     index.exportVolatilityData(file);
                 }
 

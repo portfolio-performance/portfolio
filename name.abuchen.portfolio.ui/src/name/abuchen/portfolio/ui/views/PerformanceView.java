@@ -1,27 +1,14 @@
 package name.abuchen.portfolio.ui.views;
 
-import static name.abuchen.portfolio.ui.util.SWTHelper.clearLabel;
-import static name.abuchen.portfolio.ui.util.SWTHelper.placeBelow;
-
-import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -33,22 +20,12 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 
-import name.abuchen.portfolio.math.Risk.Drawdown;
-import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -59,293 +36,22 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
-import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
-import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
-    private static class OverviewTab implements DisposeListener
-    {
-        private ClientPerformanceSnapshot snapshot;
-
-        private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
-
-        private Font kpiFont;
-        private Font boldFont;
-
-        private Composite container;
-
-        private Label ttwror;
-        private Label irr;
-        private Label absoluteChange;
-        private Label delta;
-
-        private Label ttwrorLastDay;
-        private Label absoluteChangeLastDay;
-
-        private Label maxDrawdown;
-        private Label maxDrawdownDuration;
-        private Label volatility;
-        private Label semiVolatility;
-
-        private Label[] signs;
-        private Label[] labels;
-        private Label[] values;
-
-        public void setInput(ClientPerformanceSnapshot snapshot)
-        {
-            this.snapshot = snapshot;
-
-            PerformanceIndex index = snapshot.getPerformanceIndex();
-
-            if (index.getTotals().length > 1)
-            {
-                setIndicators(snapshot, index);
-                setRiskIndicators(index);
-            }
-            else
-            {
-                clearLabel(ttwror, irr, absoluteChange, delta, ttwrorLastDay, absoluteChangeLastDay, maxDrawdown,
-                                maxDrawdownDuration, volatility, semiVolatility);
-            }
-
-            int ii = 0;
-            for (ClientPerformanceSnapshot.Category category : snapshot.getCategories())
-            {
-                signs[ii].setText(category.getSign());
-                labels[ii].setText(category.getLabel());
-                values[ii].setText(Values.Money.format(category.getValuation(), index.getClient().getBaseCurrency()));
-
-                if (++ii >= labels.length)
-                    break;
-            }
-
-            container.layout(true);
-        }
-
-        private void setIndicators(ClientPerformanceSnapshot snapshot, PerformanceIndex index)
-        {
-            int length = index.getTotals().length;
-            ttwror.setText(Values.Percent2.format(index.getFinalAccumulatedPercentage()));
-            irr.setText(Values.Percent2.format(snapshot.getPerformanceIRR()));
-            absoluteChange.setText(Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[0]));
-            delta.setText(Values.Money.format(snapshot.getAbsoluteDelta(), index.getClient().getBaseCurrency()));
-
-            ttwrorLastDay.setText(Values.Percent2.format(index.getDeltaPercentage()[length - 1]));
-            absoluteChangeLastDay.setText(
-                            Values.Amount.format(index.getTotals()[length - 1] - index.getTotals()[length - 2]));
-        }
-
-        private void setRiskIndicators(PerformanceIndex index)
-        {
-            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withZone(ZoneId.systemDefault());
-
-            Drawdown drawdown = index.getDrawdown();
-            Volatility vola = index.getVolatility();
-
-            maxDrawdown.setText(Values.Percent2.format(drawdown.getMaxDrawdown()));
-            InfoToolTip.attach(maxDrawdown,
-                            MessageFormat.format(Messages.TooltipMaxDrawdown,
-                                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getStart()),
-                                            formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd())));
-
-            // max drawdown duration
-            Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
-            maxDrawdownDuration.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
-            boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(index.getReportInterval().getEndDate());
-            String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
-                            : Messages.TooltipMaxDrawdownDurationFromXtoY;
-
-            // recovery time
-            Interval recoveryTime = drawdown.getLongestRecoveryTime();
-            isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate());
-            String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
-                            : Messages.TooltipMaxDrawdownDurationFromXtoY;
-
-            InfoToolTip.attach(maxDrawdownDuration, Messages.TooltipMaxDrawdownDuration + "\n\n" //$NON-NLS-1$
-                            + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
-                                            formatter.format(maxDDDuration.getEnd()))
-                            + "\n\n" //$NON-NLS-1$
-                            + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays())
-                            + MessageFormat.format(recoveryTimeSupplement, formatter.format(recoveryTime.getStart()),
-                                            formatter.format(recoveryTime.getEnd())));
-
-            volatility.setText(Values.Percent2.format(index.getVolatility().getStandardDeviation()));
-            InfoToolTip.attach(volatility, Messages.TooltipVolatility);
-
-            semiVolatility.setText(Values.Percent2.format(vola.getSemiDeviation()));
-            InfoToolTip.attach(semiVolatility,
-                            MessageFormat.format(Messages.TooltipSemiVolatility,
-                            Values.Percent5.format(vola.getExpectedSemiDeviation()),
-                            vola.getNormalizedSemiDeviationComparison(),
-                            Values.Percent5.format(vola.getStandardDeviation()),
-                            Values.Percent5.format(vola.getSemiDeviation())));
-        }
-
-        public void createTab(CTabFolder folder)
-        {
-            container = new Composite(folder, SWT.NONE);
-            container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            RowLayout layout = new RowLayout();
-            layout.marginHeight = layout.marginWidth = 10;
-            layout.spacing = 40;
-            container.setLayout(layout);
-            container.addDisposeListener(this);
-
-            // create fonts
-            kpiFont = resourceManager.createFont(
-                            FontDescriptor.createFrom(container.getFont()).setStyle(SWT.NORMAL).increaseHeight(10));
-
-            boldFont = resourceManager.createFont(FontDescriptor
-                            .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
-
-            createIndicators(container);
-            createRiskIndicators(container);
-            createCalculation(container);
-
-            CTabItem item = new CTabItem(folder, SWT.NONE);
-            item.setText(Messages.PerformanceTabOverview);
-            item.setControl(container);
-        }
-
-        private void createIndicators(Composite container)
-        {
-            Composite composite = new Composite(container, SWT.NONE);
-            composite.setLayout(new FormLayout());
-            composite.setBackground(container.getBackground());
-
-            Label heading = new Label(composite, SWT.NONE);
-            heading.setText(Messages.LabelKeyIndicators);
-            heading.setFont(boldFont);
-            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
-
-            int[] maxWidth = new int[1];
-
-            ttwror = addKPIBelow(Messages.LabelTTWROR, heading, maxWidth);
-            irr = addKPIBelow(Messages.LabelIRR, ttwror, maxWidth);
-            absoluteChange = addKPIBelow(Messages.LabelAbsoluteChange, irr, maxWidth);
-            delta = addKPIBelow(Messages.LabelAbsoluteDelta, absoluteChange, maxWidth);
-
-            Label headingLastDay = new Label(composite, SWT.NONE);
-            headingLastDay.setText(Messages.LabelTTWROROneDay);
-            headingLastDay.setFont(boldFont);
-            headingLastDay.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
-
-            ttwrorLastDay = addKPIBelow(Messages.LabelTTWROR, headingLastDay, maxWidth);
-            absoluteChangeLastDay = addKPIBelow(Messages.LabelAbsoluteChange, ttwrorLastDay, maxWidth);
-
-            // layout
-
-            FormData data = new FormData();
-            data.left = new FormAttachment(0, 5);
-            data.width = maxWidth[0];
-            heading.setLayoutData(data);
-
-            data = new FormData();
-            data.left = new FormAttachment(0, 5);
-            data.top = new FormAttachment(delta, 20);
-            data.width = maxWidth[0];
-            headingLastDay.setLayoutData(data);
-        }
-
-        private void createRiskIndicators(Composite container2)
-        {
-            Composite composite = new Composite(container, SWT.NONE);
-            composite.setLayout(new FormLayout());
-            composite.setBackground(container.getBackground());
-
-            Label heading = new Label(composite, SWT.NONE);
-            heading.setText(Messages.LabelRiskIndicators);
-            heading.setFont(boldFont);
-            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
-
-            int[] maxWidth = new int[1];
-
-            maxDrawdown = addKPIBelow(Messages.LabelMaxDrawdown, heading, maxWidth);
-            maxDrawdownDuration = addKPIBelow(Messages.LabelMaxDrawdownDuration, maxDrawdown, maxWidth);
-            volatility = addKPIBelow(Messages.LabelVolatility, maxDrawdownDuration, maxWidth);
-            semiVolatility = addKPIBelow(Messages.LabelSemiVolatility, volatility, maxWidth);
-
-            // layout
-
-            FormData data = new FormData();
-            data.left = new FormAttachment(0, 5);
-            data.width = Math.max(maxWidth[0], heading.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
-            heading.setLayoutData(data);
-        }
-
-        private Label addKPIBelow(String label, Control other, int[] maxWidth)
-        {
-            Label lblKpi = new Label(other.getParent(), SWT.NONE);
-            lblKpi.setText(label);
-
-            Label kpi = new Label(other.getParent(), SWT.NONE);
-            kpi.setFont(kpiFont);
-
-            placeBelow(other, lblKpi);
-            placeBelow(lblKpi, kpi);
-
-            int width = lblKpi.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-            maxWidth[0] = Math.max(width, maxWidth[0]);
-
-            return kpi;
-        }
-
-        private void createCalculation(Composite container)
-        {
-            Composite composite = new Composite(container, SWT.NONE);
-            GridLayoutFactory.fillDefaults().numColumns(3).applyTo(composite);
-            composite.setBackground(container.getBackground());
-
-            Label heading = new Label(composite, SWT.NONE);
-            heading.setText(Messages.PerformanceTabCalculation);
-            heading.setFont(boldFont);
-            heading.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
-            GridDataFactory.fillDefaults().span(3, 1).applyTo(heading);
-
-            labels = new Label[ClientPerformanceSnapshot.CategoryType.values().length];
-            signs = new Label[labels.length];
-            values = new Label[labels.length];
-
-            for (int ii = 0; ii < labels.length; ii++)
-            {
-                signs[ii] = new Label(composite, SWT.NONE);
-                labels[ii] = new Label(composite, SWT.NONE);
-                values[ii] = new Label(composite, SWT.RIGHT);
-                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
-            }
-        }
-
-        @Override
-        public void widgetDisposed(DisposeEvent e)
-        {
-            resourceManager.dispose();
-        }
-
-        public ClientPerformanceSnapshot getSnapshot()
-        {
-            return snapshot;
-        }
-    }
-
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private OverviewTab overview;
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
     private StatementOfAssetsViewer snapshotEnd;
@@ -362,7 +68,7 @@ public class PerformanceView extends AbstractHistoricView
     protected void addButtons(ToolBar toolBar)
     {
         super.addButtons(toolBar);
-        new ExportDropDown(toolBar);
+        new ExportDropDown(toolBar); // NOSONAR
     }
 
     @Override
@@ -371,8 +77,6 @@ public class PerformanceView extends AbstractHistoricView
         ReportingPeriod period = getReportingPeriod();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), converter, period);
-
-        overview.setInput(snapshot);
 
         try
         {
@@ -404,9 +108,6 @@ public class PerformanceView extends AbstractHistoricView
     {
         // result tabs
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
-
-        overview = new OverviewTab();
-        overview.createTab(folder);
 
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
@@ -529,16 +230,10 @@ public class PerformanceView extends AbstractHistoricView
         item.setText(title);
         item.setControl(container);
 
-        hookContextMenu(calculation.getTree(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillContextMenu(manager);
-            }
-        });
+        hookContextMenu(calculation.getTree(), this::fillContextMenu);
     }
 
-    private void fillContextMenu(IMenuManager manager)
+    private void fillContextMenu(IMenuManager manager) // NOSONAR
     {
         Object selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
         if (!(selection instanceof ClientPerformanceSnapshot.Position))
@@ -715,6 +410,7 @@ public class PerformanceView extends AbstractHistoricView
     {
         private ClientPerformanceSnapshot.Category[] categories;
 
+        @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
         {
             if (newInput == null)
@@ -728,23 +424,26 @@ public class PerformanceView extends AbstractHistoricView
             }
             else
             {
-                throw new RuntimeException("Unsupported type: " + newInput.getClass().getName()); //$NON-NLS-1$
+                throw new IllegalArgumentException("Unsupported type: " + newInput.getClass().getName()); //$NON-NLS-1$
             }
         }
 
+        @Override
         public Object[] getElements(Object inputElement)
         {
             return this.categories;
         }
 
+        @Override
         public Object[] getChildren(Object parentElement)
         {
             if (parentElement instanceof ClientPerformanceSnapshot.Category)
                 return ((ClientPerformanceSnapshot.Category) parentElement).getPositions()
                                 .toArray(new ClientPerformanceSnapshot.Position[0]);
-            return null;
+            return new Object[0];
         }
 
+        @Override
         public Object getParent(Object element)
         {
             if (element instanceof ClientPerformanceSnapshot.Position)
@@ -759,14 +458,18 @@ public class PerformanceView extends AbstractHistoricView
             return null;
         }
 
+        @Override
         public boolean hasChildren(Object element)
         {
             return element instanceof ClientPerformanceSnapshot.Category
                             && !((ClientPerformanceSnapshot.Category) element).getPositions().isEmpty();
         }
 
+        @Override
         public void dispose()
-        {}
+        {
+            // no resources to dispose
+        }
 
     }
 
@@ -825,33 +528,6 @@ public class PerformanceView extends AbstractHistoricView
                 {
                     new TableViewerCSVExporter(earningsByAccount)
                                     .export(Messages.PerformanceTabEarningsByAccount + ".csv"); //$NON-NLS-1$
-                }
-            });
-
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.LabelVolatility))
-            {
-                @Override
-                public void run()
-                {
-                    new AbstractCSVExporter()
-                    {
-                        @Override
-                        protected void writeToFile(File file) throws IOException
-                        {
-                            ClientPerformanceSnapshot snapshot = overview.getSnapshot();
-                            if (snapshot == null)
-                                return;
-
-                            PerformanceIndex index = snapshot.getPerformanceIndex();
-                            index.exportVolatilityData(file);
-                        }
-
-                        @Override
-                        protected Control getControl()
-                        {
-                            return ExportDropDown.this.getToolBar();
-                        }
-                    }.export(Messages.LabelVolatility + ".csv"); //$NON-NLS-1$
                 }
             });
         }

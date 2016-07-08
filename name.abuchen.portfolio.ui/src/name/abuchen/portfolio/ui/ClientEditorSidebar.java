@@ -77,21 +77,15 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
     private Entry statementOfAssets;
     private Entry taxonomies;
 
-    private Sidebar.MenuListener setAsStartPage = new Sidebar.MenuListener()
-    {
-        @Override
-        public void menuAboutToShow(final Entry entry, IMenuManager manager)
-        {
-            manager.add(new Action(Messages.MenuLabelSetAsStartPage)
-            {
-                @Override
-                public void run()
-                {
-                    editor.getPreferenceStore().setValue(START_PAGE_KEY, entry.getId());
-                }
-            });
-        }
-    };
+    private Sidebar.MenuListener setAsStartPage = (entry, manager) -> manager
+                    .add(new Action(Messages.MenuLabelSetAsStartPage)
+                    {
+                        @Override
+                        public void run()
+                        {
+                            editor.getPreferenceStore().setValue(START_PAGE_KEY, entry.getId());
+                        }
+                    });
 
     public ClientEditorSidebar(PortfolioPart editor)
     {
@@ -329,8 +323,10 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                         .setContextMenu(setAsStartPage);
 
         Entry performance = new Entry(section,
-                        new ActivateViewAction(Messages.ClientEditorLabelPerformance, "Performance")); //$NON-NLS-1$
+                        new ActivateViewAction(Messages.ClientEditorLabelPerformance, "dashboard.Dashboard")); //$NON-NLS-1$
         performance.setContextMenu(setAsStartPage);
+        new Entry(performance, new ActivateViewAction(Messages.ClientEditorPerformanceCalculation, "Performance")) //$NON-NLS-1$
+                        .setContextMenu(setAsStartPage);
         new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
         new Entry(performance,
