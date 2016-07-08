@@ -555,6 +555,8 @@ public class Messages extends NLS
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldGreaterZero;
+    public static String SecurityListFilter;
+    public static String SecurityListFilterHideInactive;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;

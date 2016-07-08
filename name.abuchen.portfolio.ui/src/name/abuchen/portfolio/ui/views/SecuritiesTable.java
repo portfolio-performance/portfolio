@@ -692,7 +692,21 @@ public final class SecuritiesTable implements ModificationListener
             markDirty();
             if (!securities.getControl().isDisposed())
             {
-                securities.refresh(security, true);
+                // the check if the security gets filtered after the change. 
+                // Since it is unknown which property of the security has
+                // been changed, filter.isFilterProperty(...) can't be used.
+                boolean areFiltersAffected = false;
+                for(ViewerFilter filter : securities.getFilters())
+                {
+                    if(!filter.select(securities, security, security));
+                        areFiltersAffected = true;
+                }
+                
+                if(areFiltersAffected)
+                    securities.refresh();
+                else
+                    securities.refresh(security, true);
+                
                 securities.setSelection(securities.getSelection());
             }
         }
