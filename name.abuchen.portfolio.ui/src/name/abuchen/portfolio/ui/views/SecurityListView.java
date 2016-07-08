@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -15,6 +17,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -135,6 +138,57 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         }
     }
 
+    private class FilterDropDown extends AbstractDropDown
+    {
+        private Predicate<Security> securityIsNotInactive = record -> record.isRetired() == false;
+
+        public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
+        {
+            super(toolBar, Messages.SecurityListFilter, Images.FILTER_OFF.image(), SWT.NONE);
+
+            if (preferenceStore.getBoolean(this.getClass().getSimpleName() + "-hideInactiveSecurities")) //$NON-NLS-1$
+                filter.add(securityIsNotInactive);
+
+            if (!filter.isEmpty())
+                getToolItem().setImage(Images.FILTER_ON.image());
+
+            toolBar.addDisposeListener(e -> {
+                preferenceStore.setValue(this.getClass().getSimpleName() + "-hideInactiveSecurities", //$NON-NLS-1$
+                                filter.contains(securityIsNotInactive));
+            });
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
+        }
+
+        private Action createAction(String label, Predicate<Security> predicate)
+        {
+            Action action = new Action(label, Action.AS_CHECK_BOX)
+            {
+                @Override
+                public void run()
+                {
+                    boolean isChecked = filter.contains(predicate);
+
+                    if (isChecked)
+                        filter.remove(predicate);
+                    else
+                        filter.add(predicate);
+
+                    setChecked(!isChecked);
+                    getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                    securities.refresh();
+                }
+            };
+            action.setChecked(filter.contains(predicate));
+            return action;
+        }
+    }
+
+    
     @Inject
     private ExchangeRateProviderFactory factory;
 
@@ -144,6 +198,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TableViewer events;
     private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
+    
+    private List<Predicate<Security>> filter = new ArrayList<>();
 
     private Watchlist watchlist;
 
@@ -235,6 +291,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         new ToolItem(toolBar, SWT.SEPARATOR | SWT.VERTICAL).setWidth(20);
 
         new CreateSecurityDropDown(toolBar);
+        new FilterDropDown(toolBar, getPreferenceStore());
         addExportButton(toolBar);
         addSaveButton(toolBar);
         addConfigButton(toolBar);
@@ -351,6 +408,23 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 }
 
                 return false;
+            }
+        });
+        
+        securities.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                for (Predicate<Security> predicate : filter)
+                {
+                    if(!predicate.test((Security) element))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         });
 
