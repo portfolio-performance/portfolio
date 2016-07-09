@@ -51,11 +51,11 @@ public class IBFlexStatementExtractor implements Extractor
     public IBFlexStatementExtractor(Client client)
     {
         this.client = client;
-        this.results = new ArrayList<Item>();
-        allSecurities = new ArrayList<Security>(client.getSecurities());
+        this.results = new ArrayList<>();
+        allSecurities = new ArrayList<>(client.getSecurities());
 
         // Maps Interactive Broker Exchange to Yahoo Exchanges, to be completed
-        this.exchanges = new HashMap<String, String>();
+        this.exchanges = new HashMap<>();
 
         this.exchanges.put("EBS", "SW");
         this.exchanges.put("LSE", "L");
@@ -110,7 +110,7 @@ public class IBFlexStatementExtractor implements Extractor
             // Find security with same conID or isin or yahooSymbol
             if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
                 return s;
-            if (isin != null && isin.length() > 0 && isin.equals(s.getIsin()))
+            if (isin.length() > 0 && isin.equals(s.getIsin()))
                 return s;
             if (yahooSymbol != null && yahooSymbol.length() > 0 && yahooSymbol.equals(s.getTickerSymbol()))
                 return s;
@@ -249,6 +249,8 @@ public class IBFlexStatementExtractor implements Extractor
 
             transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
             transaction.setNote(eElement.getAttribute("description"));
+
+            transaction.setMonetaryAmount(proceeds);
 
             results.add(new TransactionItem(transaction));
         }

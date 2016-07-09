@@ -182,6 +182,7 @@ public class GroupByTaxonomyTest
         assertThat(unassigned.getPositions().size(), is(1));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testSecuritiesWithPartialAssignment()
     {
