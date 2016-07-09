@@ -25,6 +25,7 @@ public enum Images
     BANNER("banner.png"), //$NON-NLS-1$
 
     SECURITY("security.png"), //$NON-NLS-1$
+    SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
     ACCOUNT("account.png"), //$NON-NLS-1$
     PORTFOLIO("portfolio.png"), //$NON-NLS-1$
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
