@@ -42,6 +42,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
@@ -303,13 +304,17 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Color getBackground(Object element)
             {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
+                Security security = (Security) element;
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                if (latest == null)
+                    return null;
+
+                String feed = security.getLatestFeed() != null ? security.getLatestFeed() : security.getFeed();
+                if (QuoteFeed.MANUAL.equals(feed))
+                    return null;
 
                 LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
-                if (!((Security) element).isRetired() && latest != null && latest.getTime().isBefore(sevenDaysAgo))
-                    return warningColor;
-                else
-                    return null;
+                return latest.getTime().isBefore(sevenDaysAgo) ? warningColor : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -346,8 +351,12 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Color getBackground(Object element)
             {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
+                Security security = (Security) element;
+                List<SecurityPrice> prices = security.getPrices();
                 if (prices.isEmpty())
+                    return null;
+
+                if (QuoteFeed.MANUAL.equals(security.getFeed()))
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);

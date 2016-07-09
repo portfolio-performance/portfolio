@@ -1,10 +1,14 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.ui.Images;
@@ -53,7 +57,15 @@ public class SecurityMasterDataPage extends AbstractPage
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
-        bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
+
+        Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
+        Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
+                        .getImage();
+        ControlDecoration deco = new ControlDecoration(control, SWT.TOP | SWT.LEFT);
+        deco.setDescriptionText(Messages.MsgInfoRetiredSecurities);
+        deco.setImage(image);
+        deco.show();
+
         bindings.bindStringInput(container, Messages.ColumnNote, "note"); //$NON-NLS-1$
     }
 }
