@@ -6,24 +6,26 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * Special exporter for Axtienfreunde.net
+ */
 public class AktienfreundeNetExporter
 {
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
 
     /**
      * Export all transactions in 'aktienfreunde.net' Format
@@ -31,16 +33,11 @@ public class AktienfreundeNetExporter
     public void exportAllTransactions(File file, Client client) throws IOException
     {
         // collect transactions
-        List<Transaction> transactions = new ArrayList<Transaction>();
-
-        for (Account a : client.getAccounts())
-            transactions.addAll(a.getTransactions());
-        for (Portfolio p : client.getPortfolios())
-            transactions.addAll(p.getTransactions());
-
-        Transaction.sortByDate(transactions);
-
-        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy"); //$NON-NLS-1$
+        List<? extends Transaction> transactions = Stream
+                        .concat(client.getAccounts().stream(), client.getPortfolios().stream())
+                        .flatMap(l -> l.getTransactions().stream()) //
+                        .sorted(new Transaction.ByDate()) //
+                        .collect(Collectors.toList());
 
         // write to file
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
@@ -54,41 +51,23 @@ public class AktienfreundeNetExporter
             for (Transaction t : transactions)
             {
                 if (t instanceof AccountTransaction)
-                {
-                    AccountTransaction ta = (AccountTransaction) t;
-
-                    if (ta.getSecurity() != null
-                                    && (ta.getType() == AccountTransaction.Type.INTEREST || ta.getType() == AccountTransaction.Type.DIVIDENDS))
-                        writeDividend(printer, ta, dateFormat);
-
-                }
+                    writeDividend(printer, (AccountTransaction) t);
                 else if (t instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction tp = (PortfolioTransaction) t;
-
-                    switch (tp.getType())
-                    {
-                        case BUY:
-                        case DELIVERY_INBOUND:
-                            writeBuySell(printer, tp, "Kauf", dateFormat); //$NON-NLS-1$
-                            break;
-                        case SELL:
-                        case DELIVERY_OUTBOUND:
-                            writeBuySell(printer, tp, "Verkauf", dateFormat); //$NON-NLS-1$
-                            break;
-                        default:
-                            // ignore all other transactions
-                    }
-
-                }
+                    writeBuySell(printer, (PortfolioTransaction) t);
             }
         }
     }
 
     @SuppressWarnings("nls")
-    private void writeDividend(CSVPrinter printer, AccountTransaction transaction, DateFormat dateFormat)
+    private void writeDividend(CSVPrinter printer, AccountTransaction transaction)
     {
-        printer.print(dateFormat.format(transaction.getDate()));
+        if (transaction.getSecurity() == null)
+            return;
+        if (transaction.getType() != AccountTransaction.Type.INTEREST
+                        && transaction.getType() != AccountTransaction.Type.DIVIDENDS)
+            return;
+
+        printer.print(DATE_FORMAT.format(transaction.getDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
@@ -101,9 +80,26 @@ public class AktienfreundeNetExporter
     }
 
     @SuppressWarnings("nls")
-    private void writeBuySell(CSVPrinter printer, PortfolioTransaction transaction, String type, DateFormat dateFormat)
+    private void writeBuySell(CSVPrinter printer, PortfolioTransaction transaction)
     {
-        printer.print(dateFormat.format(transaction.getDate()));
+        String type;
+
+        switch (transaction.getType())
+        {
+            case BUY:
+            case DELIVERY_INBOUND:
+                type = "Kauf"; //$NON-NLS-1$
+                break;
+            case SELL:
+            case DELIVERY_OUTBOUND:
+                type = "Verkauf"; //$NON-NLS-1$
+                break;
+            default:
+                // ignore all other transactions
+                return;
+        }
+
+        printer.print(DATE_FORMAT.format(transaction.getDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
