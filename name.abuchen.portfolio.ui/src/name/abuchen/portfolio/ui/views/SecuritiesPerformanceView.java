@@ -736,7 +736,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // dividend amount
         column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
-        column.setDescription("Bruttodividende");
+        column.setDescription(Messages.ColumnGrossDividend);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
