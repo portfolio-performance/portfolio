@@ -326,6 +326,9 @@ public class ClientPerformanceSnapshot
                 if (!period.containsTransaction().test(t))
                     continue;
 
+                fees.add(t.getUnitSum(Unit.Type.FEE, converter));
+                taxes.add(t.getUnitSum(Unit.Type.TAX, converter));
+
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
@@ -338,8 +341,6 @@ public class ClientPerformanceSnapshot
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
-                        fees.add(t.getUnitSum(Unit.Type.FEE, converter));
-                        taxes.add(t.getUnitSum(Unit.Type.TAX, converter));
                         break;
                     default:
                         throw new UnsupportedOperationException();

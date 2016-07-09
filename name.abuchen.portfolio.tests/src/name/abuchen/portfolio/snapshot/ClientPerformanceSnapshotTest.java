@@ -403,6 +403,42 @@ public class ClientPerformanceSnapshotTest
         GroupEarningsByAccount.Item item = new GroupEarningsByAccount(snapshot).getItems().get(0);
         assertThat(item.getSum(), is(Money.of(CurrencyUnit.EUR, 110_00)));
 
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    @Test
+    public void testInboundDeliveryWithFees()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder().addTo(client);
+        Portfolio portfolio = new PortfolioBuilder().addTo(client);
+
+        PortfolioTransaction delivery = new PortfolioTransaction();
+        delivery.setDate(LocalDate.parse("2011-03-01"));
+        delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+        delivery.setSecurity(security);
+        delivery.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
+        delivery.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 10_00)));
+        delivery.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 10_00)));
+
+        assertThat(delivery.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 80_00)));
+
+        portfolio.addTransaction(delivery);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(snapshot.getValue(CategoryType.TRANSFERS), is(Money.of(CurrencyUnit.EUR, 100_00)));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    private void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
+    {
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.INITIAL_VALUE));
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.CAPITAL_GAINS));
@@ -414,5 +450,4 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(valueAtEndOfPeriod.toMoney(), is(snapshot.getValue(CategoryType.FINAL_VALUE)));
     }
-
 }
