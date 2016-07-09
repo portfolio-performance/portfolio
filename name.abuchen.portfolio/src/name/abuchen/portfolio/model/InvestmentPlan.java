@@ -235,7 +235,8 @@ public class InvestmentPlan implements Named, Adaptable
                             converter.with(targetCurrencyCode).getRate(tDate, security.getCurrencyCode()).getValue());
         }
 
-        long shares = Math.round(availableAmount * Values.Share.factor() / (double) price);
+        long shares = Math
+                        .round(availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / (double) price);
 
         if (account != null)
         {
