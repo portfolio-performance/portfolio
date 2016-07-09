@@ -18,7 +18,7 @@ import name.abuchen.portfolio.util.Interval;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
-    /* package */ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
+    /* package */ ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
         super(client, converter, reportInterval);
     }
@@ -53,7 +53,7 @@ import name.abuchen.portfolio.util.Interval;
         dividends = new long[size];
         interest = new long[size];
 
-        collectTransferalsAndTaxes(size, interval);
+        collectTransferalsAndTaxes(interval);
 
         // first value = reference value
         dates[0] = interval.getStart();
@@ -83,7 +83,8 @@ import name.abuchen.portfolio.util.Interval;
                         delta[index] = (double) thisDelta / (double) transferals[index];
                     else
                         warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets,
-                                        thisDelta, date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))));
+                                        thisDelta,
+                                        date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))));
                 }
             }
             else
@@ -107,24 +108,25 @@ import name.abuchen.portfolio.util.Interval;
         int ii = Dates.daysBetween(interval.getStart(), time);
 
         if (!currencyCode.equals(getCurrencyConverter().getTermCurrency()))
-            value = getCurrencyConverter().convert(time, Money.of(currencyCode, value)).getAmount();
-
-        array[ii] += value;
+            array[ii] += getCurrencyConverter().convert(time, Money.of(currencyCode, value)).getAmount();
+        else
+            array[ii] += value;
     }
 
-    private void collectTransferalsAndTaxes(int size, Interval interval)
+    private void collectTransferalsAndTaxes(Interval interval)
     {
         for (Account account : getClient().getAccounts())
         {
-            account.getTransactions()
-                            .stream()
+            account.getTransactions() //
+                            .stream() //
                             .filter(t -> !t.getDate().isBefore(interval.getStart())
                                             && !t.getDate().isAfter(interval.getEnd()))
-                            .forEach(t -> {
+                            .forEach(t -> { // NOSONAR
                                 switch (t.getType())
                                 {
                                     case DEPOSIT:
-                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval,
+                                                        t.getDate());
                                         break;
                                     case REMOVAL:
                                         addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
@@ -137,6 +139,8 @@ import name.abuchen.portfolio.util.Interval;
                                         addValue(taxes, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
                                         break;
                                     case DIVIDENDS:
+                                        addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, t.getDate());
                                         addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
                                         break;
                                     case INTEREST:
@@ -152,8 +156,8 @@ import name.abuchen.portfolio.util.Interval;
 
         for (Portfolio portfolio : getClient().getPortfolios())
         {
-            portfolio.getTransactions()
-                            .stream()
+            portfolio.getTransactions() //
+                            .stream() //
                             .filter(t -> !t.getDate().isBefore(interval.getStart())
                                             && !t.getDate().isAfter(interval.getEnd()))
                             .forEach(t -> {
@@ -165,7 +169,8 @@ import name.abuchen.portfolio.util.Interval;
                                 switch (t.getType())
                                 {
                                     case DELIVERY_INBOUND:
-                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval,
+                                                        t.getDate());
                                         break;
                                     case DELIVERY_OUTBOUND:
                                         addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
