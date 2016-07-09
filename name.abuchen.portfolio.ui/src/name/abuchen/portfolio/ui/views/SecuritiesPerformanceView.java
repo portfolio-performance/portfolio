@@ -302,12 +302,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return ((SecurityPerformanceRecord) e).getSharesHeld();
             }
-
-            @Override
-            public String getToolTipText(Object e)
-            {
-                return Values.Share.format(((SecurityPerformanceRecord) e).getSharesHeld());
-            }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sharesHeld")); //$NON-NLS-1$
         recordColumns.addColumn(column);

@@ -179,13 +179,6 @@ public class StatementOfAssetsViewer
                 Element element = (Element) e;
                 return element.isSecurity() ? element.getSecurityPosition().getShares() : null;
             }
-
-            @Override
-            public String getToolTipText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? Values.Share.format(element.getSecurityPosition().getShares()) : null;
-            }
         });
         column.setComparator(new ElementComparator(new AttributeComparator(
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getShares() : null)));

@@ -716,13 +716,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 }
                 return null;
             }
-
-            @Override
-            public String getToolTipText(Object element)
-            {
-                Long v = getValue(element);
-                return v != null ? Values.Share.format(v) : null;
-            }
         });
         support.addColumn(column);
 

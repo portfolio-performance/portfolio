@@ -4,8 +4,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 
-import name.abuchen.portfolio.money.Values;
-
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.jface.viewers.ViewerColumn;
@@ -16,6 +14,8 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableItem;
+
+import name.abuchen.portfolio.money.Values;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {
@@ -37,6 +37,13 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
     }
 
     public abstract Long getValue(Object element);
+
+    @Override
+    public String getToolTipText(Object element)
+    {
+        Long value = getValue(element);
+        return value != null ? Values.Share.format(value) : null;
+    }
 
     private TextLayout getSharedTextLayout(Display display)
     {

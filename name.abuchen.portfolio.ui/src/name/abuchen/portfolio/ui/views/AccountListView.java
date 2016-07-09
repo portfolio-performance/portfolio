@@ -17,9 +17,11 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -357,6 +359,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         container.setLayout(layout);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ColumnEditingSupport.prepare(transactions);
 
