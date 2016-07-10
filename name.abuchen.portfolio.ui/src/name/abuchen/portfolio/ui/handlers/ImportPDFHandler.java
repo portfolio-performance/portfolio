@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
@@ -74,7 +75,7 @@ public class ImportPDFHandler
             if (fileNames.length == 0)
                 return;
 
-            List<File> files = new ArrayList<File>();
+            List<File> files = new ArrayList<>();
             for (String file : fileNames)
                 files.add(new File(fileDialog.getFilterPath(), file));
 
@@ -95,6 +96,8 @@ public class ImportPDFHandler
     {
         switch (type)
         {
+            case "bankslm": //$NON-NLS-1$
+                return new BankSLMPDFExctractor(client);
             case "comdirect": //$NON-NLS-1$
                 return new ComdirectPDFExtractor(client);
             case "commerzbank": //$NON-NLS-1$

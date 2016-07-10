@@ -42,6 +42,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.import.csv" command="_GgTyQBhXEeOR1rNFCzC82A"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_-_9i0LpsEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_k6K6cPr-EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-pdf" label="%command.import.pdf.import-pdf" enabled="false"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.bankslm" label="%command.import.pdf.bankslm" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="bankslm"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_1VyroDNiEeWWW6AB25Gh1g" elementId="name.abuchen.portfolio.ui.menu.file.import.pdf-comdirect" label="%command.import.pdf.comdirect" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_1VyroTNiEeWWW6AB25Gh1g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="comdirect"/>
           </children>
@@ -63,8 +66,8 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_VDIBcALOEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.flatex" label="%command.import.pdf.flatex" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_VDIBcQLOEeW4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="flatex"/>
           </children>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.ingdiba" label="%command.import.pdf.ingdiba" command="_pgC00EYREeSRXYVe298mXg">
-            <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="ingdiba"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_Lka2kEZrEeaGlO28N5cZQA" elementId="name.abuchen.portfolio.ui.menu.file.import.ingdiba" label="%command.import.pdf.ingdiba" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_Lka2kUZrEeaGlO28N5cZQA" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="ingdiba"/>
           </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.onvista" label="%command.import.pdf.onvista" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="onvista"/>

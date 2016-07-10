@@ -20,8 +20,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class DocumentType
     {
         private String marker;
-        private List<Block> blocks = new ArrayList<Block>();
-        private Map<String, String> context = new HashMap<String, String>();
+        private List<Block> blocks = new ArrayList<>();
+        private Map<String, String> context = new HashMap<>();
         private BiConsumer<Map<String, String>, String[]> contextProvider;
 
         public DocumentType(String marker)
@@ -124,7 +124,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     {
         private Supplier<T> supplier;
         private Function<T, Item> wrapper;
-        private List<Section<T>> sections = new ArrayList<Section<T>>();
+        private List<Section<T>> sections = new ArrayList<>();
 
         public Transaction<T> subject(Supplier<T> supplier)
         {
@@ -134,7 +134,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public Section<T> section(String... attributes)
         {
-            Section<T> section = new Section<T>(this, attributes);
+            Section<T> section = new Section<>(this, attributes);
             sections.add(section);
             return section;
         }
@@ -166,7 +166,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         private boolean isOptional = false;
         private Transaction<T> transaction;
         private String[] attributes;
-        private List<Pattern> pattern = new ArrayList<Pattern>();
+        private List<Pattern> pattern = new ArrayList<>();
         private BiConsumer<T, Map<String, String>> assignment;
 
         public Section(Transaction<T> transaction, String[] attributes)
@@ -201,7 +201,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public void parse(String filename, List<Item> items, String[] lines, int lineNo, T target)
         {
-            Map<String, String> values = new HashMap<String, String>();
+            Map<String, String> values = new HashMap<>();
 
             int patternNo = 0;
             for (int ii = lineNo; ii < lines.length; ii++)
