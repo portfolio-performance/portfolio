@@ -74,7 +74,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote, String skipCurrency)
         {
-            if (skipCurrency.equals(currencyCode))
+            if (currencyCode == null || skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
