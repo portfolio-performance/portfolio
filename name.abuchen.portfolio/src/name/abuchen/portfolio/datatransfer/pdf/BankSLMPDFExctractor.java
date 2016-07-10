@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -205,6 +207,58 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                         .match(".* Verrechnungssteuer (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .section("fees", "currency").optional() //
+                        .match(".* Quellensteuer (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .section("fees", "currency").optional() //
+                        .match(".* Nicht r.ckforderbare Steuern (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .section("grossValue", "forexSum", "forexCurrency", "totalValue", "currency", "exchangeRate") //
+                        .optional() // only present if forex is available
+                        .match("Brutto \\(([\\d.']+) \\* ... ([\\d.']+)\\) (\\w{3}+) (?<grossValue>[\\d.']+)") //
+                        .match("Netto (?<forexCurrency>\\w{3}+) (?<forexSum>[\\d.']+)") //
+                        .match("Change ... / ... (?<exchangeRate>[\\d.']+) (?<currency>\\w{3}+) (?<totalValue>[\\d.'-]+)") //
+                        .assign((t, v) -> { // NOSONAR
+
+                            // if we end up in the branch, then we have forex
+                            // dividends and must convert taxes in local
+                            // currency
+                            Money totalValue = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("totalValue")));
+                            t.setMonetaryAmount(totalValue);
+
+                            // keep tax units in case we need to convert them
+                            List<Unit> tax = t.getUnits().collect(Collectors.toList());
+                            t.clearUnits();
+
+                            Money forexGrossValue = Money.of(asCurrencyCode(v.get("forexCurrency")),
+                                            asAmount(v.get("grossValue")));
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money grossValue = Money.of(totalValue.getCurrencyCode(),
+                                            Math.round(exchangeRate.doubleValue() * forexGrossValue.getAmount()));
+                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forexGrossValue, exchangeRate);
+                            t.addUnit(unit);
+
+                            // convert tax units
+                            tax.stream().forEach(u -> {
+                                if (u.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
+                                {
+                                    t.addUnit(u);
+                                }
+                                else
+                                {
+                                    Money txm = Money.of(t.getCurrencyCode(),
+                                                    Math.round(exchangeRate.doubleValue() * u.getAmount().getAmount()));
+                                    Unit fu = new Unit(Unit.Type.TAX, txm, u.getAmount(), exchangeRate);
+                                    t.addUnit(fu);
+                                }
+                            });
+                        })
 
                         .wrap(t -> new TransactionItem(t));
 

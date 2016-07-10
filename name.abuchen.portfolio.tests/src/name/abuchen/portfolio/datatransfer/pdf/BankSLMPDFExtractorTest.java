@@ -32,7 +32,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class BankSLMPDFExtractorText
+public class BankSLMPDFExtractorTest
 {
     @Test
     public void testKauf_Inland1() throws IOException
@@ -274,6 +274,44 @@ public class BankSLMPDFExtractorText
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", 9_80L)));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", 28_00L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
+    }
+
+    @Test
+    public void testDividende_Ausland1() throws IOException
+    {
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Dividende_Ausland1.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("472672"));
+        assertThat(security.getName(), is("Nokia Corp"));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-07-05")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", 3302_00L)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", 1415_14L)));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", 4717_14L)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(17000)));
     }
 
     private String from(String resource)
