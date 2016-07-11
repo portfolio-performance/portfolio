@@ -211,27 +211,30 @@ public abstract class ReportingPeriod
 
         public LastXTradingDays(int tradingDays)
         {
-            super(tradingDaysSinceNow(tradingDays), LocalDate.now());
+            super(tradingDaysSince(LocalDate.now(), tradingDays), LocalDate.now());
 
             this.tradingDays = tradingDays;
         }
 
-        private static final LocalDate tradingDaysSinceNow(int tradingDays)
+        /* testing */ static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
         {
             TradeCalendar calendar = new TradeCalendar();
 
-            LocalDate date = LocalDate.now();
+            LocalDate date = start;
             int daysToGo = tradingDays;
 
             while (daysToGo > 0)
             {
-                date = date.minusDays(1);
-
                 if (!calendar.isHoliday(date))
                     daysToGo--;
-            }
 
-            return date.minusDays(1);
+                date = date.minusDays(1);
+            }
+            
+            while (calendar.isHoliday(date))
+                date = date.minusDays(1);
+
+            return date;
         }
 
         @Override
