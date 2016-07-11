@@ -185,6 +185,7 @@ public class ChartWidget extends WidgetDelegate
 
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
+        chart.getTitle().setText(title.getText());
         chart.getAxisSet().getYAxis(0).getTick().setVisible(false);
         if (useCase != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
