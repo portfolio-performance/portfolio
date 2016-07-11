@@ -216,6 +216,8 @@ public class ChartWidget extends WidgetDelegate
         {
             chart.suspendUpdate(true);
 
+            chart.getTitle().setText(title.getText());
+
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
