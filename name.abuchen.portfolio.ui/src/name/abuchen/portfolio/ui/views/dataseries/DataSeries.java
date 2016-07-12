@@ -194,4 +194,10 @@ public final class DataSeries
     {
         return this.type.buildUUID(instance);
     }
+
+    @Override
+    public String toString()
+    {
+        return getSearchLabel() + " [" + getUUID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }
