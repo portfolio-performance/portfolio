@@ -78,18 +78,29 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             return false;
         }
 
-        abstract void setValue(Element value, LatestSecurityPrice price) throws ParseException;
+        abstract void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException;
 
-        protected long asQuote(Element value) throws ParseException
+        protected long asQuote(Element value, String languageHint) throws ParseException
         {
             String text = value.text().trim();
 
-            // determine format based on the relative location of the last comma
-            // and dot, e.g. the last comma indicates a German number format
-            int lastDot = text.lastIndexOf('.');
-            int lastComma = text.lastIndexOf(',');
-            DecimalFormat format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
-                            : DECIMAL_FORMAT_ENGLISH.get();
+            DecimalFormat format = null;
+
+            if ("de".equals(languageHint)) //$NON-NLS-1$
+                format = DECIMAL_FORMAT_GERMAN.get();
+            else if ("en".equals(languageHint)) //$NON-NLS-1$
+                format = DECIMAL_FORMAT_ENGLISH.get();
+
+            if (format == null)
+            {
+                // determine format based on the relative location of the last
+                // comma
+                // and dot, e.g. the last comma indicates a German number format
+                int lastDot = text.lastIndexOf('.');
+                int lastComma = text.lastIndexOf(',');
+                format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
+                                : DECIMAL_FORMAT_ENGLISH.get();
+            }
 
             double quote = format.parse(text).doubleValue();
             return Math.round(quote * Values.Quote.factor());
@@ -114,7 +125,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             String text = Strings.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
@@ -144,9 +155,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            price.setValue(asQuote(value));
+            price.setValue(asQuote(value, languageHint));
         }
     }
 
@@ -159,12 +170,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             else
-                price.setHigh(asQuote(value));
+                price.setHigh(asQuote(value, languageHint));
         }
     }
 
@@ -177,12 +188,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price) throws ParseException
+        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
             else
-                price.setLow(asQuote(value));
+                price.setLow(asQuote(value, languageHint));
         }
     }
 
@@ -332,6 +343,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     private List<LatestSecurityPrice> parse(Document document, List<Exception> errors)
     {
+        // check if language is provided
+        String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
+
         List<LatestSecurityPrice> prices = new ArrayList<>();
 
         // first: find tables
@@ -353,7 +367,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
                     try
                     {
-                        LatestSecurityPrice price = extractPrice(row, specs);
+                        LatestSecurityPrice price = extractPrice(row, specs, language);
                         if (price != null)
                             prices.add(price);
                     }
@@ -454,7 +468,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return hasDate && hasClose;
     }
 
-    private LatestSecurityPrice extractPrice(Element row, List<Spec> specs) throws ParseException
+    private LatestSecurityPrice extractPrice(Element row, List<Spec> specs, String languageHint) throws ParseException
     {
         Elements cells = row.select("> td"); //$NON-NLS-1$
 
@@ -465,7 +479,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         LatestSecurityPrice price = new LatestSecurityPrice();
 
         for (Spec spec : specs)
-            spec.column.setValue(cells.get(spec.index), price);
+            spec.column.setValue(cells.get(spec.index), price, languageHint);
 
         return price;
     }
