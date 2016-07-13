@@ -18,6 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CSVSecurityPriceExtractorTest
@@ -42,8 +43,8 @@ public class CSVSecurityPriceExtractorTest
 
         List<SecurityPrice> prices = security.getPrices();
         assertThat(prices.size(), is(2));
-        assertThat(prices.get(0), is(new SecurityPrice(LocalDate.parse("2015-01-01"), 14_20)));
-        assertThat(prices.get(1), is(new SecurityPrice(LocalDate.parse("2015-01-02"), 15_20)));
+        assertThat(prices.get(0), is(new SecurityPrice(LocalDate.parse("2015-01-01"), Values.Quote.factorize(14.20))));
+        assertThat(prices.get(1), is(new SecurityPrice(LocalDate.parse("2015-01-02"), Values.Quote.factorize(15.20))));
     }
 
     @Test

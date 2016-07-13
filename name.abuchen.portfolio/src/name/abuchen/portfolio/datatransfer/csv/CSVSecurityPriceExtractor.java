@@ -71,7 +71,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
-        Long amount = getAmount(Messages.CSVColumn_Quote, rawValues, field2column);
+        Long amount = getQuote(Messages.CSVColumn_Quote, rawValues, field2column);
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 

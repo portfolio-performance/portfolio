@@ -52,12 +52,23 @@ public abstract class CSVExtractor implements Extractor
 
     protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
+        return getValue(name, rawValues, field2column, Values.Amount);
+    }
+
+    protected Long getQuote(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
+    {
+        return getValue(name, rawValues, field2column, Values.Quote);
+    }
+
+    protected Long getValue(String name, String[] rawValues, Map<String, Column> field2column, Values<Long> values)
+                    throws ParseException
+    {
         String value = getText(name, rawValues, field2column);
         if (value == null)
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return Long.valueOf((long) Math.round(num.doubleValue() * Values.Amount.factor()));
+        return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
     }
 
     protected LocalDate getDate(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
