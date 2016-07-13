@@ -28,7 +28,7 @@ public class SettingsView extends AbstractFinanceView
     private int initiallySelectedTab = 0;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelSettings;
     }

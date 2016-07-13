@@ -55,7 +55,7 @@ public class PerformanceChartView extends AbstractHistoricView
     private PerformanceChartSeriesBuilder seriesBuilder;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelPerformanceChart;
     }

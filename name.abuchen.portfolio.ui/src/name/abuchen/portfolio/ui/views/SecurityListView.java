@@ -206,7 +206,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private Pattern filterPattern;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         StringBuilder title = new StringBuilder();
         if (watchlist == null)
@@ -231,7 +231,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     {
         if (securities != null && !securities.getTableViewer().getTable().isDisposed())
         {
-            updateTitle();
+            updateTitle(getDefaultTitle());
             securities.getTableViewer().refresh(true);
             securities.getTableViewer().setSelection(securities.getTableViewer().getSelection());
         }
@@ -378,8 +378,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     protected void createTopTable(Composite parent)
     {
         securities = new SecuritiesTable(parent, this);
-        updateTitle();
-        securities.getColumnHelper().addListener(() -> updateTitle());
+        updateTitle(getDefaultTitle());
+        securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
 
         securities.addSelectionChangedListener(event -> onSecurityChanged(
                         (Security) ((IStructuredSelection) event.getSelection()).getFirstElement()));

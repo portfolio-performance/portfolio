@@ -186,7 +186,7 @@ public class DashboardView extends AbstractHistoricView
     private DashboardData dashboardData;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelDashboard;
     }

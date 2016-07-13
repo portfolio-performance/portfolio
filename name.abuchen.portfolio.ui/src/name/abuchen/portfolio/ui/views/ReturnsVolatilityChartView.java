@@ -49,7 +49,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     private DataSeriesCache cache;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelHistoricalReturnsAndVolatiltity;
     }

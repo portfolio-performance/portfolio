@@ -30,7 +30,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private StatementOfAssetsSeriesBuilder seriesBuilder;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelStatementOfAssetsHistory;
     }

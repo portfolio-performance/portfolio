@@ -62,7 +62,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     private boolean isFiltered = false;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelPortfolios;
     }

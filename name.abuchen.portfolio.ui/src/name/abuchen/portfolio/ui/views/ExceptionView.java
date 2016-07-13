@@ -19,7 +19,7 @@ public class ExceptionView extends AbstractFinanceView
     private Exception exception;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelError;
     }

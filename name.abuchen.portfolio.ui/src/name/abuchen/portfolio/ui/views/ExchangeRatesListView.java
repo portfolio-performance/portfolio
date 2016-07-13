@@ -34,7 +34,7 @@ public class ExchangeRatesListView extends AbstractListView
     private TimelineChart chart;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelCurrencies;
     }

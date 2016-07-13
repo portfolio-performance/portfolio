@@ -42,7 +42,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private List<Action> viewActions = new ArrayList<>();
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return taxonomy.getName();
     }
@@ -73,7 +73,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void propertyChange(PropertyChangeEvent event)
     {
-        updateTitle();
+        updateTitle(taxonomy.getName());
     }
 
     @Override

@@ -28,7 +28,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     private ExchangeRateProviderFactory factory;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelStatementOfAssetsHoldings;
     }

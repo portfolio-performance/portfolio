@@ -147,7 +147,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private SecurityDetailsViewer latest;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return recordColumns == null ? Messages.LabelSecurityPerformance
                         : Messages.LabelSecurityPerformance + " (" + recordColumns.getConfigurationName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -221,8 +221,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns = new ShowHideColumnHelper(SecuritiesPerformanceView.class.getName(), getClient(),
                         getPreferenceStore(), records, layout);
 
-        updateTitle();
-        recordColumns.addListener(() -> updateTitle());
+        updateTitle(getDefaultTitle());
+        recordColumns.addListener(() -> updateTitle(getDefaultTitle()));
 
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
@@ -871,8 +871,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     public void notifyModelUpdated()
     {
         reportingPeriodUpdated();
-        updateTitle();
-
+        updateTitle(getDefaultTitle());
     }
 
     @Override

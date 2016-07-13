@@ -35,7 +35,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     private ExchangeRateProviderFactory factory;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return assetViewer == null ? Messages.LabelStatementOfAssets : Messages.LabelStatementOfAssets + //
                         " (" + assetViewer.getColumnHelper().getConfigurationName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -48,7 +48,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), converter, LocalDate.now());
 
         assetViewer.setInput(snapshot);
-        updateTitle();
+        updateTitle(getDefaultTitle());
     }
 
     @Override
@@ -124,8 +124,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
         assetViewer = make(StatementOfAssetsViewer.class);
         Control control = assetViewer.createControl(parent);
 
-        updateTitle();
-        assetViewer.getColumnHelper().addListener(() -> updateTitle());
+        updateTitle(getDefaultTitle());
+        assetViewer.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
 
         hookContextMenu(assetViewer.getTableViewer().getControl(), new IMenuListener()
         {

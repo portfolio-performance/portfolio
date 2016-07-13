@@ -62,7 +62,7 @@ public class DividendsView extends AbstractFinanceView
     }
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelDividends;
     }
