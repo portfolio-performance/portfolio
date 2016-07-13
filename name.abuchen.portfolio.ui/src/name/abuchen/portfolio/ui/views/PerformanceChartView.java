@@ -137,6 +137,7 @@ public class PerformanceChartView extends AbstractHistoricView
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
 
         updateTitle(Messages.LabelPerformanceChart + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        chart.getTitle().setText(getTitle());
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
@@ -175,6 +176,7 @@ public class PerformanceChartView extends AbstractHistoricView
             updateTitle(Messages.LabelPerformanceChart + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
             chart.suspendUpdate(true);
+            chart.getTitle().setText(getTitle());
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 

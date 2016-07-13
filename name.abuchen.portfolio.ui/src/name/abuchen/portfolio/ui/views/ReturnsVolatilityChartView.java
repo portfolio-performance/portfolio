@@ -86,7 +86,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         resources = new LocalResourceManager(JFaceResources.getResources(), composite);
 
         chart = new ScatterChart(composite);
-        chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
@@ -122,6 +121,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
 
         updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        chart.getTitle().setText(getTitle());
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
@@ -161,6 +161,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                             + ")"); //$NON-NLS-1$
 
             chart.suspendUpdate(true);
+            chart.getTitle().setText(getTitle());
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
