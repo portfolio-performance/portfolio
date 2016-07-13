@@ -41,7 +41,7 @@ public final class Security implements Attributable, InvestmentVehicle
     // feed and feedURL are used to update historical prices
     private String feed;
     private String feedURL;
-    private List<SecurityPrice> prices = new ArrayList<SecurityPrice>();
+    private List<SecurityPrice> prices = new ArrayList<>();
 
     // latestFeed and latestFeedURL are used to update the latest (current)
     // quote. If null, the values from feed and feedURL are used instead.
@@ -92,6 +92,17 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         // needed to assign UUIDs when loading older versions from XML
         uuid = UUID.randomUUID().toString();
+    }
+
+    /**
+     * Generates a UUID only if no UUID exists. For not yet known reasons, some
+     * securities do miss the UUID. However, we do not want to make the
+     * #generateUUID function public.
+     */
+    public void fixMissingUUID()
+    {
+        if (uuid == null)
+            generateUUID();
     }
 
     @Override
@@ -283,9 +294,9 @@ public final class Security implements Attributable, InvestmentVehicle
 
         if (latest != null //
                         && (lastHistoric == null //
-                        || (!requestedTime.isBefore(latest.getTime()) && //
-                        !latest.getTime().isBefore(lastHistoric.getTime()) //
-                        )))
+                                        || (!requestedTime.isBefore(latest.getTime()) && //
+                                                        !latest.getTime().isBefore(lastHistoric.getTime()) //
+                                        )))
             return latest;
 
         if (lastHistoric == null)
@@ -363,14 +374,14 @@ public final class Security implements Attributable, InvestmentVehicle
     public List<SecurityEvent> getEvents()
     {
         if (this.events == null)
-            this.events = new ArrayList<SecurityEvent>();
+            this.events = new ArrayList<>();
         return events;
     }
 
     public void addEvent(SecurityEvent event)
     {
         if (this.events == null)
-            this.events = new ArrayList<SecurityEvent>();
+            this.events = new ArrayList<>();
         this.events.add(event);
     }
 
@@ -390,27 +401,25 @@ public final class Security implements Attributable, InvestmentVehicle
 
     public List<TransactionPair<?>> getTransactions(Client client)
     {
-        List<TransactionPair<?>> answer = new ArrayList<TransactionPair<?>>();
+        List<TransactionPair<?>> answer = new ArrayList<>();
 
         for (Account account : client.getAccounts())
         {
-            account.getTransactions()
-                            .stream()
+            account.getTransactions().stream() //
                             .filter(t -> this.equals(t.getSecurity()))
                             .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
                                             || t.getType() == AccountTransaction.Type.DIVIDENDS
                                             || t.getType() == AccountTransaction.Type.TAX_REFUND)
                             .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
-                            .forEach(p -> answer.add(p));
+                            .forEach(answer::add);
         }
 
         for (Portfolio portfolio : client.getPortfolios())
         {
-            portfolio.getTransactions().stream()
-                            //
+            portfolio.getTransactions().stream() //
                             .filter(t -> this.equals(t.getSecurity()))
                             .map(t -> new TransactionPair<PortfolioTransaction>(portfolio, t)) //
-                            .forEach(p -> answer.add(p));
+                            .forEach(answer::add);
         }
 
         return answer;
@@ -453,13 +462,13 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.feed = feed;
         answer.feedURL = feedURL;
-        answer.prices = new ArrayList<SecurityPrice>(prices);
+        answer.prices = new ArrayList<>(prices);
 
         answer.latestFeed = latestFeed;
         answer.latestFeedURL = latestFeedURL;
         answer.latest = latest;
 
-        answer.events = new ArrayList<SecurityEvent>(getEvents());
+        answer.events = new ArrayList<>(getEvents());
 
         answer.isRetired = isRetired;
 
