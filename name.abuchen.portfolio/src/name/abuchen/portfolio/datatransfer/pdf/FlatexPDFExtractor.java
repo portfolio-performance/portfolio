@@ -15,10 +15,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
-public class FlatexPDFExctractor extends AbstractPDFExtractor
+public class FlatexPDFExtractor extends AbstractPDFExtractor
 {
 
-    public FlatexPDFExctractor(Client client) throws IOException
+    public FlatexPDFExtractor(Client client) throws IOException
     {
         super(client);
 
@@ -31,7 +31,7 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
         addTransferOutTransaction();
         addRemoveTransaction();
         addRemoveNewFormatTransaction();
-//        addOverdraftinterestTransaction();
+        addOverdraftinterestTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -644,67 +644,58 @@ public class FlatexPDFExctractor extends AbstractPDFExtractor
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
-    
-//TODO: activate after feature interest charge...    
-//    @SuppressWarnings("nls")
-//    private void addOverdraftinterestTransaction()
-//    {
-//        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
-//            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
-//            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
-//            // read the current context here
-//            for (String line : lines)
-//            {
-//                Matcher m = pYear.matcher(line);
-//                if (m.matches())
-//                {
-//                    context.put("year", m.group(1));
-//                }
-//                m = pCurrency.matcher(line);
-//                if (m.matches())
-//                {
-//                    context.put("currency", m.group(1));
-//                }
-//            }
-//        });
-//        this.addDocumentTyp(type);
-//
-//        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Zinsabschluss[ ]+(.*)");
-//        type.addBlock(block);
-//        block.set(new Transaction<AccountTransaction>().subject(() -> {
-//            AccountTransaction t = new AccountTransaction();
-//            t.setType(AccountTransaction.Type.INTEREST);
-//            return t;
-//        })
-//
-//        .section("valuta", "amount", "sign")
-//                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
-//                        .assign((t, v) -> {
-//                                Map<String, String> context = type.getCurrentContext();
-//                                String date = v.get("valuta");
-//                                if (date != null)
-//                                {
-//                                    // create a long date from the year in the
-//                                    // context
-//                                    t.setDate(asDate(date + context.get("year")));
-//                                }
-//                                t.setNote(v.get("text"));
-//                                t.setAmount(asAmount(v.get("amount")));
-//                                t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-//                                //check for withdrawals
-//                                String sign=v.get("sign");
-//                                if("-".equals(sign))
-//                                {
-//                                    //negative amount for overdraft interest:
-//                                    t.setAmount(asAmount(v.get("amount")) * -1);
-//                                }
-//                        }).wrap(t -> {
-//                            if (t.getAmount() != 0) {
-//                                return new TransactionItem(t);
-//                            }
-//                            return null;
-//                        }));
-//    }
+
+    @SuppressWarnings("nls")
+    private void addOverdraftinterestTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
+            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
+            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
+            // read the current context here
+                        for (String line : lines)
+                        {
+                            Matcher m = pYear.matcher(line);
+                            if (m.matches())
+                            {
+                                context.put("year", m.group(1));
+                            }
+                            m = pCurrency.matcher(line);
+                            if (m.matches())
+                            {
+                                context.put("currency", m.group(1));
+                            }
+                        }
+                    });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Zinsabschluss[ ]+(.*)");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return t;
+                        })
+
+                        .section("valuta", "amount")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+[+-])")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            String date = v.get("valuta");
+                            if (date != null)
+                            {
+                                // create a long date from the year in the
+                                // context
+                                t.setDate(asDate(date + context.get("year")));
+                            }
+                            t.setNote(v.get("text"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        }).wrap(t -> {
+                            if (t.getAmount() != 0) { return new TransactionItem(t); }
+                            return null;
+                        }));
+    }
     
     @Override
     public String getLabel()

@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVStrategy;
-
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
@@ -28,6 +25,9 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVStrategy;
+
 public class PerformanceIndex
 {
     private final Client client;
@@ -40,6 +40,7 @@ public class PerformanceIndex
     protected long[] taxes;
     protected long[] dividends;
     protected long[] interest;
+    protected long[] interestCharge;
     protected double[] accumulated;
     protected double[] delta;
 
@@ -227,6 +228,11 @@ public class PerformanceIndex
     public long[] getInterest()
     {
         return interest;
+    }
+    
+    public long[] getInterestCharge()
+    {
+        return interestCharge;
     }
 
     public long[] calculateInvestedCapital()

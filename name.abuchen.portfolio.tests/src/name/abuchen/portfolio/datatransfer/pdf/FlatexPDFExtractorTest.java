@@ -16,8 +16,6 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -34,6 +32,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 
+import org.junit.Test;
+
 @SuppressWarnings("nls")
 public class FlatexPDFExtractorTest
 {
@@ -41,7 +41,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -146,7 +146,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -189,7 +189,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testKontoauszug() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -219,7 +219,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testKontoauszug2() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -248,7 +248,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -288,7 +288,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -326,7 +326,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testZinsgutschriftInland() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -364,7 +364,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -407,7 +407,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierÜbertrag() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -446,7 +446,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierAusgang() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -487,7 +487,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierAusgang2() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -527,7 +527,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierBestandsausbuchung() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -631,7 +631,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierBestandsausbuchungNeuesFormat() throws IOException
     {
-        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             String strip(File file) throws IOException
@@ -669,35 +669,34 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(83)));
     }
     
-//TODO: activate after feature interest charge...    
-//    @Test
-//    public void testZinsBelastung() throws IOException
-//    {
-//        FlatexPDFExctractor extractor = new FlatexPDFExctractor(new Client())
-//        {
-//            @Override
-//            String strip(File file) throws IOException
-//            {
-//                return from("FlatexZinsBelastung.txt");
-//            }
-//        };
-//        List<Exception> errors = new ArrayList<Exception>();
-//
-//        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
-//
-//        assertThat(errors, empty());
-//        assertThat(results.size(), is(1));
-//
-//        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
-//        assertThat(item.isPresent(), is(true));
-//        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-//        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
-//
-//        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-//        assertThat(transaction.getDate(), is(LocalDate.parse("2010-12-31")));
-//        assertThat(transaction.getAmount(), is(Values.Amount.factorize(-0.20)));
-//        assertThat(transaction.getCurrencyCode(), is("EUR"));
-//    }
+    @Test
+    public void testZinsBelastung() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("FlatexZinsBelastung.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2010-12-31")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.20)));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
+    }
     
 
    private String from(String resource)
