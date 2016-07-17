@@ -177,10 +177,12 @@ public interface Extractor
     static class AccountTransferItem extends Item
     {
         private final AccountTransferEntry entry;
+        private final boolean isOutbound;
 
-        public AccountTransferItem(AccountTransferEntry entry)
+        public AccountTransferItem(AccountTransferEntry entry, boolean isOutbound)
         {
             this.entry = entry;
+            this.isOutbound = isOutbound;
         }
 
         @Override
@@ -192,7 +194,8 @@ public interface Extractor
         @Override
         public String getTypeInformation()
         {
-            return Messages.LabelTransferAccount;
+            return isOutbound ? PortfolioTransaction.Type.TRANSFER_OUT.toString()
+                            : PortfolioTransaction.Type.TRANSFER_IN.toString();
         }
 
         @Override
@@ -216,7 +219,10 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
-            return action.process(entry, context.getAccount(), context.getSecondaryAccount());
+            if (isOutbound)
+                return action.process(entry, context.getAccount(), context.getSecondaryAccount());
+            else
+                return action.process(entry, context.getSecondaryAccount(), context.getAccount());
         }
     }
 

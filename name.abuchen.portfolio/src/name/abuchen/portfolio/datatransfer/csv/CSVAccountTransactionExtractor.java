@@ -73,7 +73,7 @@ import name.abuchen.portfolio.money.Money;
                 entry.setCurrencyCode(amount.getCurrencyCode());
                 entry.setDate(date);
                 entry.setNote(note);
-                items.add(new AccountTransferItem(entry));
+                items.add(new AccountTransferItem(entry, type == Type.TRANSFER_OUT));
                 break;
             case BUY:
             case SELL:
