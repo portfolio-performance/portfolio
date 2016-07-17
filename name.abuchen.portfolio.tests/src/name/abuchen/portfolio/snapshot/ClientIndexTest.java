@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.hamcrest.number.IsCloseTo;
+import org.junit.Test;
+
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioBuilder;
@@ -25,9 +28,6 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
-
-import org.hamcrest.number.IsCloseTo;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class ClientIndexTest
@@ -52,7 +52,6 @@ public class ClientIndexTest
                         .withdraw("2012-01-07", 369704) //
                         .fees____("2012-01-07", 88252) //
                         .fees____("2012-01-08", 100385) //
-                        // .interest_charge("2012-01-08", 1) //TODO
                         .addTo(client);
 
         return client;
