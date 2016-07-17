@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 
 public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
 {
@@ -29,7 +30,7 @@ public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
         super.fillValues(values, price, priceFormat, dateFormat);
 
         Number q = priceFormat.parse(values[6]);
-        long v = (long) (q.doubleValue() * 100);
+        long v = (long) (q.doubleValue() * Values.Quote.factor());
         price.setValue(v);
     }
 
