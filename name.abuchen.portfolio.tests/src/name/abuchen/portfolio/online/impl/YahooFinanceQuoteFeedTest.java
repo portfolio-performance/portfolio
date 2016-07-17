@@ -140,9 +140,8 @@ public class YahooFinanceQuoteFeedTest
                         equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1),
                                         Values.Quote.factorize(29.35))));
 
-        assertThat(security.getPrices().get(security.getPrices().size() - 1),
-                        equalTo(new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22),
-                                        Values.Quote.factorize(32.74))));
+        assertThat(security.getPrices().get(security.getPrices().size() - 1), equalTo(
+                        new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), Values.Quote.factorize(32.74))));
     }
 
     @Test
@@ -165,10 +164,11 @@ public class YahooFinanceQuoteFeedTest
         assertThat(security.getPrices().size(), is(2257));
 
         assertThat(security.getPrices().get(0), //
-                        equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1), 2255)));
+                        equalTo(new SecurityPrice(LocalDate.of(2003, Month.JANUARY, 1),
+                                        Values.Quote.factorize(22.55))));
 
-        assertThat(security.getPrices().get(security.getPrices().size() - 1),
-                        equalTo(new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), 3274)));
+        assertThat(security.getPrices().get(security.getPrices().size() - 1), equalTo(
+                        new SecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), Values.Quote.factorize(32.74))));
     }
 
     @Test
