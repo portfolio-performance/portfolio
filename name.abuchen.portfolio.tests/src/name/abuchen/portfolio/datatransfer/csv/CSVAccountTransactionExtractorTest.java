@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -344,5 +345,29 @@ public class CSVAccountTransactionExtractorTest
 
         assertThat(results, empty());
         assertThat(errors.size(), is(1));
+    }
+
+    @Test
+    public void testTaxesOnDividends()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList( //
+                                        new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "100", "EUR",
+                                                        "DIVIDENDS", "SAP SE", "10", "Notiz", "10" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findAny()
+                        .get().getSubject();
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 10_00)));
     }
 }

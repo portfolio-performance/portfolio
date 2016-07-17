@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 /* package */ class CSVAccountTransactionExtractor extends BaseCSVExtractor
@@ -39,15 +40,15 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new Field(Messages.CSVColumn_SecurityName).setOptional(true));
         fields.add(new AmountField(Messages.CSVColumn_Shares).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_Note).setOptional(true));
+        fields.add(new AmountField(Messages.CSVColumn_Taxes).setOptional(true));
     }
 
     @Override
     void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         // check if we have a security
-        Security security = getSecurity(rawValues, field2column, s -> {
-            s.setCurrencyCode(getCurrencyCode(Messages.CSVColumn_TransactionCurrency, rawValues, field2column));
-        });
+        Security security = getSecurity(rawValues, field2column, s -> s.setCurrencyCode(
+                        getCurrencyCode(Messages.CSVColumn_TransactionCurrency, rawValues, field2column)));
 
         // check for the transaction amount
         Money amount = getMoney(rawValues, field2column);
@@ -61,6 +62,7 @@ import name.abuchen.portfolio.money.Money;
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
+        Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
 
         switch (type)
         {
@@ -118,6 +120,8 @@ import name.abuchen.portfolio.money.Money;
                 t.setNote(note);
                 if (shares != null && type == Type.DIVIDENDS)
                     t.setShares(Math.abs(shares));
+                if (type == Type.DIVIDENDS && taxes != null && taxes.longValue() != 0)
+                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
                 items.add(new TransactionItem(t));
                 break;
             default:

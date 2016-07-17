@@ -44,6 +44,7 @@ public class CSVExporter
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_TransactionCurrency, //
+                            Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
@@ -57,6 +58,8 @@ public class CSVExporter
                 printer.print(t.getType().toString());
                 printer.print(Values.Amount.format(t.getType().isDebit() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
+                printer.print(t.getType() == AccountTransaction.Type.DIVIDENDS
+                                ? Values.Amount.format(t.getUnitSum(Unit.Type.TAX).getAmount()) : ""); //$NON-NLS-1$
                 printer.print(t.getShares() != 0 ? Values.Share.format(t.getShares()) : ""); //$NON-NLS-1$
 
                 printSecurityInfo(printer, t);
