@@ -1,0 +1,38 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Dividende ADRESSZEILE1=Herr
+Abrechnung ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 2 BELEGNUMMER=1096
+54321 Musterhausen 173458000 60738913 / 11.06.2013 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 11.06.2013
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Deutsche Telekom AG Dividend in Kind-Cash Line DE000A1TNRX5
+Nominal Ex-Tag
+STK 25,000 11.06.2013
+Verwahrart
+Girosammelverwahrung
+Barausgleich:
+Abfindung zu:
+EUR 0,700000
+Barausgleich EUR 17,50 
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+11.06.2013 172306238 EUR 17,50
+Buchung der Dividendenzahlung aus steuerlichem Einlagenkonto gem. §27KStG in Höhe von EUR 0,70 je
+Dividendenrecht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREEREIABANGE/GDBVKAPU/001096/110613/003337

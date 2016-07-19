@@ -2,7 +2,7 @@ BELEGDRUCK=J
 ORIGINAL=1
 FAXVERSAND=N
 EMAILVERSAND=N
-DEPOTNUMMER=172305000
+DEPOTNUMMER=173458000
 DEPOTUNTERBEZEICHNUNG=
 VERSANDARTENSCHLUESSEL=EBOX
 Gesamtfälligkeit ADRESSZEILE1=Herr
@@ -13,7 +13,7 @@ Herr ADRESSZEILE5=
 Max MUSTERMANN ADRESSZEILE6=
 Depot-Nr. Abrechnungs-Nr.
 Musterstr. 2 BELEGNUMMER=18
-54321 Musterhausen 172305000 25720768 / 17.11.2014 SEITENNUMMER=1STEUERERSTATTUNG=N
+54321 Musterhausen 173458000 25720768 / 17.11.2014 SEITENNUMMER=1STEUERERSTATTUNG=N
 Depotinhaber
 Max MUSTERMANN
 Frankfurt am Main, 17.11.2014
@@ -26,7 +26,7 @@ Verwahrart Girosammelverwahrung Kurswert EUR 56,30
 Kapitalertragsteuer EUR 4,22-
 Solidaritätszuschlag EUR 0,23-
 Wert Konto-Nr. Betrag zu Ihren Gunsten
-17.11.2014 172305047 EUR 51,85
+17.11.2014 172306238 EUR 51,85
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 Veräußerungsgewinn Sonstige (pauschal) EUR 16,89
 Aktienverlusttopf EUR 0,00 0,00

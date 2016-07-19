@@ -2,7 +2,7 @@ BELEGDRUCK=J
 ORIGINAL=1
 FAXVERSAND=N
 EMAILVERSAND=N
-DEPOTNUMMER=172305000
+DEPOTNUMMER=173458000
 DEPOTUNTERBEZEICHNUNG=
 VERSANDARTENSCHLUESSEL=EBOX
 Wertpapierabrechnung ADRESSZEILE1=Herr
@@ -13,7 +13,7 @@ Herr ADRESSZEILE5=
 Max MUSTERMANN ADRESSZEILE6=
 Depot-Nr. Abrechnungs-Nr.
 Musterstrasse 2 BELEGNUMMER=2522
-54321 Musterhausen 172305000 27097281 / 12.01.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+54321 Musterhausen 173458000 27097281 / 12.01.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
 Depotinhaber
 Max MUSTERMANN
 Frankfurt am Main, 12.01.2015
@@ -27,7 +27,7 @@ Handelszeit 10:11 Orderprovision EUR 5,55-
 Börse Xetra/EDE Börsengebühr EUR 1,50-
 Verwahrart Girosammelverwahrung
 Wert Konto-Nr. Betrag zu Ihren Lasten
-14.01.2015 172305047 EUR 59,55
+14.01.2015 172306238 EUR 59,55
 Wir werden in Ihrem Depot wie angegeben buchen.
 Ausfuehrung zu XETRA Order Nummer: 0065491687277
 Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
