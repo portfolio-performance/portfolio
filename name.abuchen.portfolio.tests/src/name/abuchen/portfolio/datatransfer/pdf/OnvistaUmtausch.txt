@@ -1,0 +1,34 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=173458000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Umtausch ADRESSZEILE2=Max MustermannADRESSZEILE3=Musterstr. 2
+Durchführungsanzeige ADRESSZEILE4=54321 Musterhausen ADRESSZEILE5=
+ADRESSZEILE6=
+Herr BELEGNUMMER=347SEITENNUMMER=1
+Max Mustermann
+Depot-Nr. Ausführungs-Nr. STEUERERSTATTUNG=N
+Musterstr. 2
+54321 Musterhausen 173458000 14203304 / 08.06.2011
+Depotinhaber
+Max Mustermann
+  
+ Frankfurt am Main, 08.06.2011
+ 
+Ausbuchung:    
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Bezugsrechte DE000A1KRCZ2
+Nominal Schlusstag
+STK 33,000 06.06.2011
+Verwahrart
+Girosammelverwahrung
+ 
+    
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.30/DUANDRECRECHUMTA/GAAASAFG/000347/080611/231253

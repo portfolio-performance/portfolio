@@ -2,7 +2,7 @@ BELEGDRUCK=J
 ORIGINAL=1
 FAXVERSAND=N
  EMAILVERSAND=N
-DEPOTNUMMER=172305000
+DEPOTNUMMER=173458000
        DEPOTUNTERBEZEICHNUNG=
 VERSANDARTENSCHLUESSEL=EBOX
        ADRESSZEILE1=Herr
@@ -14,7 +14,7 @@ Herr  17.05.2010 - 16.11.2010 BELEGNUMMER=31SEITENNUMMER=1
 Max MUSTERMANN
 Depot-Nr. Abrechnungs-Nr. STEUERERSTATTUNG=N
 Musterstr. 2
-54321 Musterhausen 172305000 63302459 / 17.11.2010
+54321 Musterhausen 173458000 63302459 / 17.11.2010
 Depotinhaber
 Max MUSTERMANN
   
@@ -26,7 +26,7 @@ Nominal Zahltag Zinssatz
 STK 1,000 17.11.2010 EUR 1,548250
  
 Wert  Konto-Nr. Betrag zu Ihren Gunsten  
-17.11.2010 172305047 EUR 1,14
+17.11.2010 172306238 EUR 1,14
  
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 Aktienverlusttopf EUR              0,00                  0,00     

@@ -1,0 +1,138 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=87
+54321 Musterhausen 173458000 44870296 / 26.11.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 26.11.2015
+Einbuchung:
+Gattungsbezeichnung ISIN
+AGIF-Allianz Euro Bond Inhaber Anteile A (EUR) o.N. LU0165915215
+Nominal
+STK 156,729
+Verwahrart
+Girosammelverwahrung
+Wert Betrag zu Ihren Gunsten
+EUR 0,00
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zwischengewinn EUR 28,21
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 28,21
+Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:
+Kapitalertragsteuer EUR 6,90
+Solidaritätszuschlag EUR 0,38
+Kirchensteuer EUR 0,62
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+26.11.2015 172306238 68366911 EUR 7,90
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 28,97
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,59
+im laufenden Jahr einbehaltene Kirchensteuer EUR 2,60
+Es folgt Seite 2
+3.18/DUANDEREEREIEBSTUM/GDBVKAPU/000087/271115/000313
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Ausführungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+173458000 44870296 2 ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=87
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem SEITENNUMMER=2
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238. STEUERERSTATTUNG=N
+Jahressteuerbescheinigung folgt
+Information zu steuerrelevanten Kennzahlen pro Anteil:
+- Aktiengewinn vom 23.11.2015: 0,0300% (gilt nur für Betriebsvermögen EStG)
+- Zwischengewinn vom 23.11.2015: EUR 0,18
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/DUANDEREEREIEBSTUM/GDBVKAPU/000087/271115/000313
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Abrechnung ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 2 BELEGNUMMER=2
+54321 Musterhausen 173458000 96911811 / 26.11.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 26.11.2015
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Allianz Euro Bond Fund Inhaber-Anteile A (EUR) o.N. LU0140355917
+Nominal Ex-Tag
+STK 28,000 23.11.2015
+Verwahrart
+Girosammelverwahrung
+Kapitalertragsteuer EUR 11,23-
+Solidaritätszuschlag EUR 0,62-
+Kirchensteuer EUR 1,01-
+Wert Konto-Nr. Betrag zu Ihren Lasten
+23.11.2015 172306238 EUR 12,86
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zwischengewinn EUR 45,92
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 45,92
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 35,87
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,97
+im laufenden Jahr einbehaltene Kirchensteuer EUR 3,22
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Es folgt Seite 2
+3.18/ABREEREIABSTUM/GDBVKAPU/000002/271115/002709
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+173458000 96911811 2 ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=2
+Jahressteuerbescheinigung folgt SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Wir werden in Ihrem Depot wie angegeben buchen.
+Information zu steuerrelevanten Kennzahlen pro Anteil:
+- Aktiengewinn vom 20.11.2015: 0,0100% (gilt nur für Betriebsvermögen EStG)
+- Aktiengewinn vom 20.11.2015: 0,0100% (gilt nur für Betriebsvermögen KStG)
+- Zwischengewinn vom 20.11.2015: EUR 1,64
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREEREIABSTUM/GDBVKAPU/000002/271115/002709

@@ -1,0 +1,30 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertlose Ausbuchung ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=1417
+54321 Musterhausen 173458000 30375065 / 21.06.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 21.06.2016
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Deutsche Telekom AG Dividend in Kind-Cash Line DE000A2AA2C3
+Nominal Ex-Tag
+STK 25,000 21.06.2016
+Verwahrart
+Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/DUANDEREEREIABWEAU/GDBNAAB/001417/220616/000137

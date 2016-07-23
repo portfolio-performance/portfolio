@@ -1,0 +1,67 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Spitze Verkauf ADRESSZEILE3=Musterstr. 2
+Kommissionsgeschäft ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 2 BELEGNUMMER=2359
+54321 Musterhausen 173458000 66867433 / 06.05.2013 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 06.05.2013
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Teilrechte DE000CBKTLR7
+Nominal Kurs
+STK 0,500 EUR 10,8150
+Handelstag 06.05.2013 Kurswert EUR 5,41 
+Handelszeit 12:00
+Börse außerbörslich
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+06.05.2013 172306238 EUR 5,41
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Sonstige EUR 11,55
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 11,55
+Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:
+Kapitalertragsteuer EUR 2,89
+Solidaritätszuschlag EUR 0,16
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+06.05.2013 172306238 56072633 EUR 3,05
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 7,38
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,40
+Es folgt Seite 2
+3.18/ABREABHNHANDSPVK/GAAASAFG/002359/070513/003611
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+173458000 66867433 2 ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=2359
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem SEITENNUMMER=2
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238. STEUERERSTATTUNG=N
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDSPVK/GAAASAFG/002359/070513/003611
