@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -22,10 +19,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
@@ -264,14 +257,9 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
             });
 
-            Set<Class<?>> exportTypes = new HashSet<>(Arrays.asList(new Class<?>[] { //
-                            Client.class, Security.class, Portfolio.class, Account.class }));
-
-            for (DataSeries series : picker.getSelectedDataSeries())
-            {
-                if (exportTypes.contains(series.getType()))
-                    addMenu(manager, series);
-            }
+            picker.getSelectedDataSeries().stream() //
+                            .filter(ds -> ds.getType() != DataSeries.Type.CONSUMER_PRICE_INDEX)
+                            .forEach(ds -> addMenu(manager, ds));
 
             manager.add(new Separator());
             chart.exportMenuAboutToShow(manager, getTitle());
