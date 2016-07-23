@@ -59,7 +59,7 @@ public class PerformanceView extends AbstractHistoricView
     private TableViewer earningsByAccount;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelPerformanceCalculation;
     }

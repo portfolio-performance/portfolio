@@ -61,7 +61,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     private ExchangeRateProviderFactory factory;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelInvestmentPlans;
     }

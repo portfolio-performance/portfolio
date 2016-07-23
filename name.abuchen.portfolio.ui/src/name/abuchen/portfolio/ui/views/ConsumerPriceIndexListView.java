@@ -45,7 +45,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     private TimelineChart chart;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelConsumerPriceIndex;
     }

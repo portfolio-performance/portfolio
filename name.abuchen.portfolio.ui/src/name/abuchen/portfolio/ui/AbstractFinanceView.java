@@ -38,11 +38,11 @@ public abstract class AbstractFinanceView
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
     private List<Menu> contextMenus = new ArrayList<>();
 
-    protected abstract String getTitle();
-
-    protected final void updateTitle()
+    protected abstract String getDefaultTitle();
+    
+    protected String getTitle()
     {
-        this.title.setText(getTitle());
+        return title.getText();
     }
 
     protected final void updateTitle(String title)
@@ -122,7 +122,7 @@ public abstract class AbstractFinanceView
                         .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
         title = new Label(header, SWT.NONE);
-        title.setText(getTitle());
+        title.setText(getDefaultTitle());
         title.setFont(boldFont);
         title.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
         title.setBackground(header.getBackground());

@@ -10,7 +10,7 @@ public class BrowserTestView extends AbstractFinanceView
 {
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return "Browser Test"; //$NON-NLS-1$
     }

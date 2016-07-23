@@ -30,7 +30,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private StatementOfAssetsSeriesBuilder seriesBuilder;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelStatementOfAssetsHistory;
     }
@@ -115,7 +115,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
         chart = new TimelineChart(composite);
-        chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
@@ -127,6 +126,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
 
         updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        chart.getTitle().setText(getTitle());
 
         GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(composite);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
@@ -174,7 +174,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
             chart.suspendUpdate(true);
-
+            chart.getTitle().setText(getTitle());
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
