@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -20,8 +19,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
@@ -152,7 +151,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
                 String priceCurrency = security.getCurrencyCode();
                 long price = security.getSecurityPrice(LocalDate.now()).getValue();
-                long weightedPrice = Math.round(node.getWeight() * price / Classification.ONE_HUNDRED_PERCENT);
+                long weightedPrice = Math.round(node.getWeight() * price / (double) Classification.ONE_HUNDRED_PERCENT);
                 if (weightedPrice == 0L)
                     return Values.Share.format(0L);
 
@@ -168,7 +167,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                     .convert(LocalDate.now(), Money.of(deltaCurrency, delta)).getAmount();
                 }
 
-                long shares = Math.round(delta * Values.Share.factor() * Values.Quote.factorToMoney() / weightedPrice);
+                long shares = Math
+                                .round(delta * Values.Share.divider() * Values.Quote.dividerToMoney() / weightedPrice);
                 return Values.Share.format(shares);
             }
         });
@@ -224,14 +224,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return super.canEdit(element);
             }
 
-        }.addListener(new ModificationListener()
-        {
-            @Override
-            public void onModified(Object element, Object newValue, Object oldValue)
-            {
-                onWeightModified(element, newValue, oldValue);
-            }
-        }).attachTo(column);
+        }.addListener((element, newValue, oldValue) -> onWeightModified(element, newValue, oldValue)).attachTo(column);
         support.addColumn(column);
     }
 
@@ -248,14 +241,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         if (node.isClassification() && getModel().hasWeightError(node))
         {
-            manager.appendToGroup(MENU_GROUP_CUSTOM_ACTIONS, new Action(Messages.MenuTaxonomyWeightFix)
-            {
-                @Override
-                public void run()
-                {
-                    doFixClassificationWeights(node);
-                }
-            });
+            manager.appendToGroup(MENU_GROUP_CUSTOM_ACTIONS,
+                            new SimpleAction(Messages.MenuTaxonomyWeightFix, a -> doFixClassificationWeights(node)));
         }
 
     }
