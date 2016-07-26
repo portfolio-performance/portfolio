@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ import org.json.simple.JSONValue;
     public Stream<Result> search(String query) throws IOException
     {
         // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
-        String searchUrl = MessageFormat.format(SEARCH_URL, query);
+        String searchUrl = MessageFormat.format(SEARCH_URL, URLEncoder.encode(query, "UTF-8"));
 
         List<Result> answer = new ArrayList<>();
 
