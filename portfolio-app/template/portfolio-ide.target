@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="portfolio-ide" sequenceNumber="12">
+<?pde version="3.8"?>
+
+<target name="portfolio-ide" sequenceNumber="10">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.source.feature.group" version="1.4.1.v20160212-1350"/>
@@ -33,6 +35,6 @@
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601121647"/>
 <repository location="http://archive.eclipse.org/technology/nebula/Q42015/release/"/>
 </location>
-<location path="C:\dev\portfoliodev\portfolio-app\ide-target-platform\bundles" type="Directory"/>
+<location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
 </target>
