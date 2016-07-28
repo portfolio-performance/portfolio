@@ -44,6 +44,8 @@ public class OpenFileHandler
             else
                 ((MPartStack) modelService.find(UIConstants.PartStack.MAIN, app)).getChildren().add(part);
 
+            part.setVisible(true);
+            part.getParent().setVisible(true);
             partService.showPart(part, PartState.ACTIVATE);
         }
     }
