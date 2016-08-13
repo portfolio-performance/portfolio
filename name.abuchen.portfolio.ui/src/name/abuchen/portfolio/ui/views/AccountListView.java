@@ -653,6 +653,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
                         account.deleteTransaction((AccountTransaction) transaction, getClient());
 
                     markDirty();
+                    transaction2balance.clear();
+                    updateBalance(account);
                     accounts.refresh();
                     transactions.setInput(account.getTransactions());
                 }
