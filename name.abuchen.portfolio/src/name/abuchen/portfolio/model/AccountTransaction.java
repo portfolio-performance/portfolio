@@ -42,7 +42,7 @@ public class AccountTransaction extends Transaction
     }
 
     /**
-     * Comparator to stort by date, amount, and type in order to have a stable
+     * Comparator to sort by date, amount, and type in order to have a stable
      * enough sort order to calculate the balance per transaction.
      */
     public static final class ByDateAmountAndType implements Comparator<AccountTransaction>, Serializable
