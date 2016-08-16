@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -50,6 +51,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private abstract static class ViewerPolicy
     {
+        private org.eclipse.swt.widgets.Listener sortOrderChangedListener;
+
         abstract ColumnViewer getViewer();
 
         abstract int getColumnCount();
@@ -59,6 +62,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         abstract Widget getColumn(int index);
 
         abstract Widget getSortColumn();
+
+        abstract Widget getColumnWidget(ViewerColumn column);
 
         abstract int[] getColumnOrder();
 
@@ -78,16 +83,29 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                     column.getSorter().attachTo(getViewer(), viewerColumn, direction);
                 else
                     column.getSorter().attachTo(getViewer(), viewerColumn);
+
+                // add selection listener *after* attaching the viewer sorter
+                // because the viewer sorter will add a listener that actually
+                // changes the sort order
+                if (sortOrderChangedListener != null)
+                    getColumnWidget(viewerColumn).addListener(SWT.Selection, sortOrderChangedListener);
             }
 
             if (column.getEditingSupport() != null)
+            {
                 viewerColumn.setEditingSupport(
                                 new ColumnEditingSupportWrapper(getViewer(), column.getEditingSupport()));
+            }
         }
 
         void setRedraw(boolean redraw)
         {
             getViewer().getControl().setRedraw(redraw);
+        }
+
+        public void setSortOrderChangedListener(org.eclipse.swt.widgets.Listener sortOrderChangedListener)
+        {
+            this.sortOrderChangedListener = sortOrderChangedListener;
         }
     }
 
@@ -130,6 +148,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         public Widget getSortColumn()
         {
             return table.getTable().getSortColumn();
+        }
+
+        @Override
+        Widget getColumnWidget(ViewerColumn column)
+        {
+            return ((TableViewerColumn) column).getColumn();
         }
 
         @Override
@@ -229,6 +253,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
+        Widget getColumnWidget(ViewerColumn column)
+        {
+            return ((TreeViewerColumn) column).getColumn();
+        }
+
+        @Override
         public int[] getColumnOrder()
         {
             return tree.getTree().getColumnOrder();
@@ -315,7 +345,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         this.preferences = preferences;
 
         if (client != null)
+        {
             this.store = new ConfigurationStore(identifier, client, preferences, this);
+            this.policy.setSortOrderChangedListener(e -> store.updateActive(serialize()));
+        }
 
         this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
     }
