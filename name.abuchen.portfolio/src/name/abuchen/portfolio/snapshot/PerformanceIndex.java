@@ -228,7 +228,7 @@ public class PerformanceIndex
     {
         return interest;
     }
-
+    
     public long[] calculateInvestedCapital()
     {
         long[] investedCapital = new long[transferals.length];

@@ -146,6 +146,9 @@ import name.abuchen.portfolio.util.Interval;
                                     case INTEREST:
                                         addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
                                         break;
+                                    case INTEREST_CHARGE:
+                                        addValue(interest, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
+                                        break;
                                     default:
                                         // do nothing
                                         break;

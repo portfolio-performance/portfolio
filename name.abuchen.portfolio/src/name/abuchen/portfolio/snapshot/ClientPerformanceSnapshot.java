@@ -292,6 +292,8 @@ public class ClientPerformanceSnapshot
                     case INTEREST:
                         addEarningTransaction(t, earnings, otherEarnings, taxes, earningsBySecurity);
                         break;
+                    case INTEREST_CHARGE:
+                        earnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                     case DEPOSIT:
                         deposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
@@ -419,6 +421,7 @@ public class ClientPerformanceSnapshot
                         break;
                     case REMOVAL:
                     case FEES:
+                    case INTEREST_CHARGE:
                     case TAXES:
                     case BUY:
                         value.add(t.getMonetaryAmount().with(converter.at(t.getDate())));

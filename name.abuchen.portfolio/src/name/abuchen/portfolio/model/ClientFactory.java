@@ -485,11 +485,12 @@ public class ClientFactory
             case 29:
                 // added decimal places to stock quotes
                 addDecimalPlacesToQuotes(client);
-
             case 30:
                 // added dashboards to model
                 fixStoredChartConfigurationWithNewPerformanceSeriesKeys(client);
                 migrateToConfigurationSets(client);
+            case 31:
+                // added INTEREST_CHARGE transaction type
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
