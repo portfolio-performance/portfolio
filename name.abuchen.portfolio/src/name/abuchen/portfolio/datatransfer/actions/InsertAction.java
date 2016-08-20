@@ -59,6 +59,10 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(BuySellEntry entry, Account account, Portfolio portfolio)
     {
+        // ensure consistency (in case the user deleted the creation of the
+        // security via the dialog)
+        process(entry.getPortfolioTransaction().getSecurity());
+
         if (convertBuySellToDelivery)
         {
             PortfolioTransaction t = entry.getPortfolioTransaction();
@@ -97,6 +101,10 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target)
     {
+        // ensure consistency (in case the user deleted the creation of the
+        // security via the dialog)
+        process(entry.getSourceTransaction().getSecurity());
+
         entry.setSourcePortfolio(source);
         entry.setTargetPortfolio(target);
         entry.insert();
