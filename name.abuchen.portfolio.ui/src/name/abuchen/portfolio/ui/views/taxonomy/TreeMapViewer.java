@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -22,7 +21,6 @@ import de.engehausen.treemap.IColorProvider;
 import de.engehausen.treemap.ILabelProvider;
 import de.engehausen.treemap.IRectangle;
 import de.engehausen.treemap.IRectangleRenderer;
-import de.engehausen.treemap.ISelectionChangeListener;
 import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
@@ -61,7 +59,7 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
     public void onConfigChanged()
     {
         treeMap.setTreeModel(new Model(getModel()));
-        legend.setRootItem(getModel().getRootNode());
+        legend.setRootItem(getModel().getVirtualRootNode());
     }
 
     @Override
@@ -73,29 +71,16 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
         Composite container = new Composite(sash, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
-        treeMap = new TreeMap<TaxonomyNode>(container);
+        treeMap = new TreeMap<>(container);
         treeMap.setTreeMapLayout(new SquarifiedLayout<TaxonomyNode>(10));
-        treeMap.setLabelProvider(new ILabelProvider<TaxonomyNode>()
-        {
-            @Override
-            public String getLabel(ITreeModel<IRectangle<TaxonomyNode>> model, IRectangle<TaxonomyNode> rectangle)
-            {
-                return rectangle.getNode().getName();
-            }
-        });
+        treeMap.setLabelProvider((model, rectangle) -> rectangle.getNode().getName());
 
         legend = new TreeMapLegend(container, treeMap, getModel(), getRenderer());
 
         final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, getModel().getClient(), true);
-        treeMap.addSelectionChangeListener(new ISelectionChangeListener<TaxonomyNode>()
-        {
-            @Override
-            public void selectionChanged(ITreeModel<IRectangle<TaxonomyNode>> model,
-                            IRectangle<TaxonomyNode> rectangle, String label)
-            {
-                TaxonomyNode node = rectangle.getNode();
-                details.setInput(node.getBackingSecurity());
-            }
+        treeMap.addSelectionChangeListener((model, rectangle, label) -> {
+            TaxonomyNode node = rectangle.getNode();
+            details.setInput(node.getBackingSecurity());
         });
 
         // layout tree map + legend
@@ -108,7 +93,7 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
         treeMap.setTreeModel(new Model(getModel()));
-        legend.setRootItem(getModel().getRootNode());
+        legend.setRootItem(getModel().getChartRenderingRootNode());
 
         return sash;
     }
@@ -125,28 +110,22 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
         @Override
         public Iterator<TaxonomyNode> getChildren(TaxonomyNode item)
         {
-            if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
-            {
-                return item.getChildren().stream() //
-                                .filter(n -> !n.isUnassignedCategory())//
-                                .collect(Collectors.toList()).iterator();
-            }
-            else
-            {
-                return item.getChildren().iterator();
-            }
+            return item.getChildren().iterator();
         }
 
         @Override
         public TaxonomyNode getParent(TaxonomyNode item)
         {
-            return item.getParent();
+            if (getRoot().equals(item))
+                return null;
+            else
+                return item.getParent();
         }
 
         @Override
         public TaxonomyNode getRoot()
         {
-            return model.getRootNode();
+            return model.getChartRenderingRootNode();
         }
 
         @Override
@@ -158,10 +137,7 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
         @Override
         public long getWeight(TaxonomyNode item)
         {
-            if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
-                return item.getActual().subtract(model.getUnassignedNode().getActual()).getAmount();
-            else
-                return item.getActual().getAmount();
+            return item.getActual().getAmount();
         }
     }
 
@@ -190,14 +166,13 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
             Color oldForeground = event.gc.getForeground();
             Color oldBackground = event.gc.getBackground();
 
-            Rectangle r = new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+            Rectangle r = new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(),
+                            rectangle.getHeight());
             this.colorProvider.drawRectangle(model.getRoot().getNode(), item, event.gc, r);
 
             String label = item.getName();
 
-            double total = this.model.getRootNode().getActual().getAmount();
-            if (this.model.isUnassignedCategoryInChartsExcluded())
-                total -= this.model.getUnassignedNode().getActual().getAmount();
+            double total = this.model.getChartRenderingRootNode().getActual().getAmount();
 
             String info = String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
                             Values.Percent.format(item.getActual().getAmount() / total));

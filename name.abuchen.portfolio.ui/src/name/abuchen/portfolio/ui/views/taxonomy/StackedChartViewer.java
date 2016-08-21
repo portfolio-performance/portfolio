@@ -43,8 +43,8 @@ public class StackedChartViewer extends AbstractChartPage
 {
     private static class VehicleBuilder
     {
-        private List<Integer> weights = new ArrayList<Integer>();
-        private List<SeriesBuilder> series = new ArrayList<SeriesBuilder>();
+        private List<Integer> weights = new ArrayList<>();
+        private List<SeriesBuilder> series = new ArrayList<>();
 
         public void add(int weight, SeriesBuilder series)
         {
@@ -132,7 +132,7 @@ public class StackedChartViewer extends AbstractChartPage
         final LocalDate end = interval.getEnd();
         LocalDate current = weekly.getStartDateFor(start);
 
-        dates = new ArrayList<LocalDate>();
+        dates = new ArrayList<>();
         while (current.isBefore(end))
         {
             dates.add(current);
@@ -141,6 +141,7 @@ public class StackedChartViewer extends AbstractChartPage
         dates.add(end);
     }
 
+    @Override
     public Control createControl(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
@@ -222,7 +223,7 @@ public class StackedChartViewer extends AbstractChartPage
 
     private void updateChart()
     {
-        final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<InvestmentVehicle, VehicleBuilder>();
+        final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<>();
         final Map<TaxonomyNode, SeriesBuilder> node2series = new LinkedHashMap<>();
 
         getModel().visitAll(new NodeVisitor()

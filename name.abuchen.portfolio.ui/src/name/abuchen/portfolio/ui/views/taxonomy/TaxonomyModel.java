@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,11 +32,13 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainer
 
 public final class TaxonomyModel
 {
+    @FunctionalInterface
     public interface NodeVisitor
     {
         void visit(TaxonomyNode node);
     }
 
+    @FunctionalInterface
     public interface TaxonomyModelChangeListener
     {
         void nodeChange(TaxonomyNode node);
@@ -47,19 +48,20 @@ public final class TaxonomyModel
     private final ClientSnapshot snapshot;
     private final CurrencyConverter converter;
 
-    private TaxonomyNode rootNode;
+    private TaxonomyNode virtualRootNode;
+    private TaxonomyNode classificationRootNode;
     private TaxonomyNode unassignedNode;
-    private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<InvestmentVehicle, Assignment>();
+    private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<>();
 
     private boolean excludeUnassignedCategoryInCharts = false;
     private boolean orderByTaxonomyInStackChart = false;
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
 
-    private List<TaxonomyModelChangeListener> listeners = new ArrayList<TaxonomyModelChangeListener>();
+    private List<TaxonomyModelChangeListener> listeners = new ArrayList<>();
 
     @Inject
-    /* package */TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
+    /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
         Objects.requireNonNull(client);
         Objects.requireNonNull(taxonomy);
@@ -68,11 +70,16 @@ public final class TaxonomyModel
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
-        Classification root = taxonomy.getRoot();
-        rootNode = new ClassificationNode(null, root);
+        Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
+                        Messages.PerformanceChartLabelEntirePortfolio, taxonomy.getRoot().getColor());
+        virtualRootNode = new ClassificationNode(null, virtualRoot);
 
-        LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
-        stack.add(rootNode);
+        Classification classificationRoot = taxonomy.getRoot();
+        classificationRootNode = new ClassificationNode(virtualRootNode, classificationRoot);
+        virtualRootNode.getChildren().add(classificationRootNode);
+
+        LinkedList<TaxonomyNode> stack = new LinkedList<>();
+        stack.add(classificationRootNode);
 
         while (!stack.isEmpty())
         {
@@ -90,25 +97,18 @@ public final class TaxonomyModel
             for (Assignment assignment : classification.getAssignments())
                 m.getChildren().add(new AssignmentNode(m, assignment));
 
-            Collections.sort(m.getChildren(), new Comparator<TaxonomyNode>()
-            {
-                @Override
-                public int compare(TaxonomyNode o1, TaxonomyNode o2)
-                {
-                    return o1.getRank() > o2.getRank() ? 1 : o1.getRank() == o2.getRank() ? 0 : -1;
-                }
-            });
+            Collections.sort(m.getChildren(), (o1, o2) -> Integer.compare(o1.getRank(), o2.getRank()));
         }
 
-        unassignedNode = new UnassignedContainerNode(rootNode, new Classification(root, Classification.UNASSIGNED_ID,
-                        Messages.LabelWithoutClassification));
-        rootNode.getChildren().add(unassignedNode);
+        unassignedNode = new UnassignedContainerNode(virtualRootNode, new Classification(virtualRoot,
+                        Classification.UNASSIGNED_ID, Messages.LabelWithoutClassification));
+        virtualRootNode.getChildren().add(unassignedNode);
 
         // add unassigned
         addUnassigned(client);
 
         // calculate actuals
-        visitActuals(snapshot, rootNode);
+        visitActuals(snapshot, virtualRootNode);
 
         // calculate targets
         recalculateTargets();
@@ -130,21 +130,16 @@ public final class TaxonomyModel
             investmentVehicle2weight.put(account, assignment);
         }
 
-        visitAll(new NodeVisitor()
-        {
-            @Override
-            public void visit(TaxonomyNode node)
-            {
-                if (!(node instanceof AssignmentNode))
-                    return;
+        visitAll(node -> {
+            if (!(node instanceof AssignmentNode))
+                return;
 
-                Assignment assignment = node.getAssignment();
-                Assignment count = investmentVehicle2weight.get(assignment.getInvestmentVehicle());
-                count.setWeight(count.getWeight() + assignment.getWeight());
-            }
+            Assignment assignment = node.getAssignment();
+            Assignment count = investmentVehicle2weight.get(assignment.getInvestmentVehicle());
+            count.setWeight(count.getWeight() + assignment.getWeight());
         });
 
-        List<Assignment> unassigned = new ArrayList<Assignment>();
+        List<Assignment> unassigned = new ArrayList<>();
         for (Assignment assignment : investmentVehicle2weight.values())
         {
             if (assignment.getWeight() >= Classification.ONE_HUNDRED_PERCENT)
@@ -157,14 +152,8 @@ public final class TaxonomyModel
             assignment.setWeight(Classification.ONE_HUNDRED_PERCENT);
         }
 
-        Collections.sort(unassigned, new Comparator<Assignment>()
-        {
-            @Override
-            public int compare(Assignment o1, Assignment o2)
-            {
-                return o1.getInvestmentVehicle().toString().compareToIgnoreCase(o2.getInvestmentVehicle().toString());
-            }
-        });
+        Collections.sort(unassigned, (o1, o2) -> o1.getInvestmentVehicle().toString()
+                        .compareToIgnoreCase(o2.getInvestmentVehicle().toString()));
 
         for (Assignment assignment : unassigned)
             unassignedNode.addChild(assignment);
@@ -189,10 +178,8 @@ public final class TaxonomyModel
             if (p != null)
             {
                 Money valuation = p.getValuation();
-                actual.add(Money.of(
-                                valuation.getCurrencyCode(),
-                                Math.round(valuation.getAmount() * assignment.getWeight()
-                                                / (double) Classification.ONE_HUNDRED_PERCENT)));
+                actual.add(Money.of(valuation.getCurrencyCode(), Math.round(valuation.getAmount()
+                                * assignment.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT)));
             }
         }
 
@@ -201,25 +188,15 @@ public final class TaxonomyModel
 
     private void recalculateTargets()
     {
-        // see #124
-        // only assigned assets go into the target value in order to allow an
-        // asset allocation only for assigned securities
-        rootNode.setTarget(rootNode.getActual().subtract(unassignedNode.getActual()));
+        virtualRootNode.setTarget(virtualRootNode.getActual().subtract(unassignedNode.getActual()));
 
-        visitAll(new NodeVisitor()
-        {
-            @Override
-            public void visit(TaxonomyNode node)
+        visitAll(node -> {
+            if (node.isClassification() && !node.isRoot())
             {
-                if (node.isClassification() && !node.isRoot())
-                {
-                    Money parent = node.getParent().getTarget();
-                    Money target = Money.of(
-                                    parent.getCurrencyCode(),
-                                    Math.round(parent.getAmount() * node.getWeight()
-                                                    / (double) Classification.ONE_HUNDRED_PERCENT));
-                    node.setTarget(target);
-                }
+                Money parent = node.getParent().getTarget();
+                Money target = Money.of(parent.getCurrencyCode(), Math.round(
+                                parent.getAmount() * node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT));
+                node.setTarget(target);
             }
         });
     }
@@ -269,14 +246,41 @@ public final class TaxonomyModel
         return taxonomy;
     }
 
-    public TaxonomyNode getRootNode()
+    /**
+     * Returns the virtual root node, i.e. the root node that includes the
+     * classification and the node with unassigned securities.
+     */
+    public TaxonomyNode getVirtualRootNode()
     {
-        return rootNode;
+        return virtualRootNode;
     }
 
+    /**
+     * Returns the root node of classifications, i.e. the part of the tree that
+     * includes assigned investment vehicles.
+     */
+    public TaxonomyNode getClassificationRootNode()
+    {
+        return classificationRootNode;
+    }
+
+    /**
+     * Returns the node that holds all unassigned investment vehicles.
+     */
     public TaxonomyNode getUnassignedNode()
     {
         return unassignedNode;
+    }
+
+    /**
+     * Returns the root node that is to be rendered in charts (pie, tree map,
+     * stacked chart). It is the whole node tree unless unassigned investment
+     * vehicles are not to be included or do not exist.
+     */
+    public TaxonomyNode getChartRenderingRootNode()
+    {
+        return isUnassignedCategoryInChartsExcluded() || getUnassignedNode().getActual().isZero()
+                        ? getClassificationRootNode() : getVirtualRootNode();
     }
 
     public Client getClient()
@@ -296,14 +300,14 @@ public final class TaxonomyModel
 
     public void recalculate()
     {
-        rootNode.setActual(snapshot.getMonetaryAssets());
-        visitActuals(snapshot, rootNode);
+        virtualRootNode.setActual(snapshot.getMonetaryAssets());
+        visitActuals(snapshot, virtualRootNode);
         recalculateTargets();
     }
 
     public void visitAll(NodeVisitor visitor)
     {
-        rootNode.accept(visitor);
+        virtualRootNode.accept(visitor);
     }
 
     public void addListener(TaxonomyModelChangeListener listener)
@@ -334,13 +338,13 @@ public final class TaxonomyModel
 
     public boolean hasWeightError(TaxonomyNode node)
     {
-        if (node.isUnassignedCategory())
+        if (node.isUnassignedCategory() || node.isRoot())
         {
             return false;
         }
         else if (node.isClassification())
         {
-            if (node.isRoot())
+            if (node.getParent().isRoot())
                 return node.getWeight() != Classification.ONE_HUNDRED_PERCENT;
             else
                 return node.getClassification().getParent().getChildrenWeight() != Classification.ONE_HUNDRED_PERCENT;
@@ -348,7 +352,8 @@ public final class TaxonomyModel
         else
         {
             // node is assignment
-            return getWeightByInvestmentVehicle(node.getAssignment().getInvestmentVehicle()) != Classification.ONE_HUNDRED_PERCENT;
+            return getWeightByInvestmentVehicle(
+                            node.getAssignment().getInvestmentVehicle()) != Classification.ONE_HUNDRED_PERCENT;
         }
     }
 }

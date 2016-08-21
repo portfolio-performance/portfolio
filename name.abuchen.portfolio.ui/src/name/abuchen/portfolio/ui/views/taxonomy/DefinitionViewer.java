@@ -125,7 +125,13 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
         if (newColor != null && !newColor.equals(oldColor))
         {
-            node.getClassification().setColor(Colors.toHex(newColor));
+            String hex = Colors.toHex(newColor);
+            node.getClassification().setColor(hex);
+
+            // use same color for virtual and classification root nodes
+            if (node.getParent().isRoot())
+                node.getParent().getClassification().setColor(hex);
+
             getModel().fireTaxonomyModelChange(node);
         }
     }

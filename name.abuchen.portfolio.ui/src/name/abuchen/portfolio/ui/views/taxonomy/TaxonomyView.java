@@ -20,7 +20,6 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -130,7 +129,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void notifyModelUpdated()
     {
-        model.fireTaxonomyModelChange(model.getRootNode());
+        model.fireTaxonomyModelChange(model.getVirtualRootNode());
     }
 
     private void addView(final ToolBar toolBar, String label, Images image, final int index)
@@ -174,14 +173,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         activateView(getPart().getPreferenceStore().getInt(identifierView));
 
-        model.addListener(new TaxonomyModelChangeListener()
-        {
-            @Override
-            public void nodeChange(TaxonomyNode node)
-            {
-                markDirty();
-            }
-        });
+        model.addListener(node -> markDirty());
 
         return container;
     }

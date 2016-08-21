@@ -142,6 +142,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
+                // no delta shares for unassigned securities
                 if (node.getParent() != null && node.getParent().isUnassignedCategory())
                     return null;
 
@@ -251,7 +252,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     {
         Classification classification = node.getClassification();
 
-        if (node.isRoot())
+        if (node.isUnassignedCategory())
+        {
+            classification.setWeight(0);
+        }
+        else if (node.isRoot() || node.getParent().isRoot())
         {
             classification.setWeight(Classification.ONE_HUNDRED_PERCENT);
         }

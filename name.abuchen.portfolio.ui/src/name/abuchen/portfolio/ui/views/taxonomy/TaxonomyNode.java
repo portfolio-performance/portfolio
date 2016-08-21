@@ -195,7 +195,7 @@ public abstract class TaxonomyNode implements Adaptable
         public UnassignedContainerNode(TaxonomyNode parent, Classification classification)
         {
             super(parent, classification);
-            setWeight(0);
+            super.setWeight(0);
         }
 
         @Override
@@ -213,7 +213,7 @@ public abstract class TaxonomyNode implements Adaptable
 
     private TaxonomyNode parent;
 
-    private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
+    private List<TaxonomyNode> children = new ArrayList<>();
     private Money actual;
     private Money target;
 
@@ -310,7 +310,7 @@ public abstract class TaxonomyNode implements Adaptable
 
     public List<TaxonomyNode> getPath()
     {
-        LinkedList<TaxonomyNode> path = new LinkedList<TaxonomyNode>();
+        LinkedList<TaxonomyNode> path = new LinkedList<>();
 
         TaxonomyNode item = this;
         while (item != null)

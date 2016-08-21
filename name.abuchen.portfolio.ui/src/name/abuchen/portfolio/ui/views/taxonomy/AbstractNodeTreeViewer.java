@@ -85,7 +85,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         @Override
         public Object[] getElements(Object inputElement)
         {
-            return new Object[] { model.getRootNode() };
+            return model.getVirtualRootNode().getChildren().toArray();
         }
 
         @Override
@@ -580,7 +580,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         {
             // fall back -> expand all classification nodes with children
             LinkedList<TaxonomyNode> stack = new LinkedList<>();
-            stack.push(getModel().getRootNode());
+            stack.push(getModel().getVirtualRootNode());
             while (!stack.isEmpty())
             {
                 TaxonomyNode node = stack.pop();
@@ -728,7 +728,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                         int oldWeight = node.getWeight();
                         node.setWeight(0);
                         doChangeAssignmentWeight(node, oldWeight);
-                        onTaxnomyNodeEdited(getModel().getRootNode());
+                        onTaxnomyNodeEdited(getModel().getVirtualRootNode());
                     }
                 });
             }
@@ -788,7 +788,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 node1.moveTo(getModel().getUnassignedNode());
         });
 
-        onTaxnomyNodeEdited(getModel().getRootNode());
+        onTaxnomyNodeEdited(getModel().getVirtualRootNode());
     }
 
     private void doChangeAssignmentWeight(TaxonomyNode node, int oldWeight)

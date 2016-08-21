@@ -60,19 +60,18 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             super(browser, name);
         }
 
+        @Override
         public Object function(Object[] arguments)
         {
             try
             {
-                Money total = getModel().getRootNode().getActual();
-                if (getModel().isUnassignedCategoryInChartsExcluded())
-                    total = total.subtract(getModel().getUnassignedNode().getActual());
+                TaxonomyNode root = getModel().getChartRenderingRootNode();
 
                 StringBuilder buffer = new StringBuilder();
-                printNode(buffer, getModel().getRootNode(), total);
+                printNode(buffer, root, root.getActual());
                 return buffer.toString();
             }
-            catch (Throwable e)
+            catch (Throwable e) // NOSONAR
             {
                 PortfolioPlugin.log(e);
                 return "{}"; //$NON-NLS-1$
@@ -85,9 +84,6 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             String name = StringEscapeUtils.escapeJson(node.getName());
             long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
             long base = node.isRoot() ? total.getAmount() : node.getParent().getActual().getAmount();
-            // if 'unassigned category' is excluded adjust the base for the children of the root node 
-            if(getModel().isUnassignedCategoryInChartsExcluded() && node.getParent() != null && node.getParent().isRoot())
-                base = total.getAmount();
 
             String totalPercentage = "";
             if (node.getParent() != null && !node.getParent().isRoot())
@@ -106,9 +102,6 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             for (TaxonomyNode child : node.getChildren())
             {
                 if (child.getActual().isZero())
-                    continue;
-
-                if (getModel().isUnassignedCategoryInChartsExcluded() && child.isUnassignedCategory())
                     continue;
 
                 if (isFirst)
