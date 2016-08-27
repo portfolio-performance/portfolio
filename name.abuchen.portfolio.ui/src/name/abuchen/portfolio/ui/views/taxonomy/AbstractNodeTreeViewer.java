@@ -125,22 +125,31 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         @Override
         public void dragSetData(DragSourceEvent event)
         {
-            TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
-            TaxonomyNodeTransfer.getTransfer().setTaxonomyNode(selection);
-            Assignment assignment = selection.getAssignment();
+            @SuppressWarnings("unchecked")
+            List<TaxonomyNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+            TaxonomyNodeTransfer.getTransfer().setTaxonomyNodes(nodes);
+
+            // if only one node is dragged and the node is of type security,
+            // then also enable the drag and drop of securities into a watchlist
+
+            Assignment assignment = nodes.size() == 1 ? nodes.get(0).getAssignment() : null;
             if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
                 SecurityTransfer.getTransfer().setSecurity((Security) assignment.getInvestmentVehicle());
             else
                 SecurityTransfer.getTransfer().setSecurity(null);
 
-            event.data = selection;
+            event.data = nodes;
         }
 
         @Override
         public void dragStart(DragSourceEvent event)
         {
-            TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
-            event.doit = !selection.isRoot() && !selection.isUnassignedCategory();
+            // drag data must not include the two visible root nodes, i.e. the
+            // unassigned category and the root category of the classification
+            @SuppressWarnings("unchecked")
+            List<TaxonomyNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+
+            event.doit = !nodes.stream().filter(n -> n.getParent().isRoot()).findAny().isPresent();
         }
     }
 
@@ -157,48 +166,76 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         @Override
         public boolean performDrop(Object data) // NOSONAR
         {
-            TaxonomyNode droppedNode = TaxonomyNodeTransfer.getTransfer().getTaxonomyNode();
-            if (droppedNode == getCurrentTarget())
+            List<TaxonomyNode> droppedNodes = getSubtreeNodes(TaxonomyNodeTransfer.getTransfer().getTaxonomyNodes());
+
+            final TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
+
+            // do not drop upon itself
+            if (droppedNodes.contains(target))
                 return false;
 
-            TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
+            // do not allow dragging a parent into the child
+            for (TaxonomyNode n : target.getPath())
+            {
+                if (droppedNodes.contains(n))
+                    return false;
+            }
 
-            // no categories allowed below the unassigned category
-            if (target.isUnassignedCategory() && droppedNode.isClassification())
+            // do not allow dragging of categories into the "unassigned
+            // category" (must be deleted via right-click instead)
+            if (target.getPath().stream().filter(n -> n.isUnassignedCategory()).findAny().isPresent()
+                            && droppedNodes.stream().filter(n -> n.isClassification()).findAny().isPresent())
                 return false;
-
-            // save parent in order to refresh later
-            TaxonomyNode droppedParent = droppedNode.getParent();
 
             switch (getCurrentLocation())
             {
-                case ViewerDropAdapter.LOCATION_AFTER:
-                    droppedNode.insertAfter(target);
-                    viewer.onTaxnomyNodeEdited(droppedParent);
+                case ViewerDropAdapter.LOCATION_AFTER: // NOSONAR
+                    TaxonomyNode t = target;
+                    for (TaxonomyNode node : droppedNodes)
+                    {
+                        node.insertAfter(t);
+                        t = node;
+                    }
+
+                    viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
                 case ViewerDropAdapter.LOCATION_BEFORE:
-                    droppedNode.insertBefore(target);
-                    viewer.onTaxnomyNodeEdited(droppedParent);
+                    for (TaxonomyNode node : droppedNodes)
+                        node.insertBefore(target);
+
+                    viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
                 case ViewerDropAdapter.LOCATION_ON: // NOSONAR
-                    // parent must not be dropped into child
-                    if (target.getPath().contains(droppedNode))
-                        break;
+                    // do not drag parent into child
+                    if (target.getPath().stream().filter(droppedNodes::contains).findAny().isPresent())
+                        return false;
+                    // do not move node into its own parent
+                    droppedNodes.stream().filter(n -> !n.getParent().equals(target)).forEach(n -> n.moveTo(target));
 
-                    // target must not be dropped into same node
-                    if (droppedParent.equals(target))
-                        break;
-
-                    droppedNode.moveTo(target);
-                    viewer.onTaxnomyNodeEdited(droppedParent);
+                    viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
                 case ViewerDropAdapter.LOCATION_NONE:
-                    break;
                 default:
                     break;
             }
 
             return true;
+        }
+
+        /**
+         * Returns the unique subtrees, e.g. removes the all nodes whose parent
+         * is already selected
+         */
+        private List<TaxonomyNode> getSubtreeNodes(List<TaxonomyNode> nodes)
+        {
+            List<TaxonomyNode> answer = new ArrayList<>();
+            for (TaxonomyNode node : nodes)
+            {
+                List<TaxonomyNode> path = node.getPath();
+                if (!path.subList(0, path.size() - 1).stream().filter(nodes::contains).findAny().isPresent())
+                    answer.add(node);
+            }
+            return answer;
         }
 
         @Override
@@ -304,7 +341,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         warningColor = new Color(container.getDisplay(), Colors.WARNING.swt());
         container.addDisposeListener(e -> warningColor.dispose());
 
-        nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION);
+        nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
@@ -649,10 +686,12 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     protected void fillContextMenu(IMenuManager manager) // NOSONAR
     {
-        final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) nodeViewer.getSelection()).getFirstElement();
-        if (node == null)
+        // do not show context menu if multiple nodes are selected
+        IStructuredSelection selection = (IStructuredSelection) nodeViewer.getSelection();
+        if (selection.isEmpty() || selection.size() > 1)
             return;
 
+        TaxonomyNode node = (TaxonomyNode) selection.getFirstElement();
         if (node.isUnassignedCategory())
             return;
 
