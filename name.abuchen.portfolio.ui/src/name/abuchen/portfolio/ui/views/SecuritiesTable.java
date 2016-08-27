@@ -55,6 +55,7 @@ import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -205,10 +206,17 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
+                return ""; //$NON-NLS-1$
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                return ((Security) e).isRetired() ? Images.CHECK.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
+        new BooleanEditingSupport(Security.class, "retired").addListener(this).attachTo(column); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
     }
