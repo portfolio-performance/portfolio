@@ -7,9 +7,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdatedListener;
 
-/* package */abstract class Page implements TaxonomyModelChangeListener
+/* package */abstract class Page implements TaxonomyModelUpdatedListener
 {
     private TaxonomyModel model;
     private TaxonomyNodeRenderer renderer;

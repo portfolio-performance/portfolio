@@ -39,13 +39,19 @@ public final class TaxonomyModel
     }
 
     @FunctionalInterface
-    public interface TaxonomyModelChangeListener
+    public interface TaxonomyModelUpdatedListener
     {
         void nodeChange(TaxonomyNode node);
     }
 
+    @FunctionalInterface
+    public interface DirtyListener
+    {
+        void onModelEdited();
+    }
+
     private final Taxonomy taxonomy;
-    private final ClientSnapshot snapshot;
+    private ClientSnapshot snapshot;
     private final CurrencyConverter converter;
 
     private TaxonomyNode virtualRootNode;
@@ -58,7 +64,8 @@ public final class TaxonomyModel
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
 
-    private List<TaxonomyModelChangeListener> listeners = new ArrayList<>();
+    private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
+    private List<DirtyListener> dirtyListener = new ArrayList<>();
 
     @Inject
     /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
@@ -298,6 +305,12 @@ public final class TaxonomyModel
         return converter.getTermCurrency();
     }
 
+    public void setClientSnapshot(ClientSnapshot newSnapshot)
+    {
+        this.snapshot = newSnapshot;
+        recalculate();
+    }
+
     public void recalculate()
     {
         virtualRootNode.setActual(snapshot.getMonetaryAssets());
@@ -310,20 +323,29 @@ public final class TaxonomyModel
         virtualRootNode.accept(visitor);
     }
 
-    public void addListener(TaxonomyModelChangeListener listener)
+    public void addListener(TaxonomyModelUpdatedListener listener)
     {
         listeners.add(listener);
     }
 
-    public void removeListener(TaxonomyModelChangeListener listener)
+    public void removeListener(TaxonomyModelUpdatedListener listener)
     {
         listeners.remove(listener);
     }
 
     public void fireTaxonomyModelChange(TaxonomyNode node)
     {
-        for (TaxonomyModelChangeListener listener : listeners)
-            listener.nodeChange(node);
+        listeners.forEach(listener -> listener.nodeChange(node));
+    }
+
+    public void addDirtyListener(DirtyListener listener)
+    {
+        dirtyListener.add(listener);
+    }
+
+    public void markDirty()
+    {
+        dirtyListener.forEach(l -> l.onModelEdited());
     }
 
     public int getWeightByInvestmentVehicle(InvestmentVehicle vehicle)

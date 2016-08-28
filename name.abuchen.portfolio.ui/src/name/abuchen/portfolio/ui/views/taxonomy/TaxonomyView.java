@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +16,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -36,6 +40,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
+    private ClientFilterDropDown clientFilter;
 
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
@@ -105,7 +110,19 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewPieChart, Images.VIEW_PIECHART, 2);
         addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 3);
         addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 4);
+        addFilterButton(toolBar);
         addConfigButton(toolBar);
+    }
+
+    private void addFilterButton(ToolBar toolBar)
+    {
+        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), filter -> {
+            Client filteredClient = filter.filter(getClient());
+            ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
+                            LocalDate.now());
+            model.setClientSnapshot(snapshot);
+            model.fireTaxonomyModelChange(model.getVirtualRootNode());
+        });
     }
 
     private void addConfigButton(ToolBar toolBar)
@@ -129,6 +146,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void notifyModelUpdated()
     {
+        Client filteredClient = this.clientFilter.getSelectedFilte().filter(getClient());
+        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDate.now());
+        model.setClientSnapshot(snapshot);
         model.fireTaxonomyModelChange(model.getVirtualRootNode());
     }
 
@@ -173,7 +193,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         activateView(getPart().getPreferenceStore().getInt(identifierView));
 
-        model.addListener(node -> markDirty());
+        model.addDirtyListener(this::markDirty);
 
         return container;
     }

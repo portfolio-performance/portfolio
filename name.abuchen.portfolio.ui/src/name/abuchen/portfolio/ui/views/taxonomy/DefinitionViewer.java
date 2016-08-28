@@ -133,6 +133,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
                 node.getParent().getClassification().setColor(hex);
 
             getModel().fireTaxonomyModelChange(node);
+            getModel().markDirty();
         }
     }
 
@@ -142,6 +143,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
         getModel().fireTaxonomyModelChange(null);
         getNodeViewer().getTree().redraw(); // avoids artifacts around cell
+        getModel().markDirty();
     }
 
     protected void doCascadeColorsDown(TaxonomyNode node)
@@ -150,5 +152,6 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
         getModel().fireTaxonomyModelChange(null);
         getNodeViewer().getTree().redraw(); // avoids artifacts around cell
+        getModel().markDirty();
     }
 }

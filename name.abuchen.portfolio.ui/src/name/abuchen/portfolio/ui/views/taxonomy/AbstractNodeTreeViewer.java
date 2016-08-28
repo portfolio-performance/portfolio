@@ -644,6 +644,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     {
         getModel().recalculate();
         getModel().fireTaxonomyModelChange(node);
+        getModel().markDirty();
     }
 
     @Override
@@ -908,6 +909,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         for (TaxonomyNode child : node.getChildren())
             child.setRank(rank++);
 
+        getModel().markDirty();
         getModel().fireTaxonomyModelChange(node);
     }
 }
