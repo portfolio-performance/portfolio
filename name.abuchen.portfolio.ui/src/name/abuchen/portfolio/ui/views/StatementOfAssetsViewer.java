@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -107,6 +109,7 @@ public class StatementOfAssetsViewer
     private ShowHideColumnHelper support;
 
     private final Client client;
+    private ClientFilter clientFilter = ClientFilter.NO_FILTER;
     private ClientSnapshot clientSnapshot;
     private PortfolioSnapshot portfolioSnapshot;
     private Taxonomy taxonomy;
@@ -730,8 +733,14 @@ public class StatementOfAssetsViewer
 
     public void setInput(ClientSnapshot snapshot)
     {
+        setInput(snapshot, ClientFilter.NO_FILTER);
+    }
+
+    public void setInput(ClientSnapshot snapshot, ClientFilter filter)
+    {
         this.clientSnapshot = snapshot;
         this.portfolioSnapshot = null;
+        this.clientFilter = Objects.requireNonNull(filter);
         internalSetInput(snapshot.groupByTaxonomy(taxonomy));
     }
 
@@ -739,6 +748,7 @@ public class StatementOfAssetsViewer
     {
         this.clientSnapshot = null;
         this.portfolioSnapshot = snapshot;
+        this.clientFilter = ClientFilter.NO_FILTER;
         internalSetInput(snapshot != null ? snapshot.groupByTaxonomy(taxonomy) : null);
     }
 
@@ -1125,15 +1135,16 @@ public class StatementOfAssetsViewer
             if (clientSnapshot == null && portfolioSnapshot == null)
                 return;
 
-            SecurityPerformanceSnapshot sps;
+            Client filteredClient = clientFilter.filter(client);
 
+            SecurityPerformanceSnapshot sps;
             if (clientSnapshot != null)
             {
-                sps = SecurityPerformanceSnapshot.create(client, clientSnapshot.getCurrencyConverter(), period);
+                sps = SecurityPerformanceSnapshot.create(filteredClient, clientSnapshot.getCurrencyConverter(), period);
             }
             else
             {
-                sps = SecurityPerformanceSnapshot.create(client, portfolioSnapshot.getCurrencyConverter(),
+                sps = SecurityPerformanceSnapshot.create(filteredClient, portfolioSnapshot.getCurrencyConverter(),
                                 portfolioSnapshot.getSource(), period);
             }
 

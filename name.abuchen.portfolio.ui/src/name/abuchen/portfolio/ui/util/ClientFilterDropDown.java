@@ -37,7 +37,7 @@ public class ClientFilterDropDown extends AbstractDropDown
 
     public ClientFilterDropDown(ToolBar toolBar, Client client, Consumer<ClientFilter> listener)
     {
-        super(toolBar, "Filter", Images.FILTER_OFF.image(), SWT.NONE);
+        super(toolBar, Messages.MenuChooseClientFilter, Images.FILTER_OFF.image(), SWT.NONE);
 
         this.listener = listener;
 

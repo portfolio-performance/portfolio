@@ -12,5 +12,7 @@ import name.abuchen.portfolio.model.Client;
 @FunctionalInterface
 public interface ClientFilter
 {
+    static final ClientFilter NO_FILTER = client -> client;
+
     Client filter(Client client);
 }

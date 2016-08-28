@@ -49,7 +49,7 @@ public class SecurityPerformanceSnapshot
 
     private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
     {
-        Map<Security, SecurityPerformanceRecord> records = new HashMap<Security, SecurityPerformanceRecord>();
+        Map<Security, SecurityPerformanceRecord> records = new HashMap<>();
 
         for (Security s : client.getSecurities())
             records.put(s, new SecurityPerformanceRecord(s));
@@ -59,7 +59,7 @@ public class SecurityPerformanceSnapshot
     private static SecurityPerformanceSnapshot doCreateSnapshot(Client client, CurrencyConverter converter,
                     Map<Security, SecurityPerformanceRecord> records, ReportingPeriod period)
     {
-        List<SecurityPerformanceRecord> list = new ArrayList<SecurityPerformanceRecord>(records.values());
+        List<SecurityPerformanceRecord> list = new ArrayList<>(records.values());
 
         for (Iterator<SecurityPerformanceRecord> iter = list.iterator(); iter.hasNext();)
         {

@@ -435,6 +435,7 @@ public class Messages extends NLS
     public static String MenuChartXZoomOut;
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
+    public static String MenuChooseClientFilter;
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
     public static String MenuConfigureDashboards;
