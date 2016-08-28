@@ -25,6 +25,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.snapshot.filter.PortfolioPlusClientFilter;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 
@@ -73,13 +75,15 @@ public class PerformanceIndex
     public static PerformanceIndex forPortfolio(Client client, CurrencyConverter converter, Portfolio portfolio,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        return PortfolioIndex.calculate(client, converter, portfolio, reportInterval, warnings);
+        Client pseudoClient = new PortfolioClientFilter(portfolio).filter(client);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forPortfolioPlusAccount(Client client, CurrencyConverter converter,
                     Portfolio portfolio, ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        return PortfolioPlusIndex.calculate(client, converter, portfolio, reportInterval, warnings);
+        Client pseudoClient = new PortfolioPlusClientFilter(portfolio).filter(client);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forClassification(Client client, CurrencyConverter converter,

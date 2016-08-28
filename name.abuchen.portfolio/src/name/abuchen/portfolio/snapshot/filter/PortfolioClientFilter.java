@@ -1,44 +1,51 @@
-package name.abuchen.portfolio.snapshot;
+package name.abuchen.portfolio.snapshot.filter;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyConverter;
 
-/* package */final class PortfolioIndex
+/**
+ * Filters the Client to include only transactions related to the given
+ * portfolio. Dividend transactions are included together with a corresponding
+ * REMOVAL transaction.
+ */
+public class PortfolioClientFilter implements ClientFilter
 {
-    private PortfolioIndex()
-    {}
+    private final Portfolio portfolio;
 
-    /* package */static PerformanceIndex calculate(Client client, CurrencyConverter converter, Portfolio portfolio,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+    public PortfolioClientFilter(Portfolio portfolio)
     {
-        Client pseudoClient = new Client();
+        this.portfolio = Objects.requireNonNull(portfolio);
+    }
 
-        Account pseudoAccount = new Account();
-        pseudoAccount.setName(""); //$NON-NLS-1$
-        pseudoClient.addAccount(pseudoAccount);
+    @Override
+    public Client filter(Client client)
+    {
+        ReadOnlyClient pseudoClient = new ReadOnlyClient(client);
 
-        Portfolio pseudoPortfolio = new Portfolio();
+        ReadOnlyAccount pseudoAccount = new ReadOnlyAccount(portfolio.getReferenceAccount(), ""); //$NON-NLS-1$
+        pseudoClient.internalAddAccount(pseudoAccount);
+
+        ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(portfolio);
         pseudoPortfolio.setReferenceAccount(pseudoAccount);
-        pseudoClient.addPortfolio(pseudoPortfolio);
+        pseudoClient.internalAddPortfolio(pseudoPortfolio);
 
         adaptPortfolioTransactions(portfolio, pseudoClient, pseudoPortfolio);
         collectDividends(portfolio, pseudoClient, pseudoAccount);
 
-        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
+        return pseudoClient;
     }
 
-    private static void adaptPortfolioTransactions(Portfolio portfolio, Client pseudoClient, Portfolio pseudoPortfolio)
+    private void adaptPortfolioTransactions(Portfolio portfolio, ReadOnlyClient pseudoClient,
+                    ReadOnlyPortfolio pseudoPortfolio)
     {
-        Set<Security> securities = new HashSet<Security>();
+        Set<Security> securities = new HashSet<>();
 
         for (PortfolioTransaction t : portfolio.getTransactions())
         {
@@ -56,7 +63,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     clone.setAmount(t.getAmount());
                     clone.setShares(t.getShares());
                     clone.addUnits(t.getUnits());
-                    pseudoPortfolio.addTransaction(clone);
+                    pseudoPortfolio.internalAddTransaction(clone);
                     break;
                 case SELL:
                 case TRANSFER_OUT:
@@ -67,11 +74,11 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     clone.setAmount(t.getAmount());
                     clone.setShares(t.getShares());
                     clone.addUnits(t.getUnits());
-                    pseudoPortfolio.addTransaction(clone);
+                    pseudoPortfolio.internalAddTransaction(clone);
                     break;
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
-                    pseudoPortfolio.addTransaction(t);
+                    pseudoPortfolio.internalAddTransaction(t);
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -79,10 +86,10 @@ import name.abuchen.portfolio.money.CurrencyConverter;
         }
 
         for (Security security : securities)
-            pseudoClient.addSecurity(security);
+            pseudoClient.internalAddSecurity(security);
     }
 
-    private static void collectDividends(Portfolio portfolio, Client pseudoClient, Account pseudoAccount)
+    private void collectDividends(Portfolio portfolio, ReadOnlyClient pseudoClient, ReadOnlyAccount pseudoAccount)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -101,8 +108,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
                     // security must be non-null -> tax refund is relevant for
                     // performance of security
                 case DIVIDENDS:
-                    pseudoAccount.addTransaction(t);
-                    pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                    pseudoAccount.internalAddTransaction(t);
+                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
                                     t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case BUY:

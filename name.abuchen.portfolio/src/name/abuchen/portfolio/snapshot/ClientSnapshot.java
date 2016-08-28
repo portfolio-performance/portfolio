@@ -16,16 +16,25 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 
 public class ClientSnapshot
 {
-    // //////////////////////////////////////////////////////////////
-    // factory methods
-    // //////////////////////////////////////////////////////////////
+    private final Client client;
+    private final CurrencyConverter converter;
+    private final LocalDate date;
+
+    private List<AccountSnapshot> accounts = new ArrayList<>();
+    private List<PortfolioSnapshot> portfolios = new ArrayList<>();
+
+    private PortfolioSnapshot jointPortfolio;
+    private Money assets;
 
     public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
     {
-        ClientSnapshot snapshot = new ClientSnapshot(client, converter, date);
+        ClientSnapshot snapshot = new ClientSnapshot(
+                        client instanceof ReadOnlyClient ? ((ReadOnlyClient) client).getSource() : client, converter,
+                        date);
 
         for (Account account : client.getAccounts())
             snapshot.accounts.add(AccountSnapshot.create(account, converter, date));
@@ -35,20 +44,6 @@ public class ClientSnapshot
 
         return snapshot;
     }
-
-    // //////////////////////////////////////////////////////////////
-    // instance impl
-    // //////////////////////////////////////////////////////////////
-
-    private final Client client;
-    private final CurrencyConverter converter;
-    private final LocalDate date;
-
-    private List<AccountSnapshot> accounts = new ArrayList<AccountSnapshot>();
-    private List<PortfolioSnapshot> portfolios = new ArrayList<PortfolioSnapshot>();
-
-    private PortfolioSnapshot jointPortfolio;
-    private Money assets;
 
     private ClientSnapshot(Client client, CurrencyConverter converter, LocalDate date)
     {
@@ -142,7 +137,7 @@ public class ClientSnapshot
 
     public Stream<AssetPosition> getAssetPositions()
     {
-        List<AssetPosition> answer = new ArrayList<AssetPosition>();
+        List<AssetPosition> answer = new ArrayList<>();
 
         Money monetaryAssets = getMonetaryAssets();
 

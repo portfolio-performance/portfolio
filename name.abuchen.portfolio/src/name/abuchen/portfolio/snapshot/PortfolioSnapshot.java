@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 
 public class PortfolioSnapshot
 {
@@ -24,19 +25,19 @@ public class PortfolioSnapshot
 
     public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, LocalDate date)
     {
-        List<SecurityPosition> positions = portfolio
-                        .getTransactions()
-                        .stream()
-                        .filter(t -> !t.getDate().isAfter(date))
-                        .collect(Collectors.groupingBy(t -> t.getSecurity()))
-                        .entrySet()
-                        .stream()
-                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date), e
-                                        .getValue())) //
+        List<SecurityPosition> positions = portfolio.getTransactions() //
+                        .stream() //
+                        .filter(t -> !t.getDate().isAfter(date)) //
+                        .collect(Collectors.groupingBy(t -> t.getSecurity())) //
+                        .entrySet() //
+                        .stream() //
+                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date),
+                                        e.getValue())) //
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
 
-        return new PortfolioSnapshot(portfolio, converter, date, positions);
+        return new PortfolioSnapshot(portfolio instanceof ReadOnlyPortfolio
+                        ? ((ReadOnlyPortfolio) portfolio).getSource() : portfolio, converter, date, positions);
     }
 
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots, CurrencyConverter converter)

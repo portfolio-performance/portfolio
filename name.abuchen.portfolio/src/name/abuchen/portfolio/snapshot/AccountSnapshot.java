@@ -6,6 +6,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 
 public class AccountSnapshot
 {
@@ -28,7 +29,9 @@ public class AccountSnapshot
             }
         }
 
-        return new AccountSnapshot(account, date, converter, Money.of(account.getCurrencyCode(), funds));
+        return new AccountSnapshot(
+                        account instanceof ReadOnlyAccount ? ((ReadOnlyAccount) account).getSource() : account, date,
+                        converter, Money.of(account.getCurrencyCode(), funds));
     }
 
     // //////////////////////////////////////////////////////////////
